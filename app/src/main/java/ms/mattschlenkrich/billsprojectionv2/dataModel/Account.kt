@@ -1,11 +1,12 @@
 package ms.mattschlenkrich.billsprojectionv2.dataModel
 
 import android.os.Parcelable
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
-@Entity (tableName = "tblAccounts", )
+@Entity (tableName = "tblAccounts")
 @Parcelize
 data class Account(
     @PrimaryKey(autoGenerate = true)
@@ -24,3 +25,24 @@ data class Account(
     val displayAsAsset: Boolean,
     val updateTime: String,
 ) : Parcelable
+
+
+@Entity(tableName = "accountTypes")
+@Parcelize
+data class AccountType(
+    @PrimaryKey(autoGenerate = false)
+    val accountTypeId: Int,
+    val accountType: String,
+    @ColumnInfo(defaultValue = "0")
+    val accountTypeDelete: Boolean,
+): Parcelable
+
+
+@Entity(tableName = "budgetCategory")
+@Parcelize
+data class BudgetCategory(
+    @PrimaryKey(autoGenerate = false)
+    val budgetCategory: String,
+    @ColumnInfo(defaultValue = "0")
+    val categoryDelete: Boolean,
+): Parcelable

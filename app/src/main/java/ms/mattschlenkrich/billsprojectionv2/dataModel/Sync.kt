@@ -20,13 +20,3 @@ data class Sync(
 ) : Parcelable
 
 
-
-@Entity(tableName = "accountTypes")
-@Parcelize
-data class AccountType(
-    @PrimaryKey(autoGenerate = false)
-    val accountTypeId: Int,
-    val accountType: String,
-    @ColumnInfo(defaultValue = "0")
-    val accountTypeDelete: Boolean,
-): Parcelable
