@@ -15,20 +15,21 @@ interface AccountTypeDao {
     @Query(
         "UPDATE accountTypes " +
                 "SET accountDeleted = 1, " +
-                "updateTime = :updateTime"
+                "updateTime = :updateTime " +
+                "WHERE accountTypeId = :accountTypeId"
     )
-    suspend fun deleteAccountType(accountType: AccountType, updateTime: String)
+    suspend fun deleteAccountType(accountTypeId: Long, updateTime: String)
 
     @Query(
         "SELECT * FROM accountTypes " +
-                "ORDER BY accountName " +
+                "ORDER BY accountType " +
                 "ASC COLLATE NOCASE"
     )
     fun getAccountTypes(): LiveData<List<AccountType>>
 
     @Query(
         "SELECT * FROM accountTypes" +
-                "WHERE accountName LIKE :type"
+                "WHERE accountType LIKE :type"
     )
     fun searchAccountType(type: String): LiveData<List<AccountType>>
 }

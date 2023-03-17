@@ -15,9 +15,9 @@ import ms.mattschlenkrich.billsprojectionv2.dataModel.AccountType
 )
 abstract class BillsDatabase : RoomDatabase() {
 
-    abstract fun getAccountTypesDao(): AccountCategoriesDao
+    abstract fun getAccountTypesDao(): AccountTypeDao
     abstract fun getAccountDao(): AccountDao
-    abstract fun getAccountCategories(): AccountCategoriesDao
+    abstract fun getAccountCategoriesDao(): AccountCategoriesDao
 
     companion object {
         @Volatile

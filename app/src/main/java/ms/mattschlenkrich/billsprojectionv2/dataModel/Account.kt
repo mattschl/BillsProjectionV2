@@ -22,16 +22,17 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class Account(
     @PrimaryKey(autoGenerate = true)
-    val account_ID: Int,
+    @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
+    val accountId: Long,
     val AccountName: String,
     val accountNumber: String?,
-    val accountCategoryId: Int,
-    val accountTypeId: Int,
-    @ColumnInfo(defaultValue = "0.0" , typeAffinity = ColumnInfo.REAL)
+    val accountCategoryId: Long,
+    val accountTypeId: Long,
+    @ColumnInfo(defaultValue = "0.0", typeAffinity = ColumnInfo.REAL)
     val budgetAmount: Double,
-    @ColumnInfo(defaultValue = "0.0" , typeAffinity = ColumnInfo.REAL)
+    @ColumnInfo(defaultValue = "0.0", typeAffinity = ColumnInfo.REAL)
     val accountBalance: Double,
-    @ColumnInfo(defaultValue = "0.0" , typeAffinity = ColumnInfo.REAL)
+    @ColumnInfo(defaultValue = "0.0", typeAffinity = ColumnInfo.REAL)
     val accountOwing: Double,
     @ColumnInfo(defaultValue = "0", typeAffinity = ColumnInfo.INTEGER)
     val accountDeleted: Boolean,
@@ -43,7 +44,8 @@ data class Account(
 @Parcelize
 data class AccountType(
     @PrimaryKey(autoGenerate = true)
-    val accountTypeId: Int,
+    @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
+    val accountTypeId: Long,
     val accountType: String,
     @ColumnInfo(defaultValue = "1", typeAffinity = ColumnInfo.INTEGER)
     val keepTotals: Boolean,
@@ -65,7 +67,8 @@ data class AccountType(
 @Parcelize
 data class AccountCategory(
     @PrimaryKey(autoGenerate = true)
-    val accountCategoryId: Int,
+    @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
+    val accountCategoryId: Long,
     val accountCategory: String,
     @ColumnInfo(defaultValue = "0", typeAffinity = ColumnInfo.INTEGER)
     val categoryDelete: Boolean,
