@@ -5,4 +5,16 @@
     <string name="image">image</string>
     <string name="no_accounts_to_view">No Accounts to view</string>
     <string name="account_name">Account Name</string>
+    <string name="account_number_or_reference">Account Number or Reference</string>
+    <string name="category">Category</string>
+    <string name="account_type">Account Type</string>
+    <string name="balance">Balance</string>
+    <string name="owing">Owing</string>
+    <string name="budgeted">Budgeted</string>
+    <string name="asset_account">Asset Account</string>
+    <string name="keep_totals">Keep Totals</string>
+    <string name="display_as_asset">Display as asset</string>
+    <string name="calculate_owing">Calculate Owing</string>
+    <string name="keep_mileage">Keep Mileage</string>
+    <string name="number">Number</string>
 </resources>

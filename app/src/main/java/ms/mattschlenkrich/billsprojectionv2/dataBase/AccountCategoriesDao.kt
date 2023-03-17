@@ -16,7 +16,7 @@ interface AccountCategoriesDao {
 
     @Query(
         "UPDATE accountCategory " +
-                "SET categoryDeleted = 1, " +
+                "SET isDeleted = 1, " +
                 "updateTime = :updateTime"
     )
     suspend fun deleteAccountCategory(accountCategory: AccountCategory, updateTime: String)

@@ -14,7 +14,7 @@ interface AccountTypeDao {
 
     @Query(
         "UPDATE accountTypes " +
-                "SET accountDeleted = 1, " +
+                "SET isDeleted = 1, " +
                 "updateTime = :updateTime " +
                 "WHERE accountTypeId = :accountTypeId"
     )
