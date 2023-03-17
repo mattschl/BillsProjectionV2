@@ -56,12 +56,12 @@ data class AccountType(
     @ColumnInfo(defaultValue = "0", typeAffinity = ColumnInfo.INTEGER)
     val displayAsAsset: Boolean,
     @ColumnInfo(defaultValue = "0", typeAffinity = ColumnInfo.INTEGER)
-    val accountTypeDelete: Boolean,
+    val typeDelete: Boolean,
     val updateTime: String,
 ): Parcelable
 
 
-@Entity(tableName = "accountCategories")
+@Entity(tableName = "accountCategory")
 @Parcelize
 data class AccountCategory(
     @PrimaryKey(autoGenerate = true)
