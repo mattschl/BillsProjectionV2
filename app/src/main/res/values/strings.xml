@@ -17,4 +17,5 @@
     <string name="calculate_owing">Calculate Owing</string>
     <string name="keep_mileage">Keep Mileage</string>
     <string name="number">Number</string>
+    <string name="id_not_created_yet">ID Not created yet</string>
 </resources>

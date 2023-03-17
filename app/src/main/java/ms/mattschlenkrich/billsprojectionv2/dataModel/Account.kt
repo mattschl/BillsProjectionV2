@@ -1,30 +1,31 @@
 package ms.mattschlenkrich.billsprojectionv2.dataModel
 
 import android.os.Parcelable
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import androidx.room.*
 import kotlinx.parcelize.Parcelize
 
-@Entity (tableName = "accounts",
+@Entity(
+    tableName = "accounts",
     foreignKeys = [ForeignKey(
         entity = AccountType::class,
         parentColumns = arrayOf("accountTypeId"),
         childColumns = arrayOf("accountTypeId")
     ),
-    ForeignKey(
-        entity = AccountCategory::class,
-        parentColumns = arrayOf("accountCategoryId"),
-        childColumns = arrayOf("'accountCategoryId")
-    )]
+        ForeignKey(
+            entity = AccountCategory::class,
+            parentColumns = arrayOf("accountCategoryId"),
+            childColumns = arrayOf("'accountCategoryId")
+        )],
+    indices = [
+        Index(name = "indexAccountName", value = ["accountName"], unique = true)
+    ]
 )
 @Parcelize
 data class Account(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val accountId: Long,
-    val AccountName: String,
+    val accountName: String,
     val accountNumber: String?,
     val accountCategoryId: Long,
     val accountTypeId: Long,
@@ -50,10 +51,13 @@ data class Account(
 ) : Parcelable
 
 
-@Entity(tableName = "accountTypes")
+@Entity(
+    tableName = "accountTypes",
+    indices = [Index(name = "indexAccountType", value = ["accountType"], unique = true)]
+)
 @Parcelize
 data class AccountType(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val accountTypeId: Long,
     val accountType: String,
@@ -63,10 +67,13 @@ data class AccountType(
 ): Parcelable
 
 
-@Entity(tableName = "accountCategory")
+@Entity(
+    tableName = "accountCategory",
+    indices = [Index(name = "indexAccountCategory", value = ["accountCategory"], unique = true)]
+)
 @Parcelize
 data class AccountCategory(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val accountCategoryId: Long,
     val accountCategory: String,
