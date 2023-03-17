@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2
+package ms.mattschlenkrich.billsprojectionv2.dataBase
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
@@ -26,5 +26,11 @@ interface AccountCategoriesDao {
                 "ORDER BY accountCategory " +
                 "ASC COLLATE NOCASE"
     )
-    fun getAccountCategory(): LiveData<List<AccountType>>
+    fun getAccountCategories(): LiveData<List<AccountType>>
+
+    @Query(
+        "SELECT * FROM accountCategory " +
+                "WHERE accountCategory LIKE :category"
+    )
+    fun searchAccountCategories(category: String): LiveData<List<AccountCategory>>
 }
