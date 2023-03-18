@@ -1,16 +1,26 @@
 package ms.mattschlenkrich.billsprojectionv2.dataModel
 
 import android.os.Parcelable
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.Index
-import androidx.room.PrimaryKey
+import androidx.room.*
 import kotlinx.parcelize.Parcelize
 
 @Entity(
     tableName = "accounts",
     indices = [
-        Index(name = "indexAccountName", value = ["accountName"], unique = true)
+        Index(name = "indexAccountName", value = ["accountName"], unique = true),
+        Index(value = ["accountTypeId"]),
+        Index(value = ["accountCategoryId"])
+    ],
+    foreignKeys = [ForeignKey(
+        entity = AccountType::class,
+        parentColumns = ["accountTypeId"],
+        childColumns = ["accountTypeId"]
+    ),
+        ForeignKey(
+            entity = AccountCategory::class,
+            parentColumns = ["accountCategoryId"],
+            childColumns = ["accountCategoryId"]
+        )
     ]
 )
 @Parcelize

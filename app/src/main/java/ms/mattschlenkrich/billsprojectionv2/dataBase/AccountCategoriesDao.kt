@@ -3,7 +3,6 @@ package ms.mattschlenkrich.billsprojectionv2.dataBase
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import ms.mattschlenkrich.billsprojectionv2.dataModel.AccountCategory
-import ms.mattschlenkrich.billsprojectionv2.dataModel.AccountType
 
 @Dao
 interface AccountCategoriesDao {
@@ -26,14 +25,14 @@ interface AccountCategoriesDao {
         "SELECT * FROM accountCategory " +
                 "WHERE accountCategoryId = :accountCategoryId"
     )
-    fun findAccountCategory(accountCategoryId: Long): LiveData<AccountCategory>
+    fun findAccountCategory(accountCategoryId: Long): LiveData<List<AccountCategory>>
 
     @Query(
         "SELECT * FROM accountCategory " +
                 "ORDER BY accountCategory " +
                 "COLLATE NOCASE ASC"
     )
-    fun getAccountCategories(): LiveData<List<AccountType>>
+    fun getAccountCategories(): LiveData<List<AccountCategory>>
 
     @Query(
         "SELECT * FROM accountCategory " +

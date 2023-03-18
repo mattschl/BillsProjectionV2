@@ -24,7 +24,7 @@ interface AccountTypeDao {
         "SELECT * FROM accountTypes " +
                 "WHERE accountTypeId = :accountTypeId"
     )
-    fun findAccountType(accountTypeId: Long): LiveData<AccountType>
+    fun findAccountType(accountTypeId: Long): LiveData<List<AccountType>>
 
     @Query(
         "SELECT * FROM accountTypes " +
@@ -35,7 +35,7 @@ interface AccountTypeDao {
     fun getAccountTypes(): LiveData<List<AccountType>>
 
     @Query(
-        "SELECT * FROM accountTypes" +
+        "SELECT * FROM accountTypes " +
                 "WHERE accountType LIKE :query " +
                 "ORDER BY accountType " +
                 " COLLATE NOCASE ASC"
