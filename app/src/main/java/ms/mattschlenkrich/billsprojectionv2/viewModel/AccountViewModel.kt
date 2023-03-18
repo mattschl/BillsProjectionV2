@@ -97,6 +97,11 @@ class AccountViewModel(
             accountRepository.getAccountCategories()
         }
 
+    fun findAccountCategory(accountCategoryId: Long) =
+        viewModelScope.launch {
+            accountRepository.findAccountCategory(accountCategoryId)
+        }
+
     fun searchAccountCategories(query: String?) =
         viewModelScope.launch {
             accountRepository.searchAccountCategories(query)
