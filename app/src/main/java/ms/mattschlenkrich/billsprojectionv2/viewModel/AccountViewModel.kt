@@ -40,7 +40,7 @@ class AccountViewModel(
             accountRepository.findAccount(accountId)
         }
 
-    fun searchAccounts(query: String?) =
+    fun searchAccounts(query: String) =
         viewModelScope.launch {
             accountRepository.searchAccounts(query)
         }
@@ -71,7 +71,7 @@ class AccountViewModel(
             accountRepository.getAccountTypes()
         }
 
-    fun searchAccountTypes(query: String?) =
+    fun searchAccountTypes(query: String) =
         viewModelScope.launch {
             accountRepository.searchAccountType(query)
         }
@@ -87,9 +87,9 @@ class AccountViewModel(
             accountRepository.updateAccountCategory(accountCategory)
         }
 
-    fun deleteAccountCategory(accountCategory: AccountCategory, updateTime: String) =
+    fun deleteAccountCategory(accountCategoryId: Long, updateTime: String) =
         viewModelScope.launch {
-            accountRepository.deleteAccountCategory(accountCategory, updateTime)
+            accountRepository.deleteAccountCategory(accountCategoryId, updateTime)
         }
 
     fun getAccountCategories() =
@@ -102,7 +102,7 @@ class AccountViewModel(
             accountRepository.findAccountCategory(accountCategoryId)
         }
 
-    fun searchAccountCategories(query: String?) =
+    fun searchAccountCategories(query: String) =
         viewModelScope.launch {
             accountRepository.searchAccountCategories(query)
         }

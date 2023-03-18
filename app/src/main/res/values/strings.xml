@@ -18,4 +18,5 @@
     <string name="keep_mileage">Keep Mileage</string>
     <string name="number">Number</string>
     <string name="id_not_created_yet">ID Not created yet</string>
+    <string name="account_info">Account Info</string>
 </resources>

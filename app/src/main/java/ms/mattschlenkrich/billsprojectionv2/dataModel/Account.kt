@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
 @Entity(
     tableName = "accounts",
     indices = [
-        Index(name = "indexAccountName", value = ["accountName"], unique = true),
+        Index(name = "idxAccountName", value = ["accountName"], unique = true),
         Index(value = ["accountTypeId"]),
         Index(value = ["accountCategoryId"])
     ],
@@ -29,7 +29,7 @@ data class Account(
     @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val accountId: Long,
     val accountName: String,
-    val accountNumber: String?,
+    val accountNumber: String,
     val accountCategoryId: Long,
     val accountTypeId: Long,
     @ColumnInfo(defaultValue = "0.0", typeAffinity = ColumnInfo.REAL)
@@ -50,7 +50,7 @@ data class Account(
     val displayAsAsset: Boolean,
     @ColumnInfo(defaultValue = "0", typeAffinity = ColumnInfo.INTEGER)
     val isDeleted: Boolean,
-    val updateTime: String,
+    val updateTime: String
 ) : Parcelable
 
 

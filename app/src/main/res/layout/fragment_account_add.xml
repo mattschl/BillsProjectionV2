@@ -13,7 +13,7 @@
             tools:context=".fragments.AccountViewFragment">
 
             <EditText
-                android:id="@+id/edAccountUpdateName"
+                android:id="@+id/editAccAddName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/top_margin"
@@ -31,19 +31,19 @@
                 tools:ignore="DuplicateSpeakableTextCheck" />
 
             <TextView
-                android:id="@+id/lblAccountUpdateHandle"
+                android:id="@+id/lblAccAddHandle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/top_margin"
                 android:text="@string/number"
                 android:textColor="@color/black"
                 android:textSize="20sp"
-                app:layout_constraintEnd_toStartOf="@id/edAccountUpdateHandle"
+                app:layout_constraintEnd_toStartOf="@id/editAccAddHandle"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/edAccountUpdateName" />
+                app:layout_constraintTop_toBottomOf="@id/editAccAddName" />
 
             <EditText
-                android:id="@+id/edAccountUpdateHandle"
+                android:id="@+id/editAccAddHandle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="10"
@@ -54,85 +54,85 @@
                 android:textColor="@color/black"
                 android:textColorHint="#757575"
                 android:textSize="20sp"
-                app:layout_constraintBaseline_toBaselineOf="@id/lblAccountUpdateHandle"
+                app:layout_constraintBaseline_toBaselineOf="@id/lblAccAddHandle"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/lblAccountUpdateHandle" />
+                app:layout_constraintStart_toEndOf="@id/lblAccAddHandle" />
 
             <TextView
-                android:id="@+id/lblAccountUpdateType"
+                android:id="@+id/lblAccAddType"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/top_margin"
                 android:text="@string/account_type"
                 android:textColor="@color/black"
-                app:layout_constraintBaseline_toBaselineOf="@id/drpAccountUpdateType"
-                app:layout_constraintEnd_toStartOf="@id/drpAccountUpdateType"
+                app:layout_constraintBaseline_toBaselineOf="@id/dropAccAddType"
+                app:layout_constraintEnd_toStartOf="@id/dropAccAddType"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <Spinner
-                android:id="@+id/drpAccountUpdateType"
+                android:id="@+id/dropAccAddType"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/lblAccountUpdateType"
-                app:layout_constraintTop_toBottomOf="@id/edAccountUpdateHandle"
+                app:layout_constraintStart_toEndOf="@id/lblAccAddType"
+                app:layout_constraintTop_toBottomOf="@id/editAccAddHandle"
                 tools:ignore="SpeakableTextPresentCheck" />
 
             <TextView
-                android:id="@+id/lblAccountUpdateCategory"
+                android:id="@+id/lblAccAddCategory"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/top_margin"
                 android:text="@string/category"
                 android:textColor="@color/black"
-                app:layout_constraintBaseline_toBaselineOf="@id/drpAccountUpdateCategory"
-                app:layout_constraintEnd_toStartOf="@id/drpAccountUpdateCategory"
+                app:layout_constraintBaseline_toBaselineOf="@id/dropAccAddCategory"
+                app:layout_constraintEnd_toStartOf="@id/dropAccAddCategory"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <Spinner
-                android:id="@+id/drpAccountUpdateCategory"
+                android:id="@+id/dropAccAddCategory"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
                 android:contentDescription="@string/category"
                 android:minHeight="48dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/lblAccountUpdateCategory"
-                app:layout_constraintTop_toBottomOf="@id/drpAccountUpdateType"
+                app:layout_constraintStart_toEndOf="@id/lblAccAddCategory"
+                app:layout_constraintTop_toBottomOf="@id/dropAccAddType"
                 tools:ignore="DuplicateSpeakableTextCheck" />
 
             <TextView
-                android:id="@+id/lblAccountUpdateBalance"
+                android:id="@+id/lblAccAddBalance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/top_margin"
                 android:text="@string/balance"
                 android:textColor="@color/black"
-                app:layout_constraintEnd_toStartOf="@id/lblAccountUpdateOwing"
+                app:layout_constraintEnd_toStartOf="@id/lblAccAddOwing"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/drpAccountUpdateCategory" />
+                app:layout_constraintTop_toBottomOf="@id/dropAccAddCategory" />
 
             <TextView
-                android:id="@+id/lblAccountUpdateOwing"
+                android:id="@+id/lblAccAddOwing"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/owing"
                 android:textColor="@color/black"
-                app:layout_constraintBaseline_toBaselineOf="@id/lblAccountUpdateBalance"
-                app:layout_constraintEnd_toStartOf="@id/lblAccountUpdateBudgeted"
-                app:layout_constraintStart_toEndOf="@id/lblAccountUpdateBalance" />
+                app:layout_constraintBaseline_toBaselineOf="@id/lblAccAddBalance"
+                app:layout_constraintEnd_toStartOf="@id/lblAccAddBudgeted"
+                app:layout_constraintStart_toEndOf="@id/lblAccAddBalance" />
 
             <TextView
-                android:id="@+id/lblAccountUpdateBudgeted"
+                android:id="@+id/lblAccAddBudgeted"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/budgeted"
                 android:textColor="@color/black"
-                app:layout_constraintBaseline_toBaselineOf="@id/lblAccountUpdateOwing"
+                app:layout_constraintBaseline_toBaselineOf="@id/lblAccAddOwing"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/lblAccountUpdateOwing" />
+                app:layout_constraintStart_toEndOf="@id/lblAccAddOwing" />
 
             <EditText
-                android:id="@+id/edAccountUpdateBalance"
+                android:id="@+id/editAccAddBalance"
                 android:layout_width="100dp"
                 android:layout_height="50dp"
                 android:ems="10"
@@ -143,13 +143,13 @@
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textColorHint="#757575"
-                app:layout_constraintEnd_toEndOf="@id/lblAccountUpdateBalance"
-                app:layout_constraintStart_toStartOf="@id/lblAccountUpdateBalance"
-                app:layout_constraintTop_toBottomOf="@id/lblAccountUpdateBalance"
+                app:layout_constraintEnd_toEndOf="@id/lblAccAddBalance"
+                app:layout_constraintStart_toStartOf="@id/lblAccAddBalance"
+                app:layout_constraintTop_toBottomOf="@id/lblAccAddBalance"
                 tools:ignore="DuplicateSpeakableTextCheck" />
 
             <EditText
-                android:id="@+id/edAccountUpdateOwing"
+                android:id="@+id/editAccAddOwing"
                 android:layout_width="100dp"
                 android:layout_height="50dp"
                 android:ems="10"
@@ -160,13 +160,13 @@
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textColorHint="#757575"
-                app:layout_constraintEnd_toEndOf="@id/lblAccountUpdateOwing"
-                app:layout_constraintStart_toStartOf="@id/lblAccountUpdateOwing"
-                app:layout_constraintTop_toBottomOf="@id/lblAccountUpdateOwing"
+                app:layout_constraintEnd_toEndOf="@id/lblAccAddOwing"
+                app:layout_constraintStart_toStartOf="@id/lblAccAddOwing"
+                app:layout_constraintTop_toBottomOf="@id/lblAccAddOwing"
                 tools:ignore="DuplicateSpeakableTextCheck" />
 
             <EditText
-                android:id="@+id/edAccountUpdateBudgeted"
+                android:id="@+id/editAccAddBudgeted"
                 android:layout_width="100dp"
                 android:layout_height="50dp"
                 android:autofillHints=""
@@ -176,65 +176,65 @@
                 android:selectAllOnFocus="true"
                 android:textAlignment="center"
                 android:textColorHint="#757575"
-                app:layout_constraintEnd_toEndOf="@id/lblAccountUpdateBudgeted"
-                app:layout_constraintStart_toStartOf="@id/lblAccountUpdateBudgeted"
-                app:layout_constraintTop_toBottomOf="@id/lblAccountUpdateBudgeted"
+                app:layout_constraintEnd_toEndOf="@id/lblAccAddBudgeted"
+                app:layout_constraintStart_toStartOf="@id/lblAccAddBudgeted"
+                app:layout_constraintTop_toBottomOf="@id/lblAccAddBudgeted"
                 tools:ignore="DuplicateSpeakableTextCheck" />
 
             <CheckBox
-                android:id="@+id/chkAccountUpdateIsAsset"
+                android:id="@+id/checkAccAddIsAsset"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/asset_account"
-                app:layout_constraintEnd_toStartOf="@id/chkAccountUpdateDisplayAsset"
+                app:layout_constraintEnd_toStartOf="@id/CheckAccAddDisplayAsset"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/edAccountUpdateBalance" />
+                app:layout_constraintTop_toBottomOf="@id/editAccAddBalance" />
 
             <CheckBox
-                android:id="@+id/chkAccountUpdateDisplayAsset"
+                android:id="@+id/CheckAccAddDisplayAsset"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/display_as_asset"
-                app:layout_constraintBaseline_toBaselineOf="@id/chkAccountUpdateIsAsset"
+                app:layout_constraintBaseline_toBaselineOf="@id/checkAccAddIsAsset"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/chkAccountUpdateIsAsset" />
+                app:layout_constraintStart_toEndOf="@id/checkAccAddIsAsset" />
 
             <CheckBox
-                android:id="@+id/chkAccountUpdateKeepTotals"
+                android:id="@+id/checkAccAddKeepTotals"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/keep_totals"
-                app:layout_constraintEnd_toStartOf="@id/chkAccountUpdateBalanceOwing"
+                app:layout_constraintEnd_toStartOf="@id/checkAccAddBalanceOwing"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/chkAccountUpdateIsAsset" />
+                app:layout_constraintTop_toBottomOf="@id/checkAccAddIsAsset" />
 
             <CheckBox
-                android:id="@+id/chkAccountUpdateBalanceOwing"
+                android:id="@+id/checkAccAddBalanceOwing"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/calculate_owing"
-                app:layout_constraintBaseline_toBaselineOf="@id/chkAccountUpdateKeepTotals"
+                app:layout_constraintBaseline_toBaselineOf="@id/checkAccAddKeepTotals"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/chkAccountUpdateKeepTotals" />
+                app:layout_constraintStart_toEndOf="@id/checkAccAddKeepTotals" />
 
             <CheckBox
-                android:id="@+id/chkAccountUpdateKeepMileage"
+                android:id="@+id/checkAccAddKeepMileage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/keep_mileage"
-                app:layout_constraintEnd_toStartOf="@id/txtAccountUpdateAccountId"
+                app:layout_constraintEnd_toStartOf="@id/textAccountId"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/chkAccountUpdateKeepTotals" />
+                app:layout_constraintTop_toBottomOf="@id/checkAccAddKeepTotals" />
 
             <TextView
-                android:id="@+id/txtAccountUpdateAccountId"
+                android:id="@+id/textAccountId"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/id_not_created_yet"
                 android:textColor="@color/deep_red"
-                app:layout_constraintBaseline_toBaselineOf="@+id/chkAccountUpdateKeepMileage"
+                app:layout_constraintBaseline_toBaselineOf="@+id/checkAccAddKeepMileage"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/chkAccountUpdateKeepMileage" />
+                app:layout_constraintStart_toEndOf="@+id/checkAccAddKeepMileage" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

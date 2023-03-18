@@ -20,10 +20,10 @@ class AccountRepository(private val db: BillsDatabase) {
     fun getAccounts() =
         db.getAccountDao().getAccounts()
 
-    fun findAccount(accountId: Long?) =
+    fun findAccount(accountId: Long) =
         db.getAccountDao().findAccount(accountId)
 
-    fun searchAccounts(query: String?) =
+    fun searchAccounts(query: String) =
         db.getAccountDao().searchAccounts(query)
 
 
@@ -43,7 +43,7 @@ class AccountRepository(private val db: BillsDatabase) {
     fun getAccountTypes() =
         db.getAccountTypesDao().getAccountTypes()
 
-    fun searchAccountType(query: String?) =
+    fun searchAccountType(query: String) =
         db.getAccountTypesDao().searchAccountType(query)
 
 
@@ -54,8 +54,8 @@ class AccountRepository(private val db: BillsDatabase) {
     suspend fun updateAccountCategory(accountCategory: AccountCategory) =
         db.getAccountCategoriesDao().updateAccountCategory(accountCategory)
 
-    suspend fun deleteAccountCategory(accountCategory: AccountCategory, updateTime: String) =
-        db.getAccountCategoriesDao().deleteAccountCategory(accountCategory, updateTime)
+    suspend fun deleteAccountCategory(accountCategoryId: Long, updateTime: String) =
+        db.getAccountCategoriesDao().deleteAccountCategory(accountCategoryId, updateTime)
 
     fun findAccountCategory(accountCategoryId: Long) =
         db.getAccountCategoriesDao().findAccountCategory(accountCategoryId)
@@ -63,6 +63,6 @@ class AccountRepository(private val db: BillsDatabase) {
     fun getAccountCategories() =
         db.getAccountCategoriesDao().getAccountCategories()
 
-    fun searchAccountCategories(query: String?) =
+    fun searchAccountCategories(query: String) =
         db.getAccountCategoriesDao().searchAccountCategories(query)
 }

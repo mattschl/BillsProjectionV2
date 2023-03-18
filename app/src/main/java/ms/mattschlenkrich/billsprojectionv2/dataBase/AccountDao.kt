@@ -14,9 +14,9 @@ interface AccountDao {
 
     @Query(
         "UPDATE accounts " +
-                "SET isDeleted = 1 " +
+                "SET isDeleted = 1, " +
                 "updateTime = :updateTime " +
-                "WHERE accountId = accountId"
+                "WHERE accountId = :accountId"
     )
     suspend fun deleteAccount(accountId: Long, updateTime: String)
 
@@ -31,13 +31,13 @@ interface AccountDao {
         "SELECT * FROM accounts " +
                 "WHERE accountID = :accountId "
     )
-    fun findAccount(accountId: Long?): LiveData<List<Account>>
+    fun findAccount(accountId: Long): LiveData<List<Account>>
 
     @Query(
         "SELECT * FROM accounts " +
-                "WHERE accountNane LIKE :query " +
+                "WHERE accountName LIKE :query " +
                 "ORDER BY accountName " +
                 "COLLATE NOCASE ASC "
     )
-    fun searchAccounts(query: String?): LiveData<List<Account>>
+    fun searchAccounts(query: String): LiveData<List<Account>>
 }

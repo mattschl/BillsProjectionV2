@@ -40,5 +40,5 @@ interface AccountTypeDao {
                 "ORDER BY accountType " +
                 " COLLATE NOCASE ASC"
     )
-    fun searchAccountType(query: String?): LiveData<List<AccountType>>
+    fun searchAccountType(query: String): LiveData<List<AccountType>>
 }

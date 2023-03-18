@@ -16,9 +16,10 @@ interface AccountCategoriesDao {
     @Query(
         "UPDATE accountCategory " +
                 "SET isDeleted = 1, " +
-                "updateTime = :updateTime"
+                "updateTime = :updateTime " +
+                "WHERE accountCategoryId = :accountCategoryId"
     )
-    suspend fun deleteAccountCategory(accountCategory: AccountCategory, updateTime: String)
+    suspend fun deleteAccountCategory(accountCategoryId: Long, updateTime: String)
 
 
     @Query(
@@ -40,5 +41,5 @@ interface AccountCategoriesDao {
                 "ORDER BY accountCategory " +
                 "COLLATE NOCASE ASC"
     )
-    fun searchAccountCategories(category: String?): LiveData<List<AccountCategory>>
+    fun searchAccountCategories(category: String): LiveData<List<AccountCategory>>
 }
