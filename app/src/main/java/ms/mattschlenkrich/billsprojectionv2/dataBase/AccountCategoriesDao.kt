@@ -21,16 +21,25 @@ interface AccountCategoriesDao {
     )
     suspend fun deleteAccountCategory(accountCategory: AccountCategory, updateTime: String)
 
+
+    @Query(
+        "SELECT * FROM accountCategory " +
+                "WHERE accountCategoryId = :accountCategoryId"
+    )
+    fun findAccountCategory(accountCategoryId: Long): LiveData<AccountCategory>
+
     @Query(
         "SELECT * FROM accountCategory " +
                 "ORDER BY accountCategory " +
-                "ASC COLLATE NOCASE"
+                "COLLATE NOCASE ASC"
     )
     fun getAccountCategories(): LiveData<List<AccountType>>
 
     @Query(
         "SELECT * FROM accountCategory " +
-                "WHERE accountCategory LIKE :category"
+                "WHERE accountCategory LIKE :category " +
+                "ORDER BY accountCategory " +
+                "COLLATE NOCASE ASC"
     )
-    fun searchAccountCategories(category: String): LiveData<List<AccountCategory>>
+    fun searchAccountCategories(category: String?): LiveData<List<AccountCategory>>
 }

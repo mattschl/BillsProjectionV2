@@ -1,21 +1,14 @@
 package ms.mattschlenkrich.billsprojectionv2.dataModel
 
 import android.os.Parcelable
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.Index
+import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
 @Entity(
     tableName = "accounts",
-    foreignKeys = [ForeignKey(
-        entity = AccountType::class,
-        parentColumns = arrayOf("accountTypeId"),
-        childColumns = arrayOf("accountTypeId")
-    ),
-        ForeignKey(
-            entity = AccountCategory::class,
-            parentColumns = arrayOf("accountCategoryId"),
-            childColumns = arrayOf("'accountCategoryId")
-        )],
     indices = [
         Index(name = "indexAccountName", value = ["accountName"], unique = true)
     ]
@@ -53,7 +46,9 @@ data class Account(
 
 @Entity(
     tableName = "accountTypes",
-    indices = [Index(name = "indexAccountType", value = ["accountType"], unique = true)]
+    indices = [Index(name = "indexAccountType", value = ["accountType"], unique = true),
+        Index(name = "indexAccountTypId", value = ["accountTypeId"])
+    ]
 )
 @Parcelize
 data class AccountType(
@@ -69,7 +64,9 @@ data class AccountType(
 
 @Entity(
     tableName = "accountCategory",
-    indices = [Index(name = "indexAccountCategory", value = ["accountCategory"], unique = true)]
+    indices = [Index(name = "indexAccountCategory", value = ["accountCategory"], unique = true),
+        Index(name = "indexAccountCategoryId", value = ["accountCategoryId"])
+    ]
 )
 @Parcelize
 data class AccountCategory(
@@ -80,4 +77,6 @@ data class AccountCategory(
     @ColumnInfo(defaultValue = "0", typeAffinity = ColumnInfo.INTEGER)
     val isDeleted: Boolean,
     val updateTime: String,
-): Parcelable
+) : Parcelable
+
+//

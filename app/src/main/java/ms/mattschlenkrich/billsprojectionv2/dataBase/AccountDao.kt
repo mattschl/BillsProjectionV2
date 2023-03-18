@@ -23,13 +23,21 @@ interface AccountDao {
     @Query(
         "SELECT * FROM accounts " +
                 "ORDER BY accountName " +
-                "ASC COLLATE NOCASE"
+                "COLLATE NOCASE ASC "
     )
     fun getAccounts(): LiveData<List<Account>>
 
     @Query(
         "SELECT * FROM accounts " +
-                "WHERE accountID = :accountId"
+                "WHERE accountID = :accountId "
     )
-    fun searchAccounts(accountId: Long): LiveData<List<Account>>
+    fun findAccount(accountId: Long?): LiveData<Account>
+
+    @Query(
+        "SELECT * FROM accounts " +
+                "WHERE accountNane LIKE :query " +
+                "ORDER BY accountName " +
+                "COLLATE NOCASE ASC "
+    )
+    fun searchAccounts(query: String?): LiveData<List<Account>>
 }
