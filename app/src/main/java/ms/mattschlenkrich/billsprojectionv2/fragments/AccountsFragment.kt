@@ -13,7 +13,7 @@ class AccountsFragment : Fragment() {
     private var _binding: FragmentAccountsBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var accountViewModel: AccountViewFragment
+    private lateinit var accountViewModel: AccountUpdateFragment
     private lateinit var accountAdapter: AccountAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {

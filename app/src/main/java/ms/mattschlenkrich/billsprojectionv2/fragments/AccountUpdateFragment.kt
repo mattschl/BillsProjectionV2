@@ -5,11 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountViewBinding
+import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountUpdateBinding
 
-class AccountViewFragment : Fragment() {
+class AccountUpdateFragment : Fragment() {
 
-    private var _binding: FragmentAccountViewBinding? = null
+    private var _binding: FragmentAccountUpdateBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,8 +20,8 @@ class AccountViewFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        _binding = FragmentAccountViewBinding.inflate(inflater, container, false)
+    ): View {
+        _binding = FragmentAccountUpdateBinding.inflate(inflater, container, false)
 
 
         return binding.root

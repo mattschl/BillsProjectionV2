@@ -7,9 +7,28 @@
     <fragment
         android:id="@+id/accountsFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.fragments.AccountsFragment"
-        android:label="AccountsFragment" />
+        android:label="AccountsFragment">
+        <action
+            android:id="@+id/action_accountsFragment_to_accountUpdateFragment"
+            app:destination="@id/accountUpdateFragment" />
+        <action
+            android:id="@+id/action_accountsFragment_to_accountAddFragment"
+            app:destination="@id/accountAddFragment" />
+    </fragment>
     <fragment
-        android:id="@+id/accountViewFragment"
-        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.AccountViewFragment"
-        android:label="AccountViewFragment" />
+        android:id="@+id/accountUpdateFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.AccountUpdateFragment"
+        android:label="AccountUpdateFragment">
+        <action
+            android:id="@+id/action_accountUpdateFragment_to_accountsFragment"
+            app:destination="@id/accountsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/accountAddFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.AccountAddFragment"
+        android:label="AccountAddFragment">
+        <action
+            android:id="@+id/action_accountAddFragment_to_accountsFragment"
+            app:destination="@id/accountsFragment" />
+    </fragment>
 </navigation>
