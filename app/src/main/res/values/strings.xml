@@ -19,4 +19,6 @@
     <string name="number">Number</string>
     <string name="id_not_created_yet">ID Not created yet</string>
     <string name="account_info">Account Info</string>
+    <string name="search">search</string>
+    <string name="save">Save</string>
 </resources>
