@@ -3,10 +3,12 @@ package ms.mattschlenkrich.billsprojectionv2.adapter
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.databinding.AccountLayoutBinding
+import ms.mattschlenkrich.billsprojectionv2.fragments.AccountsFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import java.util.*
 
@@ -33,8 +35,8 @@ class AccountAdapter : RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): AccountAdapter.AccountViewHolder {
-        return AccountAdapter.AccountViewHolder(
+    ): AccountViewHolder {
+        return AccountViewHolder(
             AccountLayoutBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             )
@@ -45,12 +47,12 @@ class AccountAdapter : RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() 
         return differ.currentList.size
     }
 
-    override fun onBindViewHolder(holder: AccountAdapter.AccountViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: AccountViewHolder, position: Int) {
         val currentAccount = differ.currentList[position]
 
         holder.itemBinding.tvAccountName.text = currentAccount.accountName
         val info = if (currentAccount.accountNumber.isNotEmpty()) {
-            "Account Number is ${currentAccount.accountNumber} \n"
+            "Number is ${currentAccount.accountNumber} \n"
         } else {
             ""
         } + if (currentAccount.accountBalance != 0.0) {
@@ -77,6 +79,12 @@ class AccountAdapter : RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() 
         )
         holder.itemBinding.ibAccountColor.setBackgroundColor(color)
 
-
+        holder.itemView.setOnClickListener {
+            val direction = AccountsFragmentDirections
+                .actionAccountsFragmentToAccountUpdateFragment(currentAccount)
+            it.findNavController().navigate(direction)
+        }
     }
+
+
 }
