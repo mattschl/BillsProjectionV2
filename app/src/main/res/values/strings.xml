@@ -21,4 +21,6 @@
     <string name="account_info">Account Info</string>
     <string name="search">search</string>
     <string name="save">Save</string>
+    <string name="berstyle">berStyle</string>
+    <string name="zero_int">0</string>
 </resources>

@@ -1,9 +1,9 @@
 package ms.mattschlenkrich.billsprojectionv2.repository
 
 import ms.mattschlenkrich.billsprojectionv2.dataBase.BillsDatabase
-import ms.mattschlenkrich.billsprojectionv2.dataModel.Account
-import ms.mattschlenkrich.billsprojectionv2.dataModel.AccountCategory
-import ms.mattschlenkrich.billsprojectionv2.dataModel.AccountType
+import ms.mattschlenkrich.billsprojectionv2.model.Account
+import ms.mattschlenkrich.billsprojectionv2.model.AccountCategory
+import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 
 class AccountRepository(private val db: BillsDatabase) {
 

@@ -22,6 +22,10 @@
         <action
             android:id="@+id/action_accountUpdateFragment_to_accountsFragment"
             app:destination="@id/accountsFragment" />
+        <argument
+            android:name="account"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.Account"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/accountAddFragment"

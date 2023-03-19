@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.dataModel
+package ms.mattschlenkrich.billsprojectionv2.model
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo

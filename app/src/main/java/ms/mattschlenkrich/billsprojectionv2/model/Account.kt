@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.dataModel
+package ms.mattschlenkrich.billsprojectionv2.model
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo
@@ -6,7 +6,6 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
-import java.util.*
 
 @Entity(
     tableName = "accounts",
@@ -54,7 +53,7 @@ data class Account(
     val displayAsAsset: Boolean,
     @ColumnInfo(defaultValue = "0", typeAffinity = ColumnInfo.INTEGER)
     val isDeleted: Boolean,
-    val updateTime: Date,
+    val updateTime: String,
 ) : Parcelable
 
 

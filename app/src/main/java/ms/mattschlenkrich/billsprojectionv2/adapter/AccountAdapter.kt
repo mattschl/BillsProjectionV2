@@ -6,8 +6,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import ms.mattschlenkrich.billsprojectionv2.dataModel.Account
 import ms.mattschlenkrich.billsprojectionv2.databinding.AccountLayoutBinding
+import ms.mattschlenkrich.billsprojectionv2.model.Account
 import java.util.*
 
 class AccountAdapter : RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() {
@@ -50,11 +50,11 @@ class AccountAdapter : RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() 
 
         holder.itemBinding.tvAccountName.text = currentAccount.accountName
         val info = if (currentAccount.accountNumber.isNotEmpty()) {
-            "Account Number is ${currentAccount.accountNumber} /n"
+            "Account Number is ${currentAccount.accountNumber} \n"
         } else {
             ""
         } + if (currentAccount.accountBalance != 0.0) {
-            "Balance is ${currentAccount.accountBalance} /n"
+            "Balance is ${currentAccount.accountBalance} \n"
         } else {
             ""
         } + if (currentAccount.accountOwing != 0.0) {

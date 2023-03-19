@@ -2,7 +2,8 @@ package ms.mattschlenkrich.billsprojectionv2.dataBase
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import ms.mattschlenkrich.billsprojectionv2.dataModel.Account
+import ms.mattschlenkrich.billsprojectionv2.model.Account
+import java.util.*
 
 @Dao
 interface AccountDao {

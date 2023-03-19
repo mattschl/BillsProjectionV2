@@ -4,9 +4,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import ms.mattschlenkrich.billsprojectionv2.dataModel.Account
-import ms.mattschlenkrich.billsprojectionv2.dataModel.AccountCategory
-import ms.mattschlenkrich.billsprojectionv2.dataModel.AccountType
+import ms.mattschlenkrich.billsprojectionv2.model.Account
+import ms.mattschlenkrich.billsprojectionv2.model.AccountCategory
+import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import ms.mattschlenkrich.billsprojectionv2.repository.AccountRepository
 
 class AccountViewModel(

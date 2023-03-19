@@ -2,7 +2,7 @@ package ms.mattschlenkrich.billsprojectionv2.dataBase
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import ms.mattschlenkrich.billsprojectionv2.dataModel.AccountCategory
+import ms.mattschlenkrich.billsprojectionv2.model.AccountCategory
 
 @Dao
 interface AccountCategoriesDao {

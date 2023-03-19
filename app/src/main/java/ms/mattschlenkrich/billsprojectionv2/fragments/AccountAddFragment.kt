@@ -7,10 +7,9 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.dataModel.Account
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountAddBinding
+import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
-import java.util.*
 
 
 class AccountAddFragment : Fragment(R.layout.fragment_account_add) {
@@ -46,8 +45,8 @@ class AccountAddFragment : Fragment(R.layout.fragment_account_add) {
     private fun saveAccount(view: View) {
         val accountName = binding.editAccAddName.text.toString().trim()
         val accountHandle = binding.editAccAddHandle.text.toString().trim()
-        val accountType: Long = 1
-        val accountCategory: Long = 1
+        val accountType = binding.dropAccAddType.text.toString().toLong()
+        val accountCategory = binding.dropAccAddCategory.text.toString().toLong()
         val accountBalance = binding.editAccAddBalance.text.toString().toDouble()
         val accountOwing = binding.editAccAddOwing.text.toString().toDouble()
         val accountBudgeted = binding.editAccAddBudgeted.text.toString().toDouble()
@@ -63,7 +62,7 @@ class AccountAddFragment : Fragment(R.layout.fragment_account_add) {
                 accountCategory, accountType, accountBudgeted, accountBalance,
                 accountOwing, keepTotals, isAsset, keepOwing, displayAsset,
                 keepMileage, false,
-                Calendar.getInstance().time
+                "no date"
             )
 
             accountsViewModel.addAccount(account)
