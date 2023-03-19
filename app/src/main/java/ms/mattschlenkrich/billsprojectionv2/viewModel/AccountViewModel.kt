@@ -57,19 +57,15 @@ class AccountViewModel(
         }
 
     fun findAccountType(accountTypeId: Long) =
-        viewModelScope.launch {
             accountRepository.findAccountType(accountTypeId)
-        }
+
 
     fun getAccountTypes() =
-        viewModelScope.launch {
             accountRepository.getAccountTypes()
-        }
+
 
     fun searchAccountTypes(query: String) =
-        viewModelScope.launch {
             accountRepository.searchAccountType(query)
-        }
 
 
     fun insertAccountCategory(accountCategory: AccountCategory) =
@@ -88,17 +84,12 @@ class AccountViewModel(
         }
 
     fun getAccountCategories() =
-        viewModelScope.launch {
             accountRepository.getAccountCategories()
-        }
-
+    
     fun findAccountCategory(accountCategoryId: Long) =
-        viewModelScope.launch {
             accountRepository.findAccountCategory(accountCategoryId)
-        }
 
     fun searchAccountCategories(query: String) =
-        viewModelScope.launch {
             accountRepository.searchAccountCategories(query)
-        }
+
 }

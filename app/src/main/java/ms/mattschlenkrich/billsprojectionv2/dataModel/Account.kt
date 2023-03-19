@@ -6,6 +6,7 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
+import java.util.*
 
 @Entity(
     tableName = "accounts",
@@ -53,7 +54,7 @@ data class Account(
     val displayAsAsset: Boolean,
     @ColumnInfo(defaultValue = "0", typeAffinity = ColumnInfo.INTEGER)
     val isDeleted: Boolean,
-    val updateTime: String
+    val updateTime: Date,
 ) : Parcelable
 
 
