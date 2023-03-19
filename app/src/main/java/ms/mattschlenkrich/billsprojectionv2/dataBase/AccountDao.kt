@@ -25,7 +25,7 @@ interface AccountDao {
                 "ORDER BY accountName " +
                 "COLLATE NOCASE ASC "
     )
-    fun getAccounts(): LiveData<List<Account>>
+    fun getAllAccounts(): LiveData<List<Account>>
 
     @Query(
         "SELECT * FROM accounts " +
@@ -39,5 +39,5 @@ interface AccountDao {
                 "ORDER BY accountName " +
                 "COLLATE NOCASE ASC "
     )
-    fun searchAccounts(query: String): LiveData<List<Account>>
+    fun searchAccounts(query: String?): LiveData<List<Account>>
 }

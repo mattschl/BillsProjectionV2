@@ -23,7 +23,6 @@ class AccountUpdateFragment : Fragment() {
     ): View {
         _binding = FragmentAccountUpdateBinding.inflate(inflater, container, false)
 
-
         return binding.root
     }
 

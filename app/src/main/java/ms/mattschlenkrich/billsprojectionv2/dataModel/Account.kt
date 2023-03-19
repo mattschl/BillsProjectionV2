@@ -1,7 +1,10 @@
 package ms.mattschlenkrich.billsprojectionv2.dataModel
 
 import android.os.Parcelable
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.Index
+import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
 @Entity(
@@ -11,7 +14,7 @@ import kotlinx.parcelize.Parcelize
         Index(value = ["accountTypeId"]),
         Index(value = ["accountCategoryId"])
     ],
-    foreignKeys = [ForeignKey(
+    /*foreignKeys = [ForeignKey(
         entity = AccountType::class,
         parentColumns = ["accountTypeId"],
         childColumns = ["accountTypeId"]
@@ -21,7 +24,7 @@ import kotlinx.parcelize.Parcelize
             parentColumns = ["accountCategoryId"],
             childColumns = ["accountCategoryId"]
         )
-    ]
+    ]*/
 )
 @Parcelize
 data class Account(

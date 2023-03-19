@@ -25,7 +25,6 @@ class AccountAddFragment : Fragment() {
         // Inflate the layout for this fragment
         _binding = FragmentAccountAddBinding.inflate(inflater, container, false)
 
-
         return binding.root
     }
 

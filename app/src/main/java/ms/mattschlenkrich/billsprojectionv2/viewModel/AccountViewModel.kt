@@ -12,8 +12,7 @@ import ms.mattschlenkrich.billsprojectionv2.repository.AccountRepository
 class AccountViewModel(
     app: Application,
     private val accountRepository: AccountRepository
-) :
-    AndroidViewModel(app) {
+) : AndroidViewModel(app) {
 
     fun addAccount(account: Account) =
         viewModelScope.launch {
@@ -31,19 +30,15 @@ class AccountViewModel(
         }
 
     fun getAllAccounts() =
-        viewModelScope.launch {
-            accountRepository.getAccounts()
-        }
+        accountRepository.getAllAccounts()
+
 
     fun findAccount(accountId: Long) =
-        viewModelScope.launch {
-            accountRepository.findAccount(accountId)
-        }
+        accountRepository.findAccount(accountId)
+
 
     fun searchAccounts(query: String) =
-        viewModelScope.launch {
-            accountRepository.searchAccounts(query)
-        }
+        accountRepository.searchAccounts(query)
 
 
     fun insertAccountType(accountType: AccountType) =
