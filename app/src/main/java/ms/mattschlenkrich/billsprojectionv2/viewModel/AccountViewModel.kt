@@ -5,7 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.model.Account
-import ms.mattschlenkrich.billsprojectionv2.model.AccountCategory
+import ms.mattschlenkrich.billsprojectionv2.model.AccountCategories
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import ms.mattschlenkrich.billsprojectionv2.repository.AccountRepository
 
@@ -68,12 +68,12 @@ class AccountViewModel(
             accountRepository.searchAccountType(query)
 
 
-    fun insertAccountCategory(accountCategory: AccountCategory) =
+    fun insertAccountCategory(accountCategory: AccountCategories) =
         viewModelScope.launch {
             accountRepository.insertAccountCategory(accountCategory)
         }
 
-    fun updateAccountCategory(accountCategory: AccountCategory) =
+    fun updateAccountCategory(accountCategory: AccountCategories) =
         viewModelScope.launch {
             accountRepository.updateAccountCategory(accountCategory)
         }

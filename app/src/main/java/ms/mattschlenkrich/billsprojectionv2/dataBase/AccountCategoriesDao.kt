@@ -2,19 +2,19 @@ package ms.mattschlenkrich.billsprojectionv2.dataBase
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import ms.mattschlenkrich.billsprojectionv2.model.AccountCategory
+import ms.mattschlenkrich.billsprojectionv2.model.AccountCategories
 
 @Dao
 interface AccountCategoriesDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAccountCategory(accountCategory: AccountCategory)
+    suspend fun insertAccountCategory(accountCategory: AccountCategories)
 
     @Update
-    suspend fun updateAccountCategory(accountCategory: AccountCategory)
+    suspend fun updateAccountCategory(accountCategory: AccountCategories)
 
     @Query(
-        "UPDATE accountCategory " +
+        "UPDATE accountCategories " +
                 "SET isDeleted = 1, " +
                 "updateTime = :updateTime " +
                 "WHERE accountCategoryId = :accountCategoryId"
@@ -23,23 +23,23 @@ interface AccountCategoriesDao {
 
 
     @Query(
-        "SELECT * FROM accountCategory " +
+        "SELECT * FROM accountCategories " +
                 "WHERE accountCategoryId = :accountCategoryId"
     )
-    fun findAccountCategory(accountCategoryId: Long): LiveData<List<AccountCategory>>
+    fun findAccountCategory(accountCategoryId: Long): LiveData<List<AccountCategories>>
 
     @Query(
-        "SELECT * FROM accountCategory " +
+        "SELECT * FROM accountCategories " +
                 "ORDER BY accountCategory " +
                 "COLLATE NOCASE ASC"
     )
-    fun getAccountCategories(): LiveData<List<AccountCategory>>
+    fun getAccountCategories(): LiveData<List<AccountCategories>>
 
     @Query(
-        "SELECT * FROM accountCategory " +
+        "SELECT * FROM accountCategories " +
                 "WHERE accountCategory LIKE :category " +
                 "ORDER BY accountCategory " +
                 "COLLATE NOCASE ASC"
     )
-    fun searchAccountCategories(category: String): LiveData<List<AccountCategory>>
+    fun searchAccountCategories(category: String): LiveData<List<AccountCategories>>
 }

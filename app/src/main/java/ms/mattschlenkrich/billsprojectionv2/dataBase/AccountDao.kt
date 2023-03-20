@@ -23,6 +23,7 @@ interface AccountDao {
 
     @Query(
         "SELECT * FROM accounts " +
+                "WHERE isDeleted = 0 " +
                 "ORDER BY accountName " +
                 "COLLATE NOCASE ASC "
     )

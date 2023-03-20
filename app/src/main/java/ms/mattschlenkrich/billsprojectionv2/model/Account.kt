@@ -82,7 +82,7 @@ data class AccountType(
     ]
 )
 @Parcelize
-data class AccountCategory(
+data class AccountCategories(
     @PrimaryKey
     @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val accountCategoryId: Long,

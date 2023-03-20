@@ -5,27 +5,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountTypesBinding
+import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountTypeAddBinding
 
 
-class AccountTypesFragment : Fragment() {
+class AccountTypeAddFragment : Fragment() {
 
-    private lateinit var _binding: FragmentAccountTypesBinding
+    private lateinit var _binding: FragmentAccountTypeAddBinding
     private val binding get() = _binding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //may need
-
+        //might need
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         // Inflate the layout for this fragment
-        _binding = FragmentAccountTypesBinding.inflate(inflater, container, false)
-
+        _binding = FragmentAccountTypeAddBinding.inflate(inflater, container, false)
         return binding.root
     }
+
 }

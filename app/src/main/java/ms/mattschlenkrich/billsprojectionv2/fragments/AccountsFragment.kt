@@ -94,7 +94,7 @@ class AccountsFragment :
 
         menu.clear()
         inflater.inflate(R.menu.search_menu, menu)
-
+        menu.add("View Accounts")
         val mMenuSearch = menu.findItem(R.id.menu_search) as SearchView
         mMenuSearch.isSubmitButtonEnabled = false
         mMenuSearch.setOnQueryTextListener(this)
