@@ -184,60 +184,15 @@
                 app:layout_constraintTop_toBottomOf="@id/lblAccAddBudgeted"
                 tools:ignore="DuplicateSpeakableTextCheck" />
 
-            <CheckBox
-                android:id="@+id/checkAccAddIsAsset"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/asset_account"
-                app:layout_constraintEnd_toStartOf="@id/CheckAccAddDisplayAsset"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/editAccAddBalance" />
-
-            <CheckBox
-                android:id="@+id/CheckAccAddDisplayAsset"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/display_as_asset"
-                app:layout_constraintBaseline_toBaselineOf="@id/checkAccAddIsAsset"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/checkAccAddIsAsset" />
-
-            <CheckBox
-                android:id="@+id/checkAccAddKeepTotals"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/keep_totals"
-                app:layout_constraintEnd_toStartOf="@id/checkAccAddBalanceOwing"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/checkAccAddIsAsset" />
-
-            <CheckBox
-                android:id="@+id/checkAccAddBalanceOwing"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/calculate_owing"
-                app:layout_constraintBaseline_toBaselineOf="@id/checkAccAddKeepTotals"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/checkAccAddKeepTotals" />
-
-            <CheckBox
-                android:id="@+id/checkAccAddKeepMileage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/keep_mileage"
-                app:layout_constraintEnd_toStartOf="@id/textAccountId"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/checkAccAddKeepTotals" />
-
             <TextView
                 android:id="@+id/textAccountId"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/id_not_created_yet"
                 android:textColor="@color/deep_red"
-                app:layout_constraintBaseline_toBaselineOf="@+id/checkAccAddKeepMileage"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/checkAccAddKeepMileage" />
+                app:layout_constraintTop_toBottomOf="@id/editAccAddBudgeted" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

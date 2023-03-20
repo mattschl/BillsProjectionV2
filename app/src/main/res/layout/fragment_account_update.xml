@@ -185,50 +185,6 @@
                 app:layout_constraintTop_toBottomOf="@id/lblAccountUpdateBudgeted"
                 tools:ignore="DuplicateSpeakableTextCheck" />
 
-            <CheckBox
-                android:id="@+id/chkAccountUpdateIsAsset"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/asset_account"
-                app:layout_constraintEnd_toStartOf="@id/chkAccountUpdateDisplayAsset"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/edAccountUpdateBalance" />
-
-            <CheckBox
-                android:id="@+id/chkAccountUpdateDisplayAsset"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/display_as_asset"
-                app:layout_constraintBaseline_toBaselineOf="@id/chkAccountUpdateIsAsset"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/chkAccountUpdateIsAsset" />
-
-            <CheckBox
-                android:id="@+id/chkAccountUpdateKeepTotals"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/keep_totals"
-                app:layout_constraintEnd_toStartOf="@id/chkAccountUpdateBalanceOwing"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/chkAccountUpdateIsAsset" />
-
-            <CheckBox
-                android:id="@+id/chkAccountUpdateBalanceOwing"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/calculate_owing"
-                app:layout_constraintBaseline_toBaselineOf="@id/chkAccountUpdateKeepTotals"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/chkAccountUpdateKeepTotals" />
-
-            <CheckBox
-                android:id="@+id/chkAccountUpdateKeepMileage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/keep_mileage"
-                app:layout_constraintEnd_toStartOf="@id/txtAccountUpdateAccountId"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/chkAccountUpdateKeepTotals" />
 
             <TextView
                 android:id="@+id/txtAccountUpdateAccountId"
@@ -236,16 +192,16 @@
                 android:layout_height="wrap_content"
                 android:text="@string/id_not_created_yet"
                 android:textColor="@color/deep_red"
-                app:layout_constraintBaseline_toBaselineOf="@+id/chkAccountUpdateKeepMileage"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/chkAccountUpdateKeepMileage" />
+                app:layout_constraintTop_toBottomOf="@id/edAccountUpdateBudgeted" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
                 android:shadowColor="@color/white"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/chkAccountUpdateKeepMileage" />
+                app:layout_constraintTop_toBottomOf="@id/txtAccountUpdateAccountId" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabAccountUpdateDone"

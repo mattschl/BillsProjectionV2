@@ -22,6 +22,11 @@ class AccountsFragment :
     private lateinit var accountsViewModel: AccountViewModel
     private lateinit var accountAdapter: AccountAdapter
 
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+////        setHasOptionsMenu(true)
+//    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -94,7 +99,6 @@ class AccountsFragment :
 
         menu.clear()
         inflater.inflate(R.menu.search_menu, menu)
-        menu.add("View Accounts")
         val mMenuSearch = menu.findItem(R.id.menu_search) as SearchView
         mMenuSearch.isSubmitButtonEnabled = false
         mMenuSearch.setOnQueryTextListener(this)

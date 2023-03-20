@@ -50,18 +50,12 @@ class AccountAddFragment : Fragment(R.layout.fragment_account_add) {
         val accountBalance = binding.editAccAddBalance.text.toString().toDouble()
         val accountOwing = binding.editAccAddOwing.text.toString().toDouble()
         val accountBudgeted = binding.editAccAddBudgeted.text.toString().toDouble()
-        val isAsset = binding.checkAccAddIsAsset.isChecked
-        val displayAsset = binding.CheckAccAddDisplayAsset.isChecked
-        val keepTotals = binding.checkAccAddKeepTotals.isChecked
-        val keepOwing = binding.checkAccAddBalanceOwing.isChecked
-        val keepMileage = binding.checkAccAddKeepMileage.isChecked
 
         if (accountName.isNotEmpty()) {
             val account = Account(
                 0, accountName, accountHandle,
                 accountCategory, accountType, accountBudgeted, accountBalance,
-                accountOwing, keepTotals, isAsset, keepOwing, displayAsset,
-                keepMileage, false,
+                accountOwing, false,
                 "no date"
             )
 

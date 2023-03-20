@@ -51,11 +51,6 @@ class AccountUpdateFragment : Fragment(R.layout.fragment_account_update) {
         binding.edAccountUpdateBalance.setText(currentAccount.accountBalance.toString())
         binding.edAccountUpdateOwing.setText(currentAccount.accountOwing.toString())
         binding.edAccountUpdateBudgeted.setText(currentAccount.budgetAmount.toString())
-        binding.chkAccountUpdateIsAsset.isChecked = currentAccount.isAsset
-        binding.chkAccountUpdateDisplayAsset.isChecked = currentAccount.displayAsAsset
-        binding.chkAccountUpdateBalanceOwing.isChecked = currentAccount.tallyOwing
-        binding.chkAccountUpdateKeepTotals.isChecked = currentAccount.keepTotals
-        binding.chkAccountUpdateKeepMileage.isChecked = currentAccount.keepMileage
 
         binding.fabAccountUpdateDone.setOnClickListener {
             val accountName = binding.edAccountUpdateName.text.toString().trim()
@@ -65,17 +60,12 @@ class AccountUpdateFragment : Fragment(R.layout.fragment_account_update) {
             val balance = binding.edAccountUpdateBalance.text.toString().toDouble()
             val owing = binding.edAccountUpdateOwing.text.toString().toDouble()
             val budgeted = binding.edAccountUpdateBudgeted.text.toString().toDouble()
-            val isAsset = binding.chkAccountUpdateIsAsset.isChecked
-            val displayAsset = binding.chkAccountUpdateDisplayAsset.isChecked
-            val keepBalance = binding.chkAccountUpdateBalanceOwing.isChecked
-            val keepTotals = binding.chkAccountUpdateKeepTotals.isChecked
-            val keepMileage = binding.chkAccountUpdateKeepMileage.isChecked
 
             if (accountName.isNotEmpty()) {
                 val account = Account(
                     currentAccount.accountId, accountName,
                     accountHandle, accountCategoryId, accountTypeId, budgeted,
-                    balance, owing, keepTotals, isAsset, keepBalance, keepMileage, displayAsset,
+                    balance, owing,
                     false, "no time"
                 )
                 accountsViewModel.updateAccount(account)
