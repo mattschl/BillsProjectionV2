@@ -13,8 +13,8 @@ import kotlinx.parcelize.Parcelize
         Index(name = "idxAccountName", value = ["accountName"], unique = true),
         Index(value = ["accountTypeId"]),
         Index(value = ["accountCategoryId"])
-    ],
-    /*foreignKeys = [ForeignKey(
+    ]/*,
+    foreignKeys = [ForeignKey(
         entity = AccountType::class,
         parentColumns = ["accountTypeId"],
         childColumns = ["accountTypeId"]
@@ -59,8 +59,8 @@ data class Account(
 
 @Entity(
     tableName = "accountTypes",
-    indices = [Index(name = "indexAccountType", value = ["accountType"], unique = true),
-        Index(name = "indexAccountTypId", value = ["accountTypeId"])
+    indices = [Index(name = "idxAccountType", value = ["accountType"], unique = true),
+        Index(name = "idxAccountTypId", value = ["accountTypeId"])
     ]
 )
 @Parcelize
@@ -76,9 +76,9 @@ data class AccountType(
 
 
 @Entity(
-    tableName = "accountCategory",
-    indices = [Index(name = "indexAccountCategory", value = ["accountCategory"], unique = true),
-        Index(name = "indexAccountCategoryId", value = ["accountCategoryId"])
+    tableName = "accountCategories",
+    indices = [Index(name = "idxAccountCategory", value = ["accountCategory"], unique = true),
+        Index(name = "idxAccountCategoryId", value = ["accountCategoryId"])
     ]
 )
 @Parcelize

@@ -34,7 +34,7 @@ abstract class BillsDatabase : RoomDatabase() {
             Room.databaseBuilder(
                 context.applicationContext,
                 BillsDatabase::class.java,
-                "bills_db"
+                "bills2.db"
             ).build()
     }
 }
