@@ -18,42 +18,47 @@
             app:cardCornerRadius="5dp">
 
             <LinearLayout
-                android:id="@+id/llAccountName"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal">
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/llAccountName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvAccountName"
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/account_name"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:id="@+id/ibAccountColor"
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        tools:ignore="InefficientWeight" />
+
+                </LinearLayout>
 
                 <TextView
-                    android:id="@+id/tvAccountName"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/tvAccountInfo"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/account_name"
+                    android:layout_marginTop="8dp"
+                    android:maxHeight="170dp"
+                    android:text="@string/account_info"
                     android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <View
-                    android:id="@+id/ibAccountColor"
-                    android:layout_width="10dp"
-                    android:layout_height="10dp"
-                    android:layout_gravity="center"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
-                    tools:ignore="InefficientWeight" />
-
+                    android:textSize="16sp" />
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/tvAccountInfo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:maxHeight="170dp"
-                android:text="@string/account_info"
-                android:textColor="@color/black"
-                android:textSize="16sp" />
-
         </androidx.cardview.widget.CardView>
 
     </LinearLayout>

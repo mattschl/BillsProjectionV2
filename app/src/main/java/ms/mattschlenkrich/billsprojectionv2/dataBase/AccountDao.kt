@@ -38,8 +38,7 @@ interface AccountDao {
     @Query(
         "SELECT * FROM accounts " +
                 "WHERE accountName LIKE :query " +
-                "ORDER BY accountName " +
-                "COLLATE NOCASE ASC "
+                "ORDER BY accountName "
     )
     fun searchAccounts(query: String?): LiveData<List<Account>>
 }

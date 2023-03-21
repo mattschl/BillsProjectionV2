@@ -14,7 +14,7 @@ import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 
 class AccountsFragment :
-    Fragment(), SearchView.OnQueryTextListener {
+    Fragment(R.layout.fragment_accounts), SearchView.OnQueryTextListener {
 
     private var _binding: FragmentAccountsBinding? = null
     private val binding get() = _binding!!
@@ -22,10 +22,10 @@ class AccountsFragment :
     private lateinit var accountsViewModel: AccountViewModel
     private lateinit var accountAdapter: AccountAdapter
 
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-////        setHasOptionsMenu(true)
-//    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -87,19 +87,15 @@ class AccountsFragment :
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
-    }
 
     override fun onCreateOptionsMenu(
         menu: Menu, inflater: MenuInflater
     ) {
-        super.onCreateOptionsMenu(menu, inflater)
+//        super.onCreateOptionsMenu(menu, inflater)
 
         menu.clear()
         inflater.inflate(R.menu.search_menu, menu)
-        val mMenuSearch = menu.findItem(R.id.menu_search) as SearchView
+        val mMenuSearch = menu.findItem(R.id.menu_search).actionView as SearchView
         mMenuSearch.isSubmitButtonEnabled = false
         mMenuSearch.setOnQueryTextListener(this)
     }
@@ -120,5 +116,10 @@ class AccountsFragment :
         accountsViewModel.searchAccounts(searchQuery).observe(
             this
         ) { list -> accountAdapter.differ.submitList(list) }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }
