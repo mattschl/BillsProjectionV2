@@ -1,21 +1,31 @@
 package ms.mattschlenkrich.billsprojectionv2.fragments
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import ms.mattschlenkrich.billsprojectionv2.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.adapter.AccountTypeAdapter
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountTypesBinding
+import ms.mattschlenkrich.billsprojectionv2.model.AccountType
+import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 
 
-class AccountTypesFragment : Fragment() {
+class AccountTypesFragment
+    : Fragment(R.layout.fragment_account_types), SearchView.OnQueryTextListener {
 
-    private lateinit var _binding: FragmentAccountTypesBinding
-    private val binding get() = _binding
+    private var _binding: FragmentAccountTypesBinding? = null
+    private val binding get() = _binding!!
+
+    private lateinit var accountViewModel: AccountViewModel
+    private lateinit var accountTypeAdapter: AccountTypeAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //may need
+        setHasOptionsMenu(true)
 
     }
 
@@ -28,4 +38,83 @@ class AccountTypesFragment : Fragment() {
 
         return binding.root
     }
+
+    override fun onViewCreated(
+        view: View, savedInstanceState: Bundle?
+    ) {
+        super.onViewCreated(view, savedInstanceState)
+        accountViewModel = (activity as MainActivity).accountViewModel
+
+        setupRecylcerView()
+        binding.fabAddAccountType.setOnClickListener {
+            it.findNavController().navigate(
+                R.id.action_accountTypesFragment_to_accountTypeAddFragment
+            )
+        }
+    }
+
+    private fun setupRecylcerView() {
+        accountTypeAdapter = AccountTypeAdapter()
+
+        binding.rvAccountTypes.apply {
+            layoutManager = StaggeredGridLayoutManager(
+                2,
+                StaggeredGridLayoutManager.VERTICAL
+            )
+            setHasFixedSize(true)
+            adapter = accountTypeAdapter
+        }
+        activity?.let {
+            accountViewModel.getAccountTypes().observe(
+                viewLifecycleOwner
+            ) { accountType ->
+                accountTypeAdapter.differ.submitList(accountType)
+                updateUI(accountType)
+
+            }
+        }
+    }
+
+    private fun updateUI(accountType: List<AccountType>) {
+        if (accountType.isNotEmpty()) {
+            binding.crdNoAccountTypes.visibility = View.GONE
+            binding.rvAccountTypes.visibility = View.VISIBLE
+        } else {
+            binding.crdNoAccountTypes.visibility = View.VISIBLE
+            binding.rvAccountTypes.visibility = View.GONE
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+//        super.onCreateOptionsMenu(menu, inflater)
+        menu.clear()
+        inflater.inflate(R.menu.search_menu, menu)
+        val mMenuSearch = menu.findItem(R.id.menu_search).actionView as SearchView
+        mMenuSearch.isSubmitButtonEnabled = false
+        mMenuSearch.setOnQueryTextListener(this)
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        return false
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        if (newText != null) {
+            searchAccountTypes(newText)
+        }
+        return true
+    }
+
+    private fun searchAccountTypes(query: String?) {
+        val searchQuery = "%$query"
+        accountViewModel.searchAccountTypes(searchQuery).observe(
+            this
+        ) { list -> accountTypeAdapter.differ.submitList(list) }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
+
 }

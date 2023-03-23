@@ -43,7 +43,7 @@ class AccountViewModel(
         accountRepository.searchAccounts(query)
 
 
-    fun insertAccountType(accountType: AccountType) =
+    fun addAccountType(accountType: AccountType) =
         viewModelScope.launch {
             accountRepository.insertAccountType(accountType)
         }

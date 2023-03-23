@@ -67,11 +67,6 @@ class AccountAddFragment : Fragment(R.layout.fragment_account_add) {
             ).show()
             view.findNavController().navigate(R.id.action_accountAddFragment_to_accountsFragment)
         } else {
-            Toast.makeText(
-                mView.context,
-                "Please enter a unique account name",
-                Toast.LENGTH_LONG
-            ).show()
         }
     }
 

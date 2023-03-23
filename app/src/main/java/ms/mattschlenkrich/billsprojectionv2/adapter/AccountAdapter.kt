@@ -7,19 +7,17 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import ms.mattschlenkrich.billsprojectionv2.SQLITE_DATE
-import ms.mattschlenkrich.billsprojectionv2.SQLITE_TIME
 import ms.mattschlenkrich.billsprojectionv2.databinding.AccountLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.AccountsFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import java.text.NumberFormat
-import java.text.SimpleDateFormat
 import java.util.*
 
-class AccountAdapter : RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() {
+class AccountAdapter :
+    RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() {
 
-    private var dateFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
-    private var timeFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
+    //    private var dateFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
+//    private var timeFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
     private var dollarFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
 
 
@@ -27,17 +25,18 @@ class AccountAdapter : RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() 
         RecyclerView.ViewHolder(itemBinding.root)
 
 
-    private val differCallBack = object : DiffUtil.ItemCallback<Account>() {
-        override fun areItemsTheSame(oldItem: Account, newItem: Account): Boolean {
-            return oldItem.accountId == newItem.accountId &&
-                    oldItem.accountName == newItem.accountName &&
-                    oldItem.accountNumber == newItem.accountNumber
-        }
+    private val differCallBack =
+        object : DiffUtil.ItemCallback<Account>() {
+            override fun areItemsTheSame(oldItem: Account, newItem: Account): Boolean {
+                return oldItem.accountId == newItem.accountId &&
+                        oldItem.accountName == newItem.accountName &&
+                        oldItem.accountNumber == newItem.accountNumber
+            }
 
-        override fun areContentsTheSame(oldItem: Account, newItem: Account): Boolean {
-            return oldItem == newItem
+            override fun areContentsTheSame(oldItem: Account, newItem: Account): Boolean {
+                return oldItem == newItem
+            }
         }
-    }
 
     val differ = AsyncListDiffer(this, differCallBack)
 
@@ -47,7 +46,8 @@ class AccountAdapter : RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() 
     ): AccountViewHolder {
         return AccountViewHolder(
             AccountLayoutBinding.inflate(
-                LayoutInflater.from(parent.context), parent, false
+                LayoutInflater.from(parent.context),
+                parent, false
             )
         )
     }
@@ -56,7 +56,9 @@ class AccountAdapter : RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() 
         return differ.currentList.size
     }
 
-    override fun onBindViewHolder(holder: AccountViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: AccountViewHolder, position: Int
+    ) {
         val currentAccount = differ.currentList[position]
 
         holder.itemBinding.tvAccountName.text = currentAccount.accountName
@@ -83,8 +85,11 @@ class AccountAdapter : RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() 
             currentAccount.accountBalance == 0.0 &&
             currentAccount.accountOwing == 0.0 &&
             currentAccount.budgetAmount == 0.0
-        )
-            "No info" else ""
+        ) {
+            "No info"
+        } else {
+            ""
+        }
         if (info == "No info") {
             holder.itemBinding.tvAccountInfo.visibility = ViewGroup.GONE
         } else {

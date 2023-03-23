@@ -76,14 +76,12 @@ class AccountsFragment :
     }
 
     private fun updateUI(account: List<Account>) {
-        if (account != null) {
-            if (account.isNotEmpty()) {
-                binding.crdAccountView.visibility = View.GONE
-                binding.rvAccounts.visibility = View.VISIBLE
-            } else {
-                binding.crdAccountView.visibility = View.VISIBLE
-                binding.rvAccounts.visibility = View.GONE
-            }
+        if (account.isNotEmpty()) {
+            binding.crdAccountView.visibility = View.GONE
+            binding.rvAccounts.visibility = View.VISIBLE
+        } else {
+            binding.crdAccountView.visibility = View.VISIBLE
+            binding.rvAccounts.visibility = View.GONE
         }
     }
 

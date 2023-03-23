@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/accountsFragment">
+    app:startDestination="@id/accountTypesFragment">
 
     <fragment
         android:id="@+id/accountsFragment"
@@ -14,6 +14,9 @@
         <action
             android:id="@+id/action_accountsFragment_to_accountAddFragment"
             app:destination="@id/accountAddFragment" />
+        <action
+            android:id="@+id/action_accountsFragment_to_accountTypesFragment"
+            app:destination="@id/accountTypesFragment" />
     </fragment>
     <fragment
         android:id="@+id/accountUpdateFragment"
@@ -34,5 +37,39 @@
         <action
             android:id="@+id/action_accountAddFragment_to_accountsFragment"
             app:destination="@id/accountsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/accountTypesFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.AccountTypesFragment"
+        android:label="AccountTypesFragment">
+        <action
+            android:id="@+id/action_accountTypesFragment_to_accountTypeAddFragment"
+            app:destination="@id/accountTypeAddFragment" />
+        <action
+            android:id="@+id/action_accountTypesFragment_to_accountTypeUpdateFragment"
+            app:destination="@id/accountTypeUpdateFragment" />
+        <action
+            android:id="@+id/action_accountTypesFragment_to_accountsFragment"
+            app:destination="@id/accountsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/accountTypeAddFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.AccountTypeAddFragment"
+        android:label="AccountTypeAddFragment">
+        <action
+            android:id="@+id/action_accountTypeAddFragment_to_accountTypesFragment"
+            app:destination="@id/accountTypesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/accountTypeUpdateFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.AccountTypeUpdateFragment"
+        android:label="AccountTypeUpdateFragment">
+        <action
+            android:id="@+id/action_accountTypeUpdateFragment_to_accountTypesFragment"
+            app:destination="@id/accountTypesFragment" />
+        <argument
+            android:name="accountType"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.AccountType"
+            app:nullable="true" />
     </fragment>
 </navigation>
