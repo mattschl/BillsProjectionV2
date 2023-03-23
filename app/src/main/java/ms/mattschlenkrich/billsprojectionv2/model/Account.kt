@@ -11,20 +11,13 @@ import kotlinx.parcelize.Parcelize
     tableName = "accounts",
     indices = [
         Index(name = "idxAccountName", value = ["accountName"], unique = true),
-        Index(value = ["accountTypeId"]),
-        Index(value = ["accountCategoryId"])
+        Index(value = ["accountTypeId"])
     ]/*,
     foreignKeys = [ForeignKey(
         entity = AccountType::class,
         parentColumns = ["accountTypeId"],
         childColumns = ["accountTypeId"]
-    ),
-        ForeignKey(
-            entity = AccountCategory::class,
-            parentColumns = ["accountCategoryId"],
-            childColumns = ["accountCategoryId"]
-        )
-    ]*/
+    )*/
 )
 @Parcelize
 data class Account(
@@ -33,7 +26,6 @@ data class Account(
     val accountId: Long,
     val accountName: String,
     val accountNumber: String,
-    val accountCategoryId: Long,
     val accountTypeId: Long,
     @ColumnInfo(defaultValue = "0.0", typeAffinity = ColumnInfo.REAL)
     val budgetAmount: Double,
@@ -75,21 +67,5 @@ data class AccountType(
 ): Parcelable
 
 
-@Entity(
-    tableName = "accountCategories",
-    indices = [Index(name = "idxAccountCategory", value = ["accountCategory"], unique = true),
-        Index(name = "idxAccountCategoryId", value = ["accountCategoryId"])
-    ]
-)
-@Parcelize
-data class AccountCategories(
-    @PrimaryKey
-    @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
-    val accountCategoryId: Long,
-    val accountCategory: String,
-    @ColumnInfo(defaultValue = "0", typeAffinity = ColumnInfo.INTEGER)
-    val isDeleted: Boolean,
-    val updateTime: String,
-) : Parcelable
 
 //

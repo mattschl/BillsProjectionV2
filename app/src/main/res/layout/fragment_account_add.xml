@@ -47,7 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="@string/account_name"
+                android:hint="Account Number or Description"
                 android:importantForAutofill="no"
                 android:inputType="text"
                 android:selectAllOnFocus="true"
@@ -80,27 +80,6 @@
                 tools:ignore="SpeakableTextPresentCheck" />
 
             <TextView
-                android:id="@+id/lblAccAddCategory"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/top_margin"
-                android:text="@string/category"
-                android:textColor="@color/black"
-                app:layout_constraintBaseline_toBaselineOf="@id/dropAccAddCategory"
-                app:layout_constraintEnd_toStartOf="@id/dropAccAddCategory"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <EditText
-                android:id="@+id/dropAccAddCategory"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:text="@string/zero_int"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/lblAccAddCategory"
-                app:layout_constraintTop_toBottomOf="@id/dropAccAddType"
-                tools:ignore="DuplicateSpeakableTextCheck" />
-
-            <TextView
                 android:id="@+id/lblAccAddBalance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -109,7 +88,7 @@
                 android:textColor="@color/black"
                 app:layout_constraintEnd_toStartOf="@id/lblAccAddOwing"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/dropAccAddCategory" />
+                app:layout_constraintTop_toBottomOf="@id/dropAccAddType" />
 
             <TextView
                 android:id="@+id/lblAccAddOwing"
@@ -183,16 +162,6 @@
                 app:layout_constraintStart_toStartOf="@id/lblAccAddBudgeted"
                 app:layout_constraintTop_toBottomOf="@id/lblAccAddBudgeted"
                 tools:ignore="DuplicateSpeakableTextCheck" />
-
-            <TextView
-                android:id="@+id/textAccountId"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/id_not_created_yet"
-                android:textColor="@color/deep_red"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/editAccAddBudgeted" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

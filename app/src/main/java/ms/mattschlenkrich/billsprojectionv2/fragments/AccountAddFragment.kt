@@ -46,7 +46,6 @@ class AccountAddFragment : Fragment(R.layout.fragment_account_add) {
         val accountName = binding.editAccAddName.text.toString().trim()
         val accountHandle = binding.editAccAddHandle.text.toString().trim()
         val accountType = binding.dropAccAddType.text.toString().toLong()
-        val accountCategory = binding.dropAccAddCategory.text.toString().toLong()
         val accountBalance = binding.editAccAddBalance.text.toString().toDouble()
         val accountOwing = binding.editAccAddOwing.text.toString().toDouble()
         val accountBudgeted = binding.editAccAddBudgeted.text.toString().toDouble()
@@ -54,7 +53,7 @@ class AccountAddFragment : Fragment(R.layout.fragment_account_add) {
         if (accountName.isNotEmpty()) {
             val account = Account(
                 0, accountName, accountHandle,
-                accountCategory, accountType, accountBudgeted, accountBalance,
+                accountType, accountBudgeted, accountBalance,
                 accountOwing, false,
                 "no date"
             )

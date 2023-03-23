@@ -31,20 +31,21 @@
 
                     <TextView
                         android:id="@+id/tvAccountName"
-                        android:layout_width="120dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/account_name"
                         android:textColor="@color/black"
-                        android:textSize="20sp"
+                        android:layout_weight="10"
+                        android:textSize="18sp"
                         android:textStyle="bold" />
 
                     <View
                         android:id="@+id/ibAccountColor"
-                        android:layout_width="10dp"
+                        android:layout_width="15dp"
                         android:layout_height="10dp"
                         android:layout_gravity="center"
+                        android:layout_marginStart="8dp"
                         android:layout_marginEnd="8dp"
-                        android:layout_weight="1"
                         tools:ignore="InefficientWeight" />
 
                 </LinearLayout>
@@ -57,7 +58,7 @@
                     android:maxHeight="170dp"
                     android:text="@string/account_info"
                     android:textColor="@color/black"
-                    android:textSize="16sp" />
+                    android:textSize="14sp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 

@@ -2,7 +2,6 @@ package ms.mattschlenkrich.billsprojectionv2.repository
 
 import ms.mattschlenkrich.billsprojectionv2.dataBase.BillsDatabase
 import ms.mattschlenkrich.billsprojectionv2.model.Account
-import ms.mattschlenkrich.billsprojectionv2.model.AccountCategories
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 
 class AccountRepository(private val db: BillsDatabase) {
@@ -22,6 +21,9 @@ class AccountRepository(private val db: BillsDatabase) {
 
     fun findAccount(accountId: Long) =
         db.getAccountDao().findAccount(accountId)
+
+    fun findAccountByName(accountName: String) =
+        db.getAccountDao().findAccountByName(accountName)
 
     fun searchAccounts(query: String?) =
         db.getAccountDao().searchAccounts(query)
@@ -46,23 +48,4 @@ class AccountRepository(private val db: BillsDatabase) {
     fun searchAccountType(query: String) =
         db.getAccountTypesDao().searchAccountType(query)
 
-
-    //AccountCategories queries connected with AccountCategoriesDao
-    suspend fun insertAccountCategory(accountCategory: AccountCategories) =
-        db.getAccountCategoriesDao().insertAccountCategory(accountCategory)
-
-    suspend fun updateAccountCategory(accountCategory: AccountCategories) =
-        db.getAccountCategoriesDao().updateAccountCategory(accountCategory)
-
-    suspend fun deleteAccountCategory(accountCategoryId: Long, updateTime: String) =
-        db.getAccountCategoriesDao().deleteAccountCategory(accountCategoryId, updateTime)
-
-    fun findAccountCategory(accountCategoryId: Long) =
-        db.getAccountCategoriesDao().findAccountCategory(accountCategoryId)
-
-    fun getAccountCategories() =
-        db.getAccountCategoriesDao().getAccountCategories()
-
-    fun searchAccountCategories(query: String) =
-        db.getAccountCategoriesDao().searchAccountCategories(query)
 }

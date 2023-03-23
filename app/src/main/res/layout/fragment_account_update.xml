@@ -81,30 +81,6 @@
                 tools:ignore="SpeakableTextPresentCheck" />
 
             <TextView
-                android:id="@+id/lblAccountUpdateCategory"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/top_margin"
-                android:text="@string/category"
-                android:textColor="@color/black"
-                app:layout_constraintBaseline_toBaselineOf="@id/drpAccountUpdateCategory"
-                app:layout_constraintEnd_toStartOf="@id/drpAccountUpdateCategory"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <EditText
-                android:id="@+id/drpAccountUpdateCategory"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:minHeight="48dp"
-                android:importantForAutofill="no"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/lblAccountUpdateCategory"
-                app:layout_constraintTop_toBottomOf="@id/drpAccountUpdateType"
-                android:inputType="number"
-                android:text="@string/zero_int"
-                tools:ignore="DuplicateSpeakableTextCheck" />
-
-            <TextView
                 android:id="@+id/lblAccountUpdateBalance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -113,7 +89,7 @@
                 android:textColor="@color/black"
                 app:layout_constraintEnd_toStartOf="@id/lblAccountUpdateOwing"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/drpAccountUpdateCategory" />
+                app:layout_constraintTop_toBottomOf="@id/drpAccountUpdateType" />
 
             <TextView
                 android:id="@+id/lblAccountUpdateOwing"
@@ -218,7 +194,6 @@
                 app:borderWidth="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

@@ -7,12 +7,21 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.billsprojectionv2.SQLITE_DATE
+import ms.mattschlenkrich.billsprojectionv2.SQLITE_TIME
 import ms.mattschlenkrich.billsprojectionv2.databinding.AccountLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.AccountsFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.Account
+import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.*
 
 class AccountAdapter : RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() {
+
+    private var dateFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
+    private var timeFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
+    private var dollarFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
+
 
     class AccountViewHolder(val itemBinding: AccountLayoutBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -52,23 +61,36 @@ class AccountAdapter : RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() 
 
         holder.itemBinding.tvAccountName.text = currentAccount.accountName
         val info = if (currentAccount.accountNumber.isNotEmpty()) {
-            "Number is ${currentAccount.accountNumber} \n"
+            "# ${currentAccount.accountNumber}\n"
         } else {
             ""
         } + if (currentAccount.accountBalance != 0.0) {
-            "Balance is ${currentAccount.accountBalance} \n"
+            "Balance " +
+                    "${dollarFormat.format(currentAccount.accountBalance)}\n"
         } else {
             ""
         } + if (currentAccount.accountOwing != 0.0) {
-            "Balance Owing is ${currentAccount.accountOwing}"
+            "Owing " +
+                    "${dollarFormat.format(currentAccount.accountOwing)}\n"
+        } else {
+            ""
+        } + if (currentAccount.budgetAmount != 0.0) {
+            "Budgeted " +
+                    "${dollarFormat.format(currentAccount.budgetAmount)}\n"
         } else {
             ""
         } + if (currentAccount.accountNumber.isEmpty() &&
             currentAccount.accountBalance == 0.0 &&
-            currentAccount.accountOwing == 0.0
+            currentAccount.accountOwing == 0.0 &&
+            currentAccount.budgetAmount == 0.0
         )
-            "No account info" else ""
-        holder.itemBinding.tvAccountInfo.text = info
+            "No info" else ""
+        if (info == "No info") {
+            holder.itemBinding.tvAccountInfo.visibility = ViewGroup.GONE
+        } else {
+            holder.itemBinding.tvAccountInfo.visibility = ViewGroup.VISIBLE
+            holder.itemBinding.tvAccountInfo.text = info
+        }
 
         val random = Random()
         val color = Color.argb(

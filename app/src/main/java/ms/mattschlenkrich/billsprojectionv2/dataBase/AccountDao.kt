@@ -37,6 +37,13 @@ interface AccountDao {
 
     @Query(
         "SELECT * FROM accounts " +
+                "WHERE accountName = :accountName " +
+                "COLLATE NOCASE"
+    )
+    fun findAccountByName(accountName: String): List<Account>
+
+    @Query(
+        "SELECT * FROM accounts " +
                 "WHERE accountName LIKE :query " +
                 "ORDER BY accountName "
     )
