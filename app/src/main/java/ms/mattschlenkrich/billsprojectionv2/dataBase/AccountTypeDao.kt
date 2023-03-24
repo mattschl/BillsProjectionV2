@@ -6,10 +6,11 @@ import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 
 @Dao
 interface AccountTypeDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+/*(onConflict = OnConflictStrategy.REPLACE)*/
     suspend fun insertAccountType(accountType: AccountType)
 
-    @Update
+    @Update(onConflict = OnConflictStrategy.IGNORE)
     suspend fun updateAccountType(accountType: AccountType)
 
     @Query(
@@ -28,10 +29,15 @@ interface AccountTypeDao {
 
     @Query(
         "SELECT * FROM accountTypes " +
+                "WHERE accountType = :accountTypeName"
+    )
+    fun findAccountTypeByName(accountTypeName: String): List<AccountType>
+
+    @Query(
+        "SELECT * FROM accountTypes " +
                 "ORDER BY accountType " +
                 " COLLATE NOCASE ASC"
     )
-
     fun getAccountTypes(): LiveData<List<AccountType>>
 
     @Query(

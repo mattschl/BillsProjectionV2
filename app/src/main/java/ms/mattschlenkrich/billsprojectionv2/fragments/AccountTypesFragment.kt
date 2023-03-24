@@ -45,7 +45,7 @@ class AccountTypesFragment
         super.onViewCreated(view, savedInstanceState)
         accountViewModel = (activity as MainActivity).accountViewModel
 
-        setupRecylcerView()
+        setupRecyclerView()
         binding.fabAddAccountType.setOnClickListener {
             it.findNavController().navigate(
                 R.id.action_accountTypesFragment_to_accountTypeAddFragment
@@ -53,7 +53,7 @@ class AccountTypesFragment
         }
     }
 
-    private fun setupRecylcerView() {
+    private fun setupRecyclerView() {
         accountTypeAdapter = AccountTypeAdapter()
 
         binding.rvAccountTypes.apply {

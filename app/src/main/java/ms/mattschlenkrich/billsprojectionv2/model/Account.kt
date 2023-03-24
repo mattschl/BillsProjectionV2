@@ -47,7 +47,7 @@ data class Account(
 )
 @Parcelize
 data class AccountType(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val accountTypeId: Long,
     val accountType: String,

@@ -78,6 +78,7 @@ class AccountUpdateFragment : Fragment(R.layout.fragment_account_update) {
             balance, owing,
             false, "no time"
         )
+
         if (accountName == currentAccount.accountName) {
             accountsViewModel.updateAccount(account)
             view?.findNavController()
@@ -99,7 +100,9 @@ class AccountUpdateFragment : Fragment(R.layout.fragment_account_update) {
                     setPositiveButton("Update Account") { _, _ ->
                         accountsViewModel.updateAccount(account)
                         view?.findNavController()
-                            ?.navigate(R.id.action_accountUpdateFragment_to_accountsFragment)
+                            ?.navigate(
+                                R.id.action_accountUpdateFragment_to_accountsFragment
+                            )
                     }
                     setNegativeButton("Cancel", null)
                 }.create().show()
@@ -131,7 +134,7 @@ class AccountUpdateFragment : Fragment(R.layout.fragment_account_update) {
 
     private fun deleteAccount() {
         AlertDialog.Builder(activity).apply {
-            setTitle("Delete Account")
+            setTitle("Delete Account?")
             setMessage("Are you sure you want to delete this account? ")
             setPositiveButton("Delete") { _, _ ->
                 accountsViewModel.deleteAccount(
@@ -149,7 +152,7 @@ class AccountUpdateFragment : Fragment(R.layout.fragment_account_update) {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.delete_menu, menu)
-        super.onCreateOptionsMenu(menu, inflater)
+//        super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

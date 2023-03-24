@@ -70,16 +70,23 @@ class AccountTypeAddFragment : Fragment(R.layout.fragment_account_type_add) {
                 false, "no DAte"
             )
 
-            accountsViewModel.addAccountType(accountType)
-
-            Toast.makeText(
-                mView.context,
-                "Account Type was saved successfully",
-                Toast.LENGTH_LONG
-            ).show()
-            view.findNavController().navigate(
-                R.id.action_accountTypeAddFragment_to_accountTypesFragment
-            )
+            if (accountsViewModel.addAccountType(accountType).isCompleted) {
+                Toast.makeText(
+                    mView.context,
+                    "Account Type was saved successfully",
+                    Toast.LENGTH_LONG
+                ).show()
+                view.findNavController().navigate(
+                    R.id.action_accountTypeAddFragment_to_accountTypesFragment
+                )
+            } else {
+                Toast.makeText(
+                    mView.context,
+                    "This Account Type already exists!!\n" +
+                            "Please use another name",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         } else {
             Toast.makeText(
                 mView.context,
