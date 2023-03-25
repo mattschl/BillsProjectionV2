@@ -8,10 +8,15 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.SQLITE_DATE
+import ms.mattschlenkrich.billsprojectionv2.SQLITE_TIME
 import ms.mattschlenkrich.billsprojectionv2.adapter.AccountAdapter
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountsBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
+import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 class AccountsFragment :
     Fragment(R.layout.fragment_accounts), SearchView.OnQueryTextListener {
@@ -21,6 +26,10 @@ class AccountsFragment :
 
     private lateinit var accountsViewModel: AccountViewModel
     private lateinit var accountAdapter: AccountAdapter
+
+    private val dollarFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
+    private val dateFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
+    private val timeFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

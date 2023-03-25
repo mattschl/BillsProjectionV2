@@ -43,7 +43,6 @@ interface AccountTypeDao {
     @Query(
         "SELECT * FROM accountTypes " +
                 "WHERE accountType LIKE :query " +
-                "AND isDeleted = 0 " +
                 "ORDER BY accountType " +
                 " COLLATE NOCASE ASC"
     )

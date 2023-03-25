@@ -27,4 +27,5 @@
     <string name="no_account_types_to_view">No Account Types to view</string>
     <string name="update_account_type">Update Account Type</string>
     <string name="add_account_type">Add Account Type</string>
+    <string name="display_in_budget">Display in Budget</string>
 </resources>

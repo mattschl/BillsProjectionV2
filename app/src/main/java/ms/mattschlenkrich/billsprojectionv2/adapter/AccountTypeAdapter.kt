@@ -66,13 +66,18 @@ class AccountTypeAdapter : RecyclerView.Adapter<AccountTypeAdapter.AccountTypeVi
         } else {
             ""
         } + if (currentAccountType.displayAsAsset) {
-            "This will display as an asset"
+            "This will display in the budget\n"
+        } else {
+            ""
+        } + if (currentAccountType.isDeleted) {
+            "   **DELETED**"
         } else {
             ""
         } + if (!currentAccountType.keepTotals &&
             !currentAccountType.tallyOwing &&
             !currentAccountType.isAsset &&
-            currentAccountType.displayAsAsset
+            currentAccountType.displayAsAsset &&
+            !currentAccountType.isDeleted
         ) {
             "This is a dummy account"
         } else {

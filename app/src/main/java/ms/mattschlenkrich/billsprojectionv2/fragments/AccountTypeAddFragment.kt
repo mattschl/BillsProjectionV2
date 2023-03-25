@@ -7,12 +7,10 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.SQLITE_DATE
 import ms.mattschlenkrich.billsprojectionv2.SQLITE_TIME
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountTypeAddBinding
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
-import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -26,9 +24,8 @@ class AccountTypeAddFragment : Fragment(R.layout.fragment_account_type_add) {
 
     private lateinit var mView: View
 
-    private lateinit var dateFormatter: SimpleDateFormat
-    private lateinit var timeFormatter: SimpleDateFormat
-    private lateinit var dollarFormat: NumberFormat
+    private val timeFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,9 +39,6 @@ class AccountTypeAddFragment : Fragment(R.layout.fragment_account_type_add) {
         // Inflate the layout for this fragment
         _binding = FragmentAccountTypeAddBinding.inflate(inflater, container, false)
 
-        dollarFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
-        dateFormatter = SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
-        timeFormatter = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
         return binding.root
     }
 

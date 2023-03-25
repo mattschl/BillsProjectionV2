@@ -16,7 +16,7 @@ import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
-import java.util.Locale.CANADA
+import java.util.*
 
 class AccountUpdateFragment : Fragment(R.layout.fragment_account_update) {
 
@@ -29,9 +29,9 @@ class AccountUpdateFragment : Fragment(R.layout.fragment_account_update) {
     private val args: AccountUpdateFragmentArgs by navArgs()
     private lateinit var currentAccount: Account
 
-    private lateinit var dateFormatter: SimpleDateFormat
-    private lateinit var timeFormatter: SimpleDateFormat
-    private lateinit var dollarFormat: NumberFormat
+    private val dollarFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
+    val dateFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
+    val timeFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,9 +44,6 @@ class AccountUpdateFragment : Fragment(R.layout.fragment_account_update) {
     ): View {
         _binding = FragmentAccountUpdateBinding.inflate(inflater, container, false)
         view = binding.root
-        dollarFormat = NumberFormat.getCurrencyInstance(CANADA)
-        dateFormatter = SimpleDateFormat(SQLITE_DATE, CANADA)
-        timeFormatter = SimpleDateFormat(SQLITE_TIME, CANADA)
         return binding.root
     }
 
@@ -72,11 +69,12 @@ class AccountUpdateFragment : Fragment(R.layout.fragment_account_update) {
             .replace(",", "").replace("$", "").toDouble()
         val budgeted = binding.edAccountUpdateBudgeted.text.toString()
             .replace(",", "").replace("$", "").toDouble()
+        val currTime = timeFormatter.format(Calendar.getInstance().time)
         val account = Account(
             currentAccount.accountId, accountName,
             accountHandle, accountTypeId, budgeted,
             balance, owing,
-            false, "no time"
+            false, currTime
         )
 
         if (accountName == currentAccount.accountName) {

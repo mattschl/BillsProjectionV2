@@ -20,10 +20,8 @@ class AccountAdapter :
 //    private var timeFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
     private var dollarFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
 
-
     class AccountViewHolder(val itemBinding: AccountLayoutBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
-
 
     private val differCallBack =
         object : DiffUtil.ItemCallback<Account>() {
@@ -81,10 +79,15 @@ class AccountAdapter :
                     "${dollarFormat.format(currentAccount.budgetAmount)}\n"
         } else {
             ""
+        } + if (currentAccount.isDeleted) {
+            "**Deleted**"
+        } else {
+            ""
         } + if (currentAccount.accountNumber.isEmpty() &&
             currentAccount.accountBalance == 0.0 &&
             currentAccount.accountOwing == 0.0 &&
-            currentAccount.budgetAmount == 0.0
+            currentAccount.budgetAmount == 0.0 &&
+            !currentAccount.isDeleted
         ) {
             "No info"
         } else {
@@ -112,6 +115,4 @@ class AccountAdapter :
             it.findNavController().navigate(direction)
         }
     }
-
-
 }
