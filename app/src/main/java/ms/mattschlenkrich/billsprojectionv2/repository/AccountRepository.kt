@@ -45,8 +45,8 @@ class AccountRepository(private val db: BillsDatabase) {
     fun findAccountTypeByName(accountTypeName: String) =
         db.getAccountTypesDao().findAccountTypeByName(accountTypeName)
 
-    fun getAccountTypes() =
-        db.getAccountTypesDao().getAccountTypes()
+    fun getActiveAccountTypes() =
+        db.getAccountTypesDao().getActiveAccountTypes()
 
     fun searchAccountType(query: String) =
         db.getAccountTypesDao().searchAccountType(query)

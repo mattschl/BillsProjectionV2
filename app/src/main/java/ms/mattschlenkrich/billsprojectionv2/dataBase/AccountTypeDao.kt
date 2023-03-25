@@ -6,11 +6,10 @@ import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 
 @Dao
 interface AccountTypeDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-/*(onConflict = OnConflictStrategy.REPLACE)*/
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertAccountType(accountType: AccountType)
 
-    @Update(onConflict = OnConflictStrategy.IGNORE)
+    @Update
     suspend fun updateAccountType(accountType: AccountType)
 
     @Query(
@@ -35,14 +34,16 @@ interface AccountTypeDao {
 
     @Query(
         "SELECT * FROM accountTypes " +
+                "WHERE isDeleted <> 1 " +
                 "ORDER BY accountType " +
                 " COLLATE NOCASE ASC"
     )
-    fun getAccountTypes(): LiveData<List<AccountType>>
+    fun getActiveAccountTypes(): LiveData<List<AccountType>>
 
     @Query(
         "SELECT * FROM accountTypes " +
                 "WHERE accountType LIKE :query " +
+                "AND isDeleted = 0 " +
                 "ORDER BY accountType " +
                 " COLLATE NOCASE ASC"
     )

@@ -16,6 +16,7 @@ import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.util.*
 import java.util.Locale.CANADA
 
 class AccountTypeUpdateFragment : Fragment(R.layout.fragment_account_type_update) {
@@ -73,17 +74,18 @@ class AccountTypeUpdateFragment : Fragment(R.layout.fragment_account_type_update
         val keepOwing = binding.chkAccountTypeUKeepOwing.isChecked
         val isAsset = binding.chkAccTypeAddIsAsset.isChecked
         val displayAsAsset = binding.chkAccountTypeUDisplayAsset.isChecked
+        val currTime = timeFormatter.format(Calendar.getInstance().time)
         val accountType = AccountType(
             currentAccountType.accountTypeId, accountTypeName,
             keepTotals, isAsset, keepOwing, false, displayAsAsset,
-            false, "No date"
+            false, currTime
         )
 
         if (accountTypeName == currentAccountType.accountType) {
             accountsViewModel.updateAccountType(accountType)
             view?.findNavController()
                 ?.navigate(R.id.action_accountTypeUpdateFragment_to_accountTypesFragment)
-        } else if (!accountTypeName.isNullOrBlank()) {
+        } else if (accountTypeName.isNotBlank()) {
             AlertDialog.Builder(activity).apply {
                 setTitle("Rename Account Type?")
                 setMessage("Are you sure you want to rename the Account Type?")
@@ -136,9 +138,10 @@ class AccountTypeUpdateFragment : Fragment(R.layout.fragment_account_type_update
             setTitle("Delete Account Type?")
             setMessage("Are you sure you want to delete this Account Type?")
             setPositiveButton("Delete") { _, _ ->
-                accountsViewModel.deleteAccount(
+                val currTime = timeFormatter.format(Calendar.getInstance().time)
+                accountsViewModel.deleteAccountType(
                     currentAccountType.accountTypeId,
-                    "no date"
+                    currTime
                 )
                 view?.findNavController()?.navigate(
                     R.id.action_accountTypeUpdateFragment_to_accountTypesFragment

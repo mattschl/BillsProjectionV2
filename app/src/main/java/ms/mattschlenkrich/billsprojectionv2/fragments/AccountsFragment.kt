@@ -110,7 +110,7 @@ class AccountsFragment :
     }
 
     private fun searchAccount(query: String?) {
-        val searchQuery = "%$query"
+        val searchQuery = "%$query%"
         accountsViewModel.searchAccounts(searchQuery).observe(
             this
         ) { list -> accountAdapter.differ.submitList(list) }

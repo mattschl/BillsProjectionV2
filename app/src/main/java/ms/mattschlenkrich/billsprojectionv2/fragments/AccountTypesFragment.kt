@@ -65,7 +65,7 @@ class AccountTypesFragment
             adapter = accountTypeAdapter
         }
         activity?.let {
-            accountViewModel.getAccountTypes().observe(
+            accountViewModel.getActiveAccountTypes().observe(
                 viewLifecycleOwner
             ) { accountType ->
                 accountTypeAdapter.differ.submitList(accountType)
@@ -106,7 +106,7 @@ class AccountTypesFragment
     }
 
     private fun searchAccountTypes(query: String?) {
-        val searchQuery = "%$query"
+        val searchQuery = "%$query%"
         accountViewModel.searchAccountTypes(searchQuery).observe(
             this
         ) { list -> accountTypeAdapter.differ.submitList(list) }
