@@ -9,7 +9,7 @@ interface AccountTypeDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertAccountType(accountType: AccountType)
 
-    @Update
+    @Update(onConflict = OnConflictStrategy.IGNORE)
     suspend fun updateAccountType(accountType: AccountType)
 
     @Query(

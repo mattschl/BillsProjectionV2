@@ -16,7 +16,11 @@ import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
+private const val TAG = "AccountTypeUpdate"
+
+@Suppress("DEPRECATION")
 class AccountTypeUpdateFragment : Fragment(R.layout.fragment_account_type_update) {
+
 
     private var _binding: FragmentAccountTypeUpdateBinding? = null
     private val binding get() = _binding!!
@@ -59,6 +63,11 @@ class AccountTypeUpdateFragment : Fragment(R.layout.fragment_account_type_update
         }
     }
 
+    private suspend fun findAccountTypeName(accountTypeName: String): Boolean {
+        val list = accountsViewModel.findAccountByName(accountTypeName)
+        return list.isEmpty()
+    }
+
     private fun updateAccountType() {
         val accountTypeName = binding.etAccTypeUpdate.text
             .toString().trim()
@@ -80,25 +89,21 @@ class AccountTypeUpdateFragment : Fragment(R.layout.fragment_account_type_update
         } else if (accountTypeName.isNotBlank()) {
             AlertDialog.Builder(activity).apply {
                 setTitle("Rename Account Type?")
-                setMessage("Are you sure you want to rename the Account Type?")
+                setMessage(
+                    "Are you sure you want to rename this Account Type?\n " +
+                            "NOTE:\n" +
+                            "This will NOT replace an existing Account Type"
+                )
                 setPositiveButton("Update Account Type") { _, _ ->
-                    if (accountsViewModel.updateAccountType(accountType).isCompleted) {
-                        view?.findNavController()
-                            ?.navigate(
-                                R.id.action_accountTypeUpdateFragment_to_accountTypesFragment
-                            )
-                    } else {
-                        Toast.makeText(
-                            context,
-                            "ERROR!! This Account Type already exists.\n" +
-                                    "Choose a different name",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
+                    accountsViewModel.updateAccountType(accountType)
+                    view?.findNavController()?.navigate(
+                        R.id.action_accountTypeUpdateFragment_to_accountTypesFragment
+                    )
+
+
                 }
                 setNegativeButton("Cancel", null)
             }.create().show()
-
         } else {
             Toast.makeText(
                 context,
@@ -120,6 +125,7 @@ class AccountTypeUpdateFragment : Fragment(R.layout.fragment_account_type_update
             currentAccountType.displayAsAsset
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.delete_menu, menu)
@@ -143,6 +149,7 @@ class AccountTypeUpdateFragment : Fragment(R.layout.fragment_account_type_update
         }.create().show()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_delete -> {

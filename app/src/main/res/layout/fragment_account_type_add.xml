@@ -58,6 +58,5 @@
             app:layout_constraintStart_toEndOf="@+id/chkAccTypeAddIsAsset"
             app:layout_constraintTop_toTopOf="@+id/chkAccTypeAddIsAsset" />
 
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
