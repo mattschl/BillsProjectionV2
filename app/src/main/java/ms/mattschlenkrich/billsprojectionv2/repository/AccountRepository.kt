@@ -16,8 +16,8 @@ class AccountRepository(private val db: BillsDatabase) {
     suspend fun deleteAccount(accountId: Long, updateTime: String) =
         db.getAccountDao().deleteAccount(accountId, updateTime)
 
-    fun getAllAccounts() =
-        db.getAccountDao().getAllAccounts()
+    fun getActiveAccounts() =
+        db.getAccountDao().getActiveAccounts()
 
     fun findAccount(accountId: Long) =
         db.getAccountDao().findAccount(accountId)

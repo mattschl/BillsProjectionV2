@@ -28,8 +28,8 @@ class AccountViewModel(
             accountRepository.deleteAccount(accountId, updateTime)
         }
 
-    fun getAllAccounts() =
-        accountRepository.getAllAccounts()
+    fun getActiveAccounts() =
+        accountRepository.getActiveAccounts()
 
 
     fun findAccount(accountId: Long) =
