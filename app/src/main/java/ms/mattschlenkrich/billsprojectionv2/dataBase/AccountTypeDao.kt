@@ -6,7 +6,7 @@ import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 
 @Dao
 interface AccountTypeDao {
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAccountType(accountType: AccountType)
 
     @Update(onConflict = OnConflictStrategy.IGNORE)
