@@ -68,15 +68,29 @@ class AccountAddFragment : Fragment(R.layout.fragment_account_add) {
                 currTime
             )
 
-            accountsViewModel.addAccount(account)
+            if (accountsViewModel.addAccount(account).isCompleted) {
 
+                Toast.makeText(
+                    mView.context,
+                    "Account was saved successfully",
+                    Toast.LENGTH_LONG
+                ).show()
+                view.findNavController()
+                    .navigate(R.id.action_accountAddFragment_to_accountsFragment)
+            } else {
+                Toast.makeText(
+                    mView.context,
+                    "$accountName already exists!!\n" +
+                            "Please use another name",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        } else {
             Toast.makeText(
                 mView.context,
-                "Account was saved successfully",
+                "Enter a unique Name for this Account",
                 Toast.LENGTH_LONG
             ).show()
-            view.findNavController().navigate(R.id.action_accountAddFragment_to_accountsFragment)
-        } else {
         }
     }
 

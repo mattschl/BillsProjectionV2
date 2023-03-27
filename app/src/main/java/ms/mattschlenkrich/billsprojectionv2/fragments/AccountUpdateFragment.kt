@@ -83,9 +83,7 @@ class AccountUpdateFragment : Fragment(R.layout.fragment_account_update) {
                 ?.navigate(R.id.action_accountUpdateFragment_to_accountsFragment)
         } else if (accountName.isNotEmpty()) {
             val searchAccount = accountsViewModel.findAccountByName(accountName)
-            if (searchAccount.isNotEmpty() &&
-                searchAccount[0].accountId != currentAccount.accountId
-            ) {
+            if (searchAccount.isNotEmpty()) {
                 AlertDialog.Builder(context).apply {
                     setTitle("ERROR!")
                     setMessage("This account already exists, please edit the original account!")
@@ -94,13 +92,30 @@ class AccountUpdateFragment : Fragment(R.layout.fragment_account_update) {
             } else {
                 AlertDialog.Builder(activity).apply {
                     setTitle("Rename Account?")
-                    setMessage("Are you sure you want to rename this Account?")
+                    setMessage(
+                        "Are you sure you want to rename this Account?\n " +
+                                "      NOTE:\n" +
+                                "This will NOT replace an existing Account"
+                    )
                     setPositiveButton("Update Account") { _, _ ->
-                        accountsViewModel.updateAccount(account)
-                        view?.findNavController()
-                            ?.navigate(
-                                R.id.action_accountUpdateFragment_to_accountsFragment
-                            )
+                        if (accountsViewModel.updateAccount(account).isCompleted) {
+                            Toast.makeText(
+                                context,
+                                "Account was updated",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            view?.findNavController()
+                                ?.navigate(
+                                    R.id.action_accountUpdateFragment_to_accountsFragment
+                                )
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "$accountName already exists!!\n" +
+                                        "Please use edit that Account Type",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
                     }
                     setNegativeButton("Cancel", null)
                 }.create().show()

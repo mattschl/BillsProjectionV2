@@ -10,7 +10,7 @@ interface AccountDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAccount(account: Account)
 
-    @Update(onConflict = OnConflictStrategy.IGNORE)
+    @Update(onConflict = OnConflictStrategy.ABORT)
     suspend fun updateAccount(account: Account)
 
     @Query(
@@ -37,8 +37,7 @@ interface AccountDao {
 
     @Query(
         "SELECT * FROM accounts " +
-                "WHERE accountName = :accountName " +
-                "COLLATE NOCASE"
+                "WHERE accountName = :accountName "
     )
     fun findAccountByName(accountName: String): List<Account>
 

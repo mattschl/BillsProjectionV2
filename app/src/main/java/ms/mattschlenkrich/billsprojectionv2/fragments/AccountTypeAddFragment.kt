@@ -90,7 +90,7 @@ class AccountTypeAddFragment : Fragment(R.layout.fragment_account_type_add) {
             } else {
                 Toast.makeText(
                     mView.context,
-                    "This Account Type already exists!!\n" +
+                    "$accountTypeName already exists!!\n" +
                             "Please use another name",
                     Toast.LENGTH_LONG
                 ).show()
@@ -98,7 +98,7 @@ class AccountTypeAddFragment : Fragment(R.layout.fragment_account_type_add) {
         } else {
             Toast.makeText(
                 mView.context,
-                "Please enter a unique account name",
+                "Enter a unique Name for this Account Type",
                 Toast.LENGTH_LONG
             ).show()
 

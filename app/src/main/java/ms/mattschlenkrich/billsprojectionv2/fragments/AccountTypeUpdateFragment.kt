@@ -91,16 +91,27 @@ class AccountTypeUpdateFragment : Fragment(R.layout.fragment_account_type_update
                 setTitle("Rename Account Type?")
                 setMessage(
                     "Are you sure you want to rename this Account Type?\n " +
-                            "NOTE:\n" +
+                            "      NOTE:\n" +
                             "This will NOT replace an existing Account Type"
                 )
                 setPositiveButton("Update Account Type") { _, _ ->
-                    accountsViewModel.updateAccountType(accountType)
-                    view?.findNavController()?.navigate(
-                        R.id.action_accountTypeUpdateFragment_to_accountTypesFragment
-                    )
-
-
+                    if (accountsViewModel.updateAccountType(accountType).isCompleted) {
+                        Toast.makeText(
+                            context,
+                            "Account Type was updated",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        view?.findNavController()?.navigate(
+                            R.id.action_accountTypeUpdateFragment_to_accountTypesFragment
+                        )
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "$accountTypeName already exists!!\n" +
+                                    "Please use edit that Account Type",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
                 setNegativeButton("Cancel", null)
             }.create().show()
