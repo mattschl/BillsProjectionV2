@@ -14,14 +14,12 @@ import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 class AccountTypeAddFragment : Fragment(R.layout.fragment_account_type_add) {
 
     private var _binding: FragmentAccountTypeAddBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var accountsViewModel: AccountViewModel
-
     private lateinit var mView: View
 
     private val timeFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
@@ -71,14 +69,16 @@ class AccountTypeAddFragment : Fragment(R.layout.fragment_account_type_add) {
         val currTime = timeFormatter.format(Calendar.getInstance().time)
 
         if (accountTypeName.isNotEmpty()) {
-
             val accountType = AccountType(
                 0, accountTypeName, keepTotals,
                 isAsset, keepOwing, false, displayAsAsset,
                 false, currTime
             )
-
-            if (accountsViewModel.addAccountType(accountType).isCompleted) {
+            accountsViewModel.addAccountType(accountType)
+            view.findNavController().navigate(
+                R.id.action_accountTypeAddFragment_to_accountTypesFragment
+            )
+            /*if (!accountsViewModel.addAccountType(accountType).isCancelled) {
                 Toast.makeText(
                     mView.context,
                     "Account Type was saved successfully",
@@ -94,7 +94,7 @@ class AccountTypeAddFragment : Fragment(R.layout.fragment_account_type_add) {
                             "Please use another name",
                     Toast.LENGTH_LONG
                 ).show()
-            }
+            }*/
         } else {
             Toast.makeText(
                 mView.context,

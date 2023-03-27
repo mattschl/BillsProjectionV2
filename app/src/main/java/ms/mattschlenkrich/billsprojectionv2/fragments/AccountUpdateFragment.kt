@@ -9,7 +9,6 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.SQLITE_DATE
 import ms.mattschlenkrich.billsprojectionv2.SQLITE_TIME
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
@@ -22,7 +21,8 @@ class AccountUpdateFragment : Fragment(R.layout.fragment_account_update) {
 
     private var _binding: FragmentAccountUpdateBinding? = null
     private val binding get() = _binding!!
-    private var view: View? = null
+
+    private var mView: View? = null
     private lateinit var accountsViewModel: AccountViewModel
 
     //since the update fragment contains arguments in nav_graph
@@ -30,8 +30,9 @@ class AccountUpdateFragment : Fragment(R.layout.fragment_account_update) {
     private lateinit var currentAccount: Account
 
     private val dollarFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
-    val dateFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
-    val timeFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
+
+    //    val dateFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
+    private val timeFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +44,7 @@ class AccountUpdateFragment : Fragment(R.layout.fragment_account_update) {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentAccountUpdateBinding.inflate(inflater, container, false)
-        view = binding.root
+        mView = binding.root
         return binding.root
     }
 
@@ -79,47 +80,42 @@ class AccountUpdateFragment : Fragment(R.layout.fragment_account_update) {
 
         if (accountName == currentAccount.accountName) {
             accountsViewModel.updateAccount(account)
-            view?.findNavController()
+            mView?.findNavController()
                 ?.navigate(R.id.action_accountUpdateFragment_to_accountsFragment)
-        } else if (accountName.isNotEmpty()) {
-            val searchAccount = accountsViewModel.findAccountByName(accountName)
-            if (searchAccount.isNotEmpty()) {
-                AlertDialog.Builder(context).apply {
-                    setTitle("ERROR!")
-                    setMessage("This account already exists, please edit the original account!")
-                    setNegativeButton("Ok", null)
-                }.create().show()
-            } else {
-                AlertDialog.Builder(activity).apply {
-                    setTitle("Rename Account?")
-                    setMessage(
-                        "Are you sure you want to rename this Account?\n " +
-                                "      NOTE:\n" +
-                                "This will NOT replace an existing Account"
+        } else if (accountName.isNotBlank()) {
+            AlertDialog.Builder(activity).apply {
+                setTitle("Rename Account?")
+                setMessage(
+                    "Are you sure you want to rename this Account?\n " +
+                            "      NOTE:\n" +
+                            "This will NOT replace an existing Account"
+                )
+                setPositiveButton("Update Account") { _, _ ->
+                    accountsViewModel.updateAccount(account)
+                    mView?.findNavController()?.navigate(
+                        R.id.action_accountUpdateFragment_to_accountsFragment
                     )
-                    setPositiveButton("Update Account") { _, _ ->
-                        if (accountsViewModel.updateAccount(account).isCompleted) {
-                            Toast.makeText(
-                                context,
-                                "Account was updated",
-                                Toast.LENGTH_LONG
-                            ).show()
-                            view?.findNavController()
-                                ?.navigate(
-                                    R.id.action_accountUpdateFragment_to_accountsFragment
-                                )
-                        } else {
-                            Toast.makeText(
-                                context,
-                                "$accountName already exists!!\n" +
-                                        "Please use edit that Account Type",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    }
-                    setNegativeButton("Cancel", null)
-                }.create().show()
-            }
+                    /*if (!accountsViewModel.updateAccount(account).isCancelled) {
+                        Toast.makeText(
+                            context,
+                            "Account was updated",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        mView?.findNavController() ?.navigate(
+                                R.id.action_accountUpdateFragment_to_accountsFragment
+                            )
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "$accountName already exists!!\n" +
+                                    "Please use edit that Account Type",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }*/
+                }
+                setNegativeButton("Cancel", null)
+            }.create().show()
+
         } else {
             Toast.makeText(
                 context,
@@ -154,7 +150,7 @@ class AccountUpdateFragment : Fragment(R.layout.fragment_account_update) {
                     currentAccount.accountId,
                     "no date"
                 )
-                view?.findNavController()?.navigate(
+                mView?.findNavController()?.navigate(
                     R.id.action_accountUpdateFragment_to_accountsFragment
                 )
             }
@@ -162,12 +158,14 @@ class AccountUpdateFragment : Fragment(R.layout.fragment_account_update) {
         }.create().show()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.delete_menu, menu)
 //        super.onCreateOptionsMenu(menu, inflater)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_delete -> {

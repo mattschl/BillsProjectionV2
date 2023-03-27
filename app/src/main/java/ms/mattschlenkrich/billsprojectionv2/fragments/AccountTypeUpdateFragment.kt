@@ -2,6 +2,7 @@ package ms.mattschlenkrich.billsprojectionv2.fragments
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -24,7 +25,7 @@ class AccountTypeUpdateFragment : Fragment(R.layout.fragment_account_type_update
 
     private var _binding: FragmentAccountTypeUpdateBinding? = null
     private val binding get() = _binding!!
-    private var view: View? = null
+    private var mView: View? = null
     private lateinit var accountsViewModel: AccountViewModel
 
     //since the update fragment contains arguments in nav_graph
@@ -46,7 +47,7 @@ class AccountTypeUpdateFragment : Fragment(R.layout.fragment_account_type_update
         _binding = FragmentAccountTypeUpdateBinding.inflate(
             inflater, container, false
         )
-        view = binding.root
+        mView = binding.root
 
         return binding.root
     }
@@ -69,6 +70,7 @@ class AccountTypeUpdateFragment : Fragment(R.layout.fragment_account_type_update
     }
 
     private fun updateAccountType() {
+        Log.d(TAG, "entreing accountType update")
         val accountTypeName = binding.etAccTypeUpdate.text
             .toString().trim()
         val keepTotals = binding.chkAccountTypeUKeepTotals.isChecked
@@ -84,7 +86,7 @@ class AccountTypeUpdateFragment : Fragment(R.layout.fragment_account_type_update
 
         if (accountTypeName == currentAccountType.accountType) {
             accountsViewModel.updateAccountType(accountType)
-            view?.findNavController()
+            mView?.findNavController()
                 ?.navigate(R.id.action_accountTypeUpdateFragment_to_accountTypesFragment)
         } else if (accountTypeName.isNotBlank()) {
             AlertDialog.Builder(activity).apply {
@@ -95,13 +97,17 @@ class AccountTypeUpdateFragment : Fragment(R.layout.fragment_account_type_update
                             "This will NOT replace an existing Account Type"
                 )
                 setPositiveButton("Update Account Type") { _, _ ->
-                    if (accountsViewModel.updateAccountType(accountType).isCompleted) {
+                    accountsViewModel.updateAccountType(accountType)
+                    mView?.findNavController()?.navigate(
+                        R.id.action_accountTypeUpdateFragment_to_accountTypesFragment
+                    )
+                    /*if (!accountsViewModel.updateAccountType(accountType).isCancelled) {
                         Toast.makeText(
                             context,
                             "Account Type was updated",
                             Toast.LENGTH_LONG
                         ).show()
-                        view?.findNavController()?.navigate(
+                        mView?.findNavController()?.navigate(
                             R.id.action_accountTypeUpdateFragment_to_accountTypesFragment
                         )
                     } else {
@@ -111,7 +117,7 @@ class AccountTypeUpdateFragment : Fragment(R.layout.fragment_account_type_update
                                     "Please use edit that Account Type",
                             Toast.LENGTH_LONG
                         ).show()
-                    }
+                    }*/
                 }
                 setNegativeButton("Cancel", null)
             }.create().show()
@@ -152,7 +158,7 @@ class AccountTypeUpdateFragment : Fragment(R.layout.fragment_account_type_update
                     currentAccountType.accountTypeId,
                     currTime
                 )
-                view?.findNavController()?.navigate(
+                mView?.findNavController()?.navigate(
                     R.id.action_accountTypeUpdateFragment_to_accountTypesFragment
                 )
             }

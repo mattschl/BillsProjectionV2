@@ -7,12 +7,10 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.SQLITE_DATE
 import ms.mattschlenkrich.billsprojectionv2.SQLITE_TIME
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountAddBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
-import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -25,9 +23,9 @@ class AccountAddFragment : Fragment(R.layout.fragment_account_add) {
     private lateinit var accountsViewModel: AccountViewModel
     private lateinit var mView: View
 
-    private val dollarFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
-    private val dateFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
-    private val timeFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
+//    private val dollarFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
+//    private val dateFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
+private val timeFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,16 +65,19 @@ class AccountAddFragment : Fragment(R.layout.fragment_account_add) {
                 accountOwing, false,
                 currTime
             )
-
-            if (accountsViewModel.addAccount(account).isCompleted) {
-
+            accountsViewModel.addAccount(account)
+            view.findNavController().navigate(
+                R.id.action_accountAddFragment_to_accountsFragment
+            )
+            /*if (!accountsViewModel.addAccount(account).isCancelled) {
                 Toast.makeText(
                     mView.context,
                     "Account was saved successfully",
                     Toast.LENGTH_LONG
                 ).show()
-                view.findNavController()
-                    .navigate(R.id.action_accountAddFragment_to_accountsFragment)
+                view.findNavController().navigate(
+                    R.id.action_accountAddFragment_to_accountsFragment
+                 )
             } else {
                 Toast.makeText(
                     mView.context,
@@ -84,7 +85,7 @@ class AccountAddFragment : Fragment(R.layout.fragment_account_add) {
                             "Please use another name",
                     Toast.LENGTH_LONG
                 ).show()
-            }
+            }*/
         } else {
             Toast.makeText(
                 mView.context,
