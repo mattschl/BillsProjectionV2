@@ -20,7 +20,8 @@ import java.util.*
 private const val TAG = "AccountTypeUpdate"
 
 @Suppress("DEPRECATION")
-class AccountTypeUpdateFragment : Fragment(R.layout.fragment_account_type_update) {
+class AccountTypeUpdateFragment :
+    Fragment(R.layout.fragment_account_type_update) {
 
 
     private var _binding: FragmentAccountTypeUpdateBinding? = null
@@ -86,8 +87,9 @@ class AccountTypeUpdateFragment : Fragment(R.layout.fragment_account_type_update
 
         if (accountTypeName == currentAccountType.accountType) {
             accountsViewModel.updateAccountType(accountType)
-            mView?.findNavController()
-                ?.navigate(R.id.action_accountTypeUpdateFragment_to_accountTypesFragment)
+            mView?.findNavController()?.navigate(
+                R.id.action_accountTypeUpdateFragment_to_accountTypesFragment
+            )
         } else if (accountTypeName.isNotBlank()) {
             AlertDialog.Builder(activity).apply {
                 setTitle("Rename Account Type?")

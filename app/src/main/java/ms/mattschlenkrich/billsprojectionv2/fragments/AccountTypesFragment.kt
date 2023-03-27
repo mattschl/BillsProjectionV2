@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.billsprojectionv2.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -13,17 +14,17 @@ import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountTypesBind
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 
+private const val TAG = "AccountTypesFragment"
 
 class AccountTypesFragment
-    : Fragment(R.layout.fragment_account_types), SearchView.OnQueryTextListener {
+    : Fragment(R.layout.fragment_account_types),
+    SearchView.OnQueryTextListener {
 
     private var _binding: FragmentAccountTypesBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var accountViewModel: AccountViewModel
     private lateinit var accountTypeAdapter: AccountTypeAdapter
-
-    private var showDeleted = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +37,9 @@ class AccountTypesFragment
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        _binding = FragmentAccountTypesBinding.inflate(inflater, container, false)
+        _binding = FragmentAccountTypesBinding.inflate(
+            inflater, container, false
+        )
 
         return binding.root
     }
@@ -45,6 +48,7 @@ class AccountTypesFragment
         view: View, savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d(TAG, "onViewCreated Entered")
         accountViewModel = (activity as MainActivity).accountViewModel
 
         setupRecyclerView()
@@ -91,7 +95,8 @@ class AccountTypesFragment
 //        super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
         inflater.inflate(R.menu.search_menu, menu)
-        val mMenuSearch = menu.findItem(R.id.menu_search).actionView as SearchView
+        val mMenuSearch =
+            menu.findItem(R.id.menu_search).actionView as SearchView
         mMenuSearch.isSubmitButtonEnabled = false
         mMenuSearch.setOnQueryTextListener(this)
     }

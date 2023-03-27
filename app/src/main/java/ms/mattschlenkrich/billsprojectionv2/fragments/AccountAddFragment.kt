@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.billsprojectionv2.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -14,8 +15,10 @@ import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
+private const val TAG = "AccountAdd"
 
-class AccountAddFragment : Fragment(R.layout.fragment_account_add) {
+class AccountAddFragment :
+    Fragment(R.layout.fragment_account_add) {
 
     private var _binding: FragmentAccountAddBinding? = null
     private val binding get() = _binding!!
@@ -23,9 +26,10 @@ class AccountAddFragment : Fragment(R.layout.fragment_account_add) {
     private lateinit var accountsViewModel: AccountViewModel
     private lateinit var mView: View
 
-//    private val dollarFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
+    //    private val dollarFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
 //    private val dateFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
-private val timeFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
+    private val timeFormatter: SimpleDateFormat =
+        SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,25 +42,36 @@ private val timeFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_TIME, Loca
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        _binding = FragmentAccountAddBinding.inflate(inflater, container, false)
+        _binding = FragmentAccountAddBinding.inflate(
+            inflater, container, false
+        )
 
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        accountsViewModel = (activity as MainActivity).accountViewModel
+        accountsViewModel =
+            (activity as MainActivity).accountViewModel
         mView = view
     }
 
     private fun saveAccount(view: View) {
-        val accountName = binding.editAccAddName.text.toString().trim()
-        val accountHandle = binding.editAccAddHandle.text.toString().trim()
-        val accountType = binding.dropAccAddType.text.toString().toLong()
-        val accountBalance = binding.editAccAddBalance.text.toString().toDouble()
-        val accountOwing = binding.editAccAddOwing.text.toString().toDouble()
-        val accountBudgeted = binding.editAccAddBudgeted.text.toString().toDouble()
-        val currTime = timeFormatter.format(Calendar.getInstance().time)
+        Log.d(TAG, "saveAccount entered")
+        val accountName =
+            binding.editAccAddName.text.toString().trim()
+        val accountHandle =
+            binding.editAccAddHandle.text.toString().trim()
+        val accountType =
+            binding.dropAccAddType.text.toString().toLong()
+        val accountBalance =
+            binding.editAccAddBalance.text.toString().toDouble()
+        val accountOwing =
+            binding.editAccAddOwing.text.toString().toDouble()
+        val accountBudgeted =
+            binding.editAccAddBudgeted.text.toString().toDouble()
+        val currTime =
+            timeFormatter.format(Calendar.getInstance().time)
 
         if (accountName.isNotEmpty()) {
             val account = Account(

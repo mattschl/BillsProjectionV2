@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.billsprojectionv2.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -14,7 +15,10 @@ import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
-class AccountTypeAddFragment : Fragment(R.layout.fragment_account_type_add) {
+private const val TAG = "AccountTypeAdd"
+
+class AccountTypeAddFragment :
+    Fragment(R.layout.fragment_account_type_add) {
 
     private var _binding: FragmentAccountTypeAddBinding? = null
     private val binding get() = _binding!!
@@ -22,7 +26,8 @@ class AccountTypeAddFragment : Fragment(R.layout.fragment_account_type_add) {
     private lateinit var accountsViewModel: AccountViewModel
     private lateinit var mView: View
 
-    private val timeFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
+    private val timeFormatter: SimpleDateFormat =
+        SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,6 +66,7 @@ class AccountTypeAddFragment : Fragment(R.layout.fragment_account_type_add) {
     }
 
     private fun saveAccountType(view: View) {
+        Log.d(TAG, "saveAccountType entered")
         val accountTypeName = binding.etAccTypeAdd.text.toString().trim()
         val keepTotals = binding.chkAccTypeAddKeepTotals.isChecked
         val keepOwing = binding.chkAccTypeAddKeepOwing.isChecked

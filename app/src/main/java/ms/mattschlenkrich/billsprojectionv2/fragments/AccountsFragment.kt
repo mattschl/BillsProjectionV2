@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.billsprojectionv2.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -13,8 +14,11 @@ import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountsBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 
+private const val TAG = "AccountsFragment"
+
 class AccountsFragment :
-    Fragment(R.layout.fragment_accounts), SearchView.OnQueryTextListener {
+    Fragment(R.layout.fragment_accounts),
+    SearchView.OnQueryTextListener {
 
     private var _binding: FragmentAccountsBinding? = null
     private val binding get() = _binding!!
@@ -36,7 +40,9 @@ class AccountsFragment :
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        _binding = FragmentAccountsBinding.inflate(inflater, container, false)
+        _binding = FragmentAccountsBinding.inflate(
+            inflater, container, false
+        )
 
         return binding.root
     }
@@ -45,7 +51,9 @@ class AccountsFragment :
         view: View, savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
-        accountsViewModel = (activity as MainActivity).accountViewModel
+        Log.d(TAG, "onViewCreated entered")
+        accountsViewModel =
+            (activity as MainActivity).accountViewModel
 
         setUpRecyclerView()
         binding.fabAddNewAccount.setOnClickListener {
