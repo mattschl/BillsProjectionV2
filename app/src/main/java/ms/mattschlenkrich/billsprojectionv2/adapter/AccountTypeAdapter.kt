@@ -9,10 +9,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.databinding.AccountTypeLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.AccountTypesFragmentDirections
+import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import java.util.*
 
-class AccountTypeAdapter : RecyclerView.Adapter<AccountTypeAdapter.AccountTypeViewHolder>() {
+class AccountTypeAdapter(val account: Account?) :
+    RecyclerView.Adapter<AccountTypeAdapter.AccountTypeViewHolder>() {
 
     class AccountTypeViewHolder(val itemBinding: AccountTypeLayoutBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -50,34 +52,34 @@ class AccountTypeAdapter : RecyclerView.Adapter<AccountTypeAdapter.AccountTypeVi
     override fun onBindViewHolder(
         holder: AccountTypeViewHolder, position: Int
     ) {
-        val currentAccountType = differ.currentList[position]
+        val currAccountType = differ.currentList[position]
 
-        holder.itemBinding.tvAccountType.text = currentAccountType.accountType
-        val info = if (currentAccountType.keepTotals) {
+        holder.itemBinding.tvAccountType.text = currAccountType.accountType
+        val info = if (currAccountType.keepTotals) {
             "Will keep totals\n"
         } else {
             ""
-        } + if (currentAccountType.tallyOwing) {
+        } + if (currAccountType.tallyOwing) {
             "Will calculate amount owing\n"
         } else {
             ""
-        } + if (currentAccountType.isAsset) {
+        } + if (currAccountType.isAsset) {
             "This is an asset\n"
         } else {
             ""
-        } + if (currentAccountType.displayAsAsset) {
+        } + if (currAccountType.displayAsAsset) {
             "This will display in the budget\n"
         } else {
             ""
-        } + if (currentAccountType.isDeleted) {
+        } + if (currAccountType.isDeleted) {
             "   **DELETED**"
         } else {
             ""
-        } + if (!currentAccountType.keepTotals &&
-            !currentAccountType.tallyOwing &&
-            !currentAccountType.isAsset &&
-            currentAccountType.displayAsAsset &&
-            !currentAccountType.isDeleted
+        } + if (!currAccountType.keepTotals &&
+            !currAccountType.tallyOwing &&
+            !currAccountType.isAsset &&
+            currAccountType.displayAsAsset &&
+            !currAccountType.isDeleted
         ) {
             "This is a dummy account"
         } else {
@@ -94,9 +96,15 @@ class AccountTypeAdapter : RecyclerView.Adapter<AccountTypeAdapter.AccountTypeVi
         )
         holder.itemBinding.ibAccountTypeColor.setBackgroundColor(color)
 
+        holder.itemView.setOnLongClickListener {
+            val direction = AccountTypesFragmentDirections
+                .actionAccountTypesFragmentToAccountTypeUpdateFragment(currAccountType, account)
+            it.findNavController().navigate(direction)
+            false
+        }
         holder.itemView.setOnClickListener {
             val direction = AccountTypesFragmentDirections
-                .actionAccountTypesFragmentToAccountTypeUpdateFragment(currentAccountType)
+                .actionAccountTypesFragmentToAccountUpdateFragment(account, currAccountType)
             it.findNavController().navigate(direction)
         }
 

@@ -3,6 +3,7 @@ package ms.mattschlenkrich.billsprojectionv2.dataBase
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import ms.mattschlenkrich.billsprojectionv2.model.Account
+import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
 import java.util.*
 
 @Dao
@@ -30,6 +31,16 @@ interface AccountDao {
     fun getActiveAccounts(): LiveData<List<Account>>
 
     @Query(
+        "SELECT accounts.*, accountTypes.* FROM accounts " +
+                "LEFT JOIN accountTypes ON " +
+                "accountTypes.accountTypeId = accounts.accountTypeId " +
+                "WHERE accounts.isDeleted = 0 " +
+                "ORDER BY accounts.accountName " +
+                "COLLATE NOCASE ASC "
+    )
+    fun getActiveAccountsDetailed(): LiveData<List<Account>>
+
+    @Query(
         "SELECT * FROM accounts " +
                 "WHERE accountID = :accountId "
     )
@@ -47,4 +58,8 @@ interface AccountDao {
                 "ORDER BY accountName "
     )
     fun searchAccounts(query: String?): LiveData<List<Account>>
+
+    @Transaction
+    @Query("SELECT * FROM accounts")
+    fun getAccountWithType(): LiveData<List<AccountWithType>>
 }

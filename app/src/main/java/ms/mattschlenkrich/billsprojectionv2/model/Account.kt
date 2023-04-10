@@ -1,42 +1,8 @@
 package ms.mattschlenkrich.billsprojectionv2.model
 
 import android.os.Parcelable
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.Index
-import androidx.room.PrimaryKey
+import androidx.room.*
 import kotlinx.parcelize.Parcelize
-
-@Entity(
-    tableName = "accounts",
-    indices = [
-        Index(name = "idxAccountName", value = ["accountName"], unique = true),
-        Index(value = ["accountTypeId"])
-    ]/*,
-    foreignKeys = [ForeignKey(
-        entity = AccountType::class,
-        parentColumns = ["accountTypeId"],
-        childColumns = ["accountTypeId"]
-    )*/
-)
-@Parcelize
-data class Account(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
-    val accountId: Long,
-    val accountName: String,
-    val accountNumber: String,
-    val accountTypeId: Long,
-    @ColumnInfo(defaultValue = "0.0", typeAffinity = ColumnInfo.REAL)
-    val budgetAmount: Double,
-    @ColumnInfo(defaultValue = "0.0", typeAffinity = ColumnInfo.REAL)
-    val accountBalance: Double,
-    @ColumnInfo(defaultValue = "0.0", typeAffinity = ColumnInfo.REAL)
-    val accountOwing: Double,
-    @ColumnInfo(defaultValue = "0", typeAffinity = ColumnInfo.INTEGER)
-    val isDeleted: Boolean,
-    val updateTime: String,
-) : Parcelable
 
 
 @Entity(
@@ -64,8 +30,49 @@ data class AccountType(
     @ColumnInfo(defaultValue = "0", typeAffinity = ColumnInfo.INTEGER)
     val isDeleted: Boolean,
     val updateTime: String,
-): Parcelable
+) : Parcelable
 
+@Entity(
+    tableName = "accounts",
+    indices = [
+        Index(name = "idxAccountName", value = ["accountName"], unique = true),
+        Index(value = ["accountTypeId"])
+    ],
+    foreignKeys = [ForeignKey(
+        entity = AccountType::class,
+        parentColumns = ["accountTypeId"],
+        childColumns = ["accountTypeId"]
+    )]
+)
+@Parcelize
+data class Account(
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
+    val accountId: Long,
+    val accountName: String,
+    val accountNumber: String,
+    val accountTypeId: Long,
+    @ColumnInfo(defaultValue = "0.0", typeAffinity = ColumnInfo.REAL)
+    val budgetAmount: Double,
+    @ColumnInfo(defaultValue = "0.0", typeAffinity = ColumnInfo.REAL)
+    val accountBalance: Double,
+    @ColumnInfo(defaultValue = "0.0", typeAffinity = ColumnInfo.REAL)
+    val accountOwing: Double,
+    @ColumnInfo(defaultValue = "0", typeAffinity = ColumnInfo.INTEGER)
+    val isDeleted: Boolean,
+    val updateTime: String,
+) : Parcelable
 
-
-//
+@Parcelize
+@Entity(
+    tableName = "accountWithTypes"
+)
+data class AccountWithType(
+    @Embedded
+    val account: Account,
+    @Relation(
+        parentColumn = "accountTypeId",
+        entityColumn = "accountTypeId"
+    )
+    val accountType: AccountType
+) : Parcelable

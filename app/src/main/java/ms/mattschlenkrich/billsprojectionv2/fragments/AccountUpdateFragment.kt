@@ -7,12 +7,14 @@ import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.SQLITE_TIME
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
+import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -32,6 +34,8 @@ class AccountUpdateFragment :
     //since the update fragment contains arguments in nav_graph
     private val args: AccountUpdateFragmentArgs by navArgs()
     private lateinit var currentAccount: Account
+    private var newAccountType: AccountType? = null
+    private lateinit var currAccountType: AccountType
 
     private val dollarFormat: NumberFormat =
         NumberFormat.getCurrencyInstance(Locale.CANADA)
@@ -61,12 +65,45 @@ class AccountUpdateFragment :
         accountsViewModel =
             (activity as MainActivity).accountViewModel
         currentAccount = args.account!!
-
+        newAccountType = args.accountType
         fillValues()
-
+        binding.drpAccountUpdateType.setOnClickListener {
+            gotoAccountTypes()
+        }
         binding.fabAccountUpdateDone.setOnClickListener {
             updateAccount()
         }
+    }
+
+    private fun gotoAccountTypes() {
+        val accountName =
+            binding.edAccountUpdateName.text.toString().trim()
+        val accountHandle =
+            binding.edAccountUpdateHandle.text.toString().trim()
+        val accountTypeId =
+            accountsViewModel.findAccountTypeByName(
+                binding.drpAccountUpdateType.text.toString()
+            )[0].accountTypeId
+        val balance =
+            binding.edAccountUpdateBalance.text.toString()
+                .replace(",", "").replace("$", "").toDouble()
+        val owing =
+            binding.edAccountUpdateOwing.text.toString()
+                .replace(",", "").replace("$", "").toDouble()
+        val budgeted =
+            binding.edAccountUpdateBudgeted.text.toString()
+                .replace(",", "").replace("$", "").toDouble()
+        val currTime =
+            timeFormatter.format(Calendar.getInstance().time)
+        val account = Account(
+            currentAccount.accountId, accountName,
+            accountHandle, accountTypeId, budgeted,
+            balance, owing,
+            false, currTime
+        )
+        val direction = AccountUpdateFragmentDirections
+            .actionAccountUpdateFragmentToAccountTypesFragment(account)
+        this.findNavController().navigate(direction)
     }
 
     private fun updateAccount() {
@@ -150,9 +187,10 @@ class AccountUpdateFragment :
         binding.edAccountUpdateHandle.setText(
             currentAccount.accountNumber
         )
-        binding.drpAccountUpdateType.setText(
-            currentAccount.accountTypeId.toString()
-        )
+        if (args.accountType != null) {
+
+        }
+        binding.drpAccountUpdateType.text = currAccountType.accountType
         binding.edAccountUpdateBalance.setText(
             dollarFormat.format(currentAccount.accountBalance)
         )

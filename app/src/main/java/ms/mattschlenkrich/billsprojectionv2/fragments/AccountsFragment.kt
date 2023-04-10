@@ -77,7 +77,7 @@ class AccountsFragment :
             adapter = accountAdapter
         }
         activity?.let {
-            accountsViewModel.getActiveAccounts().observe(
+            accountsViewModel.getActiveAccountsDetailed().observe(
                 viewLifecycleOwner
             ) { accounts ->
                 accountAdapter.differ.submitList(accounts)

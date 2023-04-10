@@ -18,7 +18,7 @@ class AccountAdapter :
 
     //    private var dateFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
 //    private var timeFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
-    private var dollarFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
+    private val dollarFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
 
     class AccountViewHolder(val itemBinding: AccountLayoutBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -57,6 +57,7 @@ class AccountAdapter :
     override fun onBindViewHolder(
         holder: AccountViewHolder, position: Int
     ) {
+
         val currentAccount = differ.currentList[position]
 
         holder.itemBinding.tvAccountName.text = currentAccount.accountName
@@ -109,10 +110,13 @@ class AccountAdapter :
         )
         holder.itemBinding.ibAccountColor.setBackgroundColor(color)
 
-        holder.itemView.setOnClickListener {
+        holder.itemView.setOnLongClickListener {
             val direction = AccountsFragmentDirections
-                .actionAccountsFragmentToAccountUpdateFragment(currentAccount)
+                .actionAccountsFragmentToAccountUpdateFragment(
+                    currentAccount, null
+                )
             it.findNavController().navigate(direction)
+            false
         }
     }
 }

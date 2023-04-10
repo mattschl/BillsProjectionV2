@@ -24,7 +24,7 @@ interface AccountTypeDao {
         "SELECT * FROM accountTypes " +
                 "WHERE accountTypeId = :accountTypeId"
     )
-    fun findAccountType(accountTypeId: Long): LiveData<List<AccountType>>
+    fun findAccountType(accountTypeId: Long): List<AccountType>
 
     @Query(
         "SELECT * FROM accountTypes " +

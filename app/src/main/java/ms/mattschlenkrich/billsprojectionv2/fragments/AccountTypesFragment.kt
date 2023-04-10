@@ -11,6 +11,7 @@ import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.adapter.AccountTypeAdapter
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountTypesBinding
+import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 
@@ -25,6 +26,7 @@ class AccountTypesFragment
 
     private lateinit var accountViewModel: AccountViewModel
     private lateinit var accountTypeAdapter: AccountTypeAdapter
+    private var currAccount: Account? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +62,7 @@ class AccountTypesFragment
     }
 
     private fun setupRecyclerView() {
-        accountTypeAdapter = AccountTypeAdapter()
+        accountTypeAdapter = AccountTypeAdapter(currAccount)
 
         binding.rvAccountTypes.apply {
             layoutManager = StaggeredGridLayoutManager(
