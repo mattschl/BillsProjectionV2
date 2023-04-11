@@ -28,4 +28,7 @@
     <string name="update_account_type">Update Account Type</string>
     <string name="add_account_type">Add Account Type</string>
     <string name="display_in_budget">Display in Budget</string>
+    <string name="choose_account_type">Choose Account Type</string>
+    <string name="account_number_or_description">Account Number or Description</string>
+    <string name="account_type_details">account type details</string>
 </resources>

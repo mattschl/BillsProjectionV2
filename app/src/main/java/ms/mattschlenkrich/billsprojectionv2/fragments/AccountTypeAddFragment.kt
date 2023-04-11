@@ -6,6 +6,7 @@ import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNT_TYPE_ADD
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.SQLITE_TIME
@@ -15,7 +16,7 @@ import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
-private const val TAG = "AccountTypeAdd"
+private const val TAG = FRAG_ACCOUNT_TYPE_ADD
 
 class AccountTypeAddFragment :
     Fragment(R.layout.fragment_account_type_add) {

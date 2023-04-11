@@ -13,7 +13,8 @@ import ms.mattschlenkrich.billsprojectionv2.model.Account
 import java.text.NumberFormat
 import java.util.*
 
-class AccountAdapter :
+
+class AccountAdapter(val callingFragment: String?) :
     RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() {
 
     //    private var dateFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
@@ -113,7 +114,7 @@ class AccountAdapter :
         holder.itemView.setOnLongClickListener {
             val direction = AccountsFragmentDirections
                 .actionAccountsFragmentToAccountUpdateFragment(
-                    currentAccount, null
+                    currentAccount, null, callingFragment
                 )
             it.findNavController().navigate(direction)
             false

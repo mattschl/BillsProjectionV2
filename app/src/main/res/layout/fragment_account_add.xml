@@ -24,7 +24,7 @@
                 android:selectAllOnFocus="true"
                 android:textColor="@color/black"
                 android:textColorHint="#757575"
-                android:textSize="20sp"
+                android:textSize="@dimen/title_text_size"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -37,7 +37,7 @@
                 android:layout_marginTop="@dimen/top_margin_medium"
                 android:text="@string/number"
                 android:textColor="@color/black"
-                android:textSize="20sp"
+                android:textSize="@dimen/text_info_size"
                 app:layout_constraintEnd_toStartOf="@id/editAccAddHandle"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/editAccAddName" />
@@ -47,37 +47,54 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="Account Number or Description"
+                android:hint="@string/account_number_or_description"
                 android:importantForAutofill="no"
                 android:inputType="text"
                 android:selectAllOnFocus="true"
                 android:textColor="@color/black"
                 android:textColorHint="#757575"
-                android:textSize="20sp"
+                android:textSize="@dimen/title_text_size"
                 app:layout_constraintBaseline_toBaselineOf="@id/lblAccAddHandle"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/lblAccAddHandle" />
 
-            <TextView
-                android:id="@+id/lblAccAddType"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/top_margin_medium"
-                android:text="@string/account_type"
+            <EditText
+                android:id="@+id/editAccAddBalance"
+                android:layout_width="100dp"
+                android:layout_height="48dp"
+                android:ems="10"
+                android:hint="@string/balance"
+                android:importantForAutofill="no"
+                android:inputType="numberDecimal|numberSigned"
+                android:selectAllOnFocus="true"
+                android:text="@string/zero_double"
+                android:textAlignment="center"
                 android:textColor="@color/black"
-                app:layout_constraintBaseline_toBaselineOf="@id/dropAccAddType"
-                app:layout_constraintEnd_toStartOf="@id/dropAccAddType"
-                app:layout_constraintStart_toStartOf="parent" />
+                android:textColorHint="#757575"
+                android:textSize="@dimen/text_info_size"
+                app:layout_constraintEnd_toEndOf="@id/lblAccAddBalance"
+                app:layout_constraintStart_toStartOf="@id/lblAccAddBalance"
+                app:layout_constraintTop_toBottomOf="@id/lblAccAddBalance"
+                tools:ignore="DuplicateSpeakableTextCheck" />
 
             <EditText
-                android:id="@+id/dropAccAddType"
-                android:layout_width="48dp"
+                android:id="@+id/editAccAddOwing"
+                android:layout_width="100dp"
                 android:layout_height="48dp"
-                android:text="@string/zero_int"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/lblAccAddType"
-                app:layout_constraintTop_toBottomOf="@id/editAccAddHandle"
-                tools:ignore="SpeakableTextPresentCheck" />
+                android:ems="10"
+                android:hint="@string/owing"
+                android:importantForAutofill="no"
+                android:inputType="numberDecimal|numberSigned"
+                android:selectAllOnFocus="true"
+                android:text="@string/zero_double"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textColorHint="#757575"
+                android:textSize="@dimen/text_info_size"
+                app:layout_constraintEnd_toEndOf="@id/lblAccAddOwing"
+                app:layout_constraintStart_toStartOf="@id/lblAccAddOwing"
+                app:layout_constraintTop_toBottomOf="@id/lblAccAddOwing"
+                tools:ignore="DuplicateSpeakableTextCheck" />
 
             <TextView
                 android:id="@+id/lblAccAddBalance"
@@ -88,7 +105,7 @@
                 android:textColor="@color/black"
                 app:layout_constraintEnd_toStartOf="@id/lblAccAddOwing"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/dropAccAddType" />
+                app:layout_constraintTop_toBottomOf="@id/editAccAddHandle" />
 
             <TextView
                 android:id="@+id/lblAccAddOwing"
@@ -111,57 +128,55 @@
                 app:layout_constraintStart_toEndOf="@id/lblAccAddOwing" />
 
             <EditText
-                android:id="@+id/editAccAddBalance"
-                android:layout_width="100dp"
-                android:layout_height="50dp"
-                android:ems="10"
-                android:hint="@string/balance"
-                android:text="@string/zero_double"
-                android:importantForAutofill="no"
-                android:inputType="numberDecimal|numberSigned"
-                android:selectAllOnFocus="true"
-                android:textAlignment="center"
-                android:textColor="@color/black"
-                android:textColorHint="#757575"
-                app:layout_constraintEnd_toEndOf="@id/lblAccAddBalance"
-                app:layout_constraintStart_toStartOf="@id/lblAccAddBalance"
-                app:layout_constraintTop_toBottomOf="@id/lblAccAddBalance"
-                tools:ignore="DuplicateSpeakableTextCheck" />
-
-            <EditText
-                android:id="@+id/editAccAddOwing"
-                android:layout_width="100dp"
-                android:layout_height="50dp"
-                android:ems="10"
-                android:hint="@string/owing"
-                android:importantForAutofill="no"
-                android:text="@string/zero_double"
-                android:inputType="numberDecimal|numberSigned"
-                android:selectAllOnFocus="true"
-                android:textAlignment="center"
-                android:textColor="@color/black"
-                android:textColorHint="#757575"
-                app:layout_constraintEnd_toEndOf="@id/lblAccAddOwing"
-                app:layout_constraintStart_toStartOf="@id/lblAccAddOwing"
-                app:layout_constraintTop_toBottomOf="@id/lblAccAddOwing"
-                tools:ignore="DuplicateSpeakableTextCheck" />
-
-            <EditText
                 android:id="@+id/editAccAddBudgeted"
                 android:layout_width="100dp"
-                android:layout_height="50dp"
+                android:layout_height="48dp"
                 android:autofillHints=""
                 android:ems="10"
                 android:hint="@string/budgeted"
                 android:inputType="numberDecimal|numberSigned"
-                android:text="@string/zero_double"
                 android:selectAllOnFocus="true"
+                android:text="@string/zero_double"
                 android:textAlignment="center"
                 android:textColorHint="#757575"
+                android:textSize="@dimen/text_info_size"
                 app:layout_constraintEnd_toEndOf="@id/lblAccAddBudgeted"
                 app:layout_constraintStart_toStartOf="@id/lblAccAddBudgeted"
                 app:layout_constraintTop_toBottomOf="@id/lblAccAddBudgeted"
                 tools:ignore="DuplicateSpeakableTextCheck" />
+
+            <TextView
+                android:id="@+id/lblAccAddType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/top_margin_medium"
+                android:text="@string/account_type"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                app:layout_constraintBaseline_toBaselineOf="@id/tvAccAddType"
+                app:layout_constraintEnd_toStartOf="@id/tvAccAddType"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/tvAccAddType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="48dp"
+                android:minHeight="48dp"
+                android:text="@string/choose_account_type"
+                app:flow_verticalAlign="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/lblAccAddType"
+                app:layout_constraintTop_toBottomOf="@id/editAccAddBalance" />
+
+            <TextView
+                android:id="@+id/tvTypeDetails"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/account_type_details"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvAccAddType" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

@@ -6,16 +6,17 @@ import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.adapter.AccountTypeAdapter
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountTypesBinding
-import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 
-private const val TAG = "AccountTypesFragment"
+private const val TAG = FRAG_ACCOUNT_TYPES
 
 class AccountTypesFragment
     : Fragment(R.layout.fragment_account_types),
@@ -26,7 +27,7 @@ class AccountTypesFragment
 
     private lateinit var accountViewModel: AccountViewModel
     private lateinit var accountTypeAdapter: AccountTypeAdapter
-    private var currAccount: Account? = null
+    private val args: AccountTypesFragmentArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +63,7 @@ class AccountTypesFragment
     }
 
     private fun setupRecyclerView() {
-        accountTypeAdapter = AccountTypeAdapter(currAccount)
+        accountTypeAdapter = AccountTypeAdapter(args.account, args.callingFragment)
 
         binding.rvAccountTypes.apply {
             layoutManager = StaggeredGridLayoutManager(

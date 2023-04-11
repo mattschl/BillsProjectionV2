@@ -14,6 +14,10 @@
         <action
             android:id="@+id/action_accountsFragment_to_accountAddFragment"
             app:destination="@id/accountAddFragment" />
+        <argument
+            android:name="callingFragment"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/accountUpdateFragment"
@@ -33,6 +37,10 @@
             android:name="accountType"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.AccountType"
             app:nullable="true" />
+        <argument
+            android:name="callingFragment"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/accountAddFragment"
@@ -51,6 +59,10 @@
         <argument
             android:name="accountType"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.AccountType"
+            app:nullable="true" />
+        <argument
+            android:name="callingFragment"
+            app:argType="string"
             app:nullable="true" />
     </fragment>
     <fragment
@@ -73,6 +85,10 @@
             android:name="account"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.Account"
             app:nullable="true" />
+        <argument
+            android:name="callingFragment"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/accountTypeAddFragment"
@@ -84,6 +100,10 @@
         <argument
             android:name="account"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.Account"
+            app:nullable="true" />
+        <argument
+            android:name="callingFragment"
+            app:argType="string"
             app:nullable="true" />
     </fragment>
     <fragment
@@ -100,6 +120,10 @@
         <argument
             android:name="account"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.Account"
+            app:nullable="true" />
+        <argument
+            android:name="callingFragment"
+            app:argType="string"
             app:nullable="true" />
     </fragment>
 </navigation>

@@ -7,15 +7,14 @@ import kotlinx.parcelize.Parcelize
 
 @Entity(
     tableName = "accountTypes",
-    indices = [Index(name = "idxAccountType", value = ["accountType"], unique = true),
-        Index(name = "idxAccountTypId", value = ["accountTypeId"])
+    indices = [Index(name = "idxAccountType", value = ["accountType"], unique = true)
     ]
 )
 @Parcelize
 data class AccountType(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
-    val accountTypeId: Long,
+    val typeId: Long,
     val accountType: String,
     @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val keepTotals: Boolean,
@@ -40,7 +39,7 @@ data class AccountType(
     ],
     foreignKeys = [ForeignKey(
         entity = AccountType::class,
-        parentColumns = ["accountTypeId"],
+        parentColumns = ["typeId"],
         childColumns = ["accountTypeId"]
     )]
 )
@@ -63,7 +62,7 @@ data class Account(
     val updateTime: String,
 ) : Parcelable
 
-@Parcelize
+
 @Entity(
     tableName = "accountWithTypes"
 )
@@ -72,7 +71,7 @@ data class AccountWithType(
     val account: Account,
     @Relation(
         parentColumn = "accountTypeId",
-        entityColumn = "accountTypeId"
+        entityColumn = "typeId"
     )
     val accountType: AccountType
-) : Parcelable
+)

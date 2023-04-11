@@ -7,13 +7,15 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNT_ADD
+import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.databinding.AccountTypeLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.AccountTypesFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import java.util.*
 
-class AccountTypeAdapter(val account: Account?) :
+class AccountTypeAdapter(val account: Account?, val callingFragment: String?) :
     RecyclerView.Adapter<AccountTypeAdapter.AccountTypeViewHolder>() {
 
     class AccountTypeViewHolder(val itemBinding: AccountTypeLayoutBinding) :
@@ -22,7 +24,7 @@ class AccountTypeAdapter(val account: Account?) :
     private val differCallBack =
         object : DiffUtil.ItemCallback<AccountType>() {
             override fun areItemsTheSame(oldItem: AccountType, newItem: AccountType): Boolean {
-                return oldItem.accountTypeId == newItem.accountTypeId &&
+                return oldItem.typeId == newItem.typeId &&
                         oldItem.accountType == newItem.accountType
             }
 
@@ -56,7 +58,7 @@ class AccountTypeAdapter(val account: Account?) :
 
         holder.itemBinding.tvAccountType.text = currAccountType.accountType
         val info = if (currAccountType.keepTotals) {
-            "Will keep totals\n"
+            "Transactions will be calculated\n"
         } else {
             ""
         } + if (currAccountType.tallyOwing) {
@@ -81,7 +83,7 @@ class AccountTypeAdapter(val account: Account?) :
             currAccountType.displayAsAsset &&
             !currAccountType.isDeleted
         ) {
-            "This is a dummy account"
+            "This is a dummy account and will not effect other accounts"
         } else {
             ""
         }
@@ -98,14 +100,31 @@ class AccountTypeAdapter(val account: Account?) :
 
         holder.itemView.setOnLongClickListener {
             val direction = AccountTypesFragmentDirections
-                .actionAccountTypesFragmentToAccountTypeUpdateFragment(currAccountType, account)
+                .actionAccountTypesFragmentToAccountTypeUpdateFragment(
+                    currAccountType,
+                    account,
+                    callingFragment
+                )
             it.findNavController().navigate(direction)
             false
         }
         holder.itemView.setOnClickListener {
-            val direction = AccountTypesFragmentDirections
-                .actionAccountTypesFragmentToAccountUpdateFragment(account, currAccountType)
-            it.findNavController().navigate(direction)
+            if (callingFragment == FRAG_ACCOUNT_UPDATE) {
+                val direction = AccountTypesFragmentDirections
+                    .actionAccountTypesFragmentToAccountUpdateFragment(
+                        account,
+                        currAccountType,
+                        callingFragment
+                    )
+                it.findNavController().navigate(direction)
+            } else if (callingFragment == FRAG_ACCOUNT_ADD) {
+                val direction = AccountTypesFragmentDirections
+                    .actionAccountTypesFragmentToAccountAddFragment(
+                        account, currAccountType,
+                        callingFragment
+                    )
+                it.findNavController().navigate(direction)
+            }
         }
 
     }

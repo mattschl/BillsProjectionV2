@@ -7,6 +7,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.adapter.AccountAdapter
@@ -14,7 +15,7 @@ import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountsBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 
-private const val TAG = "AccountsFragment"
+private const val TAG = FRAG_ACCOUNTS
 
 class AccountsFragment :
     Fragment(R.layout.fragment_accounts),
@@ -57,16 +58,16 @@ class AccountsFragment :
 
         setUpRecyclerView()
         binding.fabAddNewAccount.setOnClickListener {
-            it.findNavController().navigate(
-                R.id.action_accountsFragment_to_accountAddFragment
-            )
+            val direction = AccountsFragmentDirections
+                .actionAccountsFragmentToAccountAddFragment(null, null, TAG)
+            it.findNavController().navigate(direction)
         }
 
     }
 
 
     private fun setUpRecyclerView() {
-        accountAdapter = AccountAdapter()
+        accountAdapter = AccountAdapter(TAG)
 
         binding.rvAccounts.apply {
             layoutManager = StaggeredGridLayoutManager(

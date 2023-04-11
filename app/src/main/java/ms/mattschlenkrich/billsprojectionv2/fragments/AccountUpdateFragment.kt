@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.SQLITE_TIME
@@ -20,7 +21,7 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
-private const val TAG = "AccountUpdate"
+private const val TAG = FRAG_ACCOUNT_UPDATE
 
 class AccountUpdateFragment :
     Fragment(R.layout.fragment_account_update) {
@@ -83,7 +84,7 @@ class AccountUpdateFragment :
         val accountTypeId =
             accountsViewModel.findAccountTypeByName(
                 binding.drpAccountUpdateType.text.toString()
-            )[0].accountTypeId
+            )[0].typeId
         val balance =
             binding.edAccountUpdateBalance.text.toString()
                 .replace(",", "").replace("$", "").toDouble()
@@ -102,7 +103,7 @@ class AccountUpdateFragment :
             false, currTime
         )
         val direction = AccountUpdateFragmentDirections
-            .actionAccountUpdateFragmentToAccountTypesFragment(account)
+            .actionAccountUpdateFragmentToAccountTypesFragment(account, TAG)
         this.findNavController().navigate(direction)
     }
 
@@ -188,7 +189,7 @@ class AccountUpdateFragment :
             currentAccount.accountNumber
         )
         if (args.accountType != null) {
-
+            binding.drpAccountUpdateType.text = args.accountType!!.accountType
         }
         binding.drpAccountUpdateType.text = currAccountType.accountType
         binding.edAccountUpdateBalance.setText(

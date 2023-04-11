@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
+import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNT_TYPE_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.SQLITE_TIME
@@ -17,7 +18,7 @@ import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
-private const val TAG = "AccountTypeUpdate"
+private const val TAG = FRAG_ACCOUNT_TYPE_UPDATE
 
 @Suppress("DEPRECATION")
 class AccountTypeUpdateFragment :
@@ -71,7 +72,7 @@ class AccountTypeUpdateFragment :
     }
 
     private fun updateAccountType() {
-        Log.d(TAG, "entreing accountType update")
+        Log.d(TAG, "entering accountType update")
         val accountTypeName = binding.etAccTypeUpdate.text
             .toString().trim()
         val keepTotals = binding.chkAccountTypeUKeepTotals.isChecked
@@ -80,7 +81,7 @@ class AccountTypeUpdateFragment :
         val displayAsAsset = binding.chkAccountTypeUDisplayAsset.isChecked
         val currTime = timeFormatter.format(Calendar.getInstance().time)
         val accountType = AccountType(
-            currentAccountType.accountTypeId, accountTypeName,
+            currentAccountType.typeId, accountTypeName,
             keepTotals, isAsset, keepOwing, false, displayAsAsset,
             false, currTime
         )
@@ -157,7 +158,7 @@ class AccountTypeUpdateFragment :
             setPositiveButton("Delete") { _, _ ->
                 val currTime = timeFormatter.format(Calendar.getInstance().time)
                 accountsViewModel.deleteAccountType(
-                    currentAccountType.accountTypeId,
+                    currentAccountType.typeId,
                     currTime
                 )
                 mView?.findNavController()?.navigate(

@@ -33,7 +33,7 @@ interface AccountDao {
     @Query(
         "SELECT accounts.*, accountTypes.* FROM accounts " +
                 "LEFT JOIN accountTypes ON " +
-                "accountTypes.accountTypeId = accounts.accountTypeId " +
+                "accountTypes.typeId = accounts.accountTypeId " +
                 "WHERE accounts.isDeleted = 0 " +
                 "ORDER BY accounts.accountName " +
                 "COLLATE NOCASE ASC "

@@ -16,13 +16,13 @@ interface AccountTypeDao {
         "UPDATE accountTypes " +
                 "SET isDeleted = 1, " +
                 "updateTime = :updateTime " +
-                "WHERE accountTypeId = :accountTypeId"
+                "WHERE typeId = :accountTypeId"
     )
     suspend fun deleteAccountType(accountTypeId: Long, updateTime: String)
 
     @Query(
         "SELECT * FROM accountTypes " +
-                "WHERE accountTypeId = :accountTypeId"
+                "WHERE typeId = :accountTypeId"
     )
     fun findAccountType(accountTypeId: Long): List<AccountType>
 
