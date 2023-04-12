@@ -38,7 +38,7 @@ interface AccountDao {
                 "ORDER BY accounts.accountName " +
                 "COLLATE NOCASE ASC "
     )
-    fun getActiveAccountsDetailed(): LiveData<List<Account>>
+    fun getActiveAccountsDetailed(): LiveData<List<AccountWithType>>
 
     @Query(
         "SELECT * FROM accounts " +
@@ -58,6 +58,17 @@ interface AccountDao {
                 "ORDER BY accountName "
     )
     fun searchAccounts(query: String?): LiveData<List<Account>>
+
+    @Query(
+        "SELECT accounts.*, accountTypes.* FROM accounts " +
+                "LEFT JOIN accountTypes ON " +
+                "accountTypes.typeId = accounts.accountTypeId " +
+                "WHERE accounts.accountName LIKE :query " +
+                "ORDER BY accounts.accountName " +
+                "COLLATE NOCASE ASC "
+    )
+    fun searchAccountsWithType(query: String?): LiveData<List<AccountWithType>>
+
 
     @Transaction
     @Query("SELECT * FROM accounts")

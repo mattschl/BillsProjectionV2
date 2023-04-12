@@ -85,23 +85,7 @@ class AccountTypeAddFragment :
             view.findNavController().navigate(
                 R.id.action_accountTypeAddFragment_to_accountTypesFragment
             )
-            /*if (!accountsViewModel.addAccountType(accountType).isCancelled) {
-                Toast.makeText(
-                    mView.context,
-                    "Account Type was saved successfully",
-                    Toast.LENGTH_LONG
-                ).show()
-                view.findNavController().navigate(
-                    R.id.action_accountTypeAddFragment_to_accountTypesFragment
-                )
-            } else {
-                Toast.makeText(
-                    mView.context,
-                    "$accountTypeName already exists!!\n" +
-                            "Please use another name",
-                    Toast.LENGTH_LONG
-                ).show()
-            }*/
+
         } else {
             Toast.makeText(
                 mView.context,

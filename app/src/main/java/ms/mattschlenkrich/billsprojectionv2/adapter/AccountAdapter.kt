@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.databinding.AccountLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.AccountsFragmentDirections
-import ms.mattschlenkrich.billsprojectionv2.model.Account
+import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
 import java.text.NumberFormat
 import java.util.*
 
@@ -25,14 +25,20 @@ class AccountAdapter(val callingFragment: String?) :
         RecyclerView.ViewHolder(itemBinding.root)
 
     private val differCallBack =
-        object : DiffUtil.ItemCallback<Account>() {
-            override fun areItemsTheSame(oldItem: Account, newItem: Account): Boolean {
-                return oldItem.accountId == newItem.accountId &&
-                        oldItem.accountName == newItem.accountName &&
-                        oldItem.accountNumber == newItem.accountNumber
+        object : DiffUtil.ItemCallback<AccountWithType>() {
+            override fun areItemsTheSame(
+                oldItem: AccountWithType,
+                newItem: AccountWithType
+            ): Boolean {
+                return oldItem.account.accountId == newItem.account.accountId &&
+                        oldItem.account.accountName == newItem.account.accountName &&
+                        oldItem.account.accountNumber == newItem.account.accountNumber
             }
 
-            override fun areContentsTheSame(oldItem: Account, newItem: Account): Boolean {
+            override fun areContentsTheSame(
+                oldItem: AccountWithType,
+                newItem: AccountWithType
+            ): Boolean {
                 return oldItem == newItem
             }
         }
@@ -61,35 +67,35 @@ class AccountAdapter(val callingFragment: String?) :
 
         val currentAccount = differ.currentList[position]
 
-        holder.itemBinding.tvAccountName.text = currentAccount.accountName
-        val info = if (currentAccount.accountNumber.isNotEmpty()) {
-            "# ${currentAccount.accountNumber}\n"
+        holder.itemBinding.tvAccountName.text = currentAccount.account.accountName
+        val info = if (currentAccount.account.accountNumber.isNotEmpty()) {
+            "# ${currentAccount.account.accountNumber}\n"
         } else {
             ""
-        } + if (currentAccount.accountBalance != 0.0) {
+        } + if (currentAccount.account.accountBalance != 0.0) {
             "Balance " +
-                    "${dollarFormat.format(currentAccount.accountBalance)}\n"
+                    "${dollarFormat.format(currentAccount.account.accountBalance)}\n"
         } else {
             ""
-        } + if (currentAccount.accountOwing != 0.0) {
+        } + if (currentAccount.account.accountOwing != 0.0) {
             "Owing " +
-                    "${dollarFormat.format(currentAccount.accountOwing)}\n"
+                    "${dollarFormat.format(currentAccount.account.accountOwing)}\n"
         } else {
             ""
-        } + if (currentAccount.budgetAmount != 0.0) {
+        } + if (currentAccount.account.budgetAmount != 0.0) {
             "Budgeted " +
-                    "${dollarFormat.format(currentAccount.budgetAmount)}\n"
+                    "${dollarFormat.format(currentAccount.account.budgetAmount)}\n"
         } else {
             ""
-        } + if (currentAccount.isDeleted) {
+        } + if (currentAccount.account.isDeleted) {
             "**Deleted**"
         } else {
             ""
-        } + if (currentAccount.accountNumber.isEmpty() &&
-            currentAccount.accountBalance == 0.0 &&
-            currentAccount.accountOwing == 0.0 &&
-            currentAccount.budgetAmount == 0.0 &&
-            !currentAccount.isDeleted
+        } + if (currentAccount.account.accountNumber.isEmpty() &&
+            currentAccount.account.accountBalance == 0.0 &&
+            currentAccount.account.accountOwing == 0.0 &&
+            currentAccount.account.budgetAmount == 0.0 &&
+            !currentAccount.account.isDeleted
         ) {
             "No info"
         } else {
@@ -114,7 +120,9 @@ class AccountAdapter(val callingFragment: String?) :
         holder.itemView.setOnLongClickListener {
             val direction = AccountsFragmentDirections
                 .actionAccountsFragmentToAccountUpdateFragment(
-                    currentAccount, null, callingFragment
+                    currentAccount.account,
+                    currentAccount.accountType,
+                    callingFragment
                 )
             it.findNavController().navigate(direction)
             false

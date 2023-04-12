@@ -12,7 +12,7 @@ import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.adapter.AccountAdapter
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountsBinding
-import ms.mattschlenkrich.billsprojectionv2.model.Account
+import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 
 private const val TAG = FRAG_ACCOUNTS
@@ -78,17 +78,17 @@ class AccountsFragment :
             adapter = accountAdapter
         }
         activity?.let {
-            accountsViewModel.getActiveAccountsDetailed().observe(
+            accountsViewModel.getAccountWithType().observe(
                 viewLifecycleOwner
-            ) { accounts ->
-                accountAdapter.differ.submitList(accounts)
-                updateUI(accounts)
+            ) { accountWithType ->
+                accountAdapter.differ.submitList(accountWithType)
+                updateUI(accountWithType)
 
             }
         }
     }
 
-    private fun updateUI(account: List<Account>) {
+    private fun updateUI(account: List<AccountWithType>) {
         if (account.isNotEmpty()) {
             binding.crdAccountView.visibility = View.GONE
             binding.rvAccounts.visibility = View.VISIBLE
@@ -124,7 +124,7 @@ class AccountsFragment :
 
     private fun searchAccount(query: String?) {
         val searchQuery = "%$query%"
-        accountsViewModel.searchAccounts(searchQuery).observe(
+        accountsViewModel.searchAccountsWithType(searchQuery).observe(
             this
         ) { list -> accountAdapter.differ.submitList(list) }
     }

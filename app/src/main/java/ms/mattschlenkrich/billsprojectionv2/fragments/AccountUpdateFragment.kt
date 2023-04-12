@@ -191,7 +191,6 @@ class AccountUpdateFragment :
         if (args.accountType != null) {
             binding.drpAccountUpdateType.text = args.accountType!!.accountType
         }
-        binding.drpAccountUpdateType.text = currAccountType.accountType
         binding.edAccountUpdateBalance.setText(
             dollarFormat.format(currentAccount.accountBalance)
         )

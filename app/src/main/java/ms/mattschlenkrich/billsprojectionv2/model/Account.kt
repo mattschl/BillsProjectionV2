@@ -63,9 +63,6 @@ data class Account(
 ) : Parcelable
 
 
-@Entity(
-    tableName = "accountWithTypes"
-)
 data class AccountWithType(
     @Embedded
     val account: Account,
