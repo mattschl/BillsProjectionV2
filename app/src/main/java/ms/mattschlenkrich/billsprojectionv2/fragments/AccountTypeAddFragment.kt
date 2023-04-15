@@ -2,10 +2,16 @@ package ms.mattschlenkrich.billsprojectionv2.fragments
 
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.navArgs
 import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNT_TYPE_ADD
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -14,7 +20,8 @@ import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountTypeAddBi
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 
 private const val TAG = FRAG_ACCOUNT_TYPE_ADD
 
@@ -26,6 +33,7 @@ class AccountTypeAddFragment :
 
     private lateinit var accountsViewModel: AccountViewModel
     private lateinit var mView: View
+    private val args: AccountTypeAddFragmentArgs by navArgs()
 
     private val timeFormatter: SimpleDateFormat =
         SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
@@ -82,9 +90,12 @@ class AccountTypeAddFragment :
                 false, currTime
             )
             accountsViewModel.addAccountType(accountType)
-            view.findNavController().navigate(
-                R.id.action_accountTypeAddFragment_to_accountTypesFragment
-            )
+            val direction = AccountTypeAddFragmentDirections
+                .actionAccountTypeAddFragmentToAccountTypesFragment(
+                    args.account,
+                    args.callingFragment
+                )
+            mView.findNavController().navigate(direction)
 
         } else {
             Toast.makeText(

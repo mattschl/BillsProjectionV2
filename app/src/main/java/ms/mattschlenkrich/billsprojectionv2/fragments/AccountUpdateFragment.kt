@@ -34,9 +34,9 @@ class AccountUpdateFragment :
 
     //since the update fragment contains arguments in nav_graph
     private val args: AccountUpdateFragmentArgs by navArgs()
-    private lateinit var currentAccount: Account
+    private var currentAccount: Account? = null
     private var newAccountType: AccountType? = null
-    private lateinit var currAccountType: AccountType
+//    private var currAccountType: AccountType? = null
 
     private val dollarFormat: NumberFormat =
         NumberFormat.getCurrencyInstance(Locale.CANADA)
@@ -66,7 +66,7 @@ class AccountUpdateFragment :
         accountsViewModel =
             (activity as MainActivity).accountViewModel
         currentAccount = args.account!!
-        newAccountType = args.accountType
+        newAccountType = args.accountType!!
         fillValues()
         binding.drpAccountUpdateType.setOnClickListener {
             gotoAccountTypes()
@@ -82,9 +82,7 @@ class AccountUpdateFragment :
         val accountHandle =
             binding.edAccountUpdateHandle.text.toString().trim()
         val accountTypeId =
-            accountsViewModel.findAccountTypeByName(
-                binding.drpAccountUpdateType.text.toString()
-            )[0].typeId
+            currentAccount!!.accountTypeId
         val balance =
             binding.edAccountUpdateBalance.text.toString()
                 .replace(",", "").replace("$", "").toDouble()
@@ -97,7 +95,7 @@ class AccountUpdateFragment :
         val currTime =
             timeFormatter.format(Calendar.getInstance().time)
         val account = Account(
-            currentAccount.accountId, accountName,
+            currentAccount!!.accountId, accountName,
             accountHandle, accountTypeId, budgeted,
             balance, owing,
             false, currTime
@@ -114,7 +112,7 @@ class AccountUpdateFragment :
         val accountHandle =
             binding.edAccountUpdateHandle.text.toString().trim()
         val accountTypeId =
-            binding.drpAccountUpdateType.text.toString().toLong()
+            newAccountType!!.typeId
         val balance =
             binding.edAccountUpdateBalance.text.toString()
                 .replace(",", "").replace("$", "").toDouble()
@@ -127,13 +125,13 @@ class AccountUpdateFragment :
         val currTime =
             timeFormatter.format(Calendar.getInstance().time)
         val account = Account(
-            currentAccount.accountId, accountName,
+            currentAccount!!.accountId, accountName,
             accountHandle, accountTypeId, budgeted,
             balance, owing,
             false, currTime
         )
 
-        if (accountName == currentAccount.accountName) {
+        if (accountName == currentAccount!!.accountName) {
             accountsViewModel.updateAccount(account)
             mView?.findNavController()?.navigate(
                 R.id.action_accountUpdateFragment_to_accountsFragment
@@ -151,23 +149,6 @@ class AccountUpdateFragment :
                     mView?.findNavController()?.navigate(
                         R.id.action_accountUpdateFragment_to_accountsFragment
                     )
-                    /*if (!accountsViewModel.updateAccount(account).isCancelled) {
-                        Toast.makeText(
-                            context,
-                            "Account was updated",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        mView?.findNavController() ?.navigate(
-                                R.id.action_accountUpdateFragment_to_accountsFragment
-                            )
-                    } else {
-                        Toast.makeText(
-                            context,
-                            "$accountName already exists!!\n" +
-                                    "Please use edit that Account Type",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }*/
                 }
                 setNegativeButton("Cancel", null)
             }.create().show()
@@ -183,25 +164,25 @@ class AccountUpdateFragment :
 
     private fun fillValues() {
         binding.edAccountUpdateName.setText(
-            currentAccount.accountName
+            currentAccount!!.accountName
         )
         binding.edAccountUpdateHandle.setText(
-            currentAccount.accountNumber
+            currentAccount!!.accountNumber
         )
         if (args.accountType != null) {
             binding.drpAccountUpdateType.text = args.accountType!!.accountType
         }
         binding.edAccountUpdateBalance.setText(
-            dollarFormat.format(currentAccount.accountBalance)
+            dollarFormat.format(currentAccount!!.accountBalance)
         )
         binding.edAccountUpdateOwing.setText(
-            dollarFormat.format(currentAccount.accountOwing)
+            dollarFormat.format(currentAccount!!.accountOwing)
         )
         binding.edAccountUpdateBudgeted.setText(
-            dollarFormat.format(currentAccount.budgetAmount)
+            dollarFormat.format(currentAccount!!.budgetAmount)
         )
         binding.txtAccountUpdateAccountId.text =
-            currentAccount.accountId.toString()
+            currentAccount!!.accountId.toString()
     }
 
     private fun deleteAccount() {
@@ -210,7 +191,7 @@ class AccountUpdateFragment :
             setMessage("Are you sure you want to delete this account? ")
             setPositiveButton("Delete") { _, _ ->
                 accountsViewModel.deleteAccount(
-                    currentAccount.accountId,
+                    args.account!!.accountId,
                     "no date"
                 )
                 mView?.findNavController()?.navigate(

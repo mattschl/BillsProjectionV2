@@ -71,6 +71,13 @@ interface AccountDao {
 
 
     @Transaction
-    @Query("SELECT * FROM accounts")
+    @Query(
+        "SELECT accounts.*, accountTypes.* FROM accounts " +
+                "LEFT JOIN accountTypes ON " +
+                "accountTypes.typeId = accounts.accountTypeId " +
+                "WHERE accounts.isDeleted = 0  " +
+                "ORDER BY accounts.accountName " +
+                "COLLATE NOCASE ASC "
+    )
     fun getAccountWithType(): LiveData<List<AccountWithType>>
 }

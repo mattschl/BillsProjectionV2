@@ -13,7 +13,7 @@ import ms.mattschlenkrich.billsprojectionv2.databinding.AccountTypeLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.AccountTypesFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
-import java.util.*
+import java.util.Random
 
 class AccountTypeAdapter(val account: Account?, val callingFragment: String?) :
     RecyclerView.Adapter<AccountTypeAdapter.AccountTypeViewHolder>() {
@@ -54,34 +54,34 @@ class AccountTypeAdapter(val account: Account?, val callingFragment: String?) :
     override fun onBindViewHolder(
         holder: AccountTypeViewHolder, position: Int
     ) {
-        val currAccountType = differ.currentList[position]
+        val curAccountType = differ.currentList[position]
 
-        holder.itemBinding.tvAccountType.text = currAccountType.accountType
-        val info = if (currAccountType.keepTotals) {
+        holder.itemBinding.tvAccountType.text = curAccountType.accountType
+        val info = if (curAccountType.keepTotals) {
             "Transactions will be calculated\n"
         } else {
             ""
-        } + if (currAccountType.tallyOwing) {
+        } + if (curAccountType.tallyOwing) {
             "Will calculate amount owing\n"
         } else {
             ""
-        } + if (currAccountType.isAsset) {
+        } + if (curAccountType.isAsset) {
             "This is an asset\n"
         } else {
             ""
-        } + if (currAccountType.displayAsAsset) {
+        } + if (curAccountType.displayAsAsset) {
             "This will display in the budget\n"
         } else {
             ""
-        } + if (currAccountType.isDeleted) {
+        } + if (curAccountType.isDeleted) {
             "   **DELETED**"
         } else {
             ""
-        } + if (!currAccountType.keepTotals &&
-            !currAccountType.tallyOwing &&
-            !currAccountType.isAsset &&
-            currAccountType.displayAsAsset &&
-            !currAccountType.isDeleted
+        } + if (!curAccountType.keepTotals &&
+            !curAccountType.tallyOwing &&
+            !curAccountType.isAsset &&
+            curAccountType.displayAsAsset &&
+            !curAccountType.isDeleted
         ) {
             "This is a dummy account and will not effect other accounts"
         } else {
@@ -101,9 +101,9 @@ class AccountTypeAdapter(val account: Account?, val callingFragment: String?) :
         holder.itemView.setOnLongClickListener {
             val direction = AccountTypesFragmentDirections
                 .actionAccountTypesFragmentToAccountTypeUpdateFragment(
-                    currAccountType,
-                    account,
-                    callingFragment
+                    account = account,
+                    accountType = curAccountType,
+                    callingFragment = callingFragment
                 )
             it.findNavController().navigate(direction)
             false
@@ -113,14 +113,14 @@ class AccountTypeAdapter(val account: Account?, val callingFragment: String?) :
                 val direction = AccountTypesFragmentDirections
                     .actionAccountTypesFragmentToAccountUpdateFragment(
                         account,
-                        currAccountType,
+                        curAccountType,
                         callingFragment
                     )
                 it.findNavController().navigate(direction)
             } else if (callingFragment == FRAG_ACCOUNT_ADD) {
                 val direction = AccountTypesFragmentDirections
                     .actionAccountTypesFragmentToAccountAddFragment(
-                        account, currAccountType,
+                        account, curAccountType,
                         callingFragment
                     )
                 it.findNavController().navigate(direction)

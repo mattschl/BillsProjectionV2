@@ -161,9 +161,12 @@ class AccountTypeUpdateFragment :
                     currentAccountType.typeId,
                     currTime
                 )
-                mView?.findNavController()?.navigate(
-                    R.id.action_accountTypeUpdateFragment_to_accountTypesFragment
-                )
+                val direction = AccountTypeUpdateFragmentDirections
+                    .actionAccountTypeUpdateFragmentToAccountTypesFragment(
+                        args.account,
+                        args.callingFragment
+                    )
+                mView?.findNavController()?.navigate(direction)
             }
             setNegativeButton("Cancel", null)
         }.create().show()

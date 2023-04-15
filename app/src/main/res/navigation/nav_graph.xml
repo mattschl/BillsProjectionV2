@@ -114,12 +114,12 @@
             android:id="@+id/action_accountTypeUpdateFragment_to_accountTypesFragment"
             app:destination="@id/accountTypesFragment" />
         <argument
-            android:name="accountType"
-            app:argType="ms.mattschlenkrich.billsprojectionv2.model.AccountType"
-            app:nullable="true" />
-        <argument
             android:name="account"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.Account"
+            app:nullable="true" />
+        <argument
+            android:name="accountType"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.AccountType"
             app:nullable="true" />
         <argument
             android:name="callingFragment"

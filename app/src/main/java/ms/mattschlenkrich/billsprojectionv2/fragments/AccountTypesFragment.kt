@@ -2,7 +2,11 @@ package ms.mattschlenkrich.billsprojectionv2.fragments
 
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
@@ -56,9 +60,12 @@ class AccountTypesFragment
 
         setupRecyclerView()
         binding.fabAddAccountType.setOnClickListener {
-            it.findNavController().navigate(
-                R.id.action_accountTypesFragment_to_accountTypeAddFragment
-            )
+            val direction = AccountTypesFragmentDirections
+                .actionAccountTypesFragmentToAccountTypeAddFragment(
+                    args.account,
+                    args.callingFragment
+                )
+            it.findNavController().navigate(direction)
         }
     }
 
