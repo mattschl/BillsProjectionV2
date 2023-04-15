@@ -57,7 +57,7 @@ class AccountTypeAdapter(val account: Account?, val callingFragment: String?) :
         val curAccountType = differ.currentList[position]
 
         holder.itemBinding.tvAccountType.text = curAccountType.accountType
-        val info = if (curAccountType.keepTotals) {
+        var info = if (curAccountType.keepTotals) {
             "Transactions will be calculated\n"
         } else {
             ""
@@ -77,15 +77,9 @@ class AccountTypeAdapter(val account: Account?, val callingFragment: String?) :
             "   **DELETED**"
         } else {
             ""
-        } + if (!curAccountType.keepTotals &&
-            !curAccountType.tallyOwing &&
-            !curAccountType.isAsset &&
-            curAccountType.displayAsAsset &&
-            !curAccountType.isDeleted
-        ) {
-            "This is a dummy account and will not effect other accounts"
-        } else {
-            ""
+        }
+        if (info.isBlank()) {
+            info = "This is a dummy account and will not effect other accounts"
         }
         holder.itemBinding.tvAccountTypeInfo.text = info
 

@@ -88,9 +88,12 @@ class AccountTypeUpdateFragment :
 
         if (accountTypeName == currentAccountType.accountType) {
             accountsViewModel.updateAccountType(accountType)
-            mView?.findNavController()?.navigate(
-                R.id.action_accountTypeUpdateFragment_to_accountTypesFragment
-            )
+            val direction = AccountTypeUpdateFragmentDirections
+                .actionAccountTypeUpdateFragmentToAccountTypesFragment(
+                    args.account,
+                    args.callingFragment
+                )
+            mView?.findNavController()?.navigate(direction)
         } else if (accountTypeName.isNotBlank()) {
             AlertDialog.Builder(activity).apply {
                 setTitle("Rename Account Type?")
@@ -101,26 +104,12 @@ class AccountTypeUpdateFragment :
                 )
                 setPositiveButton("Update Account Type") { _, _ ->
                     accountsViewModel.updateAccountType(accountType)
-                    mView?.findNavController()?.navigate(
-                        R.id.action_accountTypeUpdateFragment_to_accountTypesFragment
-                    )
-                    /*if (!accountsViewModel.updateAccountType(accountType).isCancelled) {
-                        Toast.makeText(
-                            context,
-                            "Account Type was updated",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        mView?.findNavController()?.navigate(
-                            R.id.action_accountTypeUpdateFragment_to_accountTypesFragment
+                    val direction = AccountTypeUpdateFragmentDirections
+                        .actionAccountTypeUpdateFragmentToAccountTypesFragment(
+                            args.account,
+                            args.callingFragment
                         )
-                    } else {
-                        Toast.makeText(
-                            context,
-                            "$accountTypeName already exists!!\n" +
-                                    "Please use edit that Account Type",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }*/
+                    mView?.findNavController()?.navigate(direction)
                 }
                 setNegativeButton("Cancel", null)
             }.create().show()
