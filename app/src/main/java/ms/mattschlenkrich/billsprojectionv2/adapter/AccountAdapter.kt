@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.databinding.AccountLayoutBinding
-import ms.mattschlenkrich.billsprojectionv2.fragments.AccountsFragmentDirections
+import ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountsFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
 import java.text.NumberFormat
 import java.util.Locale
@@ -70,29 +70,25 @@ class AccountAdapter(val callingFragment: String?) :
 
         holder.itemBinding.tvAccountName.text = currentAccount.account.accountName
         var info = if (currentAccount.account.accountNumber.isNotEmpty()) {
-            "# ${currentAccount.account.accountNumber}\n"
+            "# ${currentAccount.account.accountNumber}"
         } else {
             ""
-        } + if (currentAccount.account.accountBalance != 0.0) {
-            "Balance " +
-                    "${dollarFormat.format(currentAccount.account.accountBalance)}\n"
-        } else {
-            ""
-        } + if (currentAccount.account.accountOwing != 0.0) {
-            "Owing " +
-                    "${dollarFormat.format(currentAccount.account.accountOwing)}\n"
-        } else {
-            ""
-        } + if (currentAccount.account.budgetAmount != 0.0) {
-            "Budgeted " +
-                    "${dollarFormat.format(currentAccount.account.budgetAmount)}\n"
-        } else {
-            ""
-        } + if (currentAccount.account.isDeleted) {
-            "**Deleted** "
-        } else {
-            ""
-        } + "\b "
+        }
+        if (currentAccount.account.accountBalance != 0.0) {
+            info += "${if (info.isNotEmpty()) "\n" else ""}Balance " +
+                    dollarFormat.format(currentAccount.account.accountBalance)
+        }
+        if (currentAccount.account.accountOwing != 0.0) {
+            info += "${if (info.isNotEmpty()) "\n" else ""}Owing " +
+                    dollarFormat.format(currentAccount.account.accountOwing)
+        }
+        if (currentAccount.account.budgetAmount != 0.0) {
+            info += "${if (info.isNotEmpty()) "\n" else ""}Budgeted " +
+                    dollarFormat.format(currentAccount.account.budgetAmount)
+        }
+        if (currentAccount.account.isDeleted) {
+            info += "${if (info.isNotEmpty()) "\n" else ""}       **Deleted** "
+        }
         if (info.isBlank()) {
             info = "No info"
         }

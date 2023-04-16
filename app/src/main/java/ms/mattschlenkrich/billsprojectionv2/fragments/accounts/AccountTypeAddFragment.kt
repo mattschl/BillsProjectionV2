@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.fragments
+package ms.mattschlenkrich.billsprojectionv2.fragments.accounts
 
 import android.os.Bundle
 import android.util.Log

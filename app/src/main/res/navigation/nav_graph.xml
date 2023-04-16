@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/accountsFragment"
-        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.AccountsFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountsFragment"
         android:label="AccountsFragment">
         <action
             android:id="@+id/action_accountsFragment_to_accountUpdateFragment"
@@ -21,7 +21,7 @@
     </fragment>
     <fragment
         android:id="@+id/accountUpdateFragment"
-        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.AccountUpdateFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountUpdateFragment"
         android:label="AccountUpdateFragment">
         <action
             android:id="@+id/action_accountUpdateFragment_to_accountsFragment"
@@ -44,7 +44,7 @@
     </fragment>
     <fragment
         android:id="@+id/accountAddFragment"
-        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.AccountAddFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountAddFragment"
         android:label="AccountAddFragment">
         <action
             android:id="@+id/action_accountAddFragment_to_accountsFragment"
@@ -67,7 +67,7 @@
     </fragment>
     <fragment
         android:id="@+id/accountTypesFragment"
-        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.AccountTypesFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountTypesFragment"
         android:label="AccountTypesFragment">
         <action
             android:id="@+id/action_accountTypesFragment_to_accountTypeAddFragment"
@@ -92,7 +92,7 @@
     </fragment>
     <fragment
         android:id="@+id/accountTypeAddFragment"
-        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.AccountTypeAddFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountTypeAddFragment"
         android:label="AccountTypeAddFragment">
         <action
             android:id="@+id/action_accountTypeAddFragment_to_accountTypesFragment"
@@ -108,7 +108,7 @@
     </fragment>
     <fragment
         android:id="@+id/accountTypeUpdateFragment"
-        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.AccountTypeUpdateFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountTypeUpdateFragment"
         android:label="AccountTypeUpdateFragment">
         <action
             android:id="@+id/action_accountTypeUpdateFragment_to_accountTypesFragment"

@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNT_ADD
 import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.databinding.AccountTypeLayoutBinding
-import ms.mattschlenkrich.billsprojectionv2.fragments.AccountTypesFragmentDirections
+import ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountTypesFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import java.util.Random
@@ -57,26 +57,19 @@ class AccountTypeAdapter(val account: Account?, val callingFragment: String?) :
         val curAccountType = differ.currentList[position]
 
         holder.itemBinding.tvAccountType.text = curAccountType.accountType
-        var info = if (curAccountType.keepTotals) {
-            "Transactions will be calculated\n"
-        } else {
-            ""
-        } + if (curAccountType.tallyOwing) {
-            "Will calculate amount owing\n"
-        } else {
-            ""
-        } + if (curAccountType.isAsset) {
-            "This is an asset\n"
-        } else {
-            ""
-        } + if (curAccountType.displayAsAsset) {
-            "This will display in the budget\n"
-        } else {
-            ""
-        } + if (curAccountType.isDeleted) {
-            "   **DELETED**"
-        } else {
-            ""
+        var info = if (curAccountType.keepTotals)
+            "Transactions will be calculated" else ""
+        if (curAccountType.tallyOwing) {
+            info += "${if (info.isNotEmpty()) "\n" else ""}Will calculate amount owing"
+        }
+        if (curAccountType.isAsset) {
+            info += "${if (info.isNotEmpty()) "\n" else ""}This is an asset"
+        }
+        if (curAccountType.displayAsAsset) {
+            info += "${if (info.isNotEmpty()) "\n" else ""}This will display in the budget"
+        }
+        if (curAccountType.isDeleted) {
+            info += "${if (info.isNotEmpty()) "\n" else ""}      **DELETED**"
         }
         if (info.isBlank()) {
             info = "This is a dummy account and will not effect other accounts"

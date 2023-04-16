@@ -1,9 +1,14 @@
-package ms.mattschlenkrich.billsprojectionv2.fragments
+package ms.mattschlenkrich.billsprojectionv2.fragments.accounts
 
 import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
@@ -16,7 +21,8 @@ import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountTypeUpdat
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 
 private const val TAG = FRAG_ACCOUNT_TYPE_UPDATE
 
