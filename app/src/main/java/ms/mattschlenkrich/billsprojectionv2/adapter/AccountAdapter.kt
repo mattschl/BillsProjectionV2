@@ -11,7 +11,8 @@ import ms.mattschlenkrich.billsprojectionv2.databinding.AccountLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.AccountsFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
 import java.text.NumberFormat
-import java.util.*
+import java.util.Locale
+import java.util.Random
 
 
 class AccountAdapter(val callingFragment: String?) :
@@ -68,7 +69,7 @@ class AccountAdapter(val callingFragment: String?) :
         val currentAccount = differ.currentList[position]
 
         holder.itemBinding.tvAccountName.text = currentAccount.account.accountName
-        val info = if (currentAccount.account.accountNumber.isNotEmpty()) {
+        var info = if (currentAccount.account.accountNumber.isNotEmpty()) {
             "# ${currentAccount.account.accountNumber}\n"
         } else {
             ""
@@ -88,18 +89,12 @@ class AccountAdapter(val callingFragment: String?) :
         } else {
             ""
         } + if (currentAccount.account.isDeleted) {
-            "**Deleted**"
+            "**Deleted** "
         } else {
             ""
-        } + if (currentAccount.account.accountNumber.isEmpty() &&
-            currentAccount.account.accountBalance == 0.0 &&
-            currentAccount.account.accountOwing == 0.0 &&
-            currentAccount.account.budgetAmount == 0.0 &&
-            !currentAccount.account.isDeleted
-        ) {
-            "No info"
-        } else {
-            ""
+        } + "\b "
+        if (info.isBlank()) {
+            info = "No info"
         }
         if (info == "No info") {
             holder.itemBinding.tvAccountInfo.visibility = ViewGroup.GONE
@@ -107,6 +102,7 @@ class AccountAdapter(val callingFragment: String?) :
             holder.itemBinding.tvAccountInfo.visibility = ViewGroup.VISIBLE
             holder.itemBinding.tvAccountInfo.text = info
         }
+        holder.itemBinding.tvAccType.text = currentAccount.accountType.accountType
 
         val random = Random()
         val color = Color.argb(

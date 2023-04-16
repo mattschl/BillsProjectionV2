@@ -1,13 +1,22 @@
 package ms.mattschlenkrich.billsprojectionv2.model
 
 import android.os.Parcelable
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
+import androidx.room.PrimaryKey
+import androidx.room.Relation
 import kotlinx.parcelize.Parcelize
 
 
 @Entity(
     tableName = "accountTypes",
-    indices = [Index(name = "idxAccountType", value = ["accountType"], unique = true)
+    indices = [Index(
+        name = "idxAccountType",
+        value = ["accountType"], unique = true
+    )
     ]
 )
 @Parcelize
@@ -34,7 +43,7 @@ data class AccountType(
 @Entity(
     tableName = "accounts",
     indices = [
-        Index(name = "idxAccountName", value = ["accountName"], unique = true),
+        Index(value = ["accountName"], unique = true),
         Index(value = ["accountTypeId"])
     ],
     foreignKeys = [ForeignKey(
@@ -61,7 +70,6 @@ data class Account(
     val isDeleted: Boolean,
     val updateTime: String,
 ) : Parcelable
-
 
 data class AccountWithType(
     @Embedded
