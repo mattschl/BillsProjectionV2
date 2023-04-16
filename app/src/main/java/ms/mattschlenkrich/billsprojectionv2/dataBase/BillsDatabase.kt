@@ -6,10 +6,14 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
+import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
+import ms.mattschlenkrich.billsprojectionv2.model.DaysOfWeek
+import ms.mattschlenkrich.billsprojectionv2.model.FrequencyTypes
 
 @Database(
     entities = [
-        Account::class, AccountType::class
+        Account::class, AccountType::class, BudgetRule::class, DaysOfWeek::class,
+        FrequencyTypes::class
     ], version = 1
 )
 abstract class BillsDatabase : RoomDatabase() {

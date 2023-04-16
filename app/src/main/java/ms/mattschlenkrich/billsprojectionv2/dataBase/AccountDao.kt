@@ -38,6 +38,7 @@ interface AccountDao {
     )
     fun getActiveAccounts(): LiveData<List<Account>>
 
+    @Transaction
     @Query(
         "SELECT $TABLE_ACCOUNTS.*, " +
                 "$TABLE_ACCOUNT_TYPES.* " +
@@ -69,6 +70,7 @@ interface AccountDao {
     )
     fun searchAccounts(query: String?): LiveData<List<Account>>
 
+    @Transaction
     @Query(
         "SELECT $TABLE_ACCOUNTS.*, $TABLE_ACCOUNT_TYPES.* FROM $TABLE_ACCOUNTS " +
                 "LEFT JOIN $TABLE_ACCOUNT_TYPES ON " +

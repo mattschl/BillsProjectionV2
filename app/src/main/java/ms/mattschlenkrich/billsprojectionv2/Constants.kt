@@ -50,6 +50,6 @@ const val IS_PAY_DAY = "isPayDay"
 const val IS_AUTO_PAY = "isAutoPay"
 const val START_DATE = "startDate"
 const val END_DATE = "endDate"
-const val DAY_OF_WEEK_ID = "dayId"
+const val DAY_OF_WEEK_ID = "dayOfWeekId"
 const val FREQUENCY_TYPE_ID = "frequencyTypeId"
 

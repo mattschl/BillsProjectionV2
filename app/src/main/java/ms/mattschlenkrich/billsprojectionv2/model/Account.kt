@@ -9,13 +9,18 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import kotlinx.parcelize.Parcelize
+import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_NAME
+import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_TYPE
+import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_TYPE_ID
+import ms.mattschlenkrich.billsprojectionv2.TABLE_ACCOUNTS
+import ms.mattschlenkrich.billsprojectionv2.TABLE_ACCOUNT_TYPES
+import ms.mattschlenkrich.billsprojectionv2.TYPE_ID
 
 
 @Entity(
-    tableName = "accountTypes",
+    tableName = TABLE_ACCOUNT_TYPES,
     indices = [Index(
-        name = "idxAccountType",
-        value = ["accountType"], unique = true
+        value = [ACCOUNT_TYPE], unique = true
     )
     ]
 )
@@ -41,15 +46,15 @@ data class AccountType(
 ) : Parcelable
 
 @Entity(
-    tableName = "accounts",
+    tableName = TABLE_ACCOUNTS,
     indices = [
-        Index(value = ["accountName"], unique = true),
-        Index(value = ["accountTypeId"])
+        Index(value = [ACCOUNT_NAME], unique = true),
+        Index(value = [ACCOUNT_TYPE_ID])
     ],
     foreignKeys = [ForeignKey(
         entity = AccountType::class,
-        parentColumns = ["typeId"],
-        childColumns = ["accountTypeId"]
+        parentColumns = [TYPE_ID],
+        childColumns = [ACCOUNT_TYPE_ID]
     )]
 )
 @Parcelize
@@ -75,8 +80,8 @@ data class AccountWithType(
     @Embedded
     val account: Account,
     @Relation(
-        parentColumn = "accountTypeId",
-        entityColumn = "typeId"
+        parentColumn = ACCOUNT_TYPE_ID,
+        entityColumn = TYPE_ID
     )
     val accountType: AccountType
 )
