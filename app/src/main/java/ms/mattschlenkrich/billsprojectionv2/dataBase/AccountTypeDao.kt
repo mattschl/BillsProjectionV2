@@ -2,6 +2,11 @@ package ms.mattschlenkrich.billsprojectionv2.dataBase
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_TYPE
+import ms.mattschlenkrich.billsprojectionv2.IS_DELETED
+import ms.mattschlenkrich.billsprojectionv2.TABLE_ACCOUNT_TYPES
+import ms.mattschlenkrich.billsprojectionv2.TYPE_ID
+import ms.mattschlenkrich.billsprojectionv2.UPDATE_TIME
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 
 @Dao
@@ -9,41 +14,41 @@ interface AccountTypeDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAccountType(accountType: AccountType)
 
-    @Update(onConflict = OnConflictStrategy.IGNORE)
+    @Update
     suspend fun updateAccountType(accountType: AccountType)
 
     @Query(
-        "UPDATE accountTypes " +
-                "SET isDeleted = 1, " +
-                "updateTime = :updateTime " +
+        "UPDATE $TABLE_ACCOUNT_TYPES " +
+                "SET $IS_DELETED = 1, " +
+                "$UPDATE_TIME = :updateTime " +
                 "WHERE typeId = :accountTypeId"
     )
     suspend fun deleteAccountType(accountTypeId: Long, updateTime: String)
 
     @Query(
-        "SELECT * FROM accountTypes " +
-                "WHERE typeId = :accountTypeId"
+        "SELECT * FROM $TABLE_ACCOUNT_TYPES " +
+                "WHERE $TYPE_ID = :accountTypeId"
     )
     fun findAccountType(accountTypeId: Long): List<AccountType>
 
     @Query(
-        "SELECT * FROM accountTypes " +
-                "WHERE accountType = :accountTypeName"
+        "SELECT * FROM $TABLE_ACCOUNT_TYPES " +
+                "WHERE $ACCOUNT_TYPE = :accountTypeName"
     )
     fun findAccountTypeByName(accountTypeName: String): List<AccountType>
 
     @Query(
-        "SELECT * FROM accountTypes " +
-                "WHERE isDeleted <> 1 " +
-                "ORDER BY accountType " +
+        "SELECT * FROM $TABLE_ACCOUNT_TYPES " +
+                "WHERE $IS_DELETED <> 1 " +
+                "ORDER BY $ACCOUNT_TYPE " +
                 " COLLATE NOCASE ASC"
     )
     fun getActiveAccountTypes(): LiveData<List<AccountType>>
 
     @Query(
-        "SELECT * FROM accountTypes " +
-                "WHERE accountType LIKE :query " +
-                "ORDER BY accountType " +
+        "SELECT * FROM $TABLE_ACCOUNT_TYPES " +
+                "WHERE $ACCOUNT_TYPE LIKE :query " +
+                "ORDER BY $ACCOUNT_TYPE " +
                 " COLLATE NOCASE ASC"
     )
     fun searchAccountType(query: String): LiveData<List<AccountType>>

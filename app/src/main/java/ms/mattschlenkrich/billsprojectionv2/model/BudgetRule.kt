@@ -19,9 +19,9 @@ data class DaysOfWeek(
     val dayOfWeek: String,
 ) : Parcelable
 
-@Entity(tableName = "frequencyType")
+@Entity(tableName = "frequencyTypes")
 @Parcelize
-data class FrequencyType(
+data class FrequencyTypes(
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val frequencyId: Long,
@@ -44,7 +44,7 @@ data class FrequencyType(
         parentColumns = ["dayId"],
         childColumns = ["dayOfWeekId"]
     ), ForeignKey(
-        entity = FrequencyType::class,
+        entity = FrequencyTypes::class,
         parentColumns = ["frequencyId"],
         childColumns = ["frequencyTypId"]
     )]
@@ -52,8 +52,8 @@ data class FrequencyType(
 @Parcelize
 data class BudgetRule(
     @PrimaryKey(autoGenerate = true)
-    val budgetRuleId: Long,
-    val bRuleName: String,
+    val RuleId: Long,
+    val budgetRuleName: String,
     @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val toAccountId: Long,
     @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
@@ -68,6 +68,10 @@ data class BudgetRule(
     val isAutoPay: Boolean,
     val startDate: String,
     val endDate: String?,
+    @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
+    val dayOfWeekID: Long,
+    @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
+    val frequencyTypeId: Long,
     @ColumnInfo(defaultValue = "0", typeAffinity = ColumnInfo.INTEGER)
     val isDeleted: Boolean,
     val updateTime: String
@@ -96,5 +100,5 @@ data class BudgetRuleDetailed(
         parentColumn = "frequencyTypeId",
         entityColumn = "frequencyId"
     )
-    val frequencyType: FrequencyType
+    val frequencyTypes: FrequencyTypes
 )

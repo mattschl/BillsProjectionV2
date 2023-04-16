@@ -16,6 +16,7 @@ abstract class BillsDatabase : RoomDatabase() {
 
     abstract fun getAccountTypesDao(): AccountTypeDao
     abstract fun getAccountDao(): AccountDao
+    abstract fun getBudgetRuleDao(): BudgetRuleDao
 
     companion object {
         @Volatile
