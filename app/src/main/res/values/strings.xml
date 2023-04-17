@@ -31,4 +31,5 @@
     <string name="choose_account_type">Choose Account Type</string>
     <string name="account_number_or_description">Account Number or Description</string>
     <string name="account_type_details">account type details</string>
+    <string name="no_budget_rules_to_view">No Budget Rules to View</string>
 </resources>

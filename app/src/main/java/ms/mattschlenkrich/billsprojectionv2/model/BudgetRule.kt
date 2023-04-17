@@ -29,7 +29,8 @@ import ms.mattschlenkrich.billsprojectionv2.TO_ACCOUNT_ID
         Index(value = [BUDGET_RULE_NAME], unique = true),
         Index(value = [TO_ACCOUNT_ID]),
         Index(value = [FROM_ACCOUNT_ID]),
-        Index(value = [DAY_OF_WEEK_ID])
+        Index(value = [DAY_OF_WEEK_ID]),
+        Index(value = [FREQUENCY_TYPE_ID])
     ],
     foreignKeys = [ForeignKey(
         entity = Account::class,
@@ -98,23 +99,23 @@ data class BudgetRuleDetailed(
     @Embedded
     val budgetRule: BudgetRule,
     @Relation(
-        parentColumn = "toAccountId",
-        entityColumn = "accountId"
+        parentColumn = TO_ACCOUNT_ID,
+        entityColumn = ACCOUNT_ID
     )
     val toAccount: Account,
     @Relation(
-        parentColumn = "fromAccountId",
-        entityColumn = "accountId"
+        parentColumn = FROM_ACCOUNT_ID,
+        entityColumn = ACCOUNT_ID
     )
     val fromAccount: Account,
     @Relation(
-        parentColumn = "dayOfWeekId",
-        entityColumn = "dayId"
+        parentColumn = DAY_OF_WEEK_ID,
+        entityColumn = DAY_ID
     )
     val daysOfWeek: DaysOfWeek,
     @Relation(
-        parentColumn = "frequencyTypeId",
-        entityColumn = "frequencyId"
+        parentColumn = FREQUENCY_TYPE_ID,
+        entityColumn = FREQUENCY_ID
     )
     val frequencyTypes: FrequencyTypes
 )

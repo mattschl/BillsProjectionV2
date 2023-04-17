@@ -5,13 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.R
 
-class DaysOfWeekAddFragment : Fragment() {
+private const val TAG = FRAG_BUDGET_RULES
+
+class BudgetRuleFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
     }
 
     override fun onCreateView(
@@ -19,6 +21,6 @@ class DaysOfWeekAddFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_days_of_week_add, container, false)
+        return inflater.inflate(R.layout.fragment_budget_rule, container, false)
     }
 }

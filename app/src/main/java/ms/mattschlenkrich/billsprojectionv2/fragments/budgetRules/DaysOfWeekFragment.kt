@@ -5,15 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import ms.mattschlenkrich.billsprojectionv2.FRAG_DAYS_OF_WEEK
 import ms.mattschlenkrich.billsprojectionv2.R
 
+private const val TAG = FRAG_DAYS_OF_WEEK
 
 class DaysOfWeekFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-        }
     }
 
     override fun onCreateView(
