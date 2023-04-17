@@ -33,4 +33,9 @@
     <string name="account_type_details">account type details</string>
     <string name="no_budget_rules_to_view">No Budget Rules to View</string>
     <string name="text_view">Text View</string>
+    <string name="budget_rule_name">Budget Rule Name</string>
+    <string name="to_account_name">To Account Name</string>
+    <string name="from_account_name">From Account Name</string>
+    <string name="budget_rule_info">Budget Rule Info</string>
+    <string name="to_account_from_account">To account From account</string>
 </resources>

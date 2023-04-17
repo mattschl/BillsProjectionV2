@@ -18,6 +18,7 @@ import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.adapter.AccountAdapter
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountsBinding
 import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
+import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 
 private const val TAG = FRAG_ACCOUNTS
@@ -32,7 +33,7 @@ class AccountsFragment :
     private lateinit var accountsViewModel: AccountViewModel
     private lateinit var accountAdapter: AccountAdapter
 
-    private val args: AccountsFragmentArgs? by navArgs()
+    private val args: AccountsFragmentArgs by navArgs()
 
 
 //    private val dollarFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
@@ -61,15 +62,21 @@ class AccountsFragment :
     ) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated entered")
-        accountsViewModel =
+        accouTODO("Not yet implemented") ntsViewModel =
             (activity as MainActivity).accountViewModel
 
         setUpRecyclerView()
         binding.fabAddNewAccount.setOnClickListener {
+            var budgetRule: BudgetRule? = null
+            var requestedAccount: String? = null
+            if (args.budgetRule != null) {
+                budgetRule = args.budgetRule
+                requestedAccount = args.requestedAccount
+            }
             val direction = AccountsFragmentDirections
                 .actionAccountsFragmentToAccountAddFragment(
-                    args?.budgetRule, null, null,
-                    args?.requestedAccount, TAG
+                    budgetRule, null, null,
+                    requestedAccount, TAG
                 )
             it.findNavController().navigate(direction)
         }
@@ -78,8 +85,14 @@ class AccountsFragment :
 
 
     private fun setUpRecyclerView() {
+        var budgetRule: BudgetRule? = null
+        var requestedAccount: String? = null
+        if (args.budgetRule != null) {
+            budgetRule = args.budgetRule
+            requestedAccount = args.requestedAccount
+        }
         accountAdapter = AccountAdapter(
-            args?.budgetRule, args?.requestedAccount, TAG
+            budgetRule, requestedAccount, TAG
         )
 
         binding.rvAccounts.apply {

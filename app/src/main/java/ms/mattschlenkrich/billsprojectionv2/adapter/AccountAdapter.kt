@@ -71,27 +71,27 @@ class AccountAdapter(
         holder: AccountViewHolder, position: Int
     ) {
 
-        val currentAccount = differ.currentList[position]
+        val curAccount = differ.currentList[position]
 
-        holder.itemBinding.tvAccountName.text = currentAccount.account.accountName
-        var info = if (currentAccount.account.accountNumber.isNotEmpty()) {
-            "# ${currentAccount.account.accountNumber}"
+        holder.itemBinding.tvAccountName.text = curAccount.account.accountName
+        var info = if (curAccount.account.accountNumber.isNotEmpty()) {
+            "# ${curAccount.account.accountNumber}"
         } else {
             ""
         }
-        if (currentAccount.account.accountBalance != 0.0) {
+        if (curAccount.account.accountBalance != 0.0) {
             info += "${if (info.isNotEmpty()) "\n" else ""}Balance " +
-                    dollarFormat.format(currentAccount.account.accountBalance)
+                    dollarFormat.format(curAccount.account.accountBalance)
         }
-        if (currentAccount.account.accountOwing != 0.0) {
+        if (curAccount.account.accountOwing != 0.0) {
             info += "${if (info.isNotEmpty()) "\n" else ""}Owing " +
-                    dollarFormat.format(currentAccount.account.accountOwing)
+                    dollarFormat.format(curAccount.account.accountOwing)
         }
-        if (currentAccount.account.budgetAmount != 0.0) {
+        if (curAccount.account.budgetAmount != 0.0) {
             info += "${if (info.isNotEmpty()) "\n" else ""}Budgeted " +
-                    dollarFormat.format(currentAccount.account.budgetAmount)
+                    dollarFormat.format(curAccount.account.budgetAmount)
         }
-        if (currentAccount.account.isDeleted) {
+        if (curAccount.account.isDeleted) {
             info += "${if (info.isNotEmpty()) "\n" else ""}       **Deleted** "
         }
         if (info.isBlank()) {
@@ -103,7 +103,7 @@ class AccountAdapter(
             holder.itemBinding.tvAccountInfo.visibility = ViewGroup.VISIBLE
             holder.itemBinding.tvAccountInfo.text = info
         }
-        holder.itemBinding.tvAccType.text = currentAccount.accountType.accountType
+        holder.itemBinding.tvAccType.text = curAccount.accountType.accountType
 
         val random = Random()
         val color = Color.argb(
@@ -118,8 +118,8 @@ class AccountAdapter(
             val direction = AccountsFragmentDirections
                 .actionAccountsFragmentToAccountUpdateFragment(
                     budgetRule,
-                    currentAccount.account,
-                    currentAccount.accountType,
+                    curAccount.account,
+                    curAccount.accountType,
                     requestedAccount,
                     callingFragment
                 )
