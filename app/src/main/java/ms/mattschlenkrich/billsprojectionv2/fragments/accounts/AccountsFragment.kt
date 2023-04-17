@@ -62,7 +62,7 @@ class AccountsFragment :
     ) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated entered")
-        accouTODO("Not yet implemented") ntsViewModel =
+        accountsViewModel =
             (activity as MainActivity).accountViewModel
 
         setUpRecyclerView()
