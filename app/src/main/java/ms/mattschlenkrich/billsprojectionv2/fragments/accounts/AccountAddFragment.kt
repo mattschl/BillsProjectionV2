@@ -129,7 +129,10 @@ class AccountAddFragment :
             currTime
         )
         val direction = AccountAddFragmentDirections
-            .actionAccountAddFragmentToAccountTypesFragment(account, TAG)
+            .actionAccountAddFragmentToAccountTypesFragment(
+                args.budgetRule, account,
+                args.requestedAccount, TAG
+            )
         mView.findNavController().navigate(direction)
     }
 
@@ -169,9 +172,12 @@ class AccountAddFragment :
                     currTime
                 )
                 accountsViewModel.addAccount(account)
-                view.findNavController().navigate(
-                    R.id.action_accountAddFragment_to_accountsFragment
-                )
+                val direction = AccountAddFragmentDirections
+                    .actionAccountAddFragmentToAccountsFragment(
+                        args.budgetRule, args.requestedAccount,
+                        args.callingFragment
+                    )
+                view.findNavController().navigate(direction)
 
             } else {
                 Toast.makeText(

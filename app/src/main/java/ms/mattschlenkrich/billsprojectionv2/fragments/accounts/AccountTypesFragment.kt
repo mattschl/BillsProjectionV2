@@ -62,15 +62,18 @@ class AccountTypesFragment
         binding.fabAddAccountType.setOnClickListener {
             val direction = AccountTypesFragmentDirections
                 .actionAccountTypesFragmentToAccountTypeAddFragment(
-                    args.account,
-                    args.callingFragment
+                    args.budgetRule, args.account,
+                    args.requestedAccount, args.callingFragment
                 )
             it.findNavController().navigate(direction)
         }
     }
 
     private fun setupRecyclerView() {
-        accountTypeAdapter = AccountTypeAdapter(args.account, args.callingFragment)
+        accountTypeAdapter = AccountTypeAdapter(
+            args.budgetRule, args.account,
+            args.requestedAccount, args.callingFragment
+        )
 
         binding.rvAccountTypes.apply {
             layoutManager = StaggeredGridLayoutManager(

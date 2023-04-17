@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
@@ -30,6 +31,9 @@ class AccountsFragment :
 
     private lateinit var accountsViewModel: AccountViewModel
     private lateinit var accountAdapter: AccountAdapter
+
+    private val args: AccountsFragmentArgs? by navArgs()
+
 
 //    private val dollarFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
 //    private val dateFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
@@ -63,7 +67,10 @@ class AccountsFragment :
         setUpRecyclerView()
         binding.fabAddNewAccount.setOnClickListener {
             val direction = AccountsFragmentDirections
-                .actionAccountsFragmentToAccountAddFragment(null, null, TAG)
+                .actionAccountsFragmentToAccountAddFragment(
+                    args?.budgetRule, null, null,
+                    args?.requestedAccount, TAG
+                )
             it.findNavController().navigate(direction)
         }
 
@@ -71,7 +78,9 @@ class AccountsFragment :
 
 
     private fun setUpRecyclerView() {
-        accountAdapter = AccountAdapter(TAG)
+        accountAdapter = AccountAdapter(
+            args?.budgetRule, args?.requestedAccount, TAG
+        )
 
         binding.rvAccounts.apply {
             layoutManager = StaggeredGridLayoutManager(

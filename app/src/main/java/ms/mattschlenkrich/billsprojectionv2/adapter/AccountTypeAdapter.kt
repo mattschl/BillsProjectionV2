@@ -13,9 +13,15 @@ import ms.mattschlenkrich.billsprojectionv2.databinding.AccountTypeLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountTypesFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
+import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
 import java.util.Random
 
-class AccountTypeAdapter(val account: Account?, val callingFragment: String?) :
+class AccountTypeAdapter(
+    val budgetRule: BudgetRule?,
+    val account: Account?,
+    private val requestedAccount: String?,
+    private val callingFragment: String?
+) :
     RecyclerView.Adapter<AccountTypeAdapter.AccountTypeViewHolder>() {
 
     class AccountTypeViewHolder(val itemBinding: AccountTypeLayoutBinding) :
@@ -88,9 +94,11 @@ class AccountTypeAdapter(val account: Account?, val callingFragment: String?) :
         holder.itemView.setOnLongClickListener {
             val direction = AccountTypesFragmentDirections
                 .actionAccountTypesFragmentToAccountTypeUpdateFragment(
-                    account = account,
-                    accountType = curAccountType,
-                    callingFragment = callingFragment
+                    budgetRule,
+                    account,
+                    curAccountType,
+                    requestedAccount,
+                    callingFragment
                 )
             it.findNavController().navigate(direction)
             false
@@ -99,15 +107,20 @@ class AccountTypeAdapter(val account: Account?, val callingFragment: String?) :
             if (callingFragment == FRAG_ACCOUNT_UPDATE) {
                 val direction = AccountTypesFragmentDirections
                     .actionAccountTypesFragmentToAccountUpdateFragment(
+                        budgetRule,
                         account,
                         curAccountType,
+                        requestedAccount,
                         callingFragment
                     )
                 it.findNavController().navigate(direction)
             } else if (callingFragment == FRAG_ACCOUNT_ADD) {
                 val direction = AccountTypesFragmentDirections
                     .actionAccountTypesFragmentToAccountAddFragment(
-                        account, curAccountType,
+                        budgetRule,
+                        account,
+                        curAccountType,
+                        requestedAccount,
                         callingFragment
                     )
                 it.findNavController().navigate(direction)

@@ -72,11 +72,6 @@ class AccountTypeUpdateFragment :
         }
     }
 
-    private suspend fun findAccountTypeName(accountTypeName: String): Boolean {
-        val list = accountsViewModel.findAccountByName(accountTypeName)
-        return list.isEmpty()
-    }
-
     private fun updateAccountType() {
         Log.d(TAG, "entering accountType update")
         val accountTypeName = binding.etAccTypeUpdate.text
@@ -96,8 +91,8 @@ class AccountTypeUpdateFragment :
             accountsViewModel.updateAccountType(accountType)
             val direction = AccountTypeUpdateFragmentDirections
                 .actionAccountTypeUpdateFragmentToAccountTypesFragment(
-                    args.account,
-                    args.callingFragment
+                    args.budgetRule, args.account,
+                    args.requestedAccount, args.callingFragment
                 )
             mView?.findNavController()?.navigate(direction)
         } else if (accountTypeName.isNotBlank()) {
@@ -112,8 +107,8 @@ class AccountTypeUpdateFragment :
                     accountsViewModel.updateAccountType(accountType)
                     val direction = AccountTypeUpdateFragmentDirections
                         .actionAccountTypeUpdateFragmentToAccountTypesFragment(
-                            args.account,
-                            args.callingFragment
+                            args.budgetRule, args.account,
+                            args.requestedAccount, args.callingFragment
                         )
                     mView?.findNavController()?.navigate(direction)
                 }
@@ -158,8 +153,8 @@ class AccountTypeUpdateFragment :
                 )
                 val direction = AccountTypeUpdateFragmentDirections
                     .actionAccountTypeUpdateFragmentToAccountTypesFragment(
-                        args.account,
-                        args.callingFragment
+                        args.budgetRule, args.account,
+                        args.requestedAccount, args.callingFragment
                     )
                 mView?.findNavController()?.navigate(direction)
             }

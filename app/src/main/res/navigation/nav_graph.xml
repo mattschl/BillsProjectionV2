@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/accountsFragment">
+    app:startDestination="@id/budgetRuleFragment">
 
     <fragment
         android:id="@+id/accountsFragment"
@@ -38,16 +38,16 @@
         <action
             android:id="@+id/action_accountUpdateFragment_to_accountsFragment"
             app:destination="@id/accountsFragment" />
-        <argument
-            android:name="account"
-            app:argType="ms.mattschlenkrich.billsprojectionv2.model.Account"
-            app:nullable="true" />
         <action
             android:id="@+id/action_accountUpdateFragment_to_accountTypesFragment"
             app:destination="@id/accountTypesFragment" />
         <argument
             android:name="budgetRule"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRule"
+            app:nullable="true" />
+        <argument
+            android:name="account"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.Account"
             app:nullable="true" />
         <argument
             android:name="accountType"

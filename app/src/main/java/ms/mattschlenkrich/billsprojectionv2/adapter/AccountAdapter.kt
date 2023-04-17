@@ -10,12 +10,17 @@ import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.databinding.AccountLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountsFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
+import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
 import java.text.NumberFormat
 import java.util.Locale
 import java.util.Random
 
 
-class AccountAdapter(val callingFragment: String?) :
+class AccountAdapter(
+    private val budgetRule: BudgetRule?,
+    private val requestedAccount: String?,
+    private val callingFragment: String?
+) :
     RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() {
 
     //    private var dateFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
@@ -112,8 +117,10 @@ class AccountAdapter(val callingFragment: String?) :
         holder.itemView.setOnLongClickListener {
             val direction = AccountsFragmentDirections
                 .actionAccountsFragmentToAccountUpdateFragment(
+                    budgetRule,
                     currentAccount.account,
                     currentAccount.accountType,
+                    requestedAccount,
                     callingFragment
                 )
             it.findNavController().navigate(direction)

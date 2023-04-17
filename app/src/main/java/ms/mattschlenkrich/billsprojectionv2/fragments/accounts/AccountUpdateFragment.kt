@@ -21,6 +21,7 @@ import ms.mattschlenkrich.billsprojectionv2.SQLITE_TIME
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
+import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -40,7 +41,8 @@ class AccountUpdateFragment :
 
     //since the update fragment contains arguments in nav_graph
     private val args: AccountUpdateFragmentArgs by navArgs()
-    private var currentAccount: Account? = null
+    private var curBudgetRule: BudgetRule? = null
+    private var curAccount: Account? = null
     private var newAccountType: AccountType? = null
 //    private var currAccountType: AccountType? = null
 
@@ -71,7 +73,8 @@ class AccountUpdateFragment :
         super.onViewCreated(view, savedInstanceState)
         accountsViewModel =
             (activity as MainActivity).accountViewModel
-        currentAccount = args.account!!
+        curBudgetRule = args.budgetRule!!
+        curAccount = args.account!!
         newAccountType = args.accountType!!
         fillValues()
         binding.drpAccountUpdateType.setOnClickListener {
@@ -88,7 +91,7 @@ class AccountUpdateFragment :
         val accountHandle =
             binding.edAccountUpdateHandle.text.toString().trim()
         val accountTypeId =
-            currentAccount!!.accountTypeId
+            curAccount!!.accountTypeId
         val balance =
             binding.edAccountUpdateBalance.text.toString()
                 .replace(",", "").replace("$", "").toDouble()
@@ -101,13 +104,18 @@ class AccountUpdateFragment :
         val currTime =
             timeFormatter.format(Calendar.getInstance().time)
         val account = Account(
-            currentAccount!!.accountId, accountName,
+            curAccount!!.accountId, accountName,
             accountHandle, accountTypeId, budgeted,
             balance, owing,
             false, currTime
         )
         val direction = AccountUpdateFragmentDirections
-            .actionAccountUpdateFragmentToAccountTypesFragment(account, TAG)
+            .actionAccountUpdateFragmentToAccountTypesFragment(
+                args.budgetRule,
+                account,
+                args.requestedAccount,
+                TAG
+            )
         this.findNavController().navigate(direction)
     }
 
@@ -131,13 +139,13 @@ class AccountUpdateFragment :
         val currTime =
             timeFormatter.format(Calendar.getInstance().time)
         val account = Account(
-            currentAccount!!.accountId, accountName,
+            curAccount!!.accountId, accountName,
             accountHandle, accountTypeId, budgeted,
             balance, owing,
             false, currTime
         )
 
-        if (accountName == currentAccount!!.accountName) {
+        if (accountName == curAccount!!.accountName) {
             accountsViewModel.updateAccount(account)
             mView?.findNavController()?.navigate(
                 R.id.action_accountUpdateFragment_to_accountsFragment
@@ -170,25 +178,25 @@ class AccountUpdateFragment :
 
     private fun fillValues() {
         binding.edAccountUpdateName.setText(
-            currentAccount!!.accountName
+            curAccount!!.accountName
         )
         binding.edAccountUpdateHandle.setText(
-            currentAccount!!.accountNumber
+            curAccount!!.accountNumber
         )
         if (args.accountType != null) {
             binding.drpAccountUpdateType.text = args.accountType!!.accountType
         }
         binding.edAccountUpdateBalance.setText(
-            dollarFormat.format(currentAccount!!.accountBalance)
+            dollarFormat.format(curAccount!!.accountBalance)
         )
         binding.edAccountUpdateOwing.setText(
-            dollarFormat.format(currentAccount!!.accountOwing)
+            dollarFormat.format(curAccount!!.accountOwing)
         )
         binding.edAccountUpdateBudgeted.setText(
-            dollarFormat.format(currentAccount!!.budgetAmount)
+            dollarFormat.format(curAccount!!.budgetAmount)
         )
         binding.txtAccountUpdateAccountId.text =
-            currentAccount!!.accountId.toString()
+            curAccount!!.accountId.toString()
     }
 
     private fun deleteAccount() {
