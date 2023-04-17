@@ -38,4 +38,22 @@
     <string name="from_account_name">From Account Name</string>
     <string name="budget_rule_info">Budget Rule Info</string>
     <string name="to_account_from_account">To account From account</string>
+    <string name="to_this_account">To this account</string>
+    <string name="from_this_account">From this account</string>
+    <string name="amount">Amount</string>
+    <string name="enter_budgeted_amount">Enter Budgeted Amount</string>
+    <string name="make_a_pay_day">Make a Pay Day</string>
+    <string name="automatic_payment">Automatic Payment</string>
+    <string name="first_date">First Date</string>
+    <string name="end_date">End Date</string>
+    <string name="start_date">Start Date</string>
+    <string name="scheduling_rules">Scheduling Rules</string>
+    <string name="monthly">Monthly</string>
+    <string name="week_day">Week Day</string>
+    <string name="on">On</string>
+    <string name="lead_days">Lead Days</string>
+    <string name="one">1</string>
+    <string name="zero">0</string>
+    <string name="days_before_due_date">Days before due date</string>
+    <string name="times">X</string>
 </resources>

@@ -69,9 +69,9 @@ class AccountsFragment :
         binding.fabAddNewAccount.setOnClickListener {
             var budgetRule: BudgetRule? = null
             var requestedAccount: String? = null
-            if (args.budgetRule != null) {
-                budgetRule = args.budgetRule
-                requestedAccount = args.requestedAccount
+            if (args?.budgetRule != null) {
+                budgetRule = args!!.budgetRule
+                requestedAccount = args!!.requestedAccount
             }
             val direction = AccountsFragmentDirections
                 .actionAccountsFragmentToAccountAddFragment(
@@ -87,9 +87,9 @@ class AccountsFragment :
     private fun setUpRecyclerView() {
         var budgetRule: BudgetRule? = null
         var requestedAccount: String? = null
-        if (args.budgetRule != null) {
-            budgetRule = args.budgetRule
-            requestedAccount = args.requestedAccount
+        if (args?.budgetRule != null) {
+            budgetRule = args!!.budgetRule
+            requestedAccount = args!!.requestedAccount
         }
         accountAdapter = AccountAdapter(
             budgetRule, requestedAccount, TAG
