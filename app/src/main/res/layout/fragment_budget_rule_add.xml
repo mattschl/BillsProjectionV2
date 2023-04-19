@@ -93,14 +93,14 @@
                 android:text="@string/amount"
                 android:textSize="@dimen/text_info_size"
                 app:layout_constraintBaseline_toBaselineOf="@+id/etAmount"
-                app:layout_constraintEnd_toEndOf="@+id/lblFromAccount"
-                app:layout_constraintStart_toStartOf="@+id/lblFromAccount" />
+                app:layout_constraintEnd_toStartOf="@+id/etAmount"
+                app:layout_constraintStart_toStartOf="parent" />
 
             <EditText
                 android:id="@+id/etAmount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="@string/enter_budgeted_amount"
+                android:hint="@string/budgeted_amount"
                 android:importantForAutofill="no"
                 android:inputType="numberDecimal|numberSigned"
                 android:minHeight="48dp"
@@ -108,9 +108,19 @@
                 android:textColor="@color/black"
                 android:textColorHint="#757575"
                 android:textSize="@dimen/title_text_size"
-                app:layout_constraintEnd_toEndOf="@+id/tvFromAccount"
-                app:layout_constraintStart_toStartOf="@+id/tvFromAccount"
+                app:layout_constraintEnd_toStartOf="@id/chkFixedAmount"
+                app:layout_constraintStart_toEndOf="@+id/lblAmount"
                 app:layout_constraintTop_toBottomOf="@+id/tvFromAccount" />
+
+            <CheckBox
+                android:id="@+id/chkFixedAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/fixed_amount"
+                android:textSize="@dimen/text_info_size"
+                app:layout_constraintBaseline_toBaselineOf="@+id/etAmount"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/etAmount" />
 
             <CheckBox
                 android:id="@+id/chkMakePayDay"
@@ -118,8 +128,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/make_a_pay_day"
                 android:textSize="@dimen/text_info_size"
-                app:layout_constraintEnd_toEndOf="@+id/lblAmount"
-                app:layout_constraintStart_toStartOf="@+id/lblAmount"
+                app:layout_constraintEnd_toEndOf="@+id/lblFromAccount"
+                app:layout_constraintStart_toStartOf="@+id/lblFromAccount"
                 app:layout_constraintTop_toBottomOf="@+id/etAmount" />
 
             <CheckBox
@@ -129,8 +139,8 @@
                 android:text="@string/automatic_payment"
                 android:textSize="@dimen/text_info_size"
                 app:layout_constraintBaseline_toBaselineOf="@+id/chkMakePayDay"
-                app:layout_constraintEnd_toEndOf="@+id/etAmount"
-                app:layout_constraintStart_toStartOf="@+id/etAmount" />
+                app:layout_constraintEnd_toEndOf="@+id/tvFromAccount"
+                app:layout_constraintStart_toStartOf="@+id/tvFromAccount" />
 
             <TextView
                 android:id="@+id/lblStartDate"

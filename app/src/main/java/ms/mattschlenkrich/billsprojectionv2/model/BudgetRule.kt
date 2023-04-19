@@ -72,6 +72,10 @@ data class BudgetRule(
     val dayOfWeekId: Long,
     @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val frequencyTypeId: Long,
+    @ColumnInfo(defaultValue = "1")
+    val frequencyCount: Int,
+    @ColumnInfo(defaultValue = "1")
+    val leadDays: Int,
     @ColumnInfo(defaultValue = "0", typeAffinity = ColumnInfo.INTEGER)
     val isDeleted: Boolean,
     val updateTime: String
@@ -95,6 +99,7 @@ data class FrequencyTypes(
     val frequencyType: String
 ) : Parcelable
 
+@Parcelize
 data class BudgetRuleDetailed(
     @Embedded
     val budgetRule: BudgetRule,
@@ -118,4 +123,4 @@ data class BudgetRuleDetailed(
         entityColumn = FREQUENCY_ID
     )
     val frequencyTypes: FrequencyTypes
-)
+) : Parcelable

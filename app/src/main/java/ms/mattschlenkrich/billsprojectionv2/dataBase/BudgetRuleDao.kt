@@ -8,16 +8,30 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_NAME
+import ms.mattschlenkrich.billsprojectionv2.AMOUNT
 import ms.mattschlenkrich.billsprojectionv2.BUDGET_RULE_NAME
 import ms.mattschlenkrich.billsprojectionv2.DAY_ID
+import ms.mattschlenkrich.billsprojectionv2.DAY_OF_WEEK
 import ms.mattschlenkrich.billsprojectionv2.DAY_OF_WEEK_ID
+import ms.mattschlenkrich.billsprojectionv2.END_DATE
+import ms.mattschlenkrich.billsprojectionv2.FIXED_AMOUNT
+import ms.mattschlenkrich.billsprojectionv2.FREQUENCY_COUNT
 import ms.mattschlenkrich.billsprojectionv2.FREQUENCY_ID
 import ms.mattschlenkrich.billsprojectionv2.FREQUENCY_TYPE_ID
+import ms.mattschlenkrich.billsprojectionv2.FROM_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.IS_AUTO_PAY
 import ms.mattschlenkrich.billsprojectionv2.IS_DELETED
+import ms.mattschlenkrich.billsprojectionv2.IS_PAY_DAY
+import ms.mattschlenkrich.billsprojectionv2.LEAD_DAYS
 import ms.mattschlenkrich.billsprojectionv2.RULE_ID
+import ms.mattschlenkrich.billsprojectionv2.START_DATE
+import ms.mattschlenkrich.billsprojectionv2.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.TABLE_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.TABLE_DAYS_OF_WEEK
 import ms.mattschlenkrich.billsprojectionv2.TABLE_FREQUENCY_TYPES
+import ms.mattschlenkrich.billsprojectionv2.TO_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.UPDATE_TIME
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
@@ -26,8 +40,44 @@ import ms.mattschlenkrich.billsprojectionv2.model.FrequencyTypes
 
 @Dao
 interface BudgetRuleDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertBudgetRule(budgetRule: BudgetRule)
+    @Transaction
+    @Query(
+        "INSERT INTO $TABLE_BUDGET_RULES " +
+                "($RULE_ID, $BUDGET_RULE_NAME, $TO_ACCOUNT_ID, " +
+                "$FROM_ACCOUNT_ID, $AMOUNT, $FIXED_AMOUNT, " +
+                "$IS_PAY_DAY, $IS_AUTO_PAY, $START_DATE, $END_DATE, " +
+                "$DAY_OF_WEEK_ID, $FREQUENCY_COUNT, $LEAD_DAYS," +
+                "$IS_DELETED, $UPDATE_TIME) " +
+                "VALUES (" +
+                "0,:budgetRuleName, " +
+                "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
+                "WHERE $ACCOUNT_NAME = :toAccount), " +
+                "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
+                "WHERE $ACCOUNT_NAME = :fromAccount), " +
+                ":amount, :fixedAmount, :isPayDay, :isAutoPayment, " +
+                ":startDate, :endDate, " +
+                "(SELECT $DAY_ID FROM $TABLE_DAYS_OF_WEEK " +
+                "WHERE $DAY_OF_WEEK = :dayOfWeek), " +
+                ":frequencyCount, :leadDays, 0, :updateTime" +
+                ")"
+
+    )
+    suspend fun insertBudgetRule(
+        budgetRuleName: String,
+        amount: Double,
+        toAccount: String,
+        fromAccount: String,
+        fixedAmount: Int,
+        isPayDay: Int,
+        isAutoPayment: Int,
+        startDate: String,
+        endDate: String,
+        frequencyType: String,
+        frequencyCount: Int,
+        dayOfWeek: String,
+        leadDays: Int,
+        updateTime: String
+    )
 
     @Update
     suspend fun updateBudgetRule(budgetRule: BudgetRule)

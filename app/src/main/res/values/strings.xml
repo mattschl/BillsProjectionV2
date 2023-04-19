@@ -56,4 +56,6 @@
     <string name="zero">0</string>
     <string name="days_before_due_date">Days before due date</string>
     <string name="times">X</string>
+    <string name="fixed_amount">Fixed amount</string>
+    <string name="budgeted_amount">Budgeted Amount</string>
 </resources>

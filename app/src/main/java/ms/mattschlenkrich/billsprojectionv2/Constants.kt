@@ -56,4 +56,6 @@ const val START_DATE = "startDate"
 const val END_DATE = "endDate"
 const val DAY_OF_WEEK_ID = "dayOfWeekId"
 const val FREQUENCY_TYPE_ID = "frequencyTypeId"
+const val FREQUENCY_COUNT = "frequencyCount"
+const val LEAD_DAYS = "leadDays"
 

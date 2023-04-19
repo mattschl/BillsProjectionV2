@@ -14,9 +14,22 @@ class BudgetRuleViewModel(
     private val budgetRuleRepository: BudgetRuleRepository
 ) : AndroidViewModel(app) {
 
-    fun insertBudgetRule(budgetRule: BudgetRule) =
+    fun insertBudgetRule(
+        budgetRuleName: String, amount: Double,
+        toAccount: String, fromAccount: String,
+        fixedAmount: Int, isPayDay: Int,
+        isAutoPayment: Int, startDate: String,
+        endDate: String, frequencyType: String,
+        frequencyCount: Int, dayOfWeek: String,
+        leadDays: Int, updateTime: String
+    ) =
         viewModelScope.launch {
-            budgetRuleRepository.insertBudgetRule(budgetRule)
+            budgetRuleRepository.insertBudgetRule(
+                budgetRuleName, amount, toAccount, fromAccount,
+                fixedAmount, isPayDay, isAutoPayment, startDate,
+                endDate, frequencyType, frequencyCount, dayOfWeek,
+                leadDays, updateTime
+            )
         }
 
     fun updateBudgetRule(budgetRule: BudgetRule) =

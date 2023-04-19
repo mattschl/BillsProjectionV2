@@ -7,8 +7,21 @@ import ms.mattschlenkrich.billsprojectionv2.model.FrequencyTypes
 
 class BudgetRuleRepository(private val db: BillsDatabase) {
 
-    suspend fun insertBudgetRule(budgetRule: BudgetRule) =
-        db.getBudgetRuleDao().insertBudgetRule(budgetRule)
+    suspend fun insertBudgetRule(
+        budgetRuleName: String, amount: Double,
+        toAccount: String, fromAccount: String,
+        fixedAmount: Int, isPayDay: Int,
+        isAutoPayment: Int, startDate: String,
+        endDate: String, frequencyType: String,
+        frequencyCount: Int, dayOfWeek: String,
+        leadDays: Int, updateTime: String
+    ) =
+        db.getBudgetRuleDao().insertBudgetRule(
+            budgetRuleName, amount, toAccount, fromAccount,
+            fixedAmount, isPayDay, isAutoPayment, startDate,
+            endDate, frequencyType, frequencyCount, dayOfWeek,
+            leadDays, updateTime
+        )
 
     suspend fun updateBudgetRule(budgetRule: BudgetRule) =
         db.getBudgetRuleDao().updateBudgetRule(budgetRule)

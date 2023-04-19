@@ -15,9 +15,6 @@
         <action
             android:id="@+id/action_accountsFragment_to_accountAddFragment"
             app:destination="@id/accountAddFragment" />
-        <action
-            android:id="@+id/action_accountsFragment_to_budgetRuleFragment"
-            app:destination="@id/budgetRuleFragment" />
         <argument
             android:name="budgetRule"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRule"
@@ -30,6 +27,12 @@
             android:name="callingFragment"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_accountsFragment_to_budgetRuleUpdateFragment"
+            app:destination="@id/budgetRuleUpdateFragment" />
+        <action
+            android:id="@+id/action_accountsFragment_to_budgetRuleAddFragment"
+            app:destination="@id/budgetRuleAddFragment" />
     </fragment>
     <fragment
         android:id="@+id/accountUpdateFragment"
@@ -183,23 +186,17 @@
         android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules.BudgetRuleFragment"
         android:label="BudgetRuleFragment">
         <action
-            android:id="@+id/action_budgetRuleFragment_to_accountsFragment"
-            app:destination="@id/accountsFragment" />
+            android:id="@+id/action_budgetRuleFragment_to_budgetRuleAddFragment"
+            app:destination="@id/budgetRuleAddFragment" />
         <action
-            android:id="@+id/action_budgetRuleFragment_to_daysOfWeekFragment"
-            app:destination="@id/daysOfWeekFragment" />
-        <action
-            android:id="@+id/action_budgetRuleFragment_to_frequencyTypeFragment"
-            app:destination="@id/frequencyTypeFragment" />
+            android:id="@+id/action_budgetRuleFragment_to_budgetRuleUpdateFragment"
+            app:destination="@id/budgetRuleUpdateFragment" />
     </fragment>
     <fragment
         android:id="@+id/daysOfWeekFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules.DaysOfWeekFragment"
         android:label="fragment_days_of_week"
         tools:layout="@layout/fragment_days_of_week">
-        <action
-            android:id="@+id/action_daysOfWeekFragment_to_budgetRuleFragment"
-            app:destination="@id/budgetRuleFragment" />
         <argument
             android:name="budgetRule"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRule"
@@ -208,15 +205,18 @@
             android:name="callingFragment"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_daysOfWeekFragment_to_budgetRuleAddFragment"
+            app:destination="@id/budgetRuleAddFragment" />
+        <action
+            android:id="@+id/action_daysOfWeekFragment_to_budgetRuleUpdateFragment"
+            app:destination="@id/budgetRuleUpdateFragment" />
     </fragment>
     <fragment
         android:id="@+id/frequencyTypeFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules.FrequencyTypeFragment"
         android:label="fragment_frequency_type"
         tools:layout="@layout/fragment_frequency_type">
-        <action
-            android:id="@+id/action_frequencyTypeFragment_to_budgetRuleFragment"
-            app:destination="@id/budgetRuleFragment" />
         <argument
             android:name="budgetRule"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRule"
@@ -225,5 +225,51 @@
             android:name="callingFragment"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_frequencyTypeFragment_to_budgetRuleUpdateFragment"
+            app:destination="@id/budgetRuleUpdateFragment" />
+        <action
+            android:id="@+id/action_frequencyTypeFragment_to_budgetRuleAddFragment"
+            app:destination="@id/budgetRuleAddFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/budgetRuleAddFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules.BudgetRuleAddFragment"
+        android:label="fragment_budget_rule_add"
+        tools:layout="@layout/fragment_budget_rule_add">
+        <action
+            android:id="@+id/action_budgetRuleAddFragment_to_budgetRuleFragment"
+            app:destination="@id/budgetRuleFragment" />
+        <action
+            android:id="@+id/action_budgetRuleAddFragment_to_accountsFragment"
+            app:destination="@id/accountsFragment" />
+        <action
+            android:id="@+id/action_budgetRuleAddFragment_to_daysOfWeekFragment"
+            app:destination="@id/daysOfWeekFragment" />
+        <action
+            android:id="@+id/action_budgetRuleAddFragment_to_frequencyTypeFragment"
+            app:destination="@id/frequencyTypeFragment" />
+        <argument
+            android:name="budgetRuleDetailed"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/budgetRuleUpdateFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules.BudgetRuleUpdateFragment"
+        android:label="fragment_budget_rule_update"
+        tools:layout="@layout/fragment_budget_rule_update">
+        <action
+            android:id="@+id/action_budgetRuleUpdateFragment_to_budgetRuleFragment"
+            app:destination="@id/budgetRuleFragment" />
+        <action
+            android:id="@+id/action_budgetRuleUpdateFragment_to_accountsFragment"
+            app:destination="@id/accountsFragment" />
+        <action
+            android:id="@+id/action_budgetRuleUpdateFragment_to_frequencyTypeFragment"
+            app:destination="@id/frequencyTypeFragment" />
+        <action
+            android:id="@+id/action_budgetRuleUpdateFragment_to_daysOfWeekFragment"
+            app:destination="@id/daysOfWeekFragment" />
     </fragment>
 </navigation>
