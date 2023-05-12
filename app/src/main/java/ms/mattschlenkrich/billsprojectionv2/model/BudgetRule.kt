@@ -11,14 +11,10 @@ import androidx.room.Relation
 import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.BUDGET_RULE_NAME
-import ms.mattschlenkrich.billsprojectionv2.DAY_ID
 import ms.mattschlenkrich.billsprojectionv2.DAY_OF_WEEK_ID
-import ms.mattschlenkrich.billsprojectionv2.FREQUENCY_ID
 import ms.mattschlenkrich.billsprojectionv2.FREQUENCY_TYPE_ID
 import ms.mattschlenkrich.billsprojectionv2.FROM_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.TABLE_BUDGET_RULES
-import ms.mattschlenkrich.billsprojectionv2.TABLE_DAYS_OF_WEEK
-import ms.mattschlenkrich.billsprojectionv2.TABLE_FREQUENCY_TYPES
 import ms.mattschlenkrich.billsprojectionv2.TO_ACCOUNT_ID
 
 
@@ -40,14 +36,6 @@ import ms.mattschlenkrich.billsprojectionv2.TO_ACCOUNT_ID
         entity = Account::class,
         parentColumns = [ACCOUNT_ID],
         childColumns = [FROM_ACCOUNT_ID]
-    ), ForeignKey(
-        entity = DaysOfWeek::class,
-        parentColumns = [DAY_ID],
-        childColumns = [DAY_OF_WEEK_ID]
-    ), ForeignKey(
-        entity = FrequencyTypes::class,
-        parentColumns = [FREQUENCY_ID],
-        childColumns = [FREQUENCY_TYPE_ID]
     )]
 )
 data class BudgetRule(
@@ -81,24 +69,6 @@ data class BudgetRule(
     val updateTime: String
 ) : Parcelable
 
-@Entity(tableName = TABLE_DAYS_OF_WEEK)
-@Parcelize
-data class DaysOfWeek(
-    @PrimaryKey(autoGenerate = false)
-    @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
-    val dayId: Long,
-    val dayOfWeek: String,
-) : Parcelable
-
-@Entity(tableName = TABLE_FREQUENCY_TYPES)
-@Parcelize
-data class FrequencyTypes(
-    @PrimaryKey(autoGenerate = false)
-    @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
-    val frequencyId: Long,
-    val frequencyType: String
-) : Parcelable
-
 @Parcelize
 data class BudgetRuleDetailed(
     @Embedded
@@ -112,15 +82,5 @@ data class BudgetRuleDetailed(
         parentColumn = FROM_ACCOUNT_ID,
         entityColumn = ACCOUNT_ID
     )
-    val fromAccount: Account,
-    @Relation(
-        parentColumn = DAY_OF_WEEK_ID,
-        entityColumn = DAY_ID
-    )
-    val daysOfWeek: DaysOfWeek,
-    @Relation(
-        parentColumn = FREQUENCY_TYPE_ID,
-        entityColumn = FREQUENCY_ID
-    )
-    val frequencyTypes: FrequencyTypes
+    val fromAccount: Account
 ) : Parcelable

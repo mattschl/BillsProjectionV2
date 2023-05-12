@@ -193,46 +193,6 @@
             app:destination="@id/budgetRuleUpdateFragment" />
     </fragment>
     <fragment
-        android:id="@+id/daysOfWeekFragment"
-        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules.DaysOfWeekFragment"
-        android:label="fragment_days_of_week"
-        tools:layout="@layout/fragment_days_of_week">
-        <argument
-            android:name="budgetRule"
-            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRule"
-            app:nullable="true" />
-        <argument
-            android:name="callingFragment"
-            app:argType="string"
-            app:nullable="true" />
-        <action
-            android:id="@+id/action_daysOfWeekFragment_to_budgetRuleAddFragment"
-            app:destination="@id/budgetRuleAddFragment" />
-        <action
-            android:id="@+id/action_daysOfWeekFragment_to_budgetRuleUpdateFragment"
-            app:destination="@id/budgetRuleUpdateFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/frequencyTypeFragment"
-        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules.FrequencyTypeFragment"
-        android:label="fragment_frequency_type"
-        tools:layout="@layout/fragment_frequency_type">
-        <argument
-            android:name="budgetRule"
-            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRule"
-            app:nullable="true" />
-        <argument
-            android:name="callingFragment"
-            app:argType="string"
-            app:nullable="true" />
-        <action
-            android:id="@+id/action_frequencyTypeFragment_to_budgetRuleUpdateFragment"
-            app:destination="@id/budgetRuleUpdateFragment" />
-        <action
-            android:id="@+id/action_frequencyTypeFragment_to_budgetRuleAddFragment"
-            app:destination="@id/budgetRuleAddFragment" />
-    </fragment>
-    <fragment
         android:id="@+id/budgetRuleAddFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules.BudgetRuleAddFragment"
         android:label="fragment_budget_rule_add"
@@ -243,16 +203,22 @@
         <action
             android:id="@+id/action_budgetRuleAddFragment_to_accountsFragment"
             app:destination="@id/accountsFragment" />
-        <action
-            android:id="@+id/action_budgetRuleAddFragment_to_daysOfWeekFragment"
-            app:destination="@id/daysOfWeekFragment" />
-        <action
-            android:id="@+id/action_budgetRuleAddFragment_to_frequencyTypeFragment"
-            app:destination="@id/frequencyTypeFragment" />
         <argument
-            android:name="budgetRuleDetailed"
-            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed"
+            android:name="budgetRule"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRule"
             app:nullable="true" />
+        <argument
+            android:name="callingFragment"
+            app:argType="string"
+            app:nullable="true" />
+        <!--<argument
+            android:name="toAccount"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.Account"
+            app:nullable="true" />
+        <argument
+            android:name="fromAccount"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.Account"
+            app:nullable="true" />-->
     </fragment>
     <fragment
         android:id="@+id/budgetRuleUpdateFragment"
@@ -265,11 +231,9 @@
         <action
             android:id="@+id/action_budgetRuleUpdateFragment_to_accountsFragment"
             app:destination="@id/accountsFragment" />
-        <action
-            android:id="@+id/action_budgetRuleUpdateFragment_to_frequencyTypeFragment"
-            app:destination="@id/frequencyTypeFragment" />
-        <action
-            android:id="@+id/action_budgetRuleUpdateFragment_to_daysOfWeekFragment"
-            app:destination="@id/daysOfWeekFragment" />
+        <argument
+            android:name="budgetRuleDetailed"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed"
+            app:nullable="true" />
     </fragment>
 </navigation>

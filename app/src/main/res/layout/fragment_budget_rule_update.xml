@@ -193,7 +193,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/etEndDate" />
 
             <TextView
-                android:id="@+id/tvFrequencyType"
+                android:id="@+id/spFrequencyType"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
                 android:padding="4dp"
@@ -210,9 +210,9 @@
                 android:layout_height="wrap_content"
                 android:text="@string/times"
                 android:textSize="@dimen/text_heading_size"
-                app:layout_constraintBaseline_toBaselineOf="@+id/tvFrequencyType"
+                app:layout_constraintBaseline_toBaselineOf="@+id/spFrequencyType"
                 app:layout_constraintEnd_toStartOf="@+id/etFrequencyCount"
-                app:layout_constraintStart_toEndOf="@+id/tvFrequencyType" />
+                app:layout_constraintStart_toEndOf="@+id/spFrequencyType" />
 
             <EditText
                 android:id="@+id/etFrequencyCount"
@@ -223,9 +223,9 @@
                 android:padding="@dimen/padding_start_end"
                 android:text="@string/one"
                 android:textSize="@dimen/text_heading_size"
-                app:layout_constraintEnd_toStartOf="@id/tvDayOfWeek"
-                app:layout_constraintStart_toEndOf="@+id/tvFrequencyType"
-                app:layout_constraintTop_toTopOf="@+id/tvFrequencyType" />
+                app:layout_constraintEnd_toStartOf="@id/spDayOfWeek"
+                app:layout_constraintStart_toEndOf="@+id/spFrequencyType"
+                app:layout_constraintTop_toTopOf="@+id/spFrequencyType" />
 
             <TextView
                 android:id="@+id/lblOn"
@@ -233,12 +233,12 @@
                 android:layout_height="wrap_content"
                 android:text="@string/on"
                 android:textSize="@dimen/text_heading_size"
-                app:layout_constraintBaseline_toBaselineOf="@+id/tvDayOfWeek"
-                app:layout_constraintEnd_toStartOf="@+id/tvDayOfWeek"
+                app:layout_constraintBaseline_toBaselineOf="@+id/spDayOfWeek"
+                app:layout_constraintEnd_toStartOf="@+id/spDayOfWeek"
                 app:layout_constraintStart_toEndOf="@+id/etFrequencyCount" />
 
             <TextView
-                android:id="@+id/tvDayOfWeek"
+                android:id="@+id/spDayOfWeek"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
                 android:padding="4dp"
@@ -247,7 +247,7 @@
                 android:textSize="@dimen/text_heading_size"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/etFrequencyCount"
-                app:layout_constraintTop_toTopOf="@+id/tvFrequencyType" />
+                app:layout_constraintTop_toTopOf="@+id/spFrequencyType" />
 
             <TextView
                 android:id="@+id/lblLeadDays"
@@ -270,7 +270,7 @@
                 android:textSize="@dimen/text_heading_size"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/lblLeadDays"
-                app:layout_constraintTop_toBottomOf="@+id/tvFrequencyType" />
+                app:layout_constraintTop_toBottomOf="@+id/spFrequencyType" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

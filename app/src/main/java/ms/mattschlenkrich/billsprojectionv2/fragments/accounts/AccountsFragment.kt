@@ -69,9 +69,9 @@ class AccountsFragment :
         binding.fabAddNewAccount.setOnClickListener {
             var budgetRule: BudgetRule? = null
             var requestedAccount: String? = null
-            if (args?.budgetRule != null) {
-                budgetRule = args!!.budgetRule
-                requestedAccount = args!!.requestedAccount
+            if (args.budgetRule != null) {
+                budgetRule = args.budgetRule
+                requestedAccount = args.requestedAccount
             }
             val direction = AccountsFragmentDirections
                 .actionAccountsFragmentToAccountAddFragment(
@@ -87,9 +87,9 @@ class AccountsFragment :
     private fun setUpRecyclerView() {
         var budgetRule: BudgetRule? = null
         var requestedAccount: String? = null
-        if (args?.budgetRule != null) {
-            budgetRule = args!!.budgetRule
-            requestedAccount = args!!.requestedAccount
+        if (args.budgetRule != null) {
+            budgetRule = args.budgetRule
+            requestedAccount = args.requestedAccount
         }
         accountAdapter = AccountAdapter(
             budgetRule, requestedAccount, TAG
@@ -109,7 +109,6 @@ class AccountsFragment :
             ) { accountWithType ->
                 accountAdapter.differ.submitList(accountWithType)
                 updateUI(accountWithType)
-
             }
         }
     }
@@ -132,7 +131,8 @@ class AccountsFragment :
 
         menu.clear()
         inflater.inflate(R.menu.search_menu, menu)
-        val mMenuSearch = menu.findItem(R.id.menu_search).actionView as SearchView
+        val mMenuSearch = menu.findItem(R.id.menu_search)
+            .actionView as SearchView
         mMenuSearch.isSubmitButtonEnabled = false
         mMenuSearch.setOnQueryTextListener(this)
     }

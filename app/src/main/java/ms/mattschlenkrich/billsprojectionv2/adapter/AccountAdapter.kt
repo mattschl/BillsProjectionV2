@@ -7,6 +7,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.billsprojectionv2.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.AccountLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountsFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
@@ -113,6 +114,10 @@ class AccountAdapter(
             random.nextInt(256)
         )
         holder.itemBinding.ibAccountColor.setBackgroundColor(color)
+
+        holder.itemView.setOnClickListener {
+            if (requestedAccount == REQUEST_TO_ACCOUNT)
+        }
 
         holder.itemView.setOnLongClickListener {
             val direction = AccountsFragmentDirections

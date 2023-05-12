@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetRuleLayoutBinding
+import ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules.BudgetRuleFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import java.util.Random
 
@@ -71,7 +72,10 @@ class BudgetRuleAdapter :
         holder.itemBinding.ibColor.setBackgroundColor(color)
 
         holder.itemView.setOnLongClickListener {
-            //TODO: set up the other fragment to update a budget rule
+            val direction = BudgetRuleFragmentDirections
+                .actionBudgetRuleFragmentToBudgetRuleUpdateFragment(
+                    curBudgetRule
+                )
             false
         }
     }

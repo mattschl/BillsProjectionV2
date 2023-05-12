@@ -5,8 +5,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
-import ms.mattschlenkrich.billsprojectionv2.model.DaysOfWeek
-import ms.mattschlenkrich.billsprojectionv2.model.FrequencyTypes
 import ms.mattschlenkrich.billsprojectionv2.repository.BudgetRuleRepository
 
 class BudgetRuleViewModel(
@@ -19,15 +17,15 @@ class BudgetRuleViewModel(
         toAccount: String, fromAccount: String,
         fixedAmount: Int, isPayDay: Int,
         isAutoPayment: Int, startDate: String,
-        endDate: String, frequencyType: String,
-        frequencyCount: Int, dayOfWeek: String,
+        endDate: String, frequencyTypeId: Long,
+        frequencyCount: Int, dayOfWeekId: Long,
         leadDays: Int, updateTime: String
     ) =
         viewModelScope.launch {
             budgetRuleRepository.insertBudgetRule(
                 budgetRuleName, amount, toAccount, fromAccount,
                 fixedAmount, isPayDay, isAutoPayment, startDate,
-                endDate, frequencyType, frequencyCount, dayOfWeek,
+                endDate, frequencyTypeId, frequencyCount, dayOfWeekId,
                 leadDays, updateTime
             )
         }
@@ -42,51 +40,9 @@ class BudgetRuleViewModel(
             budgetRuleRepository.deleteBudgetRule(budgetRuleId, updateTime)
         }
 
-    fun getActiveBudgetRules() =
-        budgetRuleRepository.getActiveBudgetRules()
+    fun getActiveBudgetRulesDetailed() =
+        budgetRuleRepository.getActiveBudgetRulesDetailed()
 
     fun searchBudgetRules(query: String?) =
         budgetRuleRepository.searchBudgetRules(query)
-
-    fun insertFrequencyType(frequencyType: FrequencyTypes) =
-        viewModelScope.launch {
-            budgetRuleRepository.insertFrequencyType(frequencyType)
-        }
-
-    fun updateFrequencyType(frequencyType: FrequencyTypes) =
-        viewModelScope.launch {
-            budgetRuleRepository.updateFrequencyType(frequencyType)
-        }
-
-    fun deleteFrequencyType(frequencyType: FrequencyTypes) =
-        viewModelScope.launch {
-            budgetRuleRepository.deleteFrequencyType(frequencyType)
-        }
-
-    fun getFrequencyTypes() =
-        budgetRuleRepository.getFrequencyTypes()
-
-    fun findFrequencyType(frequencyId: Long) =
-        budgetRuleRepository.findFrequencyType(frequencyId)
-
-    fun insertDayOfWeek(daysOfWeek: DaysOfWeek) =
-        viewModelScope.launch {
-            budgetRuleRepository.insertDayOfWeek(daysOfWeek)
-        }
-
-    fun updateDayOfWeek(daysOfWeek: DaysOfWeek) =
-        viewModelScope.launch {
-            budgetRuleRepository.updateDayOfWeek(daysOfWeek)
-        }
-
-    fun deleteDayOfWeek(daysOfWeek: DaysOfWeek) =
-        viewModelScope.launch {
-            budgetRuleRepository.deleteDayOfWeek(daysOfWeek)
-        }
-
-    fun getDaysOfWeek() =
-        budgetRuleRepository.getDaysOfWeek()
-
-    fun findDayOfWeek(dayOfWeekId: Long) =
-        budgetRuleRepository.findDayOfWeek(dayOfWeekId)
 }
