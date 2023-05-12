@@ -57,14 +57,14 @@ class BudgetRuleFragment :
         binding.fabAddNew.setOnClickListener {
             val direction = BudgetRuleFragmentDirections
                 .actionBudgetRuleFragmentToBudgetRuleAddFragment(
-                    null
+                    null, TAG
                 )
             it.findNavController().navigate(direction)
         }
     }
 
     private fun setupRecyclerView() {
-        budgetRuleAdapter = BudgetRuleAdapter()
+        budgetRuleAdapter = BudgetRuleAdapter(TAG)
 
         binding.rvBudgetRules.apply {
             layoutManager = StaggeredGridLayoutManager(

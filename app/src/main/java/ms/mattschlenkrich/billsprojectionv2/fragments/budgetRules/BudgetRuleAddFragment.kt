@@ -69,7 +69,8 @@ class BudgetRuleAddFragment :
         _binding = FragmentBudgetRuleAddBinding.inflate(
             inflater, container, false
         )
-        return binding.root
+        mView = binding.root
+        return mView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

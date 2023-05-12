@@ -116,7 +116,9 @@ class AccountAdapter(
         holder.itemBinding.ibAccountColor.setBackgroundColor(color)
 
         holder.itemView.setOnClickListener {
-            if (requestedAccount == REQUEST_TO_ACCOUNT)
+            if (requestedAccount == REQUEST_TO_ACCOUNT) {
+                //goto
+            }
         }
 
         holder.itemView.setOnLongClickListener {

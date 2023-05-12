@@ -23,8 +23,6 @@ import ms.mattschlenkrich.billsprojectionv2.RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.START_DATE
 import ms.mattschlenkrich.billsprojectionv2.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.TABLE_BUDGET_RULES
-import ms.mattschlenkrich.billsprojectionv2.TABLE_DAYS_OF_WEEK
-import ms.mattschlenkrich.billsprojectionv2.TABLE_FREQUENCY_TYPES
 import ms.mattschlenkrich.billsprojectionv2.TO_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.UPDATE_TIME
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
@@ -84,9 +82,7 @@ interface BudgetRuleDao {
     @Query(
         "SELECT $TABLE_BUDGET_RULES.*, " +
                 "toAccount.* , " +
-                "fromAccount.* , " +
-                "$TABLE_FREQUENCY_TYPES.*, " +
-                "$TABLE_DAYS_OF_WEEK.* " +
+                "fromAccount.*  " +
                 "FROM $TABLE_BUDGET_RULES " +
                 "LEFT JOIN $TABLE_ACCOUNTS as toAccount on " +
                 "$TABLE_BUDGET_RULES.$TO_ACCOUNT_ID = " +
@@ -104,9 +100,7 @@ interface BudgetRuleDao {
     @Query(
         "SELECT $TABLE_BUDGET_RULES.*, " +
                 "toAccount.* , " +
-                "fromAccount.* , " +
-                "$TABLE_FREQUENCY_TYPES.*, " +
-                "$TABLE_DAYS_OF_WEEK.* " +
+                "fromAccount.*  " +
                 "FROM $TABLE_BUDGET_RULES " +
                 "LEFT JOIN $TABLE_ACCOUNTS as toAccount on " +
                 "$TABLE_BUDGET_RULES.$TO_ACCOUNT_ID = " +

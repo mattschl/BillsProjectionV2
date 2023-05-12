@@ -1,17 +1,19 @@
 package ms.mattschlenkrich.billsprojectionv2.adapter
 
+import android.content.res.Resources
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetRuleLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules.BudgetRuleFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import java.util.Random
 
-class BudgetRuleAdapter :
+class BudgetRuleAdapter(val callingFragment: String) :
     RecyclerView.Adapter<BudgetRuleAdapter.BudgetRuleViewHolder>() {
 
 
@@ -59,8 +61,18 @@ class BudgetRuleAdapter :
         holder.itemBinding.tvToAccount.text = info
         info = "From: " + curBudgetRule.fromAccount.accountName
         holder.itemBinding.tvFromAccount.text = info
-        info = "Frequency: " + curBudgetRule.frequencyTypes.frequencyType +
-                "\nOn " + curBudgetRule.daysOfWeek.dayOfWeek
+        val frequencyTypes =
+            Resources.getSystem().getStringArray(R.array.frequency_type)
+        val frequencyType =
+            frequencyTypes[curBudgetRule.budgetRule.frequencyTypeId.toInt()]
+        val daysOfWeek =
+            Resources.getSystem().getStringArray(R.array.day_of_week)
+        val dayOfWeek =
+            daysOfWeek[curBudgetRule.budgetRule.dayOfWeekId.toInt()]
+        info = "Frequency: " + frequencyType +
+                " X " + curBudgetRule.budgetRule.frequencyCount +
+                "\nOn " + dayOfWeek
+        holder.itemBinding.tvInfo.text = info
 
         val random = Random()
         val color = Color.argb(
@@ -74,7 +86,8 @@ class BudgetRuleAdapter :
         holder.itemView.setOnLongClickListener {
             val direction = BudgetRuleFragmentDirections
                 .actionBudgetRuleFragmentToBudgetRuleUpdateFragment(
-                    curBudgetRule
+                    curBudgetRule,
+                    callingFragment
                 )
             false
         }

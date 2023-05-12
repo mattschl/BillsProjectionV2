@@ -55,7 +55,7 @@ interface AccountDao {
         "SELECT * FROM $TABLE_ACCOUNTS " +
                 "WHERE $ACCOUNT_ID = :accountId "
     )
-    fun findAccount(accountId: Long): LiveData<List<Account>>
+    fun findAccount(accountId: Long): List<Account>
 
     @Query(
         "SELECT * FROM $TABLE_ACCOUNTS " +

@@ -204,8 +204,8 @@
             android:id="@+id/action_budgetRuleAddFragment_to_accountsFragment"
             app:destination="@id/accountsFragment" />
         <argument
-            android:name="budgetRule"
-            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRule"
+            android:name="budgetRuleDetailed"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed"
             app:nullable="true" />
         <argument
             android:name="callingFragment"
@@ -234,6 +234,10 @@
         <argument
             android:name="budgetRuleDetailed"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="callingFragment"
+            app:argType="string"
             app:nullable="true" />
     </fragment>
 </navigation>
