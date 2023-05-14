@@ -1,6 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.adapter
 
-import android.content.res.Resources
+import android.content.Context
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -14,7 +14,7 @@ import ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules.BudgetRuleFrag
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import java.util.Random
 
-class BudgetRuleAdapter(val callingFragment: String) :
+class BudgetRuleAdapter(val context: Context, val callingFragment: String) :
     RecyclerView.Adapter<BudgetRuleAdapter.BudgetRuleViewHolder>() {
 
 
@@ -63,11 +63,11 @@ class BudgetRuleAdapter(val callingFragment: String) :
         info = "From: " + curBudgetRule.fromAccount!!.accountName
         holder.itemBinding.tvFromAccount.text = info
         val frequencyTypes =
-            Resources.getSystem().getStringArray(R.array.frequency_type)
+            context.resources.getStringArray(R.array.frequency_types)
         val frequencyType =
             frequencyTypes[curBudgetRule.budgetRule.frequencyTypeId.toInt()]
         val daysOfWeek =
-            Resources.getSystem().getStringArray(R.array.day_of_week)
+            context.resources.getStringArray(R.array.days_of_week)
         val dayOfWeek =
             daysOfWeek[curBudgetRule.budgetRule.dayOfWeekId.toInt()]
         info = "Frequency: " + frequencyType +

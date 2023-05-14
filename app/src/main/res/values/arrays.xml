@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="day_of_week">
+    <string-array name="days_of_week">
         <item>Monday</item>
         <item>Tuesday</item>
         <item>Wednesday</item>
@@ -12,12 +12,11 @@
         <item>Week End</item>
         <item>Any Day</item>
     </string-array>
-    <string-array name="frequency_type">
+    <string-array name="frequency_types">
         <item>Monthly</item>
         <item>Weekly</item>
         <item>Yearly</item>
         <item>On Payday</item>
-        <item>One Time</item>
         <item>Manually</item>
         <item>Special</item>
     </string-array>

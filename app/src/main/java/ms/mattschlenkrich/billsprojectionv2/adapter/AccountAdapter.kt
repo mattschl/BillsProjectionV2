@@ -1,14 +1,16 @@
 package ms.mattschlenkrich.billsprojectionv2.adapter
 
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_RULE_ADD
+import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_RULE_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.AccountLayoutBinding
@@ -16,9 +18,10 @@ import ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountsFragmentD
 import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import java.text.NumberFormat
-import java.util.Locale
+import java.util.Locale.CANADA
 import java.util.Random
 
+private const val TAG = "AccountAdapter"
 
 class AccountAdapter(
     private val budgetRuleDetailed: BudgetRuleDetailed?,
@@ -27,12 +30,13 @@ class AccountAdapter(
 ) :
     RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() {
 
-    //    private var dateFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
-//    private var timeFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
-    private val dollarFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
+    private var mBudgetRuleDetailed: BudgetRuleDetailed? = budgetRuleDetailed
+
+    private val dollarFormat: NumberFormat = NumberFormat.getCurrencyInstance(CANADA)
 
     class AccountViewHolder(val itemBinding: AccountLayoutBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
+
 
     private val differCallBack =
         object : DiffUtil.ItemCallback<AccountWithType>() {
@@ -119,25 +123,21 @@ class AccountAdapter(
         holder.itemBinding.ibAccountColor.setBackgroundColor(color)
 
         holder.itemView.setOnClickListener {
+            Log.d(
+                TAG, "onClick requested Account is $requestedAccount," +
+                        "  calling Fragment id $callingFragment"
+            )
             if (requestedAccount == REQUEST_TO_ACCOUNT &&
-                callingFragment == FRAG_BUDGET_RULE_ADD
+                budgetRuleDetailed != null
             ) {
-                val direction = AccountsFragmentDirections
-                    .actionAccountsFragmentToAccountAddFragment(
-                        budgetRuleDetailed, curAccount.account,
-                        null, null, FRAG_ACCOUNTS
-                    )
-                it.findNavController().navigate(direction)
+                mBudgetRuleDetailed!!.toAccount = curAccount.account
+                gotoCallingFragment(it)
             } else if (requestedAccount == REQUEST_FROM_ACCOUNT &&
-                callingFragment == FRAG_BUDGET_RULE_ADD
+                budgetRuleDetailed != null
             ) {
-                val direction = AccountsFragmentDirections
-                    .actionAccountsFragmentToAccountAddFragment(
-                        budgetRuleDetailed, curAccount.account,
-                        null, null, FRAG_ACCOUNTS
-                    )
-                it.findNavController().navigate(direction)
-            } // next option to update budgetRule
+                mBudgetRuleDetailed!!.fromAccount = curAccount.account
+                gotoCallingFragment(it)
+            }
         }
 
         holder.itemView.setOnLongClickListener {
@@ -151,6 +151,23 @@ class AccountAdapter(
                 )
             it.findNavController().navigate(direction)
             false
+        }
+    }
+
+    private fun gotoCallingFragment(it: View) {
+        if (callingFragment == FRAG_BUDGET_RULE_ADD) {
+            val direction = AccountsFragmentDirections
+                .actionAccountsFragmentToBudgetRuleAddFragment(
+                    budgetRuleDetailed, TAG
+                )
+            it.findNavController().navigate(direction)
+        } else if (callingFragment == FRAG_BUDGET_RULE_UPDATE
+        ) {
+            val direction = AccountsFragmentDirections
+                .actionAccountsFragmentToBudgetRuleUpdateFragment(
+                    budgetRuleDetailed, TAG
+                )
+            it.findNavController().navigate(direction)
         }
     }
 }

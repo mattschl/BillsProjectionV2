@@ -57,4 +57,5 @@
     <string name="times">X</string>
     <string name="fixed_amount">Fixed amount</string>
     <string name="budgeted_amount">Budgeted Amount</string>
+    <string name="choose_an_account">choose an Account</string>
 </resources>

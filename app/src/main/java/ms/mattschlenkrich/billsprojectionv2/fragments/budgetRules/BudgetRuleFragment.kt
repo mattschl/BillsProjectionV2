@@ -65,7 +65,7 @@ class BudgetRuleFragment :
     }
 
     private fun setupRecyclerView() {
-        budgetRuleAdapter = BudgetRuleAdapter(TAG)
+        budgetRuleAdapter = BudgetRuleAdapter(requireContext(), TAG)
 
         binding.rvBudgetRules.apply {
             layoutManager = StaggeredGridLayoutManager(

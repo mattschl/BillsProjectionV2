@@ -30,6 +30,7 @@ import java.util.Locale
 
 private const val TAG = FRAG_ACCOUNT_UPDATE
 
+@Suppress("DEPRECATION")
 class AccountUpdateFragment :
     Fragment(R.layout.fragment_account_update) {
 
@@ -66,7 +67,7 @@ class AccountUpdateFragment :
             inflater, container, false
         )
         mView = binding.root
-        return binding.root
+        return mView as View
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -160,9 +161,13 @@ class AccountUpdateFragment :
                 )
                 setPositiveButton("Update Account") { _, _ ->
                     accountsViewModel.updateAccount(account)
-                    mView?.findNavController()?.navigate(
-                        R.id.action_accountUpdateFragment_to_accountsFragment
-                    )
+                    val direction = AccountUpdateFragmentDirections
+                        .actionAccountUpdateFragmentToAccountsFragment(
+                            args.budgetRuleDetailed,
+                            args.requestedAccount,
+                            args.callingFragment
+                        )
+                    mView?.findNavController()?.navigate(direction)
                 }
                 setNegativeButton("Cancel", null)
             }.create().show()

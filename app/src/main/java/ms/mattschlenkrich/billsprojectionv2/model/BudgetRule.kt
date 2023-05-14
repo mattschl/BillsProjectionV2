@@ -77,10 +77,10 @@ data class BudgetRuleDetailed(
         parentColumn = TO_ACCOUNT_ID,
         entityColumn = ACCOUNT_ID
     )
-    val toAccount: Account?,
+    var toAccount: Account?,
     @Relation(
         parentColumn = FROM_ACCOUNT_ID,
         entityColumn = ACCOUNT_ID
     )
-    val fromAccount: Account?
+    var fromAccount: Account?
 ) : Parcelable

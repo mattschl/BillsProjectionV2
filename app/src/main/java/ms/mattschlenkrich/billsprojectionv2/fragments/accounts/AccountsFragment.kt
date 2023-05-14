@@ -23,6 +23,7 @@ import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 
 private const val TAG = FRAG_ACCOUNTS
 
+@Suppress("DEPRECATION")
 class AccountsFragment :
     Fragment(R.layout.fragment_accounts),
     SearchView.OnQueryTextListener {
@@ -32,6 +33,7 @@ class AccountsFragment :
 
     private lateinit var accountsViewModel: AccountViewModel
     private lateinit var accountAdapter: AccountAdapter
+    private lateinit var mView: View
 
     private val args: AccountsFragmentArgs by navArgs()
 
@@ -53,8 +55,8 @@ class AccountsFragment :
         _binding = FragmentAccountsBinding.inflate(
             inflater, container, false
         )
-
-        return binding.root
+        mView = binding.root
+        return mView
     }
 
     override fun onViewCreated(
@@ -67,27 +69,33 @@ class AccountsFragment :
 
         setUpRecyclerView()
         binding.fabAddNewAccount.setOnClickListener {
-            var budgetRuleDetailed: BudgetRuleDetailed? = null
-            var requestedAccount: String? = null
-            if (args.budgetRuleDetailed != null) {
-                budgetRuleDetailed = args.budgetRuleDetailed
-                requestedAccount = args.requestedAccount
-            }
-            val direction = AccountsFragmentDirections
-                .actionAccountsFragmentToAccountAddFragment(
-                    budgetRuleDetailed, null, null,
-                    requestedAccount, TAG
-                )
-            it.findNavController().navigate(direction)
+            addNewAccount()
         }
 
+    }
+
+    private fun addNewAccount() {
+        var budgetRuleDetailed: BudgetRuleDetailed? = null
+        var requestedAccount: String? = null
+        if (args.budgetRuleDetailed != null) {
+            budgetRuleDetailed = args.budgetRuleDetailed
+            requestedAccount = args.requestedAccount
+        }
+        val direction = AccountsFragmentDirections
+            .actionAccountsFragmentToAccountAddFragment(
+                budgetRuleDetailed, null, null,
+                requestedAccount, TAG
+            )
+        mView.findNavController().navigate(direction)
     }
 
 
     private fun setUpRecyclerView() {
 
         accountAdapter = AccountAdapter(
-            args.budgetRuleDetailed, args.requestedAccount, TAG
+            args.budgetRuleDetailed,
+            args.requestedAccount,
+            args.callingFragment
         )
 
         binding.rvAccounts.apply {
@@ -119,6 +127,7 @@ class AccountsFragment :
     }
 
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(
         menu: Menu, inflater: MenuInflater
     ) {

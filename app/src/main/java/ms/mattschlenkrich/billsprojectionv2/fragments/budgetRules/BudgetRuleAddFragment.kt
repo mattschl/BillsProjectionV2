@@ -268,12 +268,16 @@ class BudgetRuleAddFragment :
                             args.budgetRuleDetailed!!.budgetRule!!.amount
                         )
                     )
-                    tvToAccount.text =
-                        args.budgetRuleDetailed!!.toAccount!!.accountName
-                    mToAccount = args.budgetRuleDetailed!!.toAccount
-                    tvFromAccount.text =
-                        args.budgetRuleDetailed!!.fromAccount!!.accountName
-                    mFromAccount = args.budgetRuleDetailed!!.fromAccount
+                    if (args.budgetRuleDetailed!!.toAccount != null) {
+                        tvToAccount.text =
+                            args.budgetRuleDetailed!!.toAccount!!.accountName
+                        mToAccount = args.budgetRuleDetailed!!.toAccount
+                    }
+                    if (args.budgetRuleDetailed!!.fromAccount != null) {
+                        tvFromAccount.text =
+                            args.budgetRuleDetailed!!.fromAccount!!.accountName
+                        mFromAccount = args.budgetRuleDetailed!!.fromAccount
+                    }
                     chkFixedAmount.isChecked =
                         args.budgetRuleDetailed!!.budgetRule!!.fixedAmount
                     chkMakePayDay.isChecked =
@@ -313,7 +317,7 @@ class BudgetRuleAddFragment :
             ArrayAdapter(
                 mView.context,
                 R.layout.spinner_item_normal,
-                resources.getStringArray(R.array.frequency_type)
+                resources.getStringArray(R.array.frequency_types)
             )
         adapterFrequencyType.setDropDownViewResource(
             R.layout.spinner_item_normal
@@ -324,7 +328,7 @@ class BudgetRuleAddFragment :
             ArrayAdapter(
                 mView.context,
                 R.layout.spinner_item_normal,
-                resources.getStringArray(R.array.day_of_week)
+                resources.getStringArray(R.array.days_of_week)
             )
         adapterDayOfWeek.setDropDownViewResource(
             R.layout.spinner_item_normal
