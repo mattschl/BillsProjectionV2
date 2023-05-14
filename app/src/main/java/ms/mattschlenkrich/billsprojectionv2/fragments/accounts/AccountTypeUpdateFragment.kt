@@ -91,7 +91,7 @@ class AccountTypeUpdateFragment :
             accountsViewModel.updateAccountType(accountType)
             val direction = AccountTypeUpdateFragmentDirections
                 .actionAccountTypeUpdateFragmentToAccountTypesFragment(
-                    args.budgetRule, args.account,
+                    args.budgetRuleDetailed, args.account,
                     args.requestedAccount, args.callingFragment
                 )
             mView?.findNavController()?.navigate(direction)
@@ -107,7 +107,7 @@ class AccountTypeUpdateFragment :
                     accountsViewModel.updateAccountType(accountType)
                     val direction = AccountTypeUpdateFragmentDirections
                         .actionAccountTypeUpdateFragmentToAccountTypesFragment(
-                            args.budgetRule, args.account,
+                            args.budgetRuleDetailed, args.account,
                             args.requestedAccount, args.callingFragment
                         )
                     mView?.findNavController()?.navigate(direction)
@@ -153,7 +153,7 @@ class AccountTypeUpdateFragment :
                 )
                 val direction = AccountTypeUpdateFragmentDirections
                     .actionAccountTypeUpdateFragmentToAccountTypesFragment(
-                        args.budgetRule, args.account,
+                        args.budgetRuleDetailed, args.account,
                         args.requestedAccount, args.callingFragment
                     )
                 mView?.findNavController()?.navigate(direction)

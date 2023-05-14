@@ -72,15 +72,15 @@ data class BudgetRule(
 @Parcelize
 data class BudgetRuleDetailed(
     @Embedded
-    val budgetRule: BudgetRule,
+    val budgetRule: BudgetRule?,
     @Relation(
         parentColumn = TO_ACCOUNT_ID,
         entityColumn = ACCOUNT_ID
     )
-    val toAccount: Account,
+    val toAccount: Account?,
     @Relation(
         parentColumn = FROM_ACCOUNT_ID,
         entityColumn = ACCOUNT_ID
     )
-    val fromAccount: Account
+    val fromAccount: Account?
 ) : Parcelable

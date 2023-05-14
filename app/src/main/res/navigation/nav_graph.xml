@@ -16,8 +16,8 @@
             android:id="@+id/action_accountsFragment_to_accountAddFragment"
             app:destination="@id/accountAddFragment" />
         <argument
-            android:name="budgetRule"
-            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRule"
+            android:name="budgetRuleDetailed"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed"
             app:nullable="true" />
         <argument
             android:name="requestedAccount"
@@ -45,8 +45,8 @@
             android:id="@+id/action_accountUpdateFragment_to_accountTypesFragment"
             app:destination="@id/accountTypesFragment" />
         <argument
-            android:name="budgetRule"
-            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRule"
+            android:name="budgetRuleDetailed"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed"
             app:nullable="true" />
         <argument
             android:name="account"
@@ -76,8 +76,8 @@
             android:id="@+id/action_accountAddFragment_to_accountTypesFragment"
             app:destination="@id/accountTypesFragment" />
         <argument
-            android:name="budgetRule"
-            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRule"
+            android:name="budgetRuleDetailed"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed"
             app:nullable="true" />
         <argument
             android:name="account"
@@ -113,8 +113,8 @@
             android:id="@+id/action_accountTypesFragment_to_accountAddFragment"
             app:destination="@id/accountAddFragment" />
         <argument
-            android:name="budgetRule"
-            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRule"
+            android:name="budgetRuleDetailed"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed"
             app:nullable="true" />
         <argument
             android:name="account"
@@ -137,8 +137,8 @@
             android:id="@+id/action_accountTypeAddFragment_to_accountTypesFragment"
             app:destination="@id/accountTypesFragment" />
         <argument
-            android:name="budgetRule"
-            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRule"
+            android:name="budgetRuleDetailed"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed"
             app:nullable="true" />
         <argument
             android:name="account"
@@ -161,8 +161,8 @@
             android:id="@+id/action_accountTypeUpdateFragment_to_accountTypesFragment"
             app:destination="@id/accountTypesFragment" />
         <argument
-            android:name="budgetRule"
-            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRule"
+            android:name="budgetRuleDetailed"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed"
             app:nullable="true" />
         <argument
             android:name="account"

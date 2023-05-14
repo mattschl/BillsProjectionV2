@@ -21,7 +21,7 @@ import ms.mattschlenkrich.billsprojectionv2.SQLITE_TIME
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
+import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -41,7 +41,7 @@ class AccountUpdateFragment :
 
     //since the update fragment contains arguments in nav_graph
     private val args: AccountUpdateFragmentArgs by navArgs()
-    private var curBudgetRule: BudgetRule? = null
+    private var curBudgetRuleDetailed: BudgetRuleDetailed? = null
     private var curAccount: Account? = null
     private var newAccountType: AccountType? = null
 //    private var currAccountType: AccountType? = null
@@ -73,7 +73,7 @@ class AccountUpdateFragment :
         super.onViewCreated(view, savedInstanceState)
         accountsViewModel =
             (activity as MainActivity).accountViewModel
-        curBudgetRule = args.budgetRule!!
+        curBudgetRuleDetailed = args.budgetRuleDetailed!!
         curAccount = args.account!!
         newAccountType = args.accountType!!
         fillValues()
@@ -111,7 +111,7 @@ class AccountUpdateFragment :
         )
         val direction = AccountUpdateFragmentDirections
             .actionAccountUpdateFragmentToAccountTypesFragment(
-                args.budgetRule,
+                args.budgetRuleDetailed,
                 account,
                 args.requestedAccount,
                 TAG

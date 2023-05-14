@@ -7,7 +7,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.SearchView
+import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
@@ -62,7 +62,7 @@ class AccountTypesFragment
         binding.fabAddAccountType.setOnClickListener {
             val direction = AccountTypesFragmentDirections
                 .actionAccountTypesFragmentToAccountTypeAddFragment(
-                    args.budgetRule, args.account,
+                    args.budgetRuleDetailed, args.account,
                     args.requestedAccount, args.callingFragment
                 )
             it.findNavController().navigate(direction)
@@ -71,7 +71,7 @@ class AccountTypesFragment
 
     private fun setupRecyclerView() {
         accountTypeAdapter = AccountTypeAdapter(
-            args.budgetRule, args.account,
+            args.budgetRuleDetailed, args.account,
             args.requestedAccount, args.callingFragment
         )
 

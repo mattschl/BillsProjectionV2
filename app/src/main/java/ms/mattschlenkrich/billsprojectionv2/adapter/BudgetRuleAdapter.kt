@@ -4,6 +4,7 @@ import android.content.res.Resources
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -26,7 +27,7 @@ class BudgetRuleAdapter(val callingFragment: String) :
                 oldItem: BudgetRuleDetailed,
                 newItem: BudgetRuleDetailed
             ): Boolean {
-                return oldItem.budgetRule.RuleId == newItem.budgetRule.RuleId &&
+                return oldItem.budgetRule!!.RuleId == newItem.budgetRule!!.RuleId &&
                         oldItem.budgetRule.budgetRuleName == newItem.budgetRule.budgetRuleName
             }
 
@@ -56,10 +57,10 @@ class BudgetRuleAdapter(val callingFragment: String) :
     override fun onBindViewHolder(holder: BudgetRuleViewHolder, position: Int) {
         val curBudgetRule = differ.currentList[position]
         holder.itemBinding.tvBudgetRule.text =
-            curBudgetRule.budgetRule.budgetRuleName
-        var info = "To: " + curBudgetRule.toAccount.accountName
+            curBudgetRule.budgetRule!!.budgetRuleName
+        var info = "To: " + curBudgetRule.toAccount!!.accountName
         holder.itemBinding.tvToAccount.text = info
-        info = "From: " + curBudgetRule.fromAccount.accountName
+        info = "From: " + curBudgetRule.fromAccount!!.accountName
         holder.itemBinding.tvFromAccount.text = info
         val frequencyTypes =
             Resources.getSystem().getStringArray(R.array.frequency_type)
@@ -84,11 +85,13 @@ class BudgetRuleAdapter(val callingFragment: String) :
         holder.itemBinding.ibColor.setBackgroundColor(color)
 
         holder.itemView.setOnLongClickListener {
+
             val direction = BudgetRuleFragmentDirections
                 .actionBudgetRuleFragmentToBudgetRuleUpdateFragment(
                     curBudgetRule,
                     callingFragment
                 )
+            it.findNavController().navigate(direction)
             false
         }
     }

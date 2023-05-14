@@ -92,7 +92,7 @@ class AccountTypeAddFragment :
             accountsViewModel.addAccountType(accountType)
             val direction = AccountTypeAddFragmentDirections
                 .actionAccountTypeAddFragmentToAccountTypesFragment(
-                    args.budgetRule,
+                    args.budgetRuleDetailed,
                     args.account,
                     args.requestedAccount,
                     args.callingFragment

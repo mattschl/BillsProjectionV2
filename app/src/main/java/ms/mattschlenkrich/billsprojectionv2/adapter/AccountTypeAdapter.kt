@@ -13,11 +13,11 @@ import ms.mattschlenkrich.billsprojectionv2.databinding.AccountTypeLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountTypesFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
+import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import java.util.Random
 
 class AccountTypeAdapter(
-    val budgetRule: BudgetRule?,
+    val budgetRuleDetailed: BudgetRuleDetailed?,
     val account: Account?,
     private val requestedAccount: String?,
     private val callingFragment: String?
@@ -94,7 +94,7 @@ class AccountTypeAdapter(
         holder.itemView.setOnLongClickListener {
             val direction = AccountTypesFragmentDirections
                 .actionAccountTypesFragmentToAccountTypeUpdateFragment(
-                    budgetRule,
+                    budgetRuleDetailed,
                     account,
                     curAccountType,
                     requestedAccount,
@@ -107,7 +107,7 @@ class AccountTypeAdapter(
             if (callingFragment == FRAG_ACCOUNT_UPDATE) {
                 val direction = AccountTypesFragmentDirections
                     .actionAccountTypesFragmentToAccountUpdateFragment(
-                        budgetRule,
+                        budgetRuleDetailed,
                         account,
                         curAccountType,
                         requestedAccount,
@@ -117,7 +117,7 @@ class AccountTypeAdapter(
             } else if (callingFragment == FRAG_ACCOUNT_ADD) {
                 val direction = AccountTypesFragmentDirections
                     .actionAccountTypesFragmentToAccountAddFragment(
-                        budgetRule,
+                        budgetRuleDetailed,
                         account,
                         curAccountType,
                         requestedAccount,

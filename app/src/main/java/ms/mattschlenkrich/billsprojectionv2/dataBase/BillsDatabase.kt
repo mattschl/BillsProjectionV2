@@ -14,11 +14,9 @@ import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
     ], version = 1
 )
 abstract class BillsDatabase : RoomDatabase() {
-
     abstract fun getAccountTypesDao(): AccountTypeDao
     abstract fun getAccountDao(): AccountDao
     abstract fun getBudgetRuleDao(): BudgetRuleDao
-
     companion object {
         @Volatile
         private var instance: BillsDatabase? = null

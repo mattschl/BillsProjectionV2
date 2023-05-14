@@ -7,18 +7,21 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNTS
+import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_RULE_ADD
+import ms.mattschlenkrich.billsprojectionv2.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.AccountLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountsFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
+import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import java.text.NumberFormat
 import java.util.Locale
 import java.util.Random
 
 
 class AccountAdapter(
-    private val budgetRule: BudgetRule?,
+    private val budgetRuleDetailed: BudgetRuleDetailed?,
     private val requestedAccount: String?,
     private val callingFragment: String?
 ) :
@@ -116,15 +119,31 @@ class AccountAdapter(
         holder.itemBinding.ibAccountColor.setBackgroundColor(color)
 
         holder.itemView.setOnClickListener {
-            if (requestedAccount == REQUEST_TO_ACCOUNT) {
-                //goto
-            }
+            if (requestedAccount == REQUEST_TO_ACCOUNT &&
+                callingFragment == FRAG_BUDGET_RULE_ADD
+            ) {
+                val direction = AccountsFragmentDirections
+                    .actionAccountsFragmentToAccountAddFragment(
+                        budgetRuleDetailed, curAccount.account,
+                        null, null, FRAG_ACCOUNTS
+                    )
+                it.findNavController().navigate(direction)
+            } else if (requestedAccount == REQUEST_FROM_ACCOUNT &&
+                callingFragment == FRAG_BUDGET_RULE_ADD
+            ) {
+                val direction = AccountsFragmentDirections
+                    .actionAccountsFragmentToAccountAddFragment(
+                        budgetRuleDetailed, curAccount.account,
+                        null, null, FRAG_ACCOUNTS
+                    )
+                it.findNavController().navigate(direction)
+            } // next option to update budgetRule
         }
 
         holder.itemView.setOnLongClickListener {
             val direction = AccountsFragmentDirections
                 .actionAccountsFragmentToAccountUpdateFragment(
-                    budgetRule,
+                    budgetRuleDetailed,
                     curAccount.account,
                     curAccount.accountType,
                     requestedAccount,

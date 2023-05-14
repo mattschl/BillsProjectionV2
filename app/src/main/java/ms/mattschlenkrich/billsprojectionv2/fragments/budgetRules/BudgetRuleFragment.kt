@@ -20,6 +20,7 @@ import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModel
 
 private const val TAG = FRAG_BUDGET_RULES
 
+@Suppress("DEPRECATION")
 class BudgetRuleFragment :
     Fragment(R.layout.fragment_budget_rule),
     SearchView.OnQueryTextListener {
@@ -96,6 +97,7 @@ class BudgetRuleFragment :
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
 //        super.onCreateOptionsMenu(menu, inflater)
         menu.clear()

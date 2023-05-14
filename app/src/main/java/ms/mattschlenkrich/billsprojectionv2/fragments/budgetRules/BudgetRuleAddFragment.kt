@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
@@ -41,10 +42,8 @@ class BudgetRuleAddFragment :
     private lateinit var mView: View
     private val args: BudgetRuleAddFragmentArgs by navArgs()
 
-    private lateinit var mBudgetRule: BudgetRule
-    private lateinit var mToAccount: Account
-    private lateinit var mFromAccount: Account
-    private lateinit var mBudgetRuleDetailed: BudgetRuleDetailed
+    private var mToAccount: Account? = null
+    private var mFromAccount: Account? = null
     private var mDayOfWeekId = 0L
     private var mFrequencyTypeId = 0L
 
@@ -56,6 +55,7 @@ class BudgetRuleAddFragment :
     private val dateFormatter: SimpleDateFormat =
         SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
 
+    @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -79,6 +79,7 @@ class BudgetRuleAddFragment :
             (activity as MainActivity).budgetRuleViewModel
 
         fillValues()
+
         binding.apply {
             tvToAccount.setOnLongClickListener {
                 chooseToAccount()
@@ -99,17 +100,13 @@ class BudgetRuleAddFragment :
         }
     }
 
-    private fun tempSave() {
-
-    }
-
     private fun chooseFromAccount() {
         binding.apply {
-            val mBudgetRule = BudgetRule(
+            val budgetRule = BudgetRule(
                 0,
                 etBudgetName.text.toString().trim(),
-                if (mToAccount == null) 0L else mToAccount.accountId,
-                if (mFromAccount == null) 0 else mFromAccount.accountId,
+                if (mToAccount == null) 0L else mToAccount!!.accountId,
+                if (mFromAccount == null) 0L else mFromAccount!!.accountId,
                 etAmount.text.toString().trim()
                     .replace(",", "")
                     .replace("$", "")
@@ -126,9 +123,31 @@ class BudgetRuleAddFragment :
                 false,
                 ""
             )
+            val toAccount =
+                if (args.budgetRuleDetailed != null) {
+                    if (args.budgetRuleDetailed!!.toAccount != null) {
+                        args.budgetRuleDetailed!!.toAccount
+                    } else {
+                        null
+                    }
+                } else {
+                    null
+                }
+            val fromAccount =
+                if (args.budgetRuleDetailed != null) {
+                    if (args.budgetRuleDetailed!!.fromAccount != null) {
+                        args.budgetRuleDetailed!!.fromAccount
+                    } else {
+                        null
+                    }
+                } else {
+                    null
+                }
+            val mBudgetRuleDetailed =
+                BudgetRuleDetailed(budgetRule, toAccount, fromAccount)
             val direction = BudgetRuleAddFragmentDirections
                 .actionBudgetRuleAddFragmentToAccountsFragment(
-                    mBudgetRule,
+                    mBudgetRuleDetailed,
                     REQUEST_FROM_ACCOUNT,
                     TAG
                 )
@@ -138,15 +157,16 @@ class BudgetRuleAddFragment :
 
     private fun chooseToAccount() {
         binding.apply {
-            val mBudgetRule = BudgetRule(
+            val budgetRule = BudgetRule(
                 0,
                 etBudgetName.text.toString().trim(),
-                if (mToAccount == null) 0L else mToAccount.accountId,
-                if (mFromAccount == null) 0 else mFromAccount.accountId,
-                etAmount.text.toString().trim()
-                    .replace(",", "")
-                    .replace("$", "")
-                    .toDouble(),
+                if (mToAccount == null) 0L else mToAccount!!.accountId,
+                if (mFromAccount == null) 0L else mFromAccount!!.accountId,
+                if (etAmount.text.isNullOrBlank()) 0.0 else
+                    etAmount.text.toString().trim()
+                        .replace(",", "")
+                        .replace("$", "")
+                        .toDouble(),
                 chkFixedAmount.isChecked,
                 chkMakePayDay.isChecked,
                 chkAutoPayment.isChecked,
@@ -159,9 +179,31 @@ class BudgetRuleAddFragment :
                 false,
                 ""
             )
+            val toAccount =
+                if (args.budgetRuleDetailed != null) {
+                    if (args.budgetRuleDetailed!!.toAccount != null) {
+                        args.budgetRuleDetailed!!.toAccount
+                    } else {
+                        null
+                    }
+                } else {
+                    null
+                }
+            val fromAccount =
+                if (args.budgetRuleDetailed != null) {
+                    if (args.budgetRuleDetailed!!.fromAccount != null) {
+                        args.budgetRuleDetailed!!.fromAccount
+                    } else {
+                        null
+                    }
+                } else {
+                    null
+                }
+            val mBudgetRuleDetailed =
+                BudgetRuleDetailed(budgetRule, toAccount, fromAccount)
             val direction = BudgetRuleAddFragmentDirections
                 .actionBudgetRuleAddFragmentToAccountsFragment(
-                    mBudgetRule,
+                    mBudgetRuleDetailed,
                     REQUEST_TO_ACCOUNT,
                     TAG
                 )
@@ -217,36 +259,40 @@ class BudgetRuleAddFragment :
         fillSpinners()
         binding.apply {
             if (args.budgetRuleDetailed != null) {
-                etBudgetName.setText(
-                    args.budgetRuleDetailed!!.budgetRule.budgetRuleName
-                )
-                etAmount.setText(
-                    dollarFormat.format(
-                        args.budgetRuleDetailed!!.budgetRule.amount
+                if (args.budgetRuleDetailed!!.budgetRule != null) {
+                    etBudgetName.setText(
+                        args.budgetRuleDetailed!!.budgetRule!!.budgetRuleName
                     )
-                )
-                tvToAccount.text =
-                    args.budgetRuleDetailed!!.toAccount.accountName
-                tvFromAccount.text =
-                    args.budgetRuleDetailed!!.fromAccount.accountName
-                chkFixedAmount.isChecked =
-                    args.budgetRuleDetailed!!.budgetRule.fixedAmount
-                chkMakePayDay.isChecked =
-                    args.budgetRuleDetailed!!.budgetRule.isPayDay
-                chkAutoPayment.isChecked =
-                    args.budgetRuleDetailed!!.budgetRule.isAutoPay
-                etStartDate.setText(
-                    args.budgetRuleDetailed!!.budgetRule.startDate
-                )
-                etEndDate.setText(
-                    args.budgetRuleDetailed!!.budgetRule.endDate
-                )
-                spFrequencyType.setSelection(
-                    args.budgetRuleDetailed!!.budgetRule.frequencyTypeId.toInt()
-                )
-                spDayOfWeek.setSelection(
-                    args.budgetRuleDetailed!!.budgetRule.dayOfWeekId.toInt()
-                )
+                    etAmount.setText(
+                        dollarFormat.format(
+                            args.budgetRuleDetailed!!.budgetRule!!.amount
+                        )
+                    )
+                    tvToAccount.text =
+                        args.budgetRuleDetailed!!.toAccount!!.accountName
+                    mToAccount = args.budgetRuleDetailed!!.toAccount
+                    tvFromAccount.text =
+                        args.budgetRuleDetailed!!.fromAccount!!.accountName
+                    mFromAccount = args.budgetRuleDetailed!!.fromAccount
+                    chkFixedAmount.isChecked =
+                        args.budgetRuleDetailed!!.budgetRule!!.fixedAmount
+                    chkMakePayDay.isChecked =
+                        args.budgetRuleDetailed!!.budgetRule!!.isPayDay
+                    chkAutoPayment.isChecked =
+                        args.budgetRuleDetailed!!.budgetRule!!.isAutoPay
+                    etStartDate.setText(
+                        args.budgetRuleDetailed!!.budgetRule!!.startDate
+                    )
+                    etEndDate.setText(
+                        args.budgetRuleDetailed!!.budgetRule!!.endDate
+                    )
+                    spFrequencyType.setSelection(
+                        args.budgetRuleDetailed!!.budgetRule!!.frequencyTypeId.toInt()
+                    )
+                    spDayOfWeek.setSelection(
+                        args.budgetRuleDetailed!!.budgetRule!!.dayOfWeekId.toInt()
+                    )
+                }
             } else {
                 etStartDate.setText(
                     dateFormatter.format(
@@ -286,11 +332,14 @@ class BudgetRuleAddFragment :
         binding.spDayOfWeek.adapter = adapterDayOfWeek
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.save_menu, menu)
     }
 
+    @Suppress("DEPRECATION")
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_save -> {
@@ -301,47 +350,58 @@ class BudgetRuleAddFragment :
     }
 
     private fun saveBudgetRule() {
-        val budgetName =
-            binding.etBudgetName.text.toString().trim()
-        val amount =
-            binding.etAmount.text.toString().trim()
-                .replace(",", "")
-                .replace("$", "")
-                .toDouble()
-        val toAccount =
-            binding.tvToAccount.text.toString()
-        val fromAccount =
-            binding.tvFromAccount.text.toString()
-        val fixedAmount =
-            if (binding.chkFixedAmount.isChecked) 1 else 0
-        val isPayDay =
-            if (binding.chkMakePayDay.isChecked) 1 else 0
-        val isAutoPayment =
-            if (binding.chkAutoPayment.isChecked) 1 else 0
-        val startDate =
-            binding.etStartDate.text.toString()
-        val endDate =
-            binding.etEndDate.text.toString()
-        val frequencyTypeId =
-            binding.spFrequencyType.selectedItemId
-        val frequencyCount =
-            binding.etFrequencyCount.text.toString().toInt()
-        val dayOfWeekId =
-            binding.spDayOfWeek.selectedItemId
-        val leadDays =
-            binding.etLeadDays.text.toString().toInt()
-        val updateTime =
-            timeFormatter.format(Calendar.getInstance().time)
+        binding.apply {
+            if (etBudgetName.text.isNotBlank()) {
+                val budgetName =
+                    etBudgetName.text.toString().trim()
+                val amount =
+                    etAmount.text.toString().trim()
+                        .replace(",", "")
+                        .replace("$", "")
+                        .toDouble()
+                val toAccount =
+                    tvToAccount.text.toString()
+                val fromAccount =
+                    tvFromAccount.text.toString()
+                val fixedAmount =
+                    if (chkFixedAmount.isChecked) 1 else 0
+                val isPayDay =
+                    if (chkMakePayDay.isChecked) 1 else 0
+                val isAutoPayment =
+                    if (chkAutoPayment.isChecked) 1 else 0
+                val startDate =
+                    etStartDate.text.toString()
+                val endDate =
+                    etEndDate.text.toString()
+                val frequencyTypeId =
+                    spFrequencyType.selectedItemId
+                val frequencyCount =
+                    etFrequencyCount.text.toString().toInt()
+                val dayOfWeekId =
+                    spDayOfWeek.selectedItemId
+                val leadDays =
+                    etLeadDays.text.toString().toInt()
+                val updateTime =
+                    timeFormatter.format(Calendar.getInstance().time)
 
-        budgetRuleViewModel.insertBudgetRule(
-            budgetName, amount, toAccount, fromAccount,
-            fixedAmount, isPayDay, isAutoPayment,
-            startDate, endDate, frequencyTypeId,
-            frequencyCount, dayOfWeekId, leadDays, updateTime
-        )
-        val direction = BudgetRuleAddFragmentDirections
-            .actionBudgetRuleAddFragmentToBudgetRuleFragment()
-        mView.findNavController().navigate(direction)
+                budgetRuleViewModel.insertBudgetRule(
+                    budgetName, amount, toAccount, fromAccount,
+                    fixedAmount, isPayDay, isAutoPayment,
+                    startDate, endDate, frequencyTypeId,
+                    frequencyCount, dayOfWeekId, leadDays, updateTime
+                )
+                val direction = BudgetRuleAddFragmentDirections
+                    .actionBudgetRuleAddFragmentToBudgetRuleFragment()
+                mView.findNavController().navigate(direction)
+            } else {
+                Toast.makeText(
+                    mView.context,
+                    "   ERROR! \n" +
+                            "Budget Rule name cannot be empty.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
     }
 
     override fun onDestroy() {

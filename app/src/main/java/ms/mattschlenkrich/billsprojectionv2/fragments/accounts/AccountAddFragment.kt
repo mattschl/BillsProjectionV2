@@ -130,7 +130,7 @@ class AccountAddFragment :
         )
         val direction = AccountAddFragmentDirections
             .actionAccountAddFragmentToAccountTypesFragment(
-                args.budgetRule, account,
+                args.budgetRuleDetailed, account,
                 args.requestedAccount, TAG
             )
         mView.findNavController().navigate(direction)
@@ -174,7 +174,7 @@ class AccountAddFragment :
                 accountsViewModel.addAccount(account)
                 val direction = AccountAddFragmentDirections
                     .actionAccountAddFragmentToAccountsFragment(
-                        args.budgetRule, args.requestedAccount,
+                        args.budgetRuleDetailed, args.requestedAccount,
                         args.callingFragment
                     )
                 view.findNavController().navigate(direction)
