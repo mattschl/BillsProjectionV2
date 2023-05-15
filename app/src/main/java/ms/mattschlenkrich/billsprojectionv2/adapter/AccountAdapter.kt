@@ -9,6 +9,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.billsprojectionv2.ADAPTER_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_RULE_ADD
 import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_RULE_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.REQUEST_FROM_ACCOUNT
@@ -21,7 +22,7 @@ import java.text.NumberFormat
 import java.util.Locale.CANADA
 import java.util.Random
 
-private const val TAG = "AccountAdapter"
+private const val TAG = ADAPTER_ACCOUNT
 
 class AccountAdapter(
     private val budgetRuleDetailed: BudgetRuleDetailed?,
@@ -79,6 +80,7 @@ class AccountAdapter(
         holder: AccountViewHolder, position: Int
     ) {
 
+        Log.d(TAG, "$TAG is entered")
         val curAccount = differ.currentList[position]
 
         holder.itemBinding.tvAccountName.text = curAccount.account.accountName

@@ -19,6 +19,8 @@ const val FRAG_BUDGET_RULE_ADD = "BudgetRuleAdd"
 const val FRAG_BUDGET_RULE_UPDATE = "BudgetRuleUpdate"
 
 const val ADAPTER_BUDGET_RULE = "BudgetRuleAdapter"
+const val ADAPTER_ACCOUNT = "AccountAdapter"
+const val ADAPTER_ACCOUNT_TYPE = "AccountTypeAdapter"
 
 const val TABLE_ACCOUNT_TYPES = "accountTypes"
 const val TYPE_ID = "typeId"

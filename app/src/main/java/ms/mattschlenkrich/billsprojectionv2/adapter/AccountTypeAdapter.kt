@@ -1,12 +1,14 @@
 package ms.mattschlenkrich.billsprojectionv2.adapter
 
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.billsprojectionv2.ADAPTER_ACCOUNT_TYPE
 import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNT_ADD
 import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.databinding.AccountTypeLayoutBinding
@@ -15,6 +17,8 @@ import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import java.util.Random
+
+private const val TAG = ADAPTER_ACCOUNT_TYPE
 
 class AccountTypeAdapter(
     val budgetRuleDetailed: BudgetRuleDetailed?,
@@ -60,6 +64,7 @@ class AccountTypeAdapter(
     override fun onBindViewHolder(
         holder: AccountTypeViewHolder, position: Int
     ) {
+        Log.d(TAG, "$TAG is entered")
         val curAccountType = differ.currentList[position]
 
         holder.itemBinding.tvAccountType.text = curAccountType.accountType
