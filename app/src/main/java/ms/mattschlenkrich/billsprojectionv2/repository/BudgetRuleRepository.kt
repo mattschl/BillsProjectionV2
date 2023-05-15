@@ -5,6 +5,9 @@ import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
 
 class BudgetRuleRepository(private val db: BillsDatabase) {
 
+    suspend fun insertBudgetRule(budgetRule: BudgetRule) =
+        db.getBudgetRuleDao().insertBudgetRule(budgetRule)
+
     suspend fun insertBudgetRule(
         budgetRuleName: String, amount: Double,
         toAccount: String, fromAccount: String,

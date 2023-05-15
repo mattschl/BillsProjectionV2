@@ -2,6 +2,7 @@ package ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -69,6 +70,7 @@ class BudgetRuleAddFragment :
         _binding = FragmentBudgetRuleAddBinding.inflate(
             inflater, container, false
         )
+        Log.d(TAG, "$TAG is entered")
         mView = binding.root
         return mView
     }
@@ -81,13 +83,11 @@ class BudgetRuleAddFragment :
         fillValues()
 
         binding.apply {
-            tvToAccount.setOnLongClickListener {
+            tvToAccount.setOnClickListener {
                 chooseToAccount()
-                false
             }
-            tvFromAccount.setOnLongClickListener {
+            tvFromAccount.setOnClickListener {
                 chooseFromAccount()
-                false
             }
             etStartDate.setOnLongClickListener {
                 chooseStartDate()
@@ -356,47 +356,54 @@ class BudgetRuleAddFragment :
     private fun saveBudgetRule() {
         binding.apply {
             if (etBudgetName.text.isNotBlank()) {
-                val budgetName =
-                    etBudgetName.text.toString().trim()
-                val amount =
-                    etAmount.text.toString().trim()
-                        .replace(",", "")
-                        .replace("$", "")
-                        .toDouble()
-                val toAccount =
-                    tvToAccount.text.toString()
-                val fromAccount =
-                    tvFromAccount.text.toString()
-                val fixedAmount =
-                    if (chkFixedAmount.isChecked) 1 else 0
-                val isPayDay =
-                    if (chkMakePayDay.isChecked) 1 else 0
-                val isAutoPayment =
-                    if (chkAutoPayment.isChecked) 1 else 0
-                val startDate =
-                    etStartDate.text.toString()
-                val endDate =
-                    etEndDate.text.toString()
-                val frequencyTypeId =
-                    spFrequencyType.selectedItemId
-                val frequencyCount =
-                    etFrequencyCount.text.toString().toInt()
-                val dayOfWeekId =
-                    spDayOfWeek.selectedItemId
-                val leadDays =
-                    etLeadDays.text.toString().toInt()
-                val updateTime =
-                    timeFormatter.format(Calendar.getInstance().time)
-
-                budgetRuleViewModel.insertBudgetRule(
-                    budgetName, amount, toAccount, fromAccount,
-                    fixedAmount, isPayDay, isAutoPayment,
-                    startDate, endDate, frequencyTypeId,
-                    frequencyCount, dayOfWeekId, leadDays, updateTime
-                )
-                val direction = BudgetRuleAddFragmentDirections
-                    .actionBudgetRuleAddFragmentToBudgetRuleFragment()
-                mView.findNavController().navigate(direction)
+                if (mToAccount != null) {
+                    if (mFromAccount != null) {
+                        val budgetName =
+                            etBudgetName.text.toString().trim()
+                        val amount =
+                            etAmount.text.toString().trim()
+                                .replace(",", "")
+                                .replace("$", "")
+                                .toDouble()
+                        val updateTime =
+                            timeFormatter.format(Calendar.getInstance().time)
+                        val budgetRule = BudgetRule(
+                            0, budgetName,
+                            mToAccount!!.accountId,
+                            mFromAccount!!.accountId,
+                            amount,
+                            chkFixedAmount.isChecked,
+                            chkMakePayDay.isChecked,
+                            chkAutoPayment.isChecked,
+                            etStartDate.text.toString(),
+                            etEndDate.text.toString(),
+                            spDayOfWeek.selectedItemId,
+                            spFrequencyType.selectedItemId,
+                            etFrequencyCount.text.toString().toInt(),
+                            etLeadDays.text.toString().toInt(),
+                            false,
+                            updateTime
+                        )
+                        budgetRuleViewModel.insertBudgetRule(budgetRule)
+                        val direction = BudgetRuleAddFragmentDirections
+                            .actionBudgetRuleAddFragmentToBudgetRuleFragment()
+                        mView.findNavController().navigate(direction)
+                    } else {
+                        Toast.makeText(
+                            mView.context,
+                            "   ERROR! \n" +
+                                    "Please choose an account the money will come from.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                } else {
+                    Toast.makeText(
+                        mView.context,
+                        "   ERROR! \n" +
+                                "Please choose an account the money will go to.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             } else {
                 Toast.makeText(
                     mView.context,

@@ -49,7 +49,10 @@ class AccountTypeAddFragment :
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        _binding = FragmentAccountTypeAddBinding.inflate(inflater, container, false)
+        _binding = FragmentAccountTypeAddBinding.inflate(
+            inflater, container, false
+        )
+        Log.d(TAG, "$TAG is entered")
 
         return binding.root
     }

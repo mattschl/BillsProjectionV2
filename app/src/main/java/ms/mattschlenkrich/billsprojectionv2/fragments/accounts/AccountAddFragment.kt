@@ -56,6 +56,7 @@ class AccountAddFragment :
         _binding = FragmentAccountAddBinding.inflate(
             inflater, container, false
         )
+        Log.d(TAG, "$TAG is entered")
 
         return binding.root
     }

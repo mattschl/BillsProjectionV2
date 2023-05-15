@@ -2,6 +2,7 @@ package ms.mattschlenkrich.billsprojectionv2.dataBase
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
@@ -30,6 +31,9 @@ import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 
 @Dao
 interface BudgetRuleDao {
+    @Insert
+    suspend fun insertBudgetRule(budgetRule: BudgetRule)
+
     @Transaction
     @Query(
         "INSERT INTO $TABLE_BUDGET_RULES " +

@@ -93,8 +93,8 @@
                 android:text="@string/amount"
                 android:textSize="@dimen/text_info_size"
                 app:layout_constraintBaseline_toBaselineOf="@+id/etAmount"
-                app:layout_constraintEnd_toEndOf="@+id/lblFromAccount"
-                app:layout_constraintStart_toStartOf="@+id/lblFromAccount" />
+                app:layout_constraintEnd_toStartOf="@+id/etAmount"
+                app:layout_constraintStart_toStartOf="parent" />
 
             <EditText
                 android:id="@+id/etAmount"
@@ -104,13 +104,25 @@
                 android:importantForAutofill="no"
                 android:inputType="numberDecimal|numberSigned"
                 android:minHeight="48dp"
+                android:textAlignment="center"
                 android:selectAllOnFocus="true"
                 android:textColor="@color/black"
                 android:textColorHint="#757575"
                 android:textSize="@dimen/title_text_size"
-                app:layout_constraintEnd_toEndOf="@+id/tvFromAccount"
-                app:layout_constraintStart_toStartOf="@+id/tvFromAccount"
+                app:layout_constraintEnd_toStartOf="@+id/chkFixedAmount"
+                app:layout_constraintStart_toEndOf="@id/lblAmount"
                 app:layout_constraintTop_toBottomOf="@+id/tvFromAccount" />
+
+            <CheckBox
+                android:id="@+id/chkFixedAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/fixed_amount"
+                android:textSize="@dimen/text_info_size"
+                app:layout_constraintBaseline_toBaselineOf="@+id/etAmount"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/etAmount" />
+
 
             <CheckBox
                 android:id="@+id/chkMakePayDay"
@@ -118,8 +130,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/make_a_pay_day"
                 android:textSize="@dimen/text_info_size"
-                app:layout_constraintEnd_toEndOf="@+id/lblAmount"
-                app:layout_constraintStart_toStartOf="@+id/lblAmount"
+                app:layout_constraintEnd_toStartOf="@+id/chkAutoPayment"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/etAmount" />
 
             <CheckBox
@@ -129,8 +141,8 @@
                 android:text="@string/automatic_payment"
                 android:textSize="@dimen/text_info_size"
                 app:layout_constraintBaseline_toBaselineOf="@+id/chkMakePayDay"
-                app:layout_constraintEnd_toEndOf="@+id/etAmount"
-                app:layout_constraintStart_toStartOf="@+id/etAmount" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/chkMakePayDay" />
 
             <TextView
                 android:id="@+id/lblStartDate"
@@ -192,7 +204,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/etEndDate" />
 
-            <TextView
+            <Spinner
                 android:id="@+id/spFrequencyType"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
@@ -202,7 +214,8 @@
                 android:textSize="@dimen/text_heading_size"
                 app:layout_constraintEnd_toStartOf="@id/etFrequencyCount"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/lblScheduling" />
+                app:layout_constraintTop_toBottomOf="@+id/lblScheduling"
+                tools:ignore="DuplicateSpeakableTextCheck" />
 
             <TextView
                 android:id="@+id/lblTimes"
@@ -237,7 +250,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/spDayOfWeek"
                 app:layout_constraintStart_toEndOf="@+id/etFrequencyCount" />
 
-            <TextView
+            <Spinner
                 android:id="@+id/spDayOfWeek"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"

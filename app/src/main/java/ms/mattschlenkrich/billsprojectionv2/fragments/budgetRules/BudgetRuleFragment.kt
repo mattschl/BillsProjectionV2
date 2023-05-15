@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -30,6 +31,7 @@ class BudgetRuleFragment :
 
     private lateinit var viewModel: BudgetRuleViewModel
     private lateinit var budgetRuleAdapter: BudgetRuleAdapter
+    private var mView: View? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,6 +47,8 @@ class BudgetRuleFragment :
         _binding = FragmentBudgetRuleBinding.inflate(
             inflater, container, false
         )
+        Log.d(TAG, "$TAG is entered")
+        mView = binding.root
         return binding.root
     }
 
@@ -65,7 +69,7 @@ class BudgetRuleFragment :
     }
 
     private fun setupRecyclerView() {
-        budgetRuleAdapter = BudgetRuleAdapter(requireContext(), TAG)
+        budgetRuleAdapter = BudgetRuleAdapter(mView!!.context, TAG)
 
         binding.rvBudgetRules.apply {
             layoutManager = StaggeredGridLayoutManager(

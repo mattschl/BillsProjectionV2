@@ -55,6 +55,7 @@ class AccountTypeUpdateFragment :
         _binding = FragmentAccountTypeUpdateBinding.inflate(
             inflater, container, false
         )
+        Log.d(TAG, "$TAG is entered")
         mView = binding.root
 
         return binding.root

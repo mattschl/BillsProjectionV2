@@ -12,6 +12,13 @@ class BudgetRuleViewModel(
     private val budgetRuleRepository: BudgetRuleRepository
 ) : AndroidViewModel(app) {
 
+    fun insertBudgetRule(budgetRule: BudgetRule) =
+        viewModelScope.launch {
+            budgetRuleRepository.insertBudgetRule(
+                budgetRule
+            )
+        }
+
     fun insertBudgetRule(
         budgetRuleName: String, amount: Double,
         toAccount: String, fromAccount: String,

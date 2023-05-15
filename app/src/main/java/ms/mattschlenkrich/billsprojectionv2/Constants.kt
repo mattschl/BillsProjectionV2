@@ -18,6 +18,8 @@ const val FRAG_DAYS_OF_WEEK = "DaysOfWeek"
 const val FRAG_BUDGET_RULE_ADD = "BudgetRuleAdd"
 const val FRAG_BUDGET_RULE_UPDATE = "BudgetRuleUpdate"
 
+const val ADAPTER_BUDGET_RULE = "BudgetRuleAdapter"
+
 const val TABLE_ACCOUNT_TYPES = "accountTypes"
 const val TYPE_ID = "typeId"
 const val ACCOUNT_TYPE = "accountType"
