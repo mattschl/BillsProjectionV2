@@ -72,7 +72,7 @@ data class BudgetRule(
 @Parcelize
 data class BudgetRuleDetailed(
     @Embedded
-    val budgetRule: BudgetRule,
+    val budgetRule: BudgetRule?,
     @Relation(
         parentColumn = TO_ACCOUNT_ID,
         entityColumn = ACCOUNT_ID

@@ -38,8 +38,8 @@ class BudgetRuleAdapter(
                 oldItem: BudgetRuleDetailed,
                 newItem: BudgetRuleDetailed
             ): Boolean {
-                return oldItem.budgetRule.RuleId ==
-                        newItem.budgetRule.RuleId
+                return oldItem.budgetRule!!.RuleId ==
+                        newItem.budgetRule!!.RuleId
             }
 
             override fun areContentsTheSame(
@@ -70,7 +70,7 @@ class BudgetRuleAdapter(
     override fun onBindViewHolder(holder: BudgetRuleViewHolder, position: Int) {
         val budgetRuleDetailed = differ.currentList[position]
         holder.itemBinding.tvBudgetRule.text =
-            budgetRuleDetailed.budgetRule.budgetRuleName
+            budgetRuleDetailed.budgetRule!!.budgetRuleName
         var info = "To: " + budgetRuleDetailed.toAccount!!.accountName
         holder.itemBinding.tvToAccount.text = info
         info = "From: " + budgetRuleDetailed.fromAccount!!.accountName
