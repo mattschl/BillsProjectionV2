@@ -116,7 +116,7 @@ class AccountUpdateFragment :
                 args.budgetRuleDetailed,
                 account,
                 args.requestedAccount,
-                TAG
+                arrayOf(TAG)
             )
         this.findNavController().navigate(direction)
     }
@@ -166,7 +166,7 @@ class AccountUpdateFragment :
                         .actionAccountUpdateFragmentToAccountsFragment(
                             args.budgetRuleDetailed,
                             args.requestedAccount,
-                            args.callingFragment
+                            args.callingFragments
                         )
                     mView?.findNavController()?.navigate(direction)
                 }

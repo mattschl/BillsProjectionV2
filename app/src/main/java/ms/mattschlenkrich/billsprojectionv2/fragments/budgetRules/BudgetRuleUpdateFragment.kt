@@ -140,7 +140,7 @@ class BudgetRuleUpdateFragment :
         }
     }
 
-    private fun chooseFromAccount() {
+    private fun getBudgetRuleDetailed(): BudgetRuleDetailed {
         binding.apply {
             val budgetRule = BudgetRule(
                 0,
@@ -183,72 +183,31 @@ class BudgetRuleUpdateFragment :
                 } else {
                     null
                 }
-            val mBudgetRuleDetailed =
-                BudgetRuleDetailed(budgetRule, toAccount, fromAccount)
-            val direction = BudgetRuleAddFragmentDirections
-                .actionBudgetRuleAddFragmentToAccountsFragment(
-                    mBudgetRuleDetailed,
-                    REQUEST_FROM_ACCOUNT,
-                    TAG
-                )
-            mView.findNavController().navigate(direction)
+            return BudgetRuleDetailed(budgetRule, toAccount, fromAccount)
         }
     }
 
-    private fun chooseToAccount() {
-        binding.apply {
-            val budgetRule = BudgetRule(
-                0,
-                etBudgetName.text.toString().trim(),
-                if (mToAccount == null) 0L else mToAccount!!.accountId,
-                if (mFromAccount == null) 0L else mFromAccount!!.accountId,
-                if (etAmount.text.isNullOrBlank()) 0.0 else
-                    etAmount.text.toString().trim()
-                        .replace(",", "")
-                        .replace("$", "")
-                        .toDouble(),
-                chkFixedAmount.isChecked,
-                chkMakePayDay.isChecked,
-                chkAutoPayment.isChecked,
-                etStartDate.text.toString(),
-                etEndDate.text.toString(),
-                mDayOfWeekId,
-                mFrequencyTypeId,
-                etFrequencyCount.text.toString().toInt(),
-                etLeadDays.text.toString().toInt(),
-                false,
-                ""
+    private fun chooseFromAccount() {
+
+        val direction = BudgetRuleUpdateFragmentDirections
+            .actionBudgetRuleUpdateFragmentToAccountsFragment(
+                getBudgetRuleDetailed(),
+                REQUEST_FROM_ACCOUNT,
+                arrayOf(TAG)
             )
-            val toAccount =
-                if (args.budgetRuleDetailed != null) {
-                    if (args.budgetRuleDetailed!!.toAccount != null) {
-                        args.budgetRuleDetailed!!.toAccount
-                    } else {
-                        null
-                    }
-                } else {
-                    null
-                }
-            val fromAccount =
-                if (args.budgetRuleDetailed != null) {
-                    if (args.budgetRuleDetailed!!.fromAccount != null) {
-                        args.budgetRuleDetailed!!.fromAccount
-                    } else {
-                        null
-                    }
-                } else {
-                    null
-                }
-            val mBudgetRuleDetailed =
-                BudgetRuleDetailed(budgetRule, toAccount, fromAccount)
-            val direction = BudgetRuleAddFragmentDirections
-                .actionBudgetRuleAddFragmentToAccountsFragment(
-                    mBudgetRuleDetailed,
-                    REQUEST_TO_ACCOUNT,
-                    TAG
-                )
-            mView.findNavController().navigate(direction)
-        }
+        mView.findNavController().navigate(direction)
+
+    }
+
+    private fun chooseToAccount() {
+        val direction = BudgetRuleUpdateFragmentDirections
+            .actionBudgetRuleUpdateFragmentToAccountsFragment(
+                getBudgetRuleDetailed(),
+                REQUEST_TO_ACCOUNT,
+                arrayOf(TAG)
+            )
+        mView.findNavController().navigate(direction)
+
     }
 
     private fun fillValues() {
@@ -393,7 +352,9 @@ class BudgetRuleUpdateFragment :
                 )
                 budgetRuleViewModel.updateBudgetRule(budgetRule)
                 val direction = BudgetRuleUpdateFragmentDirections
-                    .actionBudgetRuleUpdateFragmentToBudgetRuleFragment()
+                    .actionBudgetRuleUpdateFragmentToBudgetRuleFragment(
+                        arrayOf(TAG)
+                    )
                 mView.findNavController().navigate(direction)
             } else {
                 Toast.makeText(

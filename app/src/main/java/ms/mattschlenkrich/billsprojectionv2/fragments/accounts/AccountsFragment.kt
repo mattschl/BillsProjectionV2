@@ -85,7 +85,7 @@ class AccountsFragment :
         val direction = AccountsFragmentDirections
             .actionAccountsFragmentToAccountAddFragment(
                 budgetRuleDetailed, null, null,
-                requestedAccount, TAG
+                requestedAccount, arrayOf(TAG)
             )
         mView.findNavController().navigate(direction)
     }
@@ -96,7 +96,7 @@ class AccountsFragment :
         accountAdapter = AccountAdapter(
             args.budgetRuleDetailed,
             args.requestedAccount,
-            args.callingFragment
+            args.callingFragments
         )
 
         binding.rvAccounts.apply {

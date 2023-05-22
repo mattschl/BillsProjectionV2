@@ -27,7 +27,7 @@ private const val TAG = ADAPTER_ACCOUNT
 class AccountAdapter(
     private val budgetRuleDetailed: BudgetRuleDetailed?,
     private val requestedAccount: String?,
-    private val callingFragment: String?
+    private val callingFragments: Array<String>?,
 ) :
     RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() {
 
@@ -127,7 +127,7 @@ class AccountAdapter(
         holder.itemView.setOnClickListener {
             Log.d(
                 TAG, "onClick requested Account is $requestedAccount," +
-                        "  calling Fragment id $callingFragment"
+                        "  calling Fragment id $callingFragments"
             )
             if (requestedAccount == REQUEST_TO_ACCOUNT &&
                 budgetRuleDetailed != null
@@ -149,7 +149,7 @@ class AccountAdapter(
                     curAccount.account,
                     curAccount.accountType,
                     requestedAccount,
-                    callingFragment
+                    callingFragments
                 )
             it.findNavController().navigate(direction)
             false
@@ -157,17 +157,19 @@ class AccountAdapter(
     }
 
     private fun gotoCallingFragment(it: View) {
-        if (callingFragment == FRAG_BUDGET_RULE_ADD) {
+        if (callingFragments!!.contains(FRAG_BUDGET_RULE_ADD)) {
             val direction = AccountsFragmentDirections
                 .actionAccountsFragmentToBudgetRuleAddFragment(
-                    budgetRuleDetailed, TAG
+                    budgetRuleDetailed,
+                    callingFragments
                 )
             it.findNavController().navigate(direction)
-        } else if (callingFragment == FRAG_BUDGET_RULE_UPDATE
+        } else if (callingFragments.contains(FRAG_BUDGET_RULE_UPDATE)
         ) {
             val direction = AccountsFragmentDirections
                 .actionAccountsFragmentToBudgetRuleUpdateFragment(
-                    budgetRuleDetailed, TAG
+                    budgetRuleDetailed,
+                    callingFragments
                 )
             it.findNavController().navigate(direction)
         }

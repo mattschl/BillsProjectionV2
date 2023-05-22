@@ -93,7 +93,7 @@ class AccountTypeUpdateFragment :
             val direction = AccountTypeUpdateFragmentDirections
                 .actionAccountTypeUpdateFragmentToAccountTypesFragment(
                     args.budgetRuleDetailed, args.account,
-                    args.requestedAccount, args.callingFragment
+                    args.requestedAccount, args.callingFragments
                 )
             mView?.findNavController()?.navigate(direction)
         } else if (accountTypeName.isNotBlank()) {
@@ -109,7 +109,7 @@ class AccountTypeUpdateFragment :
                     val direction = AccountTypeUpdateFragmentDirections
                         .actionAccountTypeUpdateFragmentToAccountTypesFragment(
                             args.budgetRuleDetailed, args.account,
-                            args.requestedAccount, args.callingFragment
+                            args.requestedAccount, args.callingFragments
                         )
                     mView?.findNavController()?.navigate(direction)
                 }
@@ -155,7 +155,7 @@ class AccountTypeUpdateFragment :
                 val direction = AccountTypeUpdateFragmentDirections
                     .actionAccountTypeUpdateFragmentToAccountTypesFragment(
                         args.budgetRuleDetailed, args.account,
-                        args.requestedAccount, args.callingFragment
+                        args.requestedAccount, args.callingFragments
                     )
                 mView?.findNavController()?.navigate(direction)
             }

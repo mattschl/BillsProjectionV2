@@ -62,31 +62,35 @@ class BudgetRuleFragment :
         binding.fabAddNew.setOnClickListener {
             val direction = BudgetRuleFragmentDirections
                 .actionBudgetRuleFragmentToBudgetRuleAddFragment(
-                    null, TAG
+                    null,
+                    arrayOf(TAG)
+
                 )
             it.findNavController().navigate(direction)
         }
     }
 
     private fun setupRecyclerView() {
-        budgetRuleAdapter = BudgetRuleAdapter(mView!!.context, TAG)
+        budgetRuleAdapter = BudgetRuleAdapter(
+            mView!!.context,
+            arrayOf(TAG)
+        )
 
         binding.rvBudgetRules.apply {
             layoutManager = StaggeredGridLayoutManager(
                 2,
                 StaggeredGridLayoutManager.VERTICAL
             )
-            setHasFixedSize(true)
             adapter = budgetRuleAdapter
         }
         activity.let {
             viewModel.getActiveBudgetRulesDetailed().observe(
                 viewLifecycleOwner
-            ) { budgetRuleDetailed ->
+            ) { budgetRuleList ->
                 budgetRuleAdapter.differ.submitList(
-                    budgetRuleDetailed
+                    budgetRuleList
                 )
-                updateUI(budgetRuleDetailed)
+                updateUI(budgetRuleList)
             }
         }
     }

@@ -24,7 +24,7 @@ class AccountTypeAdapter(
     val budgetRuleDetailed: BudgetRuleDetailed?,
     val account: Account?,
     private val requestedAccount: String?,
-    private val callingFragment: String?
+    private val callingFragments: Array<String>?
 ) :
     RecyclerView.Adapter<AccountTypeAdapter.AccountTypeViewHolder>() {
 
@@ -103,32 +103,36 @@ class AccountTypeAdapter(
                     account,
                     curAccountType,
                     requestedAccount,
-                    callingFragment
+                    callingFragments
                 )
             it.findNavController().navigate(direction)
             false
         }
         holder.itemView.setOnClickListener {
-            if (callingFragment == FRAG_ACCOUNT_UPDATE) {
-                val direction = AccountTypesFragmentDirections
-                    .actionAccountTypesFragmentToAccountUpdateFragment(
-                        budgetRuleDetailed,
-                        account,
-                        curAccountType,
-                        requestedAccount,
-                        callingFragment
-                    )
-                it.findNavController().navigate(direction)
-            } else if (callingFragment == FRAG_ACCOUNT_ADD) {
-                val direction = AccountTypesFragmentDirections
-                    .actionAccountTypesFragmentToAccountAddFragment(
-                        budgetRuleDetailed,
-                        account,
-                        curAccountType,
-                        requestedAccount,
-                        callingFragment
-                    )
-                it.findNavController().navigate(direction)
+            for (i in 0 until callingFragments!!.size) {
+                if (callingFragments[i] == FRAG_ACCOUNT_UPDATE) {
+                    val direction = AccountTypesFragmentDirections
+                        .actionAccountTypesFragmentToAccountUpdateFragment(
+                            budgetRuleDetailed,
+                            account,
+                            curAccountType,
+                            requestedAccount,
+                            callingFragments
+                        )
+                    it.findNavController().navigate(direction)
+                    break
+                } else if (callingFragments[i] == FRAG_ACCOUNT_ADD) {
+                    val direction = AccountTypesFragmentDirections
+                        .actionAccountTypesFragmentToAccountAddFragment(
+                            budgetRuleDetailed,
+                            account,
+                            curAccountType,
+                            requestedAccount,
+                            callingFragments
+                        )
+                    it.findNavController().navigate(direction)
+                    break
+                }
             }
         }
 

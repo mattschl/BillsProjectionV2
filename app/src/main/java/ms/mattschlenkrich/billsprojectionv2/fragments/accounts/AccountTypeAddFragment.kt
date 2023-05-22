@@ -98,7 +98,7 @@ class AccountTypeAddFragment :
                     args.budgetRuleDetailed,
                     args.account,
                     args.requestedAccount,
-                    args.callingFragment
+                    args.callingFragments
                 )
             mView.findNavController().navigate(direction)
 

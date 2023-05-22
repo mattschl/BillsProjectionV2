@@ -34,6 +34,12 @@ interface BudgetRuleDao {
     @Insert
     suspend fun insertBudgetRule(budgetRule: BudgetRule)
 
+    @Query(
+        "SELECT * FROM $TABLE_BUDGET_RULES " +
+                "WHERE $BUDGET_RULE_NAME = :query"
+    )
+    fun findBudgetRuleByName(query: String?): List<BudgetRule>
+
     @Transaction
     @Query(
         "INSERT INTO $TABLE_BUDGET_RULES " +

@@ -24,8 +24,8 @@
             app:argType="string"
             app:nullable="true" />
         <argument
-            android:name="callingFragment"
-            app:argType="string"
+            android:name="callingFragments"
+            app:argType="string[]"
             app:nullable="true" />
         <action
             android:id="@+id/action_accountsFragment_to_budgetRuleUpdateFragment"
@@ -61,8 +61,8 @@
             app:argType="string"
             app:nullable="true" />
         <argument
-            android:name="callingFragment"
-            app:argType="string"
+            android:name="callingFragments"
+            app:argType="string[]"
             app:nullable="true" />
     </fragment>
     <fragment
@@ -92,8 +92,8 @@
             app:argType="string"
             app:nullable="true" />
         <argument
-            android:name="callingFragment"
-            app:argType="string"
+            android:name="callingFragments"
+            app:argType="string[]"
             app:nullable="true" />
     </fragment>
     <fragment
@@ -125,8 +125,8 @@
             app:argType="string"
             app:nullable="true" />
         <argument
-            android:name="callingFragment"
-            app:argType="string"
+            android:name="callingFragments"
+            app:argType="string[]"
             app:nullable="true" />
     </fragment>
     <fragment
@@ -149,8 +149,8 @@
             app:argType="string"
             app:nullable="true" />
         <argument
-            android:name="callingFragment"
-            app:argType="string"
+            android:name="callingFragments"
+            app:argType="string[]"
             app:nullable="true" />
     </fragment>
     <fragment
@@ -177,8 +177,8 @@
             app:argType="string"
             app:nullable="true" />
         <argument
-            android:name="callingFragment"
-            app:argType="string"
+            android:name="callingFragments"
+            app:argType="string[]"
             app:nullable="true" />
     </fragment>
     <fragment
@@ -191,6 +191,10 @@
         <action
             android:id="@+id/action_budgetRuleFragment_to_budgetRuleUpdateFragment"
             app:destination="@id/budgetRuleUpdateFragment" />
+        <argument
+            android:name="callingFragments"
+            app:argType="string[]"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/budgetRuleAddFragment"
@@ -208,8 +212,8 @@
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed"
             app:nullable="true" />
         <argument
-            android:name="callingFragment"
-            app:argType="string"
+            android:name="callingFragments"
+            app:argType="string[]"
             app:nullable="true" />
         <!--<argument
             android:name="toAccount"
@@ -236,8 +240,8 @@
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed"
             app:nullable="true" />
         <argument
-            android:name="callingFragment"
-            app:argType="string"
+            android:name="callingFragments"
+            app:argType="string[]"
             app:nullable="true" />
     </fragment>
 </navigation>

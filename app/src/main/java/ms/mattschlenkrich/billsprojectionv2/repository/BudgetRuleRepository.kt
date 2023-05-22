@@ -35,4 +35,7 @@ class BudgetRuleRepository(private val db: BillsDatabase) {
 
     fun searchBudgetRules(query: String?) =
         db.getBudgetRuleDao().searchBudgetRules(query)
+
+    fun findBudgetRuleByName(query: String?) =
+        db.getBudgetRuleDao().findBudgetRuleByName(query)
 }

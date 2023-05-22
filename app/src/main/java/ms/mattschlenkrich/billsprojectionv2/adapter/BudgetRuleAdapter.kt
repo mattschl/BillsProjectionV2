@@ -20,7 +20,10 @@ import java.util.Random
 
 private const val TAG = ADAPTER_BUDGET_RULE
 
-class BudgetRuleAdapter(val context: Context, val callingFragment: String) :
+class BudgetRuleAdapter(
+    private val context: Context,
+    private val callingFragments: Array<String>
+) :
     RecyclerView.Adapter<BudgetRuleAdapter.BudgetRuleViewHolder>() {
 
     private val dollarFormat: NumberFormat =
@@ -35,8 +38,8 @@ class BudgetRuleAdapter(val context: Context, val callingFragment: String) :
                 oldItem: BudgetRuleDetailed,
                 newItem: BudgetRuleDetailed
             ): Boolean {
-                return oldItem.budgetRule!!.RuleId == newItem.budgetRule!!.RuleId &&
-                        oldItem.budgetRule.budgetRuleName == newItem.budgetRule.budgetRuleName
+                return oldItem.budgetRule.RuleId ==
+                        newItem.budgetRule.RuleId
             }
 
             override fun areContentsTheSame(
@@ -60,13 +63,14 @@ class BudgetRuleAdapter(val context: Context, val callingFragment: String) :
     }
 
     override fun getItemCount(): Int {
+        Log.d(TAG, "differ count is ${differ.currentList.size}")
         return differ.currentList.size
     }
 
     override fun onBindViewHolder(holder: BudgetRuleViewHolder, position: Int) {
         val budgetRuleDetailed = differ.currentList[position]
         holder.itemBinding.tvBudgetRule.text =
-            budgetRuleDetailed.budgetRule!!.budgetRuleName
+            budgetRuleDetailed.budgetRule.budgetRuleName
         var info = "To: " + budgetRuleDetailed.toAccount!!.accountName
         holder.itemBinding.tvToAccount.text = info
         info = "From: " + budgetRuleDetailed.fromAccount!!.accountName
@@ -100,7 +104,7 @@ class BudgetRuleAdapter(val context: Context, val callingFragment: String) :
             val direction = BudgetRuleFragmentDirections
                 .actionBudgetRuleFragmentToBudgetRuleUpdateFragment(
                     budgetRuleDetailed,
-                    callingFragment
+                    callingFragments
                 )
             it.findNavController().navigate(direction)
             false
