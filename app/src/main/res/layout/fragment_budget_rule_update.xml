@@ -285,6 +285,29 @@
                 app:layout_constraintStart_toEndOf="@+id/lblLeadDays"
                 app:layout_constraintTop_toBottomOf="@+id/spFrequencyType" />
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:shadowColor="@color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/etLeadDays" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabUpdateDone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:backgroundTint="@color/deep_red"
+                android:clickable="true"
+                android:contentDescription="@string/berstyle"
+                android:focusable="true"
+                android:src="@drawable/ic_done"
+                android:tintMode="@color/white"
+                app:borderWidth="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </layout>

@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.util.Log
@@ -92,6 +93,9 @@ class BudgetRuleUpdateFragment :
             etEndDate.setOnLongClickListener {
                 chooseEndDate()
                 false
+            }
+            fabUpdateDone.setOnClickListener {
+                updateBudgetRule()
             }
         }
     }
@@ -298,18 +302,38 @@ class BudgetRuleUpdateFragment :
     @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
-        inflater.inflate(R.menu.save_menu, menu)
+        inflater.inflate(R.menu.delete_menu, menu)
     }
 
     @Suppress("DEPRECATION")
     @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menu_save -> {
-                updateBudgetRule()
+            R.id.menu_delete -> {
+                deleteBudgetRule()
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun deleteBudgetRule() {
+        AlertDialog.Builder(activity).apply {
+            setTitle("Delete Budget Rule")
+            setMessage("Are you sure you want to delete this budget rule?")
+            setPositiveButton("Delete") { _, _ ->
+                val updateTime = timeFormatter.format(
+                    Calendar.getInstance().time
+                )
+                budgetRuleViewModel.deleteBudgetRule(
+                    args.budgetRuleDetailed!!.budgetRule!!.RuleId,
+                    updateTime
+                )
+                mView.findNavController().navigate(
+                    R.id.action_budgetRuleUpdateFragment_to_budgetRuleFragment
+                )
+            }
+            setNegativeButton("Cancel", null)
+        }.create().show()
     }
 
     private fun updateBudgetRule() {
