@@ -27,7 +27,7 @@ private const val TAG = ADAPTER_ACCOUNT
 class AccountAdapter(
     private val budgetRuleDetailed: BudgetRuleDetailed?,
     private val requestedAccount: String?,
-    private val callingFragments: Array<String>?,
+    private val callingFragments: String?,
 ) :
     RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() {
 
@@ -143,7 +143,8 @@ class AccountAdapter(
         }
 
         holder.itemView.setOnLongClickListener {
-            val direction = AccountsFragmentDirections
+
+        val direction = AccountsFragmentDirections
                 .actionAccountsFragmentToAccountUpdateFragment(
                     budgetRuleDetailed,
                     curAccount.account,

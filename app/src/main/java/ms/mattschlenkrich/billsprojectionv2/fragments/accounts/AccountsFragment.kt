@@ -82,21 +82,23 @@ class AccountsFragment :
             budgetRuleDetailed = args.budgetRuleDetailed
             requestedAccount = args.requestedAccount
         }
+        val fragmentChain = "${args.callingFragments}, $TAG"
         val direction = AccountsFragmentDirections
             .actionAccountsFragmentToAccountAddFragment(
                 budgetRuleDetailed, null, null,
-                requestedAccount, arrayOf(TAG)
+                requestedAccount, fragmentChain
             )
         mView.findNavController().navigate(direction)
     }
 
 
     private fun setUpRecyclerView() {
+        val fragmentChain = "${args.callingFragments}, $TAG"
 
         accountAdapter = AccountAdapter(
             args.budgetRuleDetailed,
             args.requestedAccount,
-            args.callingFragments
+            fragmentChain
         )
 
         binding.rvAccounts.apply {

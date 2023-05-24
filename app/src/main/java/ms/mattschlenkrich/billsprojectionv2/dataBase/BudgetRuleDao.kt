@@ -40,6 +40,11 @@ interface BudgetRuleDao {
     )
     fun findBudgetRuleByName(query: String?): List<BudgetRule>
 
+    @Query(
+        "SELECT $BUDGET_RULE_NAME FROM $TABLE_BUDGET_RULES"
+    )
+    fun getBudgetRuleNameList(): List<String>
+
     @Transaction
     @Query(
         "INSERT INTO $TABLE_BUDGET_RULES " +

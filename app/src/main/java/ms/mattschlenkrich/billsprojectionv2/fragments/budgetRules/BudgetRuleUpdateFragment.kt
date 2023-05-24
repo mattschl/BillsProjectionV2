@@ -188,23 +188,24 @@ class BudgetRuleUpdateFragment :
     }
 
     private fun chooseFromAccount() {
-
+        val fragmentChain = "${args.callingFragments}, $TAG"
         val direction = BudgetRuleUpdateFragmentDirections
             .actionBudgetRuleUpdateFragmentToAccountsFragment(
                 getBudgetRuleDetailed(),
                 REQUEST_FROM_ACCOUNT,
-                arrayOf(TAG)
+                fragmentChain
             )
         mView.findNavController().navigate(direction)
 
     }
 
     private fun chooseToAccount() {
+        val fragmentChain = "${args.callingFragments}, $TAG"
         val direction = BudgetRuleUpdateFragmentDirections
             .actionBudgetRuleUpdateFragmentToAccountsFragment(
                 getBudgetRuleDetailed(),
                 REQUEST_TO_ACCOUNT,
-                arrayOf(TAG)
+                fragmentChain
             )
         mView.findNavController().navigate(direction)
 
@@ -350,10 +351,11 @@ class BudgetRuleUpdateFragment :
                     etLeadDays.text.toString().toInt(),
                     false, updateTime
                 )
+                val fragmentChain = "${args.callingFragments}, $TAG"
                 budgetRuleViewModel.updateBudgetRule(budgetRule)
                 val direction = BudgetRuleUpdateFragmentDirections
                     .actionBudgetRuleUpdateFragmentToBudgetRuleFragment(
-                        arrayOf(TAG)
+                        fragmentChain
                     )
                 mView.findNavController().navigate(direction)
             } else {

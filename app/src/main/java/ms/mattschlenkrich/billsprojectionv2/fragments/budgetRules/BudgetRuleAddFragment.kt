@@ -14,6 +14,9 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_RULE_ADD
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -47,7 +50,7 @@ class BudgetRuleAddFragment :
     private var mFromAccount: Account? = null
     private var mDayOfWeekId = 0L
     private var mFrequencyTypeId = 0L
-
+    private var budgetNameList: List<String>? = null
 
     private val dollarFormat: NumberFormat =
         NumberFormat.getCurrencyInstance(Locale.CANADA)
@@ -79,7 +82,9 @@ class BudgetRuleAddFragment :
         super.onViewCreated(view, savedInstanceState)
         budgetRuleViewModel =
             (activity as MainActivity).budgetRuleViewModel
-
+        CoroutineScope(Dispatchers.IO).launch {
+            budgetNameList = budgetRuleViewModel.getBudgetRuleNameList()
+        }
         fillValues()
 
         binding.apply {
@@ -152,21 +157,23 @@ class BudgetRuleAddFragment :
     }
 
     private fun chooseFromAccount() {
+        val fragmentChain = "${args.callingFragments}, $TAG"
         val direction = BudgetRuleAddFragmentDirections
             .actionBudgetRuleAddFragmentToAccountsFragment(
                 getBudgetRuleDetailed(),
                 REQUEST_FROM_ACCOUNT,
-                arrayOf(TAG)
+                fragmentChain
             )
         mView.findNavController().navigate(direction)
     }
 
     private fun chooseToAccount() {
+        val fragmentChain = "${args.callingFragments}, $TAG"
         val direction = BudgetRuleAddFragmentDirections
             .actionBudgetRuleAddFragmentToAccountsFragment(
                 getBudgetRuleDetailed(),
                 REQUEST_TO_ACCOUNT,
-                arrayOf(TAG)
+                fragmentChain
             )
         mView.findNavController().navigate(direction)
     }
@@ -179,7 +186,10 @@ class BudgetRuleAddFragment :
                 requireContext(),
                 { _, year, monthOfYear, dayOfMonth ->
                     val month = monthOfYear + 1
-                    val display = "$year-${month.toString().padStart(2, '0')}-${
+                    val display = "$year-${
+                        month.toString()
+                            .padStart(2, '0')
+                    }-${
                         dayOfMonth.toString().padStart(2, '0')
                     }"
                     etEndDate.setText(display)
@@ -201,7 +211,10 @@ class BudgetRuleAddFragment :
                 requireContext(),
                 { _, year, monthOfYear, dayOfMonth ->
                     val month = monthOfYear + 1
-                    val display = "$year-${month.toString().padStart(2, '0')}-${
+                    val display = "$year-${
+                        month.toString()
+                            .padStart(2, '0')
+                    }-${
                         dayOfMonth.toString().padStart(2, '0')
                     }"
                     etStartDate.setText(display)
@@ -307,85 +320,87 @@ class BudgetRuleAddFragment :
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_save -> {
-                saveBudgetRule()
+                val mes = checkBudgetRule()
+                if (mes == "Ok") {
+                    binding.apply {
+                        val budgetName =
+                            etBudgetName.text.toString().trim()
+                        val amount =
+                            etAmount.text.toString().trim()
+                                .replace(",", "")
+                                .replace("$", "")
+                                .toDouble()
+                        val updateTime =
+                            timeFormatter.format(Calendar.getInstance().time)
+                        val budgetRule = BudgetRule(
+                            0, budgetName,
+                            mToAccount!!.accountId,
+                            mFromAccount!!.accountId,
+                            amount,
+                            chkFixedAmount.isChecked,
+                            chkMakePayDay.isChecked,
+                            chkAutoPayment.isChecked,
+                            etStartDate.text.toString(),
+                            etEndDate.text.toString(),
+                            spDayOfWeek.selectedItemId,
+                            spFrequencyType.selectedItemId,
+                            etFrequencyCount.text.toString().toInt(),
+                            etLeadDays.text.toString().toInt(),
+                            false,
+                            updateTime
+                        )
+                        val fragmentChain = "${args.callingFragments}, $TAG"
+                        budgetRuleViewModel.insertBudgetRule(budgetRule)
+                        val direction = BudgetRuleAddFragmentDirections
+                            .actionBudgetRuleAddFragmentToBudgetRuleFragment(
+                                fragmentChain
+                            )
+                        mView.findNavController().navigate(direction)
+                    }
+                } else {
+
+                    Toast.makeText(
+                        mView.context,
+                        mes,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
-    private fun saveBudgetRule() {
+    fun checkBudgetRule(): String {
         binding.apply {
-            if (etBudgetName.text.isNotBlank()) {
-                if (budgetRuleViewModel.findBudgetRuleByName(
-                        etBudgetName.text.toString()
-                    ).size > 1
-                ) {
-                    if (mToAccount != null) {
-                        if (mFromAccount != null) {
-                            val budgetName =
-                                etBudgetName.text.toString().trim()
-                            val amount =
-                                etAmount.text.toString().trim()
-                                    .replace(",", "")
-                                    .replace("$", "")
-                                    .toDouble()
-                            val updateTime =
-                                timeFormatter.format(Calendar.getInstance().time)
-                            val budgetRule = BudgetRule(
-                                0, budgetName,
-                                mToAccount!!.accountId,
-                                mFromAccount!!.accountId,
-                                amount,
-                                chkFixedAmount.isChecked,
-                                chkMakePayDay.isChecked,
-                                chkAutoPayment.isChecked,
-                                etStartDate.text.toString(),
-                                etEndDate.text.toString(),
-                                spDayOfWeek.selectedItemId,
-                                spFrequencyType.selectedItemId,
-                                etFrequencyCount.text.toString().toInt(),
-                                etLeadDays.text.toString().toInt(),
-                                false,
-                                updateTime
-                            )
-                            budgetRuleViewModel.insertBudgetRule(budgetRule)
-                            val direction = BudgetRuleAddFragmentDirections
-                                .actionBudgetRuleAddFragmentToBudgetRuleFragment(
-                                    arrayOf(TAG)
-                                )
-                            mView.findNavController().navigate(direction)
-                        } else {
-                            Toast.makeText(
-                                mView.context,
-                                "   ERROR! \n" +
-                                        "Please choose an account the money will come from.",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    } else {
-                        Toast.makeText(
-                            mView.context,
-                            "   ERROR! \n" +
-                                    "Please choose an account the money will go to.",
-                            Toast.LENGTH_LONG
-                        ).show()
+            val nameIsBlank = etBudgetName.text.isNullOrBlank()
+            var nameFound = false
+            if (budgetNameList!!.isNotEmpty() && !nameIsBlank) {
+                for (i in 0 until budgetNameList!!.size) {
+                    if (budgetNameList!![i] == etBudgetName.text.toString().trim()) {
+                        nameFound = true
+                        break
                     }
-                } else {
-                    Toast.makeText(
-                        mView.context,
-                        "   ERROR! \n" +
-                                "This rule name has already been used.\n",
-                        Toast.LENGTH_LONG
-                    ).show()
                 }
-            } else {
-                Toast.makeText(
-                    mView.context,
-                    "   ERROR! \n" +
-                            "Budget Rule name cannot be empty.",
-                    Toast.LENGTH_LONG
-                ).show()
             }
+            val errorMes = if (nameIsBlank) {
+                "     Error!!\n" +
+                        "Please enter a name"
+            } else if (nameFound) {
+                "     Error!!\n" +
+                        "This budget rule already exists."
+            } else if (tvToAccount.text.isNullOrBlank()) {
+                "     Error!!\n" +
+                        "There needs to be an account money will go to."
+            } else if (tvFromAccount.text.isNullOrBlank()) {
+                "     Error!!\n" +
+                        "There needs to be an account money will come from."
+            } else if (etAmount.text.isNullOrEmpty()) {
+                "     Error!!\n" +
+                        "Please enter a number (including zero)"
+            } else {
+                "ok"
+            }
+            return errorMes
         }
     }
 

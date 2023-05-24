@@ -25,7 +25,7 @@
             app:nullable="true" />
         <argument
             android:name="callingFragments"
-            app:argType="string[]"
+            app:argType="string"
             app:nullable="true" />
         <action
             android:id="@+id/action_accountsFragment_to_budgetRuleUpdateFragment"
@@ -62,7 +62,7 @@
             app:nullable="true" />
         <argument
             android:name="callingFragments"
-            app:argType="string[]"
+            app:argType="string"
             app:nullable="true" />
     </fragment>
     <fragment
@@ -93,7 +93,7 @@
             app:nullable="true" />
         <argument
             android:name="callingFragments"
-            app:argType="string[]"
+            app:argType="string"
             app:nullable="true" />
     </fragment>
     <fragment
@@ -126,7 +126,7 @@
             app:nullable="true" />
         <argument
             android:name="callingFragments"
-            app:argType="string[]"
+            app:argType="string"
             app:nullable="true" />
     </fragment>
     <fragment
@@ -150,7 +150,7 @@
             app:nullable="true" />
         <argument
             android:name="callingFragments"
-            app:argType="string[]"
+            app:argType="string"
             app:nullable="true" />
     </fragment>
     <fragment
@@ -178,7 +178,7 @@
             app:nullable="true" />
         <argument
             android:name="callingFragments"
-            app:argType="string[]"
+            app:argType="string"
             app:nullable="true" />
     </fragment>
     <fragment
@@ -193,7 +193,7 @@
             app:destination="@id/budgetRuleUpdateFragment" />
         <argument
             android:name="callingFragments"
-            app:argType="string[]"
+            app:argType="string"
             app:nullable="true" />
     </fragment>
     <fragment
@@ -213,7 +213,7 @@
             app:nullable="true" />
         <argument
             android:name="callingFragments"
-            app:argType="string[]"
+            app:argType="string"
             app:nullable="true" />
         <!--<argument
             android:name="toAccount"
@@ -241,7 +241,7 @@
             app:nullable="true" />
         <argument
             android:name="callingFragments"
-            app:argType="string[]"
+            app:argType="string"
             app:nullable="true" />
     </fragment>
 </navigation>

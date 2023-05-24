@@ -111,12 +111,13 @@ class AccountUpdateFragment :
             balance, owing,
             false, currTime
         )
+        val fragmentChain = "${args.callingFragments}, $TAG"
         val direction = AccountUpdateFragmentDirections
             .actionAccountUpdateFragmentToAccountTypesFragment(
                 args.budgetRuleDetailed,
                 account,
                 args.requestedAccount,
-                arrayOf(TAG)
+                fragmentChain
             )
         this.findNavController().navigate(direction)
     }

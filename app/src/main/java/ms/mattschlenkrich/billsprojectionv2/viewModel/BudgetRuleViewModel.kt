@@ -55,4 +55,7 @@ class BudgetRuleViewModel(
 
     fun findBudgetRuleByName(query: String?) =
         budgetRuleRepository.findBudgetRuleByName(query)
+
+    fun getBudgetRuleNameList() =
+        budgetRuleRepository.getBudgetRuleNameList()
 }

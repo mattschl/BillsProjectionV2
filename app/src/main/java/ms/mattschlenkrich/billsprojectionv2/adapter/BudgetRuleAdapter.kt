@@ -22,7 +22,7 @@ private const val TAG = ADAPTER_BUDGET_RULE
 
 class BudgetRuleAdapter(
     private val context: Context,
-    private val callingFragments: Array<String>
+    private val callingFragments: String,
 ) :
     RecyclerView.Adapter<BudgetRuleAdapter.BudgetRuleViewHolder>() {
 
