@@ -74,129 +74,134 @@ class AccountAddFragment :
     }
 
     private fun fillValues() {
-        if (args.account != null) {
-            binding.editAccAddName.setText(args.account!!.accountName)
-            binding.editAccAddHandle.setText(args.account!!.accountNumber)
-            binding.editAccAddBalance.setText(
-                dollarFormat.format(args.account!!.accountBalance)
-            )
-            binding.editAccAddOwing.setText(
-                dollarFormat.format(args.account!!.accountOwing)
-            )
-            binding.editAccAddBudgeted.setText(
-                dollarFormat.format(args.account!!.budgetAmount)
-            )
-        }
-        if (args.accountType != null) {
-            binding.tvAccAddType.text = args.accountType!!.accountType
-            var display =
-                if (args.accountType!!.keepTotals) "Transactions will be calculated\n" else ""
-            display += if (args.accountType!!.isAsset) "This is an asset \n" else ""
-            display += if (args.accountType!!.displayAsAsset) "This will be used for the budget \n" else ""
-            display += if (args.accountType!!.tallyOwing) "Balance owing will be calculated " else ""
-            if (display.isEmpty()) {
-                display = "This is a dummy account transactions will not effect any other accounts"
+        binding.apply {
+            if (args.account != null) {
+                editAccAddName.setText(args.account!!.accountName)
+                editAccAddHandle.setText(args.account!!.accountNumber)
+                editAccAddBalance.setText(
+                    dollarFormat.format(args.account!!.accountBalance)
+                )
+                editAccAddOwing.setText(
+                    dollarFormat.format(args.account!!.accountOwing)
+                )
+                editAccAddBudgeted.setText(
+                    dollarFormat.format(args.account!!.budgetAmount)
+                )
             }
-            binding.tvTypeDetails.text = display
+            if (args.accountType != null) {
+                tvAccAddType.text = args.accountType!!.accountType
+                var display =
+                    if (args.accountType!!.keepTotals) "Transactions will be calculated\n" else ""
+                display += if (args.accountType!!.isAsset) "This is an asset \n" else ""
+                display += if (args.accountType!!.displayAsAsset) "This will be used for the budget \n" else ""
+                display += if (args.accountType!!.tallyOwing) "Balance owing will be calculated " else ""
+                if (display.isEmpty()) {
+                    display =
+                        "This is a dummy account transactions will not effect any other accounts"
+                }
+                tvTypeDetails.text = display
+            }
         }
     }
 
     private fun gotoAccountTypes() {
-        val accountName =
-            binding.editAccAddName.text.toString().trim()
-        val accountHandle =
-            binding.editAccAddHandle.text.toString().trim()
-        val accountBalance =
-            binding.editAccAddBalance.text.toString().trim()
-                .replace(",", "")
-                .replace("$", "")
-                .toDouble()
-        val accountOwing =
-            binding.editAccAddOwing.text.toString().trim()
-                .replace(",", "")
-                .replace("$", "")
-                .toDouble()
-        val accountBudgeted =
-            binding.editAccAddBudgeted.text.toString().trim()
-                .replace(",", "")
-                .replace("$", "")
-                .toDouble()
-        val currTime =
-            timeFormatter.format(Calendar.getInstance().time)
-        val account = Account(
-            0, accountName, accountHandle,
-            0, accountBudgeted, accountBalance,
-            accountOwing, false,
-            currTime
-        )
-        val direction = AccountAddFragmentDirections
-            .actionAccountAddFragmentToAccountTypesFragment(
-                args.budgetRuleDetailed, account,
-                args.requestedAccount, args.callingFragments
+        binding.apply {
+            val accountName =
+                editAccAddName.text.toString().trim()
+            val accountHandle =
+                editAccAddHandle.text.toString().trim()
+            val accountBalance =
+                editAccAddBalance.text.toString().trim()
+                    .replace(",", "")
+                    .replace("$", "")
+                    .toDouble()
+            val accountOwing =
+                editAccAddOwing.text.toString().trim()
+                    .replace(",", "")
+                    .replace("$", "")
+                    .toDouble()
+            val accountBudgeted =
+                editAccAddBudgeted.text.toString().trim()
+                    .replace(",", "")
+                    .replace("$", "")
+                    .toDouble()
+            val currTime =
+                timeFormatter.format(Calendar.getInstance().time)
+            val account = Account(
+                0, accountName, accountHandle,
+                0, accountBudgeted, accountBalance,
+                accountOwing, false,
+                currTime
             )
-        mView.findNavController().navigate(direction)
+            val direction = AccountAddFragmentDirections
+                .actionAccountAddFragmentToAccountTypesFragment(
+                    args.budgetRuleDetailed, account,
+                    args.requestedAccount, args.callingFragments
+                )
+            mView.findNavController().navigate(direction)
+        }
     }
 
     private fun saveAccount(view: View) {
-        Log.d(TAG, "saveAccount entered")
-        val accountName =
-            binding.editAccAddName.text.toString().trim()
-        val accountHandle =
-            binding.editAccAddHandle.text.toString().trim()
-        val accountBalance =
-            binding.editAccAddBalance.text.toString().trim()
-                .replace(",", "")
-                .replace("$", "")
-                .toDouble()
-        val accountOwing =
-            binding.editAccAddOwing.text.toString().trim()
-                .replace(",", "")
-                .replace("$", "")
-                .toDouble()
-        val accountBudgeted =
-            binding.editAccAddBudgeted.text.toString().trim()
-                .replace(",", "")
-                .replace("$", "")
-                .toDouble()
-        val currTime =
-            timeFormatter.format(Calendar.getInstance().time)
-        if (binding.tvAccAddType.toString() != getString(R.string.choose_account_type)
-            && args.accountType != null
-        ) {
-            val accountTypeId =
-                args.accountType!!.typeId
-            if (accountName.isNotEmpty()) {
-                val account = Account(
-                    0, accountName, accountHandle,
-                    accountTypeId, accountBudgeted, accountBalance,
-                    accountOwing, false,
-                    currTime
-                )
-                accountsViewModel.addAccount(account)
-                val direction = AccountAddFragmentDirections
-                    .actionAccountAddFragmentToAccountsFragment(
-                        args.budgetRuleDetailed, args.requestedAccount,
-                        args.callingFragments
+        binding.apply {
+            val accountName =
+                editAccAddName.text.toString().trim()
+            val accountHandle =
+                editAccAddHandle.text.toString().trim()
+            val accountBalance =
+                editAccAddBalance.text.toString().trim()
+                    .replace(",", "")
+                    .replace("$", "")
+                    .toDouble()
+            val accountOwing =
+                editAccAddOwing.text.toString().trim()
+                    .replace(",", "")
+                    .replace("$", "")
+                    .toDouble()
+            val accountBudgeted =
+                editAccAddBudgeted.text.toString().trim()
+                    .replace(",", "")
+                    .replace("$", "")
+                    .toDouble()
+            val currTime =
+                timeFormatter.format(Calendar.getInstance().time)
+            if (tvAccAddType.toString() != getString(R.string.choose_account_type)
+                && args.accountType != null
+            ) {
+                val accountTypeId =
+                    args.accountType!!.typeId
+                if (accountName.isNotEmpty()) {
+                    val account = Account(
+                        0, accountName, accountHandle,
+                        accountTypeId, accountBudgeted, accountBalance,
+                        accountOwing, false,
+                        currTime
                     )
-                view.findNavController().navigate(direction)
+                    accountsViewModel.addAccount(account)
+                    val direction = AccountAddFragmentDirections
+                        .actionAccountAddFragmentToAccountsFragment(
+                            args.budgetRuleDetailed, args.requestedAccount,
+                            args.callingFragments
+                        )
+                    view.findNavController().navigate(direction)
 
+                } else {
+                    Toast.makeText(
+                        mView.context,
+                        "Enter a unique Name for this Account",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             } else {
                 Toast.makeText(
                     mView.context,
-                    "Enter a unique Name for this Account",
+                    "This account must have a type!\n" +
+                            "Please click on ${getString(R.string.choose_account_type)} " +
+                            "to find one",
                     Toast.LENGTH_LONG
                 ).show()
             }
-        } else {
-            Toast.makeText(
-                mView.context,
-                "This account must have a type!\n" +
-                        "Please click on ${getString(R.string.choose_account_type)} " +
-                        "to find one",
-                Toast.LENGTH_LONG
-            ).show()
         }
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

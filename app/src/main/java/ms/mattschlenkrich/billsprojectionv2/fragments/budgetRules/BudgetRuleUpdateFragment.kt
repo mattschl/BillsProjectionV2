@@ -3,7 +3,6 @@ package ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -15,6 +14,9 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_RULE_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -49,6 +51,8 @@ class BudgetRuleUpdateFragment :
     private var mFromAccount: Account? = null
     private var mDayOfWeekId = 0L
     private var mFrequencyTypeId = 0L
+    private var budgetNameList: List<String>? = null
+
     private val dollarFormat: NumberFormat =
         NumberFormat.getCurrencyInstance(Locale.CANADA)
     private val timeFormatter: SimpleDateFormat =
@@ -69,7 +73,6 @@ class BudgetRuleUpdateFragment :
         _binding = FragmentBudgetRuleUpdateBinding.inflate(
             inflater, container, false
         )
-        Log.d(TAG, "$TAG is entered")
         mView = binding.root
         return binding.root
     }
@@ -78,6 +81,9 @@ class BudgetRuleUpdateFragment :
         super.onViewCreated(view, savedInstanceState)
         budgetRuleViewModel =
             (activity as MainActivity).budgetRuleViewModel
+        CoroutineScope(Dispatchers.IO).launch {
+            budgetNameList = budgetRuleViewModel.getBudgetRuleNameList()
+        }
         fillValues()
         binding.apply {
             tvToAccount.setOnClickListener {
@@ -328,17 +334,20 @@ class BudgetRuleUpdateFragment :
                     args.budgetRuleDetailed!!.budgetRule!!.RuleId,
                     updateTime
                 )
-                mView.findNavController().navigate(
-                    R.id.action_budgetRuleUpdateFragment_to_budgetRuleFragment
-                )
+                val direction = BudgetRuleUpdateFragmentDirections
+                    .actionBudgetRuleUpdateFragmentToBudgetRuleFragment(
+                        args.callingFragments,
+                    )
+                mView.findNavController().navigate(direction)
             }
             setNegativeButton("Cancel", null)
         }.create().show()
     }
 
     private fun updateBudgetRule() {
+        val mes = checkBudgetRule()
         binding.apply {
-            if (etBudgetName.text.isNotBlank()) {
+            if (mes == "ok") {
                 val budgetName =
                     etBudgetName.text.toString().trim()
                 val amount =
@@ -385,11 +394,50 @@ class BudgetRuleUpdateFragment :
             } else {
                 Toast.makeText(
                     mView.context,
-                    "   ERROR! \n" +
-                            "Budget Rule name cannot be empty.",
+                    mes,
                     Toast.LENGTH_LONG
                 ).show()
             }
+        }
+    }
+
+    private fun checkBudgetRule(): String {
+        binding.apply {
+            val nameIsBlank = etBudgetName.text.isNullOrBlank()
+            var nameFound = false
+            if (budgetNameList!!.isNotEmpty() && !nameIsBlank) {
+                for (i in 0 until budgetNameList!!.size) {
+                    if (budgetNameList!![i] ==
+                        etBudgetName.text.toString() &&
+                        budgetNameList!![i] !=
+                        args.budgetRuleDetailed!!.budgetRule!!.budgetRuleName
+                    ) {
+                        nameFound = true
+                        break
+                    }
+                }
+            }
+            val errorMes = if (nameIsBlank) {
+                "     Error!!\n" +
+                        "Please enter a name"
+            } else if (nameFound) {
+                "     Error!!\n" +
+                        "This budget rule already exists."
+            } else if (mToAccount == null
+            ) {
+                "     Error!!\n" +
+                        "There needs to be an account money will go to."
+            } else if (mFromAccount == null
+            ) {
+                "     Error!!\n" +
+                        "There needs to be an account money will come from."
+            } else if (etAmount.text.isNullOrEmpty()) {
+                "     Error!!\n" +
+                        "Please enter a budget amount (including zero)"
+            } else {
+                "Ok"
+            }
+            return errorMes
         }
     }
 

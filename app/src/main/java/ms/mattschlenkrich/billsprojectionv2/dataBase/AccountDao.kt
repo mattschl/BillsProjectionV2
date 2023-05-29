@@ -23,6 +23,11 @@ interface AccountDao {
     suspend fun updateAccount(account: Account)
 
     @Query(
+        "SELECT $ACCOUNT_NAME FROM $TABLE_ACCOUNTS"
+    )
+    fun getAccountNameList(): List<String>
+
+    @Query(
         "UPDATE $TABLE_ACCOUNTS " +
                 "SET $IS_DELETED = 1, " +
                 "$UPDATE_TIME = :updateTime " +

@@ -12,8 +12,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -45,6 +47,7 @@ class AccountUpdateFragment :
     private var curBudgetRuleDetailed: BudgetRuleDetailed? = null
     private var curAccount: Account? = null
     private var newAccountType: AccountType? = null
+    private var accountNameList: List<String>? = null
 //    private var currAccountType: AccountType? = null
 
     private val dollarFormat: NumberFormat =
@@ -75,6 +78,9 @@ class AccountUpdateFragment :
         super.onViewCreated(view, savedInstanceState)
         accountsViewModel =
             (activity as MainActivity).accountViewModel
+        CoroutineScope(Dispatchers.IO).launch {
+            accountNameList = accountsViewModel.getAccountNameList()
+        }
         curBudgetRuleDetailed = args.budgetRuleDetailed!!
         curAccount = args.account!!
         newAccountType = args.accountType!!
@@ -88,122 +94,160 @@ class AccountUpdateFragment :
     }
 
     private fun gotoAccountTypes() {
-        val accountName =
-            binding.edAccountUpdateName.text.toString().trim()
-        val accountHandle =
-            binding.edAccountUpdateHandle.text.toString().trim()
-        val accountTypeId =
-            curAccount!!.accountTypeId
-        val balance =
-            binding.edAccountUpdateBalance.text.toString()
-                .replace(",", "").replace("$", "").toDouble()
-        val owing =
-            binding.edAccountUpdateOwing.text.toString()
-                .replace(",", "").replace("$", "").toDouble()
-        val budgeted =
-            binding.edAccountUpdateBudgeted.text.toString()
-                .replace(",", "").replace("$", "").toDouble()
-        val currTime =
-            timeFormatter.format(Calendar.getInstance().time)
-        val account = Account(
-            curAccount!!.accountId, accountName,
-            accountHandle, accountTypeId, budgeted,
-            balance, owing,
-            false, currTime
-        )
-        val fragmentChain = "${args.callingFragments}, $TAG"
-        val direction = AccountUpdateFragmentDirections
-            .actionAccountUpdateFragmentToAccountTypesFragment(
-                args.budgetRuleDetailed,
-                account,
-                args.requestedAccount,
-                fragmentChain
+        binding.apply {
+            val accountName =
+                edAccountUpdateName.text.toString().trim()
+            val accountHandle =
+                edAccountUpdateHandle.text.toString().trim()
+            val accountTypeId =
+                curAccount!!.accountTypeId
+            val balance =
+                edAccountUpdateBalance.text.toString()
+                    .replace(",", "").replace("$", "").toDouble()
+            val owing =
+                edAccountUpdateOwing.text.toString()
+                    .replace(",", "").replace("$", "").toDouble()
+            val budgeted =
+                edAccountUpdateBudgeted.text.toString()
+                    .replace(",", "").replace("$", "").toDouble()
+            val currTime =
+                timeFormatter.format(Calendar.getInstance().time)
+            val account = Account(
+                curAccount!!.accountId, accountName,
+                accountHandle, accountTypeId, budgeted,
+                balance, owing,
+                false, currTime
             )
-        this.findNavController().navigate(direction)
+            val fragmentChain = "${args.callingFragments}, $TAG"
+            val direction = AccountUpdateFragmentDirections
+                .actionAccountUpdateFragmentToAccountTypesFragment(
+                    args.budgetRuleDetailed,
+                    account,
+                    args.requestedAccount,
+                    fragmentChain
+                )
+            mView?.findNavController()?.navigate(direction)
+        }
+    }
+
+    private fun checkForErrors(): String {
+        binding.apply {
+            val nameIsBlank =
+                edAccountUpdateName.text.isNullOrBlank()
+            var nameFound = false
+            if (accountNameList!!.isNotEmpty() && !nameIsBlank) {
+                for (i in 0 until accountNameList!!.size) {
+                    if (accountNameList!![i] ==
+                        edAccountUpdateName.text.toString()
+                    ) {
+                        nameFound = true
+                        break
+                    }
+                }
+            }
+            val errorMes = if (nameIsBlank) {
+                "     Error!!\n" +
+                        "Please enter a name"
+            } else if (nameFound) {
+                "     Error!!\n" +
+                        "This budget rule already exists."
+            } else if (drpAccountUpdateType.text.isNullOrBlank()) {
+                "     Error!!\n" +
+                        "Please choose an account Type"
+            } else {
+                "ok"
+            }
+            return errorMes
+        }
     }
 
     private fun updateAccount() {
-        Log.d(TAG, "updateAccount entered")
-        val accountName =
-            binding.edAccountUpdateName.text.toString().trim()
-        val accountHandle =
-            binding.edAccountUpdateHandle.text.toString().trim()
-        val accountTypeId =
-            newAccountType!!.typeId
-        val balance =
-            binding.edAccountUpdateBalance.text.toString()
-                .replace(",", "").replace("$", "").toDouble()
-        val owing =
-            binding.edAccountUpdateOwing.text.toString()
-                .replace(",", "").replace("$", "").toDouble()
-        val budgeted =
-            binding.edAccountUpdateBudgeted.text.toString()
-                .replace(",", "").replace("$", "").toDouble()
-        val currTime =
-            timeFormatter.format(Calendar.getInstance().time)
-        val account = Account(
-            curAccount!!.accountId, accountName,
-            accountHandle, accountTypeId, budgeted,
-            balance, owing,
-            false, currTime
-        )
-
-        if (accountName == curAccount!!.accountName) {
-            accountsViewModel.updateAccount(account)
-            mView?.findNavController()?.navigate(
-                R.id.action_accountUpdateFragment_to_accountsFragment
-            )
-        } else if (accountName.isNotBlank()) {
-            AlertDialog.Builder(activity).apply {
-                setTitle("Rename Account?")
-                setMessage(
-                    "Are you sure you want to rename this Account?\n " +
-                            "      NOTE:\n" +
-                            "This will NOT replace an existing Account"
+        val mess = checkForErrors()
+        binding.apply {
+            if (mess == "ok") {
+                val accountName =
+                    edAccountUpdateName.text.toString().trim()
+                val accountHandle =
+                    edAccountUpdateHandle.text.toString().trim()
+                val accountTypeId =
+                    newAccountType!!.typeId
+                val balance =
+                    edAccountUpdateBalance.text.toString()
+                        .replace(",", "").replace("$", "").toDouble()
+                val owing =
+                    edAccountUpdateOwing.text.toString()
+                        .replace(",", "").replace("$", "").toDouble()
+                val budgeted =
+                    edAccountUpdateBudgeted.text.toString()
+                        .replace(",", "").replace("$", "").toDouble()
+                val currTime =
+                    timeFormatter.format(Calendar.getInstance().time)
+                val account = Account(
+                    curAccount!!.accountId, accountName,
+                    accountHandle, accountTypeId, budgeted,
+                    balance, owing,
+                    false, currTime
                 )
-                setPositiveButton("Update Account") { _, _ ->
-                    accountsViewModel.updateAccount(account)
-                    val direction = AccountUpdateFragmentDirections
-                        .actionAccountUpdateFragmentToAccountsFragment(
-                            args.budgetRuleDetailed,
-                            args.requestedAccount,
-                            args.callingFragments
-                        )
-                    mView?.findNavController()?.navigate(direction)
-                }
-                setNegativeButton("Cancel", null)
-            }.create().show()
 
-        } else {
-            Toast.makeText(
-                context,
-                "Enter a name for this account",
-                Toast.LENGTH_LONG
-            ).show()
+                if (accountName == curAccount!!.accountName) {
+                    accountsViewModel.updateAccount(account)
+                    mView?.findNavController()?.navigate(
+                        R.id.action_accountUpdateFragment_to_accountsFragment
+                    )
+                } else if (accountName.isNotBlank()) {
+                    AlertDialog.Builder(activity).apply {
+                        setTitle("Rename Account?")
+                        setMessage(
+                            "Are you sure you want to rename this Account?\n " +
+                                    "      NOTE:\n" +
+                                    "This will NOT replace an existing Account"
+                        )
+                        setPositiveButton("Update Account") { _, _ ->
+                            accountsViewModel.updateAccount(account)
+                            val direction = AccountUpdateFragmentDirections
+                                .actionAccountUpdateFragmentToAccountsFragment(
+                                    args.budgetRuleDetailed,
+                                    args.requestedAccount,
+                                    args.callingFragments
+                                )
+                            mView?.findNavController()?.navigate(direction)
+                        }
+                        setNegativeButton("Cancel", null)
+                    }.create().show()
+                }
+            } else {
+                Toast.makeText(
+                    context,
+                    "Enter a name for this account",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
     }
 
     private fun fillValues() {
-        binding.edAccountUpdateName.setText(
-            curAccount!!.accountName
-        )
-        binding.edAccountUpdateHandle.setText(
-            curAccount!!.accountNumber
-        )
-        if (args.accountType != null) {
-            binding.drpAccountUpdateType.text = args.accountType!!.accountType
+        binding.apply {
+            edAccountUpdateName.setText(
+                curAccount!!.accountName
+            )
+            edAccountUpdateHandle.setText(
+                curAccount!!.accountNumber
+            )
+            if (args.accountType != null) {
+                drpAccountUpdateType.text = args.accountType!!.accountType
+            }
+            edAccountUpdateBalance.setText(
+                dollarFormat.format(curAccount!!.accountBalance)
+            )
+            edAccountUpdateOwing.setText(
+                dollarFormat.format(curAccount!!.accountOwing)
+            )
+            edAccountUpdateBudgeted.setText(
+                dollarFormat.format(curAccount!!.budgetAmount)
+            )
+            txtAccountUpdateAccountId.text =
+                curAccount!!.accountId.toString()
         }
-        binding.edAccountUpdateBalance.setText(
-            dollarFormat.format(curAccount!!.accountBalance)
-        )
-        binding.edAccountUpdateOwing.setText(
-            dollarFormat.format(curAccount!!.accountOwing)
-        )
-        binding.edAccountUpdateBudgeted.setText(
-            dollarFormat.format(curAccount!!.budgetAmount)
-        )
-        binding.txtAccountUpdateAccountId.text =
-            curAccount!!.accountId.toString()
     }
 
     private fun deleteAccount() {
@@ -215,9 +259,13 @@ class AccountUpdateFragment :
                     args.account!!.accountId,
                     "no date"
                 )
-                mView?.findNavController()?.navigate(
-                    R.id.action_accountUpdateFragment_to_accountsFragment
-                )
+                val direction = AccountUpdateFragmentDirections
+                    .actionAccountUpdateFragmentToAccountsFragment(
+                        args.budgetRuleDetailed,
+                        args.requestedAccount,
+                        args.callingFragments,
+                    )
+                mView?.findNavController()?.navigate(direction)
             }
             setNegativeButton("Cancel", null)
         }.create().show()

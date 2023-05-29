@@ -31,6 +31,8 @@ class AccountRepository(private val db: BillsDatabase) {
     fun searchAccounts(query: String?) =
         db.getAccountDao().searchAccounts(query)
 
+    fun getAccountNameList() =
+        db.getAccountDao().getAccountNameList()
 
     //AccountType queries connected with AccountCategoriesDao
     suspend fun insertAccountType(accountType: AccountType) =

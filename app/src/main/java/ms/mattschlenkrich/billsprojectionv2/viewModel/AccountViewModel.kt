@@ -28,6 +28,9 @@ class AccountViewModel(
             accountRepository.deleteAccount(accountId, updateTime)
         }
 
+    fun getAccountNameList() =
+        accountRepository.getAccountNameList()
+
     fun getActiveAccounts() =
         accountRepository.getActiveAccounts()
 
