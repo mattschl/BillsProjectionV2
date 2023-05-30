@@ -130,7 +130,7 @@ class AccountUpdateFragment :
         }
     }
 
-    private fun checkForErrors(): String {
+    private fun checkAccount(): String {
         binding.apply {
             val nameIsBlank =
                 edAccountUpdateName.text.isNullOrBlank()
@@ -138,7 +138,9 @@ class AccountUpdateFragment :
             if (accountNameList!!.isNotEmpty() && !nameIsBlank) {
                 for (i in 0 until accountNameList!!.size) {
                     if (accountNameList!![i] ==
-                        edAccountUpdateName.text.toString()
+                        edAccountUpdateName.text.toString() &&
+                        accountNameList!![i] !=
+                        args.account!!.accountName
                     ) {
                         nameFound = true
                         break
@@ -155,16 +157,16 @@ class AccountUpdateFragment :
                 "     Error!!\n" +
                         "Please choose an account Type"
             } else {
-                "ok"
+                "Ok"
             }
             return errorMes
         }
     }
 
     private fun updateAccount() {
-        val mess = checkForErrors()
+        val mess = checkAccount()
         binding.apply {
-            if (mess == "ok") {
+            if (mess == "Ok") {
                 val accountName =
                     edAccountUpdateName.text.toString().trim()
                 val accountHandle =
@@ -217,8 +219,8 @@ class AccountUpdateFragment :
                 }
             } else {
                 Toast.makeText(
-                    context,
-                    "Enter a name for this account",
+                    mView!!.context,
+                    mess,
                     Toast.LENGTH_LONG
                 ).show()
             }
@@ -255,20 +257,29 @@ class AccountUpdateFragment :
             setTitle("Delete Account?")
             setMessage("Are you sure you want to delete this account? ")
             setPositiveButton("Delete") { _, _ ->
-                accountsViewModel.deleteAccount(
-                    args.account!!.accountId,
-                    "no date"
-                )
-                val direction = AccountUpdateFragmentDirections
-                    .actionAccountUpdateFragmentToAccountsFragment(
-                        args.budgetRuleDetailed,
-                        args.requestedAccount,
-                        args.callingFragments,
-                    )
-                mView?.findNavController()?.navigate(direction)
+                doDelete()
             }
             setNegativeButton("Cancel", null)
         }.create().show()
+    }
+
+    private fun doDelete() {
+        val updateTime =
+            timeFormatter.format(Calendar.getInstance().time)
+        accountsViewModel.deleteAccount(
+            args.account!!.accountId,
+            updateTime
+        )
+        val fragmentChain =
+            args.callingFragments!!
+                .replace(", $FRAG_ACCOUNT_UPDATE", "")
+        val direction = AccountUpdateFragmentDirections
+            .actionAccountUpdateFragmentToAccountsFragment(
+                args.budgetRuleDetailed,
+                args.requestedAccount,
+                fragmentChain,
+            )
+        mView?.findNavController()?.navigate(direction)
     }
 
     @Deprecated("Deprecated in Java")

@@ -347,7 +347,7 @@ class BudgetRuleUpdateFragment :
     private fun updateBudgetRule() {
         val mes = checkBudgetRule()
         binding.apply {
-            if (mes == "ok") {
+            if (mes == "Ok") {
                 val budgetName =
                     etBudgetName.text.toString().trim()
                 val amount =

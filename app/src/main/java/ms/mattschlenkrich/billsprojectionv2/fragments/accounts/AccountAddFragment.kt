@@ -12,6 +12,9 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNT_ADD
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -35,6 +38,7 @@ class AccountAddFragment :
     private lateinit var accountsViewModel: AccountViewModel
     private lateinit var mView: View
     private val args: AccountAddFragmentArgs by navArgs()
+    private var accountNameList: List<String>? = null
 
     private val dollarFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
 
@@ -65,6 +69,10 @@ class AccountAddFragment :
         super.onViewCreated(view, savedInstanceState)
         accountsViewModel =
             (activity as MainActivity).accountViewModel
+        CoroutineScope(Dispatchers.IO).launch {
+            accountNameList =
+                accountsViewModel.getAccountNameList()
+        }
         fillValues()
 
         binding.tvAccAddType.setOnClickListener {
@@ -133,74 +141,101 @@ class AccountAddFragment :
                 accountOwing, false,
                 currTime
             )
+            val fragmentChain = "${args.callingFragments}, $TAG"
             val direction = AccountAddFragmentDirections
                 .actionAccountAddFragmentToAccountTypesFragment(
-                    args.budgetRuleDetailed, account,
-                    args.requestedAccount, args.callingFragments
+                    args.budgetRuleDetailed,
+                    account,
+                    args.requestedAccount,
+                    fragmentChain
                 )
             mView.findNavController().navigate(direction)
         }
     }
 
     private fun saveAccount(view: View) {
+        val mes = checkAccount()
         binding.apply {
-            val accountName =
-                editAccAddName.text.toString().trim()
-            val accountHandle =
-                editAccAddHandle.text.toString().trim()
-            val accountBalance =
-                editAccAddBalance.text.toString().trim()
-                    .replace(",", "")
-                    .replace("$", "")
-                    .toDouble()
-            val accountOwing =
-                editAccAddOwing.text.toString().trim()
-                    .replace(",", "")
-                    .replace("$", "")
-                    .toDouble()
-            val accountBudgeted =
-                editAccAddBudgeted.text.toString().trim()
-                    .replace(",", "")
-                    .replace("$", "")
-                    .toDouble()
-            val currTime =
-                timeFormatter.format(Calendar.getInstance().time)
-            if (tvAccAddType.toString() != getString(R.string.choose_account_type)
-                && args.accountType != null
-            ) {
-                val accountTypeId =
-                    args.accountType!!.typeId
-                if (accountName.isNotEmpty()) {
-                    val account = Account(
-                        0, accountName, accountHandle,
-                        accountTypeId, accountBudgeted, accountBalance,
-                        accountOwing, false,
-                        currTime
+            if (mes == "Ok") {
+                val accountName =
+                    editAccAddName.text.toString().trim()
+                val accountHandle =
+                    editAccAddHandle.text.toString().trim()
+                val accountBalance =
+                    editAccAddBalance.text.toString().trim()
+                        .replace(",", "")
+                        .replace("$", "")
+                        .toDouble()
+                val accountOwing =
+                    editAccAddOwing.text.toString().trim()
+                        .replace(",", "")
+                        .replace("$", "")
+                        .toDouble()
+                val accountBudgeted =
+                    editAccAddBudgeted.text.toString().trim()
+                        .replace(",", "")
+                        .replace("$", "")
+                        .toDouble()
+                val updateTime =
+                    timeFormatter.format(Calendar.getInstance().time)
+                val accountTypeId = args.accountType!!.typeId
+                val account = Account(
+                    0, accountName, accountHandle,
+                    accountTypeId, accountBudgeted, accountBalance,
+                    accountOwing, false,
+                    updateTime
+                )
+                val fragmentChain =
+                    args.callingFragments!!
+                        .replace(", $FRAG_ACCOUNT_ADD", "")
+                accountsViewModel.addAccount(account)
+                val direction = AccountAddFragmentDirections
+                    .actionAccountAddFragmentToAccountsFragment(
+                        args.budgetRuleDetailed,
+                        args.requestedAccount,
+                        fragmentChain
                     )
-                    accountsViewModel.addAccount(account)
-                    val direction = AccountAddFragmentDirections
-                        .actionAccountAddFragmentToAccountsFragment(
-                            args.budgetRuleDetailed, args.requestedAccount,
-                            args.callingFragments
-                        )
-                    view.findNavController().navigate(direction)
+                view.findNavController().navigate(direction)
 
-                } else {
-                    Toast.makeText(
-                        mView.context,
-                        "Enter a unique Name for this Account",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
             } else {
                 Toast.makeText(
                     mView.context,
-                    "This account must have a type!\n" +
-                            "Please click on ${getString(R.string.choose_account_type)} " +
-                            "to find one",
+                    mes,
                     Toast.LENGTH_LONG
                 ).show()
             }
+        }
+    }
+
+    private fun checkAccount(): String {
+        binding.apply {
+            val nameIsBlank =
+                editAccAddName.text.isNullOrEmpty()
+            var nameFound = false
+            if (accountNameList!!.isNotEmpty() && !nameIsBlank) {
+                for (i in 0 until accountNameList!!.size) {
+                    if (accountNameList!![i] ==
+                        editAccAddName.text.toString().trim()
+                    ) {
+                        nameFound = true
+                        break
+                    }
+                }
+            }
+            val errorMess = if (nameIsBlank) {
+                "     Error!!\n" +
+                        "Please enter a name"
+            } else if (nameFound) {
+                "     Error!!\n" +
+                        "This account rule already exists."
+            } else if (args.accountType == null
+            ) {
+                "     Error!!\n" +
+                        "This account must have an account Type."
+            } else {
+                "Ok"
+            }
+            return errorMess
         }
     }
 

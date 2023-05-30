@@ -83,7 +83,8 @@ class BudgetRuleAddFragment :
         budgetRuleViewModel =
             (activity as MainActivity).budgetRuleViewModel
         CoroutineScope(Dispatchers.IO).launch {
-            budgetNameList = budgetRuleViewModel.getBudgetRuleNameList()
+            budgetNameList =
+                budgetRuleViewModel.getBudgetRuleNameList()
         }
         fillValues()
 
@@ -380,7 +381,9 @@ class BudgetRuleAddFragment :
             var nameFound = false
             if (budgetNameList!!.isNotEmpty() && !nameIsBlank) {
                 for (i in 0 until budgetNameList!!.size) {
-                    if (budgetNameList!![i] == etBudgetName.text.toString().trim()) {
+                    if (budgetNameList!![i] ==
+                        etBudgetName.text.toString().trim()
+                    ) {
                         nameFound = true
                         break
                     }

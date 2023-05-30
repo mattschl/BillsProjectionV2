@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.ADAPTER_ACCOUNT
+import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_RULE_ADD
 import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_RULE_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.REQUEST_FROM_ACCOUNT
@@ -144,25 +145,35 @@ class AccountAdapter(
 
         holder.itemView.setOnLongClickListener {
 
-        val direction = AccountsFragmentDirections
-                .actionAccountsFragmentToAccountUpdateFragment(
-                    budgetRuleDetailed,
-                    curAccount.account,
-                    curAccount.accountType,
-                    requestedAccount,
-                    callingFragments
-                )
-            it.findNavController().navigate(direction)
+            gotoUpdateUpdateAccount(curAccount, it)
             false
         }
     }
 
+    private fun gotoUpdateUpdateAccount(
+        curAccount: AccountWithType,
+        it: View
+    ) {
+        val fragmentChain = "$callingFragments, $FRAG_ACCOUNTS"
+        val direction = AccountsFragmentDirections
+            .actionAccountsFragmentToAccountUpdateFragment(
+                budgetRuleDetailed,
+                curAccount.account,
+                curAccount.accountType,
+                requestedAccount,
+                fragmentChain
+            )
+        it.findNavController().navigate(direction)
+    }
+
     private fun gotoCallingFragment(it: View) {
-        if (callingFragments!!.contains(FRAG_BUDGET_RULE_ADD)) {
+        val fragmentChain = callingFragments!!
+            .replace(", $FRAG_ACCOUNTS", "")
+        if (callingFragments.contains(FRAG_BUDGET_RULE_ADD)) {
             val direction = AccountsFragmentDirections
                 .actionAccountsFragmentToBudgetRuleAddFragment(
                     budgetRuleDetailed,
-                    callingFragments
+                    fragmentChain
                 )
             it.findNavController().navigate(direction)
         } else if (callingFragments.contains(FRAG_BUDGET_RULE_UPDATE)
@@ -170,7 +181,7 @@ class AccountAdapter(
             val direction = AccountsFragmentDirections
                 .actionAccountsFragmentToBudgetRuleUpdateFragment(
                     budgetRuleDetailed,
-                    callingFragments
+                    fragmentChain
                 )
             it.findNavController().navigate(direction)
         }
