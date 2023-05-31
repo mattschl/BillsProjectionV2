@@ -38,6 +38,7 @@ class AccountUpdateFragment :
 
     private var _binding: FragmentAccountUpdateBinding? = null
     private val binding get() = _binding!!
+    private lateinit var mainActivity: MainActivity
 
     private var mView: View? = null
     private lateinit var accountsViewModel: AccountViewModel
@@ -70,6 +71,7 @@ class AccountUpdateFragment :
             inflater, container, false
         )
         Log.d(TAG, "$TAG is entered")
+        mainActivity = (activity as MainActivity)
         mView = binding.root
         return mView as View
     }
@@ -81,6 +83,7 @@ class AccountUpdateFragment :
         CoroutineScope(Dispatchers.IO).launch {
             accountNameList = accountsViewModel.getAccountNameList()
         }
+        mainActivity.title = "Update Account"
         curBudgetRuleDetailed = args.budgetRuleDetailed!!
         curAccount = args.account!!
         newAccountType = args.accountType!!

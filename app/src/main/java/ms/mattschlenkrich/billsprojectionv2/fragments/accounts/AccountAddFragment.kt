@@ -34,6 +34,7 @@ class AccountAddFragment :
 
     private var _binding: FragmentAccountAddBinding? = null
     private val binding get() = _binding!!
+    private lateinit var mainActivity: MainActivity
 
     private lateinit var accountsViewModel: AccountViewModel
     private lateinit var mView: View
@@ -60,6 +61,7 @@ class AccountAddFragment :
         _binding = FragmentAccountAddBinding.inflate(
             inflater, container, false
         )
+        mainActivity = (activity as MainActivity)
         Log.d(TAG, "$TAG is entered")
 
         return binding.root
@@ -68,11 +70,12 @@ class AccountAddFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         accountsViewModel =
-            (activity as MainActivity).accountViewModel
+            mainActivity.accountViewModel
         CoroutineScope(Dispatchers.IO).launch {
             accountNameList =
                 accountsViewModel.getAccountNameList()
         }
+        mainActivity.title = "Add a new Account"
         fillValues()
 
         binding.tvAccAddType.setOnClickListener {

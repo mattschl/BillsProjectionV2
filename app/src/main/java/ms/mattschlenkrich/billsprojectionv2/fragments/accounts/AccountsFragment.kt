@@ -30,6 +30,7 @@ class AccountsFragment :
 
     private var _binding: FragmentAccountsBinding? = null
     private val binding get() = _binding!!
+    private lateinit var mainActivity: MainActivity
 
     private lateinit var accountsViewModel: AccountViewModel
     private lateinit var accountAdapter: AccountAdapter
@@ -55,6 +56,7 @@ class AccountsFragment :
         _binding = FragmentAccountsBinding.inflate(
             inflater, container, false
         )
+        mainActivity = (activity as MainActivity)
         Log.d(TAG, "$TAG is entered")
         mView = binding.root
         return mView
@@ -66,8 +68,8 @@ class AccountsFragment :
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated entered")
         accountsViewModel =
-            (activity as MainActivity).accountViewModel
-
+            mainActivity.accountViewModel
+        mainActivity.title = "Choose an Account"
         setUpRecyclerView()
         binding.fabAddNewAccount.setOnClickListener {
             addNewAccount()

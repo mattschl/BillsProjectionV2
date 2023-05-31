@@ -33,6 +33,7 @@ class AccountTypeUpdateFragment :
 
     private var _binding: FragmentAccountTypeUpdateBinding? = null
     private val binding get() = _binding!!
+    private lateinit var mainActivity: MainActivity
     private var mView: View? = null
     private lateinit var accountsViewModel: AccountViewModel
 
@@ -57,7 +58,7 @@ class AccountTypeUpdateFragment :
         )
         Log.d(TAG, "$TAG is entered")
         mView = binding.root
-
+        mainActivity = (activity as MainActivity)
         return binding.root
     }
 
@@ -65,7 +66,7 @@ class AccountTypeUpdateFragment :
         super.onViewCreated(view, savedInstanceState)
         accountsViewModel = (activity as MainActivity).accountViewModel
         currentAccountType = args.accountType!!
-
+        mainActivity.title = "Update Account Type"
         fillValues()
 
         binding.fabAccountTypeUpdate.setOnClickListener {

@@ -28,6 +28,7 @@ class BudgetRuleFragment :
 
     private var _binding: FragmentBudgetRuleBinding? = null
     private val binding get() = _binding!!
+    private lateinit var mainActivity: MainActivity
 
     private lateinit var viewModel: BudgetRuleViewModel
     private lateinit var budgetRuleAdapter: BudgetRuleAdapter
@@ -47,6 +48,7 @@ class BudgetRuleFragment :
         _binding = FragmentBudgetRuleBinding.inflate(
             inflater, container, false
         )
+        mainActivity = (activity as MainActivity)
         Log.d(TAG, "$TAG is entered")
         mView = binding.root
         return binding.root
@@ -57,7 +59,8 @@ class BudgetRuleFragment :
     ) {
         super.onViewCreated(view, savedInstanceState)
         viewModel =
-            (activity as MainActivity).budgetRuleViewModel
+            mainActivity.budgetRuleViewModel
+        mainActivity.title = "Choose a Budget Rule"
         setupRecyclerView()
         binding.fabAddNew.setOnClickListener {
             val direction = BudgetRuleFragmentDirections

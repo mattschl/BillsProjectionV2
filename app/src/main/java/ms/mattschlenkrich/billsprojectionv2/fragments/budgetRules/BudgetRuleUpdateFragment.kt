@@ -42,6 +42,7 @@ class BudgetRuleUpdateFragment :
 
     private var _binding: FragmentBudgetRuleUpdateBinding? = null
     private val binding get() = _binding!!
+    private lateinit var mainActivity: MainActivity
 
     private lateinit var budgetRuleViewModel: BudgetRuleViewModel
     private lateinit var mView: View
@@ -80,10 +81,11 @@ class BudgetRuleUpdateFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         budgetRuleViewModel =
-            (activity as MainActivity).budgetRuleViewModel
+            mainActivity.budgetRuleViewModel
         CoroutineScope(Dispatchers.IO).launch {
             budgetNameList = budgetRuleViewModel.getBudgetRuleNameList()
         }
+        mainActivity.title = "Update Budget Rule"
         fillValues()
         binding.apply {
             tvToAccount.setOnClickListener {

@@ -41,6 +41,7 @@ class BudgetRuleAddFragment :
 
     private var _binding: FragmentBudgetRuleAddBinding? = null
     private val binding get() = _binding!!
+    private lateinit var mainActivity: MainActivity
 
     private lateinit var budgetRuleViewModel: BudgetRuleViewModel
     private lateinit var mView: View
@@ -73,6 +74,7 @@ class BudgetRuleAddFragment :
         _binding = FragmentBudgetRuleAddBinding.inflate(
             inflater, container, false
         )
+        mainActivity = (activity as MainActivity)
         Log.d(TAG, "$TAG is entered")
         mView = binding.root
         return mView
@@ -81,11 +83,12 @@ class BudgetRuleAddFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         budgetRuleViewModel =
-            (activity as MainActivity).budgetRuleViewModel
+            mainActivity.budgetRuleViewModel
         CoroutineScope(Dispatchers.IO).launch {
             budgetNameList =
                 budgetRuleViewModel.getBudgetRuleNameList()
         }
+        mainActivity.title = "Add a new Budget Rule"
         fillValues()
 
         binding.apply {

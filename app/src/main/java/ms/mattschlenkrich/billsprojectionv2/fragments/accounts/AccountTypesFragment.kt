@@ -28,6 +28,7 @@ class AccountTypesFragment
 
     private var _binding: FragmentAccountTypesBinding? = null
     private val binding get() = _binding!!
+    private lateinit var mainActivity: MainActivity
 
     private lateinit var accountViewModel: AccountViewModel
     private lateinit var accountTypeAdapter: AccountTypeAdapter
@@ -48,7 +49,7 @@ class AccountTypesFragment
             inflater, container, false
         )
         Log.d(TAG, "$TAG is entered")
-
+        mainActivity = (activity as MainActivity)
         return binding.root
     }
 
@@ -57,8 +58,8 @@ class AccountTypesFragment
     ) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated Entered")
-        accountViewModel = (activity as MainActivity).accountViewModel
-
+        accountViewModel = mainActivity.accountViewModel
+        mainActivity.title = "Choose an Account Type"
         setupRecyclerView()
         binding.fabAddAccountType.setOnClickListener {
             val direction = AccountTypesFragmentDirections

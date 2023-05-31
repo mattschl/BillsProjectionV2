@@ -30,6 +30,7 @@ class AccountTypeAddFragment :
 
     private var _binding: FragmentAccountTypeAddBinding? = null
     private val binding get() = _binding!!
+    private lateinit var mainActivity: MainActivity
 
     private lateinit var accountsViewModel: AccountViewModel
     private lateinit var mView: View
@@ -53,13 +54,14 @@ class AccountTypeAddFragment :
             inflater, container, false
         )
         Log.d(TAG, "$TAG is entered")
-
+        mainActivity = (activity as MainActivity)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        accountsViewModel = (activity as MainActivity).accountViewModel
+        accountsViewModel = mainActivity.accountViewModel
+        mainActivity.title = "Add a new Account Type"
         mView = view
     }
 
