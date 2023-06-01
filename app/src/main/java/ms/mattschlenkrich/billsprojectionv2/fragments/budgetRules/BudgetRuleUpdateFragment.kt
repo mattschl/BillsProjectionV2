@@ -74,6 +74,7 @@ class BudgetRuleUpdateFragment :
         _binding = FragmentBudgetRuleUpdateBinding.inflate(
             inflater, container, false
         )
+        mainActivity = (activity as MainActivity)
         mView = binding.root
         return binding.root
     }
