@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package ms.mattschlenkrich.billsprojectionv2
 
 const val SQLITE_DATE = "yyyy-LL-dd"
@@ -67,6 +69,8 @@ const val TABLE_TRANSACTIONS = "transactions"
 const val TRANSACTION_ID = "transId"
 const val TRANSACTION_DATE = "transDate"
 const val BUDGET_RULE_ID = "bRuleId"
+const val TRANSACTION_NAME = "transName"
+const val TRANSACTION_NOTE = "transNote"
 
 const val REQUEST_TO_ACCOUNT = "toAccount"
 const val REQUEST_FROM_ACCOUNT = "fromRequest"

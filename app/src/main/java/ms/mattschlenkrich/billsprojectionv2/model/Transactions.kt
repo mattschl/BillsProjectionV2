@@ -46,7 +46,7 @@ data class Transactions(
     val transId: Long,
     val transDate: String,
     val transName: String,
-    val transDesc: String,
+    val transNote: String,
     @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val bRuleId: Long,
     @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
