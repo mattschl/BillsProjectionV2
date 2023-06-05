@@ -58,4 +58,11 @@
     <string name="fixed_amount">Fixed amount</string>
     <string name="budgeted_amount">Budgeted Amount</string>
     <string name="choose_an_account">choose an Account</string>
+    <string name="choose_a_budget_asset">Choose a budget Asset</string>
+    <string name="balance_in_account">Balance in Account</string>
+    <string name="zero_dollars">$0.00</string>
+    <string name="fixed_budgeted">Fixed budgeted</string>
+    <string name="discretionary_expenses">Discretionary Expenses</string>
+    <string name="fixed_expenses">Fixed Expenses</string>
+    <string name="surplus_or_deficit">Surplus or Deficit</string>
 </resources>
