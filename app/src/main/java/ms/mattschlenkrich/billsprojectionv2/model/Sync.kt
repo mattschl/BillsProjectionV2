@@ -6,7 +6,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
-@Entity (tableName = "syncTime")
+@Entity(tableName = "sync")
 @Parcelize
 data class Sync(
     @PrimaryKey(autoGenerate = true)

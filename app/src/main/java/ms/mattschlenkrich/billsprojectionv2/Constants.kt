@@ -63,6 +63,11 @@ const val FREQUENCY_TYPE_ID = "frequencyTypeId"
 const val FREQUENCY_COUNT = "frequencyCount"
 const val LEAD_DAYS = "leadDays"
 
+const val TABLE_TRANSACTIONS = "transactions"
+const val TRANSACTION_ID = "transId"
+const val TRANSACTION_DATE = "transDate"
+const val BUDGET_RULE_ID = "bRuleId"
+
 const val REQUEST_TO_ACCOUNT = "toAccount"
 const val REQUEST_FROM_ACCOUNT = "fromRequest"
 
