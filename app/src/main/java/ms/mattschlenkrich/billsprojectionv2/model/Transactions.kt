@@ -55,6 +55,7 @@ data class Transactions(
     val fromAccountId: Long,
     @ColumnInfo(defaultValue = "0.0", typeAffinity = ColumnInfo.REAL)
     val amount: Double,
+    val updateTime: String,
 ) : Parcelable
 
 @Parcelize

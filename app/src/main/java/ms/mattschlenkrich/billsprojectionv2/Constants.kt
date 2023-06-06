@@ -19,6 +19,8 @@ const val FRAG_BUDGET_RULES = "BudgetRules"
 const val FRAG_DAYS_OF_WEEK = "DaysOfWeek"
 const val FRAG_BUDGET_RULE_ADD = "BudgetRuleAdd"
 const val FRAG_BUDGET_RULE_UPDATE = "BudgetRuleUpdate"
+const val FRAG_TRANSACTIONS = "Transactions"
+const val FRAG_BUDGET_VIEW = "BudgetView"
 
 const val ADAPTER_BUDGET_RULE = "BudgetRuleAdapter"
 const val ADAPTER_ACCOUNT = "AccountAdapter"

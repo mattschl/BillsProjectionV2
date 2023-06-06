@@ -99,4 +99,5 @@ interface AccountDao {
                 "COLLATE NOCASE ASC "
     )
     fun getAccountWithType(): LiveData<List<AccountWithType>>
+
 }
