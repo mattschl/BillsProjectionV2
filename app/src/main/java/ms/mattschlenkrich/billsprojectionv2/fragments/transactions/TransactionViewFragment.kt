@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionViewBinding
+import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModel
 
 class TransactionViewFragment :
     Fragment(R.layout.fragment_transaction_view) {
@@ -16,6 +17,7 @@ class TransactionViewFragment :
     private val binding get() = _binding!!
     private var mView: View? = null
     private lateinit var mainActivity: MainActivity
+    private lateinit var transactionViewModel: TransactionViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,6 +39,9 @@ class TransactionViewFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        transactionViewModel =
+            mainActivity.transactionViewModel
+        mainActivity.title = "View Transactions"
 
     }
 
