@@ -7,14 +7,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionAddBinding
+import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModel
 
 
-class TransactionAddFragment :
-    Fragment(R.layout.fragment_transaction_add) {
+class TransactionUpdateFragment :
+    Fragment(R.layout.fragment_transaction_update) {
 
-    private var _binding: FragmentTransactionAddBinding? = null
+    private var _binding: FragmentTransactionUpdateBinding? = null
     private val binding get() = _binding!!
     private var mView: View? = null
     private lateinit var mainActivity: MainActivity
@@ -29,7 +29,7 @@ class TransactionAddFragment :
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentTransactionAddBinding.inflate(
+        _binding = FragmentTransactionUpdateBinding.inflate(
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
@@ -41,11 +41,11 @@ class TransactionAddFragment :
         super.onViewCreated(view, savedInstanceState)
         transactionViewModel =
             mainActivity.transactionViewModel
-        mainActivity.title = "Add a new Transaction"
+        mainActivity.title = "Update Transaction"
         setupRecyclerView()
     }
 
     private fun setupRecyclerView() {
-        //TODO make the recycler
+        TODO("Not yet implemented")
     }
 }
