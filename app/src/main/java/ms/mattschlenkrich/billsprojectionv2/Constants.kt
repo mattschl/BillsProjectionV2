@@ -52,7 +52,7 @@ const val FREQUENCY_ID = "frequencyId"
 const val FREQUENCY_TYPE = "frequencyType"
 
 const val TABLE_BUDGET_RULES = "budgetRules"
-const val RULE_ID = "RuleID"
+const val RULE_ID = "ruleID"
 const val BUDGET_RULE_NAME = "budgetRuleName"
 const val TO_ACCOUNT_ID = "toAccountId"
 const val FROM_ACCOUNT_ID = "fromAccountId"

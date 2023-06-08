@@ -334,7 +334,7 @@ class BudgetRuleUpdateFragment :
                     Calendar.getInstance().time
                 )
                 budgetRuleViewModel.deleteBudgetRule(
-                    args.budgetRuleDetailed!!.budgetRule!!.RuleId,
+                    args.budgetRuleDetailed!!.budgetRule!!.ruleId,
                     updateTime
                 )
                 val direction = BudgetRuleUpdateFragmentDirections
@@ -373,7 +373,7 @@ class BudgetRuleUpdateFragment :
                 val updateTime =
                     timeFormatter.format(Calendar.getInstance().time)
                 val budgetRule = BudgetRule(
-                    args.budgetRuleDetailed!!.budgetRule!!.RuleId,
+                    args.budgetRuleDetailed!!.budgetRule!!.ruleId,
                     budgetName, toAccountId, fromAccountId,
                     amount,
                     chkFixedAmount.isChecked,

@@ -20,6 +20,7 @@ class TransactionViewFragment :
     private lateinit var transactionViewModel: TransactionViewModel
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -41,8 +42,12 @@ class TransactionViewFragment :
         super.onViewCreated(view, savedInstanceState)
         transactionViewModel =
             mainActivity.transactionViewModel
-        mainActivity.title = "View Transactions"
+        mainActivity.title = "View Transaction History"
+        setupRecyclerView()
+    }
 
+    private fun setupRecyclerView() {
+        //TODO make the recycler
     }
 
 }

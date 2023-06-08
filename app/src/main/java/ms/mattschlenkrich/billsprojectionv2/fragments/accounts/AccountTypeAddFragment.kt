@@ -22,6 +22,7 @@ import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.Random
 
 private const val TAG = FRAG_ACCOUNT_TYPE_ADD
 
@@ -81,6 +82,10 @@ class AccountTypeAddFragment :
 
     private fun saveAccountType(view: View) {
         Log.d(TAG, "saveAccountType entered")
+        var id =
+            Random().nextInt(Int.MAX_VALUE).toLong()
+        id = if (Random().nextBoolean()) -id
+        else id
         val accountTypeName = binding.etAccTypeAdd.text.toString().trim()
         val keepTotals = binding.chkAccTypeAddKeepTotals.isChecked
         val keepOwing = binding.chkAccTypeAddKeepOwing.isChecked
@@ -90,7 +95,7 @@ class AccountTypeAddFragment :
 
         if (accountTypeName.isNotEmpty()) {
             val accountType = AccountType(
-                0, accountTypeName, keepTotals,
+                id, accountTypeName, keepTotals,
                 isAsset, keepOwing, false, displayAsAsset,
                 false, currTime
             )

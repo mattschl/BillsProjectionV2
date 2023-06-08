@@ -33,6 +33,7 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.Random
 
 private const val TAG = FRAG_BUDGET_RULE_ADD
 
@@ -334,6 +335,10 @@ class BudgetRuleAddFragment :
         val mes = checkBudgetRule()
         if (mes == "Ok") {
             binding.apply {
+                var id =
+                    Random().nextInt(Int.MAX_VALUE).toLong()
+                id = if (Random().nextBoolean()) -id
+                else id
                 val budgetName =
                     etBudgetName.text.toString().trim()
                 val amount =
@@ -344,7 +349,7 @@ class BudgetRuleAddFragment :
                 val updateTime =
                     timeFormatter.format(Calendar.getInstance().time)
                 val budgetRule = BudgetRule(
-                    0, budgetName,
+                    id, budgetName,
                     mToAccount!!.accountId,
                     mFromAccount!!.accountId,
                     amount,

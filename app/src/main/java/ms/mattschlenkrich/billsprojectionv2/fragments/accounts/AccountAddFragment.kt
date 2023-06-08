@@ -26,6 +26,7 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.Random
 
 private const val TAG = FRAG_ACCOUNT_ADD
 
@@ -160,6 +161,10 @@ class AccountAddFragment :
         val mes = checkAccount()
         binding.apply {
             if (mes == "Ok") {
+                var id =
+                    Random().nextInt(Int.MAX_VALUE).toLong()
+                id = if (Random().nextBoolean()) -id
+                else id
                 val accountName =
                     editAccAddName.text.toString().trim()
                 val accountHandle =
@@ -183,7 +188,7 @@ class AccountAddFragment :
                     timeFormatter.format(Calendar.getInstance().time)
                 val accountTypeId = args.accountType!!.typeId
                 val account = Account(
-                    0, accountName, accountHandle,
+                    id, accountName, accountHandle,
                     accountTypeId, accountBudgeted, accountBalance,
                     accountOwing, false,
                     updateTime

@@ -36,8 +36,8 @@ class BudgetRuleAdapter(
                 oldItem: BudgetRuleDetailed,
                 newItem: BudgetRuleDetailed
             ): Boolean {
-                return oldItem.budgetRule!!.RuleId ==
-                        newItem.budgetRule!!.RuleId
+                return oldItem.budgetRule!!.ruleId ==
+                        newItem.budgetRule!!.ruleId
             }
 
             override fun areContentsTheSame(

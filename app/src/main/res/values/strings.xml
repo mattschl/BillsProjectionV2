@@ -65,4 +65,5 @@
     <string name="discretionary_expenses">Discretionary Expenses</string>
     <string name="fixed_expenses">Fixed Expenses</string>
     <string name="surplus_or_deficit">Surplus or Deficit</string>
+    <string name="no_transactions_to_view">No Transactions to view</string>
 </resources>

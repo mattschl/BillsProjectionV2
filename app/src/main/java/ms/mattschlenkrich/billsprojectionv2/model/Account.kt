@@ -26,7 +26,7 @@ import ms.mattschlenkrich.billsprojectionv2.TYPE_ID
 )
 @Parcelize
 data class AccountType(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val typeId: Long,
     val accountType: String,
@@ -59,7 +59,7 @@ data class AccountType(
 )
 @Parcelize
 data class Account(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val accountId: Long,
     val accountName: String,

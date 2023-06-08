@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".fragments.accounts.AccountsFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout1"
+        android:id="@+id/conAccounts"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".fragments.accounts.AccountsFragment">
+        android:layout_height="match_parent">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabAddNewAccount"

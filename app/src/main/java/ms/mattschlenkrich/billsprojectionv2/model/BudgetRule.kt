@@ -39,8 +39,8 @@ import ms.mattschlenkrich.billsprojectionv2.TO_ACCOUNT_ID
     )]
 )
 data class BudgetRule(
-    @PrimaryKey(autoGenerate = true)
-    val RuleId: Long,
+    @PrimaryKey
+    val ruleId: Long,
     val budgetRuleName: String,
     @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val toAccountId: Long,
