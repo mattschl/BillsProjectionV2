@@ -13,13 +13,13 @@ import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.BUDGET_RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.FROM_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.RULE_ID
-import ms.mattschlenkrich.billsprojectionv2.TABLE_TRANSACTIONS
+import ms.mattschlenkrich.billsprojectionv2.TABLE_TRANSACTION
 import ms.mattschlenkrich.billsprojectionv2.TO_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_DATE
 
 @Parcelize
 @Entity(
-    tableName = TABLE_TRANSACTIONS,
+    tableName = TABLE_TRANSACTION,
     indices = [
         Index(value = [TRANSACTION_DATE]),
         Index(value = [BUDGET_RULE_ID]),

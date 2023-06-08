@@ -7,10 +7,14 @@ import androidx.room.RoomDatabase
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
+import ms.mattschlenkrich.billsprojectionv2.model.Transactions
 
 @Database(
     entities = [
-        Account::class, AccountType::class, BudgetRule::class
+        Account::class,
+        AccountType::class,
+        BudgetRule::class,
+        Transactions::class,
     ], version = 1
 )
 abstract class BillsDatabase : RoomDatabase() {

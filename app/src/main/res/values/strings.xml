@@ -66,4 +66,10 @@
     <string name="fixed_expenses">Fixed Expenses</string>
     <string name="surplus_or_deficit">Surplus or Deficit</string>
     <string name="no_transactions_to_view">No Transactions to view</string>
+    <string name="date">Date</string>
+    <string name="transaction_description">Transaction Description</string>
+    <string name="description">Description</string>
+    <string name="notes">Notes</string>
+    <string name="enter_notes">Enter Notes</string>
+    <string name="enter_description">Enter Description</string>
 </resources>
