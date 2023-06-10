@@ -41,11 +41,8 @@ class TransactionUpdateFragment :
         super.onViewCreated(view, savedInstanceState)
         transactionViewModel =
             mainActivity.transactionViewModel
-        mainActivity.title = "Update Transaction"
-        setupRecyclerView()
+        mainActivity.title = "Update this Transaction"
+
     }
 
-    private fun setupRecyclerView() {
-        TODO("Not yet implemented")
-    }
 }

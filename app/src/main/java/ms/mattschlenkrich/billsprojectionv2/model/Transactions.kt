@@ -55,6 +55,8 @@ data class Transactions(
     val fromAccountId: Long,
     @ColumnInfo(defaultValue = "0.0", typeAffinity = ColumnInfo.REAL)
     val amount: Double,
+    @ColumnInfo(defaultValue = "0", typeAffinity = ColumnInfo.INTEGER)
+    val isDeleted: Boolean,
     val updateTime: String,
 ) : Parcelable
 
@@ -71,11 +73,11 @@ data class TransactionDetailed(
         parentColumn = TO_ACCOUNT_ID,
         entityColumn = ACCOUNT_ID
     )
-    var toAccount: Account?,
+    var toAccountWithType: AccountWithType?,
     @Relation(
         parentColumn = FROM_ACCOUNT_ID,
         entityColumn = ACCOUNT_ID
     )
-    var fromAccount: Account?
+    var fromAccountWithType: AccountWithType?
 
 ) : Parcelable

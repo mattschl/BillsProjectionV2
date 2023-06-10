@@ -19,11 +19,9 @@ class TransactionViewFragment :
     private lateinit var mainActivity: MainActivity
     private lateinit var transactionViewModel: TransactionViewModel
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        // keep for later
     }
 
     override fun onCreateView(

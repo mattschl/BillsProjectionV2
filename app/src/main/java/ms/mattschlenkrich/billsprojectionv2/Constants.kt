@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package ms.mattschlenkrich.billsprojectionv2
 
 const val SQLITE_DATE = "yyyy-LL-dd"
@@ -42,14 +40,6 @@ const val ACCOUNT_NAME = "accountName"
 const val ACCOUNT_TYPE_ID = "accountTypeId"
 const val ACCOUNT_BALANCE = "accountBalance"
 const val ACCOUNT_OWING = "accountOwing"
-
-const val TABLE_DAYS_OF_WEEK = "daysOfWeek"
-const val DAY_ID = "dayId"
-const val DAY_OF_WEEK = "dayOfWeek"
-
-const val TABLE_FREQUENCY_TYPES = "frequencyTypes"
-const val FREQUENCY_ID = "frequencyId"
-const val FREQUENCY_TYPE = "frequencyType"
 
 const val TABLE_BUDGET_RULES = "budgetRules"
 const val RULE_ID = "ruleId"

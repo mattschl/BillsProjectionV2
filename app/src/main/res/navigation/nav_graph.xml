@@ -33,6 +33,15 @@
         <action
             android:id="@+id/action_accountsFragment_to_budgetRuleAddFragment"
             app:destination="@id/budgetRuleAddFragment" />
+        <action
+            android:id="@+id/action_accountsFragment_to_transactionUpdateFragment"
+            app:destination="@id/transactionUpdateFragment" />
+        <action
+            android:id="@+id/action_accountsFragment_to_transactionAddFragment"
+            app:destination="@id/transactionAddFragment" />
+        <action
+            android:id="@+id/action_accountsFragment_to_transactionUpdateFragment2"
+            app:destination="@id/transactionUpdateFragment" />
     </fragment>
     <fragment
         android:id="@+id/accountUpdateFragment"
@@ -195,6 +204,9 @@
             android:name="callingFragments"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_budgetRuleFragment_to_transactionUpdateFragment"
+            app:destination="@id/transactionUpdateFragment" />
     </fragment>
     <fragment
         android:id="@+id/budgetRuleAddFragment"
@@ -248,5 +260,42 @@
         android:id="@+id/transactionViewFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.fragments.transactions.TransactionViewFragment"
         android:label="fragment_transaction_view"
-        tools:layout="@layout/fragment_transaction_view" />
+        tools:layout="@layout/fragment_transaction_view">
+        <action
+            android:id="@+id/action_transactionViewFragment_to_transactionUpdateFragment"
+            app:destination="@id/transactionUpdateFragment" />
+        <action
+            android:id="@+id/action_transactionViewFragment_to_transactionAddFragment"
+            app:destination="@id/transactionAddFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/transactionAddFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.transactions.TransactionAddFragment"
+        android:label="fragment_transaction_add"
+        tools:layout="@layout/fragment_transaction_add">
+        <action
+            android:id="@+id/action_transactionAddFragment_to_transactionViewFragment"
+            app:destination="@id/transactionViewFragment" />
+        <action
+            android:id="@+id/action_transactionAddFragment_to_budgetRuleFragment"
+            app:destination="@id/budgetRuleFragment" />
+        <action
+            android:id="@+id/action_transactionAddFragment_to_accountsFragment"
+            app:destination="@id/accountsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/transactionUpdateFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.transactions.TransactionUpdateFragment"
+        android:label="fragment_transaction_update"
+        tools:layout="@layout/fragment_transaction_update">
+        <action
+            android:id="@+id/action_transactionUpdateFragment_to_transactionViewFragment"
+            app:destination="@id/transactionViewFragment" />
+        <action
+            android:id="@+id/action_transactionUpdateFragment_to_budgetRuleFragment"
+            app:destination="@id/budgetRuleFragment" />
+        <action
+            android:id="@+id/action_transactionUpdateFragment_to_accountsFragment"
+            app:destination="@id/accountsFragment" />
+    </fragment>
 </navigation>

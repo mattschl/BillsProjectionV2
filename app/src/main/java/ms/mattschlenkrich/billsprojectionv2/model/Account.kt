@@ -76,6 +76,7 @@ data class Account(
     val updateTime: String,
 ) : Parcelable
 
+@Parcelize
 data class AccountWithType(
     @Embedded
     val account: Account,
@@ -84,4 +85,4 @@ data class AccountWithType(
         entityColumn = TYPE_ID
     )
     val accountType: AccountType
-)
+) : Parcelable

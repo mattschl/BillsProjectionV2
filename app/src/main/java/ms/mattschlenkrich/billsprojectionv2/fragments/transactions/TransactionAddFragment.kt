@@ -42,10 +42,7 @@ class TransactionAddFragment :
         transactionViewModel =
             mainActivity.transactionViewModel
         mainActivity.title = "Add a new Transaction"
-        setupRecyclerView()
+
     }
 
-    private fun setupRecyclerView() {
-        //TODO make the recycler
-    }
 }
