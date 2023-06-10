@@ -1,7 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.adapter
 
 import android.content.Context
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.findNavController
@@ -14,21 +13,18 @@ import ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules.BudgetRuleFrag
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import java.text.NumberFormat
 import java.util.Locale
-import java.util.Random
-
-//private const val TAG = ADAPTER_BUDGET_RULE
 
 class BudgetRuleAdapter(
     private val context: Context,
     private val callingFragments: String,
-) :
-    RecyclerView.Adapter<BudgetRuleAdapter.BudgetRuleViewHolder>() {
+) : RecyclerView.Adapter<BudgetRuleAdapter.BudgetRuleViewHolder>() {
 
     private val dollarFormat: NumberFormat =
         NumberFormat.getCurrencyInstance(Locale.CANADA)
 
-    class BudgetRuleViewHolder(val itemBinding: BudgetRuleLayoutBinding) :
-        RecyclerView.ViewHolder(itemBinding.root)
+    class BudgetRuleViewHolder(
+        val itemBinding: BudgetRuleLayoutBinding
+    ) : RecyclerView.ViewHolder(itemBinding.root)
 
     private val differCallBack =
         object : DiffUtil.ItemCallback<BudgetRuleDetailed>() {
@@ -50,8 +46,9 @@ class BudgetRuleAdapter(
 
     val differ = AsyncListDiffer(this, differCallBack)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
-            BudgetRuleViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup, viewType: Int
+    ): BudgetRuleViewHolder {
         return BudgetRuleViewHolder(
             BudgetRuleLayoutBinding.inflate(
                 LayoutInflater.from(parent.context),
@@ -67,12 +64,13 @@ class BudgetRuleAdapter(
     override fun onBindViewHolder(
         holder: BudgetRuleViewHolder, position: Int
     ) {
-        val budgetRuleDetailed = differ.currentList[position]
+        val budgetRuleDetailed =
+            differ.currentList[position]
         holder.itemBinding.tvBudgetRule.text =
             budgetRuleDetailed.budgetRule!!.budgetRuleName
         var info = "To: " + budgetRuleDetailed.toAccount!!.accountName
         holder.itemBinding.tvToAccount.text = info
-        info = "From: " + budgetRuleDetailed.fromAccount!!.accountName
+        info = "\nFrom: " + budgetRuleDetailed.fromAccount!!.accountName
         holder.itemBinding.tvFromAccount.text = info
         val amount =
             dollarFormat.format(budgetRuleDetailed.budgetRule.amount)
@@ -89,17 +87,7 @@ class BudgetRuleAdapter(
                 "\nOn " + dayOfWeek
         holder.itemBinding.tvInfo.text = info
 
-        val random = Random()
-        val color = Color.argb(
-            255,
-            random.nextInt(256),
-            random.nextInt(256),
-            random.nextInt(256)
-        )
-        holder.itemBinding.ibColor.setBackgroundColor(color)
-
         holder.itemView.setOnLongClickListener {
-
             val direction = BudgetRuleFragmentDirections
                 .actionBudgetRuleFragmentToBudgetRuleUpdateFragment(
                     budgetRuleDetailed,

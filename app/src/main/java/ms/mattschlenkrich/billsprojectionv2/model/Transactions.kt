@@ -63,7 +63,7 @@ data class Transactions(
 @Parcelize
 data class TransactionDetailed(
     @Embedded
-    val transId: Transactions?,
+    val transaction: Transactions?,
     @Relation(
         parentColumn = BUDGET_RULE_ID,
         entityColumn = RULE_ID

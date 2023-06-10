@@ -69,7 +69,7 @@ class BudgetRuleFragment :
                     TAG
 
                 )
-            it.findNavController().navigate(direction)
+            mView!!.findNavController().navigate(direction)
         }
     }
 

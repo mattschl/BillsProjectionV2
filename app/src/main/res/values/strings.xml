@@ -72,4 +72,5 @@
     <string name="notes">Notes</string>
     <string name="enter_notes">Enter Notes</string>
     <string name="enter_description">Enter Description</string>
+    <string name="transaction_info">Transaction info</string>
 </resources>

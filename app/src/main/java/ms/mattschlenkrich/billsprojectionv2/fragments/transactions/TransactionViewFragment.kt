@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionViewBinding
@@ -22,6 +23,7 @@ class TransactionViewFragment :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // keep for later
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -42,6 +44,11 @@ class TransactionViewFragment :
             mainActivity.transactionViewModel
         mainActivity.title = "View Transaction History"
         setupRecyclerView()
+        binding.fabAddTransaction.setOnClickListener {
+            val direction = TransactionViewFragmentDirections
+                .actionTransactionViewFragmentToTransactionAddFragment()
+            mView!!.findNavController().navigate(direction)
+        }
     }
 
     private fun setupRecyclerView() {
