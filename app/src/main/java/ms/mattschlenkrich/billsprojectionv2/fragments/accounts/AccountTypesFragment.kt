@@ -64,8 +64,11 @@ class AccountTypesFragment
         binding.fabAddAccountType.setOnClickListener {
             val direction = AccountTypesFragmentDirections
                 .actionAccountTypesFragmentToAccountTypeAddFragment(
-                    args.budgetRuleDetailed, args.account,
-                    args.requestedAccount, args.callingFragments
+                    args.transaction,
+                    args.budgetRuleDetailed,
+                    args.account,
+                    args.requestedAccount,
+                    args.callingFragments
                 )
             it.findNavController().navigate(direction)
         }
@@ -73,8 +76,11 @@ class AccountTypesFragment
 
     private fun setupRecyclerView() {
         accountTypeAdapter = AccountTypeAdapter(
-            args.budgetRuleDetailed, args.account,
-            args.requestedAccount, args.callingFragments
+            args.transaction,
+            args.budgetRuleDetailed,
+            args.account,
+            args.requestedAccount,
+            args.callingFragments
         )
 
         binding.rvAccountTypes.apply {

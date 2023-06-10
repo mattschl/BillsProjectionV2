@@ -93,8 +93,11 @@ class AccountTypeUpdateFragment :
             accountsViewModel.updateAccountType(accountType)
             val direction = AccountTypeUpdateFragmentDirections
                 .actionAccountTypeUpdateFragmentToAccountTypesFragment(
-                    args.budgetRuleDetailed, args.account,
-                    args.requestedAccount, args.callingFragments
+                    args.transaction,
+                    args.budgetRuleDetailed,
+                    args.account,
+                    args.requestedAccount,
+                    args.callingFragments
                 )
             mView?.findNavController()?.navigate(direction)
         } else if (accountTypeName.isNotBlank()) {
@@ -109,8 +112,11 @@ class AccountTypeUpdateFragment :
                     accountsViewModel.updateAccountType(accountType)
                     val direction = AccountTypeUpdateFragmentDirections
                         .actionAccountTypeUpdateFragmentToAccountTypesFragment(
-                            args.budgetRuleDetailed, args.account,
-                            args.requestedAccount, args.callingFragments
+                            args.transaction,
+                            args.budgetRuleDetailed,
+                            args.account,
+                            args.requestedAccount,
+                            args.callingFragments
                         )
                     mView?.findNavController()?.navigate(direction)
                 }
@@ -155,8 +161,11 @@ class AccountTypeUpdateFragment :
                 )
                 val direction = AccountTypeUpdateFragmentDirections
                     .actionAccountTypeUpdateFragmentToAccountTypesFragment(
-                        args.budgetRuleDetailed, args.account,
-                        args.requestedAccount, args.callingFragments
+                        args.transaction,
+                        args.budgetRuleDetailed,
+                        args.account,
+                        args.requestedAccount,
+                        args.callingFragments
                     )
                 mView?.findNavController()?.navigate(direction)
             }

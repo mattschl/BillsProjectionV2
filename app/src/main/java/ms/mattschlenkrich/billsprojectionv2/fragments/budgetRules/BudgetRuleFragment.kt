@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
@@ -29,7 +30,7 @@ class BudgetRuleFragment :
     private var _binding: FragmentBudgetRuleBinding? = null
     private val binding get() = _binding!!
     private lateinit var mainActivity: MainActivity
-
+    private val args: BudgetRuleFragmentArgs by navArgs()
     private lateinit var viewModel: BudgetRuleViewModel
     private lateinit var budgetRuleAdapter: BudgetRuleAdapter
     private var mView: View? = null
@@ -65,6 +66,7 @@ class BudgetRuleFragment :
         binding.fabAddNew.setOnClickListener {
             val direction = BudgetRuleFragmentDirections
                 .actionBudgetRuleFragmentToBudgetRuleAddFragment(
+                    args.transaction,
                     null,
                     TAG
 
@@ -75,6 +77,7 @@ class BudgetRuleFragment :
 
     private fun setupRecyclerView() {
         budgetRuleAdapter = BudgetRuleAdapter(
+            args.transaction,
             mView!!.context,
             TAG
         )

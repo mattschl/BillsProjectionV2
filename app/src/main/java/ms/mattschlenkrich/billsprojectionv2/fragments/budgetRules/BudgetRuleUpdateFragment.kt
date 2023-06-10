@@ -204,6 +204,7 @@ class BudgetRuleUpdateFragment :
         val fragmentChain = "${args.callingFragments}, $TAG"
         val direction = BudgetRuleUpdateFragmentDirections
             .actionBudgetRuleUpdateFragmentToAccountsFragment(
+                args.transaction,
                 getBudgetRuleDetailed(),
                 REQUEST_FROM_ACCOUNT,
                 fragmentChain
@@ -216,6 +217,7 @@ class BudgetRuleUpdateFragment :
         val fragmentChain = "${args.callingFragments}, $TAG"
         val direction = BudgetRuleUpdateFragmentDirections
             .actionBudgetRuleUpdateFragmentToAccountsFragment(
+                args.transaction,
                 getBudgetRuleDetailed(),
                 REQUEST_TO_ACCOUNT,
                 fragmentChain
@@ -339,6 +341,7 @@ class BudgetRuleUpdateFragment :
                 )
                 val direction = BudgetRuleUpdateFragmentDirections
                     .actionBudgetRuleUpdateFragmentToBudgetRuleFragment(
+                        args.transaction,
                         args.callingFragments,
                     )
                 mView.findNavController().navigate(direction)
@@ -391,6 +394,7 @@ class BudgetRuleUpdateFragment :
                 budgetRuleViewModel.updateBudgetRule(budgetRule)
                 val direction = BudgetRuleUpdateFragmentDirections
                     .actionBudgetRuleUpdateFragmentToBudgetRuleFragment(
+                        args.transaction,
                         fragmentChain
                     )
                 mView.findNavController().navigate(direction)

@@ -6,10 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.navArgs
+import ms.mattschlenkrich.billsprojectionv2.FRAG_TRANSACTIONS
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionViewBinding
 import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModel
+
+private const val TAG = FRAG_TRANSACTIONS
 
 class TransactionViewFragment :
     Fragment(R.layout.fragment_transaction_view) {
@@ -19,6 +23,7 @@ class TransactionViewFragment :
     private var mView: View? = null
     private lateinit var mainActivity: MainActivity
     private lateinit var transactionViewModel: TransactionViewModel
+    private val args: TransactionViewFragmentArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +51,10 @@ class TransactionViewFragment :
         setupRecyclerView()
         binding.fabAddTransaction.setOnClickListener {
             val direction = TransactionViewFragmentDirections
-                .actionTransactionViewFragmentToTransactionAddFragment()
+                .actionTransactionViewFragmentToTransactionAddFragment(
+                    null,
+                    TAG
+                )
             mView!!.findNavController().navigate(direction)
         }
     }

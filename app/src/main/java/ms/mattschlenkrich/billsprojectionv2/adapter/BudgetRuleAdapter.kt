@@ -11,10 +11,12 @@ import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetRuleLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules.BudgetRuleFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import java.text.NumberFormat
 import java.util.Locale
 
 class BudgetRuleAdapter(
+    private val transaction: TransactionDetailed?,
     private val context: Context,
     private val callingFragments: String,
 ) : RecyclerView.Adapter<BudgetRuleAdapter.BudgetRuleViewHolder>() {
@@ -90,6 +92,7 @@ class BudgetRuleAdapter(
         holder.itemView.setOnLongClickListener {
             val direction = BudgetRuleFragmentDirections
                 .actionBudgetRuleFragmentToBudgetRuleUpdateFragment(
+                    transaction,
                     budgetRuleDetailed,
                     callingFragments
                 )

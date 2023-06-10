@@ -16,6 +16,7 @@ import java.util.Locale
 import java.util.Random
 
 class TransactionAdapter(
+    private val transaction: TransactionDetailed?,
     private val context: Context,
     private val callingFragment: String,
 ) : RecyclerView.Adapter<TransactionAdapter.TransactionsViewHolder>() {
@@ -98,7 +99,10 @@ class TransactionAdapter(
 
         holder.itemView.setOnLongClickListener {
             val direction = TransactionViewFragmentDirections
-                .actionTransactionViewFragmentToTransactionUpdateFragment()
+                .actionTransactionViewFragmentToTransactionUpdateFragment(
+                    transaction,
+                    callingFragment
+                )
             it.findNavController().navigate(direction)
             false
         }

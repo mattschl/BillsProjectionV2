@@ -16,15 +16,17 @@ import ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountTypesFragm
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import java.util.Random
 
 private const val TAG = ADAPTER_ACCOUNT_TYPE
 
 class AccountTypeAdapter(
-    val budgetRuleDetailed: BudgetRuleDetailed?,
-    val account: Account?,
+    private val transaction: TransactionDetailed?,
+    private val budgetRuleDetailed: BudgetRuleDetailed?,
+    private val account: Account?,
     private val requestedAccount: String?,
-    private val callingFragments: String?
+    private val callingFragments: String?,
 ) :
     RecyclerView.Adapter<AccountTypeAdapter.AccountTypeViewHolder>() {
 
@@ -99,6 +101,7 @@ class AccountTypeAdapter(
         holder.itemView.setOnLongClickListener {
             val direction = AccountTypesFragmentDirections
                 .actionAccountTypesFragmentToAccountTypeUpdateFragment(
+                    transaction,
                     budgetRuleDetailed,
                     account,
                     curAccountType,
@@ -112,6 +115,7 @@ class AccountTypeAdapter(
             if (callingFragments!!.contains(FRAG_ACCOUNT_UPDATE)) {
                 val direction = AccountTypesFragmentDirections
                     .actionAccountTypesFragmentToAccountUpdateFragment(
+                        transaction,
                         budgetRuleDetailed,
                         account,
                         curAccountType,
@@ -122,6 +126,7 @@ class AccountTypeAdapter(
             } else if (callingFragments.contains(FRAG_ACCOUNT_ADD)) {
                 val direction = AccountTypesFragmentDirections
                     .actionAccountTypesFragmentToAccountAddFragment(
+                        transaction,
                         budgetRuleDetailed,
                         account,
                         curAccountType,
