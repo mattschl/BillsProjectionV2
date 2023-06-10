@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.billsprojectionv2.adapter
 
-import android.content.Context
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -16,8 +15,8 @@ import java.util.Locale
 import java.util.Random
 
 class TransactionAdapter(
-    private val transaction: TransactionDetailed?,
-    private val context: Context,
+//    private val transaction: TransactionDetailed?,
+//    private val context: Context,
     private val callingFragment: String,
 ) : RecyclerView.Adapter<TransactionAdapter.TransactionsViewHolder>() {
 
@@ -100,7 +99,7 @@ class TransactionAdapter(
         holder.itemView.setOnLongClickListener {
             val direction = TransactionViewFragmentDirections
                 .actionTransactionViewFragmentToTransactionUpdateFragment(
-                    transaction,
+                    transactionDetailed,
                     callingFragment
                 )
             it.findNavController().navigate(direction)

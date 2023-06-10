@@ -20,4 +20,7 @@ class TransactionViewModel(
         viewModelScope.launch {
             transactionRepository.updateTransaction(transaction)
         }
+
+    fun getActiveTransactionsDetailed() =
+        transactionRepository.getActiveTransactionsDetailed()
 }

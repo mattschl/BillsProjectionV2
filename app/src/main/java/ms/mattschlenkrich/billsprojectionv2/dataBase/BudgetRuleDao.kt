@@ -109,7 +109,8 @@ interface BudgetRuleDao {
                 "ORDER BY $TABLE_BUDGET_RULES.$BUDGET_RULE_NAME " +
                 "COLLATE NOCASE ASC"
     )
-    fun getActiveBudgetRulesDetailed(): LiveData<List<BudgetRuleDetailed>>
+    fun getActiveBudgetRulesDetailed():
+            LiveData<List<BudgetRuleDetailed>>
 
     @Transaction
     @Query(

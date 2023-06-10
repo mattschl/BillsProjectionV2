@@ -45,4 +45,8 @@ class TransactionUpdateFragment :
 
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
 }
