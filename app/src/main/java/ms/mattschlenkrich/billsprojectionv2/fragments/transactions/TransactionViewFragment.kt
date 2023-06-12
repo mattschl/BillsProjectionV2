@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.billsprojectionv2.FRAG_TRANSACTIONS
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
@@ -21,6 +20,7 @@ import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModel
 
 private const val TAG = FRAG_TRANSACTIONS
 
+@Suppress("DEPRECATION")
 class TransactionViewFragment :
     Fragment(R.layout.fragment_transaction_view),
     SearchView.OnQueryTextListener {
@@ -31,7 +31,7 @@ class TransactionViewFragment :
     private lateinit var mainActivity: MainActivity
     private lateinit var transactionViewModel: TransactionViewModel
     private lateinit var transactionAdapter: TransactionAdapter
-    private val args: TransactionViewFragmentArgs by navArgs()
+//    private val args: TransactionViewFragmentArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,6 +104,7 @@ class TransactionViewFragment :
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
 //        super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
@@ -126,8 +127,11 @@ class TransactionViewFragment :
     }
 
     private fun searchTransactions(query: String) {
-        val searchQuery = "%$query%"
+//        val searchQuery = "%$query%"
         //update with a new query
+        //viewModel.searchTransactions(searchQuery).observe(
+        //this
+        //) { list -> transactionAdapter.differ.submitList(list) }
     }
 
     override fun onDestroy() {

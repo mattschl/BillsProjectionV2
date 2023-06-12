@@ -377,7 +377,6 @@ class BudgetRuleAddFragment :
                 mView.findNavController().navigate(direction)
             }
         } else {
-
             Toast.makeText(
                 mView.context,
                 mes,
