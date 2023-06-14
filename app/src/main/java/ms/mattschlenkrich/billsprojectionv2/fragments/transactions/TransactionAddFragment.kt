@@ -256,7 +256,6 @@ class TransactionAddFragment :
                     updateTime
                 )
                 transactionViewModel.insertTransaction(mTransaction)
-
                 val direction =
                     TransactionAddFragmentDirections
                         .actionTransactionAddFragmentToTransactionViewFragment(

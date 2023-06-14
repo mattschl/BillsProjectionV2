@@ -34,14 +34,38 @@
             tools:ignore="DuplicateSpeakableTextCheck" />
 
         <TextView
+            android:id="@+id/lblBudgetRule"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/budget_rule"
+            android:textSize="@dimen/text_info_size"
+            app:layout_constraintBaseline_toBaselineOf="@+id/tvBudgetRule"
+            app:layout_constraintEnd_toEndOf="@+id/lblDate"
+            app:layout_constraintStart_toStartOf="@+id/lblDate" />
+
+        <TextView
+            android:id="@+id/tvBudgetRule"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:padding="@dimen/padding_start_end"
+            android:text="@string/choose_a_budget_rule"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_heading_size"
+            app:layout_constraintEnd_toEndOf="@+id/etTransDate"
+            app:layout_constraintStart_toStartOf="@+id/etTransDate"
+            app:layout_constraintTop_toBottomOf="@+id/etTransDate" />
+
+
+        <TextView
             android:id="@+id/lblAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/amount"
             android:textSize="@dimen/text_info_size"
             app:layout_constraintBaseline_toBaselineOf="@+id/etAmount"
-            app:layout_constraintEnd_toStartOf="@+id/etAmount"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintEnd_toEndOf="@+id/lblBudgetRule"
+            app:layout_constraintStart_toStartOf="@+id/lblBudgetRule" />
 
         <EditText
             android:id="@+id/etAmount"
@@ -55,9 +79,10 @@
             android:textColor="@color/black"
             android:textColorHint="#757575"
             android:textSize="@dimen/title_text_size"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/lblAmount"
-            app:layout_constraintTop_toBottomOf="@+id/etTransDate" />
+            app:layout_constraintEnd_toEndOf="@+id/tvBudgetRule"
+            app:layout_constraintStart_toStartOf="@+id/tvBudgetRule"
+            app:layout_constraintTop_toBottomOf="@+id/tvBudgetRule" />
+
 
         <TextView
             android:id="@+id/lblToAccount"
@@ -158,6 +183,23 @@
             app:layout_constraintStart_toEndOf="@+id/lblNote"
             app:layout_constraintTop_toBottomOf="@id/etDescription"
             tools:ignore="DuplicateSpeakableTextCheck" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabUpdateDone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="@color/deep_red"
+            android:clickable="true"
+            android:contentDescription="@string/berstyle"
+            android:focusable="true"
+            android:src="@drawable/ic_done"
+            android:tintMode="@color/white"
+            app:borderWidth="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

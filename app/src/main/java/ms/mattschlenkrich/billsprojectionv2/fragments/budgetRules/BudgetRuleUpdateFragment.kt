@@ -43,7 +43,6 @@ class BudgetRuleUpdateFragment :
     private var _binding: FragmentBudgetRuleUpdateBinding? = null
     private val binding get() = _binding!!
     private lateinit var mainActivity: MainActivity
-
     private lateinit var budgetRuleViewModel: BudgetRuleViewModel
     private lateinit var mView: View
     private val args: BudgetRuleUpdateFragmentArgs by navArgs()
@@ -202,15 +201,15 @@ class BudgetRuleUpdateFragment :
 
     private fun chooseFromAccount() {
         val fragmentChain = "${args.callingFragments}, $TAG"
-        val direction = BudgetRuleUpdateFragmentDirections
-            .actionBudgetRuleUpdateFragmentToAccountsFragment(
-                args.transaction,
-                getBudgetRuleDetailed(),
-                REQUEST_FROM_ACCOUNT,
-                fragmentChain
-            )
+        val direction =
+            BudgetRuleUpdateFragmentDirections
+                .actionBudgetRuleUpdateFragmentToAccountsFragment(
+                    args.transaction,
+                    getBudgetRuleDetailed(),
+                    REQUEST_FROM_ACCOUNT,
+                    fragmentChain
+                )
         mView.findNavController().navigate(direction)
-
     }
 
     private fun chooseToAccount() {
@@ -223,7 +222,6 @@ class BudgetRuleUpdateFragment :
                 fragmentChain
             )
         mView.findNavController().navigate(direction)
-
     }
 
     private fun fillValues() {
@@ -392,11 +390,12 @@ class BudgetRuleUpdateFragment :
                 )
                 val fragmentChain = "${args.callingFragments}, $TAG"
                 budgetRuleViewModel.updateBudgetRule(budgetRule)
-                val direction = BudgetRuleUpdateFragmentDirections
-                    .actionBudgetRuleUpdateFragmentToBudgetRuleFragment(
-                        args.transaction,
-                        fragmentChain
-                    )
+                val direction =
+                    BudgetRuleUpdateFragmentDirections
+                        .actionBudgetRuleUpdateFragmentToBudgetRuleFragment(
+                            args.transaction,
+                            fragmentChain
+                        )
                 mView.findNavController().navigate(direction)
             } else {
                 Toast.makeText(
