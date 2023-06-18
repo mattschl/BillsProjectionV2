@@ -50,5 +50,5 @@ interface TransactionDao {
     fun getActiveTransactionsDetailed():
             LiveData<List<TransactionDetailed>>
 
-
+    
 }

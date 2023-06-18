@@ -16,7 +16,6 @@ import ms.mattschlenkrich.billsprojectionv2.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.TABLE_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.TYPE_ID
 
-
 @Entity(
     tableName = TABLE_ACCOUNT_TYPES,
     indices = [Index(
@@ -57,6 +56,8 @@ data class AccountType(
         childColumns = [ACCOUNT_TYPE_ID]
     )]
 )
+
+
 @Parcelize
 data class Account(
     @PrimaryKey
@@ -81,8 +82,10 @@ data class AccountWithType(
     @Embedded
     val account: Account,
     @Relation(
+        entity = AccountType::class,
         parentColumn = ACCOUNT_TYPE_ID,
         entityColumn = TYPE_ID
     )
     val accountType: AccountType
 ) : Parcelable
+

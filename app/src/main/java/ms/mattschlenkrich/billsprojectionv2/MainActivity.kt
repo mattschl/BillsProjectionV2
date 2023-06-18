@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
 
         setupAccountViewModel()
         setupBudgetRuleViewModel()
+        setupTransactionViewModel()
     }
 
     private fun setupBudgetRuleViewModel() {

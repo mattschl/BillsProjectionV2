@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.fragments.transactions
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,10 +15,9 @@ import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.REQUEST_TO_ACCOUNT
-import ms.mattschlenkrich.billsprojectionv2.SQLITE_DATE
 import ms.mattschlenkrich.billsprojectionv2.SQLITE_TIME
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionUpdateBinding
-import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
+import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.Transactions
@@ -42,15 +42,15 @@ class TransactionUpdateFragment :
 
     private var mTransaction: Transactions? = null
     private var mBudgetRule: BudgetRule? = null
-    private var mToAccount: AccountWithType? = null
-    private var mFromAccount: AccountWithType? = null
+    private var mToAccount: Account? = null
+    private var mFromAccount: Account? = null
 
     private val dollarFormat: NumberFormat =
         NumberFormat.getCurrencyInstance(Locale.CANADA)
     private val timeFormatter: SimpleDateFormat =
         SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
-    private val dateFormatter: SimpleDateFormat =
-        SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
+//    private val dateFormatter: SimpleDateFormat =
+//        SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,8 +105,8 @@ class TransactionUpdateFragment :
                     etDescription.text.toString(),
                     etNote.text.toString(),
                     mBudgetRule!!.ruleId,
-                    mToAccount!!.account.accountId,
-                    mFromAccount!!.account.accountId,
+                    mToAccount!!.accountId,
+                    mFromAccount!!.accountId,
                     etAmount.text.toString().trim()
                         .replace("$", "")
                         .replace(",", "")
@@ -137,9 +137,55 @@ class TransactionUpdateFragment :
         }
     }
 
+    private fun saveWithoutBudget(): Boolean {
+        var bool = false
+        AlertDialog.Builder(activity).apply {
+            setMessage(
+                "There is no Budget Rule!" +
+                        "Budget Rules are used to update the budget."
+            )
+            setPositiveButton("Save anyway") { _, _ ->
+                bool = true
+            }
+            setNegativeButton("Retry", null)
+        }.create().show()
+        return bool
+    }
+
     private fun checkTransaction(): String {
-        //TODO: ERROR check
-        return "Ok"
+        binding.apply {
+            val amount = etAmount.text.toString().trim()
+                .replace("$", "")
+                .replace(",", "")
+                .toDouble()
+            val errorMes =
+                if (etDescription.text.isNullOrBlank()) {
+                    "     ERROR!!\n" +
+                            "Please enter a description."
+                } else if (mToAccount == null
+                ) {
+                    "     Error!!\n" +
+                            "There needs to be an account money will go to."
+                } else if (mFromAccount == null
+                ) {
+                    "     Error!!\n" +
+                            "There needs to be an account money will come from."
+                } else if (etAmount.text.isNullOrEmpty() ||
+                    amount == 0.0
+                ) {
+                    "     Error!!\n" +
+                            "Please enter an amount fr this transaction"
+                } else if (mBudgetRule == null) {
+                    if (saveWithoutBudget()) {
+                        "Ok"
+                    } else {
+                        "Choose a Budget Rule"
+                    }
+                } else {
+                    "Ok"
+                }
+            return errorMes
+        }
     }
 
     private fun chooseDate() {
@@ -209,8 +255,8 @@ class TransactionUpdateFragment :
                 etDescription.text.toString(),
                 etNote.text.toString(),
                 mBudgetRule!!.ruleId,
-                mToAccount!!.account.accountId,
-                mFromAccount!!.account.accountId,
+                mToAccount!!.accountId,
+                mFromAccount!!.accountId,
                 etAmount.text.toString().trim()
                     .replace("$", "")
                     .replace(",", "")
@@ -257,17 +303,17 @@ class TransactionUpdateFragment :
                     tvBudgetRule.text =
                         mBudgetRule!!.budgetRuleName
                 }
-                if (args.transaction!!.toAccountWithType != null) {
+                if (args.transaction!!.toAccount != null) {
                     mToAccount =
-                        args.transaction!!.toAccountWithType
+                        args.transaction!!.toAccount
                     tvToAccount.text =
-                        mToAccount!!.account.accountName
+                        mToAccount!!.accountName
                 }
-                if (args.transaction!!.fromAccountWithType != null) {
+                if (args.transaction!!.fromAccount != null) {
                     mFromAccount =
-                        args.transaction!!.fromAccountWithType
+                        args.transaction!!.fromAccount
                     tvFromAccount.text =
-                        mFromAccount!!.account.accountName
+                        mFromAccount!!.accountName
                 }
             }
         }

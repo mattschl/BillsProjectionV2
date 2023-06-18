@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.fragments.transactions
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -20,9 +21,10 @@ import ms.mattschlenkrich.billsprojectionv2.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.SQLITE_DATE
 import ms.mattschlenkrich.billsprojectionv2.SQLITE_TIME
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionAddBinding
-import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
+import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.Transactions
 import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModel
 import java.text.NumberFormat
@@ -45,8 +47,8 @@ class TransactionAddFragment :
     private val args: TransactionAddFragmentArgs by navArgs()
 
     private var mBudgetRule: BudgetRule? = null
-    private var mFromAccount: AccountWithType? = null
-    private var mToAccount: AccountWithType? = null
+    private var mFromAccount: Account? = null
+    private var mToAccount: Account? = null
     private val dollarFormat: NumberFormat =
         NumberFormat.getCurrencyInstance(Locale.CANADA)
     private val timeFormatter: SimpleDateFormat =
@@ -79,6 +81,9 @@ class TransactionAddFragment :
         fillValues()
 
         binding.apply {
+            tvBudgetRule.setOnClickListener {
+                chooseBudgetRule()
+            }
             tvToAccount.setOnClickListener {
                 chooseToAccount()
             }
@@ -89,6 +94,47 @@ class TransactionAddFragment :
                 chooseDate()
                 false
             }
+        }
+    }
+
+    private fun chooseBudgetRule() {
+        val fragmentChain = TAG
+
+        val direction =
+            TransactionAddFragmentDirections
+                .actionTransactionAddFragmentToBudgetRuleFragment(
+                    getCurTransaction(),
+                    fragmentChain
+                )
+        mView.findNavController().navigate(direction)
+    }
+
+    private fun getCurTransaction(): TransactionDetailed {
+        binding.apply {
+            val curTransaction = Transactions(
+                generateId(),
+                etTransDate.text.toString(),
+                etDescription.text.toString(),
+                etNote.text.toString(),
+                mBudgetRule?.ruleId ?: 0L,
+                mToAccount?.accountId ?: 0L,
+                mFromAccount?.accountId ?: 0L,
+                if (etAmount.text.isNotEmpty()) {
+                    etAmount.text.toString().toDouble()
+                } else {
+                    0.0
+                },
+                false,
+                timeFormatter.format(
+                    Calendar.getInstance().time
+                )
+            )
+            return TransactionDetailed(
+                curTransaction,
+                mBudgetRule,
+                mToAccount,
+                mFromAccount
+            )
         }
     }
 
@@ -123,7 +169,7 @@ class TransactionAddFragment :
 
         val direction = TransactionAddFragmentDirections
             .actionTransactionAddFragmentToAccountsFragment(
-                args.transaction,
+                getCurTransaction(),
                 prepareBudgetRule(),
                 REQUEST_FROM_ACCOUNT,
                 fragmentChain
@@ -136,7 +182,7 @@ class TransactionAddFragment :
 
         val direction = TransactionAddFragmentDirections
             .actionTransactionAddFragmentToAccountsFragment(
-                args.transaction,
+                getCurTransaction(),
                 prepareBudgetRule(),
                 REQUEST_TO_ACCOUNT,
                 fragmentChain
@@ -146,12 +192,12 @@ class TransactionAddFragment :
 
     private fun prepareBudgetRule(): BudgetRuleDetailed {
         val zToAccount = if (mToAccount != null) {
-            mToAccount!!.account
+            mToAccount!!
         } else {
             null
         }
         val zFromAccount = if (mFromAccount != null) {
-            mFromAccount!!.account
+            mFromAccount!!
         } else {
             null
         }
@@ -185,17 +231,17 @@ class TransactionAddFragment :
                         tvBudgetRule.text =
                             args.transaction!!.budgetRule!!.budgetRuleName
                     }
-                    if (args.transaction!!.toAccountWithType != null) {
-                        mToAccount = args.transaction!!.toAccountWithType!!
+                    if (args.transaction!!.toAccount != null) {
+                        mToAccount = args.transaction!!.toAccount!!
                         tvToAccount.text =
-                            args.transaction!!.toAccountWithType!!
-                                .account.accountName
+                            args.transaction!!.toAccount!!
+                                .accountName
                     }
-                    if (args.transaction!!.fromAccountWithType != null) {
-                        mFromAccount = args.transaction!!.fromAccountWithType
+                    if (args.transaction!!.fromAccount != null) {
+                        mFromAccount = args.transaction!!.fromAccount
                         tvFromAccount.text =
-                            args.transaction!!.fromAccountWithType!!
-                                .account.accountName
+                            args.transaction!!.fromAccount!!
+                                .accountName
                     }
                 }
             } else {
@@ -227,16 +273,6 @@ class TransactionAddFragment :
     private fun saveTransaction() {
         val mes = checkTransaction()
         if (mes == "Ok") {
-            var id =
-                Random().nextInt(Int.MAX_VALUE).toLong()
-            id = if (Random().nextBoolean()) -id
-            else id
-            val bRuleId = mBudgetRule!!.ruleId
-            val toAccountId = mToAccount!!.account.accountId
-            val fromAccountId = mFromAccount!!.account.accountId
-            val updateTime = timeFormatter.format(
-                Calendar.getInstance().time
-            )
             binding.apply {
                 val amount =
                     etAmount.text.toString().trim()
@@ -244,16 +280,18 @@ class TransactionAddFragment :
                         .replace("$", "")
                         .toDouble()
                 val mTransaction = Transactions(
-                    id,
+                    generateId(),
                     etTransDate.text.toString(),
                     etDescription.text.toString(),
                     etNote.text.toString(),
-                    bRuleId,
-                    toAccountId,
-                    fromAccountId,
+                    mBudgetRule!!.ruleId,
+                    mToAccount!!.accountId,
+                    mFromAccount!!.accountId,
                     amount,
                     false,
-                    updateTime
+                    timeFormatter.format(
+                        Calendar.getInstance().time
+                    )
                 )
                 transactionViewModel.insertTransaction(mTransaction)
                 val direction =
@@ -273,18 +311,25 @@ class TransactionAddFragment :
         }
     }
 
+    private fun generateId(): Long {
+        var id =
+            Random().nextInt(Int.MAX_VALUE).toLong()
+        id = if (Random().nextBoolean()) -id
+        else id
+        return id
+    }
+
     private fun checkTransaction(): String {
         binding.apply {
+            val amount = etAmount.text.toString().trim()
+                .replace("$", "")
+                .replace(",", "")
+                .toDouble()
             val errorMes =
                 if (etDescription.text.isNullOrBlank()
                 ) {
                     "     Error!!\n" +
                             "Please enter a description"
-                } else if (mBudgetRule == null
-                ) {
-                    "     Error!!\n" +
-                            "There needs to be a budget rule " +
-                            "to add this transaction to budget reports."
                 } else if (mToAccount == null
                 ) {
                     "     Error!!\n" +
@@ -293,15 +338,37 @@ class TransactionAddFragment :
                 ) {
                     "     Error!!\n" +
                             "There needs to be an account money will come from."
-                } else if (etAmount.text.isNullOrEmpty()
+                } else if (etAmount.text.isNullOrEmpty() ||
+                    amount == 0.0
                 ) {
                     "     Error!!\n" +
-                            "Please enter a budget amount (including zero)"
+                            "Please enter an amount for this transaction"
+                } else if (mBudgetRule == null) {
+                    if (saveWithoutBudget()) {
+                        "Ok"
+                    } else {
+                        "Choose a Budget Rule"
+                    }
                 } else {
                     "Ok"
                 }
             return errorMes
         }
+    }
+
+    private fun saveWithoutBudget(): Boolean {
+        var bool = false
+        AlertDialog.Builder(activity).apply {
+            setMessage(
+                "There is no Budget Rule!" +
+                        "Budget Rules are used to update the budget."
+            )
+            setPositiveButton("Save anyway") { _, _ ->
+                bool = true
+            }
+            setNegativeButton("Retry", null)
+        }.create().show()
+        return bool
     }
 
     override fun onDestroy() {

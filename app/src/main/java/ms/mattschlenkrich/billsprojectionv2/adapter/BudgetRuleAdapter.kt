@@ -1,12 +1,16 @@
 package ms.mattschlenkrich.billsprojectionv2.adapter
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_RULES
+import ms.mattschlenkrich.billsprojectionv2.FRAG_TRANS_ADD
+import ms.mattschlenkrich.billsprojectionv2.FRAG_TRANS_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetRuleLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules.BudgetRuleFragmentDirections
@@ -14,6 +18,8 @@ import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import java.text.NumberFormat
 import java.util.Locale
+
+private const val TAG = "BudgetRuleAdapter"
 
 class BudgetRuleAdapter(
     private val transaction: TransactionDetailed?,
@@ -89,6 +95,50 @@ class BudgetRuleAdapter(
                 "\nOn " + dayOfWeek
         holder.itemBinding.tvInfo.text = info
 
+        holder.itemView.setOnClickListener {
+            if (transaction != null) {
+                Log.d(
+                    TAG,
+                    "transaction name is" +
+                            " ${transaction.transaction!!.transName}"
+                )
+                Log.d(TAG, "callingFragments is $callingFragments")
+                if (callingFragments.contains(FRAG_TRANS_ADD)) {
+                    val fragmentChain = "$callingFragments, $FRAG_BUDGET_RULES"
+                    val mTransaction = transaction
+                    mTransaction.budgetRule =
+                        budgetRuleDetailed.budgetRule
+                    mTransaction.toAccount =
+                        budgetRuleDetailed.toAccount
+                    mTransaction.fromAccount =
+                        budgetRuleDetailed.fromAccount
+                    val direction =
+                        BudgetRuleFragmentDirections
+                            .actionBudgetRuleFragmentToTransactionAddFragment(
+                                mTransaction,
+                                fragmentChain
+                            )
+                    it.findNavController().navigate(direction)
+                } else if (callingFragments.contains(FRAG_TRANS_UPDATE)) {
+                    val fragmentChain = "$callingFragments, $FRAG_BUDGET_RULES"
+                    val mTransaction = transaction
+                    mTransaction.budgetRule =
+                        budgetRuleDetailed.budgetRule
+                    mTransaction.toAccount =
+                        budgetRuleDetailed.toAccount
+                    mTransaction.fromAccount =
+                        budgetRuleDetailed.fromAccount
+                    val direction =
+                        BudgetRuleFragmentDirections
+                            .actionBudgetRuleFragmentToTransactionUpdateFragment(
+                                mTransaction,
+                                fragmentChain
+                            )
+                    it.findNavController().navigate(direction)
+                }
+            }
+        }
+
         holder.itemView.setOnLongClickListener {
             val direction = BudgetRuleFragmentDirections
                 .actionBudgetRuleFragmentToBudgetRuleUpdateFragment(
@@ -99,6 +149,8 @@ class BudgetRuleAdapter(
             it.findNavController().navigate(direction)
             false
         }
+
     }
+
 
 }

@@ -74,12 +74,12 @@ class TransactionAdapter(
         holder.itemBinding.tvDate.text =
             transactionDetailed.transaction.transDate
         var info = "To: " +
-                transactionDetailed.toAccountWithType!!
-                    .account.accountName
+                transactionDetailed.toAccount!!
+                    .accountName
         holder.itemBinding.tvToAccount.text = info
         info = "From: " +
-                transactionDetailed.fromAccountWithType!!
-                    .account.accountName
+                transactionDetailed.fromAccount!!
+                    .accountName
         holder.itemBinding.tvFromAccount.text = info
         info = dollarFormat.format(
             transactionDetailed.transaction.amount

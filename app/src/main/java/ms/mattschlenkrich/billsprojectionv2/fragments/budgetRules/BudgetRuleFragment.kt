@@ -79,7 +79,7 @@ class BudgetRuleFragment :
         budgetRuleAdapter = BudgetRuleAdapter(
             args.transaction,
             mView!!.context,
-            TAG
+            args.callingFragments!!
         )
 
         binding.rvBudgetRules.apply {

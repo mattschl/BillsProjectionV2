@@ -73,11 +73,34 @@ data class TransactionDetailed(
         parentColumn = TO_ACCOUNT_ID,
         entityColumn = ACCOUNT_ID
     )
-    var toAccountWithType: AccountWithType?,
+    var toAccount: Account?,
     @Relation(
         parentColumn = FROM_ACCOUNT_ID,
         entityColumn = ACCOUNT_ID
     )
-    var fromAccountWithType: AccountWithType?
+    var fromAccount: Account?
+) : Parcelable
 
+@Parcelize
+data class TransactionFull(
+    @Embedded
+    val transaction: Transactions?,
+    @Relation(
+        entity = BudgetRule::class,
+        parentColumn = BUDGET_RULE_ID,
+        entityColumn = RULE_ID
+    )
+    val budgetRule: BudgetRule?,
+    @Relation(
+        entity = AccountWithType::class,
+        parentColumn = TO_ACCOUNT_ID,
+        entityColumn = ACCOUNT_ID
+    )
+    var toAccountWithType: AccountWithType?,
+    @Relation(
+        entity = AccountWithType::class,
+        parentColumn = FROM_ACCOUNT_ID,
+        entityColumn = ACCOUNT_ID
+    )
+    var fromAccountWithType: AccountWithType?
 ) : Parcelable
