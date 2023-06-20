@@ -16,6 +16,8 @@ import ms.mattschlenkrich.billsprojectionv2.RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.TABLE_TRANSACTION
 import ms.mattschlenkrich.billsprojectionv2.TO_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_DATE
+import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_FROM_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_TO_ACCOUNT_ID
 
 @Parcelize
 @Entity(
@@ -23,17 +25,17 @@ import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_DATE
     indices = [
         Index(value = [TRANSACTION_DATE]),
         Index(value = [BUDGET_RULE_ID]),
-        Index(value = [TO_ACCOUNT_ID]),
-        Index(value = [FROM_ACCOUNT_ID])
+        Index(value = [TRANSACTION_TO_ACCOUNT_ID]),
+        Index(value = [TRANSACTION_FROM_ACCOUNT_ID])
     ],
     foreignKeys = [ForeignKey(
         entity = Account::class,
         parentColumns = [ACCOUNT_ID],
-        childColumns = [TO_ACCOUNT_ID]
+        childColumns = [TRANSACTION_TO_ACCOUNT_ID]
     ), ForeignKey(
         entity = Account::class,
         parentColumns = [ACCOUNT_ID],
-        childColumns = [FROM_ACCOUNT_ID]
+        childColumns = [TRANSACTION_FROM_ACCOUNT_ID]
     ), ForeignKey(
         entity = BudgetRule::class,
         parentColumns = [RULE_ID],
@@ -50,11 +52,11 @@ data class Transactions(
     @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val bRuleId: Long,
     @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
-    val toAccountId: Long,
+    var transToAccountId: Long,
     @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
-    val fromAccountId: Long,
+    var transFromAccountId: Long,
     @ColumnInfo(defaultValue = "0.0", typeAffinity = ColumnInfo.REAL)
-    val amount: Double,
+    val transAmount: Double,
     @ColumnInfo(defaultValue = "0", typeAffinity = ColumnInfo.INTEGER)
     val isDeleted: Boolean,
     val updateTime: String,
@@ -70,12 +72,12 @@ data class TransactionDetailed(
     )
     var budgetRule: BudgetRule?,
     @Relation(
-        parentColumn = TO_ACCOUNT_ID,
+        parentColumn = TRANSACTION_TO_ACCOUNT_ID,
         entityColumn = ACCOUNT_ID
     )
     var toAccount: Account?,
     @Relation(
-        parentColumn = FROM_ACCOUNT_ID,
+        parentColumn = TRANSACTION_FROM_ACCOUNT_ID,
         entityColumn = ACCOUNT_ID
     )
     var fromAccount: Account?

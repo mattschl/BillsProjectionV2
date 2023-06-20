@@ -234,7 +234,7 @@ class BudgetRuleUpdateFragment :
                     )
                     etAmount.setText(
                         dollarFormat.format(
-                            args.budgetRuleDetailed!!.budgetRule!!.amount
+                            args.budgetRuleDetailed!!.budgetRule!!.budgetAmount
                         )
                     )
                     if (args.budgetRuleDetailed!!.toAccount != null) {
@@ -330,12 +330,11 @@ class BudgetRuleUpdateFragment :
             setTitle("Delete Budget Rule")
             setMessage("Are you sure you want to delete this budget rule?")
             setPositiveButton("Delete") { _, _ ->
-                val updateTime = timeFormatter.format(
-                    Calendar.getInstance().time
-                )
                 budgetRuleViewModel.deleteBudgetRule(
                     args.budgetRuleDetailed!!.budgetRule!!.ruleId,
-                    updateTime
+                    timeFormatter.format(
+                        Calendar.getInstance().time
+                    )
                 )
                 val direction = BudgetRuleUpdateFragmentDirections
                     .actionBudgetRuleUpdateFragmentToBudgetRuleFragment(

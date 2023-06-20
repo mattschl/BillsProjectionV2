@@ -14,8 +14,10 @@ import ms.mattschlenkrich.billsprojectionv2.RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.TABLE_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.TABLE_TRANSACTION
-import ms.mattschlenkrich.billsprojectionv2.TO_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_DATE
+import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_FROM_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_ID
+import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_TO_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.UPDATE_TIME
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.Transactions
@@ -28,6 +30,14 @@ interface TransactionDao {
     @Update
     suspend fun updateTransaction(transaction: Transactions)
 
+    @Query(
+        "UPDATE $TABLE_TRANSACTION " +
+                "SET $IS_DELETED = 1, " +
+                "$UPDATE_TIME = :updateTime " +
+                "WHERE $TRANSACTION_ID = :transId"
+    )
+    suspend fun deleteTransaction(transId: Long, updateTime: String)
+
     @Transaction
     @Query(
         "SELECT $TABLE_TRANSACTION.*," +
@@ -39,9 +49,10 @@ interface TransactionDao {
                 "$TABLE_TRANSACTION.$BUDGET_RULE_ID = " +
                 "budgetRule.$RULE_ID " +
                 "LEFT JOIN $TABLE_ACCOUNTS as toAccount on " +
-                "$TABLE_TRANSACTION.$TO_ACCOUNT_ID =" +
+                "$TABLE_TRANSACTION.$TRANSACTION_TO_ACCOUNT_ID =" +
                 "toAccount.$ACCOUNT_ID " +
                 "LEFT JOIN $TABLE_ACCOUNTS as fromAccount on " +
+                "$TABLE_TRANSACTION.$TRANSACTION_FROM_ACCOUNT_ID = " +
                 "fromAccount.$ACCOUNT_ID " +
                 "WHERE $TABLE_TRANSACTION.$IS_DELETED = 0 " +
                 "ORDER BY $TABLE_TRANSACTION.$TRANSACTION_DATE DESC, " +

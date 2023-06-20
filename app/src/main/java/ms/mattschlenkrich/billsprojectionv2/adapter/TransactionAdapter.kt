@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.billsprojectionv2.adapter
 
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.findNavController
@@ -13,6 +14,8 @@ import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import java.text.NumberFormat
 import java.util.Locale
 import java.util.Random
+
+private const val TAG = "TransactionAdapter"
 
 class TransactionAdapter(
 //    private val transaction: TransactionDetailed?,
@@ -29,18 +32,43 @@ class TransactionAdapter(
 
     private val differCallBack =
         object : DiffUtil.ItemCallback<TransactionDetailed>() {
+//            override fun getChangePayload(
+//                oldItem: TransactionDetailed,
+//                newItem: TransactionDetailed
+//            ): Any? {
+//                return if (areItemsTheSame(oldItem, newItem)) {
+//                    null
+//                } else {
+//                    newItem
+//                }
+////                return super.getChangePayload(oldItem, newItem)
+//            }
+
             override fun areItemsTheSame(
                 oldItem: TransactionDetailed,
                 newItem: TransactionDetailed
             ): Boolean {
-                return oldItem.transaction!!.transId ==
-                        newItem.transaction!!.transId
+                Log.d(
+                    TAG, "transId = ${oldItem.transaction?.transId} \n" +
+                            "rulId = ${oldItem.budgetRule?.ruleId} \n" +
+                            "toAccountId = ${oldItem.toAccount?.accountId} \n" +
+                            "fromAccountId = ${oldItem.fromAccount?.accountId}"
+                )
+                return oldItem.transaction?.transId ==
+                        newItem.transaction?.transId &&
+                        oldItem.budgetRule?.ruleId ==
+                        newItem.budgetRule?.ruleId &&
+                        oldItem.toAccount?.accountId ==
+                        newItem.toAccount?.accountId &&
+                        oldItem.fromAccount?.accountId ==
+                        newItem.fromAccount?.accountId
             }
 
             override fun areContentsTheSame(
                 oldItem: TransactionDetailed,
                 newItem: TransactionDetailed
             ): Boolean {
+                Log.d(TAG, "'in areContentsTheSame ")
                 return oldItem == newItem
             }
         }
@@ -65,27 +93,31 @@ class TransactionAdapter(
     }
 
     override fun onBindViewHolder(
-        holder: TransactionsViewHolder, position: Int
+        holder: TransactionsViewHolder,
+        position: Int,
     ) {
-        val transactionDetailed =
-            differ.currentList[position]
+        Log.d(TAG, "position = $position")
+        val transaction =
+            differ.currentList[
+                    position
+            ]
         holder.itemBinding.tvTransDescription.text =
-            transactionDetailed.transaction!!.transName
+            transaction.transaction!!.transName
         holder.itemBinding.tvDate.text =
-            transactionDetailed.transaction.transDate
+            transaction.transaction.transDate
         var info = "To: " +
-                transactionDetailed.toAccount!!
+                transaction.toAccount!!
                     .accountName
         holder.itemBinding.tvToAccount.text = info
         info = "From: " +
-                transactionDetailed.fromAccount!!
+                transaction.fromAccount!!
                     .accountName
         holder.itemBinding.tvFromAccount.text = info
         info = dollarFormat.format(
-            transactionDetailed.transaction.amount
+            transaction.transaction.transAmount
         )
         info += "\nNote: " +
-                transactionDetailed.transaction.transNote
+                transaction.transaction.transNote
         holder.itemBinding.tvTransInfo.text = info
         val random = Random()
         val color = Color.argb(
@@ -99,12 +131,11 @@ class TransactionAdapter(
         holder.itemView.setOnLongClickListener {
             val direction = TransactionViewFragmentDirections
                 .actionTransactionViewFragmentToTransactionUpdateFragment(
-                    transactionDetailed,
+                    transaction,
                     callingFragment
                 )
             it.findNavController().navigate(direction)
             false
         }
-
     }
 }

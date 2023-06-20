@@ -10,6 +10,13 @@ class TransactionRepository(private val db: BillsDatabase) {
     suspend fun updateTransaction(transaction: Transactions) =
         db.getTransactionDao().updateTransaction(transaction)
 
+    suspend fun deleteTransaction(transId: Long, updateTime: String) =
+        db.getTransactionDao().deleteTransaction(
+            transId, updateTime
+        )
+
     fun getActiveTransactionsDetailed() =
         db.getTransactionDao().getActiveTransactionsDetailed()
+
+
 }

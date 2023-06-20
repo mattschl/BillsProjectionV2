@@ -47,7 +47,7 @@ data class BudgetRule(
     @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val fromAccountId: Long,
     @ColumnInfo(defaultValue = "0.0", typeAffinity = ColumnInfo.REAL)
-    val amount: Double,
+    val budgetAmount: Double,
     @ColumnInfo(defaultValue = "0", typeAffinity = ColumnInfo.INTEGER)
     val fixedAmount: Boolean,
     @ColumnInfo(defaultValue = "0", typeAffinity = ColumnInfo.INTEGER)

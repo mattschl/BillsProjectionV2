@@ -81,7 +81,7 @@ class BudgetRuleAdapter(
         info = "\nFrom: " + budgetRuleDetailed.fromAccount!!.accountName
         holder.itemBinding.tvFromAccount.text = info
         val amount =
-            dollarFormat.format(budgetRuleDetailed.budgetRule.amount)
+            dollarFormat.format(budgetRuleDetailed.budgetRule.budgetAmount)
         val frequencyTypes =
             context.resources.getStringArray(R.array.frequency_types)
         val frequencyType =

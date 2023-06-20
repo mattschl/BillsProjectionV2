@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "7345bfcb01fac1e114315489b3695e40",
+    "identityHash": "d609f551d71e62931d8b1abc815b79f1",
     "entities": [
       {
         "tableName": "accounts",
@@ -188,7 +188,7 @@
       },
       {
         "tableName": "budgetRules",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ruleId` INTEGER NOT NULL, `budgetRuleName` TEXT NOT NULL, `toAccountId` INTEGER NOT NULL, `fromAccountId` INTEGER NOT NULL, `amount` REAL NOT NULL DEFAULT 0.0, `fixedAmount` INTEGER NOT NULL DEFAULT 0, `isPayDay` INTEGER NOT NULL DEFAULT 0, `isAutoPay` INTEGER NOT NULL DEFAULT 0, `startDate` TEXT NOT NULL, `endDate` TEXT, `dayOfWeekId` INTEGER NOT NULL, `frequencyTypeId` INTEGER NOT NULL, `frequencyCount` INTEGER NOT NULL DEFAULT 1, `leadDays` INTEGER NOT NULL DEFAULT 1, `isDeleted` INTEGER NOT NULL DEFAULT 0, `updateTime` TEXT NOT NULL, PRIMARY KEY(`ruleId`), FOREIGN KEY(`toAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`fromAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ruleId` INTEGER NOT NULL, `budgetRuleName` TEXT NOT NULL, `toAccountId` INTEGER NOT NULL, `fromAccountId` INTEGER NOT NULL, `budgetAmount` REAL NOT NULL DEFAULT 0.0, `fixedAmount` INTEGER NOT NULL DEFAULT 0, `isPayDay` INTEGER NOT NULL DEFAULT 0, `isAutoPay` INTEGER NOT NULL DEFAULT 0, `startDate` TEXT NOT NULL, `endDate` TEXT, `dayOfWeekId` INTEGER NOT NULL, `frequencyTypeId` INTEGER NOT NULL, `frequencyCount` INTEGER NOT NULL DEFAULT 1, `leadDays` INTEGER NOT NULL DEFAULT 1, `isDeleted` INTEGER NOT NULL DEFAULT 0, `updateTime` TEXT NOT NULL, PRIMARY KEY(`ruleId`), FOREIGN KEY(`toAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`fromAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "ruleId",
@@ -215,8 +215,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "amount",
-            "columnName": "amount",
+            "fieldPath": "budgetAmount",
+            "columnName": "budgetAmount",
             "affinity": "REAL",
             "notNull": true,
             "defaultValue": "0.0"
@@ -374,7 +374,7 @@
       },
       {
         "tableName": "transactions",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`transId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `transDate` TEXT NOT NULL, `transName` TEXT NOT NULL, `transNote` TEXT NOT NULL, `bRuleId` INTEGER NOT NULL, `toAccountId` INTEGER NOT NULL, `fromAccountId` INTEGER NOT NULL, `amount` REAL NOT NULL DEFAULT 0.0, `isDeleted` INTEGER NOT NULL DEFAULT 0, `updateTime` TEXT NOT NULL, FOREIGN KEY(`toAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`fromAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`bRuleId`) REFERENCES `budgetRules`(`ruleId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`transId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `transDate` TEXT NOT NULL, `transName` TEXT NOT NULL, `transNote` TEXT NOT NULL, `bRuleId` INTEGER NOT NULL, `transToAccountId` INTEGER NOT NULL, `transFromAccountId` INTEGER NOT NULL, `transAmount` REAL NOT NULL DEFAULT 0.0, `isDeleted` INTEGER NOT NULL DEFAULT 0, `updateTime` TEXT NOT NULL, FOREIGN KEY(`transToAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`transFromAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`bRuleId`) REFERENCES `budgetRules`(`ruleId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "transId",
@@ -407,20 +407,20 @@
             "notNull": true
           },
           {
-            "fieldPath": "toAccountId",
-            "columnName": "toAccountId",
+            "fieldPath": "transToAccountId",
+            "columnName": "transToAccountId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "fromAccountId",
-            "columnName": "fromAccountId",
+            "fieldPath": "transFromAccountId",
+            "columnName": "transFromAccountId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "amount",
-            "columnName": "amount",
+            "fieldPath": "transAmount",
+            "columnName": "transAmount",
             "affinity": "REAL",
             "notNull": true,
             "defaultValue": "0.0"
@@ -465,22 +465,22 @@
             "createSql": "CREATE INDEX IF NOT EXISTS `index_transactions_bRuleId` ON `${TABLE_NAME}` (`bRuleId`)"
           },
           {
-            "name": "index_transactions_toAccountId",
+            "name": "index_transactions_transToAccountId",
             "unique": false,
             "columnNames": [
-              "toAccountId"
+              "transToAccountId"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_transactions_toAccountId` ON `${TABLE_NAME}` (`toAccountId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_transactions_transToAccountId` ON `${TABLE_NAME}` (`transToAccountId`)"
           },
           {
-            "name": "index_transactions_fromAccountId",
+            "name": "index_transactions_transFromAccountId",
             "unique": false,
             "columnNames": [
-              "fromAccountId"
+              "transFromAccountId"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_transactions_fromAccountId` ON `${TABLE_NAME}` (`fromAccountId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_transactions_transFromAccountId` ON `${TABLE_NAME}` (`transFromAccountId`)"
           }
         ],
         "foreignKeys": [
@@ -489,7 +489,7 @@
             "onDelete": "NO ACTION",
             "onUpdate": "NO ACTION",
             "columns": [
-              "toAccountId"
+              "transToAccountId"
             ],
             "referencedColumns": [
               "accountId"
@@ -500,7 +500,7 @@
             "onDelete": "NO ACTION",
             "onUpdate": "NO ACTION",
             "columns": [
-              "fromAccountId"
+              "transFromAccountId"
             ],
             "referencedColumns": [
               "accountId"
@@ -523,7 +523,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7345bfcb01fac1e114315489b3695e40')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd609f551d71e62931d8b1abc815b79f1')"
     ]
   }
 }

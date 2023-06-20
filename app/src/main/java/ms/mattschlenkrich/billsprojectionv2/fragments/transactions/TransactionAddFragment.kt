@@ -120,7 +120,11 @@ class TransactionAddFragment :
                 mToAccount?.accountId ?: 0L,
                 mFromAccount?.accountId ?: 0L,
                 if (etAmount.text.isNotEmpty()) {
-                    etAmount.text.toString().toDouble()
+                    etAmount.text.toString()
+                        .trim()
+                        .replace("$", "")
+                        .replace(",", "")
+                        .toDouble()
                 } else {
                     0.0
                 },
@@ -223,7 +227,7 @@ class TransactionAddFragment :
                     )
                     etAmount.setText(
                         dollarFormat.format(
-                            args.transaction!!.transaction!!.amount
+                            args.transaction!!.transaction!!.transAmount
                         )
                     )
                     if (args.transaction!!.budgetRule != null) {

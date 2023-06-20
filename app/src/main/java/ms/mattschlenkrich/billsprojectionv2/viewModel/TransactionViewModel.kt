@@ -21,6 +21,13 @@ class TransactionViewModel(
             transactionRepository.updateTransaction(transaction)
         }
 
+    fun deleteTransaction(transId: Long, updateTime: String) =
+        viewModelScope.launch {
+            transactionRepository.deleteTransaction(
+                transId, updateTime
+            )
+        }
+
     fun getActiveTransactionsDetailed() =
         transactionRepository.getActiveTransactionsDetailed()
 }

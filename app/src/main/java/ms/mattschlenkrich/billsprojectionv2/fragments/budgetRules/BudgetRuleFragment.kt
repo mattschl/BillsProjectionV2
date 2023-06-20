@@ -68,7 +68,7 @@ class BudgetRuleFragment :
                 .actionBudgetRuleFragmentToBudgetRuleAddFragment(
                     args.transaction,
                     null,
-                    TAG
+                    args.callingFragments
 
                 )
             mView!!.findNavController().navigate(direction)

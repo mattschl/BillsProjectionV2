@@ -13,6 +13,8 @@ import ms.mattschlenkrich.billsprojectionv2.ADAPTER_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_RULE_ADD
 import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_RULE_UPDATE
+import ms.mattschlenkrich.billsprojectionv2.FRAG_TRANS_ADD
+import ms.mattschlenkrich.billsprojectionv2.FRAG_TRANS_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.AccountLayoutBinding
@@ -34,7 +36,8 @@ class AccountAdapter(
 ) :
     RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() {
 
-    private var mBudgetRuleDetailed: BudgetRuleDetailed? = budgetRuleDetailed
+    private var mBudgetRuleDetailed = budgetRuleDetailed
+    private var mTransactionDetailed = transaction
 
     private val dollarFormat: NumberFormat = NumberFormat.getCurrencyInstance(CANADA)
 
@@ -130,8 +133,9 @@ class AccountAdapter(
         holder.itemView.setOnClickListener {
             Log.d(
                 TAG, "onClick requested Account is $requestedAccount," +
-                        "  calling Fragment id $callingFragments"
+                        "  calling Fragment is $callingFragments"
             )
+
             if (requestedAccount == REQUEST_TO_ACCOUNT &&
                 budgetRuleDetailed != null
             ) {
@@ -141,6 +145,20 @@ class AccountAdapter(
                 budgetRuleDetailed != null
             ) {
                 mBudgetRuleDetailed!!.fromAccount = curAccount.account
+                gotoCallingFragment(it)
+            } else if (requestedAccount == REQUEST_TO_ACCOUNT &&
+                transaction != null
+            ) {
+                mTransactionDetailed!!.transaction!!.transToAccountId =
+                    curAccount.account.accountId
+                mTransactionDetailed!!.toAccount = curAccount.account
+                gotoCallingFragment(it)
+            } else if (requestedAccount == REQUEST_FROM_ACCOUNT &&
+                transaction != null
+            ) {
+                mTransactionDetailed!!.transaction!!.transFromAccountId =
+                    curAccount.account.accountId
+                mTransactionDetailed!!.fromAccount = curAccount.account
                 gotoCallingFragment(it)
             }
         }
@@ -188,6 +206,24 @@ class AccountAdapter(
                     budgetRuleDetailed,
                     fragmentChain
                 )
+            it.findNavController().navigate(direction)
+        } else if (callingFragments.contains(FRAG_TRANS_ADD)
+        ) {
+            val direction =
+                AccountsFragmentDirections
+                    .actionAccountsFragmentToTransactionAddFragment(
+                        mTransactionDetailed,
+                        fragmentChain
+                    )
+            it.findNavController().navigate(direction)
+        } else if (callingFragments.contains(FRAG_TRANS_UPDATE)
+        ) {
+            val direction =
+                AccountsFragmentDirections
+                    .actionAccountsFragmentToTransactionUpdateFragment(
+                        mTransactionDetailed,
+                        fragmentChain
+                    )
             it.findNavController().navigate(direction)
         }
     }

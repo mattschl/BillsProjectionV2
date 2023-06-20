@@ -4,6 +4,9 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -281,20 +284,19 @@ class TransactionUpdateFragment :
                 if (args.transaction!!.transaction != null) {
                     mTransaction =
                         args.transaction!!.transaction
+                    etTransDate.setText(
+                        mTransaction!!.transDate
+                    )
                     etAmount.setText(
                         dollarFormat.format(
-                            mTransaction!!.amount
+                            mTransaction!!.transAmount
                         )
                     )
                     etDescription.setText(
-                        dollarFormat.format(
-                            mTransaction!!.transName
-                        )
+                        mTransaction!!.transName
                     )
                     etNote.setText(
-                        dollarFormat.format(
-                            mTransaction!!.transNote
-                        )
+                        mTransaction!!.transNote
                     )
                 }
                 if (args.transaction!!.budgetRule != null) {
@@ -317,6 +319,48 @@ class TransactionUpdateFragment :
                 }
             }
         }
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.delete_menu, menu)
+    }
+
+    @Suppress("DEPRECATION")
+    @Deprecated("Deprecated in Java")
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_delete -> {
+                deleteTransaction()
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun deleteTransaction() {
+        AlertDialog.Builder(activity).apply {
+            setTitle("Delete this Transaction")
+            setMessage("Are you sure you want to delete this Transaction?")
+            setPositiveButton("Delete") { _, _ ->
+                transactionViewModel.deleteTransaction(
+                    mTransaction!!.transId,
+                    timeFormatter.format(
+                        Calendar.getInstance().time
+                    )
+                )
+                val fragmentChain = args.callingFragments!!.replace(
+                    FRAG_TRANS_UPDATE, ""
+                )
+                val direction =
+                    TransactionUpdateFragmentDirections
+                        .actionTransactionUpdateFragmentToTransactionViewFragment(
+                            null, fragmentChain
+                        )
+                mView.findNavController().navigate(direction)
+            }
+            setNegativeButton("Cancel", null)
+        }.create().show()
     }
 
     override fun onDestroy() {

@@ -245,7 +245,7 @@ class BudgetRuleAddFragment :
                     )
                     etAmount.setText(
                         dollarFormat.format(
-                            args.budgetRuleDetailed!!.budgetRule!!.amount
+                            args.budgetRuleDetailed!!.budgetRule!!.budgetAmount
                         )
                     )
                     if (args.budgetRuleDetailed!!.toAccount != null) {
