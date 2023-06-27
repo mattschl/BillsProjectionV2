@@ -21,6 +21,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var accountViewModel: AccountViewModel
     lateinit var budgetRuleViewModel: BudgetRuleViewModel
     lateinit var transactionViewModel: TransactionViewModel
+//    private val timeFormatter: SimpleDateFormat =
+//        SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +33,7 @@ class MainActivity : AppCompatActivity() {
         setupAccountViewModel()
         setupBudgetRuleViewModel()
         setupTransactionViewModel()
+//        BillsDatabase.testDb(this.baseContext)
     }
 
     private fun setupBudgetRuleViewModel() {
@@ -49,7 +52,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupAccountViewModel() {
         val accountRepository = AccountRepository(
-            BillsDatabase(this)
+            BillsDatabase(this.applicationContext)
         )
         val accountViewModelFactory =
             AccountViewModelFactory(

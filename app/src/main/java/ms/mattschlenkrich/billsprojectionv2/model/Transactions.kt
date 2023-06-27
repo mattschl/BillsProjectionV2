@@ -11,10 +11,8 @@ import androidx.room.Relation
 import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.BUDGET_RULE_ID
-import ms.mattschlenkrich.billsprojectionv2.FROM_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.TABLE_TRANSACTION
-import ms.mattschlenkrich.billsprojectionv2.TO_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_DATE
 import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_FROM_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_TO_ACCOUNT_ID
@@ -95,14 +93,15 @@ data class TransactionFull(
     val budgetRule: BudgetRule?,
     @Relation(
         entity = AccountWithType::class,
-        parentColumn = TO_ACCOUNT_ID,
+        parentColumn = TRANSACTION_TO_ACCOUNT_ID,
         entityColumn = ACCOUNT_ID
     )
     var toAccountWithType: AccountWithType?,
     @Relation(
         entity = AccountWithType::class,
-        parentColumn = FROM_ACCOUNT_ID,
+        parentColumn = TRANSACTION_FROM_ACCOUNT_ID,
         entityColumn = ACCOUNT_ID
     )
     var fromAccountWithType: AccountWithType?
 ) : Parcelable
+

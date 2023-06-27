@@ -75,4 +75,6 @@
     <string name="transaction_info">Transaction info</string>
     <string name="choose_a_budget_rule">Choose a Budget Rule</string>
     <string name="budget_rule">Budget Rule</string>
+    <string name="transaction_amount">Transaction Amount</string>
+    <string name="settings">Settings</string>
 </resources>

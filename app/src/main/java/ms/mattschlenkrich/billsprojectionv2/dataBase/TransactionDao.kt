@@ -14,9 +14,12 @@ import ms.mattschlenkrich.billsprojectionv2.RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.TABLE_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.TABLE_TRANSACTION
+import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_AMOUNT
 import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_DATE
 import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_FROM_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_ID
+import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_NAME
+import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_NOTE
 import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_TO_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.UPDATE_TIME
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
@@ -26,6 +29,37 @@ import ms.mattschlenkrich.billsprojectionv2.model.Transactions
 interface TransactionDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTransaction(transaction: Transactions)
+
+    @Query(
+        "INSERT INTO $TABLE_TRANSACTION " +
+                "($TRANSACTION_ID, " +
+                "$TRANSACTION_DATE, " +
+                "$BUDGET_RULE_ID, " +
+                "$TRANSACTION_TO_ACCOUNT_ID, " +
+                "$TRANSACTION_FROM_ACCOUNT_ID, " +
+                "$TRANSACTION_NAME, " +
+                "$TRANSACTION_NOTE, " +
+                "$TRANSACTION_AMOUNT) " +
+                "VALUES (" +
+                ":transId, " +
+                ":transDate, " +
+                ":BRuleId, " +
+                ":toAccountId, " +
+                ":fromAccountId," +
+                ":transName, " +
+                ":transNote, " +
+                ":transAmount); "
+    )
+    suspend fun insertTransaction(
+        transId: Long,
+        transDate: String,
+        BRuleId: Long,
+        toAccountId: Long,
+        fromAccountId: Long,
+        transName: String,
+        transNote: String,
+        transAmount: Double,
+    )
 
     @Update
     suspend fun updateTransaction(transaction: Transactions)

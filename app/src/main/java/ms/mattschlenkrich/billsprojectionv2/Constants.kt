@@ -1,5 +1,8 @@
 package ms.mattschlenkrich.billsprojectionv2
 
+const val DB_NAME = "bills2.db"
+const val DB_VERSION = 1
+
 const val SQLITE_DATE = "yyyy-LL-dd"
 const val SQLITE_TIME = "yyyy-LL-dd HH:mm:ss"
 const val DATE_CHECK = "yyyy-MM-dd"

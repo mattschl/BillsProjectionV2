@@ -71,7 +71,7 @@
             android:id="@+id/etAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/budgeted_amount"
+            android:hint="@string/transaction_amount"
             android:importantForAutofill="no"
             android:inputType="numberDecimal|numberSigned"
             android:minHeight="48dp"

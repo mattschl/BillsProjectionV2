@@ -262,6 +262,8 @@ class TransactionAddFragment :
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.save_menu, menu)
+//        menu.add("new")
+//        inflater.inflate(R.menu.settings_menu, menu)
     }
 
     @Deprecated("Deprecated in Java")
