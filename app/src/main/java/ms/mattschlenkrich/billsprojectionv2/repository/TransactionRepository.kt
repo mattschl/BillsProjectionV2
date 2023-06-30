@@ -18,5 +18,6 @@ class TransactionRepository(private val db: BillsDatabase) {
     fun getActiveTransactionsDetailed() =
         db.getTransactionDao().getActiveTransactionsDetailed()
 
-
+    fun searchActiveTransactionsDetailed(query: String?) =
+        db.getTransactionDao().searchActiveTransactionsDetailed(query)
 }

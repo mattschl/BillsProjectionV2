@@ -30,4 +30,7 @@ class TransactionViewModel(
 
     fun getActiveTransactionsDetailed() =
         transactionRepository.getActiveTransactionsDetailed()
+
+    fun searchActiveTransactionsDetailed(query: String?) =
+        transactionRepository.searchActiveTransactionsDetailed(query)
 }

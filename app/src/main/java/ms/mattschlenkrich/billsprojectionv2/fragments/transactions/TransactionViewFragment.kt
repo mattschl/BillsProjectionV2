@@ -127,11 +127,13 @@ class TransactionViewFragment :
     }
 
     private fun searchTransactions(query: String) {
-//        val searchQuery = "%$query%"
-        //update with a new query
-        //viewModel.searchTransactions(searchQuery).observe(
-        //this
-        //) { list -> transactionAdapter.differ.submitList(list) }
+        val searchQuery = "%$query%"
+//        update with a new query
+        transactionViewModel
+            .searchActiveTransactionsDetailed(searchQuery)
+            .observe(
+                this
+            ) { list -> transactionAdapter.differ.submitList(list) }
     }
 
     override fun onDestroy() {
