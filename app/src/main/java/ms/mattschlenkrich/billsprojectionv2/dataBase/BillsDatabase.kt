@@ -9,6 +9,7 @@ import ms.mattschlenkrich.billsprojectionv2.DB_VERSION
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
+import ms.mattschlenkrich.billsprojectionv2.model.BudgetView
 import ms.mattschlenkrich.billsprojectionv2.model.Transactions
 
 @Database(
@@ -17,6 +18,7 @@ import ms.mattschlenkrich.billsprojectionv2.model.Transactions
         AccountType::class,
         BudgetRule::class,
         Transactions::class,
+        BudgetView::class,
     ], version = DB_VERSION
 )
 abstract class BillsDatabase : RoomDatabase() {
@@ -24,6 +26,7 @@ abstract class BillsDatabase : RoomDatabase() {
     abstract fun getAccountDao(): AccountDao
     abstract fun getBudgetRuleDao(): BudgetRuleDao
     abstract fun getTransactionDao(): TransactionDao
+    abstract fun getBudgetViewDao(): BudgetViewDao
 
     companion object {
         @Volatile

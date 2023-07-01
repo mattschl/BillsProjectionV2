@@ -8,6 +8,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.billsprojectionv2.ADAPTER_BUDGET_RULE
 import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.FRAG_TRANS_UPDATE
@@ -19,7 +20,7 @@ import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import java.text.NumberFormat
 import java.util.Locale
 
-private const val TAG = "BudgetRuleAdapter"
+private const val TAG = ADAPTER_BUDGET_RULE
 
 class BudgetRuleAdapter(
     private val transaction: TransactionDetailed?,

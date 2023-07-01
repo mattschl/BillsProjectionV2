@@ -7,11 +7,14 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.BillsDatabase
 import ms.mattschlenkrich.billsprojectionv2.databinding.ActivityMainBinding
 import ms.mattschlenkrich.billsprojectionv2.repository.AccountRepository
 import ms.mattschlenkrich.billsprojectionv2.repository.BudgetRuleRepository
+import ms.mattschlenkrich.billsprojectionv2.repository.BudgetViewRepository
 import ms.mattschlenkrich.billsprojectionv2.repository.TransactionRepository
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModelFactory
+import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetViewViewModel
+import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetViewViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModelFactory
 
@@ -21,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var accountViewModel: AccountViewModel
     lateinit var budgetRuleViewModel: BudgetRuleViewModel
     lateinit var transactionViewModel: TransactionViewModel
+    lateinit var budgetViewViewModel: BudgetViewViewModel
 //    private val timeFormatter: SimpleDateFormat =
 //        SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
 
@@ -33,7 +37,22 @@ class MainActivity : AppCompatActivity() {
         setupAccountViewModel()
         setupBudgetRuleViewModel()
         setupTransactionViewModel()
+        setupBudgetViewViewModel()
 //        BillsDatabase.testDb(this.baseContext)
+    }
+
+    private fun setupBudgetViewViewModel() {
+        val budgetViewRepository = BudgetViewRepository(
+            BillsDatabase(this)
+        )
+        val budgetViewViewModelFactory =
+            BudgetViewViewModelFactory(
+                application, budgetViewRepository
+            )
+        budgetViewViewModel = ViewModelProvider(
+            this,
+            budgetViewViewModelFactory
+        )[BudgetViewViewModel::class.java]
     }
 
     private fun setupBudgetRuleViewModel() {

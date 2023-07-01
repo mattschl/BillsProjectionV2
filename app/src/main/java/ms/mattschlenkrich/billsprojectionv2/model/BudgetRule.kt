@@ -42,29 +42,25 @@ data class BudgetRule(
     @PrimaryKey
     val ruleId: Long,
     val budgetRuleName: String,
-    @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val toAccountId: Long,
-    @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val fromAccountId: Long,
-    @ColumnInfo(defaultValue = "0.0", typeAffinity = ColumnInfo.REAL)
+    @ColumnInfo(defaultValue = "0.0")
     val budgetAmount: Double,
-    @ColumnInfo(defaultValue = "0", typeAffinity = ColumnInfo.INTEGER)
+    @ColumnInfo(defaultValue = "0")
     val fixedAmount: Boolean,
-    @ColumnInfo(defaultValue = "0", typeAffinity = ColumnInfo.INTEGER)
+    @ColumnInfo(defaultValue = "0")
     val isPayDay: Boolean,
-    @ColumnInfo(defaultValue = "0", typeAffinity = ColumnInfo.INTEGER)
+    @ColumnInfo(defaultValue = "0")
     val isAutoPay: Boolean,
     val startDate: String,
     val endDate: String?,
-    @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val dayOfWeekId: Long,
-    @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val frequencyTypeId: Long,
     @ColumnInfo(defaultValue = "1")
     val frequencyCount: Int,
     @ColumnInfo(defaultValue = "1")
     val leadDays: Int,
-    @ColumnInfo(defaultValue = "0", typeAffinity = ColumnInfo.INTEGER)
+    @ColumnInfo(defaultValue = "0")
     val isDeleted: Boolean,
     val updateTime: String
 ) : Parcelable

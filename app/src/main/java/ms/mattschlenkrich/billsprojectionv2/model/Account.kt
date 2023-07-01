@@ -29,17 +29,12 @@ data class AccountType(
     @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val typeId: Long,
     val accountType: String,
-    @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val keepTotals: Boolean,
-    @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val isAsset: Boolean,
-    @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val tallyOwing: Boolean,
-    @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val keepMileage: Boolean,
-    @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val displayAsAsset: Boolean,
-    @ColumnInfo(defaultValue = "0", typeAffinity = ColumnInfo.INTEGER)
+    @ColumnInfo(defaultValue = "0")
     val isDeleted: Boolean,
     val updateTime: String,
 ) : Parcelable
@@ -66,13 +61,13 @@ data class Account(
     val accountName: String,
     val accountNumber: String,
     val accountTypeId: Long,
-    @ColumnInfo(defaultValue = "0.0", typeAffinity = ColumnInfo.REAL)
+    @ColumnInfo(defaultValue = "0.0")
     val budgetAmount: Double,
-    @ColumnInfo(defaultValue = "0.0", typeAffinity = ColumnInfo.REAL)
+    @ColumnInfo(defaultValue = "0.0")
     val accountBalance: Double,
-    @ColumnInfo(defaultValue = "0.0", typeAffinity = ColumnInfo.REAL)
+    @ColumnInfo(defaultValue = "0.0")
     val accountOwing: Double,
-    @ColumnInfo(defaultValue = "0", typeAffinity = ColumnInfo.INTEGER)
+    @ColumnInfo(defaultValue = "0")
     val isDeleted: Boolean,
     val updateTime: String,
 ) : Parcelable

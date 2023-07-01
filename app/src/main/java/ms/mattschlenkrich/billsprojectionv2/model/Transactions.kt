@@ -42,20 +42,16 @@ import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_TO_ACCOUNT_ID
 )
 data class Transactions(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val transId: Long,
     val transDate: String,
     val transName: String,
     val transNote: String,
-    @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val bRuleId: Long,
-    @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     var transToAccountId: Long,
-    @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     var transFromAccountId: Long,
-    @ColumnInfo(defaultValue = "0.0", typeAffinity = ColumnInfo.REAL)
+    @ColumnInfo(defaultValue = "0.0")
     val transAmount: Double,
-    @ColumnInfo(defaultValue = "0", typeAffinity = ColumnInfo.INTEGER)
+    @ColumnInfo(defaultValue = "0")
     val isDeleted: Boolean,
     val updateTime: String,
 ) : Parcelable
@@ -90,7 +86,7 @@ data class TransactionFull(
         parentColumn = BUDGET_RULE_ID,
         entityColumn = RULE_ID
     )
-    val budgetRule: BudgetRule?,
+    var budgetRule: BudgetRule?,
     @Relation(
         entity = AccountWithType::class,
         parentColumn = TRANSACTION_TO_ACCOUNT_ID,
