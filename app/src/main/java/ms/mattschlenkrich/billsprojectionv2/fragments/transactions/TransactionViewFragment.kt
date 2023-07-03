@@ -46,6 +46,7 @@ class TransactionViewFragment :
         _binding = FragmentTransactionViewBinding.inflate(
             inflater, container, false
         )
+        mainActivity = (activity as MainActivity)
         mView = binding.root
         return binding.root
     }

@@ -58,6 +58,8 @@ data class BudgetView(
     @ColumnInfo(defaultValue = "0.0")
     val projectedAmount: Double,
     @ColumnInfo(defaultValue = "0")
+    val isPending: Boolean,
+    @ColumnInfo(defaultValue = "0")
     val isFixed: Boolean,
     @ColumnInfo(defaultValue = "0")
     val isAutomatic: Boolean,
@@ -94,4 +96,28 @@ data class BudgetDetailed(
         entityColumn = ACCOUNT_ID
     )
     var fromAccount: Account?
+) : Parcelable
+
+@Parcelize
+data class BudgetFullView(
+    @Embedded
+    val budgetView: BudgetView?,
+    @Relation(
+        entity = BudgetRule::class,
+        parentColumn = BUDGET_RULE_ID,
+        entityColumn = RULE_ID
+    )
+    var budgetRule: BudgetRule?,
+    @Relation(
+        entity = AccountWithType::class,
+        parentColumn = TO_ACCOUNT_ID,
+        entityColumn = ACCOUNT_ID
+    )
+    var toAccountWithType: AccountWithType?,
+    @Relation(
+        entity = AccountWithType::class,
+        parentColumn = FROM_ACCOUNT_ID,
+        entityColumn = ACCOUNT_ID
+    )
+    var fromAccountWithType: AccountWithType?
 ) : Parcelable

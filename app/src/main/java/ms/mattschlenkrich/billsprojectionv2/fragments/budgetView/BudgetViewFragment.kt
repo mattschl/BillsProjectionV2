@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.billsprojectionv2.fragments.budgetView
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,18 +25,17 @@ class BudgetViewFragment : Fragment(
     private lateinit var budgetViewViewModel: BudgetViewViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        Log.d(TAG, "building BudgetViewFragment")
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding = FragmentBudgetViewBinding.inflate(
             inflater, container, false
         )
-
         mainActivity = (activity as MainActivity)
         mView = binding.root
         return binding.root

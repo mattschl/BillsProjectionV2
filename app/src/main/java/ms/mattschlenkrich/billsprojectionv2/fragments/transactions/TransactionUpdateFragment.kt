@@ -115,6 +115,7 @@ class TransactionUpdateFragment :
                         .replace(",", "")
                         .toDouble(),
                     false,
+                    false,
                     timeFormatter.format(
                         Calendar.getInstance().time
                     )
@@ -264,6 +265,7 @@ class TransactionUpdateFragment :
                     .replace("$", "")
                     .replace(",", "")
                     .toDouble(),
+                false,
                 false,
                 timeFormatter.format(
                     Calendar.getInstance().time

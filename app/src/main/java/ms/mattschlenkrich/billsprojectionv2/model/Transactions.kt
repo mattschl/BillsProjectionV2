@@ -52,6 +52,8 @@ data class Transactions(
     @ColumnInfo(defaultValue = "0.0")
     val transAmount: Double,
     @ColumnInfo(defaultValue = "0")
+    val isPending: Boolean,
+    @ColumnInfo(defaultValue = "0")
     val isDeleted: Boolean,
     val updateTime: String,
 ) : Parcelable

@@ -37,7 +37,14 @@ class AccountAdapter(
     RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() {
 
     private var mBudgetRuleDetailed = budgetRuleDetailed
-    private var mTransactionDetailed = transaction
+    private var mTransactionDetailed =
+        transaction
+            ?: TransactionDetailed(
+                null,
+                null,
+                null,
+                null
+            )
 
     private val dollarFormat: NumberFormat = NumberFormat.getCurrencyInstance(CANADA)
 
@@ -135,31 +142,36 @@ class AccountAdapter(
                 TAG, "onClick requested Account is $requestedAccount," +
                         "  calling Fragment is $callingFragments"
             )
+            when (requestedAccount) {
+                REQUEST_TO_ACCOUNT -> {
+                    if (callingFragments!!.contains(FRAG_BUDGET_RULE_ADD) ||
+                        callingFragments.contains(FRAG_BUDGET_RULE_UPDATE)
+                    ) {
+                        mBudgetRuleDetailed!!.toAccount = curAccount.account
+                        gotoCallingFragment(it)
+                    }
+                    if (callingFragments.contains(FRAG_TRANS_ADD) ||
+                        callingFragments.contains(FRAG_TRANS_UPDATE)
+                    ) {
+                        mTransactionDetailed.toAccount = curAccount.account
+                        gotoCallingFragment(it)
+                    }
+                }
 
-            if (requestedAccount == REQUEST_TO_ACCOUNT &&
-                budgetRuleDetailed != null
-            ) {
-                mBudgetRuleDetailed!!.toAccount = curAccount.account
-                gotoCallingFragment(it)
-            } else if (requestedAccount == REQUEST_FROM_ACCOUNT &&
-                budgetRuleDetailed != null
-            ) {
-                mBudgetRuleDetailed!!.fromAccount = curAccount.account
-                gotoCallingFragment(it)
-            } else if (requestedAccount == REQUEST_TO_ACCOUNT &&
-                transaction != null
-            ) {
-                mTransactionDetailed!!.transaction!!.transToAccountId =
-                    curAccount.account.accountId
-                mTransactionDetailed!!.toAccount = curAccount.account
-                gotoCallingFragment(it)
-            } else if (requestedAccount == REQUEST_FROM_ACCOUNT &&
-                transaction != null
-            ) {
-                mTransactionDetailed!!.transaction!!.transFromAccountId =
-                    curAccount.account.accountId
-                mTransactionDetailed!!.fromAccount = curAccount.account
-                gotoCallingFragment(it)
+                REQUEST_FROM_ACCOUNT -> {
+                    if (callingFragments!!.contains(FRAG_BUDGET_RULE_ADD) ||
+                        callingFragments.contains(FRAG_BUDGET_RULE_UPDATE)
+                    ) {
+                        mBudgetRuleDetailed!!.fromAccount = curAccount.account
+                        gotoCallingFragment(it)
+                    }
+                    if (callingFragments.contains(FRAG_TRANS_ADD) ||
+                        callingFragments.contains(FRAG_TRANS_UPDATE)
+                    ) {
+                        mTransactionDetailed.fromAccount = curAccount.account
+                        gotoCallingFragment(it)
+                    }
+                }
             }
         }
 
@@ -177,8 +189,8 @@ class AccountAdapter(
         val fragmentChain = "$callingFragments, $FRAG_ACCOUNTS"
         val direction = AccountsFragmentDirections
             .actionAccountsFragmentToAccountUpdateFragment(
-                transaction,
-                budgetRuleDetailed,
+                mTransactionDetailed,
+                mBudgetRuleDetailed,
                 curAccount.account,
                 curAccount.accountType,
                 requestedAccount,
@@ -190,11 +202,15 @@ class AccountAdapter(
     private fun gotoCallingFragment(it: View) {
         val fragmentChain = callingFragments!!
             .replace(", $FRAG_ACCOUNTS", "")
+        Log.d(
+            TAG, "Fragment Chain is \n" +
+                    fragmentChain
+        )
         if (callingFragments.contains(FRAG_BUDGET_RULE_ADD)) {
             val direction = AccountsFragmentDirections
                 .actionAccountsFragmentToBudgetRuleAddFragment(
-                    transaction,
-                    budgetRuleDetailed,
+                    mTransactionDetailed,
+                    mBudgetRuleDetailed,
                     fragmentChain
                 )
             it.findNavController().navigate(direction)
@@ -202,8 +218,8 @@ class AccountAdapter(
         ) {
             val direction = AccountsFragmentDirections
                 .actionAccountsFragmentToBudgetRuleUpdateFragment(
-                    transaction,
-                    budgetRuleDetailed,
+                    mTransactionDetailed,
+                    mBudgetRuleDetailed,
                     fragmentChain
                 )
             it.findNavController().navigate(direction)

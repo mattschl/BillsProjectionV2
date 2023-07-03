@@ -205,6 +205,10 @@ class AccountAddFragment :
                         args.requestedAccount,
                         fragmentChain
                     )
+                Log.d(
+                    TAG, "fragment chain is\n" +
+                            fragmentChain
+                )
                 view.findNavController().navigate(direction)
 
             } else {

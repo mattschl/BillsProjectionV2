@@ -23,7 +23,6 @@ import ms.mattschlenkrich.billsprojectionv2.SQLITE_TIME
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionAddBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.Transactions
 import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModel
@@ -128,8 +127,9 @@ class TransactionAddFragment :
                 } else {
                     0.0
                 },
-                false,
-                timeFormatter.format(
+                isPending = false,
+                isDeleted = false,
+                updateTime = timeFormatter.format(
                     Calendar.getInstance().time
                 )
             )
@@ -168,13 +168,11 @@ class TransactionAddFragment :
     }
 
     private fun chooseFromAccount() {
-
         val fragmentChain = "${args.callingFragments}, $TAG"
-
         val direction = TransactionAddFragmentDirections
             .actionTransactionAddFragmentToAccountsFragment(
                 getCurTransaction(),
-                prepareBudgetRule(),
+                null,
                 REQUEST_FROM_ACCOUNT,
                 fragmentChain
             )
@@ -183,18 +181,17 @@ class TransactionAddFragment :
 
     private fun chooseToAccount() {
         val fragmentChain = "${args.callingFragments}, $TAG"
-
         val direction = TransactionAddFragmentDirections
             .actionTransactionAddFragmentToAccountsFragment(
                 getCurTransaction(),
-                prepareBudgetRule(),
+                null,
                 REQUEST_TO_ACCOUNT,
                 fragmentChain
             )
         mView.findNavController().navigate(direction)
     }
 
-    private fun prepareBudgetRule(): BudgetRuleDetailed {
+    /*private fun prepareBudgetRule(): BudgetRuleDetailed {
         val zToAccount = if (mToAccount != null) {
             mToAccount!!
         } else {
@@ -210,14 +207,22 @@ class TransactionAddFragment :
             zToAccount,
             zFromAccount
         )
-    }
+    }*/
 
     private fun fillValues() {
         binding.apply {
             if (args.transaction != null) {
-                if (args.transaction != null) {
+                if (args.transaction!!.transaction != null) {
                     etDescription.setText(
-                        args.transaction!!.transaction!!.transName
+                        if (args.transaction!!.transaction!!.transName.isBlank()) {
+                            if (args.transaction!!.budgetRule != null) {
+                                args.transaction!!.budgetRule!!.budgetRuleName
+                            } else {
+                                ""
+                            }
+                        } else {
+                            args.transaction!!.transaction!!.transName
+                        }
                     )
                     etNote.setText(
                         args.transaction!!.transaction!!.transNote
@@ -226,28 +231,39 @@ class TransactionAddFragment :
                         args.transaction!!.transaction!!.transDate
                     )
                     etAmount.setText(
-                        dollarFormat.format(
-                            args.transaction!!.transaction!!.transAmount
-                        )
+                        if (args.transaction!!.transaction!!.transAmount == 0.0) {
+                            if (args.transaction!!.budgetRule != null) {
+                                dollarFormat.format(
+                                    args.transaction!!.budgetRule!!.budgetAmount
+                                )
+                            } else {
+                                dollarFormat.format(
+                                    0.0
+                                )
+                            }
+                        } else {
+                            dollarFormat.format(
+                                args.transaction!!.transaction!!.transAmount
+                            )
+                        }
                     )
-                    if (args.transaction!!.budgetRule != null) {
-                        mBudgetRule = args.transaction!!.budgetRule!!
-                        tvBudgetRule.text =
-                            args.transaction!!.budgetRule!!.budgetRuleName
-                    }
-                    if (args.transaction!!.toAccount != null) {
-                        mToAccount = args.transaction!!.toAccount!!
-                        tvToAccount.text =
-                            args.transaction!!.toAccount!!
-                                .accountName
-                    }
-                    if (args.transaction!!.fromAccount != null) {
-                        mFromAccount = args.transaction!!.fromAccount
-                        tvFromAccount.text =
-                            args.transaction!!.fromAccount!!
-                                .accountName
-                    }
                 }
+                if (args.transaction!!.budgetRule != null) {
+                    mBudgetRule = args.transaction!!.budgetRule!!
+                    tvBudgetRule.text =
+                        args.transaction!!.budgetRule!!.budgetRuleName
+                }
+                if (args.transaction!!.toAccount != null) {
+                    mToAccount = args.transaction!!.toAccount!!
+                    tvToAccount.text =
+                        mToAccount!!.accountName
+                }
+                if (args.transaction!!.fromAccount != null) {
+                    mFromAccount = args.transaction!!.fromAccount
+                    tvFromAccount.text =
+                        mFromAccount!!.accountName
+                }
+
             } else {
                 etTransDate.setText(
                     dateFormatter.format(
@@ -294,8 +310,9 @@ class TransactionAddFragment :
                     mToAccount!!.accountId,
                     mFromAccount!!.accountId,
                     amount,
-                    false,
-                    timeFormatter.format(
+                    isPending = false,
+                    isDeleted = false,
+                    updateTime = timeFormatter.format(
                         Calendar.getInstance().time
                     )
                 )

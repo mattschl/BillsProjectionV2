@@ -81,7 +81,10 @@ class AccountTypeAddFragment :
     }
 
     private fun saveAccountType(view: View) {
-        Log.d(TAG, "saveAccountType entered")
+        Log.d(
+            TAG, "saveAccountType entered callingFragments are\n" +
+                    "${args.callingFragments}"
+        )
         var id =
             Random().nextInt(Int.MAX_VALUE).toLong()
         id = if (Random().nextBoolean()) -id
