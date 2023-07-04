@@ -8,13 +8,26 @@
     <fragment
         android:id="@+id/accountsFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountsFragment"
-        android:label="AccountsFragment">
+        android:label="AccountsFragment"
+        tools:layout="@layout/fragment_accounts">
         <action
             android:id="@+id/action_accountsFragment_to_accountUpdateFragment"
             app:destination="@id/accountUpdateFragment" />
         <action
             android:id="@+id/action_accountsFragment_to_accountAddFragment"
             app:destination="@id/accountAddFragment" />
+        <action
+            android:id="@+id/action_accountsFragment_to_budgetRuleUpdateFragment"
+            app:destination="@id/budgetRuleUpdateFragment" />
+        <action
+            android:id="@+id/action_accountsFragment_to_transactionUpdateFragment"
+            app:destination="@id/transactionUpdateFragment" />
+        <action
+            android:id="@+id/action_accountsFragment_to_transactionAddFragment"
+            app:destination="@id/transactionAddFragment" />
+        <action
+            android:id="@+id/action_accountsFragment_to_budgetRuleAddFragment"
+            app:destination="@id/budgetRuleAddFragment" />
         <argument
             android:name="transaction"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed"
@@ -31,26 +44,12 @@
             android:name="callingFragments"
             app:argType="string"
             app:nullable="true" />
-        <action
-            android:id="@+id/action_accountsFragment_to_budgetRuleUpdateFragment"
-            app:destination="@id/budgetRuleUpdateFragment" />
-        <action
-            android:id="@+id/action_accountsFragment_to_budgetRuleAddFragment"
-            app:destination="@id/budgetRuleAddFragment" />
-        <action
-            android:id="@+id/action_accountsFragment_to_transactionUpdateFragment"
-            app:destination="@id/transactionUpdateFragment" />
-        <action
-            android:id="@+id/action_accountsFragment_to_transactionAddFragment"
-            app:destination="@id/transactionAddFragment" />
-        <action
-            android:id="@+id/action_accountsFragment_to_transactionUpdateFragment2"
-            app:destination="@id/transactionUpdateFragment" />
     </fragment>
     <fragment
         android:id="@+id/accountUpdateFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountUpdateFragment"
-        android:label="AccountUpdateFragment">
+        android:label="AccountUpdateFragment"
+        tools:layout="@layout/fragment_account_update">
         <action
             android:id="@+id/action_accountUpdateFragment_to_accountsFragment"
             app:destination="@id/accountsFragment" />
@@ -85,7 +84,8 @@
     <fragment
         android:id="@+id/accountAddFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountAddFragment"
-        android:label="AccountAddFragment">
+        android:label="AccountAddFragment"
+        tools:layout="@layout/fragment_account_add">
         <action
             android:id="@+id/action_accountAddFragment_to_accountsFragment"
             app:destination="@id/accountsFragment" />
@@ -120,7 +120,8 @@
     <fragment
         android:id="@+id/accountTypesFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountTypesFragment"
-        android:label="AccountTypesFragment">
+        android:label="AccountTypesFragment"
+        tools:layout="@layout/fragment_account_types">
         <action
             android:id="@+id/action_accountTypesFragment_to_accountTypeAddFragment"
             app:destination="@id/accountTypeAddFragment" />
@@ -157,7 +158,8 @@
     <fragment
         android:id="@+id/accountTypeAddFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountTypeAddFragment"
-        android:label="AccountTypeAddFragment">
+        android:label="AccountTypeAddFragment"
+        tools:layout="@layout/fragment_account_type_add">
         <action
             android:id="@+id/action_accountTypeAddFragment_to_accountTypesFragment"
             app:destination="@id/accountTypesFragment" />
@@ -185,7 +187,8 @@
     <fragment
         android:id="@+id/accountTypeUpdateFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountTypeUpdateFragment"
-        android:label="AccountTypeUpdateFragment">
+        android:label="AccountTypeUpdateFragment"
+        tools:layout="@layout/fragment_account_type_update">
         <action
             android:id="@+id/action_accountTypeUpdateFragment_to_accountTypesFragment"
             app:destination="@id/accountTypesFragment" />
@@ -217,7 +220,8 @@
     <fragment
         android:id="@+id/budgetRuleFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules.BudgetRuleFragment"
-        android:label="BudgetRuleFragment">
+        android:label="BudgetRuleFragment"
+        tools:layout="@layout/fragment_budget_rule">
         <action
             android:id="@+id/action_budgetRuleFragment_to_budgetRuleAddFragment"
             app:destination="@id/budgetRuleAddFragment" />
@@ -262,6 +266,10 @@
             android:name="callingFragments"
             app:argType="string"
             app:nullable="true" />
+        <!--        <argument-->
+        <!--            android:name="extra"-->
+        <!--            app:argType="string"-->
+        <!--            app:nullable="true" />-->
     </fragment>
     <fragment
         android:id="@+id/budgetRuleUpdateFragment"

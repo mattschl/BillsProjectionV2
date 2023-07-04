@@ -54,8 +54,8 @@ data class BudgetRule(
     val isAutoPay: Boolean,
     val startDate: String,
     val endDate: String?,
-    val dayOfWeekId: Long,
-    val frequencyTypeId: Long,
+    val dayOfWeekId: Int,
+    val frequencyTypeId: Int,
     @ColumnInfo(defaultValue = "1")
     val frequencyCount: Int,
     @ColumnInfo(defaultValue = "1")

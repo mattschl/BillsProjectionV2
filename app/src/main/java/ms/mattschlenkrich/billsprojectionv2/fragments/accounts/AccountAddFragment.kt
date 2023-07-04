@@ -162,10 +162,6 @@ class AccountAddFragment :
         val mes = checkAccount()
         binding.apply {
             if (mes == "Ok") {
-                var id =
-                    Random().nextInt(Int.MAX_VALUE).toLong()
-                id = if (Random().nextBoolean()) -id
-                else id
                 val accountName =
                     editAccAddName.text.toString().trim()
                 val accountHandle =
@@ -189,7 +185,7 @@ class AccountAddFragment :
                     timeFormatter.format(Calendar.getInstance().time)
                 val accountTypeId = args.accountType!!.typeId
                 val account = Account(
-                    id, accountName, accountHandle,
+                    generateId(), accountName, accountHandle,
                     accountTypeId, accountBudgeted, accountBalance,
                     accountOwing, false,
                     updateTime
@@ -219,6 +215,14 @@ class AccountAddFragment :
                 ).show()
             }
         }
+    }
+
+    private fun generateId(): Long {
+        var id =
+            Random().nextInt(Int.MAX_VALUE).toLong()
+        id = if (Random().nextBoolean()) -id
+        else id
+        return id
     }
 
     private fun checkAccount(): String {

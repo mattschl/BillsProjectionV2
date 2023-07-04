@@ -147,10 +147,10 @@ class AccountAdapter(
                     if (callingFragments!!.contains(FRAG_BUDGET_RULE_ADD) ||
                         callingFragments.contains(FRAG_BUDGET_RULE_UPDATE)
                     ) {
+                        Log.d(TAG, "going to budget fragment: $callingFragments")
                         mBudgetRuleDetailed!!.toAccount = curAccount.account
                         gotoCallingFragment(it)
-                    }
-                    if (callingFragments.contains(FRAG_TRANS_ADD) ||
+                    } else if (callingFragments.contains(FRAG_TRANS_ADD) ||
                         callingFragments.contains(FRAG_TRANS_UPDATE)
                     ) {
                         mTransactionDetailed.toAccount = curAccount.account
@@ -164,8 +164,7 @@ class AccountAdapter(
                     ) {
                         mBudgetRuleDetailed!!.fromAccount = curAccount.account
                         gotoCallingFragment(it)
-                    }
-                    if (callingFragments.contains(FRAG_TRANS_ADD) ||
+                    } else if (callingFragments.contains(FRAG_TRANS_ADD) ||
                         callingFragments.contains(FRAG_TRANS_UPDATE)
                     ) {
                         mTransactionDetailed.fromAccount = curAccount.account
@@ -213,6 +212,10 @@ class AccountAdapter(
                     mBudgetRuleDetailed,
                     fragmentChain
                 )
+            Log.d(
+                TAG, "in gotoCallingFragment mTransactionDetailed is " +
+                        if (mTransactionDetailed != null) mTransactionDetailed.transaction else "isNull"
+            )
             it.findNavController().navigate(direction)
         } else if (callingFragments.contains(FRAG_BUDGET_RULE_UPDATE)
         ) {

@@ -69,7 +69,6 @@ class BudgetRuleFragment :
                     args.transaction,
                     null,
                     args.callingFragments
-
                 )
             mView!!.findNavController().navigate(direction)
         }

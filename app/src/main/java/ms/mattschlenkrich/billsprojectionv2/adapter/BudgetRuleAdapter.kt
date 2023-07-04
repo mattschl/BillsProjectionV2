@@ -86,11 +86,11 @@ class BudgetRuleAdapter(
         val frequencyTypes =
             context.resources.getStringArray(R.array.frequency_types)
         val frequencyType =
-            frequencyTypes[budgetRuleDetailed.budgetRule.frequencyTypeId.toInt()]
+            frequencyTypes[budgetRuleDetailed.budgetRule.frequencyTypeId]
         val daysOfWeek =
             context.resources.getStringArray(R.array.days_of_week)
         val dayOfWeek =
-            daysOfWeek[budgetRuleDetailed.budgetRule.dayOfWeekId.toInt()]
+            daysOfWeek[budgetRuleDetailed.budgetRule.dayOfWeekId]
         info = "$amount " + frequencyType +
                 " X " + budgetRuleDetailed.budgetRule.frequencyCount +
                 "\nOn " + dayOfWeek

@@ -49,8 +49,8 @@ class BudgetRuleUpdateFragment :
 
     private var mToAccount: Account? = null
     private var mFromAccount: Account? = null
-    private var mDayOfWeekId = 0L
-    private var mFrequencyTypeId = 0L
+    private var mDayOfWeekId = 0
+    private var mFrequencyTypeId = 0
     private var budgetNameList: List<String>? = null
 
     private val dollarFormat: NumberFormat =
@@ -260,13 +260,13 @@ class BudgetRuleUpdateFragment :
                         args.budgetRuleDetailed!!.budgetRule!!.endDate
                     )
                     spFrequencyType.setSelection(
-                        args.budgetRuleDetailed!!.budgetRule!!.frequencyTypeId.toInt()
+                        args.budgetRuleDetailed!!.budgetRule!!.frequencyTypeId
                     )
                     etFrequencyCount.setText(
                         args.budgetRuleDetailed!!.budgetRule!!.frequencyCount.toString()
                     )
                     spDayOfWeek.setSelection(
-                        args.budgetRuleDetailed!!.budgetRule!!.dayOfWeekId.toInt()
+                        args.budgetRuleDetailed!!.budgetRule!!.dayOfWeekId
                     )
                 }
             } else {
@@ -372,23 +372,25 @@ class BudgetRuleUpdateFragment :
                     }
                 val updateTime =
                     timeFormatter.format(Calendar.getInstance().time)
-                val budgetRule = BudgetRule(
+
+                val fragmentChain = "${args.callingFragments}, $TAG"
+                budgetRuleViewModel.updateBudgetRule(
                     args.budgetRuleDetailed!!.budgetRule!!.ruleId,
-                    budgetName, toAccountId, fromAccountId,
+                    budgetName,
                     amount,
+                    toAccountId,
+                    fromAccountId,
                     chkFixedAmount.isChecked,
                     chkMakePayDay.isChecked,
                     chkAutoPayment.isChecked,
                     etStartDate.text.toString(),
                     etEndDate.text.toString(),
-                    spDayOfWeek.selectedItemId,
-                    spFrequencyType.selectedItemId,
+                    spDayOfWeek.selectedItemId.toInt(),
+                    spFrequencyType.selectedItemId.toInt(),
                     etFrequencyCount.text.toString().toInt(),
                     etLeadDays.text.toString().toInt(),
                     false, updateTime
                 )
-                val fragmentChain = "${args.callingFragments}, $TAG"
-                budgetRuleViewModel.updateBudgetRule(budgetRule)
                 val direction =
                     BudgetRuleUpdateFragmentDirections
                         .actionBudgetRuleUpdateFragmentToBudgetRuleFragment(

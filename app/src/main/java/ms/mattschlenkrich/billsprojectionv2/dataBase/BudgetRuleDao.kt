@@ -5,9 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
-import androidx.room.Update
 import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_ID
-import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_NAME
 import ms.mattschlenkrich.billsprojectionv2.BUDGET_AMOUNT
 import ms.mattschlenkrich.billsprojectionv2.BUDGET_RULE_NAME
 import ms.mattschlenkrich.billsprojectionv2.DAY_OF_WEEK_ID
@@ -54,36 +52,72 @@ interface BudgetRuleDao {
                 "$DAY_OF_WEEK_ID, $FREQUENCY_TYPE_ID, $FREQUENCY_COUNT, $LEAD_DAYS," +
                 "$IS_DELETED, $UPDATE_TIME) " +
                 "VALUES (" +
-                "0,:budgetRuleName, " +
-                "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
-                "WHERE $ACCOUNT_NAME = :toAccount), " +
-                "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
-                "WHERE $ACCOUNT_NAME = :fromAccount), " +
+                ":ruleId," +
+                ":budgetRuleName, " +
+                ":toAccountId, " +
+                ":fromAccountId, " +
                 ":budgetAmount, :fixedAmount, :isPayDay, :isAutoPayment, " +
                 ":startDate, :endDate, :dayOfWeekId, :frequencyTypeId, " +
-                ":frequencyCount, :leadDays, 0, :updateTime" +
+                ":frequencyCount, :leadDays, :isDeleted, :updateTime" +
                 ")"
 
     )
     suspend fun insertBudgetRule(
+        ruleId: Long,
         budgetRuleName: String,
         budgetAmount: Double,
-        toAccount: String,
-        fromAccount: String,
-        fixedAmount: Int,
-        isPayDay: Int,
-        isAutoPayment: Int,
+        toAccountId: Long,
+        fromAccountId: Long,
+        fixedAmount: Boolean,
+        isPayDay: Boolean,
+        isAutoPayment: Boolean,
         startDate: String,
         endDate: String,
-        frequencyTypeId: Long,
+        frequencyTypeId: Int,
         frequencyCount: Int,
-        dayOfWeekId: Long,
+        dayOfWeekId: Int,
         leadDays: Int,
+        isDeleted: Boolean,
         updateTime: String
     )
 
-    @Update
-    suspend fun updateBudgetRule(budgetRule: BudgetRule)
+    @Query(
+        "UPDATE $TABLE_BUDGET_RULES " +
+                "SET $BUDGET_RULE_NAME = :budgetRuleName, " +
+                "$BUDGET_AMOUNT = :budgetAmount, " +
+                "$TO_ACCOUNT_ID = :toAccountId, " +
+                "$FROM_ACCOUNT_ID = :fromAccountId, " +
+                "$FIXED_AMOUNT = :fixedAmount, " +
+                "$IS_PAY_DAY = :isPayDay," +
+                "$IS_AUTO_PAY = :isAutoPayment, " +
+                "$START_DATE = :startDate, " +
+                "$END_DATE = :endDate, " +
+                "$FREQUENCY_TYPE_ID = :frequencyTypeId, " +
+                "$FREQUENCY_COUNT = :frequencyCount, " +
+                "$DAY_OF_WEEK_ID = :dayOfWeekId, " +
+                "$LEAD_DAYS = :leadDays, " +
+                "$IS_DELETED = :isDeleted, " +
+                "$UPDATE_TIME = :updateTime " +
+                "WHERE $RULE_ID = :ruleId"
+    )
+    suspend fun updateBudgetRule(
+        ruleId: Long,
+        budgetRuleName: String,
+        budgetAmount: Double,
+        toAccountId: Long,
+        fromAccountId: Long,
+        fixedAmount: Boolean,
+        isPayDay: Boolean,
+        isAutoPayment: Boolean,
+        startDate: String,
+        endDate: String,
+        frequencyTypeId: Int,
+        frequencyCount: Int,
+        dayOfWeekId: Int,
+        leadDays: Int,
+        isDeleted: Boolean,
+        updateTime: String
+    )
 
     @Query(
         "UPDATE $TABLE_BUDGET_RULES " +

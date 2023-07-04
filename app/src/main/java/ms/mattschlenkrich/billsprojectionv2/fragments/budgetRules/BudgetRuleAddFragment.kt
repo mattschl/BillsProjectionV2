@@ -50,8 +50,8 @@ class BudgetRuleAddFragment :
 
     private var mToAccount: Account? = null
     private var mFromAccount: Account? = null
-    private var mDayOfWeekId = 0L
-    private var mFrequencyTypeId = 0L
+    private var mDayOfWeekId = 0
+    private var mFrequencyTypeId = 0
     private var budgetNameList: List<String>? = null
 
     private val dollarFormat: NumberFormat =
@@ -113,7 +113,7 @@ class BudgetRuleAddFragment :
     private fun getBudgetRuleDetailed(): BudgetRuleDetailed {
         binding.apply {
             val budgetRule = BudgetRule(
-                0,
+                0L,
                 etBudgetName.text.toString().trim(),
                 if (mToAccount == null) 0L else mToAccount!!.accountId,
                 if (mFromAccount == null) 0L else mFromAccount!!.accountId,
@@ -159,6 +159,14 @@ class BudgetRuleAddFragment :
                 }
             return BudgetRuleDetailed(budgetRule, toAccount, fromAccount)
         }
+    }
+
+    private fun generateId(): Long {
+        var id =
+            Random().nextInt(Int.MAX_VALUE).toLong()
+        id = if (Random().nextBoolean()) -id
+        else id
+        return id
     }
 
     private fun chooseFromAccount() {
@@ -271,10 +279,10 @@ class BudgetRuleAddFragment :
                         args.budgetRuleDetailed!!.budgetRule!!.endDate
                     )
                     spFrequencyType.setSelection(
-                        args.budgetRuleDetailed!!.budgetRule!!.frequencyTypeId.toInt()
+                        args.budgetRuleDetailed!!.budgetRule!!.frequencyTypeId
                     )
                     spDayOfWeek.setSelection(
-                        args.budgetRuleDetailed!!.budgetRule!!.dayOfWeekId.toInt()
+                        args.budgetRuleDetailed!!.budgetRule!!.dayOfWeekId
                     )
                 }
             } else {
@@ -337,10 +345,6 @@ class BudgetRuleAddFragment :
         val mes = checkBudgetRule()
         if (mes == "Ok") {
             binding.apply {
-                var id =
-                    Random().nextInt(Int.MAX_VALUE).toLong()
-                id = if (Random().nextBoolean()) -id
-                else id
                 val budgetName =
                     etBudgetName.text.toString().trim()
                 val amount =
@@ -350,25 +354,26 @@ class BudgetRuleAddFragment :
                         .toDouble()
                 val updateTime =
                     timeFormatter.format(Calendar.getInstance().time)
-                val budgetRule = BudgetRule(
-                    id, budgetName,
+
+                val fragmentChain = "${args.callingFragments}, $TAG"
+                budgetRuleViewModel.insertBudgetRule(
+                    generateId(),
+                    budgetName,
+                    amount,
                     mToAccount!!.accountId,
                     mFromAccount!!.accountId,
-                    amount,
                     chkFixedAmount.isChecked,
                     chkMakePayDay.isChecked,
                     chkAutoPayment.isChecked,
                     etStartDate.text.toString(),
                     etEndDate.text.toString(),
-                    spDayOfWeek.selectedItemId,
-                    spFrequencyType.selectedItemId,
+                    spDayOfWeek.selectedItemId.toInt(),
+                    spFrequencyType.selectedItemId.toInt(),
                     etFrequencyCount.text.toString().toInt(),
                     etLeadDays.text.toString().toInt(),
                     false,
                     updateTime
                 )
-                val fragmentChain = "${args.callingFragments}, $TAG"
-                budgetRuleViewModel.insertBudgetRule(budgetRule)
                 val direction = BudgetRuleAddFragmentDirections
                     .actionBudgetRuleAddFragmentToBudgetRuleFragment(
                         args.transaction,
