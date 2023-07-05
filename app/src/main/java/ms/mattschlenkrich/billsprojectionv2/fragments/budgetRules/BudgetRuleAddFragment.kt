@@ -361,9 +361,9 @@ class BudgetRuleAddFragment :
                         chkAutoPayment.isChecked,
                         etStartDate.text.toString(),
                         etEndDate.text.toString(),
+                        spDayOfWeek.selectedItemId.toInt(),
                         spFrequencyType.selectedItemId.toInt(),
                         etFrequencyCount.text.toString().toInt(),
-                        spDayOfWeek.selectedItemId.toInt(),
                         etLeadDays.text.toString().toInt(),
                         false,
                         timeFormatter.format(Calendar.getInstance().time)
