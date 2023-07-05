@@ -351,13 +351,6 @@ class BudgetRuleUpdateFragment :
         val mes = checkBudgetRule()
         binding.apply {
             if (mes == "Ok") {
-                val budgetName =
-                    etBudgetName.text.toString().trim()
-                val amount =
-                    etAmount.text.toString().trim()
-                        .replace(",", "")
-                        .replace("$", "")
-                        .toDouble()
                 val toAccountId =
                     if (mToAccount != null) {
                         mToAccount!!.accountId
@@ -370,14 +363,14 @@ class BudgetRuleUpdateFragment :
                     } else {
                         0L
                     }
-                val updateTime =
-                    timeFormatter.format(Calendar.getInstance().time)
-
                 val fragmentChain = "${args.callingFragments}, $TAG"
                 budgetRuleViewModel.updateBudgetRule(
                     args.budgetRuleDetailed!!.budgetRule!!.ruleId,
-                    budgetName,
-                    amount,
+                    etBudgetName.text.toString().trim(),
+                    etAmount.text.toString()
+                        .replace(",", "")
+                        .replace("$", "")
+                        .toDouble(),
                     toAccountId,
                     fromAccountId,
                     chkFixedAmount.isChecked,
@@ -385,11 +378,12 @@ class BudgetRuleUpdateFragment :
                     chkAutoPayment.isChecked,
                     etStartDate.text.toString(),
                     etEndDate.text.toString(),
-                    spDayOfWeek.selectedItemId.toInt(),
                     spFrequencyType.selectedItemId.toInt(),
                     etFrequencyCount.text.toString().toInt(),
+                    spDayOfWeek.selectedItemId.toInt(),
                     etLeadDays.text.toString().toInt(),
-                    false, updateTime
+                    false,
+                    timeFormatter.format(Calendar.getInstance().time)
                 )
                 val direction =
                     BudgetRuleUpdateFragmentDirections

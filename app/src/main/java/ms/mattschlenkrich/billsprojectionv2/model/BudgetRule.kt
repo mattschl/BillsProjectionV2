@@ -44,7 +44,6 @@ data class BudgetRule(
     val budgetRuleName: String,
     val toAccountId: Long,
     val fromAccountId: Long,
-    @ColumnInfo(defaultValue = "0.0")
     val budgetAmount: Double,
     @ColumnInfo(defaultValue = "0")
     val fixedAmount: Boolean,

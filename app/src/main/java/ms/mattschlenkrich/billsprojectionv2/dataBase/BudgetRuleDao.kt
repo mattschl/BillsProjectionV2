@@ -43,7 +43,6 @@ interface BudgetRuleDao {
     )
     fun getBudgetRuleNameList(): List<String>
 
-    @Transaction
     @Query(
         "INSERT INTO $TABLE_BUDGET_RULES " +
                 "($RULE_ID, $BUDGET_RULE_NAME, $TO_ACCOUNT_ID, " +
@@ -129,18 +128,18 @@ interface BudgetRuleDao {
 
     @Transaction
     @Query(
-        "SELECT $TABLE_BUDGET_RULES.*, " +
+        "SELECT budgetRule.*, " +
                 "toAccount.* , " +
                 "fromAccount.*  " +
-                "FROM $TABLE_BUDGET_RULES " +
+                "FROM $TABLE_BUDGET_RULES as budgetRule " +
                 "LEFT JOIN $TABLE_ACCOUNTS as toAccount on " +
-                "$TABLE_BUDGET_RULES.$TO_ACCOUNT_ID = " +
+                "budgetRule.$TO_ACCOUNT_ID = " +
                 "toAccount.$ACCOUNT_ID " +
                 "LEFT JOIN $TABLE_ACCOUNTS as fromAccount on " +
-                "$TABLE_BUDGET_RULES.$FROM_ACCOUNT_ID = " +
+                "budgetRule.$FROM_ACCOUNT_ID = " +
                 "fromAccount.$ACCOUNT_ID " +
-                "WHERE $TABLE_BUDGET_RULES.$IS_DELETED = 0 " +
-                "ORDER BY $TABLE_BUDGET_RULES.$BUDGET_RULE_NAME " +
+                "WHERE budgetRule.$IS_DELETED = 0 " +
+                "ORDER BY budgetRule.$BUDGET_RULE_NAME " +
                 "COLLATE NOCASE ASC"
     )
     fun getActiveBudgetRulesDetailed():

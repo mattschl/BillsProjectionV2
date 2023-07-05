@@ -62,7 +62,7 @@ data class Account(
     val accountNumber: String,
     val accountTypeId: Long,
     @ColumnInfo(defaultValue = "0.0")
-    val budgetAmount: Double,
+    val budgetedAmount: Double,
     @ColumnInfo(defaultValue = "0.0")
     val accountBalance: Double,
     @ColumnInfo(defaultValue = "0.0")

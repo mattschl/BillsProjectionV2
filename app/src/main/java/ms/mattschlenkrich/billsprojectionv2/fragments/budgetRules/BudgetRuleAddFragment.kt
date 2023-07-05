@@ -345,21 +345,14 @@ class BudgetRuleAddFragment :
         val mes = checkBudgetRule()
         if (mes == "Ok") {
             binding.apply {
-                val budgetName =
-                    etBudgetName.text.toString().trim()
-                val amount =
-                    etAmount.text.toString().trim()
-                        .replace(",", "")
-                        .replace("$", "")
-                        .toDouble()
-                val updateTime =
-                    timeFormatter.format(Calendar.getInstance().time)
-
                 val fragmentChain = "${args.callingFragments}, $TAG"
                 budgetRuleViewModel.insertBudgetRule(
                     generateId(),
-                    budgetName,
-                    amount,
+                    etBudgetName.text.toString().trim(),
+                    etAmount.text.toString().trim()
+                        .replace(",", "")
+                        .replace("$", "")
+                        .toDouble(),
                     mToAccount!!.accountId,
                     mFromAccount!!.accountId,
                     chkFixedAmount.isChecked,
@@ -367,12 +360,12 @@ class BudgetRuleAddFragment :
                     chkAutoPayment.isChecked,
                     etStartDate.text.toString(),
                     etEndDate.text.toString(),
-                    spDayOfWeek.selectedItemId.toInt(),
                     spFrequencyType.selectedItemId.toInt(),
                     etFrequencyCount.text.toString().toInt(),
+                    spDayOfWeek.selectedItemId.toInt(),
                     etLeadDays.text.toString().toInt(),
                     false,
-                    updateTime
+                    timeFormatter.format(Calendar.getInstance().time)
                 )
                 val direction = BudgetRuleAddFragmentDirections
                     .actionBudgetRuleAddFragmentToBudgetRuleFragment(

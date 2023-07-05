@@ -250,7 +250,7 @@ class AccountUpdateFragment :
                 dollarFormat.format(curAccount!!.accountOwing)
             )
             edAccountUpdateBudgeted.setText(
-                dollarFormat.format(curAccount!!.budgetAmount)
+                dollarFormat.format(curAccount!!.budgetedAmount)
             )
             txtAccountUpdateAccountId.text =
                 curAccount!!.accountId.toString()

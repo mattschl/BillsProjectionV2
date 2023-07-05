@@ -83,6 +83,7 @@ class BudgetRuleAdapter(
         holder.itemBinding.tvFromAccount.text = info
         val amount =
             dollarFormat.format(budgetRuleDetailed.budgetRule.budgetAmount)
+        Log.d(TAG, "Amount is ${budgetRuleDetailed.budgetRule.budgetAmount}")
         val frequencyTypes =
             context.resources.getStringArray(R.array.frequency_types)
         val frequencyType =

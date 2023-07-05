@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "ffddfdf9e65faa71d2d0f87339780acd",
+    "identityHash": "50e3171bf12790b71183d949ee7aefda",
     "entities": [
       {
         "tableName": "accounts",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`accountId` INTEGER NOT NULL, `accountName` TEXT NOT NULL, `accountNumber` TEXT NOT NULL, `accountTypeId` INTEGER NOT NULL, `budgetAmount` REAL NOT NULL DEFAULT 0.0, `accountBalance` REAL NOT NULL DEFAULT 0.0, `accountOwing` REAL NOT NULL DEFAULT 0.0, `isDeleted` INTEGER NOT NULL DEFAULT 0, `updateTime` TEXT NOT NULL, PRIMARY KEY(`accountId`), FOREIGN KEY(`accountTypeId`) REFERENCES `accountTypes`(`typeId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`accountId` INTEGER NOT NULL, `accountName` TEXT NOT NULL, `accountNumber` TEXT NOT NULL, `accountTypeId` INTEGER NOT NULL, `budgetedAmount` REAL NOT NULL DEFAULT 0.0, `accountBalance` REAL NOT NULL DEFAULT 0.0, `accountOwing` REAL NOT NULL DEFAULT 0.0, `isDeleted` INTEGER NOT NULL DEFAULT 0, `updateTime` TEXT NOT NULL, PRIMARY KEY(`accountId`), FOREIGN KEY(`accountTypeId`) REFERENCES `accountTypes`(`typeId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "accountId",
@@ -33,8 +33,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "budgetAmount",
-            "columnName": "budgetAmount",
+            "fieldPath": "budgetedAmount",
+            "columnName": "budgetedAmount",
             "affinity": "REAL",
             "notNull": true,
             "defaultValue": "0.0"
@@ -188,7 +188,7 @@
       },
       {
         "tableName": "budgetRules",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ruleId` INTEGER NOT NULL, `budgetRuleName` TEXT NOT NULL, `toAccountId` INTEGER NOT NULL, `fromAccountId` INTEGER NOT NULL, `budgetAmount` REAL NOT NULL DEFAULT 0.0, `fixedAmount` INTEGER NOT NULL DEFAULT 0, `isPayDay` INTEGER NOT NULL DEFAULT 0, `isAutoPay` INTEGER NOT NULL DEFAULT 0, `startDate` TEXT NOT NULL, `endDate` TEXT, `dayOfWeekId` INTEGER NOT NULL, `frequencyTypeId` INTEGER NOT NULL, `frequencyCount` INTEGER NOT NULL DEFAULT 1, `leadDays` INTEGER NOT NULL DEFAULT 1, `isDeleted` INTEGER NOT NULL DEFAULT 0, `updateTime` TEXT NOT NULL, PRIMARY KEY(`ruleId`), FOREIGN KEY(`toAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`fromAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ruleId` INTEGER NOT NULL, `budgetRuleName` TEXT NOT NULL, `toAccountId` INTEGER NOT NULL, `fromAccountId` INTEGER NOT NULL, `budgetAmount` REAL NOT NULL, `fixedAmount` INTEGER NOT NULL DEFAULT 0, `isPayDay` INTEGER NOT NULL DEFAULT 0, `isAutoPay` INTEGER NOT NULL DEFAULT 0, `startDate` TEXT NOT NULL, `endDate` TEXT, `dayOfWeekId` INTEGER NOT NULL, `frequencyTypeId` INTEGER NOT NULL, `frequencyCount` INTEGER NOT NULL DEFAULT 1, `leadDays` INTEGER NOT NULL DEFAULT 1, `isDeleted` INTEGER NOT NULL DEFAULT 0, `updateTime` TEXT NOT NULL, PRIMARY KEY(`ruleId`), FOREIGN KEY(`toAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`fromAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "ruleId",
@@ -218,8 +218,7 @@
             "fieldPath": "budgetAmount",
             "columnName": "budgetAmount",
             "affinity": "REAL",
-            "notNull": true,
-            "defaultValue": "0.0"
+            "notNull": true
           },
           {
             "fieldPath": "fixedAmount",
@@ -727,7 +726,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ffddfdf9e65faa71d2d0f87339780acd')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '50e3171bf12790b71183d949ee7aefda')"
     ]
   }
 }
