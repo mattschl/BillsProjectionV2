@@ -267,22 +267,22 @@ class BudgetRuleAddFragment :
                         mFromAccount = args.budgetRuleDetailed!!.fromAccount
                     }
                     chkFixedAmount.isChecked =
-                        args.budgetRuleDetailed!!.budgetRule!!.fixedAmount
+                        args.budgetRuleDetailed!!.budgetRule!!.budFixedAmount
                     chkMakePayDay.isChecked =
-                        args.budgetRuleDetailed!!.budgetRule!!.isPayDay
+                        args.budgetRuleDetailed!!.budgetRule!!.budIsPayDay
                     chkAutoPayment.isChecked =
-                        args.budgetRuleDetailed!!.budgetRule!!.isAutoPay
+                        args.budgetRuleDetailed!!.budgetRule!!.budIsAutoPay
                     etStartDate.setText(
-                        args.budgetRuleDetailed!!.budgetRule!!.startDate
+                        args.budgetRuleDetailed!!.budgetRule!!.budStartDate
                     )
                     etEndDate.setText(
-                        args.budgetRuleDetailed!!.budgetRule!!.endDate
+                        args.budgetRuleDetailed!!.budgetRule!!.budEndDate
                     )
                     spFrequencyType.setSelection(
-                        args.budgetRuleDetailed!!.budgetRule!!.frequencyTypeId
+                        args.budgetRuleDetailed!!.budgetRule!!.budFrequencyTypeId
                     )
                     spDayOfWeek.setSelection(
-                        args.budgetRuleDetailed!!.budgetRule!!.dayOfWeekId
+                        args.budgetRuleDetailed!!.budgetRule!!.budDayOfWeekId
                     )
                 }
             } else {
@@ -347,25 +347,27 @@ class BudgetRuleAddFragment :
             binding.apply {
                 val fragmentChain = "${args.callingFragments}, $TAG"
                 budgetRuleViewModel.insertBudgetRule(
-                    generateId(),
-                    etBudgetName.text.toString().trim(),
-                    etAmount.text.toString().trim()
-                        .replace(",", "")
-                        .replace("$", "")
-                        .toDouble(),
-                    mToAccount!!.accountId,
-                    mFromAccount!!.accountId,
-                    chkFixedAmount.isChecked,
-                    chkMakePayDay.isChecked,
-                    chkAutoPayment.isChecked,
-                    etStartDate.text.toString(),
-                    etEndDate.text.toString(),
-                    spFrequencyType.selectedItemId.toInt(),
-                    etFrequencyCount.text.toString().toInt(),
-                    spDayOfWeek.selectedItemId.toInt(),
-                    etLeadDays.text.toString().toInt(),
-                    false,
-                    timeFormatter.format(Calendar.getInstance().time)
+                    BudgetRule(
+                        generateId(),
+                        etBudgetName.text.toString().trim(),
+                        mToAccount!!.accountId,
+                        mFromAccount!!.accountId,
+                        etAmount.text.toString().trim()
+                            .replace(",", "")
+                            .replace("$", "")
+                            .toDouble(),
+                        chkFixedAmount.isChecked,
+                        chkMakePayDay.isChecked,
+                        chkAutoPayment.isChecked,
+                        etStartDate.text.toString(),
+                        etEndDate.text.toString(),
+                        spFrequencyType.selectedItemId.toInt(),
+                        etFrequencyCount.text.toString().toInt(),
+                        spDayOfWeek.selectedItemId.toInt(),
+                        etLeadDays.text.toString().toInt(),
+                        false,
+                        timeFormatter.format(Calendar.getInstance().time)
+                    )
                 )
                 val direction = BudgetRuleAddFragmentDirections
                     .actionBudgetRuleAddFragmentToBudgetRuleFragment(

@@ -8,8 +8,6 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_ID
-import ms.mattschlenkrich.billsprojectionv2.BUDGET_RULE_ID
-import ms.mattschlenkrich.billsprojectionv2.IS_DELETED
 import ms.mattschlenkrich.billsprojectionv2.RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.TABLE_BUDGET_RULES
@@ -21,7 +19,9 @@ import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_ID
 import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_NAME
 import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_NOTE
 import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_TO_ACCOUNT_ID
-import ms.mattschlenkrich.billsprojectionv2.UPDATE_TIME
+import ms.mattschlenkrich.billsprojectionv2.TRANS_BUDGET_RULE_ID
+import ms.mattschlenkrich.billsprojectionv2.TRANS_IS_DELETED
+import ms.mattschlenkrich.billsprojectionv2.TRANS_UPDATE_TIME
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.Transactions
 
@@ -34,7 +34,7 @@ interface TransactionDao {
         "INSERT INTO $TABLE_TRANSACTION " +
                 "($TRANSACTION_ID, " +
                 "$TRANSACTION_DATE, " +
-                "$BUDGET_RULE_ID, " +
+                "$TRANS_BUDGET_RULE_ID, " +
                 "$TRANSACTION_TO_ACCOUNT_ID, " +
                 "$TRANSACTION_FROM_ACCOUNT_ID, " +
                 "$TRANSACTION_NAME, " +
@@ -66,8 +66,8 @@ interface TransactionDao {
 
     @Query(
         "UPDATE $TABLE_TRANSACTION " +
-                "SET $IS_DELETED = 1, " +
-                "$UPDATE_TIME = :updateTime " +
+                "SET transIsDeleted = 1, " +
+                "transUpdateTime = :updateTime " +
                 "WHERE $TRANSACTION_ID = :transId"
     )
     suspend fun deleteTransaction(transId: Long, updateTime: String)
@@ -80,7 +80,7 @@ interface TransactionDao {
                 "fromAccount.* " +
                 "FROM $TABLE_TRANSACTION " +
                 "LEFT JOIN $TABLE_BUDGET_RULES as budgetRule on " +
-                "$TABLE_TRANSACTION.$BUDGET_RULE_ID = " +
+                "$TABLE_TRANSACTION.$TRANS_BUDGET_RULE_ID = " +
                 "budgetRule.$RULE_ID " +
                 "LEFT JOIN $TABLE_ACCOUNTS as toAccount on " +
                 "$TABLE_TRANSACTION.$TRANSACTION_TO_ACCOUNT_ID =" +
@@ -88,9 +88,9 @@ interface TransactionDao {
                 "LEFT JOIN $TABLE_ACCOUNTS as fromAccount on " +
                 "$TABLE_TRANSACTION.$TRANSACTION_FROM_ACCOUNT_ID = " +
                 "fromAccount.$ACCOUNT_ID " +
-                "WHERE $TABLE_TRANSACTION.$IS_DELETED = 0 " +
+                "WHERE $TABLE_TRANSACTION.$TRANS_IS_DELETED = 0 " +
                 "ORDER BY $TABLE_TRANSACTION.$TRANSACTION_DATE DESC, " +
-                "$TABLE_TRANSACTION.$UPDATE_TIME DESC"
+                "$TABLE_TRANSACTION.$TRANS_UPDATE_TIME DESC"
     )
     fun getActiveTransactionsDetailed():
             LiveData<List<TransactionDetailed>>
@@ -103,7 +103,7 @@ interface TransactionDao {
                 "fromAccount.* " +
                 "FROM $TABLE_TRANSACTION " +
                 "LEFT JOIN $TABLE_BUDGET_RULES as budgetRule on " +
-                "$TABLE_TRANSACTION.$BUDGET_RULE_ID = " +
+                "$TABLE_TRANSACTION.$TRANS_BUDGET_RULE_ID = " +
                 "budgetRule.$RULE_ID " +
                 "LEFT JOIN $TABLE_ACCOUNTS as toAccount on " +
                 "$TABLE_TRANSACTION.$TRANSACTION_TO_ACCOUNT_ID =" +
@@ -111,11 +111,11 @@ interface TransactionDao {
                 "LEFT JOIN $TABLE_ACCOUNTS as fromAccount on " +
                 "$TABLE_TRANSACTION.$TRANSACTION_FROM_ACCOUNT_ID = " +
                 "fromAccount.$ACCOUNT_ID " +
-                "WHERE $TABLE_TRANSACTION.$IS_DELETED = 0 " +
+                "WHERE $TABLE_TRANSACTION.$TRANS_IS_DELETED = 0 " +
                 "AND ($TABLE_TRANSACTION.$TRANSACTION_NAME LIKE :query " +
                 "OR $TABLE_TRANSACTION.$TRANSACTION_NOTE LIKE :query) " +
                 "ORDER BY $TABLE_TRANSACTION.$TRANSACTION_DATE DESC, " +
-                "$TABLE_TRANSACTION.$UPDATE_TIME DESC"
+                "$TABLE_TRANSACTION.$TRANS_UPDATE_TIME DESC"
     )
     fun searchActiveTransactionsDetailed(query: String?):
             LiveData<List<TransactionDetailed>>

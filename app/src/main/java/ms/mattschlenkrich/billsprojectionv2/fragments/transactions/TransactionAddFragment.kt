@@ -127,9 +127,9 @@ class TransactionAddFragment :
                 } else {
                     0.0
                 },
-                isPending = false,
-                isDeleted = false,
-                updateTime = timeFormatter.format(
+                transIsPending = false,
+                transIsDeleted = false,
+                transUpdateTime = timeFormatter.format(
                     Calendar.getInstance().time
                 )
             )
@@ -310,9 +310,9 @@ class TransactionAddFragment :
                     mToAccount!!.accountId,
                     mFromAccount!!.accountId,
                     amount,
-                    isPending = false,
-                    isDeleted = false,
-                    updateTime = timeFormatter.format(
+                    transIsPending = false,
+                    transIsDeleted = false,
+                    transUpdateTime = timeFormatter.format(
                         Calendar.getInstance().time
                     )
                 )

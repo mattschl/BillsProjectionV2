@@ -3,13 +3,13 @@ package ms.mattschlenkrich.billsprojectionv2.dataBase
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_IS_DELETED
 import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_NAME
 import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_TYPE_ID
-import ms.mattschlenkrich.billsprojectionv2.IS_DELETED
+import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_UPDATE_TIME
 import ms.mattschlenkrich.billsprojectionv2.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.TABLE_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.TYPE_ID
-import ms.mattschlenkrich.billsprojectionv2.UPDATE_TIME
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
 import java.util.*
@@ -29,15 +29,15 @@ interface AccountDao {
 
     @Query(
         "UPDATE $TABLE_ACCOUNTS " +
-                "SET $IS_DELETED = 1, " +
-                "$UPDATE_TIME = :updateTime " +
+                "SET $ACCOUNT_IS_DELETED = 1, " +
+                "$ACCOUNT_UPDATE_TIME = :updateTime " +
                 "WHERE $ACCOUNT_ID = :accountId"
     )
     suspend fun deleteAccount(accountId: Long, updateTime: String)
 
     @Query(
         "SELECT * FROM $TABLE_ACCOUNTS " +
-                "WHERE $IS_DELETED = 0 " +
+                "WHERE $ACCOUNT_IS_DELETED = 0 " +
                 "ORDER BY $ACCOUNT_NAME " +
                 "COLLATE NOCASE ASC "
     )
@@ -50,7 +50,7 @@ interface AccountDao {
                 "FROM $TABLE_ACCOUNTS " +
                 "LEFT JOIN $TABLE_ACCOUNT_TYPES ON " +
                 "$TABLE_ACCOUNT_TYPES.$TYPE_ID = $TABLE_ACCOUNTS.$ACCOUNT_TYPE_ID " +
-                "WHERE $TABLE_ACCOUNTS.$IS_DELETED = 0 " +
+                "WHERE $TABLE_ACCOUNTS.$ACCOUNT_IS_DELETED = 0 " +
                 "ORDER BY $TABLE_ACCOUNTS.$ACCOUNT_NAME " +
                 "COLLATE NOCASE ASC "
     )
@@ -94,7 +94,7 @@ interface AccountDao {
                 "LEFT JOIN $TABLE_ACCOUNT_TYPES ON " +
                 "$TABLE_ACCOUNT_TYPES.$TYPE_ID = " +
                 "$TABLE_ACCOUNTS.$ACCOUNT_TYPE_ID " +
-                "WHERE $TABLE_ACCOUNTS.$IS_DELETED = 0  " +
+                "WHERE $TABLE_ACCOUNTS.$ACCOUNT_IS_DELETED = 0  " +
                 "ORDER BY $TABLE_ACCOUNTS.$ACCOUNT_NAME " +
                 "COLLATE NOCASE ASC "
     )

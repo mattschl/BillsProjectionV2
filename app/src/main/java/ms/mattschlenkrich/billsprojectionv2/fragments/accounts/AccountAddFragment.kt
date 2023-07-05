@@ -97,7 +97,7 @@ class AccountAddFragment :
                     dollarFormat.format(args.account!!.accountOwing)
                 )
                 editAccAddBudgeted.setText(
-                    dollarFormat.format(args.account!!.budgetedAmount)
+                    dollarFormat.format(args.account!!.accBudgetedAmount)
                 )
             }
             if (args.accountType != null) {

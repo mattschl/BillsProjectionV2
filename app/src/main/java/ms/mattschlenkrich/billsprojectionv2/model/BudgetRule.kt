@@ -11,11 +11,11 @@ import androidx.room.Relation
 import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.BUDGET_RULE_NAME
-import ms.mattschlenkrich.billsprojectionv2.DAY_OF_WEEK_ID
-import ms.mattschlenkrich.billsprojectionv2.FREQUENCY_TYPE_ID
-import ms.mattschlenkrich.billsprojectionv2.FROM_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.BUD_DAY_OF_WEEK_ID
+import ms.mattschlenkrich.billsprojectionv2.BUD_FREQUENCY_TYPE_ID
+import ms.mattschlenkrich.billsprojectionv2.BUD_FROM_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.BUD_TO_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.TABLE_BUDGET_RULES
-import ms.mattschlenkrich.billsprojectionv2.TO_ACCOUNT_ID
 
 
 @Parcelize
@@ -23,45 +23,45 @@ import ms.mattschlenkrich.billsprojectionv2.TO_ACCOUNT_ID
     tableName = TABLE_BUDGET_RULES,
     indices = [
         Index(value = [BUDGET_RULE_NAME], unique = true),
-        Index(value = [TO_ACCOUNT_ID]),
-        Index(value = [FROM_ACCOUNT_ID]),
-        Index(value = [DAY_OF_WEEK_ID]),
-        Index(value = [FREQUENCY_TYPE_ID])
+        Index(value = [BUD_TO_ACCOUNT_ID]),
+        Index(value = [BUD_FROM_ACCOUNT_ID]),
+        Index(value = [BUD_DAY_OF_WEEK_ID]),
+        Index(value = [BUD_FREQUENCY_TYPE_ID])
     ],
     foreignKeys = [ForeignKey(
         entity = Account::class,
         parentColumns = [ACCOUNT_ID],
-        childColumns = [TO_ACCOUNT_ID]
+        childColumns = [BUD_TO_ACCOUNT_ID]
     ), ForeignKey(
         entity = Account::class,
         parentColumns = [ACCOUNT_ID],
-        childColumns = [FROM_ACCOUNT_ID]
+        childColumns = [BUD_FROM_ACCOUNT_ID]
     )]
 )
 data class BudgetRule(
     @PrimaryKey
     val ruleId: Long,
     val budgetRuleName: String,
-    val toAccountId: Long,
-    val fromAccountId: Long,
+    val budToAccountId: Long,
+    val budFromAccountId: Long,
     val budgetAmount: Double,
     @ColumnInfo(defaultValue = "0")
-    val fixedAmount: Boolean,
+    val budFixedAmount: Boolean,
     @ColumnInfo(defaultValue = "0")
-    val isPayDay: Boolean,
+    val budIsPayDay: Boolean,
     @ColumnInfo(defaultValue = "0")
-    val isAutoPay: Boolean,
-    val startDate: String,
-    val endDate: String?,
-    val dayOfWeekId: Int,
-    val frequencyTypeId: Int,
+    val budIsAutoPay: Boolean,
+    val budStartDate: String,
+    val budEndDate: String?,
+    val budDayOfWeekId: Int,
+    val budFrequencyTypeId: Int,
     @ColumnInfo(defaultValue = "1")
-    val frequencyCount: Int,
+    val budFrequencyCount: Int,
     @ColumnInfo(defaultValue = "1")
-    val leadDays: Int,
+    val budLeadDays: Int,
     @ColumnInfo(defaultValue = "0")
-    val isDeleted: Boolean,
-    val updateTime: String
+    val budIsDeleted: Boolean,
+    val budUpdateTime: String
 ) : Parcelable
 
 @Parcelize
@@ -69,12 +69,12 @@ data class BudgetRuleDetailed(
     @Embedded
     val budgetRule: BudgetRule?,
     @Relation(
-        parentColumn = TO_ACCOUNT_ID,
+        parentColumn = BUD_TO_ACCOUNT_ID,
         entityColumn = ACCOUNT_ID
     )
     var toAccount: Account?,
     @Relation(
-        parentColumn = FROM_ACCOUNT_ID,
+        parentColumn = BUD_FROM_ACCOUNT_ID,
         entityColumn = ACCOUNT_ID
     )
     var fromAccount: Account?

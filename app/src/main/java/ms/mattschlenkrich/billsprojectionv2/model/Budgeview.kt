@@ -9,69 +9,69 @@ import androidx.room.Index
 import androidx.room.Relation
 import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_ID
-import ms.mattschlenkrich.billsprojectionv2.ACTUAL_DATE
-import ms.mattschlenkrich.billsprojectionv2.BUDGET_RULE_ID
-import ms.mattschlenkrich.billsprojectionv2.FROM_ACCOUNT_ID
-import ms.mattschlenkrich.billsprojectionv2.IS_PAY_DAY_ITEM
-import ms.mattschlenkrich.billsprojectionv2.PAY_DAY
-import ms.mattschlenkrich.billsprojectionv2.PROJECTED_AMOUNT
-import ms.mattschlenkrich.billsprojectionv2.PROJECTED_DATE
+import ms.mattschlenkrich.billsprojectionv2.BV_ACTUAL_DATE
+import ms.mattschlenkrich.billsprojectionv2.BV_BUDGET_RULE_ID
+import ms.mattschlenkrich.billsprojectionv2.BV_FROM_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.BV_IS_PAY_DAY_ITEM
+import ms.mattschlenkrich.billsprojectionv2.BV_PAY_DAY
+import ms.mattschlenkrich.billsprojectionv2.BV_PROJECTED_AMOUNT
+import ms.mattschlenkrich.billsprojectionv2.BV_PROJECTED_DATE
+import ms.mattschlenkrich.billsprojectionv2.BV_TO_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.TABLE_BUDGET_VIEW
-import ms.mattschlenkrich.billsprojectionv2.TO_ACCOUNT_ID
 
 @Parcelize
 @Entity(
     tableName = TABLE_BUDGET_VIEW,
     indices = [
-        Index(value = [ACTUAL_DATE]),
-        Index(value = [PAY_DAY]),
-        Index(value = [IS_PAY_DAY_ITEM]),
-        Index(value = [PROJECTED_AMOUNT])
+        Index(value = [BV_ACTUAL_DATE]),
+        Index(value = [BV_PAY_DAY]),
+        Index(value = [BV_IS_PAY_DAY_ITEM]),
+        Index(value = [BV_PROJECTED_AMOUNT])
     ],
-    primaryKeys = [BUDGET_RULE_ID, PROJECTED_DATE],
+    primaryKeys = [BV_BUDGET_RULE_ID, BV_PROJECTED_DATE],
     foreignKeys = [ForeignKey(
         entity = BudgetRule::class,
         parentColumns = [RULE_ID],
-        childColumns = [BUDGET_RULE_ID]
+        childColumns = [BV_BUDGET_RULE_ID]
     ),
         ForeignKey(
             entity = Account::class,
             parentColumns = [ACCOUNT_ID],
-            childColumns = [TO_ACCOUNT_ID]
+            childColumns = [BV_TO_ACCOUNT_ID]
         ), ForeignKey(
             entity = Account::class,
             parentColumns = [ACCOUNT_ID],
-            childColumns = [FROM_ACCOUNT_ID]
+            childColumns = [BV_FROM_ACCOUNT_ID]
         )]
 )
 data class BudgetView(
-    val bRuleId: Long,
-    val projectedDate: String,
-    val actualDate: String,
-    val payDay: String,
-    val budgetName: String,
+    val bvRuleId: Long,
+    val bvProjectedDate: String,
+    val bvActualDate: String,
+    val bvPayDay: String,
+    val bvBudgetName: String,
     @ColumnInfo(defaultValue = "0")
-    val isPayDayItem: Boolean,
-    val toAccountId: Long,
-    val fromAccountId: Long,
+    val bvIsPayDayItem: Boolean,
+    val bvToAccountId: Long,
+    val bvFromAccountId: Long,
     @ColumnInfo(defaultValue = "0.0")
-    val projectedAmount: Double,
+    val bvProjectedAmount: Double,
     @ColumnInfo(defaultValue = "0")
-    val isPending: Boolean,
+    val bvIsPending: Boolean,
     @ColumnInfo(defaultValue = "0")
-    val isFixed: Boolean,
+    val bvIsFixed: Boolean,
     @ColumnInfo(defaultValue = "0")
-    val isAutomatic: Boolean,
+    val bvIsAutomatic: Boolean,
     @ColumnInfo(defaultValue = "0")
-    val manuallyEntered: Boolean,
+    val bvManuallyEntered: Boolean,
     @ColumnInfo(defaultValue = "0")
-    val isCompleted: Boolean,
+    val bvIsCompleted: Boolean,
     @ColumnInfo(defaultValue = "0")
-    val isCancelled: Boolean,
+    val bvIsCancelled: Boolean,
     @ColumnInfo(defaultValue = "0")
-    val isDeleted: Boolean,
-    val updateTime: String
+    val bvIsDeleted: Boolean,
+    val bvUpdateTime: String
 ) : Parcelable
 
 @Parcelize
@@ -80,19 +80,19 @@ data class BudgetDetailed(
     val budgetView: BudgetView?,
     @Relation(
         entity = BudgetRule::class,
-        parentColumn = BUDGET_RULE_ID,
+        parentColumn = BV_BUDGET_RULE_ID,
         entityColumn = RULE_ID
     )
     var budgetRule: BudgetRule?,
     @Relation(
         entity = Account::class,
-        parentColumn = TO_ACCOUNT_ID,
+        parentColumn = BV_TO_ACCOUNT_ID,
         entityColumn = ACCOUNT_ID
     )
     var toAccount: Account?,
     @Relation(
         entity = Account::class,
-        parentColumn = FROM_ACCOUNT_ID,
+        parentColumn = BV_FROM_ACCOUNT_ID,
         entityColumn = ACCOUNT_ID
     )
     var fromAccount: Account?
@@ -104,19 +104,19 @@ data class BudgetFullView(
     val budgetView: BudgetView?,
     @Relation(
         entity = BudgetRule::class,
-        parentColumn = BUDGET_RULE_ID,
+        parentColumn = BV_BUDGET_RULE_ID,
         entityColumn = RULE_ID
     )
     var budgetRule: BudgetRule?,
     @Relation(
         entity = AccountWithType::class,
-        parentColumn = TO_ACCOUNT_ID,
+        parentColumn = BV_TO_ACCOUNT_ID,
         entityColumn = ACCOUNT_ID
     )
     var toAccountWithType: AccountWithType?,
     @Relation(
         entity = AccountWithType::class,
-        parentColumn = FROM_ACCOUNT_ID,
+        parentColumn = BV_FROM_ACCOUNT_ID,
         entityColumn = ACCOUNT_ID
     )
     var fromAccountWithType: AccountWithType?

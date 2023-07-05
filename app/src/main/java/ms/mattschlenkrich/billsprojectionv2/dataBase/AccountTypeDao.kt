@@ -3,10 +3,10 @@ package ms.mattschlenkrich.billsprojectionv2.dataBase
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_TYPE
-import ms.mattschlenkrich.billsprojectionv2.IS_DELETED
+import ms.mattschlenkrich.billsprojectionv2.ACCT_IS_DELETED
+import ms.mattschlenkrich.billsprojectionv2.ACCT_UPDATE_TIME
 import ms.mattschlenkrich.billsprojectionv2.TABLE_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.TYPE_ID
-import ms.mattschlenkrich.billsprojectionv2.UPDATE_TIME
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 
 @Dao
@@ -19,8 +19,8 @@ interface AccountTypeDao {
 
     @Query(
         "UPDATE $TABLE_ACCOUNT_TYPES " +
-                "SET $IS_DELETED = 1, " +
-                "$UPDATE_TIME = :updateTime " +
+                "SET $ACCT_IS_DELETED = 1, " +
+                "$ACCT_UPDATE_TIME = :updateTime " +
                 "WHERE typeId = :accountTypeId"
     )
     suspend fun deleteAccountType(accountTypeId: Long, updateTime: String)
@@ -39,7 +39,7 @@ interface AccountTypeDao {
 
     @Query(
         "SELECT * FROM $TABLE_ACCOUNT_TYPES " +
-                "WHERE $IS_DELETED <> 1 " +
+                "WHERE $ACCT_IS_DELETED <> 1 " +
                 "ORDER BY $ACCOUNT_TYPE " +
                 " COLLATE NOCASE ASC"
     )

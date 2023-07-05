@@ -10,19 +10,19 @@ import androidx.room.PrimaryKey
 import androidx.room.Relation
 import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_ID
-import ms.mattschlenkrich.billsprojectionv2.BUDGET_RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.TABLE_TRANSACTION
 import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_DATE
 import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_FROM_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_TO_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.TRANS_BUDGET_RULE_ID
 
 @Parcelize
 @Entity(
     tableName = TABLE_TRANSACTION,
     indices = [
         Index(value = [TRANSACTION_DATE]),
-        Index(value = [BUDGET_RULE_ID]),
+        Index(value = [TRANS_BUDGET_RULE_ID]),
         Index(value = [TRANSACTION_TO_ACCOUNT_ID]),
         Index(value = [TRANSACTION_FROM_ACCOUNT_ID])
     ],
@@ -37,7 +37,7 @@ import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_TO_ACCOUNT_ID
     ), ForeignKey(
         entity = BudgetRule::class,
         parentColumns = [RULE_ID],
-        childColumns = [BUDGET_RULE_ID]
+        childColumns = [TRANS_BUDGET_RULE_ID]
     )]
 )
 data class Transactions(
@@ -46,16 +46,16 @@ data class Transactions(
     val transDate: String,
     val transName: String,
     val transNote: String,
-    val bRuleId: Long,
+    val transRuleId: Long,
     var transToAccountId: Long,
     var transFromAccountId: Long,
     @ColumnInfo(defaultValue = "0.0")
     val transAmount: Double,
     @ColumnInfo(defaultValue = "0")
-    val isPending: Boolean,
+    val transIsPending: Boolean,
     @ColumnInfo(defaultValue = "0")
-    val isDeleted: Boolean,
-    val updateTime: String,
+    val transIsDeleted: Boolean,
+    val transUpdateTime: String,
 ) : Parcelable
 
 @Parcelize
@@ -63,7 +63,7 @@ data class TransactionDetailed(
     @Embedded
     val transaction: Transactions?,
     @Relation(
-        parentColumn = BUDGET_RULE_ID,
+        parentColumn = TRANS_BUDGET_RULE_ID,
         entityColumn = RULE_ID
     )
     var budgetRule: BudgetRule?,
@@ -85,7 +85,7 @@ data class TransactionFull(
     val transaction: Transactions?,
     @Relation(
         entity = BudgetRule::class,
-        parentColumn = BUDGET_RULE_ID,
+        parentColumn = TRANS_BUDGET_RULE_ID,
         entityColumn = RULE_ID
     )
     var budgetRule: BudgetRule?,

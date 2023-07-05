@@ -81,7 +81,7 @@ class AccountTypeAdapter(
         if (curAccountType.displayAsAsset) {
             info += "${if (info.isNotEmpty()) "\n" else ""}This will display in the budget"
         }
-        if (curAccountType.isDeleted) {
+        if (curAccountType.acctIsDeleted) {
             info += "${if (info.isNotEmpty()) "\n" else ""}      **DELETED**"
         }
         if (info.isBlank()) {

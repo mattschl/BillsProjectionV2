@@ -14,66 +14,12 @@ class BudgetRuleViewModel(
 
     fun insertBudgetRule(budgetRule: BudgetRule) =
         viewModelScope.launch {
-            budgetRuleRepository.insertBudgetRule(
-                budgetRule
-            )
+            budgetRuleRepository.insertBudgetRule(budgetRule)
         }
 
-    fun insertBudgetRule(
-        ruleId: Long, budgetRuleName: String, amount: Double,
-        toAccount: Long, fromAccount: Long,
-        fixedAmount: Boolean, isPayDay: Boolean,
-        isAutoPayment: Boolean, startDate: String,
-        endDate: String, frequencyTypeId: Int,
-        frequencyCount: Int, dayOfWeekId: Int,
-        leadDays: Int, isDeleted: Boolean, updateTime: String
-    ) =
+    fun updateBudgetRule(budgetRule: BudgetRule) =
         viewModelScope.launch {
-            budgetRuleRepository.insertBudgetRule(
-                ruleId, budgetRuleName, amount, toAccount, fromAccount,
-                fixedAmount, isPayDay, isAutoPayment, startDate,
-                endDate, frequencyTypeId, frequencyCount, dayOfWeekId,
-                leadDays, isDeleted, updateTime
-            )
-        }
-
-    fun updateBudgetRule(
-        ruleId: Long,
-        budgetRuleName: String,
-        budgetAmount: Double,
-        toAccountId: Long,
-        fromAccountId: Long,
-        fixedAmount: Boolean,
-        isPayDay: Boolean,
-        isAutoPayment: Boolean,
-        startDate: String,
-        endDate: String,
-        frequencyTypeId: Int,
-        frequencyCount: Int,
-        dayOfWeekId: Int,
-        leadDays: Int,
-        isDeleted: Boolean,
-        updateTime: String
-    ) =
-        viewModelScope.launch {
-            budgetRuleRepository.updateBudgetRule(
-                ruleId,
-                budgetRuleName,
-                budgetAmount,
-                toAccountId,
-                fromAccountId,
-                fixedAmount,
-                isPayDay,
-                isAutoPayment,
-                startDate,
-                endDate,
-                frequencyTypeId,
-                frequencyCount,
-                dayOfWeekId,
-                leadDays,
-                isDeleted,
-                updateTime
-            )
+            budgetRuleRepository.updateBudgetRule(budgetRule)
         }
 
     fun deleteBudgetRule(budgetRuleId: Long, updateTime: String) =

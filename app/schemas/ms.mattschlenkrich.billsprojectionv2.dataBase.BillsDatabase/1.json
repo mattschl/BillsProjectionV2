@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "50e3171bf12790b71183d949ee7aefda",
+    "identityHash": "079b7b847251432a668ddd73ff854117",
     "entities": [
       {
         "tableName": "accounts",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`accountId` INTEGER NOT NULL, `accountName` TEXT NOT NULL, `accountNumber` TEXT NOT NULL, `accountTypeId` INTEGER NOT NULL, `budgetedAmount` REAL NOT NULL DEFAULT 0.0, `accountBalance` REAL NOT NULL DEFAULT 0.0, `accountOwing` REAL NOT NULL DEFAULT 0.0, `isDeleted` INTEGER NOT NULL DEFAULT 0, `updateTime` TEXT NOT NULL, PRIMARY KEY(`accountId`), FOREIGN KEY(`accountTypeId`) REFERENCES `accountTypes`(`typeId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`accountId` INTEGER NOT NULL, `accountName` TEXT NOT NULL, `accountNumber` TEXT NOT NULL, `accountTypeId` INTEGER NOT NULL, `accBudgetedAmount` REAL NOT NULL DEFAULT 0.0, `accountBalance` REAL NOT NULL DEFAULT 0.0, `accountOwing` REAL NOT NULL DEFAULT 0.0, `accIsDeleted` INTEGER NOT NULL DEFAULT 0, `accUpdateTime` TEXT NOT NULL, PRIMARY KEY(`accountId`), FOREIGN KEY(`accountTypeId`) REFERENCES `accountTypes`(`typeId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "accountId",
@@ -33,8 +33,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "budgetedAmount",
-            "columnName": "budgetedAmount",
+            "fieldPath": "accBudgetedAmount",
+            "columnName": "accBudgetedAmount",
             "affinity": "REAL",
             "notNull": true,
             "defaultValue": "0.0"
@@ -54,15 +54,15 @@
             "defaultValue": "0.0"
           },
           {
-            "fieldPath": "isDeleted",
-            "columnName": "isDeleted",
+            "fieldPath": "accIsDeleted",
+            "columnName": "accIsDeleted",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
           },
           {
-            "fieldPath": "updateTime",
-            "columnName": "updateTime",
+            "fieldPath": "accUpdateTime",
+            "columnName": "accUpdateTime",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -109,7 +109,7 @@
       },
       {
         "tableName": "accountTypes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`typeId` INTEGER NOT NULL, `accountType` TEXT NOT NULL, `keepTotals` INTEGER NOT NULL, `isAsset` INTEGER NOT NULL, `tallyOwing` INTEGER NOT NULL, `keepMileage` INTEGER NOT NULL, `displayAsAsset` INTEGER NOT NULL, `isDeleted` INTEGER NOT NULL DEFAULT 0, `updateTime` TEXT NOT NULL, PRIMARY KEY(`typeId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`typeId` INTEGER NOT NULL, `accountType` TEXT NOT NULL, `keepTotals` INTEGER NOT NULL, `isAsset` INTEGER NOT NULL, `tallyOwing` INTEGER NOT NULL, `keepMileage` INTEGER NOT NULL, `displayAsAsset` INTEGER NOT NULL, `acctIsDeleted` INTEGER NOT NULL DEFAULT 0, `acctUpdateTime` TEXT NOT NULL, PRIMARY KEY(`typeId`))",
         "fields": [
           {
             "fieldPath": "typeId",
@@ -154,15 +154,15 @@
             "notNull": true
           },
           {
-            "fieldPath": "isDeleted",
-            "columnName": "isDeleted",
+            "fieldPath": "acctIsDeleted",
+            "columnName": "acctIsDeleted",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
           },
           {
-            "fieldPath": "updateTime",
-            "columnName": "updateTime",
+            "fieldPath": "acctUpdateTime",
+            "columnName": "acctUpdateTime",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -188,7 +188,7 @@
       },
       {
         "tableName": "budgetRules",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ruleId` INTEGER NOT NULL, `budgetRuleName` TEXT NOT NULL, `toAccountId` INTEGER NOT NULL, `fromAccountId` INTEGER NOT NULL, `budgetAmount` REAL NOT NULL, `fixedAmount` INTEGER NOT NULL DEFAULT 0, `isPayDay` INTEGER NOT NULL DEFAULT 0, `isAutoPay` INTEGER NOT NULL DEFAULT 0, `startDate` TEXT NOT NULL, `endDate` TEXT, `dayOfWeekId` INTEGER NOT NULL, `frequencyTypeId` INTEGER NOT NULL, `frequencyCount` INTEGER NOT NULL DEFAULT 1, `leadDays` INTEGER NOT NULL DEFAULT 1, `isDeleted` INTEGER NOT NULL DEFAULT 0, `updateTime` TEXT NOT NULL, PRIMARY KEY(`ruleId`), FOREIGN KEY(`toAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`fromAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ruleId` INTEGER NOT NULL, `budgetRuleName` TEXT NOT NULL, `budToAccountId` INTEGER NOT NULL, `budFromAccountId` INTEGER NOT NULL, `budgetAmount` REAL NOT NULL, `budFixedAmount` INTEGER NOT NULL DEFAULT 0, `budIsPayDay` INTEGER NOT NULL DEFAULT 0, `budIsAutoPay` INTEGER NOT NULL DEFAULT 0, `budStartDate` TEXT NOT NULL, `budEndDate` TEXT, `budDayOfWeekId` INTEGER NOT NULL, `budFrequencyTypeId` INTEGER NOT NULL, `budFrequencyCount` INTEGER NOT NULL DEFAULT 1, `budLeadDays` INTEGER NOT NULL DEFAULT 1, `budIsDeleted` INTEGER NOT NULL DEFAULT 0, `budUpdateTime` TEXT NOT NULL, PRIMARY KEY(`ruleId`), FOREIGN KEY(`budToAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`budFromAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "ruleId",
@@ -203,14 +203,14 @@
             "notNull": true
           },
           {
-            "fieldPath": "toAccountId",
-            "columnName": "toAccountId",
+            "fieldPath": "budToAccountId",
+            "columnName": "budToAccountId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "fromAccountId",
-            "columnName": "fromAccountId",
+            "fieldPath": "budFromAccountId",
+            "columnName": "budFromAccountId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -221,74 +221,74 @@
             "notNull": true
           },
           {
-            "fieldPath": "fixedAmount",
-            "columnName": "fixedAmount",
+            "fieldPath": "budFixedAmount",
+            "columnName": "budFixedAmount",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
           },
           {
-            "fieldPath": "isPayDay",
-            "columnName": "isPayDay",
+            "fieldPath": "budIsPayDay",
+            "columnName": "budIsPayDay",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
           },
           {
-            "fieldPath": "isAutoPay",
-            "columnName": "isAutoPay",
+            "fieldPath": "budIsAutoPay",
+            "columnName": "budIsAutoPay",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
           },
           {
-            "fieldPath": "startDate",
-            "columnName": "startDate",
+            "fieldPath": "budStartDate",
+            "columnName": "budStartDate",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "endDate",
-            "columnName": "endDate",
+            "fieldPath": "budEndDate",
+            "columnName": "budEndDate",
             "affinity": "TEXT",
             "notNull": false
           },
           {
-            "fieldPath": "dayOfWeekId",
-            "columnName": "dayOfWeekId",
+            "fieldPath": "budDayOfWeekId",
+            "columnName": "budDayOfWeekId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "frequencyTypeId",
-            "columnName": "frequencyTypeId",
+            "fieldPath": "budFrequencyTypeId",
+            "columnName": "budFrequencyTypeId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "frequencyCount",
-            "columnName": "frequencyCount",
+            "fieldPath": "budFrequencyCount",
+            "columnName": "budFrequencyCount",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "1"
           },
           {
-            "fieldPath": "leadDays",
-            "columnName": "leadDays",
+            "fieldPath": "budLeadDays",
+            "columnName": "budLeadDays",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "1"
           },
           {
-            "fieldPath": "isDeleted",
-            "columnName": "isDeleted",
+            "fieldPath": "budIsDeleted",
+            "columnName": "budIsDeleted",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
           },
           {
-            "fieldPath": "updateTime",
-            "columnName": "updateTime",
+            "fieldPath": "budUpdateTime",
+            "columnName": "budUpdateTime",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -310,40 +310,40 @@
             "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_budgetRules_budgetRuleName` ON `${TABLE_NAME}` (`budgetRuleName`)"
           },
           {
-            "name": "index_budgetRules_toAccountId",
+            "name": "index_budgetRules_budToAccountId",
             "unique": false,
             "columnNames": [
-              "toAccountId"
+              "budToAccountId"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetRules_toAccountId` ON `${TABLE_NAME}` (`toAccountId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetRules_budToAccountId` ON `${TABLE_NAME}` (`budToAccountId`)"
           },
           {
-            "name": "index_budgetRules_fromAccountId",
+            "name": "index_budgetRules_budFromAccountId",
             "unique": false,
             "columnNames": [
-              "fromAccountId"
+              "budFromAccountId"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetRules_fromAccountId` ON `${TABLE_NAME}` (`fromAccountId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetRules_budFromAccountId` ON `${TABLE_NAME}` (`budFromAccountId`)"
           },
           {
-            "name": "index_budgetRules_dayOfWeekId",
+            "name": "index_budgetRules_budDayOfWeekId",
             "unique": false,
             "columnNames": [
-              "dayOfWeekId"
+              "budDayOfWeekId"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetRules_dayOfWeekId` ON `${TABLE_NAME}` (`dayOfWeekId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetRules_budDayOfWeekId` ON `${TABLE_NAME}` (`budDayOfWeekId`)"
           },
           {
-            "name": "index_budgetRules_frequencyTypeId",
+            "name": "index_budgetRules_budFrequencyTypeId",
             "unique": false,
             "columnNames": [
-              "frequencyTypeId"
+              "budFrequencyTypeId"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetRules_frequencyTypeId` ON `${TABLE_NAME}` (`frequencyTypeId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetRules_budFrequencyTypeId` ON `${TABLE_NAME}` (`budFrequencyTypeId`)"
           }
         ],
         "foreignKeys": [
@@ -352,7 +352,7 @@
             "onDelete": "NO ACTION",
             "onUpdate": "NO ACTION",
             "columns": [
-              "toAccountId"
+              "budToAccountId"
             ],
             "referencedColumns": [
               "accountId"
@@ -363,7 +363,7 @@
             "onDelete": "NO ACTION",
             "onUpdate": "NO ACTION",
             "columns": [
-              "fromAccountId"
+              "budFromAccountId"
             ],
             "referencedColumns": [
               "accountId"
@@ -373,7 +373,7 @@
       },
       {
         "tableName": "transactions",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`transId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `transDate` TEXT NOT NULL, `transName` TEXT NOT NULL, `transNote` TEXT NOT NULL, `bRuleId` INTEGER NOT NULL, `transToAccountId` INTEGER NOT NULL, `transFromAccountId` INTEGER NOT NULL, `transAmount` REAL NOT NULL DEFAULT 0.0, `isPending` INTEGER NOT NULL DEFAULT 0, `isDeleted` INTEGER NOT NULL DEFAULT 0, `updateTime` TEXT NOT NULL, FOREIGN KEY(`transToAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`transFromAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`bRuleId`) REFERENCES `budgetRules`(`ruleId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`transId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `transDate` TEXT NOT NULL, `transName` TEXT NOT NULL, `transNote` TEXT NOT NULL, `transRuleId` INTEGER NOT NULL, `transToAccountId` INTEGER NOT NULL, `transFromAccountId` INTEGER NOT NULL, `transAmount` REAL NOT NULL DEFAULT 0.0, `transIsPending` INTEGER NOT NULL DEFAULT 0, `transIsDeleted` INTEGER NOT NULL DEFAULT 0, `transUpdateTime` TEXT NOT NULL, FOREIGN KEY(`transToAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`transFromAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`transRuleId`) REFERENCES `budgetRules`(`ruleId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "transId",
@@ -400,8 +400,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "bRuleId",
-            "columnName": "bRuleId",
+            "fieldPath": "transRuleId",
+            "columnName": "transRuleId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -425,22 +425,22 @@
             "defaultValue": "0.0"
           },
           {
-            "fieldPath": "isPending",
-            "columnName": "isPending",
+            "fieldPath": "transIsPending",
+            "columnName": "transIsPending",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
           },
           {
-            "fieldPath": "isDeleted",
-            "columnName": "isDeleted",
+            "fieldPath": "transIsDeleted",
+            "columnName": "transIsDeleted",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
           },
           {
-            "fieldPath": "updateTime",
-            "columnName": "updateTime",
+            "fieldPath": "transUpdateTime",
+            "columnName": "transUpdateTime",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -462,13 +462,13 @@
             "createSql": "CREATE INDEX IF NOT EXISTS `index_transactions_transDate` ON `${TABLE_NAME}` (`transDate`)"
           },
           {
-            "name": "index_transactions_bRuleId",
+            "name": "index_transactions_transRuleId",
             "unique": false,
             "columnNames": [
-              "bRuleId"
+              "transRuleId"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_transactions_bRuleId` ON `${TABLE_NAME}` (`bRuleId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_transactions_transRuleId` ON `${TABLE_NAME}` (`transRuleId`)"
           },
           {
             "name": "index_transactions_transToAccountId",
@@ -517,7 +517,7 @@
             "onDelete": "NO ACTION",
             "onUpdate": "NO ACTION",
             "columns": [
-              "bRuleId"
+              "transRuleId"
             ],
             "referencedColumns": [
               "ruleId"
@@ -527,116 +527,116 @@
       },
       {
         "tableName": "budgetView",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`bRuleId` INTEGER NOT NULL, `projectedDate` TEXT NOT NULL, `actualDate` TEXT NOT NULL, `payDay` TEXT NOT NULL, `budgetName` TEXT NOT NULL, `isPayDayItem` INTEGER NOT NULL DEFAULT 0, `toAccountId` INTEGER NOT NULL, `fromAccountId` INTEGER NOT NULL, `projectedAmount` REAL NOT NULL DEFAULT 0.0, `isPending` INTEGER NOT NULL DEFAULT 0, `isFixed` INTEGER NOT NULL DEFAULT 0, `isAutomatic` INTEGER NOT NULL DEFAULT 0, `manuallyEntered` INTEGER NOT NULL DEFAULT 0, `isCompleted` INTEGER NOT NULL DEFAULT 0, `isCancelled` INTEGER NOT NULL DEFAULT 0, `isDeleted` INTEGER NOT NULL DEFAULT 0, `updateTime` TEXT NOT NULL, PRIMARY KEY(`bRuleId`, `projectedDate`), FOREIGN KEY(`bRuleId`) REFERENCES `budgetRules`(`ruleId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`toAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`fromAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`bvRuleId` INTEGER NOT NULL, `bvProjectedDate` TEXT NOT NULL, `bvActualDate` TEXT NOT NULL, `bvPayDay` TEXT NOT NULL, `bvBudgetName` TEXT NOT NULL, `bvIsPayDayItem` INTEGER NOT NULL DEFAULT 0, `bvToAccountId` INTEGER NOT NULL, `bvFromAccountId` INTEGER NOT NULL, `bvProjectedAmount` REAL NOT NULL DEFAULT 0.0, `bvIsPending` INTEGER NOT NULL DEFAULT 0, `bvIsFixed` INTEGER NOT NULL DEFAULT 0, `bvIsAutomatic` INTEGER NOT NULL DEFAULT 0, `bvManuallyEntered` INTEGER NOT NULL DEFAULT 0, `bvIsCompleted` INTEGER NOT NULL DEFAULT 0, `bvIsCancelled` INTEGER NOT NULL DEFAULT 0, `bvIsDeleted` INTEGER NOT NULL DEFAULT 0, `bvUpdateTime` TEXT NOT NULL, PRIMARY KEY(`bvRuleId`, `bvProjectedDate`), FOREIGN KEY(`bvRuleId`) REFERENCES `budgetRules`(`ruleId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`bvToAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`bvFromAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
-            "fieldPath": "bRuleId",
-            "columnName": "bRuleId",
+            "fieldPath": "bvRuleId",
+            "columnName": "bvRuleId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "projectedDate",
-            "columnName": "projectedDate",
+            "fieldPath": "bvProjectedDate",
+            "columnName": "bvProjectedDate",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "actualDate",
-            "columnName": "actualDate",
+            "fieldPath": "bvActualDate",
+            "columnName": "bvActualDate",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "payDay",
-            "columnName": "payDay",
+            "fieldPath": "bvPayDay",
+            "columnName": "bvPayDay",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "budgetName",
-            "columnName": "budgetName",
+            "fieldPath": "bvBudgetName",
+            "columnName": "bvBudgetName",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "isPayDayItem",
-            "columnName": "isPayDayItem",
+            "fieldPath": "bvIsPayDayItem",
+            "columnName": "bvIsPayDayItem",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
           },
           {
-            "fieldPath": "toAccountId",
-            "columnName": "toAccountId",
+            "fieldPath": "bvToAccountId",
+            "columnName": "bvToAccountId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "fromAccountId",
-            "columnName": "fromAccountId",
+            "fieldPath": "bvFromAccountId",
+            "columnName": "bvFromAccountId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "projectedAmount",
-            "columnName": "projectedAmount",
+            "fieldPath": "bvProjectedAmount",
+            "columnName": "bvProjectedAmount",
             "affinity": "REAL",
             "notNull": true,
             "defaultValue": "0.0"
           },
           {
-            "fieldPath": "isPending",
-            "columnName": "isPending",
+            "fieldPath": "bvIsPending",
+            "columnName": "bvIsPending",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
           },
           {
-            "fieldPath": "isFixed",
-            "columnName": "isFixed",
+            "fieldPath": "bvIsFixed",
+            "columnName": "bvIsFixed",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
           },
           {
-            "fieldPath": "isAutomatic",
-            "columnName": "isAutomatic",
+            "fieldPath": "bvIsAutomatic",
+            "columnName": "bvIsAutomatic",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
           },
           {
-            "fieldPath": "manuallyEntered",
-            "columnName": "manuallyEntered",
+            "fieldPath": "bvManuallyEntered",
+            "columnName": "bvManuallyEntered",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
           },
           {
-            "fieldPath": "isCompleted",
-            "columnName": "isCompleted",
+            "fieldPath": "bvIsCompleted",
+            "columnName": "bvIsCompleted",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
           },
           {
-            "fieldPath": "isCancelled",
-            "columnName": "isCancelled",
+            "fieldPath": "bvIsCancelled",
+            "columnName": "bvIsCancelled",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
           },
           {
-            "fieldPath": "isDeleted",
-            "columnName": "isDeleted",
+            "fieldPath": "bvIsDeleted",
+            "columnName": "bvIsDeleted",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
           },
           {
-            "fieldPath": "updateTime",
-            "columnName": "updateTime",
+            "fieldPath": "bvUpdateTime",
+            "columnName": "bvUpdateTime",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -644,46 +644,46 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "bRuleId",
-            "projectedDate"
+            "bvRuleId",
+            "bvProjectedDate"
           ]
         },
         "indices": [
           {
-            "name": "index_budgetView_actualDate",
+            "name": "index_budgetView_bvActualDate",
             "unique": false,
             "columnNames": [
-              "actualDate"
+              "bvActualDate"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetView_actualDate` ON `${TABLE_NAME}` (`actualDate`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetView_bvActualDate` ON `${TABLE_NAME}` (`bvActualDate`)"
           },
           {
-            "name": "index_budgetView_payDay",
+            "name": "index_budgetView_bvPayDay",
             "unique": false,
             "columnNames": [
-              "payDay"
+              "bvPayDay"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetView_payDay` ON `${TABLE_NAME}` (`payDay`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetView_bvPayDay` ON `${TABLE_NAME}` (`bvPayDay`)"
           },
           {
-            "name": "index_budgetView_isPayDayItem",
+            "name": "index_budgetView_bvIsPayDayItem",
             "unique": false,
             "columnNames": [
-              "isPayDayItem"
+              "bvIsPayDayItem"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetView_isPayDayItem` ON `${TABLE_NAME}` (`isPayDayItem`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetView_bvIsPayDayItem` ON `${TABLE_NAME}` (`bvIsPayDayItem`)"
           },
           {
-            "name": "index_budgetView_projectedAmount",
+            "name": "index_budgetView_bvProjectedAmount",
             "unique": false,
             "columnNames": [
-              "projectedAmount"
+              "bvProjectedAmount"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetView_projectedAmount` ON `${TABLE_NAME}` (`projectedAmount`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetView_bvProjectedAmount` ON `${TABLE_NAME}` (`bvProjectedAmount`)"
           }
         ],
         "foreignKeys": [
@@ -692,7 +692,7 @@
             "onDelete": "NO ACTION",
             "onUpdate": "NO ACTION",
             "columns": [
-              "bRuleId"
+              "bvRuleId"
             ],
             "referencedColumns": [
               "ruleId"
@@ -703,7 +703,7 @@
             "onDelete": "NO ACTION",
             "onUpdate": "NO ACTION",
             "columns": [
-              "toAccountId"
+              "bvToAccountId"
             ],
             "referencedColumns": [
               "accountId"
@@ -714,7 +714,7 @@
             "onDelete": "NO ACTION",
             "onUpdate": "NO ACTION",
             "columns": [
-              "fromAccountId"
+              "bvFromAccountId"
             ],
             "referencedColumns": [
               "accountId"
@@ -726,7 +726,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '50e3171bf12790b71183d949ee7aefda')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '079b7b847251432a668ddd73ff854117')"
     ]
   }
 }

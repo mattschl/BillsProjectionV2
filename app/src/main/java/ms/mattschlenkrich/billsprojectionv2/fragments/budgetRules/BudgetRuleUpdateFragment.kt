@@ -248,25 +248,25 @@ class BudgetRuleUpdateFragment :
                         mFromAccount = args.budgetRuleDetailed!!.fromAccount
                     }
                     chkFixedAmount.isChecked =
-                        args.budgetRuleDetailed!!.budgetRule!!.fixedAmount
+                        args.budgetRuleDetailed!!.budgetRule!!.budFixedAmount
                     chkMakePayDay.isChecked =
-                        args.budgetRuleDetailed!!.budgetRule!!.isPayDay
+                        args.budgetRuleDetailed!!.budgetRule!!.budIsPayDay
                     chkAutoPayment.isChecked =
-                        args.budgetRuleDetailed!!.budgetRule!!.isAutoPay
+                        args.budgetRuleDetailed!!.budgetRule!!.budIsAutoPay
                     etStartDate.setText(
-                        args.budgetRuleDetailed!!.budgetRule!!.startDate
+                        args.budgetRuleDetailed!!.budgetRule!!.budStartDate
                     )
                     etEndDate.setText(
-                        args.budgetRuleDetailed!!.budgetRule!!.endDate
+                        args.budgetRuleDetailed!!.budgetRule!!.budEndDate
                     )
                     spFrequencyType.setSelection(
-                        args.budgetRuleDetailed!!.budgetRule!!.frequencyTypeId
+                        args.budgetRuleDetailed!!.budgetRule!!.budFrequencyTypeId
                     )
                     etFrequencyCount.setText(
-                        args.budgetRuleDetailed!!.budgetRule!!.frequencyCount.toString()
+                        args.budgetRuleDetailed!!.budgetRule!!.budFrequencyCount.toString()
                     )
                     spDayOfWeek.setSelection(
-                        args.budgetRuleDetailed!!.budgetRule!!.dayOfWeekId
+                        args.budgetRuleDetailed!!.budgetRule!!.budDayOfWeekId
                     )
                 }
             } else {
@@ -365,25 +365,27 @@ class BudgetRuleUpdateFragment :
                     }
                 val fragmentChain = "${args.callingFragments}, $TAG"
                 budgetRuleViewModel.updateBudgetRule(
-                    args.budgetRuleDetailed!!.budgetRule!!.ruleId,
-                    etBudgetName.text.toString().trim(),
-                    etAmount.text.toString()
-                        .replace(",", "")
-                        .replace("$", "")
-                        .toDouble(),
-                    toAccountId,
-                    fromAccountId,
-                    chkFixedAmount.isChecked,
-                    chkMakePayDay.isChecked,
-                    chkAutoPayment.isChecked,
-                    etStartDate.text.toString(),
-                    etEndDate.text.toString(),
-                    spFrequencyType.selectedItemId.toInt(),
-                    etFrequencyCount.text.toString().toInt(),
-                    spDayOfWeek.selectedItemId.toInt(),
-                    etLeadDays.text.toString().toInt(),
-                    false,
-                    timeFormatter.format(Calendar.getInstance().time)
+                    BudgetRule(
+                        args.budgetRuleDetailed!!.budgetRule!!.ruleId,
+                        etBudgetName.text.toString().trim(),
+                        toAccountId,
+                        fromAccountId,
+                        etAmount.text.toString()
+                            .replace(",", "")
+                            .replace("$", "")
+                            .toDouble(),
+                        chkFixedAmount.isChecked,
+                        chkMakePayDay.isChecked,
+                        chkAutoPayment.isChecked,
+                        etStartDate.text.toString(),
+                        etEndDate.text.toString(),
+                        spFrequencyType.selectedItemId.toInt(),
+                        etFrequencyCount.text.toString().toInt(),
+                        spDayOfWeek.selectedItemId.toInt(),
+                        etLeadDays.text.toString().toInt(),
+                        false,
+                        timeFormatter.format(Calendar.getInstance().time)
+                    )
                 )
                 val direction =
                     BudgetRuleUpdateFragmentDirections

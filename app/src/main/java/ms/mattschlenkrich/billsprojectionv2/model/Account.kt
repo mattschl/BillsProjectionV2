@@ -35,8 +35,8 @@ data class AccountType(
     val keepMileage: Boolean,
     val displayAsAsset: Boolean,
     @ColumnInfo(defaultValue = "0")
-    val isDeleted: Boolean,
-    val updateTime: String,
+    val acctIsDeleted: Boolean,
+    val acctUpdateTime: String,
 ) : Parcelable
 
 @Entity(
@@ -62,14 +62,14 @@ data class Account(
     val accountNumber: String,
     val accountTypeId: Long,
     @ColumnInfo(defaultValue = "0.0")
-    val budgetedAmount: Double,
+    val accBudgetedAmount: Double,
     @ColumnInfo(defaultValue = "0.0")
     val accountBalance: Double,
     @ColumnInfo(defaultValue = "0.0")
     val accountOwing: Double,
     @ColumnInfo(defaultValue = "0")
-    val isDeleted: Boolean,
-    val updateTime: String,
+    val accIsDeleted: Boolean,
+    val accUpdateTime: String,
 ) : Parcelable
 
 @Parcelize

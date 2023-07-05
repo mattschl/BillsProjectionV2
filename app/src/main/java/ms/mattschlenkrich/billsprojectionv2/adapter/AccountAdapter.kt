@@ -110,11 +110,11 @@ class AccountAdapter(
             info += "${if (info.isNotEmpty()) "\n" else ""}Owing " +
                     dollarFormat.format(curAccount.account.accountOwing)
         }
-        if (curAccount.account.budgetedAmount != 0.0) {
+        if (curAccount.account.accBudgetedAmount != 0.0) {
             info += "${if (info.isNotEmpty()) "\n" else ""}Budgeted " +
-                    dollarFormat.format(curAccount.account.budgetedAmount)
+                    dollarFormat.format(curAccount.account.accBudgetedAmount)
         }
-        if (curAccount.account.isDeleted) {
+        if (curAccount.account.accIsDeleted) {
             info += "${if (info.isNotEmpty()) "\n" else ""}       **Deleted** "
         }
         if (info.isBlank()) {
