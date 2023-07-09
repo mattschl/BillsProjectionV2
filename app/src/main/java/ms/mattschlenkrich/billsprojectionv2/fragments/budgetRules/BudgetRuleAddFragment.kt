@@ -50,8 +50,6 @@ class BudgetRuleAddFragment :
 
     private var mToAccount: Account? = null
     private var mFromAccount: Account? = null
-    private var mDayOfWeekId = 0
-    private var mFrequencyTypeId = 0
     private var budgetNameList: List<String>? = null
 
     private val dollarFormat: NumberFormat =
@@ -130,8 +128,8 @@ class BudgetRuleAddFragment :
                 chkAutoPayment.isChecked,
                 etStartDate.text.toString(),
                 etEndDate.text.toString(),
-                mDayOfWeekId,
-                mFrequencyTypeId,
+                spDayOfWeek.selectedItemId.toInt(),
+                spFrequencyType.selectedItemId.toInt(),
                 etFrequencyCount.text.toString().toInt(),
                 etLeadDays.text.toString().toInt(),
                 false,

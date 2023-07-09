@@ -84,7 +84,7 @@ class AccountUpdateFragment :
             accountNameList = accountsViewModel.getAccountNameList()
         }
         mainActivity.title = "Update Account"
-        curBudgetRuleDetailed = args.budgetRuleDetailed!!
+        curBudgetRuleDetailed = args.budgetRuleDetailed
         curAccount = args.account!!
         newAccountType = args.accountType!!
         fillValues()

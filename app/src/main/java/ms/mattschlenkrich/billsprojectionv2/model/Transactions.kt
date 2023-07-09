@@ -16,6 +16,8 @@ import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_DATE
 import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_FROM_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_TO_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.TRANS_BUDGET_RULE_ID
+import ms.mattschlenkrich.billsprojectionv2.TRANS_IS_DELETED
+import ms.mattschlenkrich.billsprojectionv2.TRANS_IS_PENDING
 
 @Parcelize
 @Entity(
@@ -24,7 +26,9 @@ import ms.mattschlenkrich.billsprojectionv2.TRANS_BUDGET_RULE_ID
         Index(value = [TRANSACTION_DATE]),
         Index(value = [TRANS_BUDGET_RULE_ID]),
         Index(value = [TRANSACTION_TO_ACCOUNT_ID]),
-        Index(value = [TRANSACTION_FROM_ACCOUNT_ID])
+        Index(value = [TRANSACTION_FROM_ACCOUNT_ID]),
+        Index(value = [TRANS_IS_DELETED]),
+        Index(value = [TRANS_IS_PENDING])
     ],
     foreignKeys = [ForeignKey(
         entity = Account::class,

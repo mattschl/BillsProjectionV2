@@ -32,18 +32,6 @@ class TransactionAdapter(
 
     private val differCallBack =
         object : DiffUtil.ItemCallback<TransactionDetailed>() {
-//            override fun getChangePayload(
-//                oldItem: TransactionDetailed,
-//                newItem: TransactionDetailed
-//            ): Any? {
-//                return if (areItemsTheSame(oldItem, newItem)) {
-//                    null
-//                } else {
-//                    newItem
-//                }
-////                return super.getChangePayload(oldItem, newItem)
-//            }
-
             override fun areItemsTheSame(
                 oldItem: TransactionDetailed,
                 newItem: TransactionDetailed

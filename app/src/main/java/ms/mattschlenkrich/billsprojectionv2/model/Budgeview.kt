@@ -12,6 +12,9 @@ import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.BV_ACTUAL_DATE
 import ms.mattschlenkrich.billsprojectionv2.BV_BUDGET_RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.BV_FROM_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.BV_IS_CANCELLED
+import ms.mattschlenkrich.billsprojectionv2.BV_IS_COMPLETED
+import ms.mattschlenkrich.billsprojectionv2.BV_IS_DELETED
 import ms.mattschlenkrich.billsprojectionv2.BV_IS_PAY_DAY_ITEM
 import ms.mattschlenkrich.billsprojectionv2.BV_PAY_DAY
 import ms.mattschlenkrich.billsprojectionv2.BV_PROJECTED_AMOUNT
@@ -27,7 +30,12 @@ import ms.mattschlenkrich.billsprojectionv2.TABLE_BUDGET_VIEW
         Index(value = [BV_ACTUAL_DATE]),
         Index(value = [BV_PAY_DAY]),
         Index(value = [BV_IS_PAY_DAY_ITEM]),
-        Index(value = [BV_PROJECTED_AMOUNT])
+        Index(value = [BV_PROJECTED_AMOUNT]),
+        Index(value = [BV_TO_ACCOUNT_ID]),
+        Index(value = [BV_FROM_ACCOUNT_ID]),
+        Index(value = [BV_IS_DELETED]),
+        Index(value = [BV_IS_CANCELLED]),
+        Index(value = [BV_IS_COMPLETED])
     ],
     primaryKeys = [BV_BUDGET_RULE_ID, BV_PROJECTED_DATE],
     foreignKeys = [ForeignKey(

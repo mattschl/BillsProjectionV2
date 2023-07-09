@@ -12,15 +12,27 @@ import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_NAME
 import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_TYPE
 import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_TYPE_ID
+import ms.mattschlenkrich.billsprojectionv2.ACCT_DISPLAY_AS_ASSET
+import ms.mattschlenkrich.billsprojectionv2.ACCT_IS_DELETED
+import ms.mattschlenkrich.billsprojectionv2.IS_ASSET
+import ms.mattschlenkrich.billsprojectionv2.KEEP_MILEAGE
+import ms.mattschlenkrich.billsprojectionv2.KEEP_TOTALS
 import ms.mattschlenkrich.billsprojectionv2.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.TABLE_ACCOUNT_TYPES
+import ms.mattschlenkrich.billsprojectionv2.TALLY_OWING
 import ms.mattschlenkrich.billsprojectionv2.TYPE_ID
 
 @Entity(
     tableName = TABLE_ACCOUNT_TYPES,
     indices = [Index(
         value = [ACCOUNT_TYPE], unique = true
-    )
+    ),
+        Index(value = [KEEP_TOTALS]),
+        Index(value = [IS_ASSET]),
+        Index(value = [TALLY_OWING]),
+        Index(value = [KEEP_MILEAGE]),
+        Index(value = [ACCT_DISPLAY_AS_ASSET]),
+        Index(value = [ACCT_IS_DELETED])
     ]
 )
 @Parcelize

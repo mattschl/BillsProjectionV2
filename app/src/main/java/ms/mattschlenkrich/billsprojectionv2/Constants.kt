@@ -1,7 +1,8 @@
 package ms.mattschlenkrich.billsprojectionv2
 
 const val DB_NAME = "bills2.db"
-const val DB_VERSION = 1
+const val DB_VERSION = 2
+const val BILLS_DATABASE = "BillsDatabase"
 
 const val SQLITE_DATE = "yyyy-LL-dd"
 const val SQLITE_TIME = "yyyy-LL-dd HH:mm:ss"
@@ -28,6 +29,7 @@ const val FRAG_BUDGET_VIEW = "BudgetView"
 const val ADAPTER_BUDGET_RULE = "BudgetRuleAdapter"
 const val ADAPTER_ACCOUNT = "AccountAdapter"
 const val ADAPTER_ACCOUNT_TYPE = "AccountTypeAdapter"
+const val ADAPTER_TRANSACTION = "TransactionAdapter"
 
 const val TABLE_ACCOUNT_TYPES = "accountTypes"
 const val TYPE_ID = "typeId"
@@ -38,6 +40,7 @@ const val TALLY_OWING = "tallyOwing"
 const val KEEP_MILEAGE = "keepMileage"
 const val ACCT_IS_DELETED = "acctIsDeleted"
 const val ACCT_UPDATE_TIME = "acctUpdateTime"
+const val ACCT_DISPLAY_AS_ASSET = "displayAsAsset"
 
 const val TABLE_ACCOUNTS = "accounts"
 const val ACCOUNT_ID = "accountId"
@@ -64,7 +67,7 @@ const val BUD_DAY_OF_WEEK_ID = "budDayOfWeekId"
 const val BUD_FREQUENCY_TYPE_ID = "budFrequencyTypeId"
 const val BUD_FREQUENCY_COUNT = "budFrequencyCount"
 const val BUD_LEAD_DAYS = "budLeadDays"
-const val BUD_IS_DELETED = "'budIsDeleted"
+const val BUD_IS_DELETED = "budIsDeleted"
 const val BUD_UPDATE_TIME = "budUpdateTime"
 
 const val TABLE_BUDGET_VIEW = "budgetView"

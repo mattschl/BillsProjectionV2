@@ -14,6 +14,8 @@ import ms.mattschlenkrich.billsprojectionv2.BUDGET_RULE_NAME
 import ms.mattschlenkrich.billsprojectionv2.BUD_DAY_OF_WEEK_ID
 import ms.mattschlenkrich.billsprojectionv2.BUD_FREQUENCY_TYPE_ID
 import ms.mattschlenkrich.billsprojectionv2.BUD_FROM_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.BUD_IS_DELETED
+import ms.mattschlenkrich.billsprojectionv2.BUD_IS_PAY_DAY
 import ms.mattschlenkrich.billsprojectionv2.BUD_TO_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.TABLE_BUDGET_RULES
 
@@ -26,7 +28,9 @@ import ms.mattschlenkrich.billsprojectionv2.TABLE_BUDGET_RULES
         Index(value = [BUD_TO_ACCOUNT_ID]),
         Index(value = [BUD_FROM_ACCOUNT_ID]),
         Index(value = [BUD_DAY_OF_WEEK_ID]),
-        Index(value = [BUD_FREQUENCY_TYPE_ID])
+        Index(value = [BUD_FREQUENCY_TYPE_ID]),
+        Index(value = [BUD_IS_PAY_DAY]),
+        Index(value = [BUD_IS_DELETED])
     ],
     foreignKeys = [ForeignKey(
         entity = Account::class,
