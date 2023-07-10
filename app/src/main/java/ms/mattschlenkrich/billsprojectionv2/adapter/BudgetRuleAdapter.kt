@@ -25,7 +25,7 @@ private const val TAG = ADAPTER_BUDGET_RULE
 class BudgetRuleAdapter(
     private val transaction: TransactionDetailed?,
     private val context: Context,
-    private val callingFragments: String,
+    private val callingFragments: String?,
 ) : RecyclerView.Adapter<BudgetRuleAdapter.BudgetRuleViewHolder>() {
 
     private val dollarFormat: NumberFormat =
@@ -98,7 +98,7 @@ class BudgetRuleAdapter(
         holder.itemBinding.tvInfo.text = info
 
         holder.itemView.setOnClickListener {
-            if (transaction != null) {
+            if (transaction != null && callingFragments != null) {
                 Log.d(
                     TAG,
                     "transaction name is" +

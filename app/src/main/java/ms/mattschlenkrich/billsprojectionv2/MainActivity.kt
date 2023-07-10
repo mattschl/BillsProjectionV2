@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.billsprojectionv2
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -41,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         mView = binding.root
-
+        Log.d(TAG, "MainActivity is started")
 //        val navView: BottomNavigationView = binding.bottomNavView
 //        Log.d(TAG, "navController is ${R.id.fragment_container_view}")
 //        val navController =
@@ -99,6 +100,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.title) {
+
             resources.getString(R.string.transactions) -> {
                 findNavController(R.id.fragment_container_view)
                     .navigate(
@@ -107,18 +109,26 @@ class MainActivity : AppCompatActivity() {
             }
 
             resources.getString(R.string.accounts) -> {
+                val direction =
+                    NavGraphDirections.actionGlobalAccountsFragment(
+                        null,
+                        null,
+                        null,
+                        null
+                    )
 
                 findNavController(R.id.fragment_container_view)
-                    .navigate(
-                        R.id.action_global_accountsFragment
-                    )
+                    .navigate(direction)
             }
 
             resources.getString(R.string.budget_rules) -> {
-                findNavController(R.id.fragment_container_view)
-                    .navigate(
-                        R.id.action_global_budgetRuleFragment
+                val direction =
+                    NavGraphDirections.actionGlobalBudgetRuleFragment(
+                        null,
+                        null
                     )
+                findNavController(R.id.fragment_container_view)
+                    .navigate(direction)
             }
         }
         return false
