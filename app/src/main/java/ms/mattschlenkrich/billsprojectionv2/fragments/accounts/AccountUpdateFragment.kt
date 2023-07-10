@@ -290,7 +290,7 @@ class AccountUpdateFragment :
 
     @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
+//        menu.clear()
         inflater.inflate(R.menu.delete_menu, menu)
 //        super.onCreateOptionsMenu(menu, inflater)
     }

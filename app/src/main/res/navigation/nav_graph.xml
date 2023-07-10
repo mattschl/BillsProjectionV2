@@ -18,7 +18,9 @@
             app:destination="@id/accountAddFragment" />
         <action
             android:id="@+id/action_accountsFragment_to_budgetRuleUpdateFragment"
-            app:destination="@id/budgetRuleUpdateFragment" />
+            app:destination="@id/budgetRuleUpdateFragment"
+            app:popUpTo="@id/budgetRuleUpdateFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_accountsFragment_to_transactionUpdateFragment"
             app:destination="@id/transactionUpdateFragment" />
@@ -27,7 +29,9 @@
             app:destination="@id/transactionAddFragment" />
         <action
             android:id="@+id/action_accountsFragment_to_budgetRuleAddFragment"
-            app:destination="@id/budgetRuleAddFragment" />
+            app:destination="@id/budgetRuleAddFragment"
+            app:popUpTo="@id/budgetRuleFragment"
+            app:popUpToInclusive="true" />
         <argument
             android:name="transaction"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed"
@@ -52,7 +56,9 @@
         tools:layout="@layout/fragment_account_update">
         <action
             android:id="@+id/action_accountUpdateFragment_to_accountsFragment"
-            app:destination="@id/accountsFragment" />
+            app:destination="@id/accountsFragment"
+            app:popUpTo="@id/accountsFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_accountUpdateFragment_to_accountTypesFragment"
             app:destination="@id/accountTypesFragment" />
@@ -88,7 +94,9 @@
         tools:layout="@layout/fragment_account_add">
         <action
             android:id="@+id/action_accountAddFragment_to_accountsFragment"
-            app:destination="@id/accountsFragment" />
+            app:destination="@id/accountsFragment"
+            app:popUpTo="@id/accountsFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_accountAddFragment_to_accountTypesFragment"
             app:destination="@id/accountTypesFragment" />
@@ -130,10 +138,14 @@
             app:destination="@id/accountTypeUpdateFragment" />
         <action
             android:id="@+id/action_accountTypesFragment_to_accountUpdateFragment"
-            app:destination="@id/accountUpdateFragment" />
+            app:destination="@id/accountUpdateFragment"
+            app:popUpTo="@id/accountUpdateFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_accountTypesFragment_to_accountAddFragment"
-            app:destination="@id/accountAddFragment" />
+            app:destination="@id/accountAddFragment"
+            app:popUpTo="@id/accountAddFragment"
+            app:popUpToInclusive="true" />
         <argument
             android:name="transaction"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed"
@@ -162,7 +174,9 @@
         tools:layout="@layout/fragment_account_type_add">
         <action
             android:id="@+id/action_accountTypeAddFragment_to_accountTypesFragment"
-            app:destination="@id/accountTypesFragment" />
+            app:destination="@id/accountTypesFragment"
+            app:popUpTo="@id/accountTypesFragment"
+            app:popUpToInclusive="true" />
         <argument
             android:name="transaction"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed"
@@ -191,7 +205,9 @@
         tools:layout="@layout/fragment_account_type_update">
         <action
             android:id="@+id/action_accountTypeUpdateFragment_to_accountTypesFragment"
-            app:destination="@id/accountTypesFragment" />
+            app:destination="@id/accountTypesFragment"
+            app:popUpTo="@id/accountTypesFragment"
+            app:popUpToInclusive="true" />
         <argument
             android:name="transaction"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed"
@@ -238,10 +254,14 @@
             app:nullable="true" />
         <action
             android:id="@+id/action_budgetRuleFragment_to_transactionUpdateFragment"
-            app:destination="@id/transactionUpdateFragment" />
+            app:destination="@id/transactionUpdateFragment"
+            app:popUpTo="@id/transactionUpdateFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_budgetRuleFragment_to_transactionAddFragment"
-            app:destination="@id/transactionAddFragment" />
+            app:destination="@id/transactionAddFragment"
+            app:popUpTo="@id/transactionAddFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/budgetRuleAddFragment"
@@ -250,7 +270,9 @@
         tools:layout="@layout/fragment_budget_rule_add">
         <action
             android:id="@+id/action_budgetRuleAddFragment_to_budgetRuleFragment"
-            app:destination="@id/budgetRuleFragment" />
+            app:destination="@id/budgetRuleFragment"
+            app:popUpTo="@id/budgetRuleFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_budgetRuleAddFragment_to_accountsFragment"
             app:destination="@id/accountsFragment" />
@@ -278,7 +300,9 @@
         tools:layout="@layout/fragment_budget_rule_update">
         <action
             android:id="@+id/action_budgetRuleUpdateFragment_to_budgetRuleFragment"
-            app:destination="@id/budgetRuleFragment" />
+            app:destination="@id/budgetRuleFragment"
+            app:popUpTo="@id/budgetRuleFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_budgetRuleUpdateFragment_to_accountsFragment"
             app:destination="@id/accountsFragment" />
@@ -322,7 +346,9 @@
         tools:layout="@layout/fragment_transaction_add">
         <action
             android:id="@+id/action_transactionAddFragment_to_transactionViewFragment"
-            app:destination="@id/transactionViewFragment" />
+            app:destination="@id/transactionViewFragment"
+            app:popUpTo="@id/transactionViewFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_transactionAddFragment_to_budgetRuleFragment"
             app:destination="@id/budgetRuleFragment" />
@@ -361,4 +387,19 @@
             app:argType="string"
             app:nullable="true" />
     </fragment>
+    <action
+        android:id="@+id/action_global_budgetRuleFragment"
+        app:destination="@id/budgetRuleFragment"
+        app:popUpTo="@id/budgetRuleFragment"
+        app:popUpToInclusive="true" />
+    <action
+        android:id="@+id/action_global_accountsFragment"
+        app:destination="@id/accountsFragment"
+        app:popUpTo="@id/accountsFragment"
+        app:popUpToInclusive="true" />
+    <action
+        android:id="@+id/action_global_transactionViewFragment"
+        app:destination="@id/transactionViewFragment"
+        app:popUpTo="@id/transactionViewFragment"
+        app:popUpToInclusive="true" />
 </navigation>

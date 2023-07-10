@@ -67,7 +67,7 @@ class AccountTypeAddFragment :
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
+//        menu.clear()
         inflater.inflate(R.menu.save_menu, menu)
     }
 

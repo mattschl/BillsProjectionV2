@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--    <item-->
+    <!--        android:id="@+id/navigation_budget_view"-->
+    <!--        android:icon="@drawable/ic_budget_view"-->
+    <!--        android:title="@string/budget_view" />-->
+
+    <item
+        android:id="@+id/navigation_transactions"
+        android:icon="@drawable/ic_transactions"
+        android:title="@string/transactions" />
+
+    <item
+        android:id="@+id/navigation_accounts"
+        android:icon="@drawable/ic_accounts"
+        android:title="@string/accounts" />
+
+    <item
+        android:id="@+id/navigation_budget_rules"
+        android:icon="@drawable/ic_budget_rules"
+        android:title="@string/budget_rules" />
+
+</menu>
