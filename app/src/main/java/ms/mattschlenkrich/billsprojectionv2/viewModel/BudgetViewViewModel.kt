@@ -11,8 +11,14 @@ class BudgetViewViewModel(
     app: Application,
     private val budgetViewRepository: BudgetViewRepository
 ) : AndroidViewModel(app) {
+
     suspend fun insertBudgetView(budgetView: BudgetView) =
         viewModelScope.launch {
             budgetViewRepository.insertBudgetView(budgetView)
+        }
+
+    suspend fun updateBudgetView(budgetView: BudgetView) =
+        viewModelScope.launch {
+            budgetViewRepository.updateBudgetView(budgetView)
         }
 }

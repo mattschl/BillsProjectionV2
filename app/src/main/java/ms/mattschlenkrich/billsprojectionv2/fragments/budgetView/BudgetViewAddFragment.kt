@@ -1,24 +1,20 @@
 package ms.mattschlenkrich.billsprojectionv2.fragments.budgetView
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetViewBinding
+import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetViewAddBinding
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetViewViewModel
 
-private const val TAG = FRAG_BUDGET_VIEW
-
-class BudgetViewFragment : Fragment(
-    R.layout.fragment_transaction_view
+class BudgetViewAddFragment : Fragment(
+    R.layout.fragment_budget_view_add
 ) {
 
-    private var _binding: FragmentBudgetViewBinding? = null
+    private var _binding: FragmentBudgetViewAddBinding? = null
     private val binding get() = _binding!!
     private var mView: View? = null
     private lateinit var mainActivity: MainActivity
@@ -26,15 +22,14 @@ class BudgetViewFragment : Fragment(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "building BudgetViewFragment")
+
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
-        _binding = FragmentBudgetViewBinding.inflate(
+        _binding = FragmentBudgetViewAddBinding.inflate(
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
@@ -46,8 +41,7 @@ class BudgetViewFragment : Fragment(
         super.onViewCreated(view, savedInstanceState)
         budgetViewViewModel =
             mainActivity.budgetViewViewModel
-        mainActivity.title = "View The Budget"
-
+        mainActivity.title = "Add a new Budget Item"
     }
 
     override fun onDestroy() {

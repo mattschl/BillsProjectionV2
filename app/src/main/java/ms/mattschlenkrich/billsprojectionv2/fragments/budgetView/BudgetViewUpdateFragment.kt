@@ -6,19 +6,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_VIEW
+import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_RULE_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetViewBinding
+import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetViewUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetViewViewModel
 
-private const val TAG = FRAG_BUDGET_VIEW
+private const val TAG = FRAG_BUDGET_RULE_UPDATE
 
-class BudgetViewFragment : Fragment(
-    R.layout.fragment_transaction_view
+class BudgetViewUpdateFragment : Fragment(
+    R.layout.fragment_budget_rule_update
 ) {
 
-    private var _binding: FragmentBudgetViewBinding? = null
+    private var _binding: FragmentBudgetViewUpdateBinding? = null
     private val binding get() = _binding!!
     private var mView: View? = null
     private lateinit var mainActivity: MainActivity
@@ -26,15 +26,14 @@ class BudgetViewFragment : Fragment(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "building BudgetViewFragment")
+        Log.d(TAG, "building BudgetViewAddFragment")
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
-        _binding = FragmentBudgetViewBinding.inflate(
+        _binding = FragmentBudgetViewUpdateBinding.inflate(
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
@@ -46,7 +45,7 @@ class BudgetViewFragment : Fragment(
         super.onViewCreated(view, savedInstanceState)
         budgetViewViewModel =
             mainActivity.budgetViewViewModel
-        mainActivity.title = "View The Budget"
+        mainActivity.title = "Update this Budget Item"
 
     }
 

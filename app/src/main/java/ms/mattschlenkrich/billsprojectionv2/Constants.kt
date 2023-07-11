@@ -25,6 +25,8 @@ const val FRAG_TRANSACTIONS = "Transactions"
 const val FRAG_TRANS_ADD = "TransactionAdd"
 const val FRAG_TRANS_UPDATE = "TransactionUpdate"
 const val FRAG_BUDGET_VIEW = "BudgetView"
+const val FRAG_BUDGET_VIEW_ADD = "BudgetViewAdd"
+const val FRAG_BUDGET_VIEW_UPDATE = "BudgetViewUpdate"
 
 const val ADAPTER_BUDGET_RULE = "BudgetRuleAdapter"
 const val ADAPTER_ACCOUNT = "AccountAdapter"
