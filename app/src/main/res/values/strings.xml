@@ -81,4 +81,8 @@
     <string name="budget_view">Budget View</string>
     <string name="accounts">Accounts</string>
     <string name="budget_rules">Budget Rules</string>
+    <string name="projected_date">Projected Date</string>
+    <string name="budget_description">Budget Description</string>
+    <string name="pay_day">Pay Day</string>
+    <string name="projected_amount">Projected Amount</string>
 </resources>

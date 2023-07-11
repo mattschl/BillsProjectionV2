@@ -402,4 +402,19 @@
         app:destination="@id/transactionViewFragment"
         app:popUpTo="@id/transactionViewFragment"
         app:popUpToInclusive="true" />
+    <fragment
+        android:id="@+id/budgetViewFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetViewFragment"
+        android:label="fragment_budget_view"
+        tools:layout="@layout/fragment_budget_view" />
+    <fragment
+        android:id="@+id/budgetViewAddFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetViewAddFragment"
+        android:label="fragment_budget_view_add"
+        tools:layout="@layout/fragment_budget_view_add" />
+    <fragment
+        android:id="@+id/budgetViewUpdateFragment2"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetViewUpdateFragment"
+        android:label="fragment_budget_view_update"
+        tools:layout="@layout/fragment_budget_view_update" />
 </navigation>
