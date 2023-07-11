@@ -11,15 +11,15 @@ import androidx.navigation.findNavController
 import ms.mattschlenkrich.billsprojectionv2.dataBase.BillsDatabase
 import ms.mattschlenkrich.billsprojectionv2.databinding.ActivityMainBinding
 import ms.mattschlenkrich.billsprojectionv2.repository.AccountRepository
+import ms.mattschlenkrich.billsprojectionv2.repository.BudgetItemRepository
 import ms.mattschlenkrich.billsprojectionv2.repository.BudgetRuleRepository
-import ms.mattschlenkrich.billsprojectionv2.repository.BudgetViewRepository
 import ms.mattschlenkrich.billsprojectionv2.repository.TransactionRepository
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModelFactory
+import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModel
+import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModelFactory
-import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetViewViewModel
-import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetViewViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModelFactory
 
@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var accountViewModel: AccountViewModel
     lateinit var budgetRuleViewModel: BudgetRuleViewModel
     lateinit var transactionViewModel: TransactionViewModel
-    lateinit var budgetViewViewModel: BudgetViewViewModel
+    lateinit var budgetItemViewModel: BudgetItemViewModel
     lateinit var mView: View
 //    private val timeFormatter: SimpleDateFormat =
 //        SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         setupAccountViewModel()
         setupBudgetRuleViewModel()
         setupTransactionViewModel()
-        setupBudgetViewViewModel()
+        setupBudgetItemViewModel()
 
 //        binding.bottomNavView.apply {
 //            setOnClickListener {
@@ -134,18 +134,18 @@ class MainActivity : AppCompatActivity() {
         return false
     }
 
-    private fun setupBudgetViewViewModel() {
-        val budgetViewRepository = BudgetViewRepository(
+    private fun setupBudgetItemViewModel() {
+        val budgetItemRepository = BudgetItemRepository(
             BillsDatabase(this)
         )
-        val budgetViewViewModelFactory =
-            BudgetViewViewModelFactory(
-                application, budgetViewRepository
+        val budgetItemViewModelFactory =
+            BudgetItemViewModelFactory(
+                application, budgetItemRepository
             )
-        budgetViewViewModel = ViewModelProvider(
+        budgetItemViewModel = ViewModelProvider(
             this,
-            budgetViewViewModelFactory
-        )[BudgetViewViewModel::class.java]
+            budgetItemViewModelFactory
+        )[BudgetItemViewModel::class.java]
     }
 
     private fun setupBudgetRuleViewModel() {

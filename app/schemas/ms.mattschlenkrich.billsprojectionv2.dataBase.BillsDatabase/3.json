@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "eb4684fec568532f864dfc8f6128a4b2",
+    "identityHash": "6a745b71b0430d9b00a9e71ad2c42806",
     "entities": [
       {
         "tableName": "accounts",
@@ -616,117 +616,117 @@
         ]
       },
       {
-        "tableName": "budgetView",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`bvRuleId` INTEGER NOT NULL, `bvProjectedDate` TEXT NOT NULL, `bvActualDate` TEXT NOT NULL, `bvPayDay` TEXT NOT NULL, `bvBudgetName` TEXT NOT NULL, `bvIsPayDayItem` INTEGER NOT NULL DEFAULT 0, `bvToAccountId` INTEGER NOT NULL, `bvFromAccountId` INTEGER NOT NULL, `bvProjectedAmount` REAL NOT NULL DEFAULT 0.0, `bvIsPending` INTEGER NOT NULL DEFAULT 0, `bvIsFixed` INTEGER NOT NULL DEFAULT 0, `bvIsAutomatic` INTEGER NOT NULL DEFAULT 0, `bvManuallyEntered` INTEGER NOT NULL DEFAULT 0, `bvIsCompleted` INTEGER NOT NULL DEFAULT 0, `bvIsCancelled` INTEGER NOT NULL DEFAULT 0, `bvIsDeleted` INTEGER NOT NULL DEFAULT 0, `bvUpdateTime` TEXT NOT NULL, PRIMARY KEY(`bvRuleId`, `bvProjectedDate`), FOREIGN KEY(`bvRuleId`) REFERENCES `budgetRules`(`ruleId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`bvToAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`bvFromAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "tableName": "budgetItems",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`biRuleId` INTEGER NOT NULL, `biProjectedDate` TEXT NOT NULL, `biActualDate` TEXT NOT NULL, `biPayDay` TEXT NOT NULL, `biBudgetName` TEXT NOT NULL, `biIsPayDayItem` INTEGER NOT NULL DEFAULT 0, `biToAccountId` INTEGER NOT NULL, `biFromAccountId` INTEGER NOT NULL, `biProjectedAmount` REAL NOT NULL DEFAULT 0.0, `biIsPending` INTEGER NOT NULL DEFAULT 0, `biIsFixed` INTEGER NOT NULL DEFAULT 0, `biIsAutomatic` INTEGER NOT NULL DEFAULT 0, `biManuallyEntered` INTEGER NOT NULL DEFAULT 0, `biIsCompleted` INTEGER NOT NULL DEFAULT 0, `biIsCancelled` INTEGER NOT NULL DEFAULT 0, `biIsDeleted` INTEGER NOT NULL DEFAULT 0, `biUpdateTime` TEXT NOT NULL, PRIMARY KEY(`biRuleId`, `biProjectedDate`), FOREIGN KEY(`biRuleId`) REFERENCES `budgetRules`(`ruleId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`biToAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`biFromAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
-            "fieldPath": "bvRuleId",
-            "columnName": "bvRuleId",
+            "fieldPath": "biRuleId",
+            "columnName": "biRuleId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "bvProjectedDate",
-            "columnName": "bvProjectedDate",
+            "fieldPath": "biProjectedDate",
+            "columnName": "biProjectedDate",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "bvActualDate",
-            "columnName": "bvActualDate",
+            "fieldPath": "biActualDate",
+            "columnName": "biActualDate",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "bvPayDay",
-            "columnName": "bvPayDay",
+            "fieldPath": "biPayDay",
+            "columnName": "biPayDay",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "bvBudgetName",
-            "columnName": "bvBudgetName",
+            "fieldPath": "biBudgetName",
+            "columnName": "biBudgetName",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "bvIsPayDayItem",
-            "columnName": "bvIsPayDayItem",
+            "fieldPath": "biIsPayDayItem",
+            "columnName": "biIsPayDayItem",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
           },
           {
-            "fieldPath": "bvToAccountId",
-            "columnName": "bvToAccountId",
+            "fieldPath": "biToAccountId",
+            "columnName": "biToAccountId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "bvFromAccountId",
-            "columnName": "bvFromAccountId",
+            "fieldPath": "biFromAccountId",
+            "columnName": "biFromAccountId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "bvProjectedAmount",
-            "columnName": "bvProjectedAmount",
+            "fieldPath": "biProjectedAmount",
+            "columnName": "biProjectedAmount",
             "affinity": "REAL",
             "notNull": true,
             "defaultValue": "0.0"
           },
           {
-            "fieldPath": "bvIsPending",
-            "columnName": "bvIsPending",
+            "fieldPath": "biIsPending",
+            "columnName": "biIsPending",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
           },
           {
-            "fieldPath": "bvIsFixed",
-            "columnName": "bvIsFixed",
+            "fieldPath": "biIsFixed",
+            "columnName": "biIsFixed",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
           },
           {
-            "fieldPath": "bvIsAutomatic",
-            "columnName": "bvIsAutomatic",
+            "fieldPath": "biIsAutomatic",
+            "columnName": "biIsAutomatic",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
           },
           {
-            "fieldPath": "bvManuallyEntered",
-            "columnName": "bvManuallyEntered",
+            "fieldPath": "biManuallyEntered",
+            "columnName": "biManuallyEntered",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
           },
           {
-            "fieldPath": "bvIsCompleted",
-            "columnName": "bvIsCompleted",
+            "fieldPath": "biIsCompleted",
+            "columnName": "biIsCompleted",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
           },
           {
-            "fieldPath": "bvIsCancelled",
-            "columnName": "bvIsCancelled",
+            "fieldPath": "biIsCancelled",
+            "columnName": "biIsCancelled",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
           },
           {
-            "fieldPath": "bvIsDeleted",
-            "columnName": "bvIsDeleted",
+            "fieldPath": "biIsDeleted",
+            "columnName": "biIsDeleted",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
           },
           {
-            "fieldPath": "bvUpdateTime",
-            "columnName": "bvUpdateTime",
+            "fieldPath": "biUpdateTime",
+            "columnName": "biUpdateTime",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -734,91 +734,91 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "bvRuleId",
-            "bvProjectedDate"
+            "biRuleId",
+            "biProjectedDate"
           ]
         },
         "indices": [
           {
-            "name": "index_budgetView_bvActualDate",
+            "name": "index_budgetItems_biActualDate",
             "unique": false,
             "columnNames": [
-              "bvActualDate"
+              "biActualDate"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetView_bvActualDate` ON `${TABLE_NAME}` (`bvActualDate`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetItems_biActualDate` ON `${TABLE_NAME}` (`biActualDate`)"
           },
           {
-            "name": "index_budgetView_bvPayDay",
+            "name": "index_budgetItems_biPayDay",
             "unique": false,
             "columnNames": [
-              "bvPayDay"
+              "biPayDay"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetView_bvPayDay` ON `${TABLE_NAME}` (`bvPayDay`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetItems_biPayDay` ON `${TABLE_NAME}` (`biPayDay`)"
           },
           {
-            "name": "index_budgetView_bvIsPayDayItem",
+            "name": "index_budgetItems_biIsPayDayItem",
             "unique": false,
             "columnNames": [
-              "bvIsPayDayItem"
+              "biIsPayDayItem"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetView_bvIsPayDayItem` ON `${TABLE_NAME}` (`bvIsPayDayItem`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetItems_biIsPayDayItem` ON `${TABLE_NAME}` (`biIsPayDayItem`)"
           },
           {
-            "name": "index_budgetView_bvProjectedAmount",
+            "name": "index_budgetItems_biProjectedAmount",
             "unique": false,
             "columnNames": [
-              "bvProjectedAmount"
+              "biProjectedAmount"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetView_bvProjectedAmount` ON `${TABLE_NAME}` (`bvProjectedAmount`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetItems_biProjectedAmount` ON `${TABLE_NAME}` (`biProjectedAmount`)"
           },
           {
-            "name": "index_budgetView_bvToAccountId",
+            "name": "index_budgetItems_biToAccountId",
             "unique": false,
             "columnNames": [
-              "bvToAccountId"
+              "biToAccountId"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetView_bvToAccountId` ON `${TABLE_NAME}` (`bvToAccountId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetItems_biToAccountId` ON `${TABLE_NAME}` (`biToAccountId`)"
           },
           {
-            "name": "index_budgetView_bvFromAccountId",
+            "name": "index_budgetItems_biFromAccountId",
             "unique": false,
             "columnNames": [
-              "bvFromAccountId"
+              "biFromAccountId"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetView_bvFromAccountId` ON `${TABLE_NAME}` (`bvFromAccountId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetItems_biFromAccountId` ON `${TABLE_NAME}` (`biFromAccountId`)"
           },
           {
-            "name": "index_budgetView_bvIsDeleted",
+            "name": "index_budgetItems_biIsDeleted",
             "unique": false,
             "columnNames": [
-              "bvIsDeleted"
+              "biIsDeleted"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetView_bvIsDeleted` ON `${TABLE_NAME}` (`bvIsDeleted`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetItems_biIsDeleted` ON `${TABLE_NAME}` (`biIsDeleted`)"
           },
           {
-            "name": "index_budgetView_bvIsCancelled",
+            "name": "index_budgetItems_biIsCancelled",
             "unique": false,
             "columnNames": [
-              "bvIsCancelled"
+              "biIsCancelled"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetView_bvIsCancelled` ON `${TABLE_NAME}` (`bvIsCancelled`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetItems_biIsCancelled` ON `${TABLE_NAME}` (`biIsCancelled`)"
           },
           {
-            "name": "index_budgetView_bvIsCompleted",
+            "name": "index_budgetItems_biIsCompleted",
             "unique": false,
             "columnNames": [
-              "bvIsCompleted"
+              "biIsCompleted"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetView_bvIsCompleted` ON `${TABLE_NAME}` (`bvIsCompleted`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_budgetItems_biIsCompleted` ON `${TABLE_NAME}` (`biIsCompleted`)"
           }
         ],
         "foreignKeys": [
@@ -827,7 +827,7 @@
             "onDelete": "NO ACTION",
             "onUpdate": "NO ACTION",
             "columns": [
-              "bvRuleId"
+              "biRuleId"
             ],
             "referencedColumns": [
               "ruleId"
@@ -838,7 +838,7 @@
             "onDelete": "NO ACTION",
             "onUpdate": "NO ACTION",
             "columns": [
-              "bvToAccountId"
+              "biToAccountId"
             ],
             "referencedColumns": [
               "accountId"
@@ -849,7 +849,7 @@
             "onDelete": "NO ACTION",
             "onUpdate": "NO ACTION",
             "columns": [
-              "bvFromAccountId"
+              "biFromAccountId"
             ],
             "referencedColumns": [
               "accountId"
@@ -861,7 +861,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'eb4684fec568532f864dfc8f6128a4b2')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6a745b71b0430d9b00a9e71ad2c42806')"
     ]
   }
 }

@@ -409,12 +409,12 @@
         tools:layout="@layout/fragment_budget_view" />
     <fragment
         android:id="@+id/budgetViewAddFragment"
-        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetViewAddFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetItemAddFragment"
         android:label="fragment_budget_view_add"
-        tools:layout="@layout/fragment_budget_view_add" />
+        tools:layout="@layout/fragment_budget_item_add" />
     <fragment
         android:id="@+id/budgetViewUpdateFragment2"
-        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetViewUpdateFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetItemUpdateFragment"
         android:label="fragment_budget_view_update"
-        tools:layout="@layout/fragment_budget_view_update" />
+        tools:layout="@layout/fragment_budget_item_update" />
 </navigation>

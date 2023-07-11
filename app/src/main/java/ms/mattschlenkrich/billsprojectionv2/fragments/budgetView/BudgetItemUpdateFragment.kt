@@ -6,34 +6,34 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_RULE_UPDATE
+import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_ITEM_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetViewUpdateBinding
-import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetViewViewModel
+import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetItemUpdateBinding
+import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModel
 
-private const val TAG = FRAG_BUDGET_RULE_UPDATE
+private const val TAG = FRAG_BUDGET_ITEM_UPDATE
 
-class BudgetViewUpdateFragment : Fragment(
+class BudgetItemUpdateFragment : Fragment(
     R.layout.fragment_budget_rule_update
 ) {
 
-    private var _binding: FragmentBudgetViewUpdateBinding? = null
+    private var _binding: FragmentBudgetItemUpdateBinding? = null
     private val binding get() = _binding!!
     private var mView: View? = null
     private lateinit var mainActivity: MainActivity
-    private lateinit var budgetViewViewModel: BudgetViewViewModel
+    private lateinit var budgetItemViewModel: BudgetItemViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "building BudgetViewAddFragment")
+        Log.d(TAG, "creating $TAG")
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentBudgetViewUpdateBinding.inflate(
+        _binding = FragmentBudgetItemUpdateBinding.inflate(
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
@@ -43,8 +43,8 @@ class BudgetViewUpdateFragment : Fragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        budgetViewViewModel =
-            mainActivity.budgetViewViewModel
+        budgetItemViewModel =
+            mainActivity.budgetItemViewModel
         mainActivity.title = "Update this Budget Item"
 
     }

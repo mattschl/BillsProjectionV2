@@ -10,7 +10,7 @@ import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetViewBinding
-import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetViewViewModel
+import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModel
 
 private const val TAG = FRAG_BUDGET_VIEW
 
@@ -22,7 +22,7 @@ class BudgetViewFragment : Fragment(
     private val binding get() = _binding!!
     private var mView: View? = null
     private lateinit var mainActivity: MainActivity
-    private lateinit var budgetViewViewModel: BudgetViewViewModel
+    private lateinit var budgetItemViewModel: BudgetItemViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,8 +44,8 @@ class BudgetViewFragment : Fragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        budgetViewViewModel =
-            mainActivity.budgetViewViewModel
+        budgetItemViewModel =
+            mainActivity.budgetItemViewModel
         mainActivity.title = "View The Budget"
 
     }

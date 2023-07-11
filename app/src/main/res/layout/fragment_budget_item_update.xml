@@ -2,17 +2,17 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".fragments.budgetView.BudgetViewUpdateFragment">
+    tools:context=".fragments.budgetView.BudgetItemUpdateFragment">
 
-       <androidx.constraintlayout.widget.ConstraintLayout
-           android:layout_width="match_parent"
-           android:layout_height="match_parent">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-              <TextView
-                  android:id="@+id/lblProjectedDate"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="@string/projected_date"
+        <TextView
+            android:id="@+id/lblProjectedDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/projected_date"
                   android:textSize="@dimen/text_info_size"
                   app:layout_constraintBaseline_toBaselineOf="@id/etProjectedDate"
                   app:layout_constraintEnd_toStartOf="@id/etProjectedDate"

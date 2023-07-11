@@ -4,14 +4,14 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Update
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetView
+import ms.mattschlenkrich.billsprojectionv2.model.BudgetItem
 
 @Dao
-interface BudgetViewDao {
+interface BudgetItemDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertBudgetView(budgetView: BudgetView)
+    suspend fun insertBudgetItem(budgetItem: BudgetItem)
 
     @Update
-    suspend fun updateBudgetView(budgetView: BudgetView)
+    suspend fun updateBudgetItem(budgetItem: BudgetItem)
 }

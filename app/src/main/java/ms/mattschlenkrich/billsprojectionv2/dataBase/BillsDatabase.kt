@@ -14,8 +14,8 @@ import ms.mattschlenkrich.billsprojectionv2.DB_VERSION
 import ms.mattschlenkrich.billsprojectionv2.SQLITE_TIME
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
+import ms.mattschlenkrich.billsprojectionv2.model.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetView
 import ms.mattschlenkrich.billsprojectionv2.model.Transactions
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -29,7 +29,7 @@ private const val TAG = BILLS_DATABASE
         AccountType::class,
         BudgetRule::class,
         Transactions::class,
-        BudgetView::class,
+        BudgetItem::class,
     ], version = DB_VERSION
 )
 abstract class BillsDatabase : RoomDatabase() {
@@ -37,7 +37,7 @@ abstract class BillsDatabase : RoomDatabase() {
     abstract fun getAccountDao(): AccountDao
     abstract fun getBudgetRuleDao(): BudgetRuleDao
     abstract fun getTransactionDao(): TransactionDao
-    abstract fun getBudgetViewDao(): BudgetViewDao
+    abstract fun getBudgetItemDao(): BudgetItemDao
 
     companion object {
         @Volatile
