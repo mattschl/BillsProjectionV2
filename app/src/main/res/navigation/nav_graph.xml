@@ -417,4 +417,7 @@
         android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetItemUpdateFragment"
         android:label="fragment_budget_view_update"
         tools:layout="@layout/fragment_budget_item_update" />
+    <action
+        android:id="@+id/action_global_budgetViewFragment"
+        app:destination="@id/budgetViewFragment" />
 </navigation>

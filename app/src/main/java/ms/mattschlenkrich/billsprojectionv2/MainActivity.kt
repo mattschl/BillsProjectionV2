@@ -92,20 +92,33 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menu?.add(R.string.budget_view)
         menu?.add(R.string.transactions)
         menu?.add(R.string.accounts)
         menu?.add(R.string.budget_rules)
+        menu?.add(getString(R.string.update_budget_predictions))
+        menu?.add("Bills Projection ${BuildConfig.VERSION_NAME}")
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.title) {
 
-            resources.getString(R.string.transactions) -> {
+            resources.getString(R.string.budget_view) -> {
+                val direction =
+                    NavGraphDirections.actionGlobalBudgetViewFragment()
                 findNavController(R.id.fragment_container_view)
-                    .navigate(
-                        R.id.action_global_transactionViewFragment
+                    .navigate(direction)
+            }
+
+            resources.getString(R.string.transactions) -> {
+                val direction =
+                    NavGraphDirections.actionGlobalTransactionViewFragment(
+                        null,
+                        null
                     )
+                findNavController(R.id.fragment_container_view)
+                    .navigate(direction)
             }
 
             resources.getString(R.string.accounts) -> {

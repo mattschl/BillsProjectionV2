@@ -116,7 +116,7 @@
             <CheckBox
                 android:id="@+id/chkFixedAmount"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:text="@string/fixed_amount"
                 android:textSize="@dimen/text_info_size"
                 app:layout_constraintBaseline_toBaselineOf="@+id/etAmount"
@@ -127,7 +127,7 @@
             <CheckBox
                 android:id="@+id/chkMakePayDay"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:text="@string/make_a_pay_day"
                 android:textSize="@dimen/text_info_size"
                 app:layout_constraintEnd_toStartOf="@+id/chkAutoPayment"
@@ -137,7 +137,7 @@
             <CheckBox
                 android:id="@+id/chkAutoPayment"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:text="@string/automatic_payment"
                 android:textSize="@dimen/text_info_size"
                 app:layout_constraintBaseline_toBaselineOf="@+id/chkMakePayDay"
@@ -287,7 +287,8 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="64dp"
+                android:id="@+id/spacer"
+                android:layout_height="16dp"
                 android:shadowColor="@color/white"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/etLeadDays" />
@@ -307,6 +308,14 @@
                 app:borderWidth="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvProjectedDates"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/spacer" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

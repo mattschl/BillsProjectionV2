@@ -44,6 +44,26 @@
                     tools:ignore="DuplicateSpeakableTextCheck" />
 
                 <TextView
+                    android:id="@+id/lblPayDay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/choose_a_pay_day"
+                    android:textSize="@dimen/text_info_size"
+                    app:layout_constraintBaseline_toBaselineOf="@id/spPayDay"
+                    app:layout_constraintEnd_toStartOf="@id/spPayDay"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <Spinner
+                    android:id="@+id/spPayDay"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="15dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/lblPayDay"
+                    app:layout_constraintTop_toBottomOf="@id/spAssetNames" />
+
+
+                <TextView
                     android:id="@+id/lblBalanceOwing"
                     android:layout_width="wrap_content"
                     android:layout_height="48dp"
@@ -61,9 +81,10 @@
                     android:text="@string/zero_dollars"
                     android:textAlignment="center"
                     android:textSize="@dimen/text_heading_size"
+                    android:textColor="@color/black"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/lblBalanceOwing"
-                    app:layout_constraintTop_toBottomOf="@id/spAssetNames" />
+                    app:layout_constraintTop_toBottomOf="@id/spPayDay" />
 
                 <TextView
                     android:id="@+id/tvFixedExpenses"
@@ -82,6 +103,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/discretionary_expenses"
                     android:textSize="@dimen/text_info_size"
+                    android:textColor="@color/black"
                     app:layout_constraintBaseline_toBaselineOf="@id/tvFixedExpenses"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/tvFixedExpenses" />
@@ -93,6 +115,7 @@
                     android:text="@string/surplus_or_deficit"
                     android:textSize="@dimen/text_info_size"
                     android:textStyle="bold"
+                    android:textColor="@color/black"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvFixedExpenses" />

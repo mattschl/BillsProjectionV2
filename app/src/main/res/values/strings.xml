@@ -85,4 +85,6 @@
     <string name="budget_description">Budget Description</string>
     <string name="pay_day">Pay Day</string>
     <string name="projected_amount">Projected Amount</string>
+    <string name="choose_a_pay_day">Choose a pay day</string>
+    <string name="update_budget_predictions">Update Budget Predictions</string>
 </resources>
