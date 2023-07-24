@@ -127,6 +127,7 @@ class MainActivity : AppCompatActivity() {
                         null,
                         null,
                         null,
+                        null,
                         null
                     )
 
@@ -137,6 +138,7 @@ class MainActivity : AppCompatActivity() {
             resources.getString(R.string.budget_rules) -> {
                 val direction =
                     NavGraphDirections.actionGlobalBudgetRuleFragment(
+                        null,
                         null,
                         null
                     )

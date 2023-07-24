@@ -20,6 +20,7 @@ import ms.mattschlenkrich.billsprojectionv2.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.AccountLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountsFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
+import ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import java.text.NumberFormat
@@ -29,6 +30,7 @@ import java.util.Random
 private const val TAG = ADAPTER_ACCOUNT
 
 class AccountAdapter(
+    private val budgetItem: BudgetDetailed?,
     private val transaction: TransactionDetailed?,
     private val budgetRuleDetailed: BudgetRuleDetailed?,
     private val requestedAccount: String?,
@@ -188,6 +190,7 @@ class AccountAdapter(
         val fragmentChain = "$callingFragments, $FRAG_ACCOUNTS"
         val direction = AccountsFragmentDirections
             .actionAccountsFragmentToAccountUpdateFragment(
+                budgetItem,
                 mTransactionDetailed,
                 mBudgetRuleDetailed,
                 curAccount.account,
@@ -208,6 +211,7 @@ class AccountAdapter(
         if (callingFragments.contains(FRAG_BUDGET_RULE_ADD)) {
             val direction = AccountsFragmentDirections
                 .actionAccountsFragmentToBudgetRuleAddFragment(
+                    budgetItem,
                     mTransactionDetailed,
                     mBudgetRuleDetailed,
                     fragmentChain
@@ -221,6 +225,7 @@ class AccountAdapter(
         ) {
             val direction = AccountsFragmentDirections
                 .actionAccountsFragmentToBudgetRuleUpdateFragment(
+                    budgetItem,
                     mTransactionDetailed,
                     mBudgetRuleDetailed,
                     fragmentChain

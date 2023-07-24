@@ -66,6 +66,7 @@ class BudgetRuleFragment :
         binding.fabAddNew.setOnClickListener {
             val direction = BudgetRuleFragmentDirections
                 .actionBudgetRuleFragmentToBudgetRuleAddFragment(
+                    args.budgetItem,
                     args.transaction,
                     null,
                     args.callingFragments
@@ -76,6 +77,7 @@ class BudgetRuleFragment :
 
     private fun setupRecyclerView() {
         budgetRuleAdapter = BudgetRuleAdapter(
+            args.budgetItem,
             args.transaction,
             mView!!.context,
             args.callingFragments

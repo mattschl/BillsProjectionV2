@@ -87,6 +87,28 @@
                     app:layout_constraintTop_toBottomOf="@id/spPayDay" />
 
                 <TextView
+                    android:id="@+id/tvCredits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/credits"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_info_size"
+                    app:layout_constraintEnd_toStartOf="@id/tvDebits"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvBalanceOwing" />
+
+                <TextView
+                    android:id="@+id/tvDebits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/debits"
+                    android:textColor="@color/deep_red"
+                    android:textSize="@dimen/text_info_size"
+                    app:layout_constraintBaseline_toBaselineOf="@id/tvCredits"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/tvCredits" />
+
+                <TextView
                     android:id="@+id/tvFixedExpenses"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -95,7 +117,7 @@
                     android:textSize="@dimen/text_info_size"
                     app:layout_constraintEnd_toStartOf="@id/tvDiscretionaryExpenses"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tvBalanceOwing" />
+                    app:layout_constraintTop_toBottomOf="@id/tvCredits" />
 
                 <TextView
                     android:id="@+id/tvDiscretionaryExpenses"
@@ -132,6 +154,25 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/crdSummary" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAddAction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="32dp"
+            android:backgroundTint="@color/design_default_color_error"
+            android:clickable="true"
+            android:contentDescription="@string/image"
+            android:focusable="true"
+            android:src="@drawable/ic_add"
+            android:tintMode="@color/white"
+            app:borderWidth="0dp"
+            app:fabSize="normal"
+            app:icon="@drawable/ic_add"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

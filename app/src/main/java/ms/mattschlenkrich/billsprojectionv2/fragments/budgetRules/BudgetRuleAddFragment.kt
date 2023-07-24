@@ -171,6 +171,7 @@ class BudgetRuleAddFragment :
         val fragmentChain = "${args.callingFragments}, $TAG"
         val direction = BudgetRuleAddFragmentDirections
             .actionBudgetRuleAddFragmentToAccountsFragment(
+                null,
                 args.transaction,
                 getBudgetRuleDetailed(),
                 REQUEST_FROM_ACCOUNT,
@@ -183,6 +184,7 @@ class BudgetRuleAddFragment :
         val fragmentChain = "${args.callingFragments}, $TAG"
         val direction = BudgetRuleAddFragmentDirections
             .actionBudgetRuleAddFragmentToAccountsFragment(
+                null,
                 args.transaction,
                 getBudgetRuleDetailed(),
                 REQUEST_TO_ACCOUNT,
@@ -196,7 +198,7 @@ class BudgetRuleAddFragment :
             val curDateAll = etEndDate.text.toString()
                 .split("-")
             val datePickerDialog = DatePickerDialog(
-                requireContext(),
+                mView!!.context,
                 { _, year, monthOfYear, dayOfMonth ->
                     val month = monthOfYear + 1
                     val display = "$year-${
@@ -211,7 +213,7 @@ class BudgetRuleAddFragment :
                 curDateAll[1].toInt() - 1,
                 curDateAll[2].toInt()
             )
-            datePickerDialog.setTitle("Choose the final date")
+            datePickerDialog.setTitle(getString(R.string.choose_the_final_date))
             datePickerDialog.show()
         }
     }
@@ -369,6 +371,7 @@ class BudgetRuleAddFragment :
                 )
                 val direction = BudgetRuleAddFragmentDirections
                     .actionBudgetRuleAddFragmentToBudgetRuleFragment(
+                        args.budgetItem,
                         args.transaction,
                         fragmentChain
                     )

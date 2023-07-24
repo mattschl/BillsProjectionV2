@@ -124,6 +124,7 @@ class AccountUpdateFragment :
             val fragmentChain = "${args.callingFragments}, $TAG"
             val direction = AccountUpdateFragmentDirections
                 .actionAccountUpdateFragmentToAccountTypesFragment(
+                    args.budgetItem,
                     args.transaction,
                     args.budgetRuleDetailed,
                     account,
@@ -197,9 +198,15 @@ class AccountUpdateFragment :
 
                 if (accountName == curAccount!!.accountName) {
                     accountsViewModel.updateAccount(account)
-                    mView?.findNavController()?.navigate(
-                        R.id.action_accountUpdateFragment_to_accountsFragment
-                    )
+                    val direction = AccountUpdateFragmentDirections
+                        .actionAccountUpdateFragmentToAccountsFragment(
+                            args.budgetItem,
+                            args.transaction,
+                            args.budgetRuleDetailed,
+                            args.requestedAccount,
+                            args.callingFragments
+                        )
+                    mView?.findNavController()?.navigate(direction)
                 } else if (accountName.isNotBlank()) {
                     AlertDialog.Builder(activity).apply {
                         setTitle("Rename Account?")
@@ -212,6 +219,7 @@ class AccountUpdateFragment :
                             accountsViewModel.updateAccount(account)
                             val direction = AccountUpdateFragmentDirections
                                 .actionAccountUpdateFragmentToAccountsFragment(
+                                    args.budgetItem,
                                     args.transaction,
                                     args.budgetRuleDetailed,
                                     args.requestedAccount,
@@ -280,6 +288,7 @@ class AccountUpdateFragment :
                 .replace(", $FRAG_ACCOUNT_UPDATE", "")
         val direction = AccountUpdateFragmentDirections
             .actionAccountUpdateFragmentToAccountsFragment(
+                args.budgetItem,
                 args.transaction,
                 args.budgetRuleDetailed,
                 args.requestedAccount,

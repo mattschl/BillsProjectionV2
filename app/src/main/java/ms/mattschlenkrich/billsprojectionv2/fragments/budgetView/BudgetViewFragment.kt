@@ -5,7 +5,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -47,7 +49,53 @@ class BudgetViewFragment : Fragment(
         budgetItemViewModel =
             mainActivity.budgetItemViewModel
         mainActivity.title = "View The Budget"
+        binding.fabAddAction.setOnClickListener {
+            addAction()
+        }
+    }
 
+    private fun addAction() {
+        AlertDialog.Builder(mView!!.context)
+            .setTitle(getString(R.string.choose_an_action))
+            .setItems(
+                arrayOf(
+                    getString(R.string.schedule_a_new_budget_item),
+                    getString(R.string.add_an_unscheduled_transaction)
+                )
+            ) { _, pos ->
+                when (pos) {
+                    0 -> {
+                        addNewBudgetItem()
+                    }
+
+                    1 -> {
+                        addNewTransaction()
+                    }
+                }
+            }
+            .show()
+    }
+
+    private fun addNewTransaction() {
+        val fragmentChain = TAG
+        val direction =
+            BudgetViewFragmentDirections
+                .actionBudgetViewFragmentToTransactionAddFragment(
+                    null,
+                    fragmentChain
+                )
+        findNavController().navigate(direction)
+    }
+
+    private fun addNewBudgetItem() {
+        val fragmentChain = TAG
+        val direction =
+            BudgetViewFragmentDirections
+                .actionBudgetViewFragmentToBudgetViewAddFragment2(
+                    null,
+                    fragmentChain
+                )
+        findNavController().navigate(direction)
     }
 
     override fun onDestroy() {

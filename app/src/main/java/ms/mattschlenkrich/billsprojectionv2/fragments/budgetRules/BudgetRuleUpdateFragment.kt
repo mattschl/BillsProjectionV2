@@ -202,6 +202,7 @@ class BudgetRuleUpdateFragment :
         val direction =
             BudgetRuleUpdateFragmentDirections
                 .actionBudgetRuleUpdateFragmentToAccountsFragment(
+                    args.budgetItem,
                     args.transaction,
                     getBudgetRuleDetailed(),
                     REQUEST_FROM_ACCOUNT,
@@ -214,6 +215,7 @@ class BudgetRuleUpdateFragment :
         val fragmentChain = "${args.callingFragments}, $TAG"
         val direction = BudgetRuleUpdateFragmentDirections
             .actionBudgetRuleUpdateFragmentToAccountsFragment(
+                args.budgetItem,
                 args.transaction,
                 getBudgetRuleDetailed(),
                 REQUEST_TO_ACCOUNT,
@@ -336,6 +338,7 @@ class BudgetRuleUpdateFragment :
                 )
                 val direction = BudgetRuleUpdateFragmentDirections
                     .actionBudgetRuleUpdateFragmentToBudgetRuleFragment(
+                        args.budgetItem,
                         args.transaction,
                         args.callingFragments,
                     )
@@ -388,6 +391,7 @@ class BudgetRuleUpdateFragment :
                 val direction =
                     BudgetRuleUpdateFragmentDirections
                         .actionBudgetRuleUpdateFragmentToBudgetRuleFragment(
+                            args.budgetItem,
                             args.transaction,
                             fragmentChain
                         )

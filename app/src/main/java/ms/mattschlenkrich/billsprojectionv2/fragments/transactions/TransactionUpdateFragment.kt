@@ -219,6 +219,7 @@ class TransactionUpdateFragment :
         val direction =
             TransactionUpdateFragmentDirections
                 .actionTransactionUpdateFragmentToAccountsFragment(
+                    null,
                     getCurTransDetailed(),
                     null,
                     REQUEST_FROM_ACCOUNT,
@@ -232,6 +233,7 @@ class TransactionUpdateFragment :
         val direction =
             TransactionUpdateFragmentDirections
                 .actionTransactionUpdateFragmentToAccountsFragment(
+                    null,
                     getCurTransDetailed(),
                     null,
                     REQUEST_TO_ACCOUNT,
@@ -245,6 +247,7 @@ class TransactionUpdateFragment :
         val direction =
             TransactionUpdateFragmentDirections
                 .actionTransactionUpdateFragmentToBudgetRuleFragment(
+                    null,
                     getCurTransDetailed(),
                     fragmentChain
                 )

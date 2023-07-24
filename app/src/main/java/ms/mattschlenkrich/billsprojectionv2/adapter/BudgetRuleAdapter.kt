@@ -15,6 +15,7 @@ import ms.mattschlenkrich.billsprojectionv2.FRAG_TRANS_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetRuleLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules.BudgetRuleFragmentDirections
+import ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import java.text.NumberFormat
@@ -23,6 +24,7 @@ import java.util.Locale
 private const val TAG = ADAPTER_BUDGET_RULE
 
 class BudgetRuleAdapter(
+    private val budgetItem: BudgetDetailed?,
     private val transaction: TransactionDetailed?,
     private val context: Context,
     private val callingFragments: String?,
@@ -144,6 +146,7 @@ class BudgetRuleAdapter(
         holder.itemView.setOnLongClickListener {
             val direction = BudgetRuleFragmentDirections
                 .actionBudgetRuleFragmentToBudgetRuleUpdateFragment(
+                    budgetItem,
                     transaction,
                     budgetRuleDetailed,
                     callingFragments

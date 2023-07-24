@@ -152,7 +152,7 @@
             android:textSize="@dimen/text_heading_size"
             app:layout_constraintEnd_toStartOf="@+id/chkFixedAmount"
             app:layout_constraintStart_toEndOf="@id/lblProjectedAmount"
-            app:layout_constraintTop_toBottomOf="@+id/textView" />
+            app:layout_constraintTop_toBottomOf="@+id/tvFromAccount" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -164,7 +164,7 @@
             app:layout_constraintTop_toBottomOf="@id/tvToAccount" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/tvFromAccount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minWidth="150dp"

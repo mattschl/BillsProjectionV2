@@ -102,6 +102,7 @@ class TransactionAddFragment :
         val direction =
             TransactionAddFragmentDirections
                 .actionTransactionAddFragmentToBudgetRuleFragment(
+                    null,
                     getCurTransaction(),
                     fragmentChain
                 )
@@ -171,6 +172,7 @@ class TransactionAddFragment :
         val fragmentChain = "${args.callingFragments}, $TAG"
         val direction = TransactionAddFragmentDirections
             .actionTransactionAddFragmentToAccountsFragment(
+                null,
                 getCurTransaction(),
                 null,
                 REQUEST_FROM_ACCOUNT,
@@ -183,6 +185,7 @@ class TransactionAddFragment :
         val fragmentChain = "${args.callingFragments}, $TAG"
         val direction = TransactionAddFragmentDirections
             .actionTransactionAddFragmentToAccountsFragment(
+                null,
                 getCurTransaction(),
                 null,
                 REQUEST_TO_ACCOUNT,
