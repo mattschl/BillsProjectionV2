@@ -118,7 +118,9 @@ class TransactionAddFragment :
                 etNote.text.toString(),
                 mBudgetRule?.ruleId ?: 0L,
                 mToAccount?.accountId ?: 0L,
+                chkToAccPending.isChecked,
                 mFromAccount?.accountId ?: 0L,
+                chkFromAccPending.isChecked,
                 if (etAmount.text.isNotEmpty()) {
                     etAmount.text.toString()
                         .trim()
@@ -128,7 +130,6 @@ class TransactionAddFragment :
                 } else {
                     0.0
                 },
-                transIsPending = false,
                 transIsDeleted = false,
                 transUpdateTime = timeFormatter.format(
                     Calendar.getInstance().time
@@ -261,11 +262,15 @@ class TransactionAddFragment :
                     tvToAccount.text =
                         mToAccount!!.accountName
                 }
+                chkToAccPending.isChecked =
+                    args.transaction!!.transaction!!.transToAccountPending
                 if (args.transaction!!.fromAccount != null) {
                     mFromAccount = args.transaction!!.fromAccount
                     tvFromAccount.text =
                         mFromAccount!!.accountName
                 }
+                chkFromAccPending.isChecked =
+                    args.transaction!!.transaction!!.transFromAccountPending
 
             } else {
                 etTransDate.setText(
@@ -311,9 +316,10 @@ class TransactionAddFragment :
                     etNote.text.toString(),
                     mBudgetRule!!.ruleId,
                     mToAccount!!.accountId,
+                    chkToAccPending.isChecked,
                     mFromAccount!!.accountId,
+                    chkFromAccPending.isChecked,
                     amount,
-                    transIsPending = false,
                     transIsDeleted = false,
                     transUpdateTime = timeFormatter.format(
                         Calendar.getInstance().time

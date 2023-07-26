@@ -109,12 +109,13 @@ class TransactionUpdateFragment :
                     etNote.text.toString(),
                     mBudgetRule!!.ruleId,
                     mToAccount!!.accountId,
+                    chkToAccountPending.isChecked,
                     mFromAccount!!.accountId,
+                    chkFromAccountPending.isChecked,
                     etAmount.text.toString().trim()
                         .replace("$", "")
                         .replace(",", "")
                         .toDouble(),
-                    false,
                     false,
                     timeFormatter.format(
                         Calendar.getInstance().time
@@ -263,12 +264,13 @@ class TransactionUpdateFragment :
                 etNote.text.toString(),
                 mBudgetRule!!.ruleId,
                 mToAccount!!.accountId,
+                chkToAccountPending.isChecked,
                 mFromAccount!!.accountId,
+                chkFromAccountPending.isChecked,
                 etAmount.text.toString().trim()
                     .replace("$", "")
                     .replace(",", "")
                     .toDouble(),
-                false,
                 false,
                 timeFormatter.format(
                     Calendar.getInstance().time
@@ -316,12 +318,16 @@ class TransactionUpdateFragment :
                     tvToAccount.text =
                         mToAccount!!.accountName
                 }
+                chkToAccountPending.isChecked =
+                    args.transaction!!.transaction!!.transToAccountPending
                 if (args.transaction!!.fromAccount != null) {
                     mFromAccount =
                         args.transaction!!.fromAccount
                     tvFromAccount.text =
                         mFromAccount!!.accountName
                 }
+                chkFromAccountPending.isChecked =
+                    args.transaction!!.transaction!!.transFromAccountPending
             }
         }
     }

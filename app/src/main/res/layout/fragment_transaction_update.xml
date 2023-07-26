@@ -103,9 +103,19 @@
             android:text="@string/choose_an_account"
             android:textColor="@color/black"
             android:textSize="@dimen/text_heading_size"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/chkToAccountPending"
             app:layout_constraintStart_toEndOf="@id/lblToAccount"
             app:layout_constraintTop_toBottomOf="@+id/etAmount" />
+
+        <CheckBox
+            android:id="@+id/chkToAccountPending"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="@string/pending"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvToAccount"
+            app:layout_constraintEnd_toEndOf="parent" />
+
 
         <TextView
             android:id="@+id/lblFromAccount"
@@ -114,8 +124,8 @@
             android:text="@string/from_this_account"
             android:textSize="@dimen/text_info_size"
             app:layout_constraintBaseline_toBaselineOf="@+id/tvFromAccount"
-            app:layout_constraintEnd_toEndOf="@+id/lblToAccount"
-            app:layout_constraintStart_toStartOf="@+id/lblToAccount" />
+            app:layout_constraintEnd_toStartOf="@id/tvFromAccount"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:id="@+id/tvFromAccount"
@@ -126,9 +136,19 @@
             android:text="@string/choose_an_account"
             android:textColor="@color/black"
             android:textSize="@dimen/text_heading_size"
-            app:layout_constraintEnd_toEndOf="@+id/tvToAccount"
-            app:layout_constraintStart_toStartOf="@+id/tvToAccount"
+            app:layout_constraintEnd_toStartOf="@id/chkFromAccountPending"
+            app:layout_constraintStart_toEndOf="@id/lblFromAccount"
             app:layout_constraintTop_toBottomOf="@+id/tvToAccount" />
+
+        <CheckBox
+            android:id="@+id/chkFromAccountPending"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="@string/pending"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvFromAccount"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tvFromAccount" />
 
         <TextView
             android:id="@+id/lblDescription"

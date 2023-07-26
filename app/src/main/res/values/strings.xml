@@ -93,4 +93,5 @@
     <string name="schedule_a_new_budget_item">Schedule a new budget Item</string>
     <string name="add_an_unscheduled_transaction">Add an Unscheduled transaction</string>
     <string name="choose_the_final_date">Choose the final date</string>
+    <string name="pending">Pending</string>
 </resources>

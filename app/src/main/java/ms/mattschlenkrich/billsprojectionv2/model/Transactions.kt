@@ -14,10 +14,11 @@ import ms.mattschlenkrich.billsprojectionv2.RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.TABLE_TRANSACTION
 import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_DATE
 import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_FROM_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_FROM_ACCOUNT_PENDING
 import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_TO_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_TO_ACCOUNT_PENDING
 import ms.mattschlenkrich.billsprojectionv2.TRANS_BUDGET_RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.TRANS_IS_DELETED
-import ms.mattschlenkrich.billsprojectionv2.TRANS_IS_PENDING
 
 @Parcelize
 @Entity(
@@ -28,7 +29,8 @@ import ms.mattschlenkrich.billsprojectionv2.TRANS_IS_PENDING
         Index(value = [TRANSACTION_TO_ACCOUNT_ID]),
         Index(value = [TRANSACTION_FROM_ACCOUNT_ID]),
         Index(value = [TRANS_IS_DELETED]),
-        Index(value = [TRANS_IS_PENDING])
+        Index(value = [TRANSACTION_TO_ACCOUNT_PENDING]),
+        Index(value = [TRANSACTION_FROM_ACCOUNT_PENDING])
     ],
     foreignKeys = [ForeignKey(
         entity = Account::class,
@@ -52,11 +54,13 @@ data class Transactions(
     val transNote: String,
     val transRuleId: Long,
     var transToAccountId: Long,
+    @ColumnInfo(defaultValue = "0.0")
+    var transToAccountPending: Boolean,
     var transFromAccountId: Long,
     @ColumnInfo(defaultValue = "0.0")
+    var transFromAccountPending: Boolean,
+    @ColumnInfo(defaultValue = "0.0")
     val transAmount: Double,
-    @ColumnInfo(defaultValue = "0")
-    val transIsPending: Boolean,
     @ColumnInfo(defaultValue = "0")
     val transIsDeleted: Boolean,
     val transUpdateTime: String,

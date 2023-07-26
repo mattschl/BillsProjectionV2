@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "6a745b71b0430d9b00a9e71ad2c42806",
+    "identityHash": "724e1826b0cf80a85caa73cd8f0a0784",
     "entities": [
       {
         "tableName": "accounts",
@@ -445,7 +445,7 @@
       },
       {
         "tableName": "transactions",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`transId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `transDate` TEXT NOT NULL, `transName` TEXT NOT NULL, `transNote` TEXT NOT NULL, `transRuleId` INTEGER NOT NULL, `transToAccountId` INTEGER NOT NULL, `transFromAccountId` INTEGER NOT NULL, `transAmount` REAL NOT NULL DEFAULT 0.0, `transIsPending` INTEGER NOT NULL DEFAULT 0, `transIsDeleted` INTEGER NOT NULL DEFAULT 0, `transUpdateTime` TEXT NOT NULL, FOREIGN KEY(`transToAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`transFromAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`transRuleId`) REFERENCES `budgetRules`(`ruleId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`transId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `transDate` TEXT NOT NULL, `transName` TEXT NOT NULL, `transNote` TEXT NOT NULL, `transRuleId` INTEGER NOT NULL, `transToAccountId` INTEGER NOT NULL, `transToAccountPending` INTEGER NOT NULL DEFAULT 0.0, `transFromAccountId` INTEGER NOT NULL, `transFromAccountPending` INTEGER NOT NULL DEFAULT 0.0, `transAmount` REAL NOT NULL DEFAULT 0.0, `transIsDeleted` INTEGER NOT NULL DEFAULT 0, `transUpdateTime` TEXT NOT NULL, FOREIGN KEY(`transToAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`transFromAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`transRuleId`) REFERENCES `budgetRules`(`ruleId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "transId",
@@ -484,10 +484,24 @@
             "notNull": true
           },
           {
+            "fieldPath": "transToAccountPending",
+            "columnName": "transToAccountPending",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0.0"
+          },
+          {
             "fieldPath": "transFromAccountId",
             "columnName": "transFromAccountId",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "transFromAccountPending",
+            "columnName": "transFromAccountPending",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0.0"
           },
           {
             "fieldPath": "transAmount",
@@ -495,13 +509,6 @@
             "affinity": "REAL",
             "notNull": true,
             "defaultValue": "0.0"
-          },
-          {
-            "fieldPath": "transIsPending",
-            "columnName": "transIsPending",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "0"
           },
           {
             "fieldPath": "transIsDeleted",
@@ -570,13 +577,22 @@
             "createSql": "CREATE INDEX IF NOT EXISTS `index_transactions_transIsDeleted` ON `${TABLE_NAME}` (`transIsDeleted`)"
           },
           {
-            "name": "index_transactions_transIsPending",
+            "name": "index_transactions_transToAccountPending",
             "unique": false,
             "columnNames": [
-              "transIsPending"
+              "transToAccountPending"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_transactions_transIsPending` ON `${TABLE_NAME}` (`transIsPending`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_transactions_transToAccountPending` ON `${TABLE_NAME}` (`transToAccountPending`)"
+          },
+          {
+            "name": "index_transactions_transFromAccountPending",
+            "unique": false,
+            "columnNames": [
+              "transFromAccountPending"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_transactions_transFromAccountPending` ON `${TABLE_NAME}` (`transFromAccountPending`)"
           }
         ],
         "foreignKeys": [
@@ -861,7 +877,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6a745b71b0430d9b00a9e71ad2c42806')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '724e1826b0cf80a85caa73cd8f0a0784')"
     ]
   }
 }
