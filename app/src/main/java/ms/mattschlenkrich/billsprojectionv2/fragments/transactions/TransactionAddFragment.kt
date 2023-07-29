@@ -14,23 +14,18 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import ms.mattschlenkrich.billsprojectionv2.CommonFunctions
+import ms.mattschlenkrich.billsprojectionv2.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.REQUEST_TO_ACCOUNT
-import ms.mattschlenkrich.billsprojectionv2.SQLITE_DATE
-import ms.mattschlenkrich.billsprojectionv2.SQLITE_TIME
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionAddBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.Transactions
 import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModel
-import java.text.NumberFormat
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 import java.util.Random
 
 private const val TAG = FRAG_TRANS_ADD
@@ -49,13 +44,8 @@ class TransactionAddFragment :
     private var mBudgetRule: BudgetRule? = null
     private var mFromAccount: Account? = null
     private var mToAccount: Account? = null
-    private val dollarFormat: NumberFormat =
-        NumberFormat.getCurrencyInstance(Locale.CANADA)
-    private val timeFormatter: SimpleDateFormat =
-        SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
-    private val dateFormatter: SimpleDateFormat =
-        SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
     private val cf = CommonFunctions()
+    private val df = DateFunctions()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -129,9 +119,7 @@ class TransactionAddFragment :
                     0.0
                 },
                 transIsDeleted = false,
-                transUpdateTime = timeFormatter.format(
-                    Calendar.getInstance().time
-                )
+                transUpdateTime = df.getCurrentTimeAsString()
             )
             return TransactionDetailed(
                 curTransaction,
@@ -193,23 +181,6 @@ class TransactionAddFragment :
         mView.findNavController().navigate(direction)
     }
 
-    /*private fun prepareBudgetRule(): BudgetRuleDetailed {
-        val zToAccount = if (mToAccount != null) {
-            mToAccount!!
-        } else {
-            null
-        }
-        val zFromAccount = if (mFromAccount != null) {
-            mFromAccount!!
-        } else {
-            null
-        }
-        return BudgetRuleDetailed(
-            mBudgetRule,
-            zToAccount,
-            zFromAccount
-        )
-    }*/
 
     private fun fillValues() {
         binding.apply {
@@ -235,16 +206,16 @@ class TransactionAddFragment :
                     etAmount.setText(
                         if (args.transaction!!.transaction!!.transAmount == 0.0) {
                             if (args.transaction!!.budgetRule != null) {
-                                dollarFormat.format(
+                                cf.displayDollars(
                                     args.transaction!!.budgetRule!!.budgetAmount
                                 )
                             } else {
-                                dollarFormat.format(
+                                cf.displayDollars(
                                     0.0
                                 )
                             }
                         } else {
-                            dollarFormat.format(
+                            cf.displayDollars(
                                 args.transaction!!.transaction!!.transAmount
                             )
                         }
@@ -271,16 +242,11 @@ class TransactionAddFragment :
                     args.transaction!!.transaction!!.transFromAccountPending
 
             } else {
-                etTransDate.setText(
-                    dateFormatter.format(
-                        Calendar.getInstance().time
-                    )
-                )
+                etTransDate.setText(df.getCurrentDateAsString())
             }
         }
     }
 
-    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
 //        menu.clear()
         inflater.inflate(R.menu.save_menu, menu)
@@ -316,9 +282,7 @@ class TransactionAddFragment :
                     chkFromAccPending.isChecked,
                     amount,
                     transIsDeleted = false,
-                    transUpdateTime = timeFormatter.format(
-                        Calendar.getInstance().time
-                    )
+                    transUpdateTime = df.getCurrentTimeAsString()
                 )
                 transactionViewModel.insertTransaction(mTransaction)
                 val direction =

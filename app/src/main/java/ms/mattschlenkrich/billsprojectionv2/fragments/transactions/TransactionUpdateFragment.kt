@@ -14,22 +14,18 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import ms.mattschlenkrich.billsprojectionv2.CommonFunctions
+import ms.mattschlenkrich.billsprojectionv2.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.FRAG_TRANS_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.REQUEST_TO_ACCOUNT
-import ms.mattschlenkrich.billsprojectionv2.SQLITE_TIME
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.Transactions
 import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModel
-import java.text.NumberFormat
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 
 private const val TAG = FRAG_TRANS_UPDATE
 
@@ -43,19 +39,13 @@ class TransactionUpdateFragment :
     private lateinit var transactionViewModel: TransactionViewModel
     private lateinit var mView: View
     private val cf = CommonFunctions()
+    private val df = DateFunctions()
     private val args: TransactionUpdateFragmentArgs by navArgs()
 
     private var mTransaction: Transactions? = null
     private var mBudgetRule: BudgetRule? = null
     private var mToAccount: Account? = null
     private var mFromAccount: Account? = null
-
-    private val dollarFormat: NumberFormat =
-        NumberFormat.getCurrencyInstance(Locale.CANADA)
-    private val timeFormatter: SimpleDateFormat =
-        SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
-//    private val dateFormatter: SimpleDateFormat =
-//        SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -116,9 +106,7 @@ class TransactionUpdateFragment :
                     chkFromAccountPending.isChecked,
                     cf.getDoubleFromDollars(etAmount.text.toString()),
                     false,
-                    timeFormatter.format(
-                        Calendar.getInstance().time
-                    )
+                    df.getCurrentTimeAsString()
                 )
 //                val fragmentChain = "${args.callingFragments}, $TAG"
                 transactionViewModel.updateTransaction(
@@ -266,9 +254,7 @@ class TransactionUpdateFragment :
                 chkFromAccountPending.isChecked,
                 cf.getDoubleFromDollars(etAmount.text.toString()),
                 false,
-                timeFormatter.format(
-                    Calendar.getInstance().time
-                )
+                df.getCurrentTimeAsString()
             )
             return TransactionDetailed(
                 curTransaction,
@@ -289,7 +275,7 @@ class TransactionUpdateFragment :
                         mTransaction!!.transDate
                     )
                     etAmount.setText(
-                        dollarFormat.format(
+                        cf.displayDollars(
                             mTransaction!!.transAmount
                         )
                     )
@@ -326,7 +312,6 @@ class TransactionUpdateFragment :
         }
     }
 
-    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
 //        menu.clear()
         inflater.inflate(R.menu.delete_menu, menu)
@@ -350,9 +335,7 @@ class TransactionUpdateFragment :
             setPositiveButton("Delete") { _, _ ->
                 transactionViewModel.deleteTransaction(
                     mTransaction!!.transId,
-                    timeFormatter.format(
-                        Calendar.getInstance().time
-                    )
+                    df.getCurrentTimeAsString()
                 )
                 val fragmentChain = args.callingFragments!!.replace(
                     FRAG_TRANS_UPDATE, ""

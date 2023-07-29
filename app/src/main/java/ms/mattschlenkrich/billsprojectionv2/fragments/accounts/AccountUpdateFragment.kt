@@ -17,19 +17,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.CommonFunctions
+import ms.mattschlenkrich.billsprojectionv2.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.SQLITE_TIME
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
-import java.text.NumberFormat
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 
 private const val TAG = FRAG_ACCOUNT_UPDATE
 
@@ -46,18 +42,12 @@ class AccountUpdateFragment :
     //since the update fragment contains arguments in nav_graph
     private val args: AccountUpdateFragmentArgs by navArgs()
     private val cf = CommonFunctions()
+    private val df = DateFunctions()
     private var curBudgetRuleDetailed: BudgetRuleDetailed? = null
     private var curAccount: Account? = null
     private var newAccountType: AccountType? = null
     private var accountNameList: List<String>? = null
-//    private var currAccountType: AccountType? = null
 
-    private val dollarFormat: NumberFormat =
-        NumberFormat.getCurrencyInstance(Locale.CANADA)
-
-    //    val dateFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
-    private val timeFormatter: SimpleDateFormat =
-        SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -111,13 +101,12 @@ class AccountUpdateFragment :
                 cf.getDoubleFromDollars(edAccountUpdateOwing.text.toString())
             val budgeted =
                 cf.getDoubleFromDollars(edAccountUpdateBudgeted.text.toString())
-            val currTime =
-                timeFormatter.format(Calendar.getInstance().time)
+
             val account = Account(
                 curAccount!!.accountId, accountName,
                 accountHandle, accountTypeId, budgeted,
                 balance, owing,
-                false, currTime
+                false, df.getCurrentTimeAsString()
             )
             val fragmentChain = "${args.callingFragments}, $TAG"
             val direction = AccountUpdateFragmentDirections
@@ -182,13 +171,12 @@ class AccountUpdateFragment :
                     cf.getDoubleFromDollars(edAccountUpdateOwing.text.toString())
                 val budgeted =
                     cf.getDoubleFromDollars(edAccountUpdateBudgeted.text.toString())
-                val currTime =
-                    timeFormatter.format(Calendar.getInstance().time)
+
                 val account = Account(
                     curAccount!!.accountId, accountName,
                     accountHandle, accountTypeId, budgeted,
                     balance, owing,
-                    false, currTime
+                    false, df.getCurrentTimeAsString()
                 )
 
                 if (accountName == curAccount!!.accountName) {
@@ -247,13 +235,13 @@ class AccountUpdateFragment :
                 drpAccountUpdateType.text = args.accountType!!.accountType
             }
             edAccountUpdateBalance.setText(
-                dollarFormat.format(curAccount!!.accountBalance)
+                cf.displayDollars(curAccount!!.accountBalance)
             )
             edAccountUpdateOwing.setText(
-                dollarFormat.format(curAccount!!.accountOwing)
+                cf.displayDollars(curAccount!!.accountOwing)
             )
             edAccountUpdateBudgeted.setText(
-                dollarFormat.format(curAccount!!.accBudgetedAmount)
+                cf.displayDollars(curAccount!!.accBudgetedAmount)
             )
             txtAccountUpdateAccountId.text =
                 curAccount!!.accountId.toString()
@@ -272,11 +260,9 @@ class AccountUpdateFragment :
     }
 
     private fun doDelete() {
-        val updateTime =
-            timeFormatter.format(Calendar.getInstance().time)
         accountsViewModel.deleteAccount(
             args.account!!.accountId,
-            updateTime
+            df.getCurrentTimeAsString()
         )
         val fragmentChain =
             args.callingFragments!!
@@ -292,7 +278,6 @@ class AccountUpdateFragment :
         mView?.findNavController()?.navigate(direction)
     }
 
-    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
 //        menu.clear()
         inflater.inflate(R.menu.delete_menu, menu)
