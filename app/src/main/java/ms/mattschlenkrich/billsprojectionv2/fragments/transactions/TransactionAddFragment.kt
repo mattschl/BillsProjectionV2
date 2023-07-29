@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
+import ms.mattschlenkrich.billsprojectionv2.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -54,6 +55,7 @@ class TransactionAddFragment :
         SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
     private val dateFormatter: SimpleDateFormat =
         SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
+    private val cf = CommonFunctions()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -122,11 +124,7 @@ class TransactionAddFragment :
                 mFromAccount?.accountId ?: 0L,
                 chkFromAccPending.isChecked,
                 if (etAmount.text.isNotEmpty()) {
-                    etAmount.text.toString()
-                        .trim()
-                        .replace("$", "")
-                        .replace(",", "")
-                        .toDouble()
+                    cf.getDoubleFromDollars(etAmount.text.toString())
                 } else {
                     0.0
                 },
@@ -305,10 +303,7 @@ class TransactionAddFragment :
         if (mes == "Ok") {
             binding.apply {
                 val amount =
-                    etAmount.text.toString().trim()
-                        .replace(",", "")
-                        .replace("$", "")
-                        .toDouble()
+                    cf.getDoubleFromDollars(etAmount.text.toString())
                 val mTransaction = Transactions(
                     generateId(),
                     etTransDate.text.toString(),
@@ -353,10 +348,8 @@ class TransactionAddFragment :
 
     private fun checkTransaction(): String {
         binding.apply {
-            val amount = etAmount.text.toString().trim()
-                .replace("$", "")
-                .replace(",", "")
-                .toDouble()
+            val amount =
+                cf.getDoubleFromDollars(etAmount.text.toString())
             val errorMes =
                 if (etDescription.text.isNullOrBlank()
                 ) {

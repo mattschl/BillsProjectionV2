@@ -146,6 +146,35 @@
                 tools:ignore="DuplicateSpeakableTextCheck" />
 
             <TextView
+                android:id="@+id/lblAccAddLimit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/credit_limit"
+                android:textColor="@color/black"
+                android:visibility="gone"
+                app:layout_constraintBaseline_toBaselineOf="@id/editAccAddLimit"
+                app:layout_constraintEnd_toStartOf="@id/editAccAddLimit"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <EditText
+                android:id="@+id/editAccAddLimit"
+                android:layout_width="100dp"
+                android:layout_height="48dp"
+                android:autofillHints=""
+                android:ems="10"
+                android:hint="@string/credit_limit"
+                android:inputType="numberDecimal|numberSigned"
+                android:selectAllOnFocus="true"
+                android:text="@string/zero_double"
+                android:textAlignment="center"
+                android:textColorHint="#757575"
+                android:textSize="@dimen/text_info_size"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/lblAccAddLimit"
+                app:layout_constraintTop_toBottomOf="@id/editAccAddBudgeted" />
+
+            <TextView
                 android:id="@+id/lblAccAddType"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -167,7 +196,7 @@
                 android:padding="@dimen/padding_start_end"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/lblAccAddType"
-                app:layout_constraintTop_toBottomOf="@id/editAccAddBalance" />
+                app:layout_constraintTop_toBottomOf="@id/editAccAddLimit" />
 
             <TextView
                 android:id="@+id/tvTypeDetails"

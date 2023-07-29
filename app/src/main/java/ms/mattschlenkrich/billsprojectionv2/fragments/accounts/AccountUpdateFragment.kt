@@ -16,6 +16,7 @@ import androidx.navigation.fragment.navArgs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import ms.mattschlenkrich.billsprojectionv2.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -32,7 +33,6 @@ import java.util.Locale
 
 private const val TAG = FRAG_ACCOUNT_UPDATE
 
-@Suppress("DEPRECATION")
 class AccountUpdateFragment :
     Fragment(R.layout.fragment_account_update) {
 
@@ -45,6 +45,7 @@ class AccountUpdateFragment :
 
     //since the update fragment contains arguments in nav_graph
     private val args: AccountUpdateFragmentArgs by navArgs()
+    private val cf = CommonFunctions()
     private var curBudgetRuleDetailed: BudgetRuleDetailed? = null
     private var curAccount: Account? = null
     private var newAccountType: AccountType? = null
@@ -105,14 +106,11 @@ class AccountUpdateFragment :
             val accountTypeId =
                 curAccount!!.accountTypeId
             val balance =
-                edAccountUpdateBalance.text.toString()
-                    .replace(",", "").replace("$", "").toDouble()
+                cf.getDoubleFromDollars(edAccountUpdateBalance.text.toString())
             val owing =
-                edAccountUpdateOwing.text.toString()
-                    .replace(",", "").replace("$", "").toDouble()
+                cf.getDoubleFromDollars(edAccountUpdateOwing.text.toString())
             val budgeted =
-                edAccountUpdateBudgeted.text.toString()
-                    .replace(",", "").replace("$", "").toDouble()
+                cf.getDoubleFromDollars(edAccountUpdateBudgeted.text.toString())
             val currTime =
                 timeFormatter.format(Calendar.getInstance().time)
             val account = Account(
@@ -179,14 +177,11 @@ class AccountUpdateFragment :
                 val accountTypeId =
                     newAccountType!!.typeId
                 val balance =
-                    edAccountUpdateBalance.text.toString()
-                        .replace(",", "").replace("$", "").toDouble()
+                    cf.getDoubleFromDollars(edAccountUpdateBalance.text.toString())
                 val owing =
-                    edAccountUpdateOwing.text.toString()
-                        .replace(",", "").replace("$", "").toDouble()
+                    cf.getDoubleFromDollars(edAccountUpdateOwing.text.toString())
                 val budgeted =
-                    edAccountUpdateBudgeted.text.toString()
-                        .replace(",", "").replace("$", "").toDouble()
+                    cf.getDoubleFromDollars(edAccountUpdateBudgeted.text.toString())
                 val currTime =
                     timeFormatter.format(Calendar.getInstance().time)
                 val account = Account(

@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
+import ms.mattschlenkrich.billsprojectionv2.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.FRAG_TRANS_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -41,6 +42,7 @@ class TransactionUpdateFragment :
     private lateinit var mainActivity: MainActivity
     private lateinit var transactionViewModel: TransactionViewModel
     private lateinit var mView: View
+    private val cf = CommonFunctions()
     private val args: TransactionUpdateFragmentArgs by navArgs()
 
     private var mTransaction: Transactions? = null
@@ -112,10 +114,7 @@ class TransactionUpdateFragment :
                     chkToAccountPending.isChecked,
                     mFromAccount!!.accountId,
                     chkFromAccountPending.isChecked,
-                    etAmount.text.toString().trim()
-                        .replace("$", "")
-                        .replace(",", "")
-                        .toDouble(),
+                    cf.getDoubleFromDollars(etAmount.text.toString()),
                     false,
                     timeFormatter.format(
                         Calendar.getInstance().time
@@ -159,10 +158,8 @@ class TransactionUpdateFragment :
 
     private fun checkTransaction(): String {
         binding.apply {
-            val amount = etAmount.text.toString().trim()
-                .replace("$", "")
-                .replace(",", "")
-                .toDouble()
+            val amount =
+                cf.getDoubleFromDollars(etAmount.text.toString())
             val errorMes =
                 if (etDescription.text.isNullOrBlank()) {
                     "     ERROR!!\n" +
@@ -267,10 +264,7 @@ class TransactionUpdateFragment :
                 chkToAccountPending.isChecked,
                 mFromAccount!!.accountId,
                 chkFromAccountPending.isChecked,
-                etAmount.text.toString().trim()
-                    .replace("$", "")
-                    .replace(",", "")
-                    .toDouble(),
+                cf.getDoubleFromDollars(etAmount.text.toString()),
                 false,
                 timeFormatter.format(
                     Calendar.getInstance().time
