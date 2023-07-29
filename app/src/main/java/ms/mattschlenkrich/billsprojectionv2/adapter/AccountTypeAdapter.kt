@@ -83,6 +83,9 @@ class AccountTypeAdapter(
         if (curAccountType.displayAsAsset) {
             info += "${if (info.isNotEmpty()) "\n" else ""}This will display in the budget"
         }
+        if (curAccountType.allowPending) {
+            info += "${if (info.isNotEmpty()) "\n" else ""}Transactions can be delayed"
+        }
         if (curAccountType.acctIsDeleted) {
             info += "${if (info.isNotEmpty()) "\n" else ""}      **DELETED**"
         }
@@ -140,9 +143,7 @@ class AccountTypeAdapter(
                     )
                 it.findNavController().navigate(direction)
             }
-
         }
-
     }
 
 }

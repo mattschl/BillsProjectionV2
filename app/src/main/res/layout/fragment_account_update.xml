@@ -164,6 +164,33 @@
                 app:layout_constraintTop_toBottomOf="@id/lblAccountUpdateBudgeted"
                 tools:ignore="DuplicateSpeakableTextCheck" />
 
+            <TextView
+                android:id="@+id/lblAccUpdateLimit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/credit_limit"
+                android:textColor="@color/black"
+                app:layout_constraintBaseline_toBaselineOf="@id/etAccUpdateLimit"
+                app:layout_constraintEnd_toStartOf="@id/etAccUpdateLimit"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <EditText
+                android:id="@+id/etAccUpdateLimit"
+                android:layout_width="100dp"
+                android:layout_height="48dp"
+                android:autofillHints=""
+                android:ems="10"
+                android:hint="@string/credit_limit"
+                android:inputType="numberDecimal|numberSigned"
+                android:selectAllOnFocus="true"
+                android:text="@string/zero_double"
+                android:textAlignment="center"
+                android:textColorHint="#757575"
+                android:textSize="@dimen/text_info_size"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/lblAccUpdateLimit"
+                app:layout_constraintTop_toBottomOf="@id/edAccountUpdateBalance" />
+
 
             <TextView
                 android:id="@+id/txtAccountUpdateAccountId"
@@ -173,7 +200,7 @@
                 android:textColor="@color/deep_red"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/edAccountUpdateBudgeted" />
+                app:layout_constraintTop_toBottomOf="@id/etAccUpdateLimit" />
 
             <View
                 android:layout_width="match_parent"

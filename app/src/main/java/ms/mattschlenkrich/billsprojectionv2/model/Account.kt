@@ -38,7 +38,6 @@ import ms.mattschlenkrich.billsprojectionv2.TYPE_ID
 @Parcelize
 data class AccountType(
     @PrimaryKey
-    @ColumnInfo(typeAffinity = ColumnInfo.INTEGER)
     val typeId: Long,
     val accountType: String,
     val keepTotals: Boolean,
@@ -46,6 +45,8 @@ data class AccountType(
     val tallyOwing: Boolean,
     val keepMileage: Boolean,
     val displayAsAsset: Boolean,
+    @ColumnInfo(defaultValue = "0")
+    val allowPending: Boolean,
     @ColumnInfo(defaultValue = "0")
     val acctIsDeleted: Boolean,
     val acctUpdateTime: String,

@@ -107,6 +107,7 @@ class AccountAddFragment :
                 display += if (args.accountType!!.isAsset) "This is an asset \n" else ""
                 display += if (args.accountType!!.displayAsAsset) "This will be used for the budget \n" else ""
                 display += if (args.accountType!!.tallyOwing) "Balance owing will be calculated " else ""
+                display += if (args.accountType!!.allowPending) "Transactions may be delayed " else ""
                 if (display.isEmpty()) {
                     display =
                         "This is a dummy account transactions will not effect any other accounts"

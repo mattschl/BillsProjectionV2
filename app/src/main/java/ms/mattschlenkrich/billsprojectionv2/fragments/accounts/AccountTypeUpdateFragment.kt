@@ -13,16 +13,13 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
+import ms.mattschlenkrich.billsprojectionv2.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNT_TYPE_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.SQLITE_TIME
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountTypeUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 
 private const val TAG = FRAG_ACCOUNT_TYPE_UPDATE
 
@@ -40,8 +37,7 @@ class AccountTypeUpdateFragment :
     //since the update fragment contains arguments in nav_graph
     private val args: AccountTypeUpdateFragmentArgs by navArgs()
     private lateinit var currentAccountType: AccountType
-
-    private val timeFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
+    private val df = DateFunctions()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,11 +78,11 @@ class AccountTypeUpdateFragment :
         val keepOwing = binding.chkAccountTypeUKeepOwing.isChecked
         val isAsset = binding.chkAccTypeAddIsAsset.isChecked
         val displayAsAsset = binding.chkAccountTypeUDisplayAsset.isChecked
-        val currTime = timeFormatter.format(Calendar.getInstance().time)
+        val allowPending = binding.chkAccTypeUAllowPending.isChecked
         val accountType = AccountType(
             currentAccountType.typeId, accountTypeName,
             keepTotals, isAsset, keepOwing, false, displayAsAsset,
-            false, currTime
+            allowPending, false, df.getCurrentTimeAsString()
         )
 
         if (accountTypeName == currentAccountType.accountType) {
@@ -143,6 +139,8 @@ class AccountTypeUpdateFragment :
             currentAccountType.isAsset
         binding.chkAccountTypeUDisplayAsset.isChecked =
             currentAccountType.displayAsAsset
+        binding.chkAccTypeUAllowPending.isChecked =
+            currentAccountType.allowPending
     }
 
     @Deprecated("Deprecated in Java")
@@ -156,10 +154,9 @@ class AccountTypeUpdateFragment :
             setTitle("Delete Account Type?")
             setMessage("Are you sure you want to delete this Account Type?")
             setPositiveButton("Delete") { _, _ ->
-                val currTime = timeFormatter.format(Calendar.getInstance().time)
                 accountsViewModel.deleteAccountType(
                     currentAccountType.typeId,
-                    currTime
+                    df.getCurrentTimeAsString()
                 )
                 val direction = AccountTypeUpdateFragmentDirections
                     .actionAccountTypeUpdateFragmentToAccountTypesFragment(

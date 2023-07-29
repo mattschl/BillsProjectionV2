@@ -12,16 +12,13 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
+import ms.mattschlenkrich.billsprojectionv2.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNT_TYPE_ADD
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.SQLITE_TIME
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountTypeAddBinding
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 import java.util.Random
 
 private const val TAG = FRAG_ACCOUNT_TYPE_ADD
@@ -36,9 +33,7 @@ class AccountTypeAddFragment :
     private lateinit var accountsViewModel: AccountViewModel
     private lateinit var mView: View
     private val args: AccountTypeAddFragmentArgs by navArgs()
-
-    private val timeFormatter: SimpleDateFormat =
-        SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
+    private val df = DateFunctions()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -94,13 +89,13 @@ class AccountTypeAddFragment :
         val keepOwing = binding.chkAccTypeAddKeepOwing.isChecked
         val isAsset = binding.chkAccTypeAddIsAsset.isChecked
         val displayAsAsset = binding.chkAccTypeAddDisplayAsset.isChecked
-        val currTime = timeFormatter.format(Calendar.getInstance().time)
+        val allowPending = binding.chkAccTypeAddAllowPending.isChecked
 
         if (accountTypeName.isNotEmpty()) {
             val accountType = AccountType(
                 id, accountTypeName, keepTotals,
                 isAsset, keepOwing, false, displayAsAsset,
-                false, currTime
+                allowPending, false, df.getCurrentTimeAsString()
             )
             accountsViewModel.addAccountType(accountType)
             val direction = AccountTypeAddFragmentDirections

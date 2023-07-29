@@ -69,12 +69,21 @@
             app:layout_constraintStart_toEndOf="@+id/chkAccTypeAddIsAsset"
             app:layout_constraintTop_toTopOf="@+id/chkAccTypeAddIsAsset" />
 
+        <CheckBox
+            android:id="@+id/chkAccTypeUAllowPending"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/allow_transactions_pending"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/chkAccountTypeUDisplayAsset" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="@dimen/view_spacer"
             android:shadowColor="@color/white"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/chkAccountTypeUDisplayAsset" />
+            app:layout_constraintTop_toBottomOf="@id/chkAccTypeUAllowPending" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabAccountTypeUpdate"

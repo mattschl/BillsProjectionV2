@@ -58,5 +58,14 @@
             app:layout_constraintStart_toEndOf="@+id/chkAccTypeAddIsAsset"
             app:layout_constraintTop_toTopOf="@+id/chkAccTypeAddIsAsset" />
 
+        <CheckBox
+            android:id="@+id/chkAccTypeAddAllowPending"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/allow_transactions_pending"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/chkAccTypeAddDisplayAsset" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
