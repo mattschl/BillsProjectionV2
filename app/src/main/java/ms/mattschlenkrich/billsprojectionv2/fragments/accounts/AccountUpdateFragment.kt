@@ -97,6 +97,7 @@ class AccountUpdateFragment :
                 cf.getDoubleFromDollars(edAccountUpdateBudgeted.text.toString()),
                 cf.getDoubleFromDollars(edAccountUpdateBalance.text.toString()),
                 cf.getDoubleFromDollars(edAccountUpdateOwing.text.toString()),
+                cf.getDoubleFromDollars(etAccUpdateLimit.text.toString()),
                 false,
                 df.getCurrentTimeAsString()
             )
