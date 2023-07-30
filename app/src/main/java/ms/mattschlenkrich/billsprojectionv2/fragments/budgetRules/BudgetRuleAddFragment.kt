@@ -11,7 +11,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import kotlinx.coroutines.CoroutineScope
@@ -50,11 +53,11 @@ class BudgetRuleAddFragment :
     private val cf = CommonFunctions()
     private val df = DateFunctions()
 
-    @Suppress("DEPRECATION")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
+//    @Suppress("DEPRECATION")
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        setHasOptionsMenu(true)
+//    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -79,6 +82,25 @@ class BudgetRuleAddFragment :
                 budgetRuleViewModel.getBudgetRuleNameList()
         }
         mainActivity.title = "Add a new Budget Rule"
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                // Add menu items here
+                menuInflater.inflate(R.menu.save_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                // Handle the menu selection
+                return when (menuItem.itemId) {
+                    R.id.menu_save -> {
+                        saveBudgetRule()
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
         fillValues()
 
         binding.apply {
@@ -299,22 +321,22 @@ class BudgetRuleAddFragment :
         binding.spDayOfWeek.adapter = adapterDayOfWeek
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        menu.clear()
-        inflater.inflate(R.menu.save_menu, menu)
-    }
-
-    @Suppress("DEPRECATION")
-    @Deprecated("Deprecated in Java")
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.menu_save -> {
-                saveBudgetRule()
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
+//    @Deprecated("Deprecated in Java")
+//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+////        menu.clear()
+//        inflater.inflate(R.menu.save_menu, menu)
+//    }
+//
+//    @Suppress("DEPRECATION")
+//    @Deprecated("Deprecated in Java")
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        when (item.itemId) {
+//            R.id.menu_save -> {
+//                saveBudgetRule()
+//            }
+//        }
+//        return super.onOptionsItemSelected(item)
+//    }
 
     private fun saveBudgetRule() {
         val mes = checkBudgetRule()

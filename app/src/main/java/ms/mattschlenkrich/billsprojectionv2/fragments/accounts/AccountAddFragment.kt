@@ -9,7 +9,10 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import kotlinx.coroutines.CoroutineScope
@@ -22,6 +25,7 @@ import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountAddBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
+import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 
 private const val TAG = FRAG_ACCOUNT_ADD
@@ -37,13 +41,14 @@ class AccountAddFragment :
     private lateinit var mView: View
     private val args: AccountAddFragmentArgs by navArgs()
     private var accountNameList: List<String>? = null
+    private var accountType: AccountType? = null
     private val cf = CommonFunctions()
     private val df = DateFunctions()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        setHasOptionsMenu(true)
+//    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,6 +66,27 @@ class AccountAddFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                // Add menu items here
+                menuInflater.inflate(R.menu.save_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                // Handle the menu selection
+                return when (menuItem.itemId) {
+                    R.id.menu_save -> {
+                        saveAccount(mView)
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
         accountsViewModel =
             mainActivity.accountViewModel
         CoroutineScope(Dispatchers.IO).launch {
@@ -92,6 +118,7 @@ class AccountAddFragment :
                 )
             }
             if (args.accountType != null) {
+                accountType = args.accountType
                 tvAccAddType.text = args.accountType!!.accountType
                 var display =
                     if (args.accountType!!.keepTotals) "Transactions will be calculated\n" else ""
@@ -114,7 +141,7 @@ class AccountAddFragment :
                 cf.generateId(),
                 etAccAddName.text.toString().trim(),
                 etAccAddHandle.text.toString().trim(),
-                0,
+                if (accountType != null) accountType!!.typeId else 0,
                 cf.getDoubleFromDollars(etAccAddBudgeted.text.toString()),
                 cf.getDoubleFromDollars(etAccAddBalance.text.toString()),
                 cf.getDoubleFromDollars(etAccAddOwing.text.toString()),
@@ -202,19 +229,19 @@ class AccountAddFragment :
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        menu.clear()
-        inflater.inflate(R.menu.save_menu, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.menu_save -> {
-                saveAccount(mView)
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
+//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+////        menu.clear()
+//        inflater.inflate(R.menu.save_menu, menu)
+//    }
+//
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        when (item.itemId) {
+//            R.id.menu_save -> {
+//                saveAccount(mView)
+//            }
+//        }
+//        return super.onOptionsItemSelected(item)
+//    }
 
     override fun onDestroy() {
         super.onDestroy()

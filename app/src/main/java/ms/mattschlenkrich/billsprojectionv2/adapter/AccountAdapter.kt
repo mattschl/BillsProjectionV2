@@ -218,10 +218,10 @@ class AccountAdapter(
                     mBudgetRuleDetailed,
                     fragmentChain
                 )
-            Log.d(
-                TAG, "in gotoCallingFragment mTransactionDetailed is " +
-                        mTransactionDetailed.transaction!!.transName
-            )
+//            Log.d(
+//                TAG, "in gotoCallingFragment mTransactionDetailed is " +
+//                        mTransactionDetailed.transaction!!.transName
+//            )
             it.findNavController().navigate(direction)
         } else if (callingFragments.contains(FRAG_BUDGET_RULE_UPDATE)
         ) {

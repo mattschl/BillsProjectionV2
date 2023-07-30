@@ -10,7 +10,10 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import ms.mattschlenkrich.billsprojectionv2.DateFunctions
@@ -23,7 +26,6 @@ import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 
 private const val TAG = FRAG_ACCOUNT_TYPE_UPDATE
 
-@Suppress("DEPRECATION")
 class AccountTypeUpdateFragment :
     Fragment(R.layout.fragment_account_type_update) {
 
@@ -39,11 +41,11 @@ class AccountTypeUpdateFragment :
     private lateinit var currentAccountType: AccountType
     private val df = DateFunctions()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-
-    }
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        setHasOptionsMenu(true)
+//
+//    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,7 +66,25 @@ class AccountTypeUpdateFragment :
         currentAccountType = args.accountType!!
         mainActivity.title = "Update Account Type"
         fillValues()
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                // Add menu items here
+                menuInflater.inflate(R.menu.delete_menu, menu)
+            }
 
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                // Handle the menu selection
+                return when (menuItem.itemId) {
+                    R.id.menu_delete -> {
+                        deleteAccountType()
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
         binding.fabAccountTypeUpdate.setOnClickListener {
             updateAccountType()
         }
@@ -143,11 +163,11 @@ class AccountTypeUpdateFragment :
             currentAccountType.allowPending
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        menu.clear()
-        inflater.inflate(R.menu.delete_menu, menu)
-    }
+//    @Deprecated("Deprecated in Java")
+//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+////        menu.clear()
+//        inflater.inflate(R.menu.delete_menu, menu)
+//    }
 
     private fun deleteAccountType() {
         AlertDialog.Builder(activity).apply {
@@ -173,16 +193,16 @@ class AccountTypeUpdateFragment :
         }.create().show()
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.menu_delete -> {
-                deleteAccountType()
-            }
-        }
-
-        return super.onOptionsItemSelected(item)
-    }
+//    @Deprecated("Deprecated in Java")
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        when (item.itemId) {
+//            R.id.menu_delete -> {
+//                deleteAccountType()
+//            }
+//        }
+//
+//        return super.onOptionsItemSelected(item)
+//    }
 
     override fun onDestroy() {
         super.onDestroy()

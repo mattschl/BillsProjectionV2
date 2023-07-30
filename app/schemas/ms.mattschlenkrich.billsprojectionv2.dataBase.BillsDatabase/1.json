@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "cae0c0c5893774e870e798986a05babd",
+    "identityHash": "cbd5bec6618af6ae22e23a075d9e9bdd",
     "entities": [
       {
         "tableName": "accounts",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`accountId` INTEGER NOT NULL, `accountName` TEXT NOT NULL, `accountNumber` TEXT NOT NULL, `accountTypeId` INTEGER NOT NULL, `accBudgetedAmount` REAL NOT NULL DEFAULT 0.0, `accountBalance` REAL NOT NULL DEFAULT 0.0, `accountOwing` REAL NOT NULL DEFAULT 0.0, `accIsDeleted` INTEGER NOT NULL DEFAULT 0, `accUpdateTime` TEXT NOT NULL, PRIMARY KEY(`accountId`), FOREIGN KEY(`accountTypeId`) REFERENCES `accountTypes`(`typeId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`accountId` INTEGER NOT NULL, `accountName` TEXT NOT NULL, `accountNumber` TEXT NOT NULL, `accountTypeId` INTEGER NOT NULL, `accBudgetedAmount` REAL NOT NULL DEFAULT 0.0, `accountBalance` REAL NOT NULL DEFAULT 0.0, `accountOwing` REAL NOT NULL DEFAULT 0.0, `accountCreditLimit` REAL NOT NULL DEFAULT 0.0, `accIsDeleted` INTEGER NOT NULL DEFAULT 0, `accUpdateTime` TEXT NOT NULL, PRIMARY KEY(`accountId`), FOREIGN KEY(`accountTypeId`) REFERENCES `accountTypes`(`typeId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "accountId",
@@ -49,6 +49,13 @@
           {
             "fieldPath": "accountOwing",
             "columnName": "accountOwing",
+            "affinity": "REAL",
+            "notNull": true,
+            "defaultValue": "0.0"
+          },
+          {
+            "fieldPath": "accountCreditLimit",
+            "columnName": "accountCreditLimit",
             "affinity": "REAL",
             "notNull": true,
             "defaultValue": "0.0"
@@ -884,7 +891,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cae0c0c5893774e870e798986a05babd')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cbd5bec6618af6ae22e23a075d9e9bdd')"
     ]
   }
 }

@@ -3,9 +3,11 @@ package ms.mattschlenkrich.billsprojectionv2
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.MenuProvider
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import ms.mattschlenkrich.billsprojectionv2.dataBase.BillsDatabase
@@ -58,7 +60,72 @@ class MainActivity : AppCompatActivity() {
 //            )
 //        setupActionBarWithNavController(navController, appBarConfiguration)
 //        navView.setupWithNavController(navController)
+        addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menu.add(R.string.budget_view)
+                menu.add(R.string.transactions)
+                menu.add(R.string.accounts)
+                menu.add(R.string.budget_rules)
+                menu.add(getString(R.string.update_budget_predictions))
+                menu.add("Bills Projection ${BuildConfig.VERSION_NAME}")
+            }
 
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                when (menuItem.title) {
+
+                    resources.getString(R.string.budget_view) -> {
+                        val direction =
+                            NavGraphDirections.actionGlobalBudgetViewFragment()
+                        findNavController(R.id.fragment_container_view)
+                            .navigate(direction)
+                        return true
+                    }
+
+                    resources.getString(R.string.transactions) -> {
+                        val direction =
+                            NavGraphDirections.actionGlobalTransactionViewFragment(
+                                null,
+                                null
+                            )
+                        findNavController(R.id.fragment_container_view)
+                            .navigate(direction)
+                        return true
+                    }
+
+                    resources.getString(R.string.accounts) -> {
+                        val direction =
+                            NavGraphDirections.actionGlobalAccountsFragment(
+                                null,
+                                null,
+                                null,
+                                null,
+                                null
+                            )
+
+                        findNavController(R.id.fragment_container_view)
+                            .navigate(direction)
+                        return true
+                    }
+
+                    resources.getString(R.string.budget_rules) -> {
+                        val direction =
+                            NavGraphDirections.actionGlobalBudgetRuleFragment(
+                                null,
+                                null,
+                                null
+                            )
+                        findNavController(R.id.fragment_container_view)
+                            .navigate(direction)
+                        return true
+                    }
+
+                    else -> {
+                        return false
+                    }
+                }
+
+            }
+        })
         setupAccountViewModel()
         setupBudgetRuleViewModel()
         setupTransactionViewModel()
@@ -91,63 +158,63 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menu?.add(R.string.budget_view)
-        menu?.add(R.string.transactions)
-        menu?.add(R.string.accounts)
-        menu?.add(R.string.budget_rules)
-        menu?.add(getString(R.string.update_budget_predictions))
-        menu?.add("Bills Projection ${BuildConfig.VERSION_NAME}")
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.title) {
-
-            resources.getString(R.string.budget_view) -> {
-                val direction =
-                    NavGraphDirections.actionGlobalBudgetViewFragment()
-                findNavController(R.id.fragment_container_view)
-                    .navigate(direction)
-            }
-
-            resources.getString(R.string.transactions) -> {
-                val direction =
-                    NavGraphDirections.actionGlobalTransactionViewFragment(
-                        null,
-                        null
-                    )
-                findNavController(R.id.fragment_container_view)
-                    .navigate(direction)
-            }
-
-            resources.getString(R.string.accounts) -> {
-                val direction =
-                    NavGraphDirections.actionGlobalAccountsFragment(
-                        null,
-                        null,
-                        null,
-                        null,
-                        null
-                    )
-
-                findNavController(R.id.fragment_container_view)
-                    .navigate(direction)
-            }
-
-            resources.getString(R.string.budget_rules) -> {
-                val direction =
-                    NavGraphDirections.actionGlobalBudgetRuleFragment(
-                        null,
-                        null,
-                        null
-                    )
-                findNavController(R.id.fragment_container_view)
-                    .navigate(direction)
-            }
-        }
-        return false
-    }
+//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+//        menu?.add(R.string.budget_view)
+//        menu?.add(R.string.transactions)
+//        menu?.add(R.string.accounts)
+//        menu?.add(R.string.budget_rules)
+//        menu?.add(getString(R.string.update_budget_predictions))
+//        menu?.add("Bills Projection ${BuildConfig.VERSION_NAME}")
+//        return true
+//    }
+//
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        when (item.title) {
+//
+//            resources.getString(R.string.budget_view) -> {
+//                val direction =
+//                    NavGraphDirections.actionGlobalBudgetViewFragment()
+//                findNavController(R.id.fragment_container_view)
+//                    .navigate(direction)
+//            }
+//
+//            resources.getString(R.string.transactions) -> {
+//                val direction =
+//                    NavGraphDirections.actionGlobalTransactionViewFragment(
+//                        null,
+//                        null
+//                    )
+//                findNavController(R.id.fragment_container_view)
+//                    .navigate(direction)
+//            }
+//
+//            resources.getString(R.string.accounts) -> {
+//                val direction =
+//                    NavGraphDirections.actionGlobalAccountsFragment(
+//                        null,
+//                        null,
+//                        null,
+//                        null,
+//                        null
+//                    )
+//
+//                findNavController(R.id.fragment_container_view)
+//                    .navigate(direction)
+//            }
+//
+//            resources.getString(R.string.budget_rules) -> {
+//                val direction =
+//                    NavGraphDirections.actionGlobalBudgetRuleFragment(
+//                        null,
+//                        null,
+//                        null
+//                    )
+//                findNavController(R.id.fragment_container_view)
+//                    .navigate(direction)
+//            }
+//        }
+//        return false
+//    }
 
     private fun setupBudgetItemViewModel() {
         val budgetItemRepository = BudgetItemRepository(
