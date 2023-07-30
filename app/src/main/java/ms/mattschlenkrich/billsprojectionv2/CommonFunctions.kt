@@ -2,6 +2,7 @@ package ms.mattschlenkrich.billsprojectionv2
 
 import java.text.NumberFormat
 import java.util.Locale
+import java.util.Random
 
 class CommonFunctions {
     private val dollarFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
@@ -15,5 +16,13 @@ class CommonFunctions {
 
     fun displayDollars(num: Double): String {
         return dollarFormat.format(num)
+    }
+
+    fun generateId(): Long {
+        var id =
+            Random().nextInt(Int.MAX_VALUE).toLong()
+        id = if (Random().nextBoolean()) -id
+        else id
+        return id
     }
 }

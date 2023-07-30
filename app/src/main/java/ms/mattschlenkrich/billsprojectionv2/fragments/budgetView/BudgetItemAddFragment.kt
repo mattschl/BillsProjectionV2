@@ -9,23 +9,19 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
+import ms.mattschlenkrich.billsprojectionv2.CommonFunctions
+import ms.mattschlenkrich.billsprojectionv2.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_ITEM_ADD
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.REQUEST_TO_ACCOUNT
-import ms.mattschlenkrich.billsprojectionv2.SQLITE_DATE
-import ms.mattschlenkrich.billsprojectionv2.SQLITE_TIME
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetItemAddBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModel
-import java.text.NumberFormat
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 
 private const val TAG = FRAG_BUDGET_ITEM_ADD
 
@@ -44,12 +40,8 @@ class BudgetItemAddFragment : Fragment(
     private var toAccount: Account? = null
     private var fromAccount: Account? = null
 
-    private val dollarFormat: NumberFormat =
-        NumberFormat.getCurrencyInstance(Locale.CANADA)
-    private val timeFormatter: SimpleDateFormat =
-        SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
-    private val dateFormatter: SimpleDateFormat =
-        SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
+    private val cf = CommonFunctions()
+    private val df = DateFunctions()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,7 +102,7 @@ class BudgetItemAddFragment : Fragment(
                 curDateAll[0].toInt(),
                 curDateAll[1].toInt() - 1,
                 curDateAll[2].toInt()
-            )
+            ).show()
         }
     }
 
@@ -168,9 +160,7 @@ class BudgetItemAddFragment : Fragment(
                 biIsCompleted = false,
                 biIsCancelled = false,
                 biIsDeleted = false,
-                timeFormatter.format(
-                    Calendar.getInstance().time
-                )
+                df.getCurrentTimeAsString()
             )
             return BudgetDetailed(
                 budgetItem, budgetRule, toAccount, fromAccount
@@ -188,11 +178,7 @@ class BudgetItemAddFragment : Fragment(
 
     private fun fillFromBlank() {
         binding.apply {
-            etProjectedDate.setText(
-                dateFormatter.format(
-                    Calendar.getInstance().time
-                )
-            )
+            etProjectedDate.setText(df.getCurrentDateAsString())
         }
     }
 
@@ -201,7 +187,7 @@ class BudgetItemAddFragment : Fragment(
             etProjectedDate.setText(args.budgetItem!!.budgetItem!!.biProjectedDate)
             etBudgetItemName.setText(args.budgetItem?.budgetItem?.biBudgetName)
             etProjectedAmount.setText(
-                dollarFormat.format(args.budgetItem?.budgetItem?.biProjectedAmount)
+                cf.displayDollars(args.budgetItem!!.budgetItem!!.biProjectedAmount)
             )
             if (args.budgetItem!!.budgetRule != null) {
                 tvBudgetRule.text = args.budgetItem!!.budgetRule!!.budgetRuleName

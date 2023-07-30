@@ -80,6 +80,8 @@ data class Account(
     val accountBalance: Double,
     @ColumnInfo(defaultValue = "0.0")
     val accountOwing: Double,
+    @ColumnInfo(defaultValue = "0.0")
+    val accountCreditLimit: Double,
     @ColumnInfo(defaultValue = "0")
     val accIsDeleted: Boolean,
     val accUpdateTime: String,

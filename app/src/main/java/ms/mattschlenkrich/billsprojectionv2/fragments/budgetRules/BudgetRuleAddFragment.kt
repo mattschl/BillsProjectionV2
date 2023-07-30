@@ -17,23 +17,18 @@ import androidx.navigation.fragment.navArgs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import ms.mattschlenkrich.billsprojectionv2.CommonFunctions
+import ms.mattschlenkrich.billsprojectionv2.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_RULE_ADD
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.REQUEST_TO_ACCOUNT
-import ms.mattschlenkrich.billsprojectionv2.SQLITE_DATE
-import ms.mattschlenkrich.billsprojectionv2.SQLITE_TIME
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetRuleAddBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModel
-import java.text.NumberFormat
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
-import java.util.Random
 
 private const val TAG = FRAG_BUDGET_RULE_ADD
 
@@ -52,12 +47,8 @@ class BudgetRuleAddFragment :
     private var mFromAccount: Account? = null
     private var budgetNameList: List<String>? = null
 
-    private val dollarFormat: NumberFormat =
-        NumberFormat.getCurrencyInstance(Locale.CANADA)
-    private val timeFormatter: SimpleDateFormat =
-        SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
-    private val dateFormatter: SimpleDateFormat =
-        SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
+    private val cf = CommonFunctions()
+    private val df = DateFunctions()
 
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -159,14 +150,6 @@ class BudgetRuleAddFragment :
         }
     }
 
-    private fun generateId(): Long {
-        var id =
-            Random().nextInt(Int.MAX_VALUE).toLong()
-        id = if (Random().nextBoolean()) -id
-        else id
-        return id
-    }
-
     private fun chooseFromAccount() {
         val fragmentChain = "${args.callingFragments}, $TAG"
         val direction = BudgetRuleAddFragmentDirections
@@ -198,7 +181,7 @@ class BudgetRuleAddFragment :
             val curDateAll = etEndDate.text.toString()
                 .split("-")
             val datePickerDialog = DatePickerDialog(
-                mView!!.context,
+                mView.context,
                 { _, year, monthOfYear, dayOfMonth ->
                     val month = monthOfYear + 1
                     val display = "$year-${
@@ -252,7 +235,7 @@ class BudgetRuleAddFragment :
                         args.budgetRuleDetailed!!.budgetRule!!.budgetRuleName
                     )
                     etAmount.setText(
-                        dollarFormat.format(
+                        cf.displayDollars(
                             args.budgetRuleDetailed!!.budgetRule!!.budgetAmount
                         )
                     )
@@ -286,16 +269,8 @@ class BudgetRuleAddFragment :
                     )
                 }
             } else {
-                etStartDate.setText(
-                    dateFormatter.format(
-                        Calendar.getInstance().time
-                    )
-                )
-                etEndDate.setText(
-                    dateFormatter.format(
-                        Calendar.getInstance().time
-                    )
-                )
+                etStartDate.setText(df.getCurrentDateAsString())
+                etEndDate.setText(df.getCurrentDateAsString())
             }
         }
     }
@@ -348,7 +323,7 @@ class BudgetRuleAddFragment :
                 val fragmentChain = "${args.callingFragments}, $TAG"
                 budgetRuleViewModel.insertBudgetRule(
                     BudgetRule(
-                        generateId(),
+                        cf.generateId(),
                         etBudgetName.text.toString().trim(),
                         mToAccount!!.accountId,
                         mFromAccount!!.accountId,
@@ -366,7 +341,7 @@ class BudgetRuleAddFragment :
                         etFrequencyCount.text.toString().toInt(),
                         etLeadDays.text.toString().toInt(),
                         false,
-                        timeFormatter.format(Calendar.getInstance().time)
+                        df.getCurrentTimeAsString()
                     )
                 )
                 val direction = BudgetRuleAddFragmentDirections

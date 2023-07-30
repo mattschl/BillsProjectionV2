@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.ADAPTER_BUDGET_RULE
+import ms.mattschlenkrich.billsprojectionv2.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.FRAG_TRANS_UPDATE
@@ -18,8 +19,6 @@ import ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules.BudgetRuleFrag
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
-import java.text.NumberFormat
-import java.util.Locale
 
 private const val TAG = ADAPTER_BUDGET_RULE
 
@@ -30,8 +29,7 @@ class BudgetRuleAdapter(
     private val callingFragments: String?,
 ) : RecyclerView.Adapter<BudgetRuleAdapter.BudgetRuleViewHolder>() {
 
-    private val dollarFormat: NumberFormat =
-        NumberFormat.getCurrencyInstance(Locale.CANADA)
+    private val cf = CommonFunctions()
 
     class BudgetRuleViewHolder(
         val itemBinding: BudgetRuleLayoutBinding
@@ -84,7 +82,7 @@ class BudgetRuleAdapter(
         info = "\nFrom: " + budgetRuleDetailed.fromAccount!!.accountName
         holder.itemBinding.tvFromAccount.text = info
         val amount =
-            dollarFormat.format(budgetRuleDetailed.budgetRule.budgetAmount)
+            cf.displayDollars(budgetRuleDetailed.budgetRule.budgetAmount)
         Log.d(TAG, "Amount is ${budgetRuleDetailed.budgetRule.budgetAmount}")
         val frequencyTypes =
             context.resources.getStringArray(R.array.frequency_types)

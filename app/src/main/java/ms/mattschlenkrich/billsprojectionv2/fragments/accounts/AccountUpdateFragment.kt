@@ -87,39 +87,35 @@ class AccountUpdateFragment :
         }
     }
 
-    private fun gotoAccountTypes() {
+    private fun getUpdatedAccount(): Account {
         binding.apply {
-            val accountName =
-                edAccountUpdateName.text.toString().trim()
-            val accountHandle =
-                edAccountUpdateHandle.text.toString().trim()
-            val accountTypeId =
-                curAccount!!.accountTypeId
-            val balance =
-                cf.getDoubleFromDollars(edAccountUpdateBalance.text.toString())
-            val owing =
-                cf.getDoubleFromDollars(edAccountUpdateOwing.text.toString())
-            val budgeted =
-                cf.getDoubleFromDollars(edAccountUpdateBudgeted.text.toString())
-
-            val account = Account(
-                curAccount!!.accountId, accountName,
-                accountHandle, accountTypeId, budgeted,
-                balance, owing,
-                false, df.getCurrentTimeAsString()
+            return Account(
+                curAccount!!.accountId,
+                edAccountUpdateName.text.toString().trim(),
+                edAccountUpdateHandle.text.toString().trim(),
+                curAccount!!.accountTypeId,
+                cf.getDoubleFromDollars(edAccountUpdateBudgeted.text.toString()),
+                cf.getDoubleFromDollars(edAccountUpdateBalance.text.toString()),
+                cf.getDoubleFromDollars(edAccountUpdateOwing.text.toString()),
+                false,
+                df.getCurrentTimeAsString()
             )
-            val fragmentChain = "${args.callingFragments}, $TAG"
-            val direction = AccountUpdateFragmentDirections
-                .actionAccountUpdateFragmentToAccountTypesFragment(
-                    args.budgetItem,
-                    args.transaction,
-                    args.budgetRuleDetailed,
-                    account,
-                    args.requestedAccount,
-                    fragmentChain
-                )
-            mView?.findNavController()?.navigate(direction)
         }
+    }
+
+    private fun gotoAccountTypes() {
+        val fragmentChain = "${args.callingFragments}, $TAG"
+        val direction = AccountUpdateFragmentDirections
+            .actionAccountUpdateFragmentToAccountTypesFragment(
+                args.budgetItem,
+                args.transaction,
+                args.budgetRuleDetailed,
+                getUpdatedAccount(),
+                args.requestedAccount,
+                fragmentChain
+            )
+        mView?.findNavController()?.navigate(direction)
+
     }
 
     private fun checkAccount(): String {
@@ -157,70 +153,47 @@ class AccountUpdateFragment :
 
     private fun updateAccount() {
         val mess = checkAccount()
-        binding.apply {
-            if (mess == "Ok") {
-                val accountName =
-                    edAccountUpdateName.text.toString().trim()
-                val accountHandle =
-                    edAccountUpdateHandle.text.toString().trim()
-                val accountTypeId =
-                    newAccountType!!.typeId
-                val balance =
-                    cf.getDoubleFromDollars(edAccountUpdateBalance.text.toString())
-                val owing =
-                    cf.getDoubleFromDollars(edAccountUpdateOwing.text.toString())
-                val budgeted =
-                    cf.getDoubleFromDollars(edAccountUpdateBudgeted.text.toString())
 
-                val account = Account(
-                    curAccount!!.accountId, accountName,
-                    accountHandle, accountTypeId, budgeted,
-                    balance, owing,
-                    false, df.getCurrentTimeAsString()
-                )
-
-                if (accountName == curAccount!!.accountName) {
-                    accountsViewModel.updateAccount(account)
-                    val direction = AccountUpdateFragmentDirections
-                        .actionAccountUpdateFragmentToAccountsFragment(
-                            args.budgetItem,
-                            args.transaction,
-                            args.budgetRuleDetailed,
-                            args.requestedAccount,
-                            args.callingFragments
-                        )
-                    mView?.findNavController()?.navigate(direction)
-                } else if (accountName.isNotBlank()) {
-                    AlertDialog.Builder(activity).apply {
-                        setTitle("Rename Account?")
-                        setMessage(
-                            "Are you sure you want to rename this Account?\n " +
-                                    "      NOTE:\n" +
-                                    "This will NOT replace an existing Account"
-                        )
-                        setPositiveButton("Update Account") { _, _ ->
-                            accountsViewModel.updateAccount(account)
-                            val direction = AccountUpdateFragmentDirections
-                                .actionAccountUpdateFragmentToAccountsFragment(
-                                    args.budgetItem,
-                                    args.transaction,
-                                    args.budgetRuleDetailed,
-                                    args.requestedAccount,
-                                    args.callingFragments
-                                )
-                            mView?.findNavController()?.navigate(direction)
-                        }
-                        setNegativeButton("Cancel", null)
-                    }.create().show()
-                }
-            } else {
-                Toast.makeText(
-                    mView!!.context,
-                    mess,
-                    Toast.LENGTH_LONG
-                ).show()
+        if (mess == "Ok") {
+            val name = binding.edAccountUpdateName.text.trim()
+            if (name == curAccount!!.accountName) {
+                accountsViewModel.updateAccount(getUpdatedAccount())
+                gotoAccountFragment()
+            } else if (name.isNotBlank()) {
+                AlertDialog.Builder(activity).apply {
+                    setTitle("Rename Account?")
+                    setMessage(
+                        "Are you sure you want to rename this Account?\n " +
+                                "      NOTE:\n" +
+                                "This will NOT replace an existing Account"
+                    )
+                    setPositiveButton("Update Account") { _, _ ->
+                        accountsViewModel.updateAccount(getUpdatedAccount())
+                        gotoAccountFragment()
+                    }
+                    setNegativeButton("Cancel", null)
+                }.create().show()
             }
+        } else {
+            Toast.makeText(
+                mView!!.context,
+                mess,
+                Toast.LENGTH_LONG
+            ).show()
         }
+
+    }
+
+    private fun gotoAccountFragment() {
+        val direction = AccountUpdateFragmentDirections
+            .actionAccountUpdateFragmentToAccountsFragment(
+                args.budgetItem,
+                args.transaction,
+                args.budgetRuleDetailed,
+                args.requestedAccount,
+                args.callingFragments
+            )
+        mView?.findNavController()?.navigate(direction)
     }
 
     private fun fillValues() {

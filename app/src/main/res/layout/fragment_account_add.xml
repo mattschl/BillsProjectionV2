@@ -13,7 +13,7 @@
             android:layout_height="wrap_content">
 
             <EditText
-                android:id="@+id/editAccAddName"
+                android:id="@+id/etAccAddName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/top_margin_medium"
@@ -38,12 +38,12 @@
                 android:text="@string/number"
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_info_size"
-                app:layout_constraintEnd_toStartOf="@id/editAccAddHandle"
+                app:layout_constraintEnd_toStartOf="@id/etAccAddHandle"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/editAccAddName" />
+                app:layout_constraintTop_toBottomOf="@id/etAccAddName" />
 
             <EditText
-                android:id="@+id/editAccAddHandle"
+                android:id="@+id/etAccAddHandle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="10"
@@ -59,7 +59,7 @@
                 app:layout_constraintStart_toEndOf="@id/lblAccAddHandle" />
 
             <EditText
-                android:id="@+id/editAccAddBalance"
+                android:id="@+id/etAccAddBalance"
                 android:layout_width="100dp"
                 android:layout_height="48dp"
                 android:ems="10"
@@ -78,7 +78,7 @@
                 tools:ignore="DuplicateSpeakableTextCheck" />
 
             <EditText
-                android:id="@+id/editAccAddOwing"
+                android:id="@+id/etAccAddOwing"
                 android:layout_width="100dp"
                 android:layout_height="48dp"
                 android:ems="10"
@@ -105,7 +105,7 @@
                 android:textColor="@color/black"
                 app:layout_constraintEnd_toStartOf="@id/lblAccAddOwing"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/editAccAddHandle" />
+                app:layout_constraintTop_toBottomOf="@id/etAccAddHandle" />
 
             <TextView
                 android:id="@+id/lblAccAddOwing"
@@ -128,7 +128,7 @@
                 app:layout_constraintStart_toEndOf="@id/lblAccAddOwing" />
 
             <EditText
-                android:id="@+id/editAccAddBudgeted"
+                android:id="@+id/etAccAddBudgeted"
                 android:layout_width="100dp"
                 android:layout_height="48dp"
                 android:autofillHints=""
@@ -170,7 +170,7 @@
                 android:textSize="@dimen/text_info_size"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/lblAccAddLimit"
-                app:layout_constraintTop_toBottomOf="@id/editAccAddBudgeted" />
+                app:layout_constraintTop_toBottomOf="@id/etAccAddBudgeted" />
 
             <TextView
                 android:id="@+id/lblAccAddType"

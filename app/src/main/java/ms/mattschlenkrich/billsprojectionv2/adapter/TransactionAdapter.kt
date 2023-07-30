@@ -8,11 +8,10 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.billsprojectionv2.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.databinding.TransactionLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.transactions.TransactionViewFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
-import java.text.NumberFormat
-import java.util.Locale
 import java.util.Random
 
 private const val TAG = "TransactionAdapter"
@@ -23,8 +22,7 @@ class TransactionAdapter(
     private val callingFragment: String,
 ) : RecyclerView.Adapter<TransactionAdapter.TransactionsViewHolder>() {
 
-    private val dollarFormat: NumberFormat =
-        NumberFormat.getCurrencyInstance(Locale.CANADA)
+    private val cf = CommonFunctions()
 
     class TransactionsViewHolder(
         val itemBinding: TransactionLayoutBinding
@@ -101,7 +99,7 @@ class TransactionAdapter(
                 transaction.fromAccount!!
                     .accountName
         holder.itemBinding.tvFromAccount.text = info
-        info = dollarFormat.format(
+        info = cf.displayDollars(
             transaction.transaction.transAmount
         )
         info += "\nNote: " +

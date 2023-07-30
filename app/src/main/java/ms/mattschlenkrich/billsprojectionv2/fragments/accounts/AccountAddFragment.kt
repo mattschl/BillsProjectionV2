@@ -15,18 +15,14 @@ import androidx.navigation.fragment.navArgs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import ms.mattschlenkrich.billsprojectionv2.CommonFunctions
+import ms.mattschlenkrich.billsprojectionv2.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNT_ADD
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.SQLITE_TIME
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountAddBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
-import java.text.NumberFormat
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
-import java.util.Random
 
 private const val TAG = FRAG_ACCOUNT_ADD
 
@@ -41,13 +37,8 @@ class AccountAddFragment :
     private lateinit var mView: View
     private val args: AccountAddFragmentArgs by navArgs()
     private var accountNameList: List<String>? = null
-
-    private val dollarFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
-
-    //    private val dateFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
-    private val timeFormatter: SimpleDateFormat =
-        SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
-
+    private val cf = CommonFunctions()
+    private val df = DateFunctions()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,16 +79,16 @@ class AccountAddFragment :
     private fun fillValues() {
         binding.apply {
             if (args.account != null) {
-                editAccAddName.setText(args.account!!.accountName)
-                editAccAddHandle.setText(args.account!!.accountNumber)
-                editAccAddBalance.setText(
-                    dollarFormat.format(args.account!!.accountBalance)
+                etAccAddName.setText(args.account!!.accountName)
+                etAccAddHandle.setText(args.account!!.accountNumber)
+                etAccAddBalance.setText(
+                    cf.displayDollars(args.account!!.accountBalance)
                 )
-                editAccAddOwing.setText(
-                    dollarFormat.format(args.account!!.accountOwing)
+                etAccAddOwing.setText(
+                    cf.displayDollars(args.account!!.accountOwing)
                 )
-                editAccAddBudgeted.setText(
-                    dollarFormat.format(args.account!!.accBudgetedAmount)
+                etAccAddBudgeted.setText(
+                    cf.displayDollars(args.account!!.accBudgetedAmount)
                 )
             }
             if (args.accountType != null) {
@@ -117,126 +108,76 @@ class AccountAddFragment :
         }
     }
 
-    private fun gotoAccountTypes() {
+    private fun getCurrentAccount(): Account {
         binding.apply {
-            val accountName =
-                editAccAddName.text.toString().trim()
-            val accountHandle =
-                editAccAddHandle.text.toString().trim()
-            val accountBalance =
-                editAccAddBalance.text.toString().trim()
-                    .replace(",", "")
-                    .replace("$", "")
-                    .toDouble()
-            val accountOwing =
-                editAccAddOwing.text.toString().trim()
-                    .replace(",", "")
-                    .replace("$", "")
-                    .toDouble()
-            val accountBudgeted =
-                editAccAddBudgeted.text.toString().trim()
-                    .replace(",", "")
-                    .replace("$", "")
-                    .toDouble()
-            val currTime =
-                timeFormatter.format(Calendar.getInstance().time)
-            val account = Account(
-                0, accountName, accountHandle,
-                0, accountBudgeted, accountBalance,
-                accountOwing, false,
-                currTime
+            return Account(
+                cf.generateId(),
+                etAccAddName.text.toString().trim(),
+                etAccAddHandle.text.toString().trim(),
+                0,
+                cf.getDoubleFromDollars(etAccAddBudgeted.text.toString()),
+                cf.getDoubleFromDollars(etAccAddBalance.text.toString()),
+                cf.getDoubleFromDollars(etAccAddOwing.text.toString()),
+                false,
+                df.getCurrentTimeAsString()
             )
-            val fragmentChain = "${args.callingFragments}, $TAG"
-            val direction = AccountAddFragmentDirections
-                .actionAccountAddFragmentToAccountTypesFragment(
-                    args.budgetItem,
-                    args.transaction,
-                    args.budgetRuleDetailed,
-                    account,
-                    args.requestedAccount,
-                    fragmentChain
-                )
-            mView.findNavController().navigate(direction)
         }
+    }
+
+    private fun gotoAccountTypes() {
+        val fragmentChain = "${args.callingFragments}, $TAG"
+        val direction = AccountAddFragmentDirections
+            .actionAccountAddFragmentToAccountTypesFragment(
+                args.budgetItem,
+                args.transaction,
+                args.budgetRuleDetailed,
+                getCurrentAccount(),
+                args.requestedAccount,
+                fragmentChain
+            )
+        mView.findNavController().navigate(direction)
+
     }
 
     private fun saveAccount(view: View) {
         val mes = checkAccount()
-        binding.apply {
-            if (mes == "Ok") {
-                val accountName =
-                    editAccAddName.text.toString().trim()
-                val accountHandle =
-                    editAccAddHandle.text.toString().trim()
-                val accountBalance =
-                    editAccAddBalance.text.toString().trim()
-                        .replace(",", "")
-                        .replace("$", "")
-                        .toDouble()
-                val accountOwing =
-                    editAccAddOwing.text.toString().trim()
-                        .replace(",", "")
-                        .replace("$", "")
-                        .toDouble()
-                val accountBudgeted =
-                    editAccAddBudgeted.text.toString().trim()
-                        .replace(",", "")
-                        .replace("$", "")
-                        .toDouble()
-                val updateTime =
-                    timeFormatter.format(Calendar.getInstance().time)
-                val accountTypeId = args.accountType!!.typeId
-                val account = Account(
-                    generateId(), accountName, accountHandle,
-                    accountTypeId, accountBudgeted, accountBalance,
-                    accountOwing, false,
-                    updateTime
+        if (mes == "Ok") {
+            val fragmentChain =
+                args.callingFragments!!
+                    .replace(", $FRAG_ACCOUNT_ADD", "")
+            accountsViewModel.addAccount(getCurrentAccount())
+            val direction = AccountAddFragmentDirections
+                .actionAccountAddFragmentToAccountsFragment(
+                    args.budgetItem,
+                    args.transaction,
+                    args.budgetRuleDetailed,
+                    args.requestedAccount,
+                    fragmentChain
                 )
-                val fragmentChain =
-                    args.callingFragments!!
-                        .replace(", $FRAG_ACCOUNT_ADD", "")
-                accountsViewModel.addAccount(account)
-                val direction = AccountAddFragmentDirections
-                    .actionAccountAddFragmentToAccountsFragment(
-                        args.budgetItem,
-                        args.transaction,
-                        args.budgetRuleDetailed,
-                        args.requestedAccount,
+            Log.d(
+                TAG, "fragment chain is\n" +
                         fragmentChain
-                    )
-                Log.d(
-                    TAG, "fragment chain is\n" +
-                            fragmentChain
-                )
-                view.findNavController().navigate(direction)
+            )
+            view.findNavController().navigate(direction)
 
-            } else {
-                Toast.makeText(
-                    mView.context,
-                    mes,
-                    Toast.LENGTH_LONG
-                ).show()
-            }
+        } else {
+            Toast.makeText(
+                mView.context,
+                mes,
+                Toast.LENGTH_LONG
+            ).show()
         }
-    }
-
-    private fun generateId(): Long {
-        var id =
-            Random().nextInt(Int.MAX_VALUE).toLong()
-        id = if (Random().nextBoolean()) -id
-        else id
-        return id
     }
 
     private fun checkAccount(): String {
         binding.apply {
             val nameIsBlank =
-                editAccAddName.text.isNullOrEmpty()
+                etAccAddName.text.isNullOrEmpty()
             var nameFound = false
             if (accountNameList!!.isNotEmpty() && !nameIsBlank) {
                 for (i in 0 until accountNameList!!.size) {
                     if (accountNameList!![i] ==
-                        editAccAddName.text.toString().trim()
+                        etAccAddName.text.toString().trim()
                     ) {
                         nameFound = true
                         break

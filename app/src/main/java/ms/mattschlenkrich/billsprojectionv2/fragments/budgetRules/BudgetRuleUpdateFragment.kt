@@ -17,26 +17,21 @@ import androidx.navigation.fragment.navArgs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import ms.mattschlenkrich.billsprojectionv2.CommonFunctions
+import ms.mattschlenkrich.billsprojectionv2.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_RULE_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.REQUEST_TO_ACCOUNT
-import ms.mattschlenkrich.billsprojectionv2.SQLITE_DATE
-import ms.mattschlenkrich.billsprojectionv2.SQLITE_TIME
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetRuleUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModel
-import java.text.NumberFormat
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 
 private const val TAG = FRAG_BUDGET_RULE_UPDATE
 
-@Suppress("DEPRECATION")
 class BudgetRuleUpdateFragment :
     Fragment(R.layout.fragment_budget_rule_update) {
 
@@ -51,12 +46,8 @@ class BudgetRuleUpdateFragment :
     private var mFromAccount: Account? = null
     private var budgetNameList: List<String>? = null
 
-    private val dollarFormat: NumberFormat =
-        NumberFormat.getCurrencyInstance(Locale.CANADA)
-    private val timeFormatter: SimpleDateFormat =
-        SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
-    private val dateFormatter: SimpleDateFormat =
-        SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
+    private val cf = CommonFunctions()
+    private val df = DateFunctions()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -233,7 +224,7 @@ class BudgetRuleUpdateFragment :
                         args.budgetRuleDetailed!!.budgetRule!!.budgetRuleName
                     )
                     etAmount.setText(
-                        dollarFormat.format(
+                        cf.displayDollars(
                             args.budgetRuleDetailed!!.budgetRule!!.budgetAmount
                         )
                     )
@@ -270,16 +261,8 @@ class BudgetRuleUpdateFragment :
                     )
                 }
             } else {
-                etStartDate.setText(
-                    dateFormatter.format(
-                        Calendar.getInstance().time
-                    )
-                )
-                etEndDate.setText(
-                    dateFormatter.format(
-                        Calendar.getInstance().time
-                    )
-                )
+                etStartDate.setText(df.getCurrentDateAsString())
+                etEndDate.setText(df.getCurrentDateAsString())
             }
         }
     }
@@ -308,14 +291,11 @@ class BudgetRuleUpdateFragment :
         binding.spDayOfWeek.adapter = adapterDayOfWeek
     }
 
-    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
 //        menu.clear()
         inflater.inflate(R.menu.delete_menu, menu)
     }
 
-    @Suppress("DEPRECATION")
-    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_delete -> {
@@ -332,9 +312,7 @@ class BudgetRuleUpdateFragment :
             setPositiveButton("Delete") { _, _ ->
                 budgetRuleViewModel.deleteBudgetRule(
                     args.budgetRuleDetailed!!.budgetRule!!.ruleId,
-                    timeFormatter.format(
-                        Calendar.getInstance().time
-                    )
+                    df.getCurrentTimeAsString()
                 )
                 val direction = BudgetRuleUpdateFragmentDirections
                     .actionBudgetRuleUpdateFragmentToBudgetRuleFragment(
@@ -385,7 +363,7 @@ class BudgetRuleUpdateFragment :
                         etFrequencyCount.text.toString().toInt(),
                         etLeadDays.text.toString().toInt(),
                         false,
-                        timeFormatter.format(Calendar.getInstance().time)
+                        df.getCurrentTimeAsString()
                     )
                 )
                 val direction =

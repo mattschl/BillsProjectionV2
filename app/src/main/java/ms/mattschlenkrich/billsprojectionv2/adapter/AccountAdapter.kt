@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.ADAPTER_ACCOUNT
+import ms.mattschlenkrich.billsprojectionv2.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_RULE_ADD
 import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_RULE_UPDATE
@@ -23,8 +24,6 @@ import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
-import java.text.NumberFormat
-import java.util.Locale.CANADA
 import java.util.Random
 
 private const val TAG = ADAPTER_ACCOUNT
@@ -48,11 +47,10 @@ class AccountAdapter(
                 null
             )
 
-    private val dollarFormat: NumberFormat = NumberFormat.getCurrencyInstance(CANADA)
+    private val cf = CommonFunctions()
 
     class AccountViewHolder(val itemBinding: AccountLayoutBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
-
 
     private val differCallBack =
         object : DiffUtil.ItemCallback<AccountWithType>() {
@@ -106,15 +104,19 @@ class AccountAdapter(
         }
         if (curAccount.account.accountBalance != 0.0) {
             info += "${if (info.isNotEmpty()) "\n" else ""}Balance " +
-                    dollarFormat.format(curAccount.account.accountBalance)
+                    cf.displayDollars(curAccount.account.accountBalance)
         }
         if (curAccount.account.accountOwing != 0.0) {
             info += "${if (info.isNotEmpty()) "\n" else ""}Owing " +
-                    dollarFormat.format(curAccount.account.accountOwing)
+                    cf.displayDollars(curAccount.account.accountOwing)
         }
         if (curAccount.account.accBudgetedAmount != 0.0) {
             info += "${if (info.isNotEmpty()) "\n" else ""}Budgeted " +
-                    dollarFormat.format(curAccount.account.accBudgetedAmount)
+                    cf.displayDollars(curAccount.account.accBudgetedAmount)
+        }
+        if (curAccount.account.accountCreditLimit != 0.0) {
+            info += "${if (info.isNotEmpty()) "\n" else ""}Credit Limit " +
+                    cf.displayDollars(curAccount.account.accBudgetedAmount)
         }
         if (curAccount.account.accIsDeleted) {
             info += "${if (info.isNotEmpty()) "\n" else ""}       **Deleted** "
@@ -218,7 +220,7 @@ class AccountAdapter(
                 )
             Log.d(
                 TAG, "in gotoCallingFragment mTransactionDetailed is " +
-                        if (mTransactionDetailed != null) mTransactionDetailed.transaction else "isNull"
+                        mTransactionDetailed.transaction!!.transName
             )
             it.findNavController().navigate(direction)
         } else if (callingFragments.contains(FRAG_BUDGET_RULE_UPDATE)
