@@ -28,7 +28,6 @@ import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetRuleUpdateBinding
-import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModel
@@ -45,17 +44,10 @@ class BudgetRuleUpdateFragment :
     private lateinit var mView: View
     private val args: BudgetRuleUpdateFragmentArgs by navArgs()
 
-    private var mToAccount: Account? = null
-    private var mFromAccount: Account? = null
     private var budgetNameList: List<String>? = null
 
     private val cf = CommonFunctions()
     private val df = DateFunctions()
-
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setHasOptionsMenu(true)
-//    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -168,8 +160,12 @@ class BudgetRuleUpdateFragment :
             val budgetRule = BudgetRule(
                 0,
                 etBudgetName.text.toString().trim(),
-                if (mToAccount == null) 0L else mToAccount!!.accountId,
-                if (mFromAccount == null) 0L else mFromAccount!!.accountId,
+                if (args.budgetRuleDetailed!!.toAccount == null)
+                    0L
+                else args.budgetRuleDetailed!!.toAccount!!.accountId,
+                if (args.budgetRuleDetailed!!.fromAccount == null)
+                    0L
+                else args.budgetRuleDetailed!!.fromAccount!!.accountId,
                 etAmount.text.toString().trim()
                     .replace(",", "")
                     .replace("$", "")
@@ -253,12 +249,10 @@ class BudgetRuleUpdateFragment :
                     if (args.budgetRuleDetailed!!.toAccount != null) {
                         tvToAccount.text =
                             args.budgetRuleDetailed!!.toAccount!!.accountName
-                        mToAccount = args.budgetRuleDetailed!!.toAccount
                     }
                     if (args.budgetRuleDetailed!!.fromAccount != null) {
                         tvFromAccount.text =
                             args.budgetRuleDetailed!!.fromAccount!!.accountName
-                        mFromAccount = args.budgetRuleDetailed!!.fromAccount
                     }
                     chkFixedAmount.isChecked =
                         args.budgetRuleDetailed!!.budgetRule!!.budFixedAmount
@@ -313,20 +307,6 @@ class BudgetRuleUpdateFragment :
         binding.spDayOfWeek.adapter = adapterDayOfWeek
     }
 
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-////        menu.clear()
-//        inflater.inflate(R.menu.delete_menu, menu)
-//    }
-//
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        when (item.itemId) {
-//            R.id.menu_delete -> {
-//                deleteBudgetRule()
-//            }
-//        }
-//        return super.onOptionsItemSelected(item)
-//    }
-
     private fun deleteBudgetRule() {
         AlertDialog.Builder(activity).apply {
             setTitle("Delete Budget Rule")
@@ -353,14 +333,14 @@ class BudgetRuleUpdateFragment :
         binding.apply {
             if (mes == "Ok") {
                 val toAccountId =
-                    if (mToAccount != null) {
-                        mToAccount!!.accountId
+                    if (args.budgetRuleDetailed!!.toAccount != null) {
+                        args.budgetRuleDetailed!!.toAccount!!.accountId
                     } else {
                         0L
                     }
                 val fromAccountId =
-                    if (mFromAccount != null) {
-                        mFromAccount!!.accountId
+                    if (args.budgetRuleDetailed!!.fromAccount != null) {
+                        args.budgetRuleDetailed!!.fromAccount!!.accountId
                     } else {
                         0L
                     }
@@ -428,11 +408,11 @@ class BudgetRuleUpdateFragment :
             } else if (nameFound) {
                 "     Error!!\n" +
                         "This budget rule already exists."
-            } else if (mToAccount == null
+            } else if (args.budgetRuleDetailed!!.toAccount == null
             ) {
                 "     Error!!\n" +
                         "There needs to be an account money will go to."
-            } else if (mFromAccount == null
+            } else if (args.budgetRuleDetailed!!.fromAccount == null
             ) {
                 "     Error!!\n" +
                         "There needs to be an account money will come from."

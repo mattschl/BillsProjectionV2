@@ -25,7 +25,6 @@ import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountAddBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
-import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 
 private const val TAG = FRAG_ACCOUNT_ADD
@@ -41,14 +40,8 @@ class AccountAddFragment :
     private lateinit var mView: View
     private val args: AccountAddFragmentArgs by navArgs()
     private var accountNameList: List<String>? = null
-    private var accountType: AccountType? = null
     private val cf = CommonFunctions()
     private val df = DateFunctions()
-
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setHasOptionsMenu(true)
-//    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -118,7 +111,6 @@ class AccountAddFragment :
                 )
             }
             if (args.accountType != null) {
-                accountType = args.accountType
                 tvAccAddType.text = args.accountType!!.accountType
                 var display =
                     if (args.accountType!!.keepTotals) "Transactions will be calculated\n" else ""
@@ -141,7 +133,9 @@ class AccountAddFragment :
                 cf.generateId(),
                 etAccAddName.text.toString().trim(),
                 etAccAddHandle.text.toString().trim(),
-                if (accountType != null) accountType!!.typeId else 0,
+                if (args.accountType != null)
+                    args.accountType!!.typeId
+                else 0,
                 cf.getDoubleFromDollars(etAccAddBudgeted.text.toString()),
                 cf.getDoubleFromDollars(etAccAddBalance.text.toString()),
                 cf.getDoubleFromDollars(etAccAddOwing.text.toString()),
@@ -228,20 +222,6 @@ class AccountAddFragment :
             return errorMess
         }
     }
-
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-////        menu.clear()
-//        inflater.inflate(R.menu.save_menu, menu)
-//    }
-//
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        when (item.itemId) {
-//            R.id.menu_save -> {
-//                saveAccount(mView)
-//            }
-//        }
-//        return super.onOptionsItemSelected(item)
-//    }
 
     override fun onDestroy() {
         super.onDestroy()

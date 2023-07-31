@@ -12,13 +12,27 @@ class BudgetItemViewModel(
     private val budgetItemRepository: BudgetItemRepository
 ) : AndroidViewModel(app) {
 
-    suspend fun insertBudgetItem(budgetItem: BudgetItem) =
+    fun insertBudgetItem(budgetItem: BudgetItem) =
         viewModelScope.launch {
             budgetItemRepository.insertBudgetItem(budgetItem)
         }
 
-    suspend fun updateBudgetItem(budgetItem: BudgetItem) =
+    fun updateBudgetItem(budgetItem: BudgetItem) =
         viewModelScope.launch {
             budgetItemRepository.updateBudgetItem(budgetItem)
         }
+
+    fun deleteBudgetItem(
+        budgetRulId: Long,
+        projectedDate: String,
+        updateTime: String
+    ) =
+        viewModelScope.launch {
+            budgetItemRepository.deleteBudgetItem(
+                budgetRulId,
+                projectedDate,
+                updateTime
+            )
+        }
+
 }

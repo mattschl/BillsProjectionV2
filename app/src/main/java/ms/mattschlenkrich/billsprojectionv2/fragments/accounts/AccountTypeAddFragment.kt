@@ -38,12 +38,6 @@ class AccountTypeAddFragment :
     private val args: AccountTypeAddFragmentArgs by navArgs()
     private val df = DateFunctions()
 
-
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setHasOptionsMenu(true)
-//    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -83,20 +77,6 @@ class AccountTypeAddFragment :
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
     }
-
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-////        menu.clear()
-//        inflater.inflate(R.menu.save_menu, menu)
-//    }
-//
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        when (item.itemId) {
-//            R.id.menu_save -> {
-//                saveAccountType(mView)
-//            }
-//        }
-//        return super.onOptionsItemSelected(item)
-//    }
 
     private fun saveAccountType() {
         Log.d(

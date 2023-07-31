@@ -26,8 +26,6 @@ import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
-import ms.mattschlenkrich.billsprojectionv2.model.AccountType
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 
 private const val TAG = FRAG_ACCOUNT_UPDATE
@@ -46,16 +44,7 @@ class AccountUpdateFragment :
     private val args: AccountUpdateFragmentArgs by navArgs()
     private val cf = CommonFunctions()
     private val df = DateFunctions()
-    private var curBudgetRuleDetailed: BudgetRuleDetailed? = null
-    private var curAccount: Account? = null
-    private var newAccountType: AccountType? = null
     private var accountNameList: List<String>? = null
-
-
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setHasOptionsMenu(true)
-//    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -97,9 +86,6 @@ class AccountUpdateFragment :
             accountNameList = accountsViewModel.getAccountNameList()
         }
         mainActivity.title = "Update Account"
-        curBudgetRuleDetailed = args.budgetRuleDetailed
-        curAccount = args.account!!
-        newAccountType = args.accountType!!
         fillValues()
         binding.drpAccountUpdateType.setOnClickListener {
             gotoAccountTypes()
@@ -112,10 +98,10 @@ class AccountUpdateFragment :
     private fun getUpdatedAccount(): Account {
         binding.apply {
             return Account(
-                curAccount!!.accountId,
+                args.account!!.accountId,
                 edAccountUpdateName.text.toString().trim(),
                 edAccountUpdateHandle.text.toString().trim(),
-                curAccount!!.accountTypeId,
+                args.account!!.accountTypeId,
                 cf.getDoubleFromDollars(edAccountUpdateBudgeted.text.toString()),
                 cf.getDoubleFromDollars(edAccountUpdateBalance.text.toString()),
                 cf.getDoubleFromDollars(edAccountUpdateOwing.text.toString()),
@@ -179,7 +165,7 @@ class AccountUpdateFragment :
 
         if (mess == "Ok") {
             val name = binding.edAccountUpdateName.text.trim()
-            if (name == curAccount!!.accountName) {
+            if (name == args.account!!.accountName) {
                 accountsViewModel.updateAccount(getUpdatedAccount())
                 gotoAccountFragment()
             } else if (name.isNotBlank()) {
@@ -222,25 +208,25 @@ class AccountUpdateFragment :
     private fun fillValues() {
         binding.apply {
             edAccountUpdateName.setText(
-                curAccount!!.accountName
+                args.account!!.accountName
             )
             edAccountUpdateHandle.setText(
-                curAccount!!.accountNumber
+                args.account!!.accountNumber
             )
             if (args.accountType != null) {
                 drpAccountUpdateType.text = args.accountType!!.accountType
             }
             edAccountUpdateBalance.setText(
-                cf.displayDollars(curAccount!!.accountBalance)
+                cf.displayDollars(args.account!!.accountBalance)
             )
             edAccountUpdateOwing.setText(
-                cf.displayDollars(curAccount!!.accountOwing)
+                cf.displayDollars(args.account!!.accountOwing)
             )
             edAccountUpdateBudgeted.setText(
-                cf.displayDollars(curAccount!!.accBudgetedAmount)
+                cf.displayDollars(args.account!!.accBudgetedAmount)
             )
             txtAccountUpdateAccountId.text =
-                curAccount!!.accountId.toString()
+                args.account!!.accountId.toString()
         }
     }
 
@@ -273,22 +259,6 @@ class AccountUpdateFragment :
             )
         mView?.findNavController()?.navigate(direction)
     }
-
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-////        menu.clear()
-//        inflater.inflate(R.menu.delete_menu, menu)
-////        super.onCreateOptionsMenu(menu, inflater)
-//    }
-//
-//    @Deprecated("Deprecated in Java")
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        when (item.itemId) {
-//            R.id.menu_delete -> {
-//                deleteAccount()
-//            }
-//        }
-//        return super.onOptionsItemSelected(item)
-//    }
 
     override fun onDestroy() {
         super.onDestroy()

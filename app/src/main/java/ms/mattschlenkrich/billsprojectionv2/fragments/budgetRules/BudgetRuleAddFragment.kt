@@ -28,7 +28,6 @@ import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetRuleAddBinding
-import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModel
@@ -46,18 +45,10 @@ class BudgetRuleAddFragment :
     private lateinit var mView: View
     private val args: BudgetRuleAddFragmentArgs by navArgs()
 
-    private var mToAccount: Account? = null
-    private var mFromAccount: Account? = null
     private var budgetNameList: List<String>? = null
 
     private val cf = CommonFunctions()
     private val df = DateFunctions()
-
-//    @Suppress("DEPRECATION")
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setHasOptionsMenu(true)
-//    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -126,8 +117,12 @@ class BudgetRuleAddFragment :
             val budgetRule = BudgetRule(
                 0L,
                 etBudgetName.text.toString().trim(),
-                if (mToAccount == null) 0L else mToAccount!!.accountId,
-                if (mFromAccount == null) 0L else mFromAccount!!.accountId,
+                if (args.budgetRuleDetailed!!.toAccount == null)
+                    0L
+                else args.budgetRuleDetailed!!.toAccount!!.accountId,
+                if (args.budgetRuleDetailed!!.fromAccount == null)
+                    0L
+                else args.budgetRuleDetailed!!.fromAccount!!.accountId,
                 if (etAmount.text.isNotEmpty()) {
                     etAmount.text.toString().trim()
                         .replace(",", "")
@@ -264,12 +259,10 @@ class BudgetRuleAddFragment :
                     if (args.budgetRuleDetailed!!.toAccount != null) {
                         tvToAccount.text =
                             args.budgetRuleDetailed!!.toAccount!!.accountName
-                        mToAccount = args.budgetRuleDetailed!!.toAccount
                     }
                     if (args.budgetRuleDetailed!!.fromAccount != null) {
                         tvFromAccount.text =
                             args.budgetRuleDetailed!!.fromAccount!!.accountName
-                        mFromAccount = args.budgetRuleDetailed!!.fromAccount
                     }
                     chkFixedAmount.isChecked =
                         args.budgetRuleDetailed!!.budgetRule!!.budFixedAmount
@@ -321,23 +314,6 @@ class BudgetRuleAddFragment :
         binding.spDayOfWeek.adapter = adapterDayOfWeek
     }
 
-//    @Deprecated("Deprecated in Java")
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-////        menu.clear()
-//        inflater.inflate(R.menu.save_menu, menu)
-//    }
-//
-//    @Suppress("DEPRECATION")
-//    @Deprecated("Deprecated in Java")
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        when (item.itemId) {
-//            R.id.menu_save -> {
-//                saveBudgetRule()
-//            }
-//        }
-//        return super.onOptionsItemSelected(item)
-//    }
-
     private fun saveBudgetRule() {
         val mes = checkBudgetRule()
         if (mes == "Ok") {
@@ -347,8 +323,8 @@ class BudgetRuleAddFragment :
                     BudgetRule(
                         cf.generateId(),
                         etBudgetName.text.toString().trim(),
-                        mToAccount!!.accountId,
-                        mFromAccount!!.accountId,
+                        args.budgetRuleDetailed!!.toAccount!!.accountId,
+                        args.budgetRuleDetailed!!.fromAccount!!.accountId,
                         etAmount.text.toString().trim()
                             .replace(",", "")
                             .replace("$", "")
@@ -403,11 +379,11 @@ class BudgetRuleAddFragment :
             } else if (nameFound) {
                 "     Error!!\n" +
                         "This budget rule already exists."
-            } else if (mToAccount == null
+            } else if (args.budgetRuleDetailed!!.toAccount == null
             ) {
                 "     Error!!\n" +
                         "There needs to be an account money will go to."
-            } else if (mFromAccount == null
+            } else if (args.budgetRuleDetailed!!.fromAccount == null
             ) {
                 "     Error!!\n" +
                         "There needs to be an account money will come from."

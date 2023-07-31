@@ -25,7 +25,6 @@ import ms.mattschlenkrich.billsprojectionv2.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionAddBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.Transactions
 import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModel
@@ -43,16 +42,9 @@ class TransactionAddFragment :
     private lateinit var transactionViewModel: TransactionViewModel
     private val args: TransactionAddFragmentArgs by navArgs()
 
-    private var mBudgetRule: BudgetRule? = null
-    private var mFromAccount: Account? = null
     private var mToAccount: Account? = null
     private val cf = CommonFunctions()
     private val df = DateFunctions()
-
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setHasOptionsMenu(true)
-//    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -128,10 +120,10 @@ class TransactionAddFragment :
                 etTransDate.text.toString(),
                 etDescription.text.toString(),
                 etNote.text.toString(),
-                mBudgetRule?.ruleId ?: 0L,
-                mToAccount?.accountId ?: 0L,
+                args.transaction?.budgetRule?.ruleId ?: 0L,
+                args.transaction?.toAccount?.accountId ?: 0L,
                 chkToAccPending.isChecked,
-                mFromAccount?.accountId ?: 0L,
+                args.transaction?.fromAccount?.accountId ?: 0L,
                 chkFromAccPending.isChecked,
                 if (etAmount.text.isNotEmpty()) {
                     cf.getDoubleFromDollars(etAmount.text.toString())
@@ -143,9 +135,9 @@ class TransactionAddFragment :
             )
             return TransactionDetailed(
                 curTransaction,
-                mBudgetRule,
-                mToAccount,
-                mFromAccount
+                args.transaction?.budgetRule,
+                args.transaction?.toAccount,
+                args.transaction?.fromAccount
             )
         }
     }
@@ -242,7 +234,7 @@ class TransactionAddFragment :
                     )
                 }
                 if (args.transaction!!.budgetRule != null) {
-                    mBudgetRule = args.transaction!!.budgetRule!!
+                    args.transaction!!.budgetRule = args.transaction!!.budgetRule!!
                     tvBudgetRule.text =
                         args.transaction!!.budgetRule!!.budgetRuleName
                 }
@@ -254,9 +246,8 @@ class TransactionAddFragment :
                 chkToAccPending.isChecked =
                     args.transaction!!.transaction!!.transToAccountPending
                 if (args.transaction!!.fromAccount != null) {
-                    mFromAccount = args.transaction!!.fromAccount
                     tvFromAccount.text =
-                        mFromAccount!!.accountName
+                        args.transaction?.fromAccount!!.accountName
                 }
                 chkFromAccPending.isChecked =
                     args.transaction!!.transaction!!.transFromAccountPending
@@ -266,23 +257,6 @@ class TransactionAddFragment :
             }
         }
     }
-
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-////        menu.clear()
-//        inflater.inflate(R.menu.save_menu, menu)
-////        menu.add("new")
-////        inflater.inflate(R.menu.settings_menu, menu)
-//    }
-//
-//    @Deprecated("Deprecated in Java")
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        when (item.itemId) {
-//            R.id.menu_save -> {
-//                saveTransaction()
-//            }
-//        }
-//        return super.onContextItemSelected(item)
-//    }
 
     private fun saveTransaction() {
         val mes = checkTransaction()
@@ -295,10 +269,10 @@ class TransactionAddFragment :
                     etTransDate.text.toString(),
                     etDescription.text.toString(),
                     etNote.text.toString(),
-                    mBudgetRule!!.ruleId,
+                    args.transaction!!.budgetRule!!.ruleId,
                     mToAccount!!.accountId,
                     chkToAccPending.isChecked,
-                    mFromAccount!!.accountId,
+                    args.transaction?.fromAccount!!.accountId,
                     chkFromAccPending.isChecked,
                     amount,
                     transIsDeleted = false,
@@ -343,7 +317,7 @@ class TransactionAddFragment :
                 ) {
                     "     Error!!\n" +
                             "There needs to be an account money will go to."
-                } else if (mFromAccount == null
+                } else if (args.transaction?.fromAccount == null
                 ) {
                     "     Error!!\n" +
                             "There needs to be an account money will come from."
@@ -352,7 +326,7 @@ class TransactionAddFragment :
                 ) {
                     "     Error!!\n" +
                             "Please enter an amount for this transaction"
-                } else if (mBudgetRule == null) {
+                } else if (args.transaction!!.budgetRule == null) {
                     if (saveWithoutBudget()) {
                         "Ok"
                     } else {
