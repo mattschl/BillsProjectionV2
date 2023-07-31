@@ -96,4 +96,5 @@
     <string name="pending">Pending</string>
     <string name="credit_limit">Credit Limit</string>
     <string name="allow_transactions_pending">Allow transactions pending</string>
+    <string name="choose_the_projected_date">Choose the Projected Date</string>
 </resources>

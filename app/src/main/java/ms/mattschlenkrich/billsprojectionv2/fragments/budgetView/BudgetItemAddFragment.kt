@@ -2,11 +2,16 @@ package ms.mattschlenkrich.billsprojectionv2.fragments.budgetView
 
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import ms.mattschlenkrich.billsprojectionv2.CommonFunctions
@@ -35,7 +40,8 @@ class BudgetItemAddFragment : Fragment(
     private lateinit var mainActivity: MainActivity
     private lateinit var budgetItemViewModel: BudgetItemViewModel
     private val args: BudgetItemAddFragmentArgs by navArgs()
-    private var budgetAmount = 0.0
+
+    //    private var budgetAmount = 0.0
     private var budgetRule: BudgetRule? = null
     private var toAccount: Account? = null
     private var fromAccount: Account? = null
@@ -43,10 +49,7 @@ class BudgetItemAddFragment : Fragment(
     private val cf = CommonFunctions()
     private val df = DateFunctions()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Log.d(TAG, "creating $TAG")
-    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -66,6 +69,25 @@ class BudgetItemAddFragment : Fragment(
             mainActivity.budgetItemViewModel
         mainActivity.title = "Add a new Budget Item"
         fillValues()
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                // Add menu items here
+                menuInflater.inflate(R.menu.save_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                // Handle the menu selection
+                return when (menuItem.itemId) {
+                    R.id.menu_save -> {
+                        saveBudgetItem()
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
         binding.apply {
             tvBudgetRule.setOnClickListener {
                 chooseBudgetRule()
@@ -81,6 +103,10 @@ class BudgetItemAddFragment : Fragment(
                 false
             }
         }
+    }
+
+    private fun saveBudgetItem() {
+        TODO("Not yet implemented")
     }
 
     private fun chooseDate() {
@@ -102,7 +128,9 @@ class BudgetItemAddFragment : Fragment(
                 curDateAll[0].toInt(),
                 curDateAll[1].toInt() - 1,
                 curDateAll[2].toInt()
-            ).show()
+            )
+            datePickerDialog.setTitle(getString(R.string.choose_the_projected_date))
+            datePickerDialog.show()
         }
     }
 
@@ -116,6 +144,7 @@ class BudgetItemAddFragment : Fragment(
                 REQUEST_FROM_ACCOUNT,
                 fragmentChain
             )
+        mView!!.findNavController().navigate(direction)
     }
 
     private fun chooseToAccount() {
@@ -128,6 +157,7 @@ class BudgetItemAddFragment : Fragment(
                 REQUEST_TO_ACCOUNT,
                 fragmentChain
             )
+        mView!!.findNavController().navigate(direction)
     }
 
     private fun chooseBudgetRule() {

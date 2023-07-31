@@ -24,15 +24,11 @@ class BudgetItemUpdateFragment : Fragment(
     private lateinit var mainActivity: MainActivity
     private lateinit var budgetItemViewModel: BudgetItemViewModel
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Log.d(TAG, "creating $TAG")
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.d(TAG, "Entering $TAG")
         _binding = FragmentBudgetItemUpdateBinding.inflate(
             inflater, container, false
         )
