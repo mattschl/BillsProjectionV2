@@ -5,10 +5,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -23,10 +27,10 @@ import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 
 private const val TAG = FRAG_ACCOUNTS
 
-@Suppress("DEPRECATION")
 class AccountsFragment :
     Fragment(R.layout.fragment_accounts),
-    SearchView.OnQueryTextListener {
+    SearchView.OnQueryTextListener,
+    MenuProvider {
 
     private var _binding: FragmentAccountsBinding? = null
     private val binding get() = _binding!!
@@ -43,10 +47,10 @@ class AccountsFragment :
 //    private val dateFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
 //    private val timeFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        setHasOptionsMenu(true)
+//    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -70,6 +74,9 @@ class AccountsFragment :
         accountsViewModel =
             mainActivity.accountViewModel
         mainActivity.title = "Choose an Account"
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
         setUpRecyclerView()
         binding.fabAddNewAccount.setOnClickListener {
             addNewAccount()
@@ -135,20 +142,31 @@ class AccountsFragment :
         }
     }
 
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
 
-    @Deprecated("Deprecated in Java")
-    override fun onCreateOptionsMenu(
-        menu: Menu, inflater: MenuInflater
-    ) {
-//        super.onCreateOptionsMenu(menu, inflater)
-
-//        menu.clear()
-        inflater.inflate(R.menu.search_menu, menu)
+        menuInflater.inflate(R.menu.search_menu, menu)
         val mMenuSearch = menu.findItem(R.id.menu_search)
             .actionView as SearchView
         mMenuSearch.isSubmitButtonEnabled = false
         mMenuSearch.setOnQueryTextListener(this)
     }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        return false
+    }
+
+//    override fun onCreateOptionsMenu(
+//        menu: Menu, inflater: MenuInflater
+//    ) {
+////        super.onCreateOptionsMenu(menu, inflater)
+//
+////        menu.clear()
+//        inflater.inflate(R.menu.search_menu, menu)
+//        val mMenuSearch = menu.findItem(R.id.menu_search)
+//            .actionView as SearchView
+//        mMenuSearch.isSubmitButtonEnabled = false
+//        mMenuSearch.setOnQueryTextListener(this)
+//    }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
         return false

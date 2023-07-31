@@ -4,10 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.billsprojectionv2.FRAG_TRANSACTIONS
@@ -20,10 +24,10 @@ import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModel
 
 private const val TAG = FRAG_TRANSACTIONS
 
-@Suppress("DEPRECATION")
 class TransactionViewFragment :
     Fragment(R.layout.fragment_transaction_view),
-    SearchView.OnQueryTextListener {
+    SearchView.OnQueryTextListener,
+    MenuProvider {
 
     private var _binding: FragmentTransactionViewBinding? = null
     private val binding get() = _binding!!
@@ -33,11 +37,11 @@ class TransactionViewFragment :
     private lateinit var transactionAdapter: TransactionAdapter
 //    private val args: TransactionViewFragmentArgs by navArgs()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        // keep for later
-        setHasOptionsMenu(true)
-    }
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        // keep for later
+//        setHasOptionsMenu(true)
+//    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,6 +60,9 @@ class TransactionViewFragment :
         transactionViewModel =
             mainActivity.transactionViewModel
         mainActivity.title = "View Transaction History"
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
         setupRecyclerView()
         binding.fabAddTransaction.setOnClickListener {
             val direction = TransactionViewFragmentDirections
@@ -104,16 +111,29 @@ class TransactionViewFragment :
         }
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        super.onCreateOptionsMenu(menu, inflater)
-//        menu.clear()
-        inflater.inflate(R.menu.search_menu, menu)
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+
+        menuInflater.inflate(R.menu.search_menu, menu)
         val mMenuSearch = menu.findItem(R.id.menu_search)
             .actionView as SearchView
         mMenuSearch.isSubmitButtonEnabled = false
         mMenuSearch.setOnQueryTextListener(this)
     }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        return false
+    }
+
+//    @Deprecated("Deprecated in Java")
+//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+////        super.onCreateOptionsMenu(menu, inflater)
+////        menu.clear()
+//        inflater.inflate(R.menu.search_menu, menu)
+//        val mMenuSearch = menu.findItem(R.id.menu_search)
+//            .actionView as SearchView
+//        mMenuSearch.isSubmitButtonEnabled = false
+//        mMenuSearch.setOnQueryTextListener(this)
+//    }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
         return false
