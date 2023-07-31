@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package ms.mattschlenkrich.billsprojectionv2
 
 const val DB_NAME = "bills2.db"
@@ -107,4 +109,22 @@ const val TRANS_UPDATE_TIME = "transUpdateTime"
 
 const val REQUEST_TO_ACCOUNT = "toAccount"
 const val REQUEST_FROM_ACCOUNT = "fromAccount"
+
+const val DAY_MONDAY = "Monday"
+const val DAY_TUESDAY = "Tuesday"
+const val DAY_WEDNESDAY = "Wednesday"
+const val DAY_THURSDAY = "Thursday"
+const val DAY_FRIDAY = "Friday"
+const val DAY_SATURDAY = "Saturday"
+const val DAY_SUNDAY = "Sunday"
+const val DAY_WEEK_DAY = "Week Day"
+const val DAY_ANY_DAY = "Any Day"
+const val DAY_PAY_DAY = "Pay Day"
+
+const val INTERVAL_WEEKLY = "Weekly"
+const val INTERVAL_MONTHLY = "Monthly"
+const val INTERVAL_YEARLY = "Yearly"
+const val INTERVAL_ON_PAY_DAY = "On Payday"
+const val INTERVAL_SPECIAL = "Special"
+const val INTERVAL_ONE_TIME = "One Time"
 

@@ -65,7 +65,7 @@
     <string name="discretionary_expenses">Discretionary Expenses</string>
     <string name="fixed_expenses">Fixed Expenses</string>
     <string name="surplus_or_deficit">Surplus or Deficit</string>
-    <string name="no_transactions_to_view">No Transactions to view</string>
+    <string name="no_transactions_to_view">No Transactions to view.</string>
     <string name="date">Date</string>
     <string name="transaction_description">Transaction Description</string>
     <string name="description">Description</string>
@@ -97,4 +97,10 @@
     <string name="credit_limit">Credit Limit</string>
     <string name="allow_transactions_pending">Allow transactions pending</string>
     <string name="choose_the_projected_date">Choose the Projected Date</string>
+    <string name="instructions_no_budget_items">To fill in the budget,
+        you will need to create Budget Rules and update the budget.\n
+        It is important to have a Budget Rule that is a pay day
+        to create pay day periods for the budget.</string>
+    <string name="instructions_no_transactions">Add transactions to discover your spending habits
+        so that you can create some Budget Rules to take control of your spending.</string>
 </resources>

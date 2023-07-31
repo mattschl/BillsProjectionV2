@@ -80,8 +80,8 @@
                     android:layout_marginStart="15dp"
                     android:text="@string/zero_dollars"
                     android:textAlignment="center"
-                    android:textSize="@dimen/text_heading_size"
                     android:textColor="@color/black"
+                    android:textSize="@dimen/text_heading_size"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/lblBalanceOwing"
                     app:layout_constraintTop_toBottomOf="@id/spPayDay" />
@@ -124,8 +124,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/discretionary_expenses"
-                    android:textSize="@dimen/text_info_size"
                     android:textColor="@color/black"
+                    android:textSize="@dimen/text_info_size"
                     app:layout_constraintBaseline_toBaselineOf="@id/tvFixedExpenses"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/tvFixedExpenses" />
@@ -135,9 +135,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/surplus_or_deficit"
+                    android:textColor="@color/black"
                     android:textSize="@dimen/text_info_size"
                     android:textStyle="bold"
-                    android:textColor="@color/black"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvFixedExpenses" />
@@ -150,10 +150,50 @@
             android:id="@+id/rvBudgetSummary"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/crdSummary" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/crdNoTransactions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/crdSummary">
+
+            <LinearLayout
+                android:id="@+id/llNoBudget"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvNoBudgetItems"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="50dp"
+                    android:text="@string/no_transactions_to_view"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/tvNoBudgetItemsInstructions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="50dp"
+                    android:text="@string/instructions_no_budget_items"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_info_size"
+                    tools:ignore="VisualLintLongText" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabAddAction"

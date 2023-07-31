@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId "ms.mattschlenkrich.billsprojectionv2"
-        minSdk 22
+        minSdk 26
         targetSdk 33
         versionCode 1
         versionName 'v2 build 1'
