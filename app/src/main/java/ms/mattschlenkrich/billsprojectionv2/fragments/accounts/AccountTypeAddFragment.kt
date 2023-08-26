@@ -15,10 +15,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
-import ms.mattschlenkrich.billsprojectionv2.DateFunctions
-import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNT_TYPE_ADD
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_TYPE_ADD
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountTypeAddBinding
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel

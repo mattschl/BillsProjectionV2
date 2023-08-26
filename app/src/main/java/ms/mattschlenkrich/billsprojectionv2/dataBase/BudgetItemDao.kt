@@ -5,11 +5,11 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import ms.mattschlenkrich.billsprojectionv2.BI_BUDGET_RULE_ID
-import ms.mattschlenkrich.billsprojectionv2.BI_IS_DELETED
-import ms.mattschlenkrich.billsprojectionv2.BI_PROJECTED_DATE
-import ms.mattschlenkrich.billsprojectionv2.BI_UPDATE_TIME
-import ms.mattschlenkrich.billsprojectionv2.TABLE_BUDGET_ITEMS
+import ms.mattschlenkrich.billsprojectionv2.common.BI_BUDGET_RULE_ID
+import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_DELETED
+import ms.mattschlenkrich.billsprojectionv2.common.BI_PROJECTED_DATE
+import ms.mattschlenkrich.billsprojectionv2.common.BI_UPDATE_TIME
+import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_ITEMS
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetItem
 
 @Dao

@@ -9,16 +9,16 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import kotlinx.parcelize.Parcelize
-import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_ID
-import ms.mattschlenkrich.billsprojectionv2.RULE_ID
-import ms.mattschlenkrich.billsprojectionv2.TABLE_TRANSACTION
-import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_DATE
-import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_FROM_ACCOUNT_ID
-import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_FROM_ACCOUNT_PENDING
-import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_TO_ACCOUNT_ID
-import ms.mattschlenkrich.billsprojectionv2.TRANSACTION_TO_ACCOUNT_PENDING
-import ms.mattschlenkrich.billsprojectionv2.TRANS_BUDGET_RULE_ID
-import ms.mattschlenkrich.billsprojectionv2.TRANS_IS_DELETED
+import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.common.RULE_ID
+import ms.mattschlenkrich.billsprojectionv2.common.TABLE_TRANSACTION
+import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_DATE
+import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_FROM_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_FROM_ACCOUNT_PENDING
+import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_TO_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_TO_ACCOUNT_PENDING
+import ms.mattschlenkrich.billsprojectionv2.common.TRANS_BUDGET_RULE_ID
+import ms.mattschlenkrich.billsprojectionv2.common.TRANS_IS_DELETED
 
 @Parcelize
 @Entity(

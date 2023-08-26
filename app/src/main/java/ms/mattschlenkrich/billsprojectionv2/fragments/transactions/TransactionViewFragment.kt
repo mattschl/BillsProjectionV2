@@ -14,10 +14,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import ms.mattschlenkrich.billsprojectionv2.FRAG_TRANSACTIONS
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.adapter.TransactionAdapter
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTIONS
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionViewBinding
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModel

@@ -2,14 +2,14 @@ package ms.mattschlenkrich.billsprojectionv2.dataBase
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_ID
-import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_IS_DELETED
-import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_NAME
-import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_TYPE_ID
-import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_UPDATE_TIME
-import ms.mattschlenkrich.billsprojectionv2.TABLE_ACCOUNTS
-import ms.mattschlenkrich.billsprojectionv2.TABLE_ACCOUNT_TYPES
-import ms.mattschlenkrich.billsprojectionv2.TYPE_ID
+import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_IS_DELETED
+import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_NAME
+import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_TYPE_ID
+import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_UPDATE_TIME
+import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNTS
+import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNT_TYPES
+import ms.mattschlenkrich.billsprojectionv2.common.TYPE_ID
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
 import java.util.*

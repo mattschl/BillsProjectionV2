@@ -2,11 +2,11 @@ package ms.mattschlenkrich.billsprojectionv2.dataBase
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_TYPE
-import ms.mattschlenkrich.billsprojectionv2.ACCT_IS_DELETED
-import ms.mattschlenkrich.billsprojectionv2.ACCT_UPDATE_TIME
-import ms.mattschlenkrich.billsprojectionv2.TABLE_ACCOUNT_TYPES
-import ms.mattschlenkrich.billsprojectionv2.TYPE_ID
+import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_TYPE
+import ms.mattschlenkrich.billsprojectionv2.common.ACCT_IS_DELETED
+import ms.mattschlenkrich.billsprojectionv2.common.ACCT_UPDATE_TIME
+import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNT_TYPES
+import ms.mattschlenkrich.billsprojectionv2.common.TYPE_ID
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 
 @Dao

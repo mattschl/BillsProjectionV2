@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2
+package ms.mattschlenkrich.billsprojectionv2.common
 
 import java.text.SimpleDateFormat
 import java.time.LocalDate

@@ -19,11 +19,11 @@ import androidx.navigation.fragment.navArgs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ms.mattschlenkrich.billsprojectionv2.CommonFunctions
-import ms.mattschlenkrich.billsprojectionv2.DateFunctions
-import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel

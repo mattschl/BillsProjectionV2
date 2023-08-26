@@ -6,14 +6,14 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_ID
-import ms.mattschlenkrich.billsprojectionv2.BUDGET_RULE_NAME
-import ms.mattschlenkrich.billsprojectionv2.BUD_FROM_ACCOUNT_ID
-import ms.mattschlenkrich.billsprojectionv2.BUD_TO_ACCOUNT_ID
-import ms.mattschlenkrich.billsprojectionv2.BUD_UPDATE_TIME
-import ms.mattschlenkrich.billsprojectionv2.RULE_ID
-import ms.mattschlenkrich.billsprojectionv2.TABLE_ACCOUNTS
-import ms.mattschlenkrich.billsprojectionv2.TABLE_BUDGET_RULES
+import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_RULE_NAME
+import ms.mattschlenkrich.billsprojectionv2.common.BUD_FROM_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.common.BUD_TO_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.common.BUD_UPDATE_TIME
+import ms.mattschlenkrich.billsprojectionv2.common.RULE_ID
+import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNTS
+import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 

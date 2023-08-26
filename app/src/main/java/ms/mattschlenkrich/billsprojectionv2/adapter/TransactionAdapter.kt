@@ -8,7 +8,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import ms.mattschlenkrich.billsprojectionv2.CommonFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.databinding.TransactionLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.transactions.TransactionViewFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed

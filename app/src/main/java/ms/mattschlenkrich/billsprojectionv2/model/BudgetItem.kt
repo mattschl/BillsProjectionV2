@@ -8,20 +8,20 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.Relation
 import kotlinx.parcelize.Parcelize
-import ms.mattschlenkrich.billsprojectionv2.ACCOUNT_ID
-import ms.mattschlenkrich.billsprojectionv2.BI_ACTUAL_DATE
-import ms.mattschlenkrich.billsprojectionv2.BI_BUDGET_RULE_ID
-import ms.mattschlenkrich.billsprojectionv2.BI_FROM_ACCOUNT_ID
-import ms.mattschlenkrich.billsprojectionv2.BI_IS_CANCELLED
-import ms.mattschlenkrich.billsprojectionv2.BI_IS_COMPLETED
-import ms.mattschlenkrich.billsprojectionv2.BI_IS_DELETED
-import ms.mattschlenkrich.billsprojectionv2.BI_IS_PAY_DAY_ITEM
-import ms.mattschlenkrich.billsprojectionv2.BI_PAY_DAY
-import ms.mattschlenkrich.billsprojectionv2.BI_PROJECTED_AMOUNT
-import ms.mattschlenkrich.billsprojectionv2.BI_PROJECTED_DATE
-import ms.mattschlenkrich.billsprojectionv2.BI_TO_ACCOUNT_ID
-import ms.mattschlenkrich.billsprojectionv2.RULE_ID
-import ms.mattschlenkrich.billsprojectionv2.TABLE_BUDGET_ITEMS
+import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.common.BI_ACTUAL_DATE
+import ms.mattschlenkrich.billsprojectionv2.common.BI_BUDGET_RULE_ID
+import ms.mattschlenkrich.billsprojectionv2.common.BI_FROM_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_CANCELLED
+import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_COMPLETED
+import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_DELETED
+import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_PAY_DAY_ITEM
+import ms.mattschlenkrich.billsprojectionv2.common.BI_PAY_DAY
+import ms.mattschlenkrich.billsprojectionv2.common.BI_PROJECTED_AMOUNT
+import ms.mattschlenkrich.billsprojectionv2.common.BI_PROJECTED_DATE
+import ms.mattschlenkrich.billsprojectionv2.common.BI_TO_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.common.RULE_ID
+import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_ITEMS
 
 @Parcelize
 @Entity(

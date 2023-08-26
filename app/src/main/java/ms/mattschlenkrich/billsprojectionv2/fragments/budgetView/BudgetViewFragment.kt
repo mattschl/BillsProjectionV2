@@ -8,9 +8,9 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetViewBinding
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModel
 

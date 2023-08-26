@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package ms.mattschlenkrich.billsprojectionv2
+package ms.mattschlenkrich.billsprojectionv2.common
 
 const val DB_NAME = "bills2.db"
 const val DB_VERSION = 1

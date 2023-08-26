@@ -7,11 +7,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import ms.mattschlenkrich.billsprojectionv2.ACCT_UPDATE_TIME
-import ms.mattschlenkrich.billsprojectionv2.BILLS_DATABASE
-import ms.mattschlenkrich.billsprojectionv2.DB_NAME
-import ms.mattschlenkrich.billsprojectionv2.DB_VERSION
-import ms.mattschlenkrich.billsprojectionv2.SQLITE_TIME
+import ms.mattschlenkrich.billsprojectionv2.common.ACCT_UPDATE_TIME
+import ms.mattschlenkrich.billsprojectionv2.common.BILLS_DATABASE
+import ms.mattschlenkrich.billsprojectionv2.common.DB_NAME
+import ms.mattschlenkrich.billsprojectionv2.common.DB_VERSION
+import ms.mattschlenkrich.billsprojectionv2.common.SQLITE_TIME
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetItem

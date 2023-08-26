@@ -1,21 +1,21 @@
 package ms.mattschlenkrich.billsprojectionv2.projections
 
 import android.util.Log
-import ms.mattschlenkrich.billsprojectionv2.DAY_ANY_DAY
-import ms.mattschlenkrich.billsprojectionv2.DAY_FRIDAY
-import ms.mattschlenkrich.billsprojectionv2.DAY_MONDAY
-import ms.mattschlenkrich.billsprojectionv2.DAY_SATURDAY
-import ms.mattschlenkrich.billsprojectionv2.DAY_SUNDAY
-import ms.mattschlenkrich.billsprojectionv2.DAY_THURSDAY
-import ms.mattschlenkrich.billsprojectionv2.DAY_TUESDAY
-import ms.mattschlenkrich.billsprojectionv2.DAY_WEDNESDAY
-import ms.mattschlenkrich.billsprojectionv2.DAY_WEEK_DAY
-import ms.mattschlenkrich.billsprojectionv2.INTERVAL_MONTHLY
-import ms.mattschlenkrich.billsprojectionv2.INTERVAL_ONE_TIME
-import ms.mattschlenkrich.billsprojectionv2.INTERVAL_ON_PAY_DAY
-import ms.mattschlenkrich.billsprojectionv2.INTERVAL_SPECIAL
-import ms.mattschlenkrich.billsprojectionv2.INTERVAL_WEEKLY
-import ms.mattschlenkrich.billsprojectionv2.INTERVAL_YEARLY
+import ms.mattschlenkrich.billsprojectionv2.common.DAY_ANY_DAY
+import ms.mattschlenkrich.billsprojectionv2.common.DAY_FRIDAY
+import ms.mattschlenkrich.billsprojectionv2.common.DAY_MONDAY
+import ms.mattschlenkrich.billsprojectionv2.common.DAY_SATURDAY
+import ms.mattschlenkrich.billsprojectionv2.common.DAY_SUNDAY
+import ms.mattschlenkrich.billsprojectionv2.common.DAY_THURSDAY
+import ms.mattschlenkrich.billsprojectionv2.common.DAY_TUESDAY
+import ms.mattschlenkrich.billsprojectionv2.common.DAY_WEDNESDAY
+import ms.mattschlenkrich.billsprojectionv2.common.DAY_WEEK_DAY
+import ms.mattschlenkrich.billsprojectionv2.common.INTERVAL_MONTHLY
+import ms.mattschlenkrich.billsprojectionv2.common.INTERVAL_ONE_TIME
+import ms.mattschlenkrich.billsprojectionv2.common.INTERVAL_ON_PAY_DAY
+import ms.mattschlenkrich.billsprojectionv2.common.INTERVAL_SPECIAL
+import ms.mattschlenkrich.billsprojectionv2.common.INTERVAL_WEEKLY
+import ms.mattschlenkrich.billsprojectionv2.common.INTERVAL_YEARLY
 import java.time.DayOfWeek
 import java.time.LocalDate
 

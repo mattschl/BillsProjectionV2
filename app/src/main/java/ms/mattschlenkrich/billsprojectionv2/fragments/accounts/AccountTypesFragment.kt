@@ -16,10 +16,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.adapter.AccountTypeAdapter
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountTypesBinding
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel

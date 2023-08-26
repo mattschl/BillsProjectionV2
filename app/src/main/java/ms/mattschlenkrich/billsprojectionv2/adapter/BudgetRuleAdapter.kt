@@ -8,12 +8,12 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import ms.mattschlenkrich.billsprojectionv2.ADAPTER_BUDGET_RULE
-import ms.mattschlenkrich.billsprojectionv2.CommonFunctions
-import ms.mattschlenkrich.billsprojectionv2.FRAG_BUDGET_RULES
-import ms.mattschlenkrich.billsprojectionv2.FRAG_TRANS_ADD
-import ms.mattschlenkrich.billsprojectionv2.FRAG_TRANS_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_BUDGET_RULE
+import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetRuleLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules.BudgetRuleFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed

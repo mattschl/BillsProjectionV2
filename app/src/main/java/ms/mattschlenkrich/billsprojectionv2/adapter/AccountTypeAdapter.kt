@@ -8,9 +8,9 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import ms.mattschlenkrich.billsprojectionv2.ADAPTER_ACCOUNT_TYPE
-import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNT_ADD
-import ms.mattschlenkrich.billsprojectionv2.FRAG_ACCOUNT_UPDATE
+import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_ACCOUNT_TYPE
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_ADD
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.databinding.AccountTypeLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountTypesFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.Account
