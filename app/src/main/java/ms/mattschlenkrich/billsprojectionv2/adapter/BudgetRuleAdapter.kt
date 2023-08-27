@@ -23,8 +23,8 @@ import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 private const val TAG = ADAPTER_BUDGET_RULE
 
 class BudgetRuleAdapter(
-    private val budgetItem: BudgetDetailed?,
-    private val transaction: TransactionDetailed?,
+    private val budgetDetailed: BudgetDetailed?,
+    private val transactionDetailed: TransactionDetailed?,
     private val context: Context,
     private val callingFragments: String?,
 ) : RecyclerView.Adapter<BudgetRuleAdapter.BudgetRuleViewHolder>() {
@@ -98,16 +98,11 @@ class BudgetRuleAdapter(
         holder.itemBinding.tvInfo.text = info
 
         holder.itemView.setOnClickListener {
-            if (transaction != null && callingFragments != null) {
-                Log.d(
-                    TAG,
-                    "transaction name is" +
-                            " ${transaction.transaction!!.transName}"
-                )
+            if (transactionDetailed != null && callingFragments != null) {
                 Log.d(TAG, "callingFragments is $callingFragments")
                 if (callingFragments.contains(FRAG_TRANS_ADD)) {
                     val fragmentChain = "$callingFragments, $FRAG_BUDGET_RULES"
-                    val mTransaction = transaction
+                    val mTransaction = transactionDetailed
                     mTransaction.budgetRule =
                         budgetRuleDetailed.budgetRule
                     mTransaction.toAccount =
@@ -123,7 +118,7 @@ class BudgetRuleAdapter(
                     it.findNavController().navigate(direction)
                 } else if (callingFragments.contains(FRAG_TRANS_UPDATE)) {
                     val fragmentChain = "$callingFragments, $FRAG_BUDGET_RULES"
-                    val mTransaction = transaction
+                    val mTransaction = transactionDetailed
                     mTransaction.budgetRule =
                         budgetRuleDetailed.budgetRule
                     mTransaction.toAccount =
@@ -144,8 +139,8 @@ class BudgetRuleAdapter(
         holder.itemView.setOnLongClickListener {
             val direction = BudgetRuleFragmentDirections
                 .actionBudgetRuleFragmentToBudgetRuleUpdateFragment(
-                    budgetItem,
-                    transaction,
+                    budgetDetailed,
+                    transactionDetailed,
                     budgetRuleDetailed,
                     callingFragments
                 )

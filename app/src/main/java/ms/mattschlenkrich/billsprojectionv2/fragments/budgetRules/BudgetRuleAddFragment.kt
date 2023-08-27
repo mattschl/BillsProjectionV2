@@ -114,15 +114,30 @@ class BudgetRuleAddFragment :
 
     private fun getBudgetRuleDetailed(): BudgetRuleDetailed {
         binding.apply {
+            val toAccId = if (args.budgetRuleDetailed == null) {
+                0L
+            } else {
+                if (args.budgetRuleDetailed!!.toAccount == null) {
+                    0L
+                } else {
+                    args.budgetRuleDetailed!!.toAccount!!.accountId
+                }
+            }
+            val fromAccId = if (args.budgetRuleDetailed == null) {
+                0L
+            } else {
+                if (args.budgetRuleDetailed!!.fromAccount == null) {
+                    0L
+                } else {
+                    args.budgetRuleDetailed!!.fromAccount!!.accountId
+                }
+            }
+
             val budgetRule = BudgetRule(
                 0L,
                 etBudgetName.text.toString().trim(),
-                if (args.budgetRuleDetailed!!.toAccount == null)
-                    0L
-                else args.budgetRuleDetailed!!.toAccount!!.accountId,
-                if (args.budgetRuleDetailed!!.fromAccount == null)
-                    0L
-                else args.budgetRuleDetailed!!.fromAccount!!.accountId,
+                toAccId,
+                fromAccId,
                 if (etAmount.text.isNotEmpty()) {
                     etAmount.text.toString().trim()
                         .replace(",", "")
