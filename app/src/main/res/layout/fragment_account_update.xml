@@ -186,7 +186,6 @@
                 android:text="@string/zero_double"
                 android:textAlignment="center"
                 android:textColorHint="#757575"
-                android:textSize="@dimen/text_info_size"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/lblAccUpdateLimit"
                 app:layout_constraintTop_toBottomOf="@id/edAccountUpdateBalance" />

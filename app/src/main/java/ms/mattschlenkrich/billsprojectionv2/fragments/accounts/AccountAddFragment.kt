@@ -109,6 +109,9 @@ class AccountAddFragment :
                 etAccAddBudgeted.setText(
                     cf.displayDollars(args.account!!.accBudgetedAmount)
                 )
+                etAccAddLimit.setText(
+                    cf.displayDollars(args.account!!.accountCreditLimit)
+                )
             }
             if (args.accountType != null) {
                 tvAccAddType.text = args.accountType!!.accountType
@@ -120,7 +123,7 @@ class AccountAddFragment :
                 display += if (args.accountType!!.allowPending) "Transactions may be delayed " else ""
                 if (display.isEmpty()) {
                     display =
-                        "This is a dummy account transactions will not effect any other accounts"
+                        "This account does not keep a balance/owing amount"
                 }
                 tvTypeDetails.text = display
             }
@@ -139,7 +142,7 @@ class AccountAddFragment :
                 cf.getDoubleFromDollars(etAccAddBudgeted.text.toString()),
                 cf.getDoubleFromDollars(etAccAddBalance.text.toString()),
                 cf.getDoubleFromDollars(etAccAddOwing.text.toString()),
-                cf.getDoubleFromDollars(editAccAddLimit.text.toString()),
+                cf.getDoubleFromDollars(etAccAddLimit.text.toString()),
                 false,
                 df.getCurrentTimeAsString()
             )

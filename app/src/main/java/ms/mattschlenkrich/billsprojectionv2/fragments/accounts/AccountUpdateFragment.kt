@@ -225,6 +225,9 @@ class AccountUpdateFragment :
             edAccountUpdateBudgeted.setText(
                 cf.displayDollars(args.account!!.accBudgetedAmount)
             )
+            etAccUpdateLimit.setText(
+                cf.displayDollars(args.account!!.accountCreditLimit)
+            )
             txtAccountUpdateAccountId.text =
                 args.account!!.accountId.toString()
         }

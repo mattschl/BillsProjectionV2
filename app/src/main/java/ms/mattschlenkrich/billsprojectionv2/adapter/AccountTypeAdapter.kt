@@ -90,7 +90,7 @@ class AccountTypeAdapter(
             info += "${if (info.isNotEmpty()) "\n" else ""}      **DELETED**"
         }
         if (info.isBlank()) {
-            info = "This is a dummy account and will not effect other accounts"
+            info = "This account does not keep a balance/owing amount"
         }
         holder.itemBinding.tvAccountTypeInfo.text = info
 
