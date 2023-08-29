@@ -98,6 +98,17 @@ interface AccountDao {
                 "ORDER BY $TABLE_ACCOUNTS.$ACCOUNT_NAME " +
                 "COLLATE NOCASE ASC "
     )
-    fun getAccountWithType(): LiveData<List<AccountWithType>>
+    fun getAccountsWithType(): LiveData<List<AccountWithType>>
+
+    @Transaction
+    @Query(
+        "SELECT $TABLE_ACCOUNTS.*, $TABLE_ACCOUNT_TYPES.* " +
+                "FROM $TABLE_ACCOUNTS " +
+                "LEFT JOIN $TABLE_ACCOUNT_TYPES ON " +
+                "$TABLE_ACCOUNT_TYPES.$TYPE_ID = " +
+                "$TABLE_ACCOUNTS.$ACCOUNT_TYPE_ID " +
+                "WHERE $TABLE_ACCOUNTS.$ACCOUNT_ID = :accountId  "
+    )
+    fun getAccountWithType(accountId: Long): AccountWithType
 
 }

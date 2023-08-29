@@ -64,8 +64,6 @@ data class AccountType(
         childColumns = [ACCOUNT_TYPE_ID]
     )]
 )
-
-
 @Parcelize
 data class Account(
     @PrimaryKey

@@ -37,8 +37,8 @@ class AccountViewModel(
     fun getActiveAccountsDetailed() =
         accountRepository.getActiveAccountsDetailed()
 
-    fun getAccountWithType() =
-        accountRepository.getAccountWithType()
+    fun getAccountsWithType() =
+        accountRepository.getAccountsWithType()
 
     fun findAccount(accountId: Long) =
         accountRepository.findAccount(accountId)
@@ -81,4 +81,8 @@ class AccountViewModel(
 
     fun searchAccountsWithType(query: String) =
         accountRepository.searchAccountsWithType(query)
+
+    fun getAccountWithType(accountId: Long) =
+        accountRepository.getAccountWithType(accountId)
+
 }

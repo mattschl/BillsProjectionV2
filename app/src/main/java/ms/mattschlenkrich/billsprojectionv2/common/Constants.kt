@@ -55,6 +55,7 @@ const val ACCOUNT_BALANCE = "accountBalance"
 const val ACCOUNT_OWING = "accountOwing"
 const val ACCOUNT_IS_DELETED = "accIsDeleted"
 const val ACCOUNT_UPDATE_TIME = "accUpdateTime"
+const val VIEW_ACCOUNT_WITH_TYPE = "accountWithType"
 
 const val TABLE_BUDGET_RULES = "budgetRules"
 const val RULE_ID = "ruleId"

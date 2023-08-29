@@ -3,6 +3,7 @@ package ms.mattschlenkrich.billsprojectionv2.fragments.transactions
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -16,6 +17,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
@@ -27,6 +32,7 @@ import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionAddBi
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.Transactions
+import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModel
 import java.util.Random
 
@@ -40,6 +46,8 @@ class TransactionAddFragment :
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var transactionViewModel: TransactionViewModel
+    private lateinit var accountViewModel: AccountViewModel
+    private var success = false
     private val args: TransactionAddFragmentArgs by navArgs()
 
     private var mToAccount: Account? = null
@@ -62,6 +70,8 @@ class TransactionAddFragment :
         super.onViewCreated(view, savedInstanceState)
         transactionViewModel =
             mainActivity.transactionViewModel
+        accountViewModel =
+            mainActivity.accountViewModel
         mainActivity.title = "Add a new Transaction"
         fillValues()
         val menuHost: MenuHost = requireActivity()
@@ -75,7 +85,9 @@ class TransactionAddFragment :
                 // Handle the menu selection
                 return when (menuItem.itemId) {
                     R.id.menu_save -> {
+                        menuItem.isVisible = false
                         saveTransaction()
+                        menuItem.isVisible = true
                         true
                     }
 
@@ -107,15 +119,15 @@ class TransactionAddFragment :
             TransactionAddFragmentDirections
                 .actionTransactionAddFragmentToBudgetRuleFragment(
                     null,
-                    getCurTransaction(),
+                    getTransactionDetailed(),
                     fragmentChain
                 )
         mView.findNavController().navigate(direction)
     }
 
-    private fun getCurTransaction(): TransactionDetailed {
+    private fun getTransaction(): Transactions {
         binding.apply {
-            val curTransaction = Transactions(
+            return Transactions(
                 generateId(),
                 etTransDate.text.toString(),
                 etDescription.text.toString(),
@@ -133,8 +145,13 @@ class TransactionAddFragment :
                 transIsDeleted = false,
                 transUpdateTime = df.getCurrentTimeAsString()
             )
+        }
+    }
+
+    private fun getTransactionDetailed(): TransactionDetailed {
+        binding.apply {
             return TransactionDetailed(
-                curTransaction,
+                getTransaction(),
                 args.transaction?.budgetRule,
                 args.transaction?.toAccount,
                 args.transaction?.fromAccount
@@ -172,7 +189,7 @@ class TransactionAddFragment :
         val direction = TransactionAddFragmentDirections
             .actionTransactionAddFragmentToAccountsFragment(
                 null,
-                getCurTransaction(),
+                getTransactionDetailed(),
                 null,
                 REQUEST_FROM_ACCOUNT,
                 fragmentChain
@@ -185,7 +202,7 @@ class TransactionAddFragment :
         val direction = TransactionAddFragmentDirections
             .actionTransactionAddFragmentToAccountsFragment(
                 null,
-                getCurTransaction(),
+                getTransactionDetailed(),
                 null,
                 REQUEST_TO_ACCOUNT,
                 fragmentChain
@@ -261,24 +278,21 @@ class TransactionAddFragment :
     private fun saveTransaction() {
         val mes = checkTransaction()
         if (mes == "Ok") {
-            binding.apply {
-                val amount =
-                    cf.getDoubleFromDollars(etAmount.text.toString())
-                val mTransaction = Transactions(
-                    generateId(),
-                    etTransDate.text.toString(),
-                    etDescription.text.toString(),
-                    etNote.text.toString(),
-                    args.transaction!!.budgetRule!!.ruleId,
-                    mToAccount!!.accountId,
-                    chkToAccPending.isChecked,
-                    args.transaction?.fromAccount!!.accountId,
-                    chkFromAccPending.isChecked,
-                    amount,
-                    transIsDeleted = false,
-                    transUpdateTime = df.getCurrentTimeAsString()
-                )
-                transactionViewModel.insertTransaction(mTransaction)
+            val mTransaction = getTransaction()
+            if (!transactionViewModel.insertTransaction(
+                    mTransaction
+                ).isCancelled
+            ) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val go = async {
+                        updateAccounts(mTransaction)
+                    }
+                    if (go.await()) {
+                        success = true
+                    }
+                }
+            }
+            if (success) {
                 val direction =
                     TransactionAddFragmentDirections
                         .actionTransactionAddFragmentToTransactionViewFragment(
@@ -293,6 +307,56 @@ class TransactionAddFragment :
                 mes,
                 Toast.LENGTH_LONG
             ).show()
+        }
+    }
+
+    private fun updateAccounts(mTransaction: Transactions): Boolean {
+        val toAccountWithType =
+            accountViewModel.getAccountWithType(mTransaction.transToAccountId)
+        if (!mTransaction.transToAccountPending) {
+            if (toAccountWithType.accountType.keepTotals) {
+                transactionViewModel.updateAccountBalance(
+                    toAccountWithType.account.accountBalance +
+                            mTransaction.transAmount,
+                    mTransaction.transToAccountId,
+                    df.getCurrentTimeAsString()
+                )
+                Log.d(TAG, "updating toAccountBalance")
+            }
+            if (toAccountWithType.accountType.tallyOwing) {
+                transactionViewModel.updateAccountOwing(
+                    toAccountWithType.account.accountOwing -
+                            mTransaction.transAmount,
+                    mTransaction.transToAccountId,
+                    df.getCurrentTimeAsString()
+                )
+            }
+        }
+        val fromAccountWithType =
+            accountViewModel.getAccountWithType(
+                mTransaction.transFromAccountId
+            )
+        if (!mTransaction.transFromAccountPending) {
+            if (fromAccountWithType.accountType.keepTotals) {
+                transactionViewModel.updateAccountBalance(
+                    fromAccountWithType.account.accountBalance -
+                            mTransaction.transAmount,
+                    mTransaction.transFromAccountId,
+                    df.getCurrentTimeAsString()
+                )
+                Log.d(TAG, "updating fromAccountBalance")
+            }
+            if (fromAccountWithType.accountType.tallyOwing) {
+                transactionViewModel.updateAccountOwing(
+                    fromAccountWithType.account.accountOwing +
+                            mTransaction.transAmount,
+                    mTransaction.transFromAccountId,
+                    df.getCurrentTimeAsString()
+                )
+            }
+            return true
+        } else {
+            return false
         }
     }
 
