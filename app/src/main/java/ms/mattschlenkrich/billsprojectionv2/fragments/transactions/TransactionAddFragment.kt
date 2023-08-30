@@ -85,9 +85,9 @@ class TransactionAddFragment :
                 // Handle the menu selection
                 return when (menuItem.itemId) {
                     R.id.menu_save -> {
-                        menuItem.isVisible = false
+                        menuItem.isEnabled = false
                         saveTransaction()
-                        menuItem.isVisible = true
+                        menuItem.isEnabled = true
                         true
                     }
 
@@ -232,23 +232,23 @@ class TransactionAddFragment :
                     etTransDate.setText(
                         args.transaction!!.transaction!!.transDate
                     )
-                    etAmount.setText(
-                        if (args.transaction!!.transaction!!.transAmount == 0.0) {
-                            if (args.transaction!!.budgetRule != null) {
-                                cf.displayDollars(
-                                    args.transaction!!.budgetRule!!.budgetAmount
-                                )
-                            } else {
-                                cf.displayDollars(
-                                    0.0
-                                )
-                            }
+                    etAmount.hint = "Budgeted " +
+                            if (args.transaction!!.transaction!!.transAmount == 0.0) {
+                                if (args.transaction!!.budgetRule != null) {
+                                    cf.displayDollars(
+                                        args.transaction!!.budgetRule!!.budgetAmount
+                                    )
+                                } else {
+                                    cf.displayDollars(
+                                        0.0
+                                    )
+                                }
                         } else {
                             cf.displayDollars(
                                 args.transaction!!.transaction!!.transAmount
                             )
                         }
-                    )
+
                 }
                 if (args.transaction!!.budgetRule != null) {
                     args.transaction!!.budgetRule = args.transaction!!.budgetRule!!
@@ -279,28 +279,25 @@ class TransactionAddFragment :
         val mes = checkTransaction()
         if (mes == "Ok") {
             val mTransaction = getTransaction()
-            if (!transactionViewModel.insertTransaction(
-                    mTransaction
-                ).isCancelled
-            ) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    val go = async {
-                        updateAccounts(mTransaction)
-                    }
-                    if (go.await()) {
-                        success = true
-                    }
+            transactionViewModel.insertTransaction(
+                mTransaction
+            )
+            CoroutineScope(Dispatchers.IO).launch {
+                val go = async {
+                    updateAccounts(mTransaction)
+                }
+                if (go.await()) {
+                    success = true
                 }
             }
-            if (success) {
-                val direction =
-                    TransactionAddFragmentDirections
-                        .actionTransactionAddFragmentToTransactionViewFragment(
-                            null,
-                            null
-                        )
-                mView.findNavController().navigate(direction)
-            }
+            val direction =
+                TransactionAddFragmentDirections
+                    .actionTransactionAddFragmentToTransactionViewFragment(
+                        null,
+                        null
+                    )
+            mView.findNavController().navigate(direction)
+
         } else {
             Toast.makeText(
                 mView.context,
@@ -310,9 +307,12 @@ class TransactionAddFragment :
         }
     }
 
+
     private fun updateAccounts(mTransaction: Transactions): Boolean {
         val toAccountWithType =
-            accountViewModel.getAccountWithType(mTransaction.transToAccountId)
+            accountViewModel.getAccountWithType(
+                mTransaction.transToAccountId
+            )
         if (!mTransaction.transToAccountPending) {
             if (toAccountWithType.accountType.keepTotals) {
                 transactionViewModel.updateAccountBalance(
@@ -354,10 +354,8 @@ class TransactionAddFragment :
                     df.getCurrentTimeAsString()
                 )
             }
-            return true
-        } else {
-            return false
         }
+        return true
     }
 
     private fun generateId(): Long {
