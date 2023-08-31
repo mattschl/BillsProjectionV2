@@ -30,6 +30,7 @@ private const val TAG = BILLS_DATABASE
         BudgetRule::class,
         Transactions::class,
         BudgetItem::class,
+//        AccountAndType::class,
     ], version = DB_VERSION
 )
 abstract class BillsDatabase : RoomDatabase() {

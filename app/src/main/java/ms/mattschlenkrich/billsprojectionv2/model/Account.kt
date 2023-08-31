@@ -85,6 +85,24 @@ data class Account(
     val accUpdateTime: String,
 ) : Parcelable
 
+//@DatabaseView(
+//    "SELECT * FROM $TABLE_ACCOUNTS " +
+//            "LEFT JOIN $TABLE_ACCOUNT_TYPES on " +
+//            "$TABLE_ACCOUNTS.accountTypeId =" +
+//            "$TABLE_ACCOUNT_TYPES.typeId;"
+//)
+//@Parcelize
+//data class AccountAndType(
+//    @Embedded
+//    val account: Account,
+//    @Relation(
+//        entity = AccountType::class,
+//        parentColumn = ACCOUNT_TYPE_ID,
+//        entityColumn = TYPE_ID
+//    )
+//    val accountType: AccountType
+//): Parcelable
+
 @Parcelize
 data class AccountWithType(
     @Embedded
