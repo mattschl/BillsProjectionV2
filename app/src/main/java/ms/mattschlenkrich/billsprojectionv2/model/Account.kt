@@ -2,6 +2,7 @@ package ms.mattschlenkrich.billsprojectionv2.model
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo
+import androidx.room.DatabaseView
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -85,23 +86,37 @@ data class Account(
     val accUpdateTime: String,
 ) : Parcelable
 
-//@DatabaseView(
-//    "SELECT * FROM $TABLE_ACCOUNTS " +
-//            "LEFT JOIN $TABLE_ACCOUNT_TYPES on " +
-//            "$TABLE_ACCOUNTS.accountTypeId =" +
-//            "$TABLE_ACCOUNT_TYPES.typeId;"
-//)
-//@Parcelize
-//data class AccountAndType(
-//    @Embedded
-//    val account: Account,
-//    @Relation(
-//        entity = AccountType::class,
-//        parentColumn = ACCOUNT_TYPE_ID,
-//        entityColumn = TYPE_ID
-//    )
-//    val accountType: AccountType
-//): Parcelable
+@DatabaseView(
+    "SELECT $TABLE_ACCOUNTS.*," +
+            "$TABLE_ACCOUNT_TYPES.* " +
+            "FROM $TABLE_ACCOUNTS " +
+            "LEFT JOIN $TABLE_ACCOUNT_TYPES on " +
+            "$TABLE_ACCOUNTS.accountTypeId =" +
+            "$TABLE_ACCOUNT_TYPES.typeId;"
+)
+@Parcelize
+data class AccountAndType(
+    val accountId: Long,
+    val accountName: String,
+    val accountNumber: String,
+    val accountTypeId: Long,
+    val accBudgetedAmount: Double,
+    val accountBalance: Double,
+    val accountOwing: Double,
+    val accountCreditLimit: Double,
+    val accIsDeleted: Boolean,
+    val accUpdateTime: String,
+    val typeId: Long,
+    val accountType: String,
+    val keepTotals: Boolean,
+    val isAsset: Boolean,
+    val tallyOwing: Boolean,
+    val keepMileage: Boolean,
+    val displayAsAsset: Boolean,
+    val allowPending: Boolean,
+    val acctIsDeleted: Boolean,
+    val acctUpdateTime: String,
+) : Parcelable
 
 @Parcelize
 data class AccountWithType(

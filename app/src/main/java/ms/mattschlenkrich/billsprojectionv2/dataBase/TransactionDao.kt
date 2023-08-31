@@ -25,6 +25,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.TRANS_BUDGET_RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.common.TRANS_IS_DELETED
 import ms.mattschlenkrich.billsprojectionv2.common.TRANS_UPDATE_TIME
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.TransactionFull
 import ms.mattschlenkrich.billsprojectionv2.model.Transactions
 
 @Dao
@@ -156,29 +157,29 @@ interface TransactionDao {
     fun getTransactionDetailed(transId: Long):
             TransactionDetailed
 
-//    @Transaction
-//    @Query(
-//        "SELECT $TABLE_TRANSACTION.*, " +
-//                "budgetRule.*," +
-//                "toAccount.*, " +
-//                "fromAccount.* " +
-//                "FROM $TABLE_TRANSACTION " +
-//                "LEFT JOIN $TABLE_BUDGET_RULES as budgetRule on " +
-//                "$TABLE_TRANSACTION.$TRANS_BUDGET_RULE_ID = " +
-//                "budgetRule.$RULE_ID " +
-//                "LEFT JOIN $TABLE_ACCOUNTS as toAccount on " +
-//                "toAccount.accountId = " +
-//                ":toAccountID " +
-//                "LEFT JOIN $TABLE_ACCOUNTS as fromAccount on " +
-//                "$TABLE_TRANSACTION.$TRANSACTION_FROM_ACCOUNT_ID = " +
-//                "fromAccount.$ACCOUNT_ID " +
-//                "WHERE $TABLE_TRANSACTION.$TRANSACTION_ID = :transId;"
-//    )
-//    fun getTransactionFull(
-//        transId: Long,
-//        toAccountID: Long,
-//        fromAccountID: Long,
-//    ): TransactionDetailed
+    @Transaction
+    @Query(
+        "SELECT $TABLE_TRANSACTION.*, " +
+                "budgetRule.*," +
+                "toAccount.*, " +
+                "fromAccount.* " +
+                "FROM $TABLE_TRANSACTION " +
+                "LEFT JOIN $TABLE_BUDGET_RULES as budgetRule on " +
+                "$TABLE_TRANSACTION.$TRANS_BUDGET_RULE_ID = " +
+                "budgetRule.$RULE_ID " +
+                "LEFT JOIN AccountAndType as toAccount on " +
+                "toAccount.accountId = " +
+                ":toAccountID " +
+                "LEFT JOIN AccountAndType as fromAccount on " +
+                "fromAccount.accountId = " +
+                ":fromAccountID " +
+                "WHERE $TABLE_TRANSACTION.$TRANSACTION_ID = :transId;"
+    )
+    fun getTransactionFull(
+        transId: Long,
+        toAccountID: Long,
+        fromAccountID: Long,
+    ): TransactionFull
 
     @Query(
         "UPDATE $TABLE_ACCOUNTS " +

@@ -43,8 +43,14 @@ class TransactionRepository(private val db: BillsDatabase) {
     fun searchActiveTransactionsDetailed(query: String?) =
         db.getTransactionDao().searchActiveTransactionsDetailed(query)
 
-//    fun getTransactionFull(transId: Long) =
-//        db.getTransactionDao().getTransactionFull(transId)
+    fun getTransactionFull(
+        transId: Long,
+        toAccountID: Long,
+        fromAccountID: Long,
+    ) =
+        db.getTransactionDao().getTransactionFull(
+            transId, toAccountID, fromAccountID
+        )
 
     suspend fun updateAccountBalance(
         newBalance: Double,

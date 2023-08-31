@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "6a745b71b0430d9b00a9e71ad2c42806",
+    "identityHash": "4be660ee6de4eec834f70646ff1e5f3c",
     "entities": [
       {
         "tableName": "accounts",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`accountId` INTEGER NOT NULL, `accountName` TEXT NOT NULL, `accountNumber` TEXT NOT NULL, `accountTypeId` INTEGER NOT NULL, `accBudgetedAmount` REAL NOT NULL DEFAULT 0.0, `accountBalance` REAL NOT NULL DEFAULT 0.0, `accountOwing` REAL NOT NULL DEFAULT 0.0, `accIsDeleted` INTEGER NOT NULL DEFAULT 0, `accUpdateTime` TEXT NOT NULL, PRIMARY KEY(`accountId`), FOREIGN KEY(`accountTypeId`) REFERENCES `accountTypes`(`typeId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`accountId` INTEGER NOT NULL, `accountName` TEXT NOT NULL, `accountNumber` TEXT NOT NULL, `accountTypeId` INTEGER NOT NULL, `accBudgetedAmount` REAL NOT NULL DEFAULT 0.0, `accountBalance` REAL NOT NULL DEFAULT 0.0, `accountOwing` REAL NOT NULL DEFAULT 0.0, `accountCreditLimit` REAL NOT NULL DEFAULT 0.0, `accIsDeleted` INTEGER NOT NULL DEFAULT 0, `accUpdateTime` TEXT NOT NULL, PRIMARY KEY(`accountId`), FOREIGN KEY(`accountTypeId`) REFERENCES `accountTypes`(`typeId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "accountId",
@@ -49,6 +49,13 @@
           {
             "fieldPath": "accountOwing",
             "columnName": "accountOwing",
+            "affinity": "REAL",
+            "notNull": true,
+            "defaultValue": "0.0"
+          },
+          {
+            "fieldPath": "accountCreditLimit",
+            "columnName": "accountCreditLimit",
             "affinity": "REAL",
             "notNull": true,
             "defaultValue": "0.0"
@@ -109,7 +116,7 @@
       },
       {
         "tableName": "accountTypes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`typeId` INTEGER NOT NULL, `accountType` TEXT NOT NULL, `keepTotals` INTEGER NOT NULL, `isAsset` INTEGER NOT NULL, `tallyOwing` INTEGER NOT NULL, `keepMileage` INTEGER NOT NULL, `displayAsAsset` INTEGER NOT NULL, `acctIsDeleted` INTEGER NOT NULL DEFAULT 0, `acctUpdateTime` TEXT NOT NULL, PRIMARY KEY(`typeId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`typeId` INTEGER NOT NULL, `accountType` TEXT NOT NULL, `keepTotals` INTEGER NOT NULL, `isAsset` INTEGER NOT NULL, `tallyOwing` INTEGER NOT NULL, `keepMileage` INTEGER NOT NULL, `displayAsAsset` INTEGER NOT NULL, `allowPending` INTEGER NOT NULL DEFAULT 0, `acctIsDeleted` INTEGER NOT NULL DEFAULT 0, `acctUpdateTime` TEXT NOT NULL, PRIMARY KEY(`typeId`))",
         "fields": [
           {
             "fieldPath": "typeId",
@@ -152,6 +159,13 @@
             "columnName": "displayAsAsset",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "allowPending",
+            "columnName": "allowPending",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           },
           {
             "fieldPath": "acctIsDeleted",
@@ -445,7 +459,7 @@
       },
       {
         "tableName": "transactions",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`transId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `transDate` TEXT NOT NULL, `transName` TEXT NOT NULL, `transNote` TEXT NOT NULL, `transRuleId` INTEGER NOT NULL, `transToAccountId` INTEGER NOT NULL, `transFromAccountId` INTEGER NOT NULL, `transAmount` REAL NOT NULL DEFAULT 0.0, `transIsPending` INTEGER NOT NULL DEFAULT 0, `transIsDeleted` INTEGER NOT NULL DEFAULT 0, `transUpdateTime` TEXT NOT NULL, FOREIGN KEY(`transToAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`transFromAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`transRuleId`) REFERENCES `budgetRules`(`ruleId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`transId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `transDate` TEXT NOT NULL, `transName` TEXT NOT NULL, `transNote` TEXT NOT NULL, `transRuleId` INTEGER NOT NULL, `transToAccountId` INTEGER NOT NULL, `transToAccountPending` INTEGER NOT NULL DEFAULT 0.0, `transFromAccountId` INTEGER NOT NULL, `transFromAccountPending` INTEGER NOT NULL DEFAULT 0.0, `transAmount` REAL NOT NULL DEFAULT 0.0, `transIsDeleted` INTEGER NOT NULL DEFAULT 0, `transUpdateTime` TEXT NOT NULL, FOREIGN KEY(`transToAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`transFromAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`transRuleId`) REFERENCES `budgetRules`(`ruleId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "transId",
@@ -484,10 +498,24 @@
             "notNull": true
           },
           {
+            "fieldPath": "transToAccountPending",
+            "columnName": "transToAccountPending",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0.0"
+          },
+          {
             "fieldPath": "transFromAccountId",
             "columnName": "transFromAccountId",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "transFromAccountPending",
+            "columnName": "transFromAccountPending",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0.0"
           },
           {
             "fieldPath": "transAmount",
@@ -495,13 +523,6 @@
             "affinity": "REAL",
             "notNull": true,
             "defaultValue": "0.0"
-          },
-          {
-            "fieldPath": "transIsPending",
-            "columnName": "transIsPending",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "0"
           },
           {
             "fieldPath": "transIsDeleted",
@@ -570,13 +591,22 @@
             "createSql": "CREATE INDEX IF NOT EXISTS `index_transactions_transIsDeleted` ON `${TABLE_NAME}` (`transIsDeleted`)"
           },
           {
-            "name": "index_transactions_transIsPending",
+            "name": "index_transactions_transToAccountPending",
             "unique": false,
             "columnNames": [
-              "transIsPending"
+              "transToAccountPending"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_transactions_transIsPending` ON `${TABLE_NAME}` (`transIsPending`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_transactions_transToAccountPending` ON `${TABLE_NAME}` (`transToAccountPending`)"
+          },
+          {
+            "name": "index_transactions_transFromAccountPending",
+            "unique": false,
+            "columnNames": [
+              "transFromAccountPending"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_transactions_transFromAccountPending` ON `${TABLE_NAME}` (`transFromAccountPending`)"
           }
         ],
         "foreignKeys": [
@@ -858,10 +888,15 @@
         ]
       }
     ],
-    "views": [],
+    "views": [
+      {
+        "viewName": "AccountAndType",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT accounts.*,accountTypes.* FROM accounts LEFT JOIN accountTypes on accounts.accountTypeId =accountTypes.typeId;"
+      }
+    ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6a745b71b0430d9b00a9e71ad2c42806')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4be660ee6de4eec834f70646ff1e5f3c')"
     ]
   }
 }

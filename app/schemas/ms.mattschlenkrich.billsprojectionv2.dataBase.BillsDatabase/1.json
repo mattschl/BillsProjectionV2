@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "cbd5bec6618af6ae22e23a075d9e9bdd",
+    "identityHash": "4be660ee6de4eec834f70646ff1e5f3c",
     "entities": [
       {
         "tableName": "accounts",
@@ -888,10 +888,15 @@
         ]
       }
     ],
-    "views": [],
+    "views": [
+      {
+        "viewName": "AccountAndType",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT accounts.*,accountTypes.* FROM accounts LEFT JOIN accountTypes on accounts.accountTypeId =accountTypes.typeId;"
+      }
+    ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cbd5bec6618af6ae22e23a075d9e9bdd')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4be660ee6de4eec834f70646ff1e5f3c')"
     ]
   }
 }

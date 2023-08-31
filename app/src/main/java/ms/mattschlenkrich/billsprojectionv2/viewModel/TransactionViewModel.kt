@@ -37,8 +37,14 @@ class TransactionViewModel(
 //        )
 //    }
 
-//    fun getTransactionFull(transId: Long) =
-//        transactionRepository.getTransactionFull(transId)
+    fun getTransactionFull(
+        transId: Long,
+        toAccountID: Long,
+        fromAccountID: Long,
+    ) =
+        transactionRepository.getTransactionFull(
+            transId, toAccountID, fromAccountID
+        )
 
     fun getTransactionDetailed(transId: Long) =
         transactionRepository.getTransactionDetailed(transId)

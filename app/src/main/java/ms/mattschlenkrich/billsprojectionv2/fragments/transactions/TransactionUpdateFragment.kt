@@ -3,7 +3,6 @@ package ms.mattschlenkrich.billsprojectionv2.fragments.transactions
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -359,95 +358,91 @@ class TransactionUpdateFragment :
     }
 
     private fun updateAccounts(
-        mTransaction: Transactions,
+        newTransaction: Transactions
     ): Boolean {
-        val oldTransaction = args.transaction!!.transaction!!
-        val oldToAccountWithType =
-            accountViewModel.getAccountWithType(
-                oldTransaction.transToAccountId
+        val oldTransaction =
+            transactionViewModel.getTransactionFull(
+                args.transaction!!.transaction!!.transId,
+                args.transaction!!.transaction!!.transToAccountId,
+                args.transaction!!.transaction!!.transFromAccountId
             )
-        if (!oldTransaction.transToAccountPending) {
-            if (oldToAccountWithType.accountType.keepTotals) {
+        if (!oldTransaction.transaction.transToAccountPending) {
+            if (oldTransaction.toAccountAndType.keepTotals) {
                 transactionViewModel.updateAccountBalance(
-                    oldToAccountWithType.account.accountBalance -
-                            oldTransaction.transAmount,
-                    oldTransaction.transToAccountId,
+                    oldTransaction.toAccountAndType.accountBalance -
+                            oldTransaction.transaction.transAmount,
+                    oldTransaction.transaction.transToAccountId,
                     df.getCurrentTimeAsString()
                 )
             }
-            if (oldToAccountWithType.accountType.tallyOwing) {
+            if (oldTransaction.toAccountAndType.tallyOwing) {
                 transactionViewModel.updateAccountOwing(
-                    oldToAccountWithType.account.accountBalance +
-                            oldTransaction.transAmount,
-                    oldTransaction.transToAccountId,
+                    oldTransaction.toAccountAndType.accountOwing +
+                            oldTransaction.transaction.transAmount,
+                    oldTransaction.transaction.transToAccountId,
                     df.getCurrentTimeAsString()
+                )
+            }
+            if (!oldTransaction.transaction.transFromAccountPending) {
+                if (oldTransaction.fromAccountAndType.keepTotals) {
+                    transactionViewModel.updateAccountBalance(
+                        oldTransaction.fromAccountAndType.accountBalance +
+                                oldTransaction.transaction.transAmount,
+                        oldTransaction.transaction.transFromAccountId,
+                        df.getCurrentTimeAsString()
+                    )
+                }
+                if (oldTransaction.fromAccountAndType.tallyOwing) {
+                    transactionViewModel.updateAccountOwing(
+                        oldTransaction.fromAccountAndType.accountOwing -
+                                oldTransaction.transaction.transAmount,
+                        oldTransaction.transaction.transFromAccountId,
+                        df.getCurrentTimeAsString()
+                    )
 
-                )
+                }
             }
         }
-        val oldFromAccountWithType =
-            accountViewModel.getAccountWithType(
-                oldTransaction.transFromAccountId
-            )
-        if (!oldTransaction.transFromAccountPending) {
-            if (oldFromAccountWithType.accountType.keepTotals) {
-                transactionViewModel.updateAccountBalance(
-                    oldFromAccountWithType.account.accountBalance +
-                            oldTransaction.transAmount,
-                    oldTransaction.transFromAccountId,
-                    df.getCurrentTimeAsString()
+        if (!newTransaction.transToAccountPending) {
+            val toAccountWithType =
+                accountViewModel.getAccountWithType(
+                    newTransaction.transToAccountId
                 )
-            }
-            if (oldFromAccountWithType.accountType.tallyOwing) {
-                transactionViewModel.updateAccountOwing(
-                    oldFromAccountWithType.account.accountOwing -
-                            oldTransaction.transAmount,
-                    oldTransaction.transFromAccountId,
-                    df.getCurrentTimeAsString()
-                )
-            }
-        }
-        val toAccountWithType =
-            accountViewModel.getAccountWithType(
-                mTransaction.transToAccountId
-            )
-        if (!mTransaction.transToAccountPending) {
             if (toAccountWithType.accountType.keepTotals) {
                 transactionViewModel.updateAccountBalance(
                     toAccountWithType.account.accountBalance +
-                            mTransaction.transAmount,
-                    mTransaction.transToAccountId,
+                            newTransaction.transAmount,
+                    newTransaction.transToAccountId,
                     df.getCurrentTimeAsString()
                 )
             }
             if (toAccountWithType.accountType.tallyOwing) {
                 transactionViewModel.updateAccountOwing(
                     toAccountWithType.account.accountOwing -
-                            mTransaction.transAmount,
-                    mTransaction.transToAccountId,
+                            newTransaction.transAmount,
+                    newTransaction.transToAccountId,
                     df.getCurrentTimeAsString()
                 )
             }
         }
-        val fromAccountWithType =
-            accountViewModel.getAccountWithType(
-                mTransaction.transFromAccountId
-            )
-        if (!mTransaction.transFromAccountPending) {
+        if (!newTransaction.transFromAccountPending) {
+            val fromAccountWithType =
+                accountViewModel.getAccountWithType(
+                    newTransaction.transFromAccountId
+                )
             if (fromAccountWithType.accountType.keepTotals) {
                 transactionViewModel.updateAccountBalance(
                     fromAccountWithType.account.accountBalance -
-                            mTransaction.transAmount,
-                    mTransaction.transFromAccountId,
+                            newTransaction.transAmount,
+                    newTransaction.transFromAccountId,
                     df.getCurrentTimeAsString()
                 )
-                Log.d(TAG, "updating fromAccountBalance")
             }
             if (fromAccountWithType.accountType.tallyOwing) {
                 transactionViewModel.updateAccountOwing(
                     fromAccountWithType.account.accountOwing +
-                            mTransaction.transAmount,
-                    mTransaction.transFromAccountId,
+                            newTransaction.transAmount,
+                    newTransaction.transFromAccountId,
                     df.getCurrentTimeAsString()
                 )
             }
@@ -455,51 +450,145 @@ class TransactionUpdateFragment :
         return true
     }
 
-    private fun updateAccounts(): Boolean {
-        val oldTransaction = args.transaction!!.transaction!!
-        val oldToAccountWithType =
-            accountViewModel.getAccountWithType(
-                oldTransaction.transToAccountId
-            )
-        if (!oldTransaction.transToAccountPending) {
-            if (oldToAccountWithType.accountType.keepTotals) {
-                transactionViewModel.updateAccountBalance(
-                    oldToAccountWithType.account.accountBalance -
-                            oldTransaction.transAmount,
-                    oldTransaction.transToAccountId,
-                    df.getCurrentTimeAsString()
-                )
-            }
-            if (oldToAccountWithType.accountType.tallyOwing) {
-                transactionViewModel.updateAccountOwing(
-                    oldToAccountWithType.account.accountBalance +
-                            oldTransaction.transAmount,
-                    oldTransaction.transToAccountId,
-                    df.getCurrentTimeAsString()
+//    private fun updateAccounts(
+//        mTransaction: Transactions,
+//    ): Boolean {
+//        val oldTransaction = args.transaction!!.transaction!!
+//        val oldToAccountWithType =
+//            accountViewModel.getAccountWithType(
+//                oldTransaction.transToAccountId
+//            )
+//        if (!oldTransaction.transToAccountPending) {
+//            if (oldToAccountWithType.accountType.keepTotals) {
+//                transactionViewModel.updateAccountBalance(
+//                    oldToAccountWithType.account.accountBalance -
+//                            oldTransaction.transAmount,
+//                    oldTransaction.transToAccountId,
+//                    df.getCurrentTimeAsString()
+//                )
+//            }
+//            if (oldToAccountWithType.accountType.tallyOwing) {
+//                transactionViewModel.updateAccountOwing(
+//                    oldToAccountWithType.account.accountBalance +
+//                            oldTransaction.transAmount,
+//                    oldTransaction.transToAccountId,
+//                    df.getCurrentTimeAsString()
+//
+//                )
+//            }
+//        }
+//        val oldFromAccountWithType =
+//            accountViewModel.getAccountWithType(
+//                oldTransaction.transFromAccountId
+//            )
+//        if (!oldTransaction.transFromAccountPending) {
+//            if (oldFromAccountWithType.accountType.keepTotals) {
+//                transactionViewModel.updateAccountBalance(
+//                    oldFromAccountWithType.account.accountBalance +
+//                            oldTransaction.transAmount,
+//                    oldTransaction.transFromAccountId,
+//                    df.getCurrentTimeAsString()
+//                )
+//            }
+//            if (oldFromAccountWithType.accountType.tallyOwing) {
+//                transactionViewModel.updateAccountOwing(
+//                    oldFromAccountWithType.account.accountOwing -
+//                            oldTransaction.transAmount,
+//                    oldTransaction.transFromAccountId,
+//                    df.getCurrentTimeAsString()
+//                )
+//            }
+//        }
+//        val toAccountWithType =
+//            accountViewModel.getAccountWithType(
+//                mTransaction.transToAccountId
+//            )
+//        if (!mTransaction.transToAccountPending) {
+//            if (toAccountWithType.accountType.keepTotals) {
+//                transactionViewModel.updateAccountBalance(
+//                    toAccountWithType.account.accountBalance +
+//                            mTransaction.transAmount,
+//                    mTransaction.transToAccountId,
+//                    df.getCurrentTimeAsString()
+//                )
+//            }
+//            if (toAccountWithType.accountType.tallyOwing) {
+//                transactionViewModel.updateAccountOwing(
+//                    toAccountWithType.account.accountOwing -
+//                            mTransaction.transAmount,
+//                    mTransaction.transToAccountId,
+//                    df.getCurrentTimeAsString()
+//                )
+//            }
+//        }
+//        val fromAccountWithType =
+//            accountViewModel.getAccountWithType(
+//                mTransaction.transFromAccountId
+//            )
+//        if (!mTransaction.transFromAccountPending) {
+//            if (fromAccountWithType.accountType.keepTotals) {
+//                transactionViewModel.updateAccountBalance(
+//                    fromAccountWithType.account.accountBalance -
+//                            mTransaction.transAmount,
+//                    mTransaction.transFromAccountId,
+//                    df.getCurrentTimeAsString()
+//                )
+//                Log.d(TAG, "updating fromAccountBalance")
+//            }
+//            if (fromAccountWithType.accountType.tallyOwing) {
+//                transactionViewModel.updateAccountOwing(
+//                    fromAccountWithType.account.accountOwing +
+//                            mTransaction.transAmount,
+//                    mTransaction.transFromAccountId,
+//                    df.getCurrentTimeAsString()
+//                )
+//            }
+//        }
+//        return true
+//    }
 
-                )
-            }
-        }
-        val oldFromAccountWithType =
-            accountViewModel.getAccountWithType(
-                oldTransaction.transFromAccountId
+    private fun updateAccounts(): Boolean {
+        val oldTransaction =
+            transactionViewModel.getTransactionFull(
+                args.transaction!!.transaction!!.transId,
+                args.transaction!!.transaction!!.transToAccountId,
+                args.transaction!!.transaction!!.transFromAccountId
             )
-        if (!oldTransaction.transFromAccountPending) {
-            if (oldFromAccountWithType.accountType.keepTotals) {
+        if (!oldTransaction.transaction.transToAccountPending) {
+            if (oldTransaction.toAccountAndType.keepTotals) {
                 transactionViewModel.updateAccountBalance(
-                    oldFromAccountWithType.account.accountBalance +
-                            oldTransaction.transAmount,
-                    oldTransaction.transFromAccountId,
+                    oldTransaction.toAccountAndType.accountBalance -
+                            oldTransaction.transaction.transAmount,
+                    oldTransaction.transaction.transToAccountId,
                     df.getCurrentTimeAsString()
                 )
             }
-            if (oldFromAccountWithType.accountType.tallyOwing) {
+            if (oldTransaction.toAccountAndType.tallyOwing) {
                 transactionViewModel.updateAccountOwing(
-                    oldFromAccountWithType.account.accountOwing -
-                            oldTransaction.transAmount,
-                    oldTransaction.transFromAccountId,
+                    oldTransaction.toAccountAndType.accountOwing +
+                            oldTransaction.transaction.transAmount,
+                    oldTransaction.transaction.transToAccountId,
                     df.getCurrentTimeAsString()
                 )
+            }
+            if (!oldTransaction.transaction.transFromAccountPending) {
+                if (oldTransaction.fromAccountAndType.keepTotals) {
+                    transactionViewModel.updateAccountBalance(
+                        oldTransaction.fromAccountAndType.accountBalance +
+                                oldTransaction.transaction.transAmount,
+                        oldTransaction.transaction.transFromAccountId,
+                        df.getCurrentTimeAsString()
+                    )
+                }
+                if (oldTransaction.fromAccountAndType.tallyOwing) {
+                    transactionViewModel.updateAccountOwing(
+                        oldTransaction.fromAccountAndType.accountOwing -
+                                oldTransaction.transaction.transAmount,
+                        oldTransaction.transaction.transFromAccountId,
+                        df.getCurrentTimeAsString()
+                    )
+
+                }
             }
         }
         return true

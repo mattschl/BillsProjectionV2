@@ -116,16 +116,16 @@ data class BudgetFullView(
         entityColumn = RULE_ID
     )
     var budgetRule: BudgetRule?,
-//    @Relation(
-//        entity = AccountWithType::class,
-//        parentColumn = BI_TO_ACCOUNT_ID,
-//        entityColumn = ACCOUNT_ID
-//    )
-//    var toAccountAndType: AccountAndType?,
-//    @Relation(
-//        entity = AccountWithType::class,
-//        parentColumn = BI_FROM_ACCOUNT_ID,
-//        entityColumn = ACCOUNT_ID
-//    )
-//    var fromAccountAndType: AccountAndType?
+    @Relation(
+        entity = AccountWithType::class,
+        parentColumn = BI_TO_ACCOUNT_ID,
+        entityColumn = ACCOUNT_ID
+    )
+    var toAccountAndType: AccountAndType?,
+    @Relation(
+        entity = AccountWithType::class,
+        parentColumn = BI_FROM_ACCOUNT_ID,
+        entityColumn = ACCOUNT_ID
+    )
+    var fromAccountAndType: AccountAndType?
 ) : Parcelable

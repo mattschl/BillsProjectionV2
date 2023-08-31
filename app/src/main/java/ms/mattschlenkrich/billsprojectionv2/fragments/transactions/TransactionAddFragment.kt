@@ -34,7 +34,6 @@ import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.Transactions
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModel
-import java.util.Random
 
 private const val TAG = FRAG_TRANS_ADD
 
@@ -128,7 +127,7 @@ class TransactionAddFragment :
     private fun getTransaction(): Transactions {
         binding.apply {
             return Transactions(
-                generateId(),
+                cf.generateId(),
                 etTransDate.text.toString(),
                 etDescription.text.toString(),
                 etNote.text.toString(),
@@ -356,14 +355,6 @@ class TransactionAddFragment :
             }
         }
         return true
-    }
-
-    private fun generateId(): Long {
-        var id =
-            Random().nextInt(Int.MAX_VALUE).toLong()
-        id = if (Random().nextBoolean()) -id
-        else id
-        return id
     }
 
     private fun checkTransaction(): String {
