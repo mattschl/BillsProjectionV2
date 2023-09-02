@@ -164,11 +164,11 @@ class AccountUpdateFragment :
         val mess = checkAccount()
 
         if (mess == "Ok") {
-            val name = binding.edAccountUpdateName.text.trim()
-            if (name == args.account!!.accountName) {
+            val name = binding.edAccountUpdateName.text.trim().toString()
+            if (name == args.account!!.accountName.trim()) {
                 accountsViewModel.updateAccount(getUpdatedAccount())
                 gotoAccountFragment()
-            } else if (name.isNotBlank()) {
+            } else if (name != args.account!!.accountName.trim()) {
                 AlertDialog.Builder(activity).apply {
                     setTitle("Rename Account?")
                     setMessage(

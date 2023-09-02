@@ -73,7 +73,7 @@ class AccountTypeAdapter(
 
         holder.itemBinding.tvAccountType.text = curAccountType.accountType
         var info = if (curAccountType.keepTotals)
-            "Transactions will be calculated" else ""
+            "Balance will be updated" else ""
         if (curAccountType.tallyOwing) {
             info += "${if (info.isNotEmpty()) "\n" else ""}Will calculate amount owing"
         }
