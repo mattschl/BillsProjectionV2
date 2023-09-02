@@ -116,7 +116,7 @@ class AccountAdapter(
         }
         if (curAccount.account.accountCreditLimit != 0.0) {
             info += "${if (info.isNotEmpty()) "\n" else ""}Credit Limit " +
-                    cf.displayDollars(curAccount.account.accBudgetedAmount)
+                    cf.displayDollars(curAccount.account.accountCreditLimit)
         }
         if (curAccount.account.accIsDeleted) {
             info += "${if (info.isNotEmpty()) "\n" else ""}       **Deleted** "

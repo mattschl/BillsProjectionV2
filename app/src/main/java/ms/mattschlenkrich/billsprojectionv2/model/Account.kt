@@ -16,8 +16,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_TYPE_ID
 import ms.mattschlenkrich.billsprojectionv2.common.ACCT_DISPLAY_AS_ASSET
 import ms.mattschlenkrich.billsprojectionv2.common.ACCT_IS_DELETED
 import ms.mattschlenkrich.billsprojectionv2.common.IS_ASSET
+import ms.mattschlenkrich.billsprojectionv2.common.KEEP_BALANCE
 import ms.mattschlenkrich.billsprojectionv2.common.KEEP_MILEAGE
-import ms.mattschlenkrich.billsprojectionv2.common.KEEP_TOTALS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.common.TALLY_OWING
@@ -28,7 +28,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.TYPE_ID
     indices = [Index(
         value = [ACCOUNT_TYPE], unique = true
     ),
-        Index(value = [KEEP_TOTALS]),
+        Index(value = [KEEP_BALANCE]),
         Index(value = [IS_ASSET]),
         Index(value = [TALLY_OWING]),
         Index(value = [KEEP_MILEAGE]),

@@ -25,11 +25,15 @@ import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTIONS
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionAddBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
+import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.Transactions
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
@@ -50,6 +54,7 @@ class TransactionAddFragment :
     private val args: TransactionAddFragmentArgs by navArgs()
 
     private var mToAccount: Account? = null
+    private var mBudgetRule: BudgetRule? = null
     private val cf = CommonFunctions()
     private val df = DateFunctions()
 
@@ -345,16 +350,37 @@ class TransactionAddFragment :
                 )
                 Log.d(TAG, "updating fromAccountBalance")
             }
-            if (fromAccountWithType.accountType.tallyOwing) {
-                transactionViewModel.updateAccountOwing(
-                    fromAccountWithType.account.accountOwing +
-                            mTransaction.transAmount,
-                    mTransaction.transFromAccountId,
-                    df.getCurrentTimeAsString()
-                )
-            }
+            gotoCallingFragment()
         }
         return true
+    }
+
+    private fun gotoCallingFragment() {
+        val fragmentChain = args.callingFragments!!
+            .replace(",$TAG", "")
+        if (args.callingFragments!!.contains(FRAG_TRANSACTIONS)) {
+            val direction =
+                TransactionAddFragmentDirections
+                    .actionTransactionAddFragmentToTransactionViewFragment(
+                        null,
+                        fragmentChain
+                    )
+            mView.findNavController().navigate(direction)
+        } else if (args.callingFragments!!.contains(FRAG_BUDGET_RULES)) {
+            val direction =
+                TransactionAddFragmentDirections
+                    .actionTransactionAddFragmentToBudgetRuleFragment(
+                        null,
+                        null,
+                        fragmentChain
+                    )
+            mView.findNavController().navigate(direction)
+        } else if (args.callingFragments!!.contains(FRAG_BUDGET_VIEW)) {
+            val direction =
+                TransactionAddFragmentDirections
+                    .actionTransactionAddFragmentToBudgetViewFragment()
+            mView.findNavController().navigate(direction)
+        }
     }
 
     private fun checkTransaction(): String {
@@ -400,6 +426,7 @@ class TransactionAddFragment :
                         "Budget Rules are used to update the budget."
             )
             setPositiveButton("Save anyway") { _, _ ->
+
                 bool = true
             }
             setNegativeButton("Retry", null)
