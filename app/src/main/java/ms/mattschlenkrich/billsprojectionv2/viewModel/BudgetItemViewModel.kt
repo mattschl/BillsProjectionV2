@@ -35,4 +35,26 @@ class BudgetItemViewModel(
             )
         }
 
+    fun updatePayDay(
+        payDay: String,
+        updateTime: String,
+        budgetRuleId: Long,
+        projectedDate: String
+    ) = viewModelScope.launch {
+        budgetItemRepository.updatePayDay(
+            payDay, updateTime, budgetRuleId, projectedDate
+        )
+    }
+
+    fun getPayDaysActive(currentDate: String) =
+        budgetItemRepository.getPayDaysActive(currentDate)
+
+    fun deleteFutureBudgetItems(
+        currentDate: String,
+        updateTime: String
+    ) = viewModelScope.launch {
+        budgetItemRepository.deleteFutureBudgetItems(
+            currentDate, updateTime
+        )
+    }
 }

@@ -14,6 +14,9 @@ class BudgetRuleRepository(private val db: BillsDatabase) {
     suspend fun deleteBudgetRule(budgetRuleId: Long, updateTime: String) =
         db.getBudgetRuleDao().deleteBudgetRule(budgetRuleId, updateTime)
 
+    suspend fun getBudgetRulesActive(endDate: String) =
+        db.getBudgetRuleDao().getBudgetRulesActive(endDate)
+
     fun getActiveBudgetRulesDetailed() =
         db.getBudgetRuleDao().getActiveBudgetRulesDetailed()
 

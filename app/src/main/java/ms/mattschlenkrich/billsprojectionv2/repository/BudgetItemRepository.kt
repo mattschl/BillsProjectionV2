@@ -21,4 +21,23 @@ class BudgetItemRepository(private val db: BillsDatabase) {
             projectedDate,
             updateTime
         )
+
+    suspend fun updatePayDay(
+        payDay: String,
+        updateTime: String,
+        budgetRuleId: Long,
+        projectedDate: String
+    ) = db.getBudgetItemDao().updatePayDay(
+        payDay, updateTime, budgetRuleId, projectedDate
+    )
+
+    fun getPayDaysActive(currentDate: String) =
+        db.getBudgetItemDao().getPayDaysActive(currentDate)
+
+    suspend fun deleteFutureBudgetItems(
+        currentDate: String,
+        updateTime: String
+    ) = db.getBudgetItemDao().deleteFutureBudgetItems(
+        currentDate, updateTime
+    )
 }

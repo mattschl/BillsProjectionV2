@@ -5,8 +5,12 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import ms.mattschlenkrich.billsprojectionv2.common.BI_ACTUAL_DATE
 import ms.mattschlenkrich.billsprojectionv2.common.BI_BUDGET_RULE_ID
+import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_CANCELLED
 import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_DELETED
+import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_PAY_DAY_ITEM
+import ms.mattschlenkrich.billsprojectionv2.common.BI_PAY_DAY
 import ms.mattschlenkrich.billsprojectionv2.common.BI_PROJECTED_DATE
 import ms.mattschlenkrich.billsprojectionv2.common.BI_UPDATE_TIME
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_ITEMS
@@ -15,7 +19,7 @@ import ms.mattschlenkrich.billsprojectionv2.model.BudgetItem
 @Dao
 interface BudgetItemDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBudgetItem(budgetItem: BudgetItem)
 
     @Update
@@ -33,4 +37,39 @@ interface BudgetItemDao {
         projectedDate: String,
         updateTime: String
     )
+
+    @Query(
+        "UPDATE $TABLE_BUDGET_ITEMS " +
+                "SET $BI_PAY_DAY = :payDay," +
+                "$BI_UPDATE_TIME = :updateTime " +
+                "WHERE $BI_BUDGET_RULE_ID = :budgetRuleId " +
+                "AND $BI_PROJECTED_DATE = :projectedDate;"
+    )
+    suspend fun updatePayDay(
+        payDay: String,
+        updateTime: String,
+        budgetRuleId: Long,
+        projectedDate: String
+    )
+
+    @Query(
+        "SELECT $BI_PAY_DAY FROM $TABLE_BUDGET_ITEMS " +
+                "WHERE $BI_PAY_DAY >= :currentDate " +
+                "AND $BI_IS_PAY_DAY_ITEM = 1 " +
+                "AND $BI_IS_DELETED = 0 " +
+                "AND $BI_IS_CANCELLED = 0"
+    )
+    fun getPayDaysActive(currentDate: String): List<String>
+
+    @Query(
+        "UPDATE $TABLE_BUDGET_ITEMS " +
+                "SET $BI_IS_DELETED = 1, " +
+                "$BI_UPDATE_TIME = :updateTime " +
+                "WHERE $BI_ACTUAL_DATE > :currentDate"
+    )
+    suspend fun deleteFutureBudgetItems(
+        currentDate: String,
+        updateTime: String
+    )
+
 }

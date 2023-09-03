@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2
 
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -12,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import ms.mattschlenkrich.billsprojectionv2.dataBase.BillsDatabase
 import ms.mattschlenkrich.billsprojectionv2.databinding.ActivityMainBinding
+import ms.mattschlenkrich.billsprojectionv2.projections.UpdateBudgetPredictions
 import ms.mattschlenkrich.billsprojectionv2.repository.AccountRepository
 import ms.mattschlenkrich.billsprojectionv2.repository.BudgetItemRepository
 import ms.mattschlenkrich.billsprojectionv2.repository.BudgetRuleRepository
@@ -24,6 +26,7 @@ import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModelFactory
+import java.time.LocalDate
 
 private const val TAG = "MainActivity"
 
@@ -45,21 +48,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         mView = binding.root
         Log.d(TAG, "MainActivity is started")
-//        val navView: BottomNavigationView = binding.bottomNavView
-//        Log.d(TAG, "navController is ${R.id.fragment_container_view}")
-//        val navController =
-//            findNavController(R.id.fragment_container_view)
-//
-//        val appBarConfiguration =
-//            AppBarConfiguration(
-//                setOf(
-//                    R.id.transactionViewFragment,
-//                    R.id.accountsFragment,
-//                    R.id.budgetRuleFragment
-//                )
-//            )
-//        setupActionBarWithNavController(navController, appBarConfiguration)
-//        navView.setupWithNavController(navController)
         addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menu.add(R.string.budget_view)
@@ -119,6 +107,11 @@ class MainActivity : AppCompatActivity() {
                         return true
                     }
 
+                    getString(R.string.update_budget_predictions) -> {
+                        updateBudgetPredictions()
+                        return true
+                    }
+
                     else -> {
                         return false
                     }
@@ -131,90 +124,30 @@ class MainActivity : AppCompatActivity() {
         setupTransactionViewModel()
         setupBudgetItemViewModel()
 
-//        binding.bottomNavView.apply {
-//            setOnClickListener {
-//                Log.d(TAG, "selectedItemId = $selectedItemId")
-//                when (selectedItemId) {
-//                    0 -> {
-//                        //not in operation
-//                        Log.d(TAG, "0 is selected")
-//                    }
-//                    1 -> {
-//                        findNavController().navigate(R.id.transactionViewFragment)
-//                    }
-//                    2 -> {
-//                        findNavController().navigate(R.id.accountsFragment)
-//                    }
-//                    3 -> {
-//                        findNavController().navigate(R.id.budgetRuleFragment)
-//                    }
-//                }
-//
-//            }
-//        }
-
-
-//        BillsDatabase.testDb(this.baseContext)
-
     }
 
-//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-//        menu?.add(R.string.budget_view)
-//        menu?.add(R.string.transactions)
-//        menu?.add(R.string.accounts)
-//        menu?.add(R.string.budget_rules)
-//        menu?.add(getString(R.string.update_budget_predictions))
-//        menu?.add("Bills Projection ${BuildConfig.VERSION_NAME}")
-//        return true
-//    }
-//
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        when (item.title) {
-//
-//            resources.getString(R.string.budget_view) -> {
-//                val direction =
-//                    NavGraphDirections.actionGlobalBudgetViewFragment()
-//                findNavController(R.id.fragment_container_view)
-//                    .navigate(direction)
-//            }
-//
-//            resources.getString(R.string.transactions) -> {
-//                val direction =
-//                    NavGraphDirections.actionGlobalTransactionViewFragment(
-//                        null,
-//                        null
-//                    )
-//                findNavController(R.id.fragment_container_view)
-//                    .navigate(direction)
-//            }
-//
-//            resources.getString(R.string.accounts) -> {
-//                val direction =
-//                    NavGraphDirections.actionGlobalAccountsFragment(
-//                        null,
-//                        null,
-//                        null,
-//                        null,
-//                        null
-//                    )
-//
-//                findNavController(R.id.fragment_container_view)
-//                    .navigate(direction)
-//            }
-//
-//            resources.getString(R.string.budget_rules) -> {
-//                val direction =
-//                    NavGraphDirections.actionGlobalBudgetRuleFragment(
-//                        null,
-//                        null,
-//                        null
-//                    )
-//                findNavController(R.id.fragment_container_view)
-//                    .navigate(direction)
-//            }
-//        }
-//        return false
-//    }
+    private fun updateBudgetPredictions() {
+        val updateBudgetPredictions =
+            UpdateBudgetPredictions(this)
+        val stopDateAll = LocalDate.now()
+            .plusMonths(4).toString()
+            .split("-")
+        val datePickerDialog = DatePickerDialog(
+            this,
+            { _, year, monthOfYear, dayOfMonth ->
+                val month = monthOfYear + 1
+                val display = "$year-${month.toString().padStart(2, '0')}-${
+                    dayOfMonth.toString().padStart(2, '0')
+                }"
+                updateBudgetPredictions.updatePredictions(display)
+            },
+            stopDateAll[0].toInt(),
+            stopDateAll[1].toInt() - 1,
+            stopDateAll[2].toInt()
+        )
+        datePickerDialog.setTitle("Pick a date to project forward to.")
+        datePickerDialog.show()
+    }
 
     private fun setupBudgetItemViewModel() {
         val budgetItemRepository = BudgetItemRepository(

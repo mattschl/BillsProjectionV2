@@ -27,6 +27,9 @@ class BudgetRuleViewModel(
             budgetRuleRepository.deleteBudgetRule(budgetRuleId, updateTime)
         }
 
+    suspend fun getBudgetRulesActive(endDate: String) =
+        budgetRuleRepository.getBudgetRulesActive(endDate)
+
     fun getActiveBudgetRulesDetailed() =
         budgetRuleRepository.getActiveBudgetRulesDetailed()
 

@@ -42,16 +42,6 @@ class AccountsFragment :
 
     private val args: AccountsFragmentArgs by navArgs()
 
-
-//    private val dollarFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
-//    private val dateFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
-//    private val timeFormatter: SimpleDateFormat = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
-
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setHasOptionsMenu(true)
-//    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -76,12 +66,10 @@ class AccountsFragment :
         mainActivity.title = "Choose an Account"
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
-
         setUpRecyclerView()
         binding.fabAddNewAccount.setOnClickListener {
             addNewAccount()
         }
-
     }
 
     private fun addNewAccount() {
@@ -101,7 +89,6 @@ class AccountsFragment :
             )
         mView.findNavController().navigate(direction)
     }
-
 
     private fun setUpRecyclerView() {
         val fragmentChain = "${args.callingFragments}, $TAG"
@@ -154,19 +141,6 @@ class AccountsFragment :
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         return false
     }
-
-//    override fun onCreateOptionsMenu(
-//        menu: Menu, inflater: MenuInflater
-//    ) {
-////        super.onCreateOptionsMenu(menu, inflater)
-//
-////        menu.clear()
-//        inflater.inflate(R.menu.search_menu, menu)
-//        val mMenuSearch = menu.findItem(R.id.menu_search)
-//            .actionView as SearchView
-//        mMenuSearch.isSubmitButtonEnabled = false
-//        mMenuSearch.setOnQueryTextListener(this)
-//    }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
         return false

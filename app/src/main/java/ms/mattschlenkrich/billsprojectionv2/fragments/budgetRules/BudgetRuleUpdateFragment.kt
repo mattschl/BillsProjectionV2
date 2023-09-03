@@ -330,73 +330,68 @@ class BudgetRuleUpdateFragment :
                     args.budgetRuleDetailed!!.budgetRule!!.ruleId,
                     df.getCurrentTimeAsString()
                 )
-                val direction = BudgetRuleUpdateFragmentDirections
-                    .actionBudgetRuleUpdateFragmentToBudgetRuleFragment(
-                        args.budgetItem,
-                        args.transaction,
-                        args.callingFragments,
-                    )
-                mView.findNavController().navigate(direction)
+                gotoBudgetRuleFragment()
             }
             setNegativeButton("Cancel", null)
         }.create().show()
     }
 
+    private fun gotoBudgetRuleFragment() {
+        val direction = BudgetRuleUpdateFragmentDirections
+            .actionBudgetRuleUpdateFragmentToBudgetRuleFragment(
+                args.budgetItem,
+                args.transaction,
+                args.callingFragments,
+            )
+        mView.findNavController().navigate(direction)
+    }
+
+    private fun getCurBudgetRule(): BudgetRule {
+        val toAccountId =
+            if (args.budgetRuleDetailed!!.toAccount != null) {
+                args.budgetRuleDetailed!!.toAccount!!.accountId
+            } else {
+                0L
+            }
+        val fromAccountId =
+            if (args.budgetRuleDetailed!!.fromAccount != null) {
+                args.budgetRuleDetailed!!.fromAccount!!.accountId
+            } else {
+                0L
+            }
+        binding.apply {
+            return BudgetRule(
+                args.budgetRuleDetailed!!.budgetRule!!.ruleId,
+                etBudgetName.text.toString().trim(),
+                toAccountId,
+                fromAccountId,
+                cf.getDoubleFromDollars(etAmount.text.toString()),
+                chkFixedAmount.isChecked,
+                chkMakePayDay.isChecked,
+                chkAutoPayment.isChecked,
+                etStartDate.text.toString(),
+                etEndDate.text.toString(),
+                spDayOfWeek.selectedItemId.toInt(),
+                spFrequencyType.selectedItemId.toInt(),
+                etFrequencyCount.text.toString().toInt(),
+                etLeadDays.text.toString().toInt(),
+                false,
+                df.getCurrentTimeAsString()
+            )
+        }
+    }
+
     private fun updateBudgetRule() {
         val mes = checkBudgetRule()
-        binding.apply {
-            if (mes == "Ok") {
-                val toAccountId =
-                    if (args.budgetRuleDetailed!!.toAccount != null) {
-                        args.budgetRuleDetailed!!.toAccount!!.accountId
-                    } else {
-                        0L
-                    }
-                val fromAccountId =
-                    if (args.budgetRuleDetailed!!.fromAccount != null) {
-                        args.budgetRuleDetailed!!.fromAccount!!.accountId
-                    } else {
-                        0L
-                    }
-                val fragmentChain = "${args.callingFragments}, $TAG"
-                budgetRuleViewModel.updateBudgetRule(
-                    BudgetRule(
-                        args.budgetRuleDetailed!!.budgetRule!!.ruleId,
-                        etBudgetName.text.toString().trim(),
-                        toAccountId,
-                        fromAccountId,
-                        etAmount.text.toString()
-                            .replace(",", "")
-                            .replace("$", "")
-                            .toDouble(),
-                        chkFixedAmount.isChecked,
-                        chkMakePayDay.isChecked,
-                        chkAutoPayment.isChecked,
-                        etStartDate.text.toString(),
-                        etEndDate.text.toString(),
-                        spDayOfWeek.selectedItemId.toInt(),
-                        spFrequencyType.selectedItemId.toInt(),
-                        etFrequencyCount.text.toString().toInt(),
-                        etLeadDays.text.toString().toInt(),
-                        false,
-                        df.getCurrentTimeAsString()
-                    )
-                )
-                val direction =
-                    BudgetRuleUpdateFragmentDirections
-                        .actionBudgetRuleUpdateFragmentToBudgetRuleFragment(
-                            args.budgetItem,
-                            args.transaction,
-                            fragmentChain
-                        )
-                mView.findNavController().navigate(direction)
-            } else {
-                Toast.makeText(
-                    mView.context,
-                    mes,
-                    Toast.LENGTH_LONG
-                ).show()
-            }
+        if (mes == "Ok") {
+            budgetRuleViewModel.updateBudgetRule(getCurBudgetRule())
+            gotoBudgetRuleFragment()
+        } else {
+            Toast.makeText(
+                mView.context,
+                mes,
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 

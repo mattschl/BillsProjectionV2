@@ -8,7 +8,10 @@ import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_RULE_NAME
+import ms.mattschlenkrich.billsprojectionv2.common.BUD_END_DATE
 import ms.mattschlenkrich.billsprojectionv2.common.BUD_FROM_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.common.BUD_IS_DELETED
+import ms.mattschlenkrich.billsprojectionv2.common.BUD_IS_PAY_DAY
 import ms.mattschlenkrich.billsprojectionv2.common.BUD_TO_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.common.BUD_UPDATE_TIME
 import ms.mattschlenkrich.billsprojectionv2.common.RULE_ID
@@ -44,6 +47,16 @@ interface BudgetRuleDao {
                 "WHERE $RULE_ID = :budgetRuleId"
     )
     suspend fun deleteBudgetRule(budgetRuleId: Long, updateTime: String)
+
+    @Query(
+        "SELECT * FROM $TABLE_BUDGET_RULES " +
+                "WHERE $BUD_IS_DELETED = 0 " +
+                "AND $BUD_END_DATE >= :endDate " +
+                "ORDER BY $BUD_IS_PAY_DAY DESC, " +
+                "$BUDGET_RULE_NAME"
+    )
+    suspend fun getBudgetRulesActive(endDate: String):
+            List<BudgetRule>
 
     @Transaction
     @Query(

@@ -28,6 +28,7 @@ import java.util.Random
 
 private const val TAG = ADAPTER_ACCOUNT
 
+@Suppress("CanBeParameter")
 class AccountAdapter(
     private val budgetItem: BudgetDetailed?,
     private val transaction: TransactionDetailed?,
@@ -37,7 +38,13 @@ class AccountAdapter(
 ) :
     RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() {
 
-    private var mBudgetRuleDetailed = budgetRuleDetailed
+    private var mBudgetRuleDetailed =
+        budgetRuleDetailed
+            ?: BudgetRuleDetailed(
+                null,
+                null,
+                null
+            )
     private var mTransactionDetailed =
         transaction
             ?: TransactionDetailed(
@@ -152,7 +159,7 @@ class AccountAdapter(
                         callingFragments.contains(FRAG_BUDGET_RULE_UPDATE)
                     ) {
                         Log.d(TAG, "going to budget fragment: $callingFragments")
-                        mBudgetRuleDetailed!!.toAccount = curAccount.account
+                        mBudgetRuleDetailed.toAccount = curAccount.account
                         gotoCallingFragment(it)
                     } else if (callingFragments.contains(FRAG_TRANS_ADD) ||
                         callingFragments.contains(FRAG_TRANS_UPDATE)
@@ -166,7 +173,7 @@ class AccountAdapter(
                     if (callingFragments!!.contains(FRAG_BUDGET_RULE_ADD) ||
                         callingFragments.contains(FRAG_BUDGET_RULE_UPDATE)
                     ) {
-                        mBudgetRuleDetailed!!.fromAccount = curAccount.account
+                        mBudgetRuleDetailed.fromAccount = curAccount.account
                         gotoCallingFragment(it)
                     } else if (callingFragments.contains(FRAG_TRANS_ADD) ||
                         callingFragments.contains(FRAG_TRANS_UPDATE)

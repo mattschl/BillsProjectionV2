@@ -1,6 +1,8 @@
 package ms.mattschlenkrich.billsprojectionv2.projections
 
 import android.util.Log
+import ms.mattschlenkrich.billsprojectionv2.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.DAY_ANY_DAY
 import ms.mattschlenkrich.billsprojectionv2.common.DAY_FRIDAY
 import ms.mattschlenkrich.billsprojectionv2.common.DAY_MONDAY
@@ -22,17 +24,21 @@ import java.time.LocalDate
 private const val TAG = "ProjectBudgetDates"
 
 //@Suppress("unused")
-class ProjectBudgetDates {
+class ProjectBudgetDates(private val mainActivity: MainActivity) {
 
     fun projectDates(
         startDate: String,
         endDate: String,
         interval: Long,
-        intervalType: String,
-        dayOfWeek: String,
+        intervalTypeId: Int,
+        dayOfWeekId: Int,
         leadDays: Long,
     ): ArrayList<LocalDate> {
         var dates = ArrayList<LocalDate>()
+        val intervalType = mainActivity.baseContext.resources
+            .getStringArray(R.array.frequency_types)[intervalTypeId]
+        val dayOfWeek = mainActivity.baseContext.resources
+            .getStringArray(R.array.days_of_week)[dayOfWeekId]
         when (intervalType) {
             INTERVAL_WEEKLY -> {
                 dates = projectWeekly(
@@ -69,6 +75,7 @@ class ProjectBudgetDates {
                 Log.d(TAG, "in interval 1 time date is ${dates[0]} - ${dates.size} date(s)")
             }
         }
+        Log.d(TAG, "the final dates size is ${dates.size}")
         return dates
     }
 
@@ -200,15 +207,16 @@ class ProjectBudgetDates {
                 workingDate = workingDate.plusWeeks(interval)
                 if (workingDate > LocalDate.now()) {
                     dates.add(workingDate)
-                    /*Log.d(
+                    Log.d(
                         TAG,
                         "Testing, in projectWeekly date is $workingDate. -------- End date is ${
                             LocalDate.parse(endDate)
                         } !!!"
-                    )*/
+                    )
                 }
             }
         }
+        Log.d(TAG, "dates size = ${dates.size}")
         return dates
     }
 
