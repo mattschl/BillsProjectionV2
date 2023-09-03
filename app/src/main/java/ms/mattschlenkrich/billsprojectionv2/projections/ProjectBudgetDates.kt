@@ -34,49 +34,50 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
         dayOfWeekId: Int,
         leadDays: Long,
     ): ArrayList<LocalDate> {
-        var dates = ArrayList<LocalDate>()
         val intervalType = mainActivity.baseContext.resources
             .getStringArray(R.array.frequency_types)[intervalTypeId]
         val dayOfWeek = mainActivity.baseContext.resources
             .getStringArray(R.array.days_of_week)[dayOfWeekId]
         when (intervalType) {
             INTERVAL_WEEKLY -> {
-                dates = projectWeekly(
+                return projectWeekly(
                     startDate, endDate, interval
                 )
             }
 
             INTERVAL_MONTHLY -> {
-                dates = projectMonthly(
+                return projectMonthly(
                     startDate, endDate, interval, dayOfWeek, leadDays
                 )
             }
 
             INTERVAL_YEARLY -> {
-                dates = projectYearly(
+                return projectYearly(
                     startDate, endDate, interval, dayOfWeek, leadDays
                 )
             }
 
             INTERVAL_ON_PAY_DAY -> {
-                dates = projectOnPayDay(
+                return projectOnPayDay(
                     startDate, interval
                 )
             }
 
             INTERVAL_SPECIAL -> {
                 //special projections
+                return ArrayList()
             }
 
             INTERVAL_ONE_TIME -> {
-                dates = projectOneTime(
+                return projectOneTime(
                     startDate, dayOfWeek, leadDays
                 )
-                Log.d(TAG, "in interval 1 time date is ${dates[0]} - ${dates.size} date(s)")
+            }
+
+            else -> {
+                return ArrayList()
             }
         }
-        Log.d(TAG, "the final dates size is ${dates.size}")
-        return dates
     }
 
     private fun fixDates(
@@ -84,7 +85,6 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
         dayOfWeek: String,
         leadDays: Long,
     ): ArrayList<LocalDate> {
-        //TODO: Work on fixing dates to proper day of week
         var minusDates = ArrayList<LocalDate>()
         if (leadDays == 0L) {
             minusDates = datesToFix

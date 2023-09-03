@@ -29,64 +29,65 @@ class UpdateBudgetPredictions(
     }
 
     fun updatePredictions(stopDate: String) {
-        budgetItemViewModel.deleteFutureBudgetItems(
-            df.getCurrentDateAsString(),
-            df.getCurrentTimeAsString()
-        )
-
         CoroutineScope(Dispatchers.IO).launch {
-            val budgetRulesList = async {
-                budgetRuleViewModel.getBudgetRulesActive(
-                    df.getCurrentDateAsString()
+            val deleted = async {
+                budgetItemViewModel.deleteFutureBudgetItems(
+                    df.getCurrentDateAsString(),
+                    df.getCurrentTimeAsString()
                 )
             }
-            val budgetRules = budgetRulesList.await()
-            Log.d(TAG, "budgetRules size is ${budgetRules.size}")
-            for (i in budgetRules.indices) {
-                if (budgetRules[i].budIsPayDay) {
-                    fillPayDays(
-                        budgetRules[i],
-                        stopDate
+            if (deleted.await().isCompleted) {
+                val budgetRulesList = async {
+                    budgetRuleViewModel.getBudgetRulesActive(
+                        df.getCurrentDateAsString()
                     )
-                } else {
-                    break
                 }
-            }
-            val payDays =
-                budgetItemViewModel.getPayDaysActive(
-                    df.getCurrentDateAsString()
-                )
-            val payDayDates = ArrayList<LocalDate>()
-            for (element in payDays) {
-                payDayDates.add(LocalDate.parse(element))
-            }
-            for (i in budgetRules.indices) {
-                val endDate =
-                    if (stopDate < budgetRules[i].budEndDate!!) {
-                        stopDate
-                    } else {
-                        budgetRules[i].budEndDate!!
-                    }
-                if (!budgetRules[i].budIsPayDay) {
-                    val projectedDates =
-                        projectBudgetDates.projectDates(
-                            budgetRules[i].budStartDate,
-                            endDate,
-                            budgetRules[i].budFrequencyCount.toLong(),
-                            budgetRules[i].budFrequencyTypeId,
-                            budgetRules[i].budDayOfWeekId,
-                            budgetRules[i].budLeadDays.toLong()
+                val budgetRules = budgetRulesList.await()
+                Log.d(TAG, "budgetRules size is ${budgetRules.size}")
+                for (i in budgetRules.indices) {
+                    if (budgetRules[i].budIsPayDay) {
+                        fillPayDays(
+                            budgetRules[i],
+                            stopDate
                         )
-                    for (a in 0 until projectedDates.size) {
-                        for (p in 0 until payDayDates.size) {
-                            if (projectedDates[i] >= payDayDates[p] &&
-                                projectedDates[i] < payDayDates[p + 1]
-                            ) {
-                                fillOthers(
-                                    budgetRules[i],
-                                    projectedDates[a].toString(),
-                                    payDayDates[p].toString()
-                                )
+                    } else {
+                        break
+                    }
+                }
+                val payDays = async {
+                    budgetItemViewModel.getPayDaysActive(
+                        df.getCurrentDateAsString()
+                    )
+                }
+                val payDayDates = payDays.await()
+                for (i in budgetRules.indices) {
+                    val endDate =
+                        if (stopDate < budgetRules[i].budEndDate!!) {
+                            stopDate
+                        } else {
+                            budgetRules[i].budEndDate!!
+                        }
+                    if (!budgetRules[i].budIsPayDay) {
+                        val projectedDates =
+                            projectBudgetDates.projectDates(
+                                budgetRules[i].budStartDate,
+                                endDate,
+                                budgetRules[i].budFrequencyCount.toLong(),
+                                budgetRules[i].budFrequencyTypeId,
+                                budgetRules[i].budDayOfWeekId,
+                                budgetRules[i].budLeadDays.toLong()
+                            )
+                        for (a in 0 until projectedDates.size) {
+                            for (p in 0 until payDayDates.size - 1) {
+                                if (projectedDates[a] >= LocalDate.parse(payDayDates[p]) &&
+                                    projectedDates[a] < LocalDate.parse(payDayDates[p + 1])
+                                ) {
+                                    fillOthers(
+                                        budgetRules[i],
+                                        projectedDates[a].toString(),
+                                        payDayDates[p]
+                                    )
+                                }
                             }
                         }
                     }
@@ -128,7 +129,7 @@ class UpdateBudgetPredictions(
             if (stopDate < budgetRule.budEndDate!!) {
                 stopDate
             } else {
-                budgetRule.budEndDate!!
+                budgetRule.budEndDate
             }
         Log.d(
             TAG,
@@ -144,14 +145,14 @@ class UpdateBudgetPredictions(
                 budgetRule.budLeadDays.toLong()
             )
         Log.d(TAG, "payDates size is ${payDates.size}")
-        for (i in 0 until payDates.size) {
-            Log.d(TAG, "in fillPayDays, payDate is ${payDates[i]}")
+        for (a in 0 until payDates.size) {
+            Log.d(TAG, "in fillPayDays, payDate is ${payDates[a]}")
             budgetItemViewModel.insertBudgetItem(
                 BudgetItem(
                     budgetRule.ruleId,
-                    payDates[i].toString(),
-                    payDates[i].toString(),
-                    payDates[i].toString(),
+                    payDates[a].toString(),
+                    payDates[a].toString(),
+                    payDates[a].toString(),
                     budgetRule.budgetRuleName,
                     true,
                     budgetRule.budToAccountId,
