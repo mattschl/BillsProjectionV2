@@ -74,14 +74,14 @@ data class BudgetItem(
     @ColumnInfo(defaultValue = "0")
     val biManuallyEntered: Boolean,
     @ColumnInfo(defaultValue = "0")
-    val biLocked: Boolean,
-    @ColumnInfo(defaultValue = "0")
     val biIsCompleted: Boolean,
     @ColumnInfo(defaultValue = "0")
     val biIsCancelled: Boolean,
     @ColumnInfo(defaultValue = "0")
     val biIsDeleted: Boolean,
-    val biUpdateTime: String
+    val biUpdateTime: String,
+    @ColumnInfo(defaultValue = "0")
+    val biLocked: Boolean,
 ) : Parcelable
 
 @Parcelize

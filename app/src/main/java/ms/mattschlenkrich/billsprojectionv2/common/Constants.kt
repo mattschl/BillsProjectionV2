@@ -3,7 +3,7 @@
 package ms.mattschlenkrich.billsprojectionv2.common
 
 const val DB_NAME = "bills2.db"
-const val DB_VERSION = 2
+const val DB_VERSION = 1
 const val BILLS_DATABASE = "BillsDatabase"
 
 const val SQLITE_DATE = "yyyy-LL-dd"

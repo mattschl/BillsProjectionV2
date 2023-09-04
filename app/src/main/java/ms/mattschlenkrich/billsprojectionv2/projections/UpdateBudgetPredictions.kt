@@ -1,8 +1,7 @@
 package ms.mattschlenkrich.billsprojectionv2.projections
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetItem
@@ -23,15 +22,27 @@ class UpdateBudgetPredictions(
 
     fun updatePredictions(stopDate: String) {
         //1. Delete the future dates not already locked
-        runBlocking(Dispatchers.IO) {
-            launch {
-                budgetItemViewModel.deleteFutureBudgetItems(
-                    df.getCurrentDateAsString(),
-                    df.getCurrentTimeAsString()
-                )
-            }
+        CoroutineScope(Dispatchers.IO) {
+            val
         }
+        //2. get a list of budget rules
+//        var budgetRuleList: List<BudgetRule>
+//        CoroutineScope(Dispatchers.IO).launch {
+//            val budgetRules =
+//                async {
+//                    budgetRuleViewModel.getBudgetRulesActive()
+//                }
+//            budgetRuleList = budgetRules.await()
+//        }
+//        if (budgetRuleList.isNotEmpty())
+        //3. find only those rules that are paydays and process them first
 
+
+        //4. get a list of paydays
+
+        //5. find only those rules that fall on a payday and process them
+
+        //6. process the rest of the rules and assign paydays
     }
 
     private fun insertRule(rule: BudgetRule, projectedDate: String): Boolean {

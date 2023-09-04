@@ -170,7 +170,7 @@ class BudgetItemUpdateFragment : Fragment(
                 biIsCompleted = false,
                 biIsCancelled = false,
                 biIsDeleted = false,
-                df.getCurrentTimeAsString()
+                biUpdateTime = df.getCurrentTimeAsString()
             )
             return BudgetDetailed(
                 budgetItem,
