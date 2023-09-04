@@ -58,9 +58,7 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
             }
 
             INTERVAL_ON_PAY_DAY -> {
-                return projectOnPayDay(
-                    startDate, interval
-                )
+                return ArrayList()
             }
 
             INTERVAL_SPECIAL -> {
@@ -207,12 +205,6 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
                 workingDate = workingDate.plusWeeks(interval)
                 if (workingDate > LocalDate.now()) {
                     dates.add(workingDate)
-                    Log.d(
-                        TAG,
-                        "Testing, in projectWeekly date is $workingDate. -------- End date is ${
-                            LocalDate.parse(endDate)
-                        } !!!"
-                    )
                 }
             }
         }
@@ -241,36 +233,6 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
         return fixDates(datesToFix, dayOfWeek, leadDays)
     }
 
-    //------------To do budget items that fall on a payday -------
-    @Suppress("UNUSED_PARAMETER", "UNREACHABLE_CODE", "UnnecessaryVariable")
-    private fun projectOnPayDay(
-        startDate: String,
-        interval: Long
-    ): ArrayList<LocalDate> {
-        TODO("write the dao function")
-        val dates = ArrayList<LocalDate>()
-//        val projectionsDb = ProjectionsDb(context)
-//        val payDates = projectionsDb.getPayDates(startDate)
-//        if (payDates.size > 0) {
-//            dates.add(payDates[0])
-////            Log.d(TAG, "pay Date number 0 is ${payDates[0]}")
-//            if (interval < 2) {
-//                for (i in 1 until payDates.size) {
-//                    dates.add(payDates[i])
-//                }
-//            } else {
-//                for (i in 1 until payDates.size) {
-//                    if ((i.toDouble() / interval.toDouble()) -
-//                        (i.toDouble() / interval.toDouble()).toInt() == 0.0
-//                    ) {
-//                        dates.add(payDates[i])
-//                    }
-//                }
-//            }
-//        }
-        return dates
-    }
-
     private fun projectOneTime(
         startDate: String,
         dayOfWeek: String,
@@ -279,5 +241,24 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
         val dates = ArrayList<LocalDate>()
         dates.add(LocalDate.parse(startDate))
         return fixDates(dates, dayOfWeek, leadDays)
+    }
+
+    fun projectOnPayDay(
+        startDate: String,
+        interval: Long,
+        payDayList: List<String>,
+        endDate: String
+    ): ArrayList<LocalDate> {
+        val dates = ArrayList<LocalDate>()
+        for (d in 0 until payDayList.size - 1) {
+            Log.d(TAG, "")
+            if (payDayList[d] in startDate..endDate &&
+                (d + 1) % interval.toInt() == 0 &&
+                payDayList[d] >= LocalDate.now().toString()
+            ) {
+                dates.add(LocalDate.parse(payDayList[d]))
+            }
+        }
+        return dates
     }
 }

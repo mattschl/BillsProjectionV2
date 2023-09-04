@@ -108,7 +108,7 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     getString(R.string.update_budget_predictions) -> {
-                        updateBudgetPredictions()
+                        updateBudget()
                         return true
                     }
 
@@ -126,9 +126,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun updateBudgetPredictions() {
-        val updateBudgetPredictions =
-            UpdateBudgetPredictions(this)
+    private fun updateBudget() {
         val stopDateAll = LocalDate.now()
             .plusMonths(4).toString()
             .split("-")
@@ -139,7 +137,7 @@ class MainActivity : AppCompatActivity() {
                 val display = "$year-${month.toString().padStart(2, '0')}-${
                     dayOfMonth.toString().padStart(2, '0')
                 }"
-                updateBudgetPredictions.updatePredictions(display)
+                doTheUpdate(display)
             },
             stopDateAll[0].toInt(),
             stopDateAll[1].toInt() - 1,
@@ -147,6 +145,15 @@ class MainActivity : AppCompatActivity() {
         )
         datePickerDialog.setTitle("Pick a date to project forward to.")
         datePickerDialog.show()
+    }
+
+    private fun doTheUpdate(
+        display: String
+    ) {
+        val updateBudgetPredictions =
+            UpdateBudgetPredictions(this)
+        Log.d(TAG, "Doing the update passing the date $display")
+        updateBudgetPredictions.updatePredictions(display)
     }
 
     private fun setupBudgetItemViewModel() {

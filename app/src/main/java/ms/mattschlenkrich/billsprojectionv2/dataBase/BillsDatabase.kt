@@ -5,9 +5,13 @@ import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import ms.mattschlenkrich.billsprojectionv2.common.BILLS_DATABASE
+import ms.mattschlenkrich.billsprojectionv2.common.BI_LOCKED
 import ms.mattschlenkrich.billsprojectionv2.common.DB_NAME
 import ms.mattschlenkrich.billsprojectionv2.common.DB_VERSION
+import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_ITEMS
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountAndType
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
@@ -51,6 +55,7 @@ abstract class BillsDatabase : RoomDatabase() {
 //            val addAccountTypes = AddAccountTypeCallBack()
 //            val addAccounts = AddAccountsCallBack()
 //            val addBudgetRules = AddBudgetRuleCallBack()
+            val upgrade1to2 = Upgrade1to2()
             return Room.databaseBuilder(
                 context.applicationContext,
                 BillsDatabase::class.java,
@@ -58,7 +63,16 @@ abstract class BillsDatabase : RoomDatabase() {
             )
 //                .addCallback(addAccountTypes)
 //                .addCallback(addAccounts)
+                .addMigrations(upgrade1to2)
                 .build()
+        }
+    }
+
+    class Upgrade1to2 : Migration(1, 2) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            val sql = "ALTER TABLE $TABLE_BUDGET_ITEMS " +
+                    "ADD COLUMN $BI_LOCKED BOOLEAN;"
+            database.execSQL(sql)
         }
     }
 

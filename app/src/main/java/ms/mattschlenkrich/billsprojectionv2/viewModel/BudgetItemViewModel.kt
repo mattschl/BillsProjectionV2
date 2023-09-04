@@ -46,8 +46,8 @@ class BudgetItemViewModel(
         )
     }
 
-    fun getPayDaysActive(currentDate: String) =
-        budgetItemRepository.getPayDaysActive(currentDate)
+    fun getPayDaysActive() =
+        budgetItemRepository.getPayDaysActive()
 
     fun deleteFutureBudgetItems(
         currentDate: String,

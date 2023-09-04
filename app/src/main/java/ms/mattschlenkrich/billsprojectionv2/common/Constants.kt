@@ -3,7 +3,7 @@
 package ms.mattschlenkrich.billsprojectionv2.common
 
 const val DB_NAME = "bills2.db"
-const val DB_VERSION = 1
+const val DB_VERSION = 2
 const val BILLS_DATABASE = "BillsDatabase"
 
 const val SQLITE_DATE = "yyyy-LL-dd"
@@ -91,6 +91,7 @@ const val BI_PROJECTED_AMOUNT = "biProjectedAmount"
 const val BI_IS_AUTOMATIC = "biIsAutomatic"
 const val BI_IS_FIXED = "bIsFixed"
 const val BI_IS_MANUALLY_ENTERED = "biManuallyEntered"
+const val BI_LOCKED = "biLocked"
 const val BI_IS_COMPLETED = "biIsCompleted"
 const val BI_IS_CANCELLED = "biIsCancelled"
 const val BI_IS_DELETED = "biIsDeleted"

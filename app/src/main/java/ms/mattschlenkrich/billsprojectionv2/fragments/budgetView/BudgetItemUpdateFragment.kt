@@ -32,7 +32,7 @@ import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModel
 private const val TAG = FRAG_BUDGET_ITEM_UPDATE
 
 class BudgetItemUpdateFragment : Fragment(
-    R.layout.fragment_budget_rule_update
+    R.layout.fragment_budget_item_update
 ) {
 
     private var _binding: FragmentBudgetItemUpdateBinding? = null
@@ -166,6 +166,7 @@ class BudgetItemUpdateFragment : Fragment(
                 chkFixedAmount.isChecked,
                 chkIsAutoPayment.isChecked,
                 biManuallyEntered = true,
+                biLocked = chkIsLocked.isChecked,
                 biIsCompleted = false,
                 biIsCancelled = false,
                 biIsDeleted = false,
@@ -186,29 +187,12 @@ class BudgetItemUpdateFragment : Fragment(
             setMessage("Are you sure you want to delete this budget item?")
             setPositiveButton("Delete") { _, _ ->
                 binding.apply {
-                    budgetItemViewModel.updateBudgetItem(
-                        BudgetItem(
-                            args.budgetItem!!.budgetItem!!.biRuleId,
-                            etProjectedDate.text.toString(),
-                            etProjectedDate.text.toString(),
-                            spPayDays.selectedItem.toString(),
-                            etBudgetItemName.text.toString(),
-                            chkIsPayDay.isChecked,
-                            args.budgetItem!!.budgetItem!!.biToAccountId,
-                            args.budgetItem!!.budgetItem!!.biFromAccountId,
-                            cf.getDoubleFromDollars(
-                                etProjectedAmount.text.toString()
-                            ),
-                            biIsPending = false,
-                            chkFixedAmount.isChecked,
-                            chkIsAutoPayment.isChecked,
-                            biManuallyEntered = true,
-                            biIsCompleted = false,
-                            biIsCancelled = false,
-                            biIsDeleted = false,
-                            biUpdateTime = df.getCurrentTimeAsString()
-                        )
+                    budgetItemViewModel.deleteBudgetItem(
+                        args.budgetItem!!.budgetItem!!.biRuleId,
+                        args.budgetItem!!.budgetItem!!.biProjectedDate,
+                        df.getCurrentTimeAsString()
                     )
+
                 }
                 gotoCallingFragment()
             }

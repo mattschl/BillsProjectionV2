@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "4be660ee6de4eec834f70646ff1e5f3c",
+    "identityHash": "03cf85de5350e6371d17d43bfca81f97",
     "entities": [
       {
         "tableName": "accounts",
@@ -647,7 +647,7 @@
       },
       {
         "tableName": "budgetItems",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`biRuleId` INTEGER NOT NULL, `biProjectedDate` TEXT NOT NULL, `biActualDate` TEXT NOT NULL, `biPayDay` TEXT NOT NULL, `biBudgetName` TEXT NOT NULL, `biIsPayDayItem` INTEGER NOT NULL DEFAULT 0, `biToAccountId` INTEGER NOT NULL, `biFromAccountId` INTEGER NOT NULL, `biProjectedAmount` REAL NOT NULL DEFAULT 0.0, `biIsPending` INTEGER NOT NULL DEFAULT 0, `biIsFixed` INTEGER NOT NULL DEFAULT 0, `biIsAutomatic` INTEGER NOT NULL DEFAULT 0, `biManuallyEntered` INTEGER NOT NULL DEFAULT 0, `biIsCompleted` INTEGER NOT NULL DEFAULT 0, `biIsCancelled` INTEGER NOT NULL DEFAULT 0, `biIsDeleted` INTEGER NOT NULL DEFAULT 0, `biUpdateTime` TEXT NOT NULL, PRIMARY KEY(`biRuleId`, `biProjectedDate`), FOREIGN KEY(`biRuleId`) REFERENCES `budgetRules`(`ruleId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`biToAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`biFromAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`biRuleId` INTEGER NOT NULL, `biProjectedDate` TEXT NOT NULL, `biActualDate` TEXT NOT NULL, `biPayDay` TEXT NOT NULL, `biBudgetName` TEXT NOT NULL, `biIsPayDayItem` INTEGER NOT NULL DEFAULT 0, `biToAccountId` INTEGER NOT NULL, `biFromAccountId` INTEGER NOT NULL, `biProjectedAmount` REAL NOT NULL DEFAULT 0.0, `biIsPending` INTEGER NOT NULL DEFAULT 0, `biIsFixed` INTEGER NOT NULL DEFAULT 0, `biIsAutomatic` INTEGER NOT NULL DEFAULT 0, `biManuallyEntered` INTEGER NOT NULL DEFAULT 0, `biLocked` INTEGER NOT NULL DEFAULT 0, `biIsCompleted` INTEGER NOT NULL DEFAULT 0, `biIsCancelled` INTEGER NOT NULL DEFAULT 0, `biIsDeleted` INTEGER NOT NULL DEFAULT 0, `biUpdateTime` TEXT NOT NULL, PRIMARY KEY(`biRuleId`, `biProjectedDate`), FOREIGN KEY(`biRuleId`) REFERENCES `budgetRules`(`ruleId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`biToAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`biFromAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "biRuleId",
@@ -729,6 +729,13 @@
           {
             "fieldPath": "biManuallyEntered",
             "columnName": "biManuallyEntered",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "biLocked",
+            "columnName": "biLocked",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
@@ -896,7 +903,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4be660ee6de4eec834f70646ff1e5f3c')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '03cf85de5350e6371d17d43bfca81f97')"
     ]
   }
 }

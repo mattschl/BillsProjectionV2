@@ -9,6 +9,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.BI_ACTUAL_DATE
 import ms.mattschlenkrich.billsprojectionv2.common.BI_BUDGET_RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_CANCELLED
 import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_DELETED
+import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_MANUALLY_ENTERED
 import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_PAY_DAY_ITEM
 import ms.mattschlenkrich.billsprojectionv2.common.BI_PAY_DAY
 import ms.mattschlenkrich.billsprojectionv2.common.BI_PROJECTED_DATE
@@ -53,19 +54,20 @@ interface BudgetItemDao {
     )
 
     @Query(
-        "SELECT $BI_PAY_DAY FROM $TABLE_BUDGET_ITEMS " +
-                "WHERE $BI_PAY_DAY >= :currentDate " +
-                "AND $BI_IS_PAY_DAY_ITEM = 1 " +
+        "SELECT DISTINCT $BI_PROJECTED_DATE FROM $TABLE_BUDGET_ITEMS " +
+                "WHERE $BI_IS_PAY_DAY_ITEM = 1 " +
                 "AND $BI_IS_DELETED = 0 " +
-                "AND $BI_IS_CANCELLED = 0"
+                "AND $BI_IS_CANCELLED = 0 " +
+                "ORDER BY $BI_PROJECTED_DATE; "
     )
-    fun getPayDaysActive(currentDate: String): List<String>
+    fun getPayDaysActive(): List<String>
 
     @Query(
         "UPDATE $TABLE_BUDGET_ITEMS " +
                 "SET $BI_IS_DELETED = 1, " +
                 "$BI_UPDATE_TIME = :updateTime " +
-                "WHERE $BI_ACTUAL_DATE > :currentDate"
+                "WHERE $BI_ACTUAL_DATE > :currentDate " +
+                "AND $BI_IS_MANUALLY_ENTERED = 0"
     )
     suspend fun deleteFutureBudgetItems(
         currentDate: String,

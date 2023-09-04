@@ -177,36 +177,46 @@
                   app:layout_constraintStart_toStartOf="@+id/tvToAccount"
                   app:layout_constraintTop_toBottomOf="@id/tvToAccount" />
 
-              <CheckBox
-                  android:id="@+id/chkFixedAmount"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="@string/fixed_amount"
-                  android:textSize="@dimen/text_info_size"
-                  app:layout_constraintBaseline_toBaselineOf="@id/etProjectedAmount"
-                  app:layout_constraintEnd_toEndOf="parent"
-                  app:layout_constraintStart_toEndOf="@id/etProjectedAmount" />
-
-              <CheckBox
-                  android:id="@+id/chkIsPayDay"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="@string/make_a_pay_day"
-                  android:textSize="@dimen/text_info_size"
-                  app:layout_constraintEnd_toStartOf="@id/chkIsAutoPayment"
-                  app:layout_constraintStart_toStartOf="parent"
-                  app:layout_constraintTop_toBottomOf="@+id/etProjectedAmount" />
-
-              <CheckBox
-                  android:id="@+id/chkIsAutoPayment"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="@string/automatic_payment"
-                  android:textSize="@dimen/text_info_size"
-                  app:layout_constraintBaseline_toBaselineOf="@+id/chkIsPayDay"
-                  app:layout_constraintEnd_toEndOf="parent"
-                  app:layout_constraintStart_toEndOf="@id/chkIsPayDay" />
+        <CheckBox
+            android:id="@+id/chkFixedAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/fixed_amount"
+            android:textSize="@dimen/text_info_size"
+            app:layout_constraintBaseline_toBaselineOf="@id/etProjectedAmount"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/etProjectedAmount" />
 
 
-       </androidx.constraintlayout.widget.ConstraintLayout>
+        <CheckBox
+            android:id="@+id/chkIsPayDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/pay_day"
+            android:textSize="@dimen/text_info_size"
+            app:layout_constraintEnd_toStartOf="@id/chkIsAutoPayment"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etProjectedAmount" />
+
+        <CheckBox
+            android:id="@+id/chkIsAutoPayment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/automatic"
+            android:textSize="@dimen/text_info_size"
+            app:layout_constraintBaseline_toBaselineOf="@+id/chkIsPayDay"
+            app:layout_constraintEnd_toStartOf="@id/chkIsLocked"
+            app:layout_constraintStart_toEndOf="@id/chkIsPayDay" />
+
+        <CheckBox
+            android:id="@+id/chkIsLocked"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lock"
+            android:textSize="@dimen/text_info_size"
+            app:layout_constraintBaseline_toBaselineOf="@+id/chkIsPayDay"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/chkIsAutoPayment" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -74,6 +74,8 @@ data class BudgetItem(
     @ColumnInfo(defaultValue = "0")
     val biManuallyEntered: Boolean,
     @ColumnInfo(defaultValue = "0")
+    val biLocked: Boolean,
+    @ColumnInfo(defaultValue = "0")
     val biIsCompleted: Boolean,
     @ColumnInfo(defaultValue = "0")
     val biIsCancelled: Boolean,

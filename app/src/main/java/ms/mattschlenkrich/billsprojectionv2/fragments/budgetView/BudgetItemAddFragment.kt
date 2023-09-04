@@ -120,6 +120,7 @@ class BudgetItemAddFragment : Fragment(
                         chkFixedAmount.isChecked,
                         chkIsAutoPayment.isChecked,
                         biManuallyEntered = true,
+                        biLocked = chkIsLocked.isChecked,
                         biIsCompleted = false,
                         biIsCancelled = false,
                         biIsDeleted = false,
@@ -237,6 +238,7 @@ class BudgetItemAddFragment : Fragment(
                 chkFixedAmount.isChecked,
                 chkIsAutoPayment.isChecked,
                 biManuallyEntered = true,
+                biLocked = chkIsLocked.isChecked,
                 biIsCompleted = false,
                 biIsCancelled = false,
                 biIsDeleted = false,
@@ -284,6 +286,7 @@ class BudgetItemAddFragment : Fragment(
             chkFixedAmount.isChecked = args.budgetItem!!.budgetItem!!.biIsFixed
             chkIsAutoPayment.isChecked = args.budgetItem!!.budgetItem!!.biIsAutomatic
             chkIsPayDay.isChecked = args.budgetItem!!.budgetItem!!.biIsPayDayItem
+            chkIsLocked.isChecked = args.budgetItem!!.budgetItem!!.biLocked
         }
     }
 

@@ -103,4 +103,6 @@
         to create pay day periods for the budget.</string>
     <string name="instructions_no_transactions">Add transactions to discover your spending habits
         so that you can create some Budget Rules to take control of your spending.</string>
+    <string name="automatic">Automatic</string>
+    <string name="lock">Lock</string>
 </resources>
