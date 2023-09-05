@@ -251,11 +251,12 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
     ): ArrayList<LocalDate> {
         val dates = ArrayList<LocalDate>()
         for (d in 0 until payDayList.size - 1) {
-            Log.d(TAG, "")
+            Log.d(TAG, "new date is ${payDayList[d]}")
             if (payDayList[d] in startDate..endDate &&
                 (d + 1) % interval.toInt() == 0 &&
                 payDayList[d] >= LocalDate.now().toString()
             ) {
+                Log.d(TAG, "adding date to list ${payDayList[d]}")
                 dates.add(LocalDate.parse(payDayList[d]))
             }
         }

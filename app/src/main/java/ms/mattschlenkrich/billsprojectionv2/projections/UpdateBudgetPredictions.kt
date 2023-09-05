@@ -1,7 +1,12 @@
 package ms.mattschlenkrich.billsprojectionv2.projections
 
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetItem
@@ -14,35 +19,169 @@ private const val TAG = "UpdateBudgetItems"
 class UpdateBudgetPredictions(
     mainActivity: MainActivity,
 ) {
-    private var budgetRuleViewModel: BudgetRuleViewModel = mainActivity.budgetRuleViewModel
-    private var budgetItemViewModel: BudgetItemViewModel = mainActivity.budgetItemViewModel
+    private var budgetRuleViewModel: BudgetRuleViewModel =
+        mainActivity.budgetRuleViewModel
+    private var budgetItemViewModel: BudgetItemViewModel =
+        mainActivity.budgetItemViewModel
     private val df = DateFunctions()
     private val projectBudgetDates = ProjectBudgetDates(mainActivity)
 
 
     fun updatePredictions(stopDate: String) {
         //1. Delete the future dates not already locked
-        CoroutineScope(Dispatchers.IO) {
-            val
+        runBlocking {
+            deleteFutureItems()
         }
-        //2. get a list of budget rules
-//        var budgetRuleList: List<BudgetRule>
-//        CoroutineScope(Dispatchers.IO).launch {
-//            val budgetRules =
-//                async {
-//                    budgetRuleViewModel.getBudgetRulesActive()
-//                }
-//            budgetRuleList = budgetRules.await()
-//        }
-//        if (budgetRuleList.isNotEmpty())
-        //3. find only those rules that are paydays and process them first
+        runBlocking {
+            val budgetRules =
+                budgetRuleViewModel.getBudgetRulesActive()
+            if (budgetRules.isNotEmpty()) {
+                val payDayRuleList =
+                    getPayDayRules(budgetRules)
+                if (payDayRuleList.isNotEmpty()) {
+                    for (rule in payDayRuleList) {
+                        val endDate =
+                            if (rule.budEndDate!! > stopDate) {
+                                stopDate
+                            } else {
+                                rule.budEndDate
+                            }
+                        val payDates =
+                            projectBudgetDates.projectDates(
+                                rule.budStartDate,
+                                endDate,
+                                rule.budFrequencyCount.toLong(),
+                                rule.budFrequencyTypeId,
+                                rule.budDayOfWeekId,
+                                rule.budLeadDays.toLong()
+                            )
+                        for (date in payDates) {
+                            runBlocking {
+                                insertRule(
+                                    rule,
+                                    date.toString()
+                                )
+                            }
+                        }
+                    }
+                }
+                val rulesOnPayDay =
+                    getBudgetRulesOnPayDay(budgetRules)
+                if (rulesOnPayDay.isNotEmpty()) {
+                    Log.d(TAG, "before the delay ........")
+                    CoroutineScope(Dispatchers.IO).launch {
+                        delay(10000)
+                        Log.d(TAG, "Delay is done")
+                        val payDayList =
+                            async {
+                                budgetItemViewModel.getPayDaysActive()
+                            }
+                        val payDays =
+                            payDayList.await()
+                        if (payDays.isNotEmpty()) {
+                            for (rule in rulesOnPayDay) {
+                                val endDate =
+                                    if (rule.budEndDate!! > stopDate) {
+                                        stopDate
+                                    } else {
+                                        rule.budEndDate
+                                    }
+                                val payDates =
+                                    projectBudgetDates.projectOnPayDay(
+                                        rule.budStartDate,
+                                        rule.budFrequencyCount.toLong(),
+                                        payDays,
+                                        endDate
+                                    )
+                                for (date in payDates) {
+                                    runBlocking {
+                                        insertRule(
+                                            rule,
+                                            date.toString()
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                val rulesOther =
+                    getBudgetRulesOther(budgetRules)
+                if (rulesOther.isNotEmpty()) {
+                    for (rule in rulesOther) {
+                        val endDate =
+                            if (rule.budEndDate!! > stopDate) {
+                                stopDate
+                            } else {
+                                rule.budEndDate
+                            }
+                        val payDates =
+                            projectBudgetDates.projectDates(
+                                rule.budStartDate,
+                                endDate,
+                                rule.budFrequencyCount.toLong(),
+                                rule.budFrequencyTypeId,
+                                rule.budDayOfWeekId,
+                                rule.budLeadDays.toLong()
+                            )
+                        for (date in payDates) {
+                            runBlocking {
+                                insertRule(
+                                    rule,
+                                    date.toString()
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
+    private fun getBudgetRulesOther(
+        budgetRules: List<BudgetRule>
+    ): ArrayList<BudgetRule> {
+        val ruleList = ArrayList<BudgetRule>()
+        for (rule in budgetRules) {
+            if (!rule.budIsPayDay &&
+                rule.budFrequencyTypeId != 3
+            ) {
+                ruleList.add(rule)
+            }
+        }
+        return ruleList
+    }
 
-        //4. get a list of paydays
+    private fun getBudgetRulesOnPayDay(
+        budgetRules: List<BudgetRule>
+    ): ArrayList<BudgetRule> {
+        val ruleList = ArrayList<BudgetRule>()
+        for (rule in budgetRules) {
+            if (rule.budFrequencyTypeId == 3) {
+                ruleList.add(rule)
+            }
+        }
+        return ruleList
+    }
 
-        //5. find only those rules that fall on a payday and process them
+    private fun getPayDayRules(
+        budgetRules: List<BudgetRule>
+    ): List<BudgetRule> {
+        val payDayRuleList = ArrayList<BudgetRule>()
+        for (rule in budgetRules) {
+            if (rule.budIsPayDay) {
+                payDayRuleList.add(rule)
+            }
+        }
+        return payDayRuleList
+    }
 
-        //6. process the rest of the rules and assign paydays
+    private fun deleteFutureItems(): Boolean {
+        budgetItemViewModel.deleteFutureBudgetItems(
+            df.getCurrentDateAsString(),
+            df.getCurrentTimeAsString()
+        )
+        return true
     }
 
     private fun insertRule(rule: BudgetRule, projectedDate: String): Boolean {
