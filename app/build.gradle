@@ -52,17 +52,18 @@ dependencies {
 
     def room_version = '2.5.2'
     implementation "androidx.room:room-runtime:$room_version"
-    // To use Kotlin symbol processing tool (ksp)
+    // To use Kotlin symbol processing tool (ksp)id("androidx.navigation.safeargs.kotlin")
     ksp("androidx.room:room-compiler:$room_version")
 
     //coRoutines
     implementation('org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3')
     implementation "androidx.room:room-ktx:$room_version"
 
-    def nav_version = '2.7.1'
+    def nav_version = '2.7.2'
     // Kotlin Navigation
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
+//    ksp("androidx.navigation.safeargs.kotlin:$nav_version")
 
     //Lifecycle architecture
     def lifecycle_version = '2.6.1'

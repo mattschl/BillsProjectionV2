@@ -33,7 +33,6 @@ import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionAddBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.Transactions
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
@@ -54,7 +53,8 @@ class TransactionAddFragment :
     private val args: TransactionAddFragmentArgs by navArgs()
 
     private var mToAccount: Account? = null
-    private var mBudgetRule: BudgetRule? = null
+
+    //    private var mBudgetRule: BudgetRule? = null
     private val cf = CommonFunctions()
     private val df = DateFunctions()
 
@@ -220,14 +220,12 @@ class TransactionAddFragment :
             if (args.transaction != null) {
                 if (args.transaction!!.transaction != null) {
                     etDescription.setText(
-                        if (args.transaction!!.transaction!!.transName.isBlank()) {
+                        args.transaction!!.transaction!!.transName.ifBlank {
                             if (args.transaction!!.budgetRule != null) {
                                 args.transaction!!.budgetRule!!.budgetRuleName
                             } else {
                                 ""
                             }
-                        } else {
-                            args.transaction!!.transaction!!.transName
                         }
                     )
                     etNote.setText(
@@ -237,21 +235,24 @@ class TransactionAddFragment :
                         args.transaction!!.transaction!!.transDate
                     )
                     etAmount.hint = "Budgeted " +
-                            if (args.transaction!!.transaction!!.transAmount == 0.0) {
-                                if (args.transaction!!.budgetRule != null) {
-                                    cf.displayDollars(
-                                        args.transaction!!.budgetRule!!.budgetAmount
-                                    )
-                                } else {
-                                    cf.displayDollars(
-                                        0.0
-                                    )
-                                }
-                        } else {
+                            if (args.transaction!!.transaction!!.transAmount == 0.0 &&
+                                args.transaction!!.budgetRule != null
+                            ) {
+                                cf.displayDollars(
+                                    args.transaction!!.budgetRule!!.budgetAmount
+                                )
+                            } else {
+                                cf.displayDollars(
+                                    args.transaction!!.transaction!!.transAmount
+                                )
+                            }
+                    if (args.transaction!!.transaction!!.transAmount != 0.0) {
+                        etAmount.setText(
                             cf.displayDollars(
                                 args.transaction!!.transaction!!.transAmount
                             )
-                        }
+                        )
+                    }
 
                 }
                 if (args.transaction!!.budgetRule != null) {
@@ -366,6 +367,11 @@ class TransactionAddFragment :
                         fragmentChain
                     )
             mView.findNavController().navigate(direction)
+        } else if (args.callingFragments!!.contains(FRAG_BUDGET_VIEW)) {
+            val direction =
+                TransactionAddFragmentDirections
+                    .actionTransactionAddFragmentToBudgetViewFragment()
+            mView.findNavController().navigate(direction)
         } else if (args.callingFragments!!.contains(FRAG_BUDGET_RULES)) {
             val direction =
                 TransactionAddFragmentDirections
@@ -374,11 +380,6 @@ class TransactionAddFragment :
                         null,
                         fragmentChain
                     )
-            mView.findNavController().navigate(direction)
-        } else if (args.callingFragments!!.contains(FRAG_BUDGET_VIEW)) {
-            val direction =
-                TransactionAddFragmentDirections
-                    .actionTransactionAddFragmentToBudgetViewFragment()
             mView.findNavController().navigate(direction)
         }
     }

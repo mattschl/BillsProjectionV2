@@ -13,6 +13,7 @@ import ms.mattschlenkrich.billsprojectionv2.model.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModel
+import java.time.LocalDate
 
 private const val TAG = "UpdateBudgetItems"
 
@@ -124,12 +125,29 @@ class UpdateBudgetPredictions(
                                 rule.budDayOfWeekId,
                                 rule.budLeadDays.toLong()
                             )
-                        for (date in payDates) {
-                            runBlocking {
-                                insertRule(
-                                    rule,
-                                    date.toString()
-                                )
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val payDayList =
+                                async {
+                                    budgetItemViewModel.getPayDaysActive()
+                                }
+                            val payDays =
+                                payDayList.await()
+                            if (payDays.isNotEmpty()) {
+                                for (date in payDates) {
+                                    for (d in 0 until payDays.size - 1) {
+                                        if (date >= LocalDate.parse(payDays[d]) &&
+                                            date < LocalDate.parse(payDays[d + 1])
+                                        ) {
+                                            runBlocking {
+                                                insertRule(
+                                                    rule,
+                                                    date.toString(),
+                                                    payDays[d]
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -191,6 +209,36 @@ class UpdateBudgetPredictions(
                 projectedDate,
                 projectedDate,
                 projectedDate,
+                rule.budgetRuleName,
+                rule.budIsPayDay,
+                rule.budToAccountId,
+                rule.budFromAccountId,
+                rule.budgetAmount,
+                false,
+                rule.budFixedAmount,
+                rule.budIsAutoPay,
+                biManuallyEntered = false,
+                biLocked = false,
+                biIsCompleted = false,
+                biIsCancelled = false,
+                biIsDeleted = false,
+                biUpdateTime = df.getCurrentTimeAsString()
+            )
+        )
+        return true
+    }
+
+    private fun insertRule(
+        rule: BudgetRule,
+        projectedDate: String,
+        payDay: String
+    ): Boolean {
+        budgetItemViewModel.insertBudgetItem(
+            BudgetItem(
+                rule.ruleId,
+                projectedDate,
+                projectedDate,
+                payDay,
                 rule.budgetRuleName,
                 rule.budIsPayDay,
                 rule.budToAccountId,
