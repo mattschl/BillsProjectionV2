@@ -25,7 +25,6 @@ import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTIONS
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
@@ -372,7 +371,7 @@ class TransactionAddFragment :
                 TransactionAddFragmentDirections
                     .actionTransactionAddFragmentToBudgetViewFragment()
             mView.findNavController().navigate(direction)
-        } else if (args.callingFragments!!.contains(FRAG_BUDGET_RULES)) {
+        } /*else if (args.callingFragments!!.contains(FRAG_BUDGET_RULES)) {
             val direction =
                 TransactionAddFragmentDirections
                     .actionTransactionAddFragmentToBudgetRuleFragment(
@@ -381,7 +380,7 @@ class TransactionAddFragment :
                         fragmentChain
                     )
             mView.findNavController().navigate(direction)
-        }
+        }*/
     }
 
     private fun checkTransaction(): String {

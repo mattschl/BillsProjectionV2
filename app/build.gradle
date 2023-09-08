@@ -64,9 +64,10 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
 //    ksp("androidx.navigation.safeargs.kotlin:$nav_version")
+//    implementation("androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version")
 
     //Lifecycle architecture
-    def lifecycle_version = '2.6.1'
+    def lifecycle_version = '2.6.2'
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
     // LiveData

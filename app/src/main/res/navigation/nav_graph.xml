@@ -32,6 +32,12 @@
             app:destination="@id/budgetRuleAddFragment"
             app:popUpTo="@id/budgetRuleFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_accountsFragment_to_budgetViewAddFragment2"
+            app:destination="@id/budgetViewAddFragment" />
+        <action
+            android:id="@+id/action_accountsFragment_to_budgetViewUpdateFragment22"
+            app:destination="@id/budgetViewUpdateFragment" />
         <argument
             android:name="budgetItem"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed"
@@ -52,12 +58,6 @@
             android:name="callingFragments"
             app:argType="string"
             app:nullable="true" />
-        <action
-            android:id="@+id/action_accountsFragment_to_budgetViewAddFragment2"
-            app:destination="@id/budgetViewAddFragment" />
-        <action
-            android:id="@+id/action_accountsFragment_to_budgetViewUpdateFragment22"
-            app:destination="@id/budgetViewUpdateFragment" />
     </fragment>
     <fragment
         android:id="@+id/accountUpdateFragment"
