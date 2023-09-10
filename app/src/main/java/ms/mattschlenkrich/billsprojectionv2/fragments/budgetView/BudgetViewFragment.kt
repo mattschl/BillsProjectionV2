@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.fragments.budgetView
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -85,7 +86,7 @@ class BudgetViewFragment : Fragment(
             spPayDay.onItemSelectedListener =
                 object : AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                        fillBudgetTotals(
+                        fillBudgetList(
                             spAssetNames.selectedItem.toString(),
                             spPayDay.selectedItem.toString()
                         )
@@ -98,7 +99,7 @@ class BudgetViewFragment : Fragment(
         }
     }
 
-    private fun fillBudgetTotals(asset: String, payDay: String) {
+    private fun fillBudgetList(asset: String, payDay: String) {
         val budgetViewAdapter = BudgetViewAdapter(
             asset
         )
@@ -107,6 +108,7 @@ class BudgetViewFragment : Fragment(
             layoutManager = LinearLayoutManager(requireContext())
             adapter = budgetViewAdapter
         }
+
         activity?.let {
             budgetItemViewModel.getBudgetItems(
                 asset, payDay
@@ -115,92 +117,92 @@ class BudgetViewFragment : Fragment(
             ) { budgetItems ->
                 budgetViewAdapter.differ.submitList(budgetItems)
                 updateUi(budgetItems)
+                budgetList.clear()
+                budgetItems.listIterator().forEach {
+                    budgetList.add(it)
+                }
+                fillBudgetTotals()
             }
         }
-//        budgetList.clear()
-//        budgetItemViewModel.getBudgetItems(
-//            asset, payDay
-//        ).observe(
-//            viewLifecycleOwner
-//        ) { budgetItemList ->
-//            budgetItemList.forEach {
-//                budgetList.add(it)
-//            }
-//        }
-//        Log.d(TAG, "budget list size is ${budgetList.size}")
-//        var debits = 0.0
-//        var credits = 0.0
-//        var fixedExpenses = 0.0
-//        var otherExpenses = 0.0
-//        for (details in budgetList) {
-//            if (details.toAccount!!.accountName ==
-//                curAsset.account.accountName
-//            ) {
-//                debits += details.budgetItem!!.biProjectedAmount
-//            } else {
-//                credits = details.budgetItem!!.biProjectedAmount
-//            }
-//            if (details.budgetItem.biIsFixed) {
-//                fixedExpenses += details.budgetItem.biProjectedAmount
-//            } else {
-//                otherExpenses += details.budgetItem.biProjectedAmount
-//            }
-//        }
-//        var surplus = credits - debits
-//        binding.apply {
-//            if (spPayDay.selectedItemId == 0L) {
-//                if (curAsset.accountType.keepTotals) {
-//                    surplus += curAsset.account.accountBalance
-//                } else {
-//                    surplus -= curAsset.account.accountOwing
-//                }
-//            }
-//            if (credits > 0.0) {
-//                val display = "Credits: ${cf.displayDollars(credits)}"
-//                tvCredits.text = display
-//                tvCredits.setTextColor(Color.BLACK)
-//            } else {
-//                tvCredits.text = getString(R.string.no_credits)
-//                tvCredits.setTextColor(Color.DKGRAY)
-//            }
-//            if (debits > 0.0) {
-//                val display = "Debits: ${cf.displayDollars(debits)}"
-//                tvDebits.text = display
-//                tvDebits.setTextColor(Color.RED)
-//            } else {
-//                tvDebits.text = getString(R.string.no_debits)
-//                tvDebits.setTextColor(Color.DKGRAY)
-//            }
-//            if (fixedExpenses > 0.0) {
-//                val display = "Fixed Expenses: ${cf.displayDollars(fixedExpenses)}"
-//                tvFixedExpenses.text = display
-//                tvFixedExpenses.setTextColor(Color.RED)
-//            } else {
-//                tvFixedExpenses.text = getString(R.string.no_fixed_expenses)
-//                tvFixedExpenses.setTextColor(Color.DKGRAY)
-//            }
-//            if (otherExpenses > 0.0) {
-//                val display = "Discretionary: ${cf.displayDollars(otherExpenses)}"
-//                tvDiscretionaryExpenses.text = display
-//                tvDiscretionaryExpenses.setTextColor(Color.BLUE)
-//            } else {
-//                tvDiscretionaryExpenses.text = getString(R.string.no_discretionary_expenses)
-//                tvDiscretionaryExpenses.setTextColor(Color.DKGRAY)
-//            }
-//            if (surplus >= 0.0) {
-//                val display = "Surplus of ${cf.displayDollars(surplus)}"
-//                tvSurplusOrDeficit.text = display
-//                tvSurplusOrDeficit.setTextColor(Color.BLACK)
-//            } else {
-//                val display = "DEFICIT of ${cf.displayDollars(-surplus)}"
-//                tvSurplusOrDeficit.text = display
-//                tvSurplusOrDeficit.setTextColor(Color.RED)
-//            }
-//        }
+    }
+
+    private fun fillBudgetTotals() {
+        fillAssetDetails()
+        Log.d(TAG, "budget list size is ${budgetList.size}")
+        var debits = 0.0
+        var credits = 0.0
+        var fixedExpenses = 0.0
+        var otherExpenses = 0.0
+        for (details in budgetList) {
+            if (details.toAccount!!.accountName ==
+                curAsset.account.accountName
+            ) {
+                debits += details.budgetItem!!.biProjectedAmount
+            } else {
+                credits = details.budgetItem!!.biProjectedAmount
+            }
+            if (details.budgetItem.biIsFixed) {
+                fixedExpenses += details.budgetItem.biProjectedAmount
+            } else {
+                otherExpenses += details.budgetItem.biProjectedAmount
+            }
+        }
+        var surplus = credits - debits
+        binding.apply {
+            if (spPayDay.selectedItemId == 0L) {
+                if (curAsset.accountType.keepTotals) {
+                    surplus += curAsset.account.accountBalance
+                } else {
+                    surplus -= curAsset.account.accountOwing
+                }
+            }
+            if (credits > 0.0) {
+                val display = "Credits: ${cf.displayDollars(credits)}"
+                tvCredits.text = display
+                tvCredits.setTextColor(Color.BLACK)
+            } else {
+                tvCredits.text = getString(R.string.no_credits)
+                tvCredits.setTextColor(Color.DKGRAY)
+            }
+            if (debits > 0.0) {
+                val display = "Debits: ${cf.displayDollars(debits)}"
+                tvDebits.text = display
+                tvDebits.setTextColor(Color.RED)
+            } else {
+                tvDebits.text = getString(R.string.no_debits)
+                tvDebits.setTextColor(Color.DKGRAY)
+            }
+            if (fixedExpenses > 0.0) {
+                val display = "Fixed Expenses: ${cf.displayDollars(fixedExpenses)}"
+                tvFixedExpenses.text = display
+                tvFixedExpenses.setTextColor(Color.RED)
+            } else {
+                tvFixedExpenses.text = getString(R.string.no_fixed_expenses)
+                tvFixedExpenses.setTextColor(Color.DKGRAY)
+            }
+            if (otherExpenses > 0.0) {
+                val display = "Discretionary: ${cf.displayDollars(otherExpenses)}"
+                tvDiscretionaryExpenses.text = display
+                tvDiscretionaryExpenses.setTextColor(Color.BLUE)
+            } else {
+                tvDiscretionaryExpenses.text = getString(R.string.no_discretionary_expenses)
+                tvDiscretionaryExpenses.setTextColor(Color.DKGRAY)
+            }
+            if (surplus >= 0.0) {
+                val display = "Surplus of ${cf.displayDollars(surplus)}"
+                tvSurplusOrDeficit.text = display
+                tvSurplusOrDeficit.setTextColor(Color.BLACK)
+            } else {
+                val display = "DEFICIT of ${cf.displayDollars(-surplus)}"
+                tvSurplusOrDeficit.text = display
+                tvSurplusOrDeficit.setTextColor(Color.RED)
+            }
+        }
+
     }
 
     private fun updateUi(budgetItems: List<BudgetDetailed>?) {
-        if (budgetItems == null) {
+        if (budgetItems.isNullOrEmpty()) {
             binding.crdNoTransactions.visibility = View.VISIBLE
             binding.rvBudgetSummary.visibility = View.GONE
         } else {
@@ -230,14 +232,43 @@ class BudgetViewFragment : Fragment(
                             curAsset = asset.await()
                         }
                         fillPayDaysLive(spAssetNames.selectedItem.toString())
+
                     }
 
                     override fun onNothingSelected(p0: AdapterView<*>?) {
                         //not needed
                     }
                 }
+        }
+    }
 
-
+    private fun fillAssetDetails() {
+        binding.apply {
+            if (curAsset.accountType.keepTotals) {
+                lblBalanceOwing.text =
+                    getString(R.string.balance_in_account)
+                if (curAsset.account.accountBalance >= 0.0) {
+                    tvBalanceOwing.setTextColor(Color.BLACK)
+                } else {
+                    tvBalanceOwing.setTextColor(Color.RED)
+                }
+                tvBalanceOwing.text =
+                    cf.displayDollars(curAsset.account.accountBalance)
+            } else if (curAsset.accountType.tallyOwing) {
+                if (curAsset.account.accountOwing >= 0.0) {
+                    lblBalanceOwing.text =
+                        getString(R.string.balance_owing)
+                    tvBalanceOwing.setTextColor(Color.RED)
+                    tvBalanceOwing.text =
+                        cf.displayDollars(curAsset.account.accountOwing)
+                } else {
+                    lblBalanceOwing.text =
+                        getString(R.string.credit_of)
+                    tvBalanceOwing.setTextColor(Color.BLACK)
+                    tvBalanceOwing.text =
+                        cf.displayDollars(-curAsset.account.accountOwing)
+                }
+            }
         }
     }
 
@@ -272,175 +303,6 @@ class BudgetViewFragment : Fragment(
         }
         binding.spAssetNames.adapter = assetAdapter
     }
-//
-//    private fun selectAsset() {
-//        CoroutineScope(Dispatchers.IO).launch {
-//            delay(1000)
-//            val payDays =
-//                async {
-//                    budgetItemViewModel.getPayDays(
-//                        binding.spAssetNames.selectedItem.toString()
-//                    )
-//                }
-//            populatePayDays(payDays.await())
-//        }
-//    }
-//
-//    private fun populatePayDays(payDays: List<String>): Boolean {
-//        val adapterPayDays = ArrayAdapter(
-//            requireContext(),
-//            R.layout.spinner_item_bold,
-//            payDays
-//        )
-//        adapterPayDays.setDropDownViewResource(
-//            R.layout.spinner_item_bold
-//        )
-//        binding.spPayDay.adapter = adapterPayDays
-//        return true
-//    }
-//
-//    private fun fillAssets(assetList: List<String>, view: View):Boolean {
-//        val adapterAssets = ArrayAdapter(
-//            requireContext(),
-//            R.layout.spinner_item_bold,
-//            assetList
-//        )
-//        adapterAssets.setDropDownViewResource(
-//            R.layout.spinner_item_bold
-//        )
-//       view.findOnBackInvokedDispatcher().spAssetNames.adapter = adapterAssets
-//        return true
-//    }
-//
-////    private fun selectPayDay() {
-//        CoroutineScope(Dispatchers.IO).launch {
-//            val budgetItemList =
-//                async {
-//                    budgetItemViewModel.getBudgetItems(
-//                        binding.spAssetNames.selectedItem.toString(),
-//                        binding.spPayDay.selectedItem.toString()
-//                    )
-//                }
-//            if (budgetItemList.await().isNotEmpty()) {
-//                CoroutineScope(Dispatchers.Main).launch {
-//                    fillBudgetItems(
-//                        budgetItemList.await(),
-////                        binding.spPayDay.selectedItem.toString()
-//                        )
-//                }
-//            }
-//        }
-//    }
-//
-//    private fun fillBudgetItems(
-//        budgetItemList: List<BudgetDetailed>,
-////        curAsset: AccountWithType
-//    ) {
-
-
-//    }
-//
-//    private fun selectAsset() {
-//        binding.spAssetNames.onItemSelectedListener =
-//            object : AdapterView.OnItemSelectedListener {
-//                override fun onItemSelected(
-//                    p0: AdapterView<*>?,
-//                    p1: View?,
-//                    p2: Int,
-//                    p3: Long
-//                ) {
-//                    CoroutineScope(Dispatchers.IO).launch {
-//                        val payDays =
-//                           async {
-//                                budgetItemViewModel.getPayDays(
-//                                    binding.spAssetNames.selectedItem.toString()
-//                                )
-//                            }
-//                        val asset =
-//                            async {
-//                                accountViewModel.getAccountWithType(
-//                                    binding.spAssetNames.selectedItem.toString()
-//                                )
-//                            }
-//                        CoroutineScope(Dispatchers.Main).launch {
-//                            curAsset = asset.await()
-//                            fillAssetDetails(
-//                                asset.await(),
-//                                payDays.await())
-//                        }
-//                    }
-//                }
-//
-//                override fun onNothingSelected(p0: AdapterView<*>?) {
-//                    // should be deprecated but need it for object
-//                }
-//            }
-//    }
-//
-//    private fun fillAssetDetails(
-//        asset: AccountWithType,
-//        payDayList: List<String>) {
-//        binding.apply {
-//            if (payDayList.isNotEmpty()) {
-//                val adapterPayDay = ArrayAdapter(
-//                    requireContext(),
-//                    R.layout.spinner_item_bold,
-//                    payDayList
-//                )
-//                adapterPayDay.setDropDownViewResource(
-//                    R.layout.spinner_item_bold
-//                )
-//                spPayDay.adapter = adapterPayDay
-//            }
-//            if (asset.accountType.keepTotals) {
-//                lblBalanceOwing.text =
-//                    getString(R.string.balance_in_account)
-//                if (asset.account.accountBalance >= 0.0) {
-//                    tvBalanceOwing.setTextColor(Color.BLACK)
-//                } else {
-//                    tvBalanceOwing.setTextColor(Color.RED)
-//                }
-//                tvBalanceOwing.text =
-//                    cf.displayDollars(asset.account.accountBalance)
-//            } else if (asset.accountType.tallyOwing) {
-//                if (asset.account.accountOwing >= 0.0) {
-//                    lblBalanceOwing.text =
-//                        getString(R.string.balance_owing)
-//                    tvBalanceOwing.setTextColor(Color.RED)
-//                    tvBalanceOwing.text =
-//                        cf.displayDollars(asset.account.accountOwing)
-//                } else {
-//                    lblBalanceOwing.text =
-//                        getString(R.string.credit_of)
-//                    tvBalanceOwing.setTextColor(Color.BLACK)
-//                    tvBalanceOwing.text =
-//                        cf.displayDollars(-asset.account.accountOwing)
-//                }
-//            }
-//        }
-//    }
-//
-//    private suspend fun fillAssets() {
-//        CoroutineScope(Dispatchers.IO).launch {
-//           val assets =
-//              async { budgetItemViewModel.getAccountsForBudget() }
-//            if (assets.await().isNotEmpty()) {
-//               CoroutineScope(Dispatchers.Main).launch {
-//                    assetList = assets.await()
-//                    val adapterAssets = ArrayAdapter(
-//                        requireContext(),
-//                        R.layout.spinner_item_bold,
-//                        assetList
-//                    )
-//                    adapterAssets.setDropDownViewResource(
-//                        R.layout.spinner_item_bold
-//                    )
-//                    binding.spAssetNames.adapter = adapterAssets
-//                }
-//            }
-//        }
-//        binding.spAssetNames.setSelection(0)
-//    }
 
     private fun addAction() {
         AlertDialog.Builder(mView!!.context)
