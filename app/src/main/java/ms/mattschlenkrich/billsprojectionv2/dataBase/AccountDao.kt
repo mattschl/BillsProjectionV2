@@ -66,7 +66,7 @@ interface AccountDao {
         "SELECT * FROM $TABLE_ACCOUNTS " +
                 "WHERE $ACCOUNT_NAME = :accountName "
     )
-    fun findAccountByName(accountName: String): List<Account>
+    fun findAccountByName(accountName: String): Account
 
     @Query(
         "SELECT * FROM $TABLE_ACCOUNTS " +
@@ -110,5 +110,18 @@ interface AccountDao {
                 "WHERE $TABLE_ACCOUNTS.$ACCOUNT_ID = :accountId  "
     )
     fun getAccountWithType(accountId: Long): AccountWithType
+
+    @Transaction
+    @Query(
+        "SELECT $TABLE_ACCOUNTS.*, $TABLE_ACCOUNT_TYPES.* " +
+                "FROM $TABLE_ACCOUNTS " +
+                "LEFT JOIN $TABLE_ACCOUNT_TYPES ON " +
+                "$TABLE_ACCOUNT_TYPES.$TYPE_ID = " +
+                "$TABLE_ACCOUNTS.$ACCOUNT_TYPE_ID " +
+                "WHERE $TABLE_ACCOUNTS.$ACCOUNT_ID = " +
+                "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
+                "WHERE $ACCOUNT_NAME = :accountName)"
+    )
+    fun getAccountWithType(accountName: String): AccountWithType
 
 }

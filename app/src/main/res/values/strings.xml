@@ -105,4 +105,10 @@
         so that you can create some Budget Rules to take control of your spending.</string>
     <string name="automatic">Automatic</string>
     <string name="lock">Lock</string>
+    <string name="balance_owing">Balance Owing</string>
+    <string name="credit_of">Credit of</string>
+    <string name="no_credits">No Credits</string>
+    <string name="no_debits">No debits</string>
+    <string name="no_fixed_expenses">No Fixed Expenses</string>
+    <string name="no_discretionary_expenses">No Discretionary Expenses</string>
 </resources>

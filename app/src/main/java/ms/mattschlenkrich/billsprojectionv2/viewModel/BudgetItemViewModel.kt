@@ -57,4 +57,13 @@ class BudgetItemViewModel(
             currentDate, updateTime
         )
     }
+
+    fun getAccountsForBudget() =
+        budgetItemRepository.getAccountsForBudget()
+
+    fun getPayDays(asset: String) =
+        budgetItemRepository.getPayDays(asset)
+
+    fun getBudgetItems(asset: String, payDay: String) =
+        budgetItemRepository.getBudgetItems(asset, payDay)
 }

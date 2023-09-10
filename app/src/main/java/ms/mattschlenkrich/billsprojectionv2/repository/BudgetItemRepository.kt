@@ -40,4 +40,13 @@ class BudgetItemRepository(private val db: BillsDatabase) {
     ) = db.getBudgetItemDao().deleteFutureBudgetItems(
         currentDate, updateTime
     )
+
+    fun getAccountsForBudget() =
+        db.getBudgetItemDao().getAccountsForBudget()
+
+    fun getPayDays(asset: String) =
+        db.getBudgetItemDao().getPayDays(asset)
+
+    fun getBudgetItems(asset: String, payDay: String) =
+        db.getBudgetItemDao().getBudgetItems(asset, payDay)
 }

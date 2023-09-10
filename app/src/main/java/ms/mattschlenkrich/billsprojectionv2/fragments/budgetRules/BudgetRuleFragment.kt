@@ -35,7 +35,7 @@ class BudgetRuleFragment :
     private val binding get() = _binding!!
     private lateinit var mainActivity: MainActivity
     private val args: BudgetRuleFragmentArgs by navArgs()
-    private lateinit var viewModel: BudgetRuleViewModel
+    private lateinit var budgetRuleViewModel: BudgetRuleViewModel
     private lateinit var budgetRuleAdapter: BudgetRuleAdapter
     private var mView: View? = null
 
@@ -63,7 +63,7 @@ class BudgetRuleFragment :
         view: View, savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel =
+        budgetRuleViewModel =
             mainActivity.budgetRuleViewModel
         mainActivity.title = "Choose a Budget Rule"
         val menuHost: MenuHost = requireActivity()
@@ -98,7 +98,7 @@ class BudgetRuleFragment :
             adapter = budgetRuleAdapter
         }
         activity.let {
-            viewModel.getActiveBudgetRulesDetailed().observe(
+            budgetRuleViewModel.getActiveBudgetRulesDetailed().observe(
                 viewLifecycleOwner
             ) { budgetRuleList ->
                 budgetRuleAdapter.differ.submitList(
@@ -157,7 +157,7 @@ class BudgetRuleFragment :
 
     private fun searchBudgetRules(query: String?) {
         val searchQuery = "%$query%"
-        viewModel.searchBudgetRules(searchQuery).observe(
+        budgetRuleViewModel.searchBudgetRules(searchQuery).observe(
             this
         ) { list -> budgetRuleAdapter.differ.submitList(list) }
     }
