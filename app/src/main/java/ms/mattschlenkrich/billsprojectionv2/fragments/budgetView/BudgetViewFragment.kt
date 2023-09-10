@@ -231,6 +231,7 @@ class BudgetViewFragment : Fragment(
                             }
                             curAsset = asset.await()
                         }
+                        clearCurrentDisplay()
                         fillPayDaysLive(spAssetNames.selectedItem.toString())
 
                     }
@@ -239,6 +240,20 @@ class BudgetViewFragment : Fragment(
                         //not needed
                     }
                 }
+        }
+    }
+
+    private fun clearCurrentDisplay() {
+        binding.apply {
+            lblBalanceOwing.text = ""
+            tvBalanceOwing.text = ""
+            llNoBudget.visibility = View.VISIBLE
+            rvBudgetSummary.visibility = View.GONE
+            tvDebits.text = ""
+            tvCredits.text = ""
+            tvFixedExpenses.text = ""
+            tvDiscretionaryExpenses.text = ""
+            tvSurplusOrDeficit.text = ""
         }
     }
 
