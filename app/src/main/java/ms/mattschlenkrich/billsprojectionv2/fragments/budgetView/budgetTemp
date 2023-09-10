@@ -1,0 +1,17 @@
+ private fun initData() {
+        var packageTypesAdapter =
+        ArrayAdapter<Any>(
+        this@CreateWaybillActivity,
+        android.R.layout.simple_spinner_item)
+
+        createWaybillViewModel.allPackageTypes.observe(
+        this, Observer { packageTypes ->
+
+            packageTypes?.forEach {
+                packageTypesAdapter.add(it)
+            }
+        })
+
+        sp_package_type.adapter = packageTypesAdapter
+
+    }

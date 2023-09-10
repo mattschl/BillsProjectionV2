@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.dataBase
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -94,7 +95,7 @@ interface BudgetItemDao {
                 "WHERE $TABLE_ACCOUNT_TYPES.$ACCT_DISPLAY_AS_ASSET = 1 " +
                 "ORDER BY $TABLE_ACCOUNTS.$ACCOUNT_NAME COLLATE NOCASE;"
     )
-    fun getAccountsForBudget(): List<String>
+    fun getAssetsForBudget(): LiveData<List<String>>
 
     @Query(
         "SELECT DISTINCT $BI_PAY_DAY FROM $TABLE_BUDGET_ITEMS " +
@@ -106,7 +107,7 @@ interface BudgetItemDao {
                 "AND $BI_IS_CANCELLED = 0 " +
                 "ORDER BY $BI_PAY_DAY ASC"
     )
-    fun getPayDays(asset: String): List<String>
+    fun getPayDays(asset: String): LiveData<List<String>>
 
     @Transaction
     @Query(
@@ -122,12 +123,20 @@ interface BudgetItemDao {
                 "LEFT JOIN $TABLE_ACCOUNTS as fromAccount ON " +
                 "$TABLE_BUDGET_ITEMS.$BI_FROM_ACCOUNT_ID = " +
                 "fromAccount.accountId " +
-                "WHERE $TABLE_BUDGET_ITEMS.$BI_FROM_ACCOUNT_ID = " +
+                "WHERE $TABLE_BUDGET_ITEMS.$BI_PAY_DAY = :payDay " +
+                "AND ($TABLE_BUDGET_ITEMS.$BI_FROM_ACCOUNT_ID = " +
                 "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
                 "WHERE $ACCOUNT_NAME = :asset) " +
-                "AND $TABLE_BUDGET_ITEMS.$BI_PAY_DAY = :payDay " +
+                "OR $TABLE_BUDGET_ITEMS.$BI_TO_ACCOUNT_ID = " +
+                "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS  " +
+                "WHERE $ACCOUNT_NAME = :asset) " +
+                " )" +
                 "ORDER BY $TABLE_BUDGET_ITEMS.$BI_ACTUAL_DATE ASC, " +
                 "$TABLE_BUDGET_ITEMS.$BI_BUDGET_NAME ASC;"
     )
-    fun getBudgetItems(asset: String, payDay: String): List<BudgetDetailed>
+    fun getBudgetItems(
+        asset: String,
+        payDay: String
+    )
+            : LiveData<List<BudgetDetailed>>
 }

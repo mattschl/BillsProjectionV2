@@ -5,13 +5,24 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.adapter.BudgetViewAdapter
+import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetViewBinding
+import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
+import ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModel
 
@@ -27,9 +38,11 @@ class BudgetViewFragment : Fragment(
     private lateinit var mainActivity: MainActivity
     private lateinit var budgetItemViewModel: BudgetItemViewModel
     private lateinit var accountViewModel: AccountViewModel
-//    private val cf = CommonFunctions()
-//    private lateinit var assetList: List<String>
-//    private lateinit var curAsset: AccountWithType
+    private val cf = CommonFunctions()
+
+    //    private lateinit var assetList: List<String>
+    private lateinit var curAsset: AccountWithType
+    private val budgetList = ArrayList<BudgetDetailed>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,47 +70,69 @@ class BudgetViewFragment : Fragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mainActivity.title = "View The Budget"
-//        CoroutineScope(Dispatchers.Main).launch {
-//            fillAssets()
-//            selectAsset()
-//            selectPayDay()
-//        }
         binding.apply {
             fabAddAction.setOnClickListener {
                 addAction()
             }
         }
+        fillAssetsLive()
+        selectAsset()
+        selectPayDay()
     }
 
-//    private fun selectPayDay() {
-//        CoroutineScope(Dispatchers.IO).launch {
-//            val budgetItemList =
-//                async {
-//                    budgetItemViewModel.getBudgetItems(
-//                        binding.spAssetNames.selectedItem.toString(),
-//                        binding.spPayDay.selectedItem.toString()
-//                    )
-//                }
-//            if (budgetItemList.await().isNotEmpty()) {
-//                CoroutineScope(Dispatchers.Main).launch {
-//                    fillBudgetItems(
-//                        budgetItemList.await(),
-////                        binding.spPayDay.selectedItem.toString()
-//                        )
-//                }
+    private fun selectPayDay() {
+        binding.apply {
+            spPayDay.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                        fillBudgetTotals(
+                            spAssetNames.selectedItem.toString(),
+                            spPayDay.selectedItem.toString()
+                        )
+                    }
+
+                    override fun onNothingSelected(p0: AdapterView<*>?) {
+                        //Not necessary
+                    }
+                }
+        }
+    }
+
+    private fun fillBudgetTotals(asset: String, payDay: String) {
+        val budgetViewAdapter = BudgetViewAdapter(
+            asset
+        )
+
+        binding.rvBudgetSummary.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = budgetViewAdapter
+        }
+        activity?.let {
+            budgetItemViewModel.getBudgetItems(
+                asset, payDay
+            ).observe(
+                viewLifecycleOwner
+            ) { budgetItems ->
+                budgetViewAdapter.differ.submitList(budgetItems)
+                updateUi(budgetItems)
+            }
+        }
+//        budgetList.clear()
+//        budgetItemViewModel.getBudgetItems(
+//            asset, payDay
+//        ).observe(
+//            viewLifecycleOwner
+//        ) { budgetItemList ->
+//            budgetItemList.forEach {
+//                budgetList.add(it)
 //            }
 //        }
-//    }
-//
-//    private fun fillBudgetItems(
-//        budgetItemList: List<BudgetDetailed>,
-////        curAsset: AccountWithType
-//    ) {
-//        var credits = 0.0
+//        Log.d(TAG, "budget list size is ${budgetList.size}")
 //        var debits = 0.0
+//        var credits = 0.0
 //        var fixedExpenses = 0.0
 //        var otherExpenses = 0.0
-//        for (details in budgetItemList) {
+//        for (details in budgetList) {
 //            if (details.toAccount!!.accountName ==
 //                curAsset.account.accountName
 //            ) {
@@ -162,6 +197,147 @@ class BudgetViewFragment : Fragment(
 //                tvSurplusOrDeficit.setTextColor(Color.RED)
 //            }
 //        }
+    }
+
+    private fun updateUi(budgetItems: List<BudgetDetailed>?) {
+        if (budgetItems == null) {
+            binding.crdNoTransactions.visibility = View.VISIBLE
+            binding.rvBudgetSummary.visibility = View.GONE
+        } else {
+            binding.crdNoTransactions.visibility = View.GONE
+            binding.rvBudgetSummary.visibility = View.VISIBLE
+
+        }
+
+    }
+
+    private fun selectAsset() {
+        binding.apply {
+            spAssetNames.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        p0: AdapterView<*>?,
+                        p1: View?,
+                        p2: Int,
+                        p3: Long
+                    ) {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val asset = async {
+                                accountViewModel.getAccountWithType(
+                                    spAssetNames.selectedItem.toString()
+                                )
+                            }
+                            curAsset = asset.await()
+                        }
+                        fillPayDaysLive(spAssetNames.selectedItem.toString())
+                    }
+
+                    override fun onNothingSelected(p0: AdapterView<*>?) {
+                        //not needed
+                    }
+                }
+
+
+        }
+    }
+
+    private fun fillPayDaysLive(asset: String) {
+        val payDayAdapter =
+            ArrayAdapter<Any>(
+                requireContext(),
+                R.layout.spinner_item_bold
+            )
+        budgetItemViewModel.getPayDays(asset).observe(
+            viewLifecycleOwner
+        ) { payDayList ->
+            payDayList?.forEach {
+                payDayAdapter.add(it)
+            }
+        }
+        binding.spPayDay.adapter = payDayAdapter
+    }
+
+    private fun fillAssetsLive() {
+        val assetAdapter =
+            ArrayAdapter<Any>(
+                requireContext(),
+                R.layout.spinner_item_bold
+            )
+        budgetItemViewModel.getAssetsForBudget().observe(
+            viewLifecycleOwner
+        ) { assetList ->
+            assetList?.forEach {
+                assetAdapter.add(it)
+            }
+        }
+        binding.spAssetNames.adapter = assetAdapter
+    }
+//
+//    private fun selectAsset() {
+//        CoroutineScope(Dispatchers.IO).launch {
+//            delay(1000)
+//            val payDays =
+//                async {
+//                    budgetItemViewModel.getPayDays(
+//                        binding.spAssetNames.selectedItem.toString()
+//                    )
+//                }
+//            populatePayDays(payDays.await())
+//        }
+//    }
+//
+//    private fun populatePayDays(payDays: List<String>): Boolean {
+//        val adapterPayDays = ArrayAdapter(
+//            requireContext(),
+//            R.layout.spinner_item_bold,
+//            payDays
+//        )
+//        adapterPayDays.setDropDownViewResource(
+//            R.layout.spinner_item_bold
+//        )
+//        binding.spPayDay.adapter = adapterPayDays
+//        return true
+//    }
+//
+//    private fun fillAssets(assetList: List<String>, view: View):Boolean {
+//        val adapterAssets = ArrayAdapter(
+//            requireContext(),
+//            R.layout.spinner_item_bold,
+//            assetList
+//        )
+//        adapterAssets.setDropDownViewResource(
+//            R.layout.spinner_item_bold
+//        )
+//       view.findOnBackInvokedDispatcher().spAssetNames.adapter = adapterAssets
+//        return true
+//    }
+//
+////    private fun selectPayDay() {
+//        CoroutineScope(Dispatchers.IO).launch {
+//            val budgetItemList =
+//                async {
+//                    budgetItemViewModel.getBudgetItems(
+//                        binding.spAssetNames.selectedItem.toString(),
+//                        binding.spPayDay.selectedItem.toString()
+//                    )
+//                }
+//            if (budgetItemList.await().isNotEmpty()) {
+//                CoroutineScope(Dispatchers.Main).launch {
+//                    fillBudgetItems(
+//                        budgetItemList.await(),
+////                        binding.spPayDay.selectedItem.toString()
+//                        )
+//                }
+//            }
+//        }
+//    }
+//
+//    private fun fillBudgetItems(
+//        budgetItemList: List<BudgetDetailed>,
+////        curAsset: AccountWithType
+//    ) {
+
+
 //    }
 //
 //    private fun selectAsset() {
