@@ -7,4 +7,5 @@
     <dimen name="text_info_size">16sp</dimen>
     <dimen name="text_heading_size">18sp</dimen>
     <dimen name="title_text_size">20sp</dimen>
+    <dimen name="margin_large">36dp</dimen>
 </resources>

@@ -91,7 +91,7 @@ class BudgetRuleAddFragment :
                     else -> false
                 }
             }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        }, viewLifecycleOwner, Lifecycle.State.CREATED)
         fillValues()
 
         binding.apply {

@@ -85,7 +85,9 @@ class BudgetViewFragment : Fragment(
         binding.apply {
             spPayDay.onItemSelectedListener =
                 object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                    override fun onItemSelected(
+                        p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long
+                    ) {
                         fillBudgetList(
                             spAssetNames.selectedItem.toString(),
                             spPayDay.selectedItem.toString()
@@ -101,7 +103,8 @@ class BudgetViewFragment : Fragment(
 
     private fun fillBudgetList(asset: String, payDay: String) {
         val budgetViewAdapter = BudgetViewAdapter(
-            asset
+            asset,
+            mView!!.context
         )
 
         binding.rvBudgetSummary.apply {
@@ -137,14 +140,17 @@ class BudgetViewFragment : Fragment(
             if (details.toAccount!!.accountName ==
                 curAsset.account.accountName
             ) {
+                credits += details.budgetItem!!.biProjectedAmount
+            } else {
                 debits += details.budgetItem!!.biProjectedAmount
-            } else {
-                credits = details.budgetItem!!.biProjectedAmount
             }
-            if (details.budgetItem.biIsFixed) {
-                fixedExpenses += details.budgetItem.biProjectedAmount
-            } else {
-                otherExpenses += details.budgetItem.biProjectedAmount
+            if (details.fromAccount!!.accountName == curAsset.account.accountName) {
+                if (details.budgetItem.biIsFixed
+                ) {
+                    fixedExpenses += details.budgetItem.biProjectedAmount
+                } else {
+                    otherExpenses += details.budgetItem.biProjectedAmount
+                }
             }
         }
         var surplus = credits - debits
