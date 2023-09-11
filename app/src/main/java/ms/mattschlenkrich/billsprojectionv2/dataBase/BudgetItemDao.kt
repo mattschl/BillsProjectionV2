@@ -131,8 +131,9 @@ interface BudgetItemDao {
                 "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS  " +
                 "WHERE $ACCOUNT_NAME = :asset) " +
                 " )" +
-                "ORDER BY $TABLE_BUDGET_ITEMS.$BI_ACTUAL_DATE ASC, " +
-                "$TABLE_BUDGET_ITEMS.$BI_BUDGET_NAME ASC;"
+                "ORDER BY $TABLE_BUDGET_ITEMS.$BI_IS_PAY_DAY_ITEM DESC, " +
+                "$TABLE_BUDGET_ITEMS.$BI_ACTUAL_DATE , " +
+                "$TABLE_BUDGET_ITEMS.$BI_BUDGET_NAME ;"
     )
     fun getBudgetItems(
         asset: String,

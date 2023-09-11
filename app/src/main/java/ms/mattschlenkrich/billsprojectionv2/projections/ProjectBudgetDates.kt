@@ -182,10 +182,10 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
             var workingDate: LocalDate
             workingDate = LocalDate.parse(startDate)
              do {
-                 workingDate = workingDate.plusMonths(interval)
                  if (workingDate > LocalDate.now()) {
                      datesToFix.add(workingDate)
                  }
+                 workingDate = workingDate.plusMonths(interval)
              } while (workingDate <= LocalDate.parse(endDate))
         }
         return fixDates(datesToFix, dayOfWeek, leadDays)
@@ -202,10 +202,10 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
             var workingDate: LocalDate
             workingDate = LocalDate.parse(startDate)
             while (workingDate <= LocalDate.parse(endDate)) {
-                workingDate = workingDate.plusWeeks(interval)
                 if (workingDate > LocalDate.now()) {
                     dates.add(workingDate)
                 }
+                workingDate = workingDate.plusWeeks(interval)
             }
         }
         Log.d(TAG, "dates size = ${dates.size}")
@@ -224,10 +224,10 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
             var workingDate: LocalDate
             workingDate = LocalDate.parse(startDate)
             while (workingDate <= LocalDate.parse(endDate)) {
-                workingDate = workingDate.plusYears(interval)
                 if (workingDate > LocalDate.now()) {
                     datesToFix.add(workingDate)
                 }
+                workingDate = workingDate.plusYears(interval)
             }
         }
         return fixDates(datesToFix, dayOfWeek, leadDays)
