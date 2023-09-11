@@ -23,6 +23,8 @@ import java.util.Random
 private const val TAG = ADAPTER_ACCOUNT_TYPE
 
 class AccountTypeAdapter(
+    private val asset: String?,
+    private val payDay: String?,
     private val budgetItem: BudgetDetailed?,
     private val transaction: TransactionDetailed?,
     private val budgetRuleDetailed: BudgetRuleDetailed?,
@@ -106,6 +108,8 @@ class AccountTypeAdapter(
         holder.itemView.setOnLongClickListener {
             val direction = AccountTypesFragmentDirections
                 .actionAccountTypesFragmentToAccountTypeUpdateFragment(
+                    asset,
+                    payDay,
                     budgetItem,
                     transaction,
                     budgetRuleDetailed,
@@ -121,6 +125,8 @@ class AccountTypeAdapter(
             if (callingFragments!!.contains(FRAG_ACCOUNT_UPDATE)) {
                 val direction = AccountTypesFragmentDirections
                     .actionAccountTypesFragmentToAccountUpdateFragment(
+                        asset,
+                        payDay,
                         budgetItem,
                         transaction,
                         budgetRuleDetailed,
@@ -133,6 +139,8 @@ class AccountTypeAdapter(
             } else if (callingFragments.contains(FRAG_ACCOUNT_ADD)) {
                 val direction = AccountTypesFragmentDirections
                     .actionAccountTypesFragmentToAccountAddFragment(
+                        asset,
+                        payDay,
                         budgetItem,
                         transaction,
                         budgetRuleDetailed,

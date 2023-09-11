@@ -352,6 +352,8 @@ class BudgetViewFragment : Fragment(
         val direction =
             BudgetViewFragmentDirections
                 .actionBudgetViewFragmentToTransactionAddFragment(
+                    binding.spAssetNames.selectedItem.toString(),
+                    binding.spPayDay.selectedItem.toString(),
                     null,
                     fragmentChain
                 )
@@ -362,7 +364,9 @@ class BudgetViewFragment : Fragment(
         val fragmentChain = TAG
         val direction =
             BudgetViewFragmentDirections
-                .actionBudgetViewFragmentToBudgetViewAddFragment2(
+                .actionBudgetViewFragmentToBudgetItemAddFragment(
+                    binding.spAssetNames.selectedItem.toString(),
+                    binding.spPayDay.selectedItem.toString(),
                     null,
                     fragmentChain
                 )

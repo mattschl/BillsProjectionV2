@@ -17,6 +17,8 @@ import java.util.Random
 private const val TAG = "TransactionAdapter"
 
 class TransactionAdapter(
+    private val asset: String?,
+    private val payDay: String?,
 //    private val transaction: TransactionDetailed?,
 //    private val context: Context,
     private val callingFragment: String,
@@ -117,6 +119,8 @@ class TransactionAdapter(
         holder.itemView.setOnLongClickListener {
             val direction = TransactionViewFragmentDirections
                 .actionTransactionViewFragmentToTransactionUpdateFragment(
+                    asset,
+                    payDay,
                     transaction,
                     callingFragment
                 )

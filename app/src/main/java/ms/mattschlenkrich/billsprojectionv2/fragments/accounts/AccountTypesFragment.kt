@@ -72,6 +72,8 @@ class AccountTypesFragment
         binding.fabAddAccountType.setOnClickListener {
             val direction = AccountTypesFragmentDirections
                 .actionAccountTypesFragmentToAccountTypeAddFragment(
+                    args.asset,
+                    args.payDay,
                     args.budgetItem,
                     args.transaction,
                     args.budgetRuleDetailed,
@@ -85,6 +87,8 @@ class AccountTypesFragment
 
     private fun setupRecyclerView() {
         accountTypeAdapter = AccountTypeAdapter(
+            args.asset,
+            args.payDay,
             args.budgetItem,
             args.transaction,
             args.budgetRuleDetailed,

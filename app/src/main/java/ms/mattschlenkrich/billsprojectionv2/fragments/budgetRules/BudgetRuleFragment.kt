@@ -73,6 +73,8 @@ class BudgetRuleFragment :
     private fun addNewRule() {
         val direction = BudgetRuleFragmentDirections
             .actionBudgetRuleFragmentToBudgetRuleAddFragment(
+                args.asset,
+                args.payDay,
                 args.budgetItem,
                 args.transaction,
                 null,
@@ -83,6 +85,8 @@ class BudgetRuleFragment :
 
     private fun setupRecyclerView() {
         budgetRuleAdapter = BudgetRuleAdapter(
+            args.asset,
+            args.payDay,
             args.budgetItem,
             args.transaction,
             mView!!.context,

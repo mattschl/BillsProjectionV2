@@ -30,6 +30,8 @@ private const val TAG = ADAPTER_ACCOUNT
 
 @Suppress("CanBeParameter")
 class AccountAdapter(
+    private val asset: String?,
+    private val payDay: String?,
     private val budgetItem: BudgetDetailed?,
     private val transaction: TransactionDetailed?,
     private val budgetRuleDetailed: BudgetRuleDetailed?,
@@ -199,6 +201,8 @@ class AccountAdapter(
         val fragmentChain = "$callingFragments, $FRAG_ACCOUNTS"
         val direction = AccountsFragmentDirections
             .actionAccountsFragmentToAccountUpdateFragment(
+                asset,
+                payDay,
                 budgetItem,
                 mTransactionDetailed,
                 mBudgetRuleDetailed,
@@ -220,6 +224,8 @@ class AccountAdapter(
         if (callingFragments.contains(FRAG_BUDGET_RULE_ADD)) {
             val direction = AccountsFragmentDirections
                 .actionAccountsFragmentToBudgetRuleAddFragment(
+                    asset,
+                    payDay,
                     budgetItem,
                     mTransactionDetailed,
                     mBudgetRuleDetailed,
@@ -234,6 +240,8 @@ class AccountAdapter(
         ) {
             val direction = AccountsFragmentDirections
                 .actionAccountsFragmentToBudgetRuleUpdateFragment(
+                    asset,
+                    payDay,
                     budgetItem,
                     mTransactionDetailed,
                     mBudgetRuleDetailed,
@@ -245,6 +253,8 @@ class AccountAdapter(
             val direction =
                 AccountsFragmentDirections
                     .actionAccountsFragmentToTransactionAddFragment(
+                        asset,
+                        payDay,
                         mTransactionDetailed,
                         fragmentChain
                     )
@@ -254,6 +264,8 @@ class AccountAdapter(
             val direction =
                 AccountsFragmentDirections
                     .actionAccountsFragmentToTransactionUpdateFragment(
+                        asset,
+                        payDay,
                         mTransactionDetailed,
                         fragmentChain
                     )

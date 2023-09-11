@@ -13,6 +13,7 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -35,6 +36,7 @@ class TransactionViewFragment :
     private lateinit var mainActivity: MainActivity
     private lateinit var transactionViewModel: TransactionViewModel
     private lateinit var transactionAdapter: TransactionAdapter
+    private val args: TransactionUpdateFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,6 +62,8 @@ class TransactionViewFragment :
         binding.fabAddTransaction.setOnClickListener {
             val direction = TransactionViewFragmentDirections
                 .actionTransactionViewFragmentToTransactionAddFragment(
+                    args.asset,
+                    args.payDay,
                     null,
                     TAG
                 )
@@ -69,6 +73,8 @@ class TransactionViewFragment :
 
     private fun setupRecyclerView() {
         transactionAdapter = TransactionAdapter(
+            args.asset,
+            args.payDay,
             TAG
         )
 

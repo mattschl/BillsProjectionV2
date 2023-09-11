@@ -127,6 +127,8 @@ class TransactionUpdateFragment :
                 val direction =
                     TransactionUpdateFragmentDirections
                         .actionTransactionUpdateFragmentToTransactionViewFragment(
+                            args.asset,
+                            args.payDay,
                             getCurTransDetailed(),
                             TAG
                         )
@@ -217,6 +219,8 @@ class TransactionUpdateFragment :
         val direction =
             TransactionUpdateFragmentDirections
                 .actionTransactionUpdateFragmentToAccountsFragment(
+                    args.asset,
+                    args.payDay,
                     null,
                     getCurTransDetailed(),
                     null,
@@ -231,6 +235,8 @@ class TransactionUpdateFragment :
         val direction =
             TransactionUpdateFragmentDirections
                 .actionTransactionUpdateFragmentToAccountsFragment(
+                    args.asset,
+                    args.payDay,
                     null,
                     getCurTransDetailed(),
                     null,
@@ -245,6 +251,8 @@ class TransactionUpdateFragment :
         val direction =
             TransactionUpdateFragmentDirections
                 .actionTransactionUpdateFragmentToBudgetRuleFragment(
+                    args.asset,
+                    args.payDay,
                     null,
                     getCurTransDetailed(),
                     fragmentChain
@@ -349,6 +357,8 @@ class TransactionUpdateFragment :
                 val direction =
                     TransactionUpdateFragmentDirections
                         .actionTransactionUpdateFragmentToTransactionViewFragment(
+                            args.asset,
+                            args.payDay,
                             null, fragmentChain
                         )
                 mView.findNavController().navigate(direction)

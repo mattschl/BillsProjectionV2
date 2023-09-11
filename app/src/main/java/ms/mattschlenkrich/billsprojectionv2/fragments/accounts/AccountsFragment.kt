@@ -82,6 +82,8 @@ class AccountsFragment :
         val fragmentChain = "${args.callingFragments}, $TAG"
         val direction = AccountsFragmentDirections
             .actionAccountsFragmentToAccountAddFragment(
+                args.asset,
+                args.payDay,
                 args.budgetItem,
                 args.transaction,
                 budgetRuleDetailed, null, null,
@@ -94,6 +96,8 @@ class AccountsFragment :
         val fragmentChain = "${args.callingFragments}, $TAG"
 
         accountAdapter = AccountAdapter(
+            args.asset,
+            args.payDay,
             args.budgetItem,
             args.transaction,
             args.budgetRuleDetailed,

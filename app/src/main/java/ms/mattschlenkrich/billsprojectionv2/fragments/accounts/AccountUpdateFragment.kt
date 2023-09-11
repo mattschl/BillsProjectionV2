@@ -116,6 +116,8 @@ class AccountUpdateFragment :
         val fragmentChain = "${args.callingFragments}, $TAG"
         val direction = AccountUpdateFragmentDirections
             .actionAccountUpdateFragmentToAccountTypesFragment(
+                args.asset,
+                args.payDay,
                 args.budgetItem,
                 args.transaction,
                 args.budgetRuleDetailed,
@@ -196,6 +198,8 @@ class AccountUpdateFragment :
     private fun gotoAccountFragment() {
         val direction = AccountUpdateFragmentDirections
             .actionAccountUpdateFragmentToAccountsFragment(
+                args.asset,
+                args.payDay,
                 args.budgetItem,
                 args.transaction,
                 args.budgetRuleDetailed,
@@ -254,6 +258,8 @@ class AccountUpdateFragment :
                 .replace(", $FRAG_ACCOUNT_UPDATE", "")
         val direction = AccountUpdateFragmentDirections
             .actionAccountUpdateFragmentToAccountsFragment(
+                args.asset,
+                args.payDay,
                 args.budgetItem,
                 args.transaction,
                 args.budgetRuleDetailed,

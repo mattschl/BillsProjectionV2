@@ -151,6 +151,8 @@ class AccountAddFragment :
         val fragmentChain = "${args.callingFragments}, $TAG"
         val direction = AccountAddFragmentDirections
             .actionAccountAddFragmentToAccountTypesFragment(
+                args.asset,
+                args.payDay,
                 args.budgetItem,
                 args.transaction,
                 args.budgetRuleDetailed,
@@ -171,6 +173,8 @@ class AccountAddFragment :
             accountsViewModel.addAccount(getCurrentAccount())
             val direction = AccountAddFragmentDirections
                 .actionAccountAddFragmentToAccountsFragment(
+                    args.asset,
+                    args.payDay,
                     args.budgetItem,
                     args.transaction,
                     args.budgetRuleDetailed,

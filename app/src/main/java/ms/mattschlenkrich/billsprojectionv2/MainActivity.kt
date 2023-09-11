@@ -63,7 +63,11 @@ class MainActivity : AppCompatActivity() {
 
                     resources.getString(R.string.budget_view) -> {
                         val direction =
-                            NavGraphDirections.actionGlobalBudgetViewFragment()
+                            NavGraphDirections.actionGlobalBudgetViewFragment(
+                                null,
+                                null,
+                                null
+                            )
                         findNavController(R.id.fragment_container_view)
                             .navigate(direction)
                         return true
@@ -72,6 +76,8 @@ class MainActivity : AppCompatActivity() {
                     resources.getString(R.string.transactions) -> {
                         val direction =
                             NavGraphDirections.actionGlobalTransactionViewFragment(
+                                null,
+                                null,
                                 null,
                                 null
                             )
@@ -87,6 +93,8 @@ class MainActivity : AppCompatActivity() {
                                 null,
                                 null,
                                 null,
+                                null,
+                                null,
                                 null
                             )
 
@@ -98,6 +106,8 @@ class MainActivity : AppCompatActivity() {
                     resources.getString(R.string.budget_rules) -> {
                         val direction =
                             NavGraphDirections.actionGlobalBudgetRuleFragment(
+                                null,
+                                null,
                                 null,
                                 null,
                                 null

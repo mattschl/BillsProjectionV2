@@ -66,7 +66,7 @@ class TransactionAddFragment :
         )
         mainActivity = (activity as MainActivity)
         mView = binding.root
-        return binding.root
+        return mView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -116,11 +116,14 @@ class TransactionAddFragment :
     }
 
     private fun chooseBudgetRule() {
-        val fragmentChain = TAG
+        val fragmentChain =
+            args.callingFragments + "', " + TAG
 
         val direction =
             TransactionAddFragmentDirections
                 .actionTransactionAddFragmentToBudgetRuleFragment(
+                    args.asset,
+                    args.payDay,
                     null,
                     getTransactionDetailed(),
                     fragmentChain
@@ -191,6 +194,8 @@ class TransactionAddFragment :
         val fragmentChain = "${args.callingFragments}, $TAG"
         val direction = TransactionAddFragmentDirections
             .actionTransactionAddFragmentToAccountsFragment(
+                args.asset,
+                args.payDay,
                 null,
                 getTransactionDetailed(),
                 null,
@@ -204,6 +209,8 @@ class TransactionAddFragment :
         val fragmentChain = "${args.callingFragments}, $TAG"
         val direction = TransactionAddFragmentDirections
             .actionTransactionAddFragmentToAccountsFragment(
+                args.asset,
+                args.payDay,
                 null,
                 getTransactionDetailed(),
                 null,
@@ -294,13 +301,16 @@ class TransactionAddFragment :
                     success = true
                 }
             }
-            val direction =
-                TransactionAddFragmentDirections
-                    .actionTransactionAddFragmentToTransactionViewFragment(
-                        null,
-                        null
-                    )
-            mView.findNavController().navigate(direction)
+            gotoCallingFragment()
+//            val direction =
+//                TransactionAddFragmentDirections
+//                    .actionTransactionAddFragmentToTransactionViewFragment(
+//                        args.asset,
+//                        args.payDay,
+//                        null,
+//                        null
+//                    )
+//            mView.findNavController().navigate(direction)
 
         } else {
             Toast.makeText(
@@ -362,6 +372,8 @@ class TransactionAddFragment :
             val direction =
                 TransactionAddFragmentDirections
                     .actionTransactionAddFragmentToTransactionViewFragment(
+                        args.asset,
+                        args.payDay,
                         null,
                         fragmentChain
                     )
@@ -369,7 +381,11 @@ class TransactionAddFragment :
         } else if (args.callingFragments!!.contains(FRAG_BUDGET_VIEW)) {
             val direction =
                 TransactionAddFragmentDirections
-                    .actionTransactionAddFragmentToBudgetViewFragment()
+                    .actionTransactionAddFragmentToBudgetViewFragment(
+                        args.asset,
+                        args.payDay,
+                        fragmentChain
+                    )
             mView.findNavController().navigate(direction)
         } /*else if (args.callingFragments!!.contains(FRAG_BUDGET_RULES)) {
             val direction =

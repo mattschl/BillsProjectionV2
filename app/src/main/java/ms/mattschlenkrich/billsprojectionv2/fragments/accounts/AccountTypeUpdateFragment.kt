@@ -109,6 +109,8 @@ class AccountTypeUpdateFragment :
             accountsViewModel.updateAccountType(accountType)
             val direction = AccountTypeUpdateFragmentDirections
                 .actionAccountTypeUpdateFragmentToAccountTypesFragment(
+                    args.asset,
+                    args.payDay,
                     args.budgetItem,
                     args.transaction,
                     args.budgetRuleDetailed,
@@ -129,6 +131,8 @@ class AccountTypeUpdateFragment :
                     accountsViewModel.updateAccountType(accountType)
                     val direction = AccountTypeUpdateFragmentDirections
                         .actionAccountTypeUpdateFragmentToAccountTypesFragment(
+                            args.asset,
+                            args.payDay,
                             args.budgetItem,
                             args.transaction,
                             args.budgetRuleDetailed,
@@ -180,6 +184,8 @@ class AccountTypeUpdateFragment :
                 )
                 val direction = AccountTypeUpdateFragmentDirections
                     .actionAccountTypeUpdateFragmentToAccountTypesFragment(
+                        args.asset,
+                        args.payDay,
                         args.budgetItem,
                         args.transaction,
                         args.budgetRuleDetailed,

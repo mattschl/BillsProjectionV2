@@ -137,8 +137,14 @@ class BudgetItemAddFragment : Fragment(
                 FRAG_BUDGET_VIEW
             )
         ) {
+            val fragmentChain = args.callingFragments!!
+                .replace(",${TAG}", "")
             val direction = BudgetItemAddFragmentDirections
-                .actionBudgetViewAddFragmentToBudgetViewFragment2()
+                .actionBudgetItemAddFragmentToBudgetViewFragment(
+                    args.asset,
+                    args.payDay,
+                    fragmentChain
+                )
             mView!!.findNavController().navigate(direction)
         }
     }
@@ -195,7 +201,9 @@ class BudgetItemAddFragment : Fragment(
     private fun chooseAccount(requestedAccount: String) {
         val fragmentChain = TAG
         val direction = BudgetItemAddFragmentDirections
-            .actionBudgetViewAddFragmentToAccountsFragment2(
+            .actionBudgetItemAddFragmentToAccountsFragment(
+                args.asset,
+                args.payDay,
                 getCurBudgetDetailed(),
                 null,
                 null,
@@ -208,7 +216,9 @@ class BudgetItemAddFragment : Fragment(
     private fun chooseBudgetRule() {
         val fragmentChain = TAG
         val direction = BudgetItemAddFragmentDirections
-            .actionBudgetViewAddFragmentToBudgetRuleFragment2(
+            .actionBudgetItemAddFragmentToBudgetRuleFragment(
+                args.asset,
+                args.payDay,
                 getCurBudgetDetailed(),
                 null,
                 fragmentChain

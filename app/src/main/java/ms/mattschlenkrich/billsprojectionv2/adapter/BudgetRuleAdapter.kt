@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_BUDGET_RULE
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_ADD
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
@@ -23,6 +25,8 @@ import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 private const val TAG = ADAPTER_BUDGET_RULE
 
 class BudgetRuleAdapter(
+    private val asset: String?,
+    private val payDay: String?,
     private val budgetDetailed: BudgetDetailed?,
     private val transactionDetailed: TransactionDetailed?,
     private val context: Context,
@@ -98,47 +102,64 @@ class BudgetRuleAdapter(
         holder.itemBinding.tvInfo.text = info
 
         holder.itemView.setOnClickListener {
-            if (transactionDetailed != null && callingFragments != null) {
-                Log.d(TAG, "callingFragments is $callingFragments")
-                if (callingFragments.contains(FRAG_TRANS_ADD)) {
-                    val fragmentChain = "$callingFragments, $FRAG_BUDGET_RULES"
-                    val mTransaction = transactionDetailed
-                    mTransaction.budgetRule =
-                        budgetRuleDetailed.budgetRule
-                    mTransaction.toAccount =
-                        budgetRuleDetailed.toAccount
-                    mTransaction.fromAccount =
-                        budgetRuleDetailed.fromAccount
-                    val direction =
-                        BudgetRuleFragmentDirections
-                            .actionBudgetRuleFragmentToTransactionAddFragment(
-                                mTransaction,
-                                fragmentChain
-                            )
-                    it.findNavController().navigate(direction)
-                } else if (callingFragments.contains(FRAG_TRANS_UPDATE)) {
-                    val fragmentChain = "$callingFragments, $FRAG_BUDGET_RULES"
-                    val mTransaction = transactionDetailed
-                    mTransaction.budgetRule =
-                        budgetRuleDetailed.budgetRule
-                    mTransaction.toAccount =
-                        budgetRuleDetailed.toAccount
-                    mTransaction.fromAccount =
-                        budgetRuleDetailed.fromAccount
-                    val direction =
-                        BudgetRuleFragmentDirections
-                            .actionBudgetRuleFragmentToTransactionUpdateFragment(
-                                mTransaction,
-                                fragmentChain
-                            )
-                    it.findNavController().navigate(direction)
-                }
+            Log.d(TAG, "callingFragments is $callingFragments")
+            val fragmentChain = callingFragments!!
+                .replace(", $FRAG_BUDGET_RULES", "")
+            val mTransaction = transactionDetailed
+            mTransaction?.budgetRule =
+                budgetRuleDetailed.budgetRule
+            mTransaction?.toAccount =
+                budgetRuleDetailed.toAccount
+            mTransaction?.fromAccount =
+                budgetRuleDetailed.fromAccount
+            if (callingFragments.contains(FRAG_TRANS_ADD)) {
+                val direction =
+                    BudgetRuleFragmentDirections
+                        .actionBudgetRuleFragmentToTransactionAddFragment(
+                            asset,
+                            payDay,
+                            mTransaction,
+                            fragmentChain
+                        )
+                it.findNavController().navigate(direction)
+            } else if (callingFragments.contains(FRAG_TRANS_UPDATE)) {
+                val direction =
+                    BudgetRuleFragmentDirections
+                        .actionBudgetRuleFragmentToTransactionUpdateFragment(
+                            asset,
+                            payDay,
+                            mTransaction,
+                            fragmentChain
+                        )
+                it.findNavController().navigate(direction)
+            } else if (callingFragments.contains(FRAG_BUDGET_ITEM_ADD)) {
+                val direction =
+                    BudgetRuleFragmentDirections
+                        .actionBudgetRuleFragmentToBudgetItemAddFragment(
+                            asset,
+                            payDay,
+                            budgetDetailed,
+                            fragmentChain
+                        )
+                it.findNavController().navigate(direction)
+            } else if (callingFragments.contains(FRAG_BUDGET_ITEM_UPDATE)) {
+                val direction =
+                    BudgetRuleFragmentDirections
+                        .actionBudgetRuleFragmentToBudgetItemUpdateFragment(
+                            asset,
+                            payDay,
+                            budgetDetailed,
+                            fragmentChain
+                        )
+                it.findNavController().navigate(direction)
             }
         }
 
         holder.itemView.setOnLongClickListener {
             val direction = BudgetRuleFragmentDirections
                 .actionBudgetRuleFragmentToBudgetRuleUpdateFragment(
+                    asset,
+                    payDay,
                     budgetDetailed,
                     transactionDetailed,
                     budgetRuleDetailed,

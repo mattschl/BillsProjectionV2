@@ -33,11 +33,19 @@
             app:popUpTo="@id/budgetRuleFragment"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_accountsFragment_to_budgetViewAddFragment2"
-            app:destination="@id/budgetViewAddFragment" />
+            android:id="@+id/action_accountsFragment_to_budgetItemAddFragment"
+            app:destination="@id/budgetItemAddFragment" />
         <action
-            android:id="@+id/action_accountsFragment_to_budgetViewUpdateFragment22"
-            app:destination="@id/budgetViewUpdateFragment" />
+            android:id="@+id/action_accountsFragment_to_budgetItemUpdateFragment"
+            app:destination="@id/budgetItemUpdateFragment" />
+        <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
         <argument
             android:name="budgetItem"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed"
@@ -72,6 +80,14 @@
         <action
             android:id="@+id/action_accountUpdateFragment_to_accountTypesFragment"
             app:destination="@id/accountTypesFragment" />
+        <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
         <argument
             android:name="budgetItem"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed"
@@ -114,6 +130,14 @@
         <action
             android:id="@+id/action_accountAddFragment_to_accountTypesFragment"
             app:destination="@id/accountTypesFragment" />
+        <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
         <argument
             android:name="budgetItem"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed"
@@ -165,6 +189,14 @@
             app:popUpTo="@id/accountAddFragment"
             app:popUpToInclusive="true" />
         <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
             android:name="budgetItem"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed"
             app:nullable="true" />
@@ -200,6 +232,14 @@
             app:popUpTo="@id/accountTypesFragment"
             app:popUpToInclusive="true" />
         <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
             android:name="budgetItem"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed"
             app:nullable="true" />
@@ -234,6 +274,14 @@
             app:destination="@id/accountTypesFragment"
             app:popUpTo="@id/accountTypesFragment"
             app:popUpToInclusive="true" />
+        <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
         <argument
             android:name="budgetItem"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed"
@@ -274,6 +322,30 @@
         <action
             android:id="@+id/action_budgetRuleFragment_to_budgetRuleUpdateFragment"
             app:destination="@id/budgetRuleUpdateFragment" />
+        <action
+            android:id="@+id/action_budgetRuleFragment_to_transactionUpdateFragment"
+            app:destination="@id/transactionUpdateFragment"
+            app:popUpTo="@id/transactionUpdateFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_budgetRuleFragment_to_transactionAddFragment"
+            app:destination="@id/transactionAddFragment"
+            app:popUpTo="@id/transactionAddFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_budgetRuleFragment_to_budgetItemAddFragment"
+            app:destination="@id/budgetItemAddFragment" />
+        <action
+            android:id="@+id/action_budgetRuleFragment_to_budgetItemUpdateFragment"
+            app:destination="@id/budgetItemUpdateFragment" />
+        <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
         <argument
             android:name="budgetItem"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed"
@@ -286,22 +358,6 @@
             android:name="callingFragments"
             app:argType="string"
             app:nullable="true" />
-        <action
-            android:id="@+id/action_budgetRuleFragment_to_transactionUpdateFragment"
-            app:destination="@id/transactionUpdateFragment"
-            app:popUpTo="@id/transactionUpdateFragment"
-            app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_budgetRuleFragment_to_transactionAddFragment"
-            app:destination="@id/transactionAddFragment"
-            app:popUpTo="@id/transactionAddFragment"
-            app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_budgetRuleFragment_to_budgetViewAddFragment2"
-            app:destination="@id/budgetViewAddFragment" />
-        <action
-            android:id="@+id/action_budgetRuleFragment_to_budgetViewUpdateFragment22"
-            app:destination="@id/budgetViewUpdateFragment" />
     </fragment>
     <fragment
         android:id="@+id/budgetRuleAddFragment"
@@ -316,6 +372,14 @@
         <action
             android:id="@+id/action_budgetRuleAddFragment_to_accountsFragment"
             app:destination="@id/accountsFragment" />
+        <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
         <argument
             android:name="budgetItem"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed"
@@ -347,6 +411,14 @@
             android:id="@+id/action_budgetRuleUpdateFragment_to_accountsFragment"
             app:destination="@id/accountsFragment" />
         <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
             android:name="budgetItem"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed"
             app:nullable="true" />
@@ -375,6 +447,14 @@
             android:id="@+id/action_transactionViewFragment_to_transactionAddFragment"
             app:destination="@id/transactionAddFragment" />
         <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
             android:name="transaction"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed"
             app:nullable="true" />
@@ -399,6 +479,14 @@
         <action
             android:id="@+id/action_transactionAddFragment_to_accountsFragment"
             app:destination="@id/accountsFragment" />
+        <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
         <argument
             android:name="transaction"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed"
@@ -426,6 +514,14 @@
             android:id="@+id/action_transactionUpdateFragment_to_accountsFragment"
             app:destination="@id/accountsFragment" />
         <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
             android:name="transaction"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed"
             app:nullable="true" />
@@ -440,31 +536,51 @@
         android:label="fragment_budget_view"
         tools:layout="@layout/fragment_budget_view">
         <action
-            android:id="@+id/action_budgetViewFragment_to_budgetViewAddFragment2"
-            app:destination="@id/budgetViewAddFragment" />
+            android:id="@+id/action_budgetViewFragment_to_budgetItemAddFragment"
+            app:destination="@id/budgetItemAddFragment" />
         <action
-            android:id="@+id/action_budgetViewFragment_to_budgetViewUpdateFragment22"
-            app:destination="@id/budgetViewUpdateFragment" />
+            android:id="@+id/action_budgetViewFragment_to_budgetItemUpdateFragment"
+            app:destination="@id/budgetItemUpdateFragment" />
         <action
             android:id="@+id/action_budgetViewFragment_to_transactionAddFragment"
             app:destination="@id/transactionAddFragment" />
+        <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="callingFragment"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
     <fragment
-        android:id="@+id/budgetViewAddFragment"
+        android:id="@+id/budgetItemAddFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetItemAddFragment"
-        android:label="fragment_budget_view_add"
+        android:label="fragment_budget_item_add"
         tools:layout="@layout/fragment_budget_item_add">
         <action
-            android:id="@+id/action_budgetViewAddFragment_to_budgetViewFragment2"
+            android:id="@+id/action_budgetItemAddFragment_to_budgetViewFragment"
             app:destination="@id/budgetViewFragment"
             app:popUpTo="@id/budgetViewFragment"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_budgetViewAddFragment_to_accountsFragment2"
+            android:id="@+id/action_budgetItemAddFragment_to_accountsFragment"
             app:destination="@id/accountsFragment" />
         <action
-            android:id="@+id/action_budgetViewAddFragment_to_budgetRuleFragment2"
+            android:id="@+id/action_budgetItemAddFragment_to_budgetRuleFragment"
             app:destination="@id/budgetRuleFragment" />
+        <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
         <argument
             android:name="budgetItem"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed"
@@ -475,21 +591,28 @@
             app:nullable="true" />
     </fragment>
     <fragment
-        android:id="@+id/budgetViewUpdateFragment"
+        android:id="@+id/budgetItemUpdateFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetItemUpdateFragment"
-        android:label="fragment_budget_view_update"
+        android:label="fragment_budget_item_update"
         tools:layout="@layout/fragment_budget_item_update">
         <action
-            android:id="@+id/action_budgetViewUpdateFragment2_to_budgetViewFragment2"
+            android:id="@+id/action_budgetItemUpdateFragment_to_budgetViewFragment"
             app:destination="@id/budgetViewFragment"
-            app:popUpTo="@id/budgetViewFragment"
-            app:popUpToInclusive="true" />
+            app:popUpTo="@id/budgetViewFragment" />
         <action
-            android:id="@+id/action_budgetViewUpdateFragment2_to_accountsFragment2"
+            android:id="@+id/action_budgetItemUpdateFragment_to_accountsFragment"
             app:destination="@id/accountsFragment" />
         <action
-            android:id="@+id/action_budgetViewUpdateFragment2_to_budgetRuleFragment2"
+            android:id="@+id/action_budgetItemUpdateFragment_to_budgetRuleFragment"
             app:destination="@id/budgetRuleFragment" />
+        <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
         <argument
             android:name="budgetItem"
             app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed"
@@ -501,7 +624,8 @@
     </fragment>
     <action
         android:id="@+id/action_global_budgetViewFragment"
-        app:destination="@id/budgetViewFragment" />
+        app:destination="@id/budgetViewFragment"
+        app:popUpToInclusive="true" />
     <action
         android:id="@+id/action_global_budgetRuleFragment"
         app:destination="@id/budgetRuleFragment"
