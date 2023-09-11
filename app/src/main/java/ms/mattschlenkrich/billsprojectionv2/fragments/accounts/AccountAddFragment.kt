@@ -136,9 +136,7 @@ class AccountAddFragment :
                 cf.generateId(),
                 etAccAddName.text.toString().trim(),
                 etAccAddHandle.text.toString().trim(),
-                if (args.accountType != null)
-                    args.accountType!!.typeId
-                else 0,
+                args.accountType?.typeId ?: 0L,
                 cf.getDoubleFromDollars(etAccAddBudgeted.text.toString()),
                 cf.getDoubleFromDollars(etAccAddBalance.text.toString()),
                 cf.getDoubleFromDollars(etAccAddOwing.text.toString()),

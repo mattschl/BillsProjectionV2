@@ -73,25 +73,7 @@ class BudgetRuleAddFragment :
                 budgetRuleViewModel.getBudgetRuleNameList()
         }
         mainActivity.title = "Add a new Budget Rule"
-        val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                // Add menu items here
-                menuInflater.inflate(R.menu.save_menu, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                // Handle the menu selection
-                return when (menuItem.itemId) {
-                    R.id.menu_save -> {
-                        saveBudgetRule()
-                        true
-                    }
-
-                    else -> false
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.CREATED)
+        fillMenu()
         fillValues()
 
         binding.apply {
@@ -112,37 +94,39 @@ class BudgetRuleAddFragment :
         }
     }
 
-    private fun getBudgetRuleDetailed(): BudgetRuleDetailed {
-        binding.apply {
-            val toAccId = if (args.budgetRuleDetailed == null) {
-                0L
-            } else {
-                if (args.budgetRuleDetailed!!.toAccount == null) {
-                    0L
-                } else {
-                    args.budgetRuleDetailed!!.toAccount!!.accountId
-                }
-            }
-            val fromAccId = if (args.budgetRuleDetailed == null) {
-                0L
-            } else {
-                if (args.budgetRuleDetailed!!.fromAccount == null) {
-                    0L
-                } else {
-                    args.budgetRuleDetailed!!.fromAccount!!.accountId
-                }
+    private fun fillMenu() {
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                // Add menu items here
+                menuInflater.inflate(R.menu.save_menu, menu)
             }
 
-            val budgetRule = BudgetRule(
-                0L,
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                // Handle the menu selection
+                return when (menuItem.itemId) {
+                    R.id.menu_save -> {
+                        saveBudgetRule()
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.CREATED)
+    }
+
+    private fun getCurBudgetRule(): BudgetRule {
+        binding.apply {
+            return BudgetRule(
+                cf.generateId(),
                 etBudgetName.text.toString().trim(),
-                toAccId,
-                fromAccId,
+                args.budgetRuleDetailed?.toAccount?.accountId ?: 0L,
+                args.budgetRuleDetailed?.fromAccount?.accountId ?: 0L,
                 if (etAmount.text.isNotEmpty()) {
-                    etAmount.text.toString().trim()
-                        .replace(",", "")
-                        .replace("$", "")
-                        .toDouble()
+                    cf.getDoubleFromDollars(
+                        etAmount.text.toString().trim()
+                    )
                 } else {
                     0.0
                 },
@@ -156,30 +140,17 @@ class BudgetRuleAddFragment :
                 etFrequencyCount.text.toString().toInt(),
                 etLeadDays.text.toString().toInt(),
                 false,
-                ""
+                df.getCurrentTimeAsString()
             )
-            val toAccount =
-                if (args.budgetRuleDetailed != null) {
-                    if (args.budgetRuleDetailed!!.toAccount != null) {
-                        args.budgetRuleDetailed!!.toAccount
-                    } else {
-                        null
-                    }
-                } else {
-                    null
-                }
-            val fromAccount =
-                if (args.budgetRuleDetailed != null) {
-                    if (args.budgetRuleDetailed!!.fromAccount != null) {
-                        args.budgetRuleDetailed!!.fromAccount
-                    } else {
-                        null
-                    }
-                } else {
-                    null
-                }
-            return BudgetRuleDetailed(budgetRule, toAccount, fromAccount)
         }
+    }
+
+    private fun getBudgetRuleDetailed(): BudgetRuleDetailed {
+        return BudgetRuleDetailed(
+            getCurBudgetRule(),
+            args.budgetRuleDetailed?.toAccount,
+            args.budgetRuleDetailed?.fromAccount
+        )
     }
 
     private fun chooseFromAccount() {
@@ -335,27 +306,7 @@ class BudgetRuleAddFragment :
             binding.apply {
                 val fragmentChain = "${args.callingFragments}, $TAG"
                 budgetRuleViewModel.insertBudgetRule(
-                    BudgetRule(
-                        cf.generateId(),
-                        etBudgetName.text.toString().trim(),
-                        args.budgetRuleDetailed!!.toAccount!!.accountId,
-                        args.budgetRuleDetailed!!.fromAccount!!.accountId,
-                        etAmount.text.toString().trim()
-                            .replace(",", "")
-                            .replace("$", "")
-                            .toDouble(),
-                        chkFixedAmount.isChecked,
-                        chkMakePayDay.isChecked,
-                        chkAutoPayment.isChecked,
-                        etStartDate.text.toString(),
-                        etEndDate.text.toString(),
-                        spDayOfWeek.selectedItemId.toInt(),
-                        spFrequencyType.selectedItemId.toInt(),
-                        etFrequencyCount.text.toString().toInt(),
-                        etLeadDays.text.toString().toInt(),
-                        false,
-                        df.getCurrentTimeAsString()
-                    )
+                    getCurBudgetRule()
                 )
                 val direction = BudgetRuleAddFragmentDirections
                     .actionBudgetRuleAddFragmentToBudgetRuleFragment(
