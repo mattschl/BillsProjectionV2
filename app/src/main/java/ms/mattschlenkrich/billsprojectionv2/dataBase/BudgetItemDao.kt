@@ -76,6 +76,28 @@ interface BudgetItemDao {
     fun getPayDaysActive(): List<String>
 
     @Query(
+        "SELECT DISTINCT $BI_PAY_DAY FROM $TABLE_BUDGET_ITEMS " +
+                "WHERE $BI_IS_COMPLETED = 0 " +
+                "AND $BI_IS_DELETED = 0 " +
+                "AND $BI_IS_CANCELLED = 0 " +
+                "ORDER BY $BI_PAY_DAY;"
+    )
+    fun getPayDays(): LiveData<List<String>>
+
+    @Query(
+        "SELECT DISTINCT $BI_PAY_DAY FROM $TABLE_BUDGET_ITEMS " +
+                "WHERE $BI_FROM_ACCOUNT_ID = " +
+                "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
+                "WHERE $ACCOUNT_NAME = :asset) " +
+                "AND $BI_IS_DELETED = 0 " +
+                "AND $BI_IS_COMPLETED = 0 " +
+                "AND $BI_IS_CANCELLED = 0 " +
+                "ORDER BY $BI_PAY_DAY ASC"
+    )
+    fun getPayDays(asset: String): LiveData<List<String>>
+
+
+    @Query(
         "UPDATE $TABLE_BUDGET_ITEMS " +
                 "SET $BI_IS_DELETED = 1, " +
                 "$BI_UPDATE_TIME = :updateTime " +
@@ -96,18 +118,6 @@ interface BudgetItemDao {
                 "ORDER BY $TABLE_ACCOUNTS.$ACCOUNT_NAME COLLATE NOCASE;"
     )
     fun getAssetsForBudget(): LiveData<List<String>>
-
-    @Query(
-        "SELECT DISTINCT $BI_PAY_DAY FROM $TABLE_BUDGET_ITEMS " +
-                "WHERE $BI_FROM_ACCOUNT_ID = " +
-                "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
-                "WHERE $ACCOUNT_NAME = :asset) " +
-                "AND $BI_IS_DELETED = 0 " +
-                "AND $BI_IS_COMPLETED = 0 " +
-                "AND $BI_IS_CANCELLED = 0 " +
-                "ORDER BY $BI_PAY_DAY ASC"
-    )
-    fun getPayDays(asset: String): LiveData<List<String>>
 
     @Transaction
     @Query(

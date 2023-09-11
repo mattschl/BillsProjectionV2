@@ -40,11 +40,6 @@ class BudgetRuleFragment :
     private var mView: View? = null
 
 
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setHasOptionsMenu(true)
-//    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -71,15 +66,19 @@ class BudgetRuleFragment :
 
         setupRecyclerView()
         binding.fabAddNew.setOnClickListener {
-            val direction = BudgetRuleFragmentDirections
-                .actionBudgetRuleFragmentToBudgetRuleAddFragment(
-                    args.budgetItem,
-                    args.transaction,
-                    null,
-                    args.callingFragments
-                )
-            mView!!.findNavController().navigate(direction)
+            addNewRule()
         }
+    }
+
+    private fun addNewRule() {
+        val direction = BudgetRuleFragmentDirections
+            .actionBudgetRuleFragmentToBudgetRuleAddFragment(
+                args.budgetItem,
+                args.transaction,
+                null,
+                args.callingFragments
+            )
+        mView!!.findNavController().navigate(direction)
     }
 
     private fun setupRecyclerView() {
@@ -131,18 +130,6 @@ class BudgetRuleFragment :
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         return false
     }
-
-
-//    @Deprecated("Deprecated in Java")
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-////        super.onCreateOptionsMenu(menu, inflater)
-////        menu.clear()
-//        inflater.inflate(R.menu.search_menu, menu)
-//        val mMenuSearch = menu.findItem(R.id.menu_search)
-//            .actionView as SearchView
-//        mMenuSearch.isSubmitButtonEnabled = false
-//        mMenuSearch.setOnQueryTextListener(this)
-//    }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
         return false

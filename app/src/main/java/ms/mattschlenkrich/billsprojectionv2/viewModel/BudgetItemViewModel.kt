@@ -66,4 +66,7 @@ class BudgetItemViewModel(
 
     fun getBudgetItems(asset: String, payDay: String) =
         budgetItemRepository.getBudgetItems(asset, payDay)
+
+    fun getPayDays() =
+        budgetItemRepository.getPayDays()
 }

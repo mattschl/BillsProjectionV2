@@ -128,7 +128,7 @@ class TransactionAddFragment :
         mView.findNavController().navigate(direction)
     }
 
-    private fun getTransaction(): Transactions {
+    private fun getCurTransaction(): Transactions {
         binding.apply {
             return Transactions(
                 cf.generateId(),
@@ -154,7 +154,7 @@ class TransactionAddFragment :
     private fun getTransactionDetailed(): TransactionDetailed {
         binding.apply {
             return TransactionDetailed(
-                getTransaction(),
+                getCurTransaction(),
                 args.transaction?.budgetRule,
                 args.transaction?.toAccount,
                 args.transaction?.fromAccount
@@ -282,7 +282,7 @@ class TransactionAddFragment :
     private fun saveTransaction() {
         val mes = checkTransaction()
         if (mes == "Ok") {
-            val mTransaction = getTransaction()
+            val mTransaction = getCurTransaction()
             transactionViewModel.insertTransaction(
                 mTransaction
             )

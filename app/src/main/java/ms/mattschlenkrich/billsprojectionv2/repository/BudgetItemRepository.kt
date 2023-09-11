@@ -49,4 +49,7 @@ class BudgetItemRepository(private val db: BillsDatabase) {
 
     fun getBudgetItems(asset: String, payDay: String) =
         db.getBudgetItemDao().getBudgetItems(asset, payDay)
+
+    fun getPayDays() =
+        db.getBudgetItemDao().getPayDays()
 }

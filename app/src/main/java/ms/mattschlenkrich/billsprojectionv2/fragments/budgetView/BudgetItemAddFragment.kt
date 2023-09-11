@@ -8,6 +8,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -44,7 +45,6 @@ class BudgetItemAddFragment : Fragment(
     private val df = DateFunctions()
 
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -62,7 +62,43 @@ class BudgetItemAddFragment : Fragment(
         budgetItemViewModel =
             mainActivity.budgetItemViewModel
         mainActivity.title = "Add a new Budget Item"
+        fillPayDaysLive()
+        fillMenu()
+        binding.apply {
+            tvBudgetRule.setOnClickListener {
+                chooseBudgetRule()
+            }
+            tvToAccount.setOnClickListener {
+                chooseAccount(REQUEST_TO_ACCOUNT)
+            }
+            tvFromAccount.setOnClickListener {
+                chooseAccount(REQUEST_FROM_ACCOUNT)
+            }
+            etProjectedDate.setOnLongClickListener {
+                chooseDate()
+                false
+            }
+        }
         fillValues()
+    }
+
+    private fun fillPayDaysLive() {
+        val payDayAdapter =
+            ArrayAdapter<Any>(
+                requireContext(),
+                R.layout.spinner_item_bold
+            )
+        budgetItemViewModel.getPayDays().observe(
+            viewLifecycleOwner
+        ) { payDayList ->
+            payDayList?.forEach {
+                payDayAdapter.add(it)
+            }
+        }
+        binding.spPayDays.adapter = payDayAdapter
+    }
+
+    private fun fillMenu() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -82,21 +118,6 @@ class BudgetItemAddFragment : Fragment(
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
-        binding.apply {
-            tvBudgetRule.setOnClickListener {
-                chooseBudgetRule()
-            }
-            tvToAccount.setOnClickListener {
-                chooseAccount(REQUEST_TO_ACCOUNT)
-            }
-            tvFromAccount.setOnClickListener {
-                chooseAccount(REQUEST_FROM_ACCOUNT)
-            }
-            etProjectedDate.setOnLongClickListener {
-                chooseDate()
-                false
-            }
-        }
     }
 
     private fun saveBudgetItem() {
@@ -104,28 +125,7 @@ class BudgetItemAddFragment : Fragment(
         if (mes == "OK") {
             binding.apply {
                 budgetItemViewModel.insertBudgetItem(
-                    BudgetItem(
-                        args.budgetItem!!.budgetItem!!.biRuleId,
-                        etProjectedDate.text.toString(),
-                        etProjectedDate.text.toString(),
-                        spPayDays.selectedItem.toString(),
-                        etBudgetItemName.text.toString(),
-                        chkIsPayDay.isChecked,
-                        args.budgetItem!!.toAccount!!.accountId,
-                        args.budgetItem!!.fromAccount!!.accountId,
-                        cf.getDoubleFromDollars(
-                            etProjectedAmount.text.toString()
-                        ),
-                        biIsPending = false,
-                        chkFixedAmount.isChecked,
-                        chkIsAutoPayment.isChecked,
-                        biManuallyEntered = true,
-                        biLocked = chkIsLocked.isChecked,
-                        biIsCompleted = false,
-                        biIsCancelled = false,
-                        biIsDeleted = false,
-                        biUpdateTime = df.getCurrentTimeAsString()
-                    )
+                    getCurBudgetItem()
                 )
                 gotoCallingFragment()
             }
@@ -196,7 +196,7 @@ class BudgetItemAddFragment : Fragment(
         val fragmentChain = TAG
         val direction = BudgetItemAddFragmentDirections
             .actionBudgetViewAddFragmentToAccountsFragment2(
-                getCurrentBudgetItem(),
+                getCurBudgetDetailed(),
                 null,
                 null,
                 requestedAccount,
@@ -209,31 +209,40 @@ class BudgetItemAddFragment : Fragment(
         val fragmentChain = TAG
         val direction = BudgetItemAddFragmentDirections
             .actionBudgetViewAddFragmentToBudgetRuleFragment2(
-                getCurrentBudgetItem(),
+                getCurBudgetDetailed(),
                 null,
                 fragmentChain
             )
         mView!!.findNavController().navigate(direction)
     }
 
-    private fun getCurrentBudgetItem(): BudgetDetailed {
+    private fun getCurBudgetDetailed(): BudgetDetailed {
+        return BudgetDetailed(
+            getCurBudgetItem(),
+            args.budgetItem?.budgetRule,
+            args.budgetItem?.toAccount,
+            args.budgetItem?.fromAccount
+        )
+    }
+
+    private fun getCurBudgetItem(): BudgetItem {
         binding.apply {
-            val budgetItem = BudgetItem(
-                if (args.budgetItem!!.budgetRule != null)
-                    args.budgetItem!!.budgetRule!!.ruleId
-                else 0,
+            return BudgetItem(
+                args.budgetItem?.budgetRule?.ruleId ?: 0L,
                 etProjectedDate.text.toString(),
                 etProjectedDate.text.toString(),
                 spPayDays.selectedItem.toString(),
                 etBudgetItemName.text.toString(),
                 chkIsPayDay.isChecked,
-                if (args.budgetItem!!.toAccount != null)
-                    args.budgetItem!!.toAccount!!.accountId
-                else 0,
-                if (args.budgetItem!!.fromAccount != null)
-                    args.budgetItem!!.fromAccount!!.accountId
-                else 0,
-                etProjectedAmount.text.toString().toDouble(),
+                args.budgetItem?.toAccount?.accountId ?: 0L,
+                args.budgetItem?.fromAccount?.accountId ?: 0L,
+                if (etProjectedAmount.text.isNotEmpty()) {
+                    cf.getDoubleFromDollars(
+                        etProjectedAmount.text.toString()
+                    )
+                } else {
+                    0.0
+                },
                 biIsPending = false,
                 chkFixedAmount.isChecked,
                 chkIsAutoPayment.isChecked,
@@ -243,12 +252,6 @@ class BudgetItemAddFragment : Fragment(
                 biIsCancelled = false,
                 biIsDeleted = false,
                 biUpdateTime = df.getCurrentTimeAsString()
-            )
-            return BudgetDetailed(
-                budgetItem,
-                args.budgetItem!!.budgetRule,
-                args.budgetItem!!.toAccount,
-                args.budgetItem!!.fromAccount
             )
         }
     }
@@ -287,6 +290,14 @@ class BudgetItemAddFragment : Fragment(
             chkIsAutoPayment.isChecked = args.budgetItem!!.budgetItem!!.biIsAutomatic
             chkIsPayDay.isChecked = args.budgetItem!!.budgetItem!!.biIsPayDayItem
             chkIsLocked.isChecked = args.budgetItem!!.budgetItem!!.biLocked
+            for (i in 0 until spPayDays.adapter.count) {
+                if (spPayDays.getItemAtPosition(i) ==
+                    args.budgetItem!!.budgetItem!!.biPayDay
+                ) {
+                    spPayDays.setSelection(i)
+                    break
+                }
+            }
         }
     }
 

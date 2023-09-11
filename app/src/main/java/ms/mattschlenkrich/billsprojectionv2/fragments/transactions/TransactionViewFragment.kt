@@ -35,13 +35,6 @@ class TransactionViewFragment :
     private lateinit var mainActivity: MainActivity
     private lateinit var transactionViewModel: TransactionViewModel
     private lateinit var transactionAdapter: TransactionAdapter
-//    private val args: TransactionViewFragmentArgs by navArgs()
-
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        // keep for later
-//        setHasOptionsMenu(true)
-//    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -123,17 +116,6 @@ class TransactionViewFragment :
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         return false
     }
-
-//    @Deprecated("Deprecated in Java")
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-////        super.onCreateOptionsMenu(menu, inflater)
-////        menu.clear()
-//        inflater.inflate(R.menu.search_menu, menu)
-//        val mMenuSearch = menu.findItem(R.id.menu_search)
-//            .actionView as SearchView
-//        mMenuSearch.isSubmitButtonEnabled = false
-//        mMenuSearch.setOnQueryTextListener(this)
-//    }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
         return false
