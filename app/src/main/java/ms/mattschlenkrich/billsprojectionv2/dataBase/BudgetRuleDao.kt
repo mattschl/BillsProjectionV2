@@ -93,4 +93,20 @@ interface BudgetRuleDao {
     )
     fun searchBudgetRules(query: String?): LiveData<List<BudgetRuleDetailed>>
 
+    @Transaction
+    @Query(
+        "SELECT $TABLE_BUDGET_RULES.*," +
+                "toAccount.*, " +
+                "fromAccount.* " +
+                "FROM $TABLE_BUDGET_RULES " +
+                "LEFT JOiN $TABLE_ACCOUNTS as toAccount on " +
+                "$TABLE_BUDGET_RULES.$BUD_TO_ACCOUNT_ID = " +
+                "toAccount.accountId " +
+                "LEFT JOIN $TABLE_ACCOUNTS as fromAccount on " +
+                "$TABLE_BUDGET_RULES.$BUD_FROM_ACCOUNT_ID = " +
+                "fromAccount.$ACCOUNT_ID " +
+                "WHERE $TABLE_BUDGET_RULES.ruleId = :ruleId;"
+    )
+    fun getBudgetRuleDetailed(ruleId: Long): BudgetRuleDetailed
+
 }

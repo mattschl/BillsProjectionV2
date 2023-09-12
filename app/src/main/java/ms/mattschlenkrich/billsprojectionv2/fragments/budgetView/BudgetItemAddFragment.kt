@@ -15,6 +15,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
@@ -26,7 +31,9 @@ import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetItemAddBinding
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetItem
+import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModel
+import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModel
 
 private const val TAG = FRAG_BUDGET_ITEM_ADD
 
@@ -39,6 +46,8 @@ class BudgetItemAddFragment : Fragment(
     private var mView: View? = null
     private lateinit var mainActivity: MainActivity
     private lateinit var budgetItemViewModel: BudgetItemViewModel
+    private lateinit var budgetRuleViewModel: BudgetRuleViewModel
+    private lateinit var budgetItemDetailed: BudgetRuleDetailed
     private val args: BudgetItemAddFragmentArgs by navArgs()
 
     private val cf = CommonFunctions()
@@ -61,6 +70,8 @@ class BudgetItemAddFragment : Fragment(
         super.onViewCreated(view, savedInstanceState)
         budgetItemViewModel =
             mainActivity.budgetItemViewModel
+        budgetRuleViewModel =
+            mainActivity.budgetRuleViewModel
         mainActivity.title = "Add a new Budget Item"
         fillPayDaysLive()
         fillMenu()
@@ -79,6 +90,12 @@ class BudgetItemAddFragment : Fragment(
                 false
             }
         }
+        budgetItemDetailed =
+            BudgetRuleDetailed(
+                null,
+                null,
+                null
+            )
         fillValues()
     }
 
@@ -282,19 +299,63 @@ class BudgetItemAddFragment : Fragment(
 
     private fun fillFromTemp() {
         binding.apply {
-            etProjectedDate.setText(args.budgetItem!!.budgetItem!!.biProjectedDate)
-            etBudgetItemName.setText(args.budgetItem?.budgetItem?.biBudgetName)
-            etProjectedAmount.setText(
-                cf.displayDollars(args.budgetItem!!.budgetItem!!.biProjectedAmount)
-            )
+            var budgetRuleDetailed: BudgetRuleDetailed? = null
+            etProjectedDate.setText(args.budgetItem?.budgetItem?.biProjectedDate)
             if (args.budgetItem!!.budgetRule != null) {
                 tvBudgetRule.text = args.budgetItem!!.budgetRule!!.budgetRuleName
+                CoroutineScope(Dispatchers.IO).launch {
+                    val mBudgetRuleDetailed =
+                        async {
+                            budgetRuleViewModel.getBudgetRuleDetailed(
+                                args.budgetItem!!.budgetRule!!.ruleId
+                            )
+                        }
+                    budgetItemDetailed.budgetRule =
+                        args.budgetItem!!.budgetRule
+                    budgetRuleDetailed =
+                        mBudgetRuleDetailed.await()
+                }
             }
-            if (args.budgetItem!!.toAccount != null) {
-                tvToAccount.text = args.budgetItem!!.toAccount!!.accountName
-            }
-            if (args.budgetItem!!.fromAccount != null) {
-                tvFromAccount.text = args.budgetItem!!.fromAccount!!.accountName
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(500)
+                if (args.budgetItem!!.budgetItem!!.biBudgetName.isNullOrEmpty()) {
+                    etBudgetItemName.setText(
+                        budgetRuleDetailed?.budgetRule?.budgetRuleName
+                    )
+                } else {
+                    etBudgetItemName.setText(args.budgetItem?.budgetItem?.biBudgetName)
+                }
+                if (args.budgetItem!!.budgetItem!!.biProjectedAmount == 0.0) {
+                    etProjectedAmount.setText(
+                        cf.displayDollars(
+                            budgetRuleDetailed?.budgetRule?.budgetAmount ?: 0.0
+                        )
+                    )
+                } else {
+                    etProjectedAmount.setText(
+                        cf.displayDollars(
+                            args.budgetItem!!.budgetItem!!.biProjectedAmount
+                        )
+                    )
+                }
+                if (args.budgetItem!!.toAccount != null) {
+                    tvToAccount.text = args.budgetItem!!.toAccount!!.accountName
+                    budgetItemDetailed.toAccount =
+                        args.budgetItem!!.toAccount
+                } else {
+                    tvToAccount.text = budgetRuleDetailed?.toAccount?.accountName
+                    budgetItemDetailed.toAccount =
+                        budgetRuleDetailed?.toAccount
+                }
+                if (args.budgetItem!!.fromAccount != null) {
+                    tvFromAccount.text = args.budgetItem!!.fromAccount!!.accountName
+                    budgetItemDetailed.fromAccount =
+                        args.budgetItem!!.fromAccount
+                } else {
+                    tvFromAccount.text = budgetRuleDetailed?.fromAccount?.accountName
+                    budgetItemDetailed.fromAccount =
+                        budgetRuleDetailed?.fromAccount
+                }
             }
             chkFixedAmount.isChecked = args.budgetItem!!.budgetItem!!.biIsFixed
             chkIsAutoPayment.isChecked = args.budgetItem!!.budgetItem!!.biIsAutomatic

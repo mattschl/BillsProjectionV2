@@ -86,18 +86,18 @@ class BudgetRuleAdapter(
         info = "\nFrom: " + budgetRuleDetailed.fromAccount!!.accountName
         holder.itemBinding.tvFromAccount.text = info
         val amount =
-            cf.displayDollars(budgetRuleDetailed.budgetRule.budgetAmount)
-        Log.d(TAG, "Amount is ${budgetRuleDetailed.budgetRule.budgetAmount}")
+            cf.displayDollars(budgetRuleDetailed.budgetRule!!.budgetAmount)
+        Log.d(TAG, "Amount is ${budgetRuleDetailed.budgetRule!!.budgetAmount}")
         val frequencyTypes =
             context.resources.getStringArray(R.array.frequency_types)
         val frequencyType =
-            frequencyTypes[budgetRuleDetailed.budgetRule.budFrequencyTypeId]
+            frequencyTypes[budgetRuleDetailed.budgetRule!!.budFrequencyTypeId]
         val daysOfWeek =
             context.resources.getStringArray(R.array.days_of_week)
         val dayOfWeek =
-            daysOfWeek[budgetRuleDetailed.budgetRule.budDayOfWeekId]
+            daysOfWeek[budgetRuleDetailed.budgetRule!!.budDayOfWeekId]
         info = "$amount " + frequencyType +
-                " X " + budgetRuleDetailed.budgetRule.budFrequencyCount +
+                " X " + budgetRuleDetailed.budgetRule!!.budFrequencyCount +
                 "\nOn " + dayOfWeek
         holder.itemBinding.tvInfo.text = info
 
@@ -108,10 +108,8 @@ class BudgetRuleAdapter(
             val mTransaction = transactionDetailed
             mTransaction?.budgetRule =
                 budgetRuleDetailed.budgetRule
-            mTransaction?.toAccount =
-                budgetRuleDetailed.toAccount
-            mTransaction?.fromAccount =
-                budgetRuleDetailed.fromAccount
+            val mBudgetDetailed = budgetDetailed
+            mBudgetDetailed?.budgetRule = budgetRuleDetailed!!.budgetRule
             if (callingFragments.contains(FRAG_TRANS_ADD)) {
                 val direction =
                     BudgetRuleFragmentDirections
@@ -138,7 +136,7 @@ class BudgetRuleAdapter(
                         .actionBudgetRuleFragmentToBudgetItemAddFragment(
                             asset,
                             payDay,
-                            budgetDetailed,
+                            mBudgetDetailed,
                             fragmentChain
                         )
                 it.findNavController().navigate(direction)
@@ -148,7 +146,7 @@ class BudgetRuleAdapter(
                         .actionBudgetRuleFragmentToBudgetItemUpdateFragment(
                             asset,
                             payDay,
-                            budgetDetailed,
+                            mBudgetDetailed,
                             fragmentChain
                         )
                 it.findNavController().navigate(direction)
