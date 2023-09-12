@@ -11,10 +11,12 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -39,6 +41,7 @@ class BudgetViewFragment : Fragment(
     private lateinit var mainActivity: MainActivity
     private lateinit var budgetItemViewModel: BudgetItemViewModel
     private lateinit var accountViewModel: AccountViewModel
+    private val args: BudgetItemAddFragmentArgs by navArgs()
     private val cf = CommonFunctions()
 
     //    private lateinit var assetList: List<String>
@@ -79,6 +82,35 @@ class BudgetViewFragment : Fragment(
         fillAssetsLive()
         selectAsset()
         selectPayDay()
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(1000)
+        }
+        resumeHistory()
+    }
+
+    private fun resumeHistory() {
+        binding.apply {
+            if (args.asset != null) {
+                for (i in 0 until spAssetNames.adapter.count) {
+                    if (spAssetNames.getItemAtPosition(i).toString() ==
+                        args.asset
+                    ) {
+                        spAssetNames.setSelection(i)
+                        break
+                    }
+                }
+                if (args.payDay != null) {
+                    for (i in 0 until spPayDay.adapter.count) {
+                        if (spPayDay.getItemAtPosition(i).toString() ==
+                            args.payDay
+                        ) {
+                            spPayDay.setSelection(i)
+                            break
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun selectPayDay() {

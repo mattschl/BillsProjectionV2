@@ -95,7 +95,14 @@ class BudgetItemUpdateFragment : Fragment(
                 chooseDate()
                 false
             }
+            fabUpdateDone.setOnClickListener {
+                updateBudgetItem()
+            }
         }
+    }
+
+    private fun updateBudgetItem() {
+        TODO("Not yet implemented")
     }
 
     private fun chooseDate() {
@@ -124,12 +131,13 @@ class BudgetItemUpdateFragment : Fragment(
     }
 
     private fun chooseAccount(requestedAccount: String) {
-        val fragmentChain = TAG
+        val fragmentChain =
+            args.callingFragments + ", " + TAG
         val direction = BudgetItemUpdateFragmentDirections
             .actionBudgetItemUpdateFragmentToAccountsFragment(
                 args.asset,
                 args.payDay,
-                getCurrentBudgetItem(),
+                getCurBudgetItemDetailed(),
                 null,
                 null,
                 requestedAccount,
@@ -139,32 +147,46 @@ class BudgetItemUpdateFragment : Fragment(
     }
 
     private fun chooseBudgetRule() {
-        val fragmentChain = TAG
+        val fragmentChain =
+            args.callingFragments + ", " + TAG
         val direction = BudgetItemUpdateFragmentDirections
             .actionBudgetItemUpdateFragmentToBudgetRuleFragment(
                 args.asset,
                 args.payDay,
-                getCurrentBudgetItem(),
+                getCurBudgetItemDetailed(),
                 null,
                 fragmentChain
             )
         mView?.findNavController()?.navigate(direction)
     }
 
-    private fun getCurrentBudgetItem(): BudgetDetailed {
+    private fun getCurBudgetItemDetailed(): BudgetDetailed {
         binding.apply {
-            val budgetItem = BudgetItem(
+            val budgetItem =
+                getCurBudgetItem()
+            return BudgetDetailed(
+                budgetItem,
+                args.budgetItem!!.budgetRule,
+                args.budgetItem!!.toAccount,
+                args.budgetItem!!.fromAccount
+            )
+        }
+    }
+
+    private fun getCurBudgetItem(): BudgetItem {
+        binding.apply {
+            return BudgetItem(
                 if (args.budgetItem!!.budgetRule != null)
-                    args.budgetItem!!.budgetRule!!.ruleId else 0,
+                    args.budgetItem!!.budgetRule!!.ruleId else 0L,
                 etProjectedDate.text.toString(),
                 etProjectedDate.text.toString(),
                 spPayDays.selectedItem.toString(),
                 etBudgetItemName.text.toString(),
                 chkIsPayDay.isChecked,
                 if (args.budgetItem!!.toAccount != null)
-                    args.budgetItem!!.toAccount!!.accountId else 0,
+                    args.budgetItem!!.toAccount!!.accountId else 0L,
                 if (args.budgetItem!!.fromAccount != null)
-                    args.budgetItem!!.fromAccount!!.accountId else 0,
+                    args.budgetItem!!.fromAccount!!.accountId else 0L,
                 etProjectedAmount.text.toString().toDouble(),
                 biIsPending = false,
                 chkFixedAmount.isChecked,
@@ -175,12 +197,6 @@ class BudgetItemUpdateFragment : Fragment(
                 biIsCancelled = false,
                 biIsDeleted = false,
                 biUpdateTime = df.getCurrentTimeAsString()
-            )
-            return BudgetDetailed(
-                budgetItem,
-                args.budgetItem!!.budgetRule,
-                args.budgetItem!!.toAccount,
-                args.budgetItem!!.fromAccount
             )
         }
     }

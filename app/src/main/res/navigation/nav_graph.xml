@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/budgetViewFragment">
+    app:startDestination="@id/startFragment">
 
     <fragment
         android:id="@+id/accountsFragment"
@@ -641,4 +641,15 @@
         app:destination="@id/transactionViewFragment"
         app:popUpTo="@id/transactionViewFragment"
         app:popUpToInclusive="true" />
+    <fragment
+        android:id="@+id/startFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.start.StartFragment"
+        android:label="fragment_start"
+        tools:layout="@layout/fragment_start">
+        <action
+            android:id="@+id/action_startFragment_to_budgetViewFragment"
+            app:destination="@id/budgetViewFragment"
+            app:popUpTo="@id/budgetViewFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>

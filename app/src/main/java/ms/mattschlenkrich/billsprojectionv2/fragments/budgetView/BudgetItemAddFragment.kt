@@ -2,6 +2,7 @@ package ms.mattschlenkrich.billsprojectionv2.fragments.budgetView
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -9,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -138,24 +140,31 @@ class BudgetItemAddFragment : Fragment(
     }
 
     private fun saveBudgetItem() {
+        Log.d(TAG, "calling Fragment is ${args.callingFragments}")
         val mes = checkBudgetItem()
-        if (mes == "OK") {
-            binding.apply {
-                budgetItemViewModel.insertBudgetItem(
-                    getCurBudgetItem()
-                )
-                gotoCallingFragment()
-            }
+        if (mes == "Ok") {
+            budgetItemViewModel.insertBudgetItem(
+                getCurBudgetItem()
+            )
+            gotoCallingFragment()
+        } else {
+            Toast.makeText(
+                requireContext(),
+                mes,
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
     private fun gotoCallingFragment() {
-        if (args.callingFragments.toString().contains(
+        val fragmentChain = args.callingFragments!!
+            .replace(", $TAG", "")
+
+        if (args.callingFragments!!.contains(
                 FRAG_BUDGET_VIEW
             )
         ) {
-            val fragmentChain = args.callingFragments!!
-                .replace(",${TAG}", "")
+            Log.d(TAG, "In gotoCallingFragment: ${args.callingFragments}")
             val direction = BudgetItemAddFragmentDirections
                 .actionBudgetItemAddFragmentToBudgetViewFragment(
                     args.asset,
@@ -172,10 +181,10 @@ class BudgetItemAddFragment : Fragment(
                 if (etBudgetItemName.text.isNullOrBlank()) {
                     "     Error!!\n" +
                             "Please enter a name or description"
-                } else if (args.budgetItem!!.toAccount == null) {
+                } else if (budgetItemDetailed.toAccount == null) {
                     "     Error!!\n" +
                             "There needs to be an account money will go to."
-                } else if (args.budgetItem!!.fromAccount == null
+                } else if (budgetItemDetailed.fromAccount == null
                 ) {
                     "     Error!!\n" +
                             "There needs to be an account money will come from."
@@ -216,7 +225,8 @@ class BudgetItemAddFragment : Fragment(
     }
 
     private fun chooseAccount(requestedAccount: String) {
-        val fragmentChain = TAG
+        val fragmentChain =
+            args.callingFragments + ", " + TAG
         val direction = BudgetItemAddFragmentDirections
             .actionBudgetItemAddFragmentToAccountsFragment(
                 args.asset,
@@ -231,7 +241,8 @@ class BudgetItemAddFragment : Fragment(
     }
 
     private fun chooseBudgetRule() {
-        val fragmentChain = TAG
+        val fragmentChain =
+            args.callingFragments + ", " + TAG
         val direction = BudgetItemAddFragmentDirections
             .actionBudgetItemAddFragmentToBudgetRuleFragment(
                 args.asset,
@@ -255,14 +266,15 @@ class BudgetItemAddFragment : Fragment(
     private fun getCurBudgetItem(): BudgetItem {
         binding.apply {
             return BudgetItem(
-                args.budgetItem?.budgetRule?.ruleId ?: 0L,
+                budgetItemDetailed.budgetRule?.ruleId
+                    ?: cf.generateId(),
                 etProjectedDate.text.toString(),
                 etProjectedDate.text.toString(),
                 spPayDays.selectedItem.toString(),
                 etBudgetItemName.text.toString(),
                 chkIsPayDay.isChecked,
-                args.budgetItem?.toAccount?.accountId ?: 0L,
-                args.budgetItem?.fromAccount?.accountId ?: 0L,
+                budgetItemDetailed.toAccount?.accountId ?: 0L,
+                budgetItemDetailed.fromAccount?.accountId ?: 0L,
                 if (etProjectedAmount.text.isNotEmpty()) {
                     cf.getDoubleFromDollars(
                         etProjectedAmount.text.toString()
@@ -318,7 +330,7 @@ class BudgetItemAddFragment : Fragment(
             }
             CoroutineScope(Dispatchers.Main).launch {
                 delay(500)
-                if (args.budgetItem!!.budgetItem!!.biBudgetName.isNullOrEmpty()) {
+                if (args.budgetItem!!.budgetItem!!.biBudgetName.isEmpty()) {
                     etBudgetItemName.setText(
                         budgetRuleDetailed?.budgetRule?.budgetRuleName
                     )
