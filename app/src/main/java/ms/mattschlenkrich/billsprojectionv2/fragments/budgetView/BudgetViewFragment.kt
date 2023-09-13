@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -32,7 +31,7 @@ import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModel
 private const val TAG = FRAG_BUDGET_VIEW
 
 class BudgetViewFragment : Fragment(
-    R.layout.fragment_transaction_view
+    R.layout.fragment_budget_view
 ) {
 
     private var _binding: FragmentBudgetViewBinding? = null
@@ -82,13 +81,11 @@ class BudgetViewFragment : Fragment(
         fillAssetsLive()
         selectAsset()
         selectPayDay()
-        CoroutineScope(Dispatchers.Main).launch {
-            delay(1000)
-        }
-        resumeHistory()
+//        resumeHistory()
     }
 
     private fun resumeHistory() {
+
         binding.apply {
             if (args.asset != null) {
                 for (i in 0 until spAssetNames.adapter.count) {
@@ -111,6 +108,7 @@ class BudgetViewFragment : Fragment(
                 }
             }
         }
+
     }
 
     private fun selectPayDay() {

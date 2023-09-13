@@ -649,7 +649,6 @@
         <action
             android:id="@+id/action_startFragment_to_budgetViewFragment"
             app:destination="@id/budgetViewFragment"
-            app:popUpTo="@id/budgetViewFragment"
-            app:popUpToInclusive="true" />
+            app:popUpTo="@id/budgetViewFragment" />
     </fragment>
 </navigation>

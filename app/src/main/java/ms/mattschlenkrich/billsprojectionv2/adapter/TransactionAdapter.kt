@@ -3,13 +3,14 @@ package ms.mattschlenkrich.billsprojectionv2.adapter
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
-import ms.mattschlenkrich.billsprojectionv2.databinding.TransactionLayoutBinding
+import ms.mattschlenkrich.billsprojectionv2.databinding.TransactionLinearItemBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.transactions.TransactionViewFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import java.util.Random
@@ -27,7 +28,7 @@ class TransactionAdapter(
     private val cf = CommonFunctions()
 
     class TransactionsViewHolder(
-        val itemBinding: TransactionLayoutBinding
+        val itemBinding: TransactionLinearItemBinding
     ) : RecyclerView.ViewHolder(itemBinding.root)
 
     private val differCallBack =
@@ -68,7 +69,7 @@ class TransactionAdapter(
         viewType: Int
     ): TransactionsViewHolder {
         return TransactionsViewHolder(
-            TransactionLayoutBinding.inflate(
+            TransactionLinearItemBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent, false
             )
@@ -87,7 +88,7 @@ class TransactionAdapter(
         Log.d(TAG, "position = $position")
         val transaction =
             differ.currentList[
-                    position
+                position
             ]
         holder.itemBinding.tvTransDescription.text =
             transaction.transaction!!.transName
@@ -96,17 +97,21 @@ class TransactionAdapter(
         var info = "To: " +
                 transaction.toAccount!!
                     .accountName
+        holder.itemBinding.tvTransAmount.text =
+            cf.displayDollars(transaction.transaction.transAmount)
         holder.itemBinding.tvToAccount.text = info
         info = "From: " +
                 transaction.fromAccount!!
                     .accountName
         holder.itemBinding.tvFromAccount.text = info
-        info = cf.displayDollars(
-            transaction.transaction.transAmount
-        )
-        info += "\nNote: " +
-                transaction.transaction.transNote
-        holder.itemBinding.tvTransInfo.text = info
+        if (transaction.transaction.transNote.isEmpty()) {
+            holder.itemBinding.tvTransInfo.visibility = View.GONE
+        } else {
+            info = "Note: " +
+                    transaction.transaction.transNote
+            holder.itemBinding.tvTransInfo.text = info
+            holder.itemBinding.tvTransInfo.visibility = View.VISIBLE
+        }
         val random = Random()
         val color = Color.argb(
             255,

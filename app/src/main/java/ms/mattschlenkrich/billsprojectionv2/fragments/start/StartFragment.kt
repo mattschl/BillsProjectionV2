@@ -42,7 +42,7 @@ class StartFragment : Fragment(
                     .actionStartFragmentToBudgetViewFragment(
                         null,
                         null,
-                        null
+                        null,
                     )
             mView!!.findNavController().navigate(direction)
         }
