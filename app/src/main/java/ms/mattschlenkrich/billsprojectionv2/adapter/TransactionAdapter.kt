@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.databinding.TransactionLinearItemBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.transactions.TransactionViewFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
@@ -26,6 +27,7 @@ class TransactionAdapter(
 ) : RecyclerView.Adapter<TransactionAdapter.TransactionsViewHolder>() {
 
     private val cf = CommonFunctions()
+    private val df = DateFunctions()
 
     class TransactionsViewHolder(
         val itemBinding: TransactionLinearItemBinding
@@ -93,7 +95,7 @@ class TransactionAdapter(
         holder.itemBinding.tvTransDescription.text =
             transaction.transaction!!.transName
         holder.itemBinding.tvDate.text =
-            transaction.transaction.transDate
+            df.getDisplayDate(transaction.transaction.transDate)
         var info = "To: " +
                 transaction.toAccount!!
                     .accountName

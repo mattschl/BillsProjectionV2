@@ -129,7 +129,9 @@ interface TransactionDao {
                 "fromAccount.$ACCOUNT_ID " +
                 "WHERE $TABLE_TRANSACTION.$TRANS_IS_DELETED = 0 " +
                 "AND ($TABLE_TRANSACTION.$TRANSACTION_NAME LIKE :query " +
-                "OR $TABLE_TRANSACTION.$TRANSACTION_NOTE LIKE :query) " +
+                "OR $TABLE_TRANSACTION.$TRANSACTION_NOTE LIKE :query " +
+                "OR toAccount.accountName LIKE :query " +
+                "OR fromAccount.accountName LIKE :query) " +
                 "ORDER BY $TABLE_TRANSACTION.$TRANSACTION_DATE DESC, " +
                 "$TABLE_TRANSACTION.$TRANS_UPDATE_TIME DESC;"
     )
