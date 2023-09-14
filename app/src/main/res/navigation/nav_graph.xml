@@ -553,7 +553,7 @@
             app:argType="string"
             app:nullable="true" />
         <argument
-            android:name="callingFragment"
+            android:name="callingFragments"
             app:argType="string"
             app:nullable="true" />
     </fragment>

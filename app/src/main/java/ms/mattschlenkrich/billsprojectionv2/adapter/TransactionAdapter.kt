@@ -1,5 +1,7 @@
 package ms.mattschlenkrich.billsprojectionv2.adapter
 
+import android.app.AlertDialog
+import android.content.Context
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,11 +11,16 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.databinding.TransactionLinearItemBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.transactions.TransactionViewFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.Transactions
 import java.util.Random
 
 private const val TAG = "TransactionAdapter"
@@ -22,12 +29,18 @@ class TransactionAdapter(
     private val asset: String?,
     private val payDay: String?,
 //    private val transaction: TransactionDetailed?,
-//    private val context: Context,
+    private val context: Context,
+    private val mainActivity: MainActivity,
     private val callingFragment: String,
 ) : RecyclerView.Adapter<TransactionAdapter.TransactionsViewHolder>() {
 
     private val cf = CommonFunctions()
     private val df = DateFunctions()
+    private val transactionViewModel =
+        mainActivity.transactionViewModel
+    private val accountViewModel =
+        mainActivity.accountViewModel
+
 
     class TransactionsViewHolder(
         val itemBinding: TransactionLinearItemBinding
@@ -92,19 +105,39 @@ class TransactionAdapter(
             differ.currentList[
                 position
             ]
-        holder.itemBinding.tvTransDescription.text =
-            transaction.transaction!!.transName
         holder.itemBinding.tvDate.text =
-            df.getDisplayDate(transaction.transaction.transDate)
+            df.getDisplayDate(transaction.transaction!!.transDate)
+        holder.itemBinding.tvTransDescription.text =
+            transaction.transaction.transName
+        holder.itemBinding.tvTransAmount.text =
+            cf.displayDollars(transaction.transaction.transAmount)
         var info = "To: " +
                 transaction.toAccount!!
                     .accountName
-        holder.itemBinding.tvTransAmount.text =
-            cf.displayDollars(transaction.transaction.transAmount)
+        if (transaction.transaction.transToAccountPending) {
+            info += " *PENDING*"
+            holder.itemBinding.tvToAccount.setTextColor(
+                Color.RED
+            )
+        } else {
+            holder.itemBinding.tvToAccount.setTextColor(
+                Color.BLACK
+            )
+        }
         holder.itemBinding.tvToAccount.text = info
         info = "From: " +
                 transaction.fromAccount!!
                     .accountName
+        if (transaction.transaction.transFromAccountPending) {
+            info += " *PENDING*"
+            holder.itemBinding.tvFromAccount.setTextColor(
+                Color.RED
+            )
+        } else {
+            holder.itemBinding.tvFromAccount.setTextColor(
+                Color.BLACK
+            )
+        }
         holder.itemBinding.tvFromAccount.text = info
         if (transaction.transaction.transNote.isEmpty()) {
             holder.itemBinding.tvTransInfo.visibility = View.GONE
@@ -123,16 +156,98 @@ class TransactionAdapter(
         )
         holder.itemBinding.ibColor.setBackgroundColor(color)
 
-        holder.itemView.setOnLongClickListener {
-            val direction = TransactionViewFragmentDirections
-                .actionTransactionViewFragmentToTransactionUpdateFragment(
-                    asset,
-                    payDay,
-                    transaction,
-                    callingFragment
+        holder.itemView.setOnClickListener {
+            AlertDialog.Builder(context)
+                .setTitle(
+                    "Choose action for " +
+                            transaction.transaction.transName
                 )
-            it.findNavController().navigate(direction)
-            false
+                .setItems(
+                    arrayOf(
+                        "Edit this transaction",
+                        "Delete this transaction"
+                    )
+                ) { _, pos ->
+                    when (pos) {
+                        0 -> {
+                            val direction = TransactionViewFragmentDirections
+                                .actionTransactionViewFragmentToTransactionUpdateFragment(
+                                    asset,
+                                    payDay,
+                                    transaction,
+                                    callingFragment
+                                )
+                            it.findNavController().navigate(direction)
+                        }
+
+                        1 -> {
+                            AlertDialog.Builder(context)
+                                .setTitle(
+                                    "Are you sure you want to delete " +
+                                            transaction.transaction.transName
+                                )
+                                .setPositiveButton("Delete") { _, _ ->
+                                    deleteTransaction(transaction.transaction)
+                                }
+                                .setNegativeButton("Cancel", null)
+                                .show()
+                        }
+                    }
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        }
+    }
+
+    private fun deleteTransaction(transaction: Transactions) {
+        CoroutineScope(Dispatchers.IO).launch {
+            transactionViewModel.deleteTransaction(
+                transaction.transId,
+                df.getCurrentTimeAsString()
+            )
+            val oldTransaction =
+                transactionViewModel.getTransactionFull(
+                    transaction.transId,
+                    transaction.transToAccountId,
+                    transaction.transFromAccountId
+                )
+            if (!oldTransaction.transaction.transToAccountPending) {
+                if (oldTransaction.toAccountAndType.keepTotals) {
+                    transactionViewModel.updateAccountBalance(
+                        oldTransaction.toAccountAndType.accountBalance -
+                                oldTransaction.transaction.transAmount,
+                        oldTransaction.transaction.transToAccountId,
+                        df.getCurrentTimeAsString()
+                    )
+                }
+                if (oldTransaction.toAccountAndType.tallyOwing) {
+                    transactionViewModel.updateAccountOwing(
+                        oldTransaction.toAccountAndType.accountOwing +
+                                oldTransaction.transaction.transAmount,
+                        oldTransaction.transaction.transToAccountId,
+                        df.getCurrentTimeAsString()
+                    )
+                }
+                if (!oldTransaction.transaction.transFromAccountPending) {
+                    if (oldTransaction.fromAccountAndType.keepTotals) {
+                        transactionViewModel.updateAccountBalance(
+                            oldTransaction.fromAccountAndType.accountBalance +
+                                    oldTransaction.transaction.transAmount,
+                            oldTransaction.transaction.transFromAccountId,
+                            df.getCurrentTimeAsString()
+                        )
+                    }
+                    if (oldTransaction.fromAccountAndType.tallyOwing) {
+                        transactionViewModel.updateAccountOwing(
+                            oldTransaction.fromAccountAndType.accountOwing -
+                                    oldTransaction.transaction.transAmount,
+                            oldTransaction.transaction.transFromAccountId,
+                            df.getCurrentTimeAsString()
+                        )
+
+                    }
+                }
+            }
         }
     }
 }

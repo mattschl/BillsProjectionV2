@@ -74,4 +74,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
     // Annotation processor
     ksp("androidx.room:room-compiler:$room_version")
+
+    def material3_version = "1.1.1"
+
+    implementation "androidx.compose.material3:material3:$material3_version"
 }

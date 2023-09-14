@@ -40,7 +40,7 @@ class BudgetViewFragment : Fragment(
     private lateinit var mainActivity: MainActivity
     private lateinit var budgetItemViewModel: BudgetItemViewModel
     private lateinit var accountViewModel: AccountViewModel
-    private val args: BudgetItemAddFragmentArgs by navArgs()
+    private val args: BudgetViewFragmentArgs by navArgs()
     private val cf = CommonFunctions()
 
     //    private lateinit var assetList: List<String>
@@ -85,25 +85,23 @@ class BudgetViewFragment : Fragment(
     }
 
     private fun resumeHistory() {
-
         binding.apply {
-            if (args.asset != null) {
-                for (i in 0 until spAssetNames.adapter.count) {
-                    if (spAssetNames.getItemAtPosition(i).toString() ==
-                        args.asset
-                    ) {
-                        spAssetNames.setSelection(i)
-                        break
-                    }
+            for (i in 0 until spAssetNames.adapter.count) {
+                if (spAssetNames.getItemAtPosition(i).toString() ==
+                    args.asset
+                ) {
+                    spAssetNames.setSelection(i)
+                    break
                 }
-                if (args.payDay != null) {
-                    for (i in 0 until spPayDay.adapter.count) {
-                        if (spPayDay.getItemAtPosition(i).toString() ==
-                            args.payDay
-                        ) {
-                            spPayDay.setSelection(i)
-                            break
-                        }
+            }
+
+            if (args.payDay != null) {
+                for (i in 0 until spPayDay.adapter.count) {
+                    if (spPayDay.getItemAtPosition(i).toString() ==
+                        args.payDay
+                    ) {
+                        spPayDay.setSelection(i)
+                        break
                     }
                 }
             }
@@ -351,8 +349,21 @@ class BudgetViewFragment : Fragment(
             assetList?.forEach {
                 assetAdapter.add(it)
             }
+
         }
-        binding.spAssetNames.adapter = assetAdapter
+        binding.apply {
+            spAssetNames.adapter = assetAdapter
+            if (args.asset != null) {
+                for (i in 0 until spAssetNames.adapter.count) {
+                    if (spAssetNames.getItemAtPosition(i).toString() ==
+                        args.asset
+                    ) {
+                        spAssetNames.setSelection(i)
+                        break
+                    }
+                }
+            }
+        }
     }
 
     private fun addAction() {

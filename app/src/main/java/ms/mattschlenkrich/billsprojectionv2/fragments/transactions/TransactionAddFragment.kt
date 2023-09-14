@@ -367,7 +367,7 @@ class TransactionAddFragment :
 
     private fun gotoCallingFragment() {
         val fragmentChain = args.callingFragments!!
-            .replace(",$TAG", "")
+            .replace(", $TAG", "")
         if (args.callingFragments!!.contains(FRAG_TRANSACTIONS)) {
             val direction =
                 TransactionAddFragmentDirections
@@ -402,7 +402,11 @@ class TransactionAddFragment :
     private fun checkTransaction(): String {
         binding.apply {
             val amount =
-                cf.getDoubleFromDollars(etAmount.text.toString())
+                if (etAmount.text.isNotEmpty()) {
+                    cf.getDoubleFromDollars(etAmount.text.toString())
+                } else {
+                    0.0
+                }
             val errorMes =
                 if (etDescription.text.isNullOrBlank()
                 ) {

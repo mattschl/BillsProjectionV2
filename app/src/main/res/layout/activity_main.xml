@@ -15,7 +15,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="0dp"
             android:layout_marginEnd="0dp"
-            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -37,7 +36,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:navGraph="@navigation/nav_graph"
-            tools:layout="@layout/fragment_transaction_view" />
+            tools:layout="@layout/fragment_start" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

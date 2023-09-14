@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import ms.mattschlenkrich.billsprojectionv2.dataBase.BillsDatabase
 import ms.mattschlenkrich.billsprojectionv2.databinding.ActivityMainBinding
 import ms.mattschlenkrich.billsprojectionv2.projections.UpdateBudgetPredictions
@@ -50,10 +51,10 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "MainActivity is started")
         addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menu.add(R.string.budget_view)
-                menu.add(R.string.transactions)
-                menu.add(R.string.accounts)
-                menu.add(R.string.budget_rules)
+//                menu.add(R.string.budget_view)
+//                menu.add(R.string.transactions)
+//                menu.add(R.string.accounts)
+//                menu.add(R.string.budget_rules)
                 menu.add(getString(R.string.update_budget_predictions))
                 menu.add("Bills Projection ${BuildConfig.VERSION_NAME}")
             }
@@ -61,61 +62,25 @@ class MainActivity : AppCompatActivity() {
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 when (menuItem.title) {
 
-                    resources.getString(R.string.budget_view) -> {
-                        val direction =
-                            NavGraphDirections.actionGlobalBudgetViewFragment(
-                                null,
-                                null,
-                                null
-                            )
-                        findNavController(R.id.fragment_container_view)
-                            .navigate(direction)
-                        return true
-                    }
-
-                    resources.getString(R.string.transactions) -> {
-                        val direction =
-                            NavGraphDirections.actionGlobalTransactionViewFragment(
-                                null,
-                                null,
-                                null,
-                                null
-                            )
-                        findNavController(R.id.fragment_container_view)
-                            .navigate(direction)
-                        return true
-                    }
-
-                    resources.getString(R.string.accounts) -> {
-                        val direction =
-                            NavGraphDirections.actionGlobalAccountsFragment(
-                                null,
-                                null,
-                                null,
-                                null,
-                                null,
-                                null,
-                                null
-                            )
-
-                        findNavController(R.id.fragment_container_view)
-                            .navigate(direction)
-                        return true
-                    }
-
-                    resources.getString(R.string.budget_rules) -> {
-                        val direction =
-                            NavGraphDirections.actionGlobalBudgetRuleFragment(
-                                null,
-                                null,
-                                null,
-                                null,
-                                null
-                            )
-                        findNavController(R.id.fragment_container_view)
-                            .navigate(direction)
-                        return true
-                    }
+//                    resources.getString(R.string.budget_view) -> {
+//                        gotoBudgetView()
+//                        return true
+//                    }
+//
+//                    resources.getString(R.string.transactions) -> {
+//                        gotoTransactions()
+//                        return true
+//                    }
+//
+//                    resources.getString(R.string.accounts) -> {
+//                        gotoAccounts()
+//                        return true
+//                    }
+//
+//                    resources.getString(R.string.budget_rules) -> {
+//                        gotoBudgetRules()
+//                        return true
+//                    }
 
                     getString(R.string.update_budget_predictions) -> {
                         updateBudget()
@@ -129,11 +94,93 @@ class MainActivity : AppCompatActivity() {
 
             }
         })
+        val bottomNav =
+            findViewById<BottomNavigationView>(R.id.bottom_nav_view)
+        bottomNav.setOnItemSelectedListener {
+            when (it.itemId) {
+                R.id.navigation_budget_view -> {
+                    gotoBudgetView()
+                    true
+                }
+
+                R.id.navigation_accounts -> {
+                    gotoAccounts()
+                    true
+                }
+
+                R.id.navigation_transactions -> {
+                    gotoTransactions()
+                    true
+                }
+
+                R.id.navigation_budget_rules -> {
+                    gotoBudgetRules()
+                    true
+                }
+
+                else -> {
+                    false
+                }
+            }
+        }
+
         setupAccountViewModel()
         setupBudgetRuleViewModel()
         setupTransactionViewModel()
         setupBudgetItemViewModel()
 
+    }
+
+    private fun gotoBudgetView() {
+        val direction =
+            NavGraphDirections.actionGlobalBudgetViewFragment(
+                null,
+                null,
+                null
+            )
+        findNavController(R.id.fragment_container_view)
+            .navigate(direction)
+    }
+
+    private fun gotoBudgetRules() {
+        val direction =
+            NavGraphDirections.actionGlobalBudgetRuleFragment(
+                null,
+                null,
+                null,
+                null,
+                null
+            )
+        findNavController(R.id.fragment_container_view)
+            .navigate(direction)
+    }
+
+    private fun gotoAccounts() {
+        val direction =
+            NavGraphDirections.actionGlobalAccountsFragment(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+            )
+
+        findNavController(R.id.fragment_container_view)
+            .navigate(direction)
+    }
+
+    private fun gotoTransactions() {
+        val direction =
+            NavGraphDirections.actionGlobalTransactionViewFragment(
+                null,
+                null,
+                null,
+                null
+            )
+        findNavController(R.id.fragment_container_view)
+            .navigate(direction)
     }
 
     private fun updateBudget() {

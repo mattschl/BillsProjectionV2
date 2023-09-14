@@ -75,6 +75,8 @@ class TransactionViewFragment :
         transactionAdapter = TransactionAdapter(
             args.asset,
             args.payDay,
+            mView!!.context,
+            mainActivity,
             TAG
         )
 
