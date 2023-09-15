@@ -1,0 +1,608 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/startFragment">
+
+    <fragment
+        android:id="@+id/accountsFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountsFragment"
+        android:label="AccountsFragment"
+        tools:layout="@layout/fragment_accounts">
+        <action
+            android:id="@+id/action_accountsFragment_to_accountUpdateFragment"
+            app:destination="@id/accountUpdateFragment" />
+        <action
+            android:id="@+id/action_accountsFragment_to_accountAddFragment"
+            app:destination="@id/accountAddFragment" />
+        <action
+            android:id="@+id/action_accountsFragment_to_budgetRuleUpdateFragment"
+            app:destination="@id/budgetRuleUpdateFragment"
+            app:popUpTo="@id/budgetRuleUpdateFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_accountsFragment_to_transactionUpdateFragment"
+            app:destination="@id/transactionUpdateFragment" />
+        <action
+            android:id="@+id/action_accountsFragment_to_transactionAddFragment"
+            app:destination="@id/transactionAddFragment" />
+        <action
+            android:id="@+id/action_accountsFragment_to_budgetItemAddFragment"
+            app:destination="@id/budgetItemAddFragment" />
+        <action
+            android:id="@+id/action_accountsFragment_to_budgetItemUpdateFragment"
+            app:destination="@id/budgetItemUpdateFragment" />
+        <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="budgetItem"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="transaction"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="budgetRuleDetailed"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="requestedAccount"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="callingFragments"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/accountUpdateFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountUpdateFragment"
+        android:label="AccountUpdateFragment"
+        tools:layout="@layout/fragment_account_update">
+        <action
+            android:id="@+id/action_accountUpdateFragment_to_accountsFragment"
+            app:destination="@id/accountsFragment"
+            app:popUpTo="@id/accountsFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_accountUpdateFragment_to_accountTypesFragment"
+            app:destination="@id/accountTypesFragment" />
+        <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="budgetItem"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="transaction"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="budgetRuleDetailed"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="account"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.Account"
+            app:nullable="true" />
+        <argument
+            android:name="accountType"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.AccountType"
+            app:nullable="true" />
+        <argument
+            android:name="requestedAccount"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="callingFragments"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/accountAddFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountAddFragment"
+        android:label="AccountAddFragment"
+        tools:layout="@layout/fragment_account_add">
+        <action
+            android:id="@+id/action_accountAddFragment_to_accountsFragment"
+            app:destination="@id/accountsFragment"
+            app:popUpTo="@id/accountsFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_accountAddFragment_to_accountTypesFragment"
+            app:destination="@id/accountTypesFragment" />
+        <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="budgetItem"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="transaction"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="budgetRuleDetailed"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="account"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.Account"
+            app:nullable="true" />
+        <argument
+            android:name="accountType"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.AccountType"
+            app:nullable="true" />
+        <argument
+            android:name="requestedAccount"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="callingFragments"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/accountTypesFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountTypesFragment"
+        android:label="AccountTypesFragment"
+        tools:layout="@layout/fragment_account_types">
+        <action
+            android:id="@+id/action_accountTypesFragment_to_accountTypeAddFragment"
+            app:destination="@id/accountTypeAddFragment" />
+        <action
+            android:id="@+id/action_accountTypesFragment_to_accountTypeUpdateFragment"
+            app:destination="@id/accountTypeUpdateFragment" />
+        <action
+            android:id="@+id/action_accountTypesFragment_to_accountUpdateFragment"
+            app:destination="@id/accountUpdateFragment"
+            app:popUpTo="@id/accountUpdateFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_accountTypesFragment_to_accountAddFragment"
+            app:destination="@id/accountAddFragment"
+            app:popUpTo="@id/accountAddFragment"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="budgetItem"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="transaction"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="budgetRuleDetailed"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="account"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.Account"
+            app:nullable="true" />
+        <argument
+            android:name="requestedAccount"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="callingFragments"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/accountTypeAddFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountTypeAddFragment"
+        android:label="AccountTypeAddFragment"
+        tools:layout="@layout/fragment_account_type_add">
+        <action
+            android:id="@+id/action_accountTypeAddFragment_to_accountTypesFragment"
+            app:destination="@id/accountTypesFragment"
+            app:popUpTo="@id/accountTypesFragment"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="budgetItem"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="transaction"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="budgetRuleDetailed"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="account"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.Account"
+            app:nullable="true" />
+        <argument
+            android:name="requestedAccount"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="callingFragments"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/accountTypeUpdateFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountTypeUpdateFragment"
+        android:label="AccountTypeUpdateFragment"
+        tools:layout="@layout/fragment_account_type_update">
+        <action
+            android:id="@+id/action_accountTypeUpdateFragment_to_accountTypesFragment"
+            app:destination="@id/accountTypesFragment"
+            app:popUpTo="@id/accountTypesFragment"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="budgetItem"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="transaction"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="budgetRuleDetailed"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="account"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.Account"
+            app:nullable="true" />
+        <argument
+            android:name="accountType"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.AccountType"
+            app:nullable="true" />
+        <argument
+            android:name="requestedAccount"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="callingFragments"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/budgetRuleFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules.BudgetRuleFragment"
+        android:label="BudgetRuleFragment"
+        tools:layout="@layout/fragment_budget_rule">
+        <action
+            android:id="@+id/action_budgetRuleFragment_to_budgetRuleUpdateFragment"
+            app:destination="@id/budgetRuleUpdateFragment" />
+        <action
+            android:id="@+id/action_budgetRuleFragment_to_transactionUpdateFragment"
+            app:destination="@id/transactionUpdateFragment"
+            app:popUpTo="@id/transactionUpdateFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_budgetRuleFragment_to_transactionAddFragment"
+            app:destination="@id/transactionAddFragment"
+            app:popUpTo="@id/transactionAddFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_budgetRuleFragment_to_budgetItemAddFragment"
+            app:destination="@id/budgetItemAddFragment" />
+        <action
+            android:id="@+id/action_budgetRuleFragment_to_budgetItemUpdateFragment"
+            app:destination="@id/budgetItemUpdateFragment" />
+        <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="budgetItem"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="transaction"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="callingFragments"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/budgetRuleUpdateFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules.BudgetRuleUpdateFragment"
+        android:label="fragment_budget_rule_update"
+        tools:layout="@layout/fragment_budget_rule_update">
+        <action
+            android:id="@+id/action_budgetRuleUpdateFragment_to_budgetRuleFragment"
+            app:destination="@id/budgetRuleFragment"
+            app:popUpTo="@id/budgetRuleFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_budgetRuleUpdateFragment_to_accountsFragment"
+            app:destination="@id/accountsFragment" />
+        <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="budgetItem"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="transaction"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="budgetRuleDetailed"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="callingFragments"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/transactionViewFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.transactions.TransactionViewFragment"
+        android:label="fragment_transaction_view"
+        tools:layout="@layout/fragment_transaction_view">
+        <action
+            android:id="@+id/action_transactionViewFragment_to_transactionUpdateFragment"
+            app:destination="@id/transactionUpdateFragment" />
+        <action
+            android:id="@+id/action_transactionViewFragment_to_transactionAddFragment"
+            app:destination="@id/transactionAddFragment" />
+        <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="transaction"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="callingFragments"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/transactionAddFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.transactions.TransactionAddFragment"
+        android:label="fragment_transaction_add"
+        tools:layout="@layout/fragment_transaction_add">
+        <action
+            android:id="@+id/action_transactionAddFragment_to_transactionViewFragment"
+            app:destination="@id/transactionViewFragment"
+            app:popUpTo="@id/transactionViewFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_transactionAddFragment_to_budgetRuleFragment"
+            app:destination="@id/budgetRuleFragment" />
+        <action
+            android:id="@+id/action_transactionAddFragment_to_accountsFragment"
+            app:destination="@id/accountsFragment" />
+        <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="transaction"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="callingFragments"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_transactionAddFragment_to_budgetViewFragment"
+            app:destination="@id/budgetViewFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/transactionUpdateFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.transactions.TransactionUpdateFragment"
+        android:label="fragment_transaction_update"
+        tools:layout="@layout/fragment_transaction_update">
+        <action
+            android:id="@+id/action_transactionUpdateFragment_to_transactionViewFragment"
+            app:destination="@id/transactionViewFragment" />
+        <action
+            android:id="@+id/action_transactionUpdateFragment_to_budgetRuleFragment"
+            app:destination="@id/budgetRuleFragment" />
+        <action
+            android:id="@+id/action_transactionUpdateFragment_to_accountsFragment"
+            app:destination="@id/accountsFragment" />
+        <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="transaction"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="callingFragments"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/budgetViewFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetViewFragment"
+        android:label="fragment_budget_view"
+        tools:layout="@layout/fragment_budget_view">
+        <action
+            android:id="@+id/action_budgetViewFragment_to_budgetItemAddFragment"
+            app:destination="@id/budgetItemAddFragment" />
+        <action
+            android:id="@+id/action_budgetViewFragment_to_budgetItemUpdateFragment"
+            app:destination="@id/budgetItemUpdateFragment" />
+        <action
+            android:id="@+id/action_budgetViewFragment_to_transactionAddFragment"
+            app:destination="@id/transactionAddFragment" />
+        <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="callingFragments"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/budgetItemAddFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetItemAddFragment"
+        android:label="fragment_budget_item_add"
+        tools:layout="@layout/fragment_budget_item_add">
+        <action
+            android:id="@+id/action_budgetItemAddFragment_to_budgetViewFragment"
+            app:destination="@id/budgetViewFragment"
+            app:popUpTo="@id/budgetViewFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_budgetItemAddFragment_to_accountsFragment"
+            app:destination="@id/accountsFragment" />
+        <action
+            android:id="@+id/action_budgetItemAddFragment_to_budgetRuleFragment"
+            app:destination="@id/budgetRuleFragment" />
+        <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="budgetItem"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="callingFragments"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/budgetItemUpdateFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetItemUpdateFragment"
+        android:label="fragment_budget_item_update"
+        tools:layout="@layout/fragment_budget_item_update">
+        <action
+            android:id="@+id/action_budgetItemUpdateFragment_to_budgetViewFragment"
+            app:destination="@id/budgetViewFragment"
+            app:popUpTo="@id/budgetViewFragment" />
+        <action
+            android:id="@+id/action_budgetItemUpdateFragment_to_accountsFragment"
+            app:destination="@id/accountsFragment" />
+        <action
+            android:id="@+id/action_budgetItemUpdateFragment_to_budgetRuleFragment"
+            app:destination="@id/budgetRuleFragment" />
+        <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="budgetItem"
+            app:argType="ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed"
+            app:nullable="true" />
+        <argument
+            android:name="callingFragments"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_budgetViewFragment"
+        app:destination="@id/budgetViewFragment"
+        app:popUpToInclusive="true" />
+    <action
+        android:id="@+id/action_global_budgetRuleFragment"
+        app:destination="@id/budgetRuleFragment"
+        app:popUpTo="@id/budgetRuleFragment"
+        app:popUpToInclusive="true" />
+    <action
+        android:id="@+id/action_global_accountsFragment"
+        app:destination="@id/accountsFragment"
+        app:popUpTo="@id/accountsFragment"
+        app:popUpToInclusive="true" />
+    <action
+        android:id="@+id/action_global_transactionViewFragment"
+        app:destination="@id/transactionViewFragment"
+        app:popUpTo="@id/transactionViewFragment"
+        app:popUpToInclusive="true" />
+    <fragment
+        android:id="@+id/startFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.start.StartFragment"
+        android:label="fragment_start"
+        tools:layout="@layout/fragment_start">
+        <action
+            android:id="@+id/action_startFragment_to_budgetViewFragment"
+            app:destination="@id/budgetViewFragment"
+            app:popUpTo="@id/budgetViewFragment" />
+    </fragment>
+</navigation>
