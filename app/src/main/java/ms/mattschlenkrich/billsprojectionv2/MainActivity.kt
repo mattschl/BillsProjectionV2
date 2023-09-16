@@ -39,8 +39,6 @@ class MainActivity : AppCompatActivity() {
     lateinit var transactionViewModel: TransactionViewModel
     lateinit var budgetItemViewModel: BudgetItemViewModel
     lateinit var mView: View
-//    private val timeFormatter: SimpleDateFormat =
-//        SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,44 +49,20 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "MainActivity is started")
         addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-//                menu.add(R.string.budget_view)
-//                menu.add(R.string.transactions)
-//                menu.add(R.string.accounts)
-//                menu.add(R.string.budget_rules)
                 menu.add(getString(R.string.update_budget_predictions))
                 menu.add("Bills Projection ${BuildConfig.VERSION_NAME}")
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                when (menuItem.title) {
-
-//                    resources.getString(R.string.budget_view) -> {
-//                        gotoBudgetView()
-//                        return true
-//                    }
-//
-//                    resources.getString(R.string.transactions) -> {
-//                        gotoTransactions()
-//                        return true
-//                    }
-//
-//                    resources.getString(R.string.accounts) -> {
-//                        gotoAccounts()
-//                        return true
-//                    }
-//
-//                    resources.getString(R.string.budget_rules) -> {
-//                        gotoBudgetRules()
-//                        return true
-//                    }
+                return when (menuItem.title) {
 
                     getString(R.string.update_budget_predictions) -> {
                         updateBudget()
-                        return true
+                        true
                     }
 
                     else -> {
-                        return false
+                        false
                     }
                 }
 

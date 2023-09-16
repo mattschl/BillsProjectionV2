@@ -10,6 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import ms.mattschlenkrich.billsprojectionv2.NavGraphDirections
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentStartBinding
 
@@ -38,12 +39,8 @@ class StartFragment : Fragment(
         CoroutineScope(Dispatchers.Main).launch {
             delay(2000)
             val direction =
-                StartFragmentDirections
-                    .actionStartFragmentToBudgetViewFragment(
-                        null,
-                        null,
-                        null
-                    )
+                NavGraphDirections
+                    .actionGlobalBudgetViewFragment()
             mView!!.findNavController().navigate(direction)
         }
     }

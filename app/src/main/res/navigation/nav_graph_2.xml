@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_2"
+    app:startDestination="@id/startFragment2">
+
+    <fragment
+        android:id="@+id/startFragment2"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.start.StartFragment"
+        android:label="fragment_start"
+        tools:layout="@layout/fragment_start">
+        <action
+            android:id="@+id/action_startFragment2_to_budgetViewFragment2"
+            app:destination="@id/budgetViewFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/budgetViewFragment2"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetViewFragment"
+        android:label="fragment_budget_view"
+        tools:layout="@layout/fragment_budget_view">
+        <argument
+            android:name="asset"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="payDay"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="callingFragments"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+</navigation>

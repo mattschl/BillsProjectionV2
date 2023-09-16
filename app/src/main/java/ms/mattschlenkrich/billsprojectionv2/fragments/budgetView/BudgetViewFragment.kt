@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -81,27 +82,32 @@ class BudgetViewFragment : Fragment(
         fillAssetsLive()
         selectAsset()
         selectPayDay()
-//        resumeHistory()
+        resumeHistory()
     }
 
     private fun resumeHistory() {
         binding.apply {
-            for (i in 0 until spAssetNames.adapter.count) {
-                if (spAssetNames.getItemAtPosition(i).toString() ==
-                    args.asset
-                ) {
-                    spAssetNames.setSelection(i)
-                    break
-                }
-            }
-
-            if (args.payDay != null) {
-                for (i in 0 until spPayDay.adapter.count) {
-                    if (spPayDay.getItemAtPosition(i).toString() ==
-                        args.payDay
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(500)
+                for (i in 0 until spAssetNames.adapter.count) {
+                    if (spAssetNames.getItemAtPosition(i).toString() ==
+                        args.asset
                     ) {
-                        spPayDay.setSelection(i)
+                        spAssetNames.setSelection(i)
                         break
+                    }
+                }
+                delay(500)
+                if (args.payDay != null &&
+                    spPayDay.adapter != null
+                ) {
+                    for (i in 0 until spPayDay.adapter.count) {
+                        if (spPayDay.getItemAtPosition(i).toString() ==
+                            args.payDay
+                        ) {
+                            spPayDay.setSelection(i)
+                            break
+                        }
                     }
                 }
             }

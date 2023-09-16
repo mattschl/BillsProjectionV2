@@ -124,4 +124,10 @@ interface AccountDao {
     )
     fun getAccountWithType(accountName: String): AccountWithType
 
+    @Query(
+        "SELECT * FROM $TABLE_ACCOUNTS " +
+                "WHERE $ACCOUNT_ID = :accountId"
+    )
+    fun getAccount(accountId: Long): Account
+
 }

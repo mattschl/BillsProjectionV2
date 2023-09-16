@@ -547,14 +547,17 @@
         <argument
             android:name="asset"
             app:argType="string"
+            android:defaultValue="@null"
             app:nullable="true" />
         <argument
             android:name="payDay"
             app:argType="string"
+            android:defaultValue="@null"
             app:nullable="true" />
         <argument
             android:name="callingFragments"
             app:argType="string"
+            android:defaultValue="@null"
             app:nullable="true" />
     </fragment>
     <fragment

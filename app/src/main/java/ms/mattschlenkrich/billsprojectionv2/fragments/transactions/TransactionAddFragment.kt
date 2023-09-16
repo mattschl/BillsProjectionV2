@@ -20,6 +20,7 @@ import androidx.navigation.fragment.navArgs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -32,6 +33,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionAddBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
+import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.Transactions
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
@@ -52,6 +54,9 @@ class TransactionAddFragment :
     private val args: TransactionAddFragmentArgs by navArgs()
 
     private var mToAccount: Account? = null
+    private var mFromAccount: Account? = null
+    private var mToAccountWithType: AccountWithType? = null
+    private var mFromAccountWithType: AccountWithType? = null
 
     //    private var mBudgetRule: BudgetRule? = null
     private val cf = CommonFunctions()
@@ -265,17 +270,113 @@ class TransactionAddFragment :
                     args.transaction!!.budgetRule = args.transaction!!.budgetRule!!
                     tvBudgetRule.text =
                         args.transaction!!.budgetRule!!.budgetRuleName
+                    if (args.transaction!!.toAccount == null) {
+                        if (args.transaction!!.budgetRule!!.budToAccountId != 0L) {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val toAccount =
+                                    async {
+                                        accountViewModel.getAccount(
+                                            args.transaction!!.budgetRule!!.budToAccountId
+                                        )
+                                    }
+                                mToAccount = toAccount.await()
+                                val toAccountWithType =
+                                    async {
+                                        accountViewModel.getAccountWithType(
+                                            args.transaction!!.budgetRule!!.budToAccountId
+                                        )
+                                    }
+                                mToAccountWithType = toAccountWithType.await()
+                            }
+                            CoroutineScope(Dispatchers.Main).launch {
+                                delay(1000)
+                                tvToAccount.text = mToAccount?.accountName
+                                if (mToAccountWithType?.accountType?.allowPending == true) {
+                                    chkToAccPending.visibility = View.VISIBLE
+                                } else {
+                                    chkToAccPending.visibility = View.GONE
+                                }
+                            }
+                        }
+                    }
+                    if (args.transaction!!.fromAccount == null) {
+                        if (args.transaction!!.budgetRule!!.budFromAccountId != 0L) {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val fromAccount =
+                                    async {
+                                        accountViewModel.getAccount(
+                                            args.transaction!!.budgetRule!!.budFromAccountId
+                                        )
+                                    }
+                                mFromAccount = fromAccount.await()
+                                val fromAccountWithType =
+                                    async {
+                                        accountViewModel.getAccountWithType(
+                                            args.transaction!!.budgetRule!!.budFromAccountId
+                                        )
+                                    }
+                                mFromAccountWithType = fromAccountWithType.await()
+                            }
+                            CoroutineScope(Dispatchers.Main).launch {
+                                delay(1000)
+                                tvFromAccount.text = mFromAccount?.accountName
+                                if (mFromAccountWithType?.accountType?.allowPending == true) {
+                                    chkFromAccPending.visibility = View.VISIBLE
+                                } else {
+                                    chkFromAccPending.visibility = View.GONE
+                                }
+                            }
+
+                        }
+                    }
                 }
                 if (args.transaction!!.toAccount != null) {
-                    mToAccount = args.transaction!!.toAccount!!
+                    mToAccount = args.transaction!!.toAccount
                     tvToAccount.text =
-                        mToAccount!!.accountName
+                        args.transaction!!.toAccount!!.accountName
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val toAccountWithType =
+                            async {
+                                accountViewModel.getAccountWithType(
+                                    args.transaction!!.toAccount!!.accountName
+                                )
+                            }
+                        mToAccountWithType = toAccountWithType.await()
+                    }
+                    CoroutineScope(Dispatchers.Main).launch {
+                        delay(250)
+                        if (mToAccountWithType?.accountType?.allowPending == true) {
+                            chkToAccPending.visibility = View.VISIBLE
+                        } else {
+                            chkToAccPending.visibility = View.GONE
+                        }
+                    }
                 }
                 chkToAccPending.isChecked =
                     args.transaction!!.transaction!!.transToAccountPending
                 if (args.transaction!!.fromAccount != null) {
+                    mFromAccount = args.transaction!!.fromAccount
                     tvFromAccount.text =
                         args.transaction?.fromAccount!!.accountName
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val fromAccountWithType =
+                            async {
+                                accountViewModel.getAccountWithType(
+                                    args.transaction?.fromAccount!!.accountName
+                                )
+                            }
+                        mFromAccountWithType = fromAccountWithType.await()
+                    }
+                    CoroutineScope(Dispatchers.Main).launch {
+                        delay(250)
+                        if (mFromAccountWithType?.accountType?.allowPending == true) {
+                            chkFromAccPending.visibility = View.VISIBLE
+                        } else {
+                            chkFromAccPending.visibility = View.GONE
+                        }
+                    }
+                } else {
+                    chkFromAccPending.visibility = View.GONE
                 }
                 chkFromAccPending.isChecked =
                     args.transaction!!.transaction!!.transFromAccountPending
@@ -325,14 +426,14 @@ class TransactionAddFragment :
     private fun updateAccounts(mTransaction: Transactions): Boolean {
         val toAccountWithType =
             accountViewModel.getAccountWithType(
-                mTransaction.transToAccountId
+                mToAccount!!.accountId
             )
         if (!mTransaction.transToAccountPending) {
             if (toAccountWithType.accountType.keepTotals) {
                 transactionViewModel.updateAccountBalance(
                     toAccountWithType.account.accountBalance +
                             mTransaction.transAmount,
-                    mTransaction.transToAccountId,
+                    mToAccount!!.accountId,
                     df.getCurrentTimeAsString()
                 )
                 Log.d(TAG, "updating toAccountBalance")
@@ -341,24 +442,23 @@ class TransactionAddFragment :
                 transactionViewModel.updateAccountOwing(
                     toAccountWithType.account.accountOwing -
                             mTransaction.transAmount,
-                    mTransaction.transToAccountId,
+                    mToAccount!!.accountId,
                     df.getCurrentTimeAsString()
                 )
             }
         }
         val fromAccountWithType =
             accountViewModel.getAccountWithType(
-                mTransaction.transFromAccountId
+                mFromAccount!!.accountId
             )
         if (!mTransaction.transFromAccountPending) {
             if (fromAccountWithType.accountType.keepTotals) {
                 transactionViewModel.updateAccountBalance(
                     fromAccountWithType.account.accountBalance -
                             mTransaction.transAmount,
-                    mTransaction.transFromAccountId,
+                    mFromAccount!!.accountId,
                     df.getCurrentTimeAsString()
                 )
-                Log.d(TAG, "updating fromAccountBalance")
             }
             gotoCallingFragment()
         }
@@ -382,9 +482,9 @@ class TransactionAddFragment :
             val direction =
                 TransactionAddFragmentDirections
                     .actionTransactionAddFragmentToBudgetViewFragment(
-                        args.asset,
-                        args.payDay,
-                        fragmentChain
+                        asset = args.asset,
+                        payDay = args.payDay,
+                        callingFragments = fragmentChain
                     )
             mView.findNavController().navigate(direction)
         } /*else if (args.callingFragments!!.contains(FRAG_BUDGET_RULES)) {
@@ -416,7 +516,7 @@ class TransactionAddFragment :
                 ) {
                     "     Error!!\n" +
                             "There needs to be an account money will go to."
-                } else if (args.transaction?.fromAccount == null
+                } else if (mFromAccount == null
                 ) {
                     "     Error!!\n" +
                             "There needs to be an account money will come from."
