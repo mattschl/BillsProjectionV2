@@ -14,7 +14,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -22,8 +21,8 @@ import ms.mattschlenkrich.billsprojectionv2.adapter.AccountAdapter
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountsBinding
 import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
+import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 
 private const val TAG = FRAG_ACCOUNTS
 
@@ -35,12 +34,11 @@ class AccountsFragment :
     private var _binding: FragmentAccountsBinding? = null
     private val binding get() = _binding!!
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
 
     private lateinit var accountsViewModel: AccountViewModel
     private lateinit var accountAdapter: AccountAdapter
     private lateinit var mView: View
-
-    private val args: AccountsFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,7 +49,7 @@ class AccountsFragment :
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
-        Log.d(TAG, "$TAG is entered")
+        mainViewModel = mainActivity.mainViewModel
         mView = binding.root
         return mView
     }
@@ -73,36 +71,17 @@ class AccountsFragment :
     }
 
     private fun addNewAccount() {
-        var budgetRuleDetailed: BudgetRuleDetailed? = null
-        var requestedAccount: String? = null
-        if (args.budgetRuleDetailed != null) {
-            budgetRuleDetailed = args.budgetRuleDetailed
-            requestedAccount = args.requestedAccount
-        }
-        val fragmentChain = "${args.callingFragments}, $TAG"
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments() + ", " + TAG
+        )
         val direction = AccountsFragmentDirections
-            .actionAccountsFragmentToAccountAddFragment(
-                args.asset,
-                args.payDay,
-                args.budgetItem,
-                args.transaction,
-                budgetRuleDetailed, null, null,
-                requestedAccount, fragmentChain
-            )
+            .actionAccountsFragmentToAccountAddFragment()
         mView.findNavController().navigate(direction)
     }
 
     private fun setUpRecyclerView() {
-        val fragmentChain = "${args.callingFragments}, $TAG"
-
         accountAdapter = AccountAdapter(
-            args.asset,
-            args.payDay,
-            args.budgetItem,
-            args.transaction,
-            args.budgetRuleDetailed,
-            args.requestedAccount,
-            fragmentChain
+            mainViewModel
         )
 
         binding.rvAccounts.apply {

@@ -15,7 +15,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.navArgs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,7 +25,9 @@ import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
+import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
+import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 
 private const val TAG = FRAG_ACCOUNT_UPDATE
 
@@ -36,12 +37,11 @@ class AccountUpdateFragment :
     private var _binding: FragmentAccountUpdateBinding? = null
     private val binding get() = _binding!!
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
 
     private var mView: View? = null
     private lateinit var accountsViewModel: AccountViewModel
 
-    //since the update fragment contains arguments in nav_graph
-    private val args: AccountUpdateFragmentArgs by navArgs()
     private val cf = CommonFunctions()
     private val df = DateFunctions()
     private var accountNameList: List<String>? = null
@@ -55,6 +55,7 @@ class AccountUpdateFragment :
         )
         Log.d(TAG, "$TAG is entered")
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
         mView = binding.root
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
@@ -98,10 +99,10 @@ class AccountUpdateFragment :
     private fun getUpdatedAccount(): Account {
         binding.apply {
             return Account(
-                args.account!!.accountId,
+                mainViewModel.getAccountWithType()!!.account.accountId,
                 edAccountUpdateName.text.toString().trim(),
                 edAccountUpdateHandle.text.toString().trim(),
-                args.account!!.accountTypeId,
+                mainViewModel.getAccountWithType()!!.accountType?.typeId ?: 0L,
                 cf.getDoubleFromDollars(edAccountUpdateBudgeted.text.toString()),
                 cf.getDoubleFromDollars(edAccountUpdateBalance.text.toString()),
                 cf.getDoubleFromDollars(edAccountUpdateOwing.text.toString()),
@@ -113,18 +114,17 @@ class AccountUpdateFragment :
     }
 
     private fun gotoAccountTypes() {
-        val fragmentChain = "${args.callingFragments}, $TAG"
-        val direction = AccountUpdateFragmentDirections
-            .actionAccountUpdateFragmentToAccountTypesFragment(
-                args.asset,
-                args.payDay,
-                args.budgetItem,
-                args.transaction,
-                args.budgetRuleDetailed,
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments() + ", " + TAG
+        )
+        mainViewModel.setAccountWithType(
+            AccountWithType(
                 getUpdatedAccount(),
-                args.requestedAccount,
-                fragmentChain
+                mainViewModel.getAccountWithType()!!.accountType
             )
+        )
+        val direction = AccountUpdateFragmentDirections
+            .actionAccountUpdateFragmentToAccountTypesFragment()
         mView?.findNavController()?.navigate(direction)
 
     }
@@ -139,7 +139,7 @@ class AccountUpdateFragment :
                     if (accountNameList!![i] ==
                         edAccountUpdateName.text.toString() &&
                         accountNameList!![i] !=
-                        args.account!!.accountName
+                        mainViewModel.getAccountWithType()!!.account.accountName
                     ) {
                         nameFound = true
                         break
@@ -167,10 +167,10 @@ class AccountUpdateFragment :
 
         if (mess == "Ok") {
             val name = binding.edAccountUpdateName.text.trim().toString()
-            if (name == args.account!!.accountName.trim()) {
+            if (name == mainViewModel.getAccountWithType()!!.account.accountName.trim()) {
                 accountsViewModel.updateAccount(getUpdatedAccount())
                 gotoAccountFragment()
-            } else if (name != args.account!!.accountName.trim()) {
+            } else if (name != mainViewModel.getAccountWithType()!!.account.accountName.trim()) {
                 AlertDialog.Builder(activity).apply {
                     setTitle("Rename Account?")
                     setMessage(
@@ -196,44 +196,49 @@ class AccountUpdateFragment :
     }
 
     private fun gotoAccountFragment() {
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments()!!
+                .replace(", $TAG", "")
+        )
         val direction = AccountUpdateFragmentDirections
-            .actionAccountUpdateFragmentToAccountsFragment(
-                args.asset,
-                args.payDay,
-                args.budgetItem,
-                args.transaction,
-                args.budgetRuleDetailed,
-                args.requestedAccount,
-                args.callingFragments
-            )
+            .actionAccountUpdateFragmentToAccountsFragment()
         mView?.findNavController()?.navigate(direction)
     }
 
     private fun fillValues() {
         binding.apply {
             edAccountUpdateName.setText(
-                args.account!!.accountName
+                mainViewModel.getAccountWithType()!!.account.accountName
             )
             edAccountUpdateHandle.setText(
-                args.account!!.accountNumber
+                mainViewModel.getAccountWithType()!!.account.accountNumber
             )
-            if (args.accountType != null) {
-                drpAccountUpdateType.text = args.accountType!!.accountType
+            if (mainViewModel.getAccountWithType()!!.accountType != null) {
+                drpAccountUpdateType.text =
+                    mainViewModel.getAccountWithType()!!.accountType!!.accountType
             }
             edAccountUpdateBalance.setText(
-                cf.displayDollars(args.account!!.accountBalance)
+                cf.displayDollars(
+                    mainViewModel.getAccountWithType()!!.account.accountBalance
+                )
             )
             edAccountUpdateOwing.setText(
-                cf.displayDollars(args.account!!.accountOwing)
+                cf.displayDollars(
+                    mainViewModel.getAccountWithType()!!.account.accountOwing
+                )
             )
             edAccountUpdateBudgeted.setText(
-                cf.displayDollars(args.account!!.accBudgetedAmount)
+                cf.displayDollars(
+                    mainViewModel.getAccountWithType()!!.account.accBudgetedAmount
+                )
             )
             etAccUpdateLimit.setText(
-                cf.displayDollars(args.account!!.accountCreditLimit)
+                cf.displayDollars(
+                    mainViewModel.getAccountWithType()!!.account.accountCreditLimit
+                )
             )
             txtAccountUpdateAccountId.text =
-                args.account!!.accountId.toString()
+                mainViewModel.getAccountWithType()!!.account.accountId.toString()
         }
     }
 
@@ -250,22 +255,15 @@ class AccountUpdateFragment :
 
     private fun doDelete() {
         accountsViewModel.deleteAccount(
-            args.account!!.accountId,
+            mainViewModel.getAccountWithType()!!.account.accountId,
             df.getCurrentTimeAsString()
         )
-        val fragmentChain =
-            args.callingFragments!!
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments()!!
                 .replace(", $FRAG_ACCOUNT_UPDATE", "")
+        )
         val direction = AccountUpdateFragmentDirections
-            .actionAccountUpdateFragmentToAccountsFragment(
-                args.asset,
-                args.payDay,
-                args.budgetItem,
-                args.transaction,
-                args.budgetRuleDetailed,
-                args.requestedAccount,
-                fragmentChain,
-            )
+            .actionAccountUpdateFragmentToAccountsFragment()
         mView?.findNavController()?.navigate(direction)
     }
 

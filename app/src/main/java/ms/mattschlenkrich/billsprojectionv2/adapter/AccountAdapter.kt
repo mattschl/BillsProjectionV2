@@ -26,24 +26,18 @@ import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
+import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 import java.util.Random
 
 private const val TAG = ADAPTER_ACCOUNT
 
-@Suppress("CanBeParameter")
 class AccountAdapter(
-    private val asset: String?,
-    private val payDay: String?,
-    private val budgetItem: BudgetDetailed?,
-    private val transaction: TransactionDetailed?,
-    private val budgetRuleDetailed: BudgetRuleDetailed?,
-    private val requestedAccount: String?,
-    private val callingFragments: String?,
+    private val mainViewModel: MainViewModel
 ) :
     RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() {
 
     private var mBudgetItem =
-        budgetItem
+        mainViewModel.getBudgetItem()
             ?: BudgetDetailed(
                 null,
                 null,
@@ -52,14 +46,14 @@ class AccountAdapter(
             )
 
     private var mBudgetRuleDetailed =
-        budgetRuleDetailed
+        mainViewModel.getBudgetRuleDetailed()
             ?: BudgetRuleDetailed(
                 null,
                 null,
                 null
             )
     private var mTransactionDetailed =
-        transaction
+        mainViewModel.getTransactionDetailed()
             ?: TransactionDetailed(
                 null,
                 null,
@@ -162,31 +156,38 @@ class AccountAdapter(
         holder.itemBinding.ibAccountColor.setBackgroundColor(color)
 
         holder.itemView.setOnClickListener {
-            Log.d(
-                TAG, "onClick requested Account is $requestedAccount," +
-                        "  calling Fragment is $callingFragments"
-            )
-            when (requestedAccount) {
+            when (mainViewModel.getRequestedAccount()) {
                 REQUEST_TO_ACCOUNT -> {
-                        mBudgetRuleDetailed.toAccount = curAccount.account
+                    mBudgetRuleDetailed.toAccount = curAccount.account
+                    mainViewModel.setBudgetRuleDetailed(mBudgetRuleDetailed)
                     mTransactionDetailed.toAccount = curAccount.account
+                    mainViewModel.setTransactionDetailed(mTransactionDetailed)
                     mBudgetItem.toAccount = curAccount.account
-                        gotoCallingFragment(it)
+                    mainViewModel.setBudgetItem(mBudgetItem)
+                    gotoCallingFragment(it)
 
                 }
 
                 REQUEST_FROM_ACCOUNT -> {
-                        mBudgetRuleDetailed.fromAccount = curAccount.account
+                    mBudgetRuleDetailed.fromAccount = curAccount.account
+                    mainViewModel.setBudgetRuleDetailed(mBudgetRuleDetailed)
                     mTransactionDetailed.fromAccount = curAccount.account
+                    mainViewModel.setTransactionDetailed(mTransactionDetailed)
                     mBudgetItem.fromAccount = curAccount.account
-                        gotoCallingFragment(it)
+                    mainViewModel.setBudgetItem(mBudgetItem)
+                    gotoCallingFragment(it)
 
                 }
             }
         }
 
         holder.itemView.setOnLongClickListener {
-
+            mainViewModel.setAccountWithType(
+                curAccount
+            )
+            mainViewModel.setCallingFragments(
+                mainViewModel.getCallingFragments() + ", " + FRAG_ACCOUNTS
+            )
             gotoUpdateUpdateAccount(curAccount, it)
             false
         }
@@ -196,93 +197,63 @@ class AccountAdapter(
         curAccount: AccountWithType,
         it: View
     ) {
-        val fragmentChain = "$callingFragments, $FRAG_ACCOUNTS"
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments() + ", " + FRAG_ACCOUNTS
+        )
+        mainViewModel.setAccountWithType(
+            curAccount
+        )
         val direction = AccountsFragmentDirections
-            .actionAccountsFragmentToAccountUpdateFragment(
-                asset,
-                payDay,
-                budgetItem,
-                mTransactionDetailed,
-                mBudgetRuleDetailed,
-                curAccount.account,
-                curAccount.accountType,
-                requestedAccount,
-                fragmentChain
-            )
+            .actionAccountsFragmentToAccountUpdateFragment()
         it.findNavController().navigate(direction)
     }
 
     private fun gotoCallingFragment(it: View) {
-        val fragmentChain = callingFragments!!
-            .replace(", $FRAG_ACCOUNTS", "")
-        Log.d(
-            TAG, "Fragment Chain is \n" +
-                    fragmentChain
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments()!!
+                .replace(", $FRAG_ACCOUNTS", "")
         )
-        if (callingFragments.contains(FRAG_BUDGET_RULE_ADD)) {
+        if (mainViewModel.getCallingFragments()!!
+                .contains(FRAG_BUDGET_RULE_ADD)
+        ) {
             val direction = AccountsFragmentDirections
                 .actionAccountsFragmentToBudgetRuleAddFragment(
-                    asset,
-                    payDay,
-                    budgetItem,
-                    mTransactionDetailed,
-                    mBudgetRuleDetailed,
-                    fragmentChain
+
                 )
             it.findNavController().navigate(direction)
-        } else if (callingFragments.contains(FRAG_BUDGET_RULE_UPDATE)
+        } else if (mainViewModel.getCallingFragments()!!
+                .contains(FRAG_BUDGET_RULE_UPDATE)
         ) {
             val direction = AccountsFragmentDirections
-                .actionAccountsFragmentToBudgetRuleUpdateFragment(
-                    asset,
-                    payDay,
-                    budgetItem,
-                    mTransactionDetailed,
-                    mBudgetRuleDetailed,
-                    fragmentChain
-                )
+                .actionAccountsFragmentToBudgetRuleUpdateFragment()
             it.findNavController().navigate(direction)
-        } else if (callingFragments.contains(FRAG_TRANS_ADD)
+        } else if (mainViewModel.getCallingFragments()!!
+                .contains(FRAG_TRANS_ADD)
         ) {
             val direction =
                 AccountsFragmentDirections
-                    .actionAccountsFragmentToTransactionAddFragment(
-                        asset,
-                        payDay,
-                        mTransactionDetailed,
-                        fragmentChain
-                    )
+                    .actionAccountsFragmentToTransactionAddFragment()
             it.findNavController().navigate(direction)
-        } else if (callingFragments.contains(FRAG_TRANS_UPDATE)
+        } else if (mainViewModel.getCallingFragments()!!
+                .contains(FRAG_TRANS_UPDATE)
         ) {
             val direction =
                 AccountsFragmentDirections
-                    .actionAccountsFragmentToTransactionUpdateFragment(
-                        asset,
-                        payDay,
-                        mTransactionDetailed,
-                        fragmentChain
-                    )
+                    .actionAccountsFragmentToTransactionUpdateFragment()
             it.findNavController().navigate(direction)
-        } else if (callingFragments.contains(FRAG_BUDGET_ITEM_ADD)) {
+        } else if (mainViewModel.getCallingFragments()!!
+                .contains(FRAG_BUDGET_ITEM_ADD)
+        ) {
             val direction =
                 AccountsFragmentDirections
-                    .actionAccountsFragmentToBudgetItemAddFragment(
-                        asset,
-                        payDay,
-                        budgetItem,
-                        callingFragments
-                    )
+                    .actionAccountsFragmentToBudgetItemAddFragment()
             it.findNavController().navigate(direction)
-        } else if (callingFragments.contains(FRAG_BUDGET_ITEM_UPDATE)) {
+        } else if (mainViewModel.getCallingFragments()!!
+                .contains(FRAG_BUDGET_ITEM_UPDATE)
+        ) {
             val direction =
                 AccountsFragmentDirections
-                    .actionAccountsFragmentToBudgetItemUpdateFragment(
-                        asset,
-                        payDay,
-                        budgetItem,
-                        callingFragments
-                    )
+                    .actionAccountsFragmentToBudgetItemUpdateFragment()
             it.findNavController().navigate(direction)
         }
     }

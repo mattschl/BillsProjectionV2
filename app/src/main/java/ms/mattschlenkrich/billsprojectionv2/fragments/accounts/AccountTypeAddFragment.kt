@@ -14,7 +14,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.navArgs
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
@@ -35,7 +34,6 @@ class AccountTypeAddFragment :
 
     private lateinit var accountsViewModel: AccountViewModel
     private lateinit var mView: View
-    private val args: AccountTypeAddFragmentArgs by navArgs()
     private val df = DateFunctions()
 
     override fun onCreateView(
@@ -79,10 +77,6 @@ class AccountTypeAddFragment :
     }
 
     private fun saveAccountType() {
-        Log.d(
-            TAG, "saveAccountType entered callingFragments are\n" +
-                    "${args.callingFragments}"
-        )
         var id =
             Random().nextInt(Int.MAX_VALUE).toLong()
         id = if (Random().nextBoolean()) -id
@@ -102,16 +96,7 @@ class AccountTypeAddFragment :
             )
             accountsViewModel.addAccountType(accountType)
             val direction = AccountTypeAddFragmentDirections
-                .actionAccountTypeAddFragmentToAccountTypesFragment(
-                    args.asset,
-                    args.payDay,
-                    args.budgetItem,
-                    args.transaction,
-                    args.budgetRuleDetailed,
-                    args.account,
-                    args.requestedAccount,
-                    args.callingFragments
-                )
+                .actionAccountTypeAddFragmentToAccountTypesFragment()
             mView.findNavController().navigate(direction)
 
         } else {

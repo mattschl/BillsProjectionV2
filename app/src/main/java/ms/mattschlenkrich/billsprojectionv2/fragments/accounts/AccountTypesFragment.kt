@@ -14,7 +14,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -23,6 +22,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountTypesBinding
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
+import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 
 private const val TAG = FRAG_ACCOUNT_TYPES
 
@@ -35,15 +35,9 @@ class AccountTypesFragment
     private val binding get() = _binding!!
     private lateinit var mainActivity: MainActivity
 
+    private lateinit var mainViewModel: MainViewModel
     private lateinit var accountViewModel: AccountViewModel
     private lateinit var accountTypeAdapter: AccountTypeAdapter
-    private val args: AccountTypesFragmentArgs by navArgs()
-
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setHasOptionsMenu(true)
-//
-//    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,6 +57,7 @@ class AccountTypesFragment
     ) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated Entered")
+        mainViewModel = mainActivity.mainViewModel
         accountViewModel = mainActivity.accountViewModel
         mainActivity.title = "Choose an Account Type"
         val menuHost: MenuHost = requireActivity()
@@ -71,30 +66,14 @@ class AccountTypesFragment
         setupRecyclerView()
         binding.fabAddAccountType.setOnClickListener {
             val direction = AccountTypesFragmentDirections
-                .actionAccountTypesFragmentToAccountTypeAddFragment(
-                    args.asset,
-                    args.payDay,
-                    args.budgetItem,
-                    args.transaction,
-                    args.budgetRuleDetailed,
-                    args.account,
-                    args.requestedAccount,
-                    args.callingFragments
-                )
+                .actionAccountTypesFragmentToAccountTypeAddFragment()
             it.findNavController().navigate(direction)
         }
     }
 
     private fun setupRecyclerView() {
         accountTypeAdapter = AccountTypeAdapter(
-            args.asset,
-            args.payDay,
-            args.budgetItem,
-            args.transaction,
-            args.budgetRuleDetailed,
-            args.account,
-            args.requestedAccount,
-            args.callingFragments
+            mainViewModel
         )
 
         binding.rvAccountTypes.apply {
@@ -138,17 +117,6 @@ class AccountTypesFragment
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         return false
     }
-
-
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-////        super.onCreateOptionsMenu(menu, inflater)
-////        menu.clear()
-//        inflater.inflate(R.menu.search_menu, menu)
-//        val mMenuSearch =
-//            menu.findItem(R.id.menu_search).actionView as SearchView
-//        mMenuSearch.isSubmitButtonEnabled = false
-//        mMenuSearch.setOnQueryTextListener(this)
-//    }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
         return false

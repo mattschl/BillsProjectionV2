@@ -22,6 +22,18 @@ class MainViewModel(
     private var requestedAccount: String? = null
     private var callingFragments: String? = null
 
+    fun eraseAll() {
+        asset = ""
+        payDay = ""
+        budgetItem = null
+        transactionDetailed = null
+        budgetRuleDetailed = null
+        account = null
+        accountType = null
+        requestedAccount = ""
+        callingFragments = ""
+    }
+
     fun setCallingFragments(newCallingFragments: String?) {
         callingFragments = newCallingFragments
     }

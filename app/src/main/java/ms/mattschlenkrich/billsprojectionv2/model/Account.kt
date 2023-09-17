@@ -125,8 +125,8 @@ data class AccountWithType(
     @Relation(
         entity = AccountType::class,
         parentColumn = ACCOUNT_TYPE_ID,
-        entityColumn = TYPE_ID
+        entityColumn = TYPE_ID,
     )
-    val accountType: AccountType
+    val accountType: AccountType?,
 ) : Parcelable
 

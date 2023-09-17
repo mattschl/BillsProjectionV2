@@ -15,7 +15,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.navArgs
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
@@ -23,6 +22,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_TYPE_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountTypeUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
+import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 
 private const val TAG = FRAG_ACCOUNT_TYPE_UPDATE
 
@@ -33,11 +33,10 @@ class AccountTypeUpdateFragment :
     private var _binding: FragmentAccountTypeUpdateBinding? = null
     private val binding get() = _binding!!
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
     private var mView: View? = null
     private lateinit var accountsViewModel: AccountViewModel
 
-    //since the update fragment contains arguments in nav_graph
-    private val args: AccountTypeUpdateFragmentArgs by navArgs()
     private lateinit var currentAccountType: AccountType
     private val df = DateFunctions()
 
@@ -57,13 +56,14 @@ class AccountTypeUpdateFragment :
         Log.d(TAG, "$TAG is entered")
         mView = binding.root
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         accountsViewModel = (activity as MainActivity).accountViewModel
-        currentAccountType = args.accountType!!
+        currentAccountType = mainViewModel.getAccountType()!!
         mainActivity.title = "Update Account Type"
         fillValues()
         val menuHost: MenuHost = requireActivity()
@@ -108,16 +108,7 @@ class AccountTypeUpdateFragment :
         if (accountTypeName == currentAccountType.accountType) {
             accountsViewModel.updateAccountType(accountType)
             val direction = AccountTypeUpdateFragmentDirections
-                .actionAccountTypeUpdateFragmentToAccountTypesFragment(
-                    args.asset,
-                    args.payDay,
-                    args.budgetItem,
-                    args.transaction,
-                    args.budgetRuleDetailed,
-                    args.account,
-                    args.requestedAccount,
-                    args.callingFragments
-                )
+                .actionAccountTypeUpdateFragmentToAccountTypesFragment()
             mView?.findNavController()?.navigate(direction)
         } else if (accountTypeName.isNotBlank()) {
             AlertDialog.Builder(activity).apply {
@@ -130,16 +121,7 @@ class AccountTypeUpdateFragment :
                 setPositiveButton("Update Account Type") { _, _ ->
                     accountsViewModel.updateAccountType(accountType)
                     val direction = AccountTypeUpdateFragmentDirections
-                        .actionAccountTypeUpdateFragmentToAccountTypesFragment(
-                            args.asset,
-                            args.payDay,
-                            args.budgetItem,
-                            args.transaction,
-                            args.budgetRuleDetailed,
-                            args.account,
-                            args.requestedAccount,
-                            args.callingFragments
-                        )
+                        .actionAccountTypeUpdateFragmentToAccountTypesFragment()
                     mView?.findNavController()?.navigate(direction)
                 }
                 setNegativeButton("Cancel", null)
@@ -183,32 +165,12 @@ class AccountTypeUpdateFragment :
                     df.getCurrentTimeAsString()
                 )
                 val direction = AccountTypeUpdateFragmentDirections
-                    .actionAccountTypeUpdateFragmentToAccountTypesFragment(
-                        args.asset,
-                        args.payDay,
-                        args.budgetItem,
-                        args.transaction,
-                        args.budgetRuleDetailed,
-                        args.account,
-                        args.requestedAccount,
-                        args.callingFragments
-                    )
+                    .actionAccountTypeUpdateFragmentToAccountTypesFragment()
                 mView?.findNavController()?.navigate(direction)
             }
             setNegativeButton("Cancel", null)
         }.create().show()
     }
-
-//    @Deprecated("Deprecated in Java")
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        when (item.itemId) {
-//            R.id.menu_delete -> {
-//                deleteAccountType()
-//            }
-//        }
-//
-//        return super.onOptionsItemSelected(item)
-//    }
 
     override fun onDestroy() {
         super.onDestroy()

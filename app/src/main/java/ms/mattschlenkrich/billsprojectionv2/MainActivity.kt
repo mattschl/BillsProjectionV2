@@ -115,56 +115,38 @@ class MainActivity : AppCompatActivity() {
             this,
             mainViewModelFactory
         )[MainViewModel::class.java]
+        mainViewModel.eraseAll()
     }
 
     private fun gotoBudgetView() {
+        mainViewModel.eraseAll()
         val direction =
-            NavGraphDirections.actionGlobalBudgetViewFragment(
-                null,
-                null,
-                null
-            )
+            NavGraphDirections.actionGlobalBudgetViewFragment()
         findNavController(R.id.fragment_container_view)
             .navigate(direction)
     }
 
     private fun gotoBudgetRules() {
+        mainViewModel.eraseAll()
         val direction =
-            NavGraphDirections.actionGlobalBudgetRuleFragment(
-                null,
-                null,
-                null,
-                null,
-                null
-            )
+            NavGraphDirections.actionGlobalBudgetRuleFragment()
         findNavController(R.id.fragment_container_view)
             .navigate(direction)
     }
 
     private fun gotoAccounts() {
+        mainViewModel.eraseAll()
         val direction =
-            NavGraphDirections.actionGlobalAccountsFragment(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-            )
+            NavGraphDirections.actionGlobalAccountsFragment()
 
         findNavController(R.id.fragment_container_view)
             .navigate(direction)
     }
 
     private fun gotoTransactions() {
+        mainViewModel.eraseAll()
         val direction =
-            NavGraphDirections.actionGlobalTransactionViewFragment(
-                null,
-                null,
-                null,
-                null
-            )
+            NavGraphDirections.actionGlobalTransactionViewFragment()
         findNavController(R.id.fragment_container_view)
             .navigate(direction)
     }

@@ -10,27 +10,18 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_ACCOUNT_TYPE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_ADD
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.databinding.AccountTypeLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountTypesFragmentDirections
-import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
-import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
+import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 import java.util.Random
 
 private const val TAG = ADAPTER_ACCOUNT_TYPE
 
 class AccountTypeAdapter(
-    private val asset: String?,
-    private val payDay: String?,
-    private val budgetItem: BudgetDetailed?,
-    private val transaction: TransactionDetailed?,
-    private val budgetRuleDetailed: BudgetRuleDetailed?,
-    private val account: Account?,
-    private val requestedAccount: String?,
-    private val callingFragments: String?,
+    private val mainViewModel: MainViewModel
 ) :
     RecyclerView.Adapter<AccountTypeAdapter.AccountTypeViewHolder>() {
 
@@ -106,49 +97,28 @@ class AccountTypeAdapter(
         holder.itemBinding.ibAccountTypeColor.setBackgroundColor(color)
 
         holder.itemView.setOnLongClickListener {
+            mainViewModel.setCallingFragments(
+                mainViewModel.getCallingFragments() + ", " + FRAG_ACCOUNT_TYPES
+            )
+            mainViewModel.setAccountType(
+                curAccountType
+            )
             val direction = AccountTypesFragmentDirections
-                .actionAccountTypesFragmentToAccountTypeUpdateFragment(
-                    asset,
-                    payDay,
-                    budgetItem,
-                    transaction,
-                    budgetRuleDetailed,
-                    account,
-                    curAccountType,
-                    requestedAccount,
-                    callingFragments
-                )
+                .actionAccountTypesFragmentToAccountTypeUpdateFragment()
             it.findNavController().navigate(direction)
             false
         }
         holder.itemView.setOnClickListener {
-            if (callingFragments!!.contains(FRAG_ACCOUNT_UPDATE)) {
+            mainViewModel.setAccountType(
+                curAccountType
+            )
+            if (mainViewModel.getCallingFragments()!!.contains(FRAG_ACCOUNT_UPDATE)) {
                 val direction = AccountTypesFragmentDirections
-                    .actionAccountTypesFragmentToAccountUpdateFragment(
-                        asset,
-                        payDay,
-                        budgetItem,
-                        transaction,
-                        budgetRuleDetailed,
-                        account,
-                        curAccountType,
-                        requestedAccount,
-                        callingFragments
-                    )
+                    .actionAccountTypesFragmentToAccountUpdateFragment()
                 it.findNavController().navigate(direction)
-            } else if (callingFragments.contains(FRAG_ACCOUNT_ADD)) {
+            } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_ACCOUNT_ADD)) {
                 val direction = AccountTypesFragmentDirections
-                    .actionAccountTypesFragmentToAccountAddFragment(
-                        asset,
-                        payDay,
-                        budgetItem,
-                        transaction,
-                        budgetRuleDetailed,
-                        account,
-                        curAccountType,
-                        requestedAccount,
-                        callingFragments
-                    )
+                    .actionAccountTypesFragmentToAccountAddFragment()
                 it.findNavController().navigate(direction)
             }
         }
