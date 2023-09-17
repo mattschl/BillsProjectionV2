@@ -25,6 +25,8 @@ import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModelFactory
+import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
+import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModelFactory
 import java.time.LocalDate
@@ -34,6 +36,7 @@ private const val TAG = "MainActivity"
 class MainActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityMainBinding
+    lateinit var mainViewModel: MainViewModel
     lateinit var accountViewModel: AccountViewModel
     lateinit var budgetRuleViewModel: BudgetRuleViewModel
     lateinit var transactionViewModel: TransactionViewModel
@@ -97,12 +100,21 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
+        setMainViewModel()
         setupAccountViewModel()
         setupBudgetRuleViewModel()
         setupTransactionViewModel()
         setupBudgetItemViewModel()
 
+    }
+
+    private fun setMainViewModel() {
+        val mainViewModelFactory =
+            MainViewModelFactory(application)
+        mainViewModel = ViewModelProvider(
+            this,
+            mainViewModelFactory
+        )[MainViewModel::class.java]
     }
 
     private fun gotoBudgetView() {
