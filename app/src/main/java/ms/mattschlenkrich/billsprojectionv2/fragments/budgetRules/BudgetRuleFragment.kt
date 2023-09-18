@@ -14,7 +14,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -23,6 +22,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetRuleBinding
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModel
+import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 
 private const val TAG = FRAG_BUDGET_RULES
 
@@ -34,7 +34,7 @@ class BudgetRuleFragment :
     private var _binding: FragmentBudgetRuleBinding? = null
     private val binding get() = _binding!!
     private lateinit var mainActivity: MainActivity
-    private val args: BudgetRuleFragmentArgs by navArgs()
+    private lateinit var mainViewModel: MainViewModel
     private lateinit var budgetRuleViewModel: BudgetRuleViewModel
     private lateinit var budgetRuleAdapter: BudgetRuleAdapter
     private var mView: View? = null
@@ -49,6 +49,8 @@ class BudgetRuleFragment :
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
+        mainViewModel =
+            mainActivity.mainViewModel
         Log.d(TAG, "$TAG is entered")
         mView = binding.root
         return binding.root
@@ -72,25 +74,14 @@ class BudgetRuleFragment :
 
     private fun addNewRule() {
         val direction = BudgetRuleFragmentDirections
-            .actionBudgetRuleFragmentToBudgetRuleAddFragment(
-                args.asset,
-                args.payDay,
-                args.budgetItem,
-                args.transaction,
-                null,
-                args.callingFragments
-            )
+            .actionBudgetRuleFragmentToBudgetRuleAddFragment()
         mView!!.findNavController().navigate(direction)
     }
 
     private fun setupRecyclerView() {
         budgetRuleAdapter = BudgetRuleAdapter(
-            args.asset,
-            args.payDay,
-            args.budgetItem,
-            args.transaction,
+            mainViewModel,
             mView!!.context,
-            args.callingFragments
         )
 
         binding.rvBudgetRules.apply {

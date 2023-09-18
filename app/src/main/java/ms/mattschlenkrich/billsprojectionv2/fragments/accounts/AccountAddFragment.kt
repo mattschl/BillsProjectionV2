@@ -125,24 +125,24 @@ class AccountAddFragment :
                     )
                 )
             }
-            if (mainViewModel.getAccountWithType() != null) {
+            if (mainViewModel.getAccountWithType()?.accountType != null) {
                 tvAccAddType.text =
-                    mainViewModel.getAccountWithType()!!.accountType.accountType
+                    mainViewModel.getAccountWithType()!!.accountType!!.accountType
                 var display =
                     if (
-                        mainViewModel.getAccountWithType()!!.accountType.keepTotals
+                        mainViewModel.getAccountWithType()!!.accountType!!.keepTotals
                     ) "Transactions will be calculated\n" else ""
                 display += if (
-                    mainViewModel.getAccountWithType()!!.accountType.isAsset
+                    mainViewModel.getAccountWithType()!!.accountType!!.isAsset
                 ) "This is an asset \n" else ""
                 display += if (
-                    mainViewModel.getAccountWithType()!!.accountType.displayAsAsset
+                    mainViewModel.getAccountWithType()!!.accountType!!.displayAsAsset
                 ) "This will be used for the budget \n" else ""
                 display += if (
-                    mainViewModel.getAccountWithType()!!.accountType.tallyOwing)
+                    mainViewModel.getAccountWithType()!!.accountType!!.tallyOwing)
                     "Balance owing will be calculated " else ""
                 display += if (
-                    mainViewModel.getAccountWithType()!!.accountType.allowPending)
+                    mainViewModel.getAccountWithType()!!.accountType!!.allowPending)
                     "Transactions may be delayed " else ""
                 if (display.isEmpty()) {
                     display =

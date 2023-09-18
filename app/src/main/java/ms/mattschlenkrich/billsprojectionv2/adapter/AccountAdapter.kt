@@ -144,7 +144,7 @@ class AccountAdapter(
             holder.itemBinding.tvAccountInfo.visibility = ViewGroup.VISIBLE
             holder.itemBinding.tvAccountInfo.text = info
         }
-        holder.itemBinding.tvAccType.text = curAccount.accountType.accountType
+        holder.itemBinding.tvAccType.text = curAccount.accountType?.accountType
 
         val random = Random()
         val color = Color.argb(
