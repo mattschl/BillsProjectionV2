@@ -16,7 +16,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.navArgs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -37,6 +36,7 @@ import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.Transactions
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
+import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModel
 
 private const val TAG = FRAG_TRANS_ADD
@@ -48,10 +48,10 @@ class TransactionAddFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
     private lateinit var transactionViewModel: TransactionViewModel
     private lateinit var accountViewModel: AccountViewModel
     private var success = false
-    private val args: TransactionAddFragmentArgs by navArgs()
 
     private var mToAccount: Account? = null
     private var mFromAccount: Account? = null
@@ -70,6 +70,8 @@ class TransactionAddFragment :
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
+        mainViewModel =
+            mainActivity.mainViewModel
         mView = binding.root
         return mView
     }
@@ -121,18 +123,15 @@ class TransactionAddFragment :
     }
 
     private fun chooseBudgetRule() {
-        val fragmentChain =
-            args.callingFragments + "', " + TAG
-
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments() + "', " + TAG
+        )
+        mainViewModel.setTransactionDetailed(
+            getTransactionDetailed()
+        )
         val direction =
             TransactionAddFragmentDirections
-                .actionTransactionAddFragmentToBudgetRuleFragment(
-                    args.asset,
-                    args.payDay,
-                    null,
-                    getTransactionDetailed(),
-                    fragmentChain
-                )
+                .actionTransactionAddFragmentToBudgetRuleFragment()
         mView.findNavController().navigate(direction)
     }
 
@@ -143,10 +142,10 @@ class TransactionAddFragment :
                 etTransDate.text.toString(),
                 etDescription.text.toString(),
                 etNote.text.toString(),
-                args.transaction?.budgetRule?.ruleId ?: 0L,
-                args.transaction?.toAccount?.accountId ?: 0L,
+                mainViewModel.getTransactionDetailed()?.budgetRule?.ruleId ?: 0L,
+                mainViewModel.getTransactionDetailed()?.toAccount?.accountId ?: 0L,
                 chkToAccPending.isChecked,
-                args.transaction?.fromAccount?.accountId ?: 0L,
+                mainViewModel.getTransactionDetailed()?.fromAccount?.accountId ?: 0L,
                 chkFromAccPending.isChecked,
                 if (etAmount.text.isNotEmpty()) {
                     cf.getDoubleFromDollars(etAmount.text.toString())
@@ -163,9 +162,9 @@ class TransactionAddFragment :
         binding.apply {
             return TransactionDetailed(
                 getCurTransaction(),
-                args.transaction?.budgetRule,
-                args.transaction?.toAccount,
-                args.transaction?.fromAccount
+                mainViewModel.getTransactionDetailed()?.budgetRule,
+                mainViewModel.getTransactionDetailed()?.toAccount,
+                mainViewModel.getTransactionDetailed()?.fromAccount
             )
         }
     }
@@ -196,94 +195,79 @@ class TransactionAddFragment :
     }
 
     private fun chooseFromAccount() {
-        val fragmentChain = "${args.callingFragments}, $TAG"
+        mainViewModel.setCallingFragments(
+            "${mainViewModel.getCallingFragments()}, $TAG"
+        )
+        mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
+        mainViewModel.setTransactionDetailed(getTransactionDetailed())
         val direction = TransactionAddFragmentDirections
-            .actionTransactionAddFragmentToAccountsFragment(
-                args.asset,
-                args.payDay,
-                null,
-                getTransactionDetailed(),
-                null,
-                REQUEST_FROM_ACCOUNT,
-                fragmentChain
-            )
+            .actionTransactionAddFragmentToAccountsFragment()
         mView.findNavController().navigate(direction)
     }
 
     private fun chooseToAccount() {
-        val fragmentChain = "${args.callingFragments}, $TAG"
+        mainViewModel.setCallingFragments(
+            "${mainViewModel.getCallingFragments()}, $TAG"
+        )
+        mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
+        mainViewModel.setTransactionDetailed(getTransactionDetailed())
         val direction = TransactionAddFragmentDirections
-            .actionTransactionAddFragmentToAccountsFragment(
-                args.asset,
-                args.payDay,
-                null,
-                getTransactionDetailed(),
-                null,
-                REQUEST_TO_ACCOUNT,
-                fragmentChain
-            )
+            .actionTransactionAddFragmentToAccountsFragment()
         mView.findNavController().navigate(direction)
     }
 
 
     private fun fillValues() {
         binding.apply {
-            if (args.transaction != null) {
-                if (args.transaction!!.transaction != null) {
+            if (mainViewModel.getTransactionDetailed() != null) {
+                if (mainViewModel.getTransactionDetailed()!!.transaction != null) {
                     etDescription.setText(
-                        args.transaction!!.transaction!!.transName.ifBlank {
-                            if (args.transaction!!.budgetRule != null) {
-                                args.transaction!!.budgetRule!!.budgetRuleName
-                            } else {
-                                ""
-                            }
-                        }
+                        mainViewModel.getTransactionDetailed()!!.transaction?.transName ?: ""
                     )
                     etNote.setText(
-                        args.transaction!!.transaction!!.transNote
+                        mainViewModel.getTransactionDetailed()!!.transaction!!.transNote
                     )
                     etTransDate.setText(
-                        args.transaction!!.transaction!!.transDate
+                        mainViewModel.getTransactionDetailed()!!.transaction!!.transDate
                     )
                     etAmount.hint = "Budgeted " +
-                            if (args.transaction!!.transaction!!.transAmount == 0.0 &&
-                                args.transaction!!.budgetRule != null
+                            if (mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount == 0.0 &&
+                                mainViewModel.getTransactionDetailed()!!.budgetRule != null
                             ) {
                                 cf.displayDollars(
-                                    args.transaction!!.budgetRule!!.budgetAmount
+                                    mainViewModel.getTransactionDetailed()!!.budgetRule!!.budgetAmount
                                 )
                             } else {
                                 cf.displayDollars(
-                                    args.transaction!!.transaction!!.transAmount
+                                    mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount
                                 )
                             }
-                    if (args.transaction!!.transaction!!.transAmount != 0.0) {
+                    if (mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount != 0.0) {
                         etAmount.setText(
                             cf.displayDollars(
-                                args.transaction!!.transaction!!.transAmount
+                                mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount
                             )
                         )
                     }
 
                 }
-                if (args.transaction!!.budgetRule != null) {
-                    args.transaction!!.budgetRule = args.transaction!!.budgetRule!!
+                if (mainViewModel.getTransactionDetailed()!!.budgetRule != null) {
                     tvBudgetRule.text =
-                        args.transaction!!.budgetRule!!.budgetRuleName
-                    if (args.transaction!!.toAccount == null) {
-                        if (args.transaction!!.budgetRule!!.budToAccountId != 0L) {
+                        mainViewModel.getTransactionDetailed()!!.budgetRule!!.budgetRuleName
+                    if (mainViewModel.getTransactionDetailed()!!.toAccount == null) {
+                        if (mainViewModel.getTransactionDetailed()!!.budgetRule!!.budToAccountId != 0L) {
                             CoroutineScope(Dispatchers.IO).launch {
                                 val toAccount =
                                     async {
                                         accountViewModel.getAccount(
-                                            args.transaction!!.budgetRule!!.budToAccountId
+                                            mainViewModel.getTransactionDetailed()!!.budgetRule!!.budToAccountId
                                         )
                                     }
                                 mToAccount = toAccount.await()
                                 val toAccountWithType =
                                     async {
                                         accountViewModel.getAccountWithType(
-                                            args.transaction!!.budgetRule!!.budToAccountId
+                                            mainViewModel.getTransactionDetailed()!!.budgetRule!!.budToAccountId
                                         )
                                     }
                                 mToAccountWithType = toAccountWithType.await()
@@ -299,20 +283,20 @@ class TransactionAddFragment :
                             }
                         }
                     }
-                    if (args.transaction!!.fromAccount == null) {
-                        if (args.transaction!!.budgetRule!!.budFromAccountId != 0L) {
+                    if (mainViewModel.getTransactionDetailed()!!.fromAccount == null) {
+                        if (mainViewModel.getTransactionDetailed()!!.budgetRule!!.budFromAccountId != 0L) {
                             CoroutineScope(Dispatchers.IO).launch {
                                 val fromAccount =
                                     async {
                                         accountViewModel.getAccount(
-                                            args.transaction!!.budgetRule!!.budFromAccountId
+                                            mainViewModel.getTransactionDetailed()!!.budgetRule!!.budFromAccountId
                                         )
                                     }
                                 mFromAccount = fromAccount.await()
                                 val fromAccountWithType =
                                     async {
                                         accountViewModel.getAccountWithType(
-                                            args.transaction!!.budgetRule!!.budFromAccountId
+                                            mainViewModel.getTransactionDetailed()!!.budgetRule!!.budFromAccountId
                                         )
                                     }
                                 mFromAccountWithType = fromAccountWithType.await()
@@ -330,15 +314,16 @@ class TransactionAddFragment :
                         }
                     }
                 }
-                if (args.transaction!!.toAccount != null) {
-                    mToAccount = args.transaction!!.toAccount
+                if (mainViewModel.getTransactionDetailed()!!.toAccount != null) {
+                    mToAccount =
+                        mainViewModel.getTransactionDetailed()!!.toAccount
                     tvToAccount.text =
-                        args.transaction!!.toAccount!!.accountName
+                        mainViewModel.getTransactionDetailed()!!.toAccount!!.accountName
                     CoroutineScope(Dispatchers.IO).launch {
                         val toAccountWithType =
                             async {
                                 accountViewModel.getAccountWithType(
-                                    args.transaction!!.toAccount!!.accountName
+                                    mainViewModel.getTransactionDetailed()!!.toAccount!!.accountName
                                 )
                             }
                         mToAccountWithType = toAccountWithType.await()
@@ -353,16 +338,17 @@ class TransactionAddFragment :
                     }
                 }
                 chkToAccPending.isChecked =
-                    args.transaction!!.transaction!!.transToAccountPending
-                if (args.transaction!!.fromAccount != null) {
-                    mFromAccount = args.transaction!!.fromAccount
+                    mainViewModel.getTransactionDetailed()!!.transaction!!.transToAccountPending
+                if (mainViewModel.getTransactionDetailed()!!.fromAccount != null) {
+                    mFromAccount =
+                        mainViewModel.getTransactionDetailed()!!.fromAccount
                     tvFromAccount.text =
-                        args.transaction?.fromAccount!!.accountName
+                        mainViewModel.getTransactionDetailed()?.fromAccount!!.accountName
                     CoroutineScope(Dispatchers.IO).launch {
                         val fromAccountWithType =
                             async {
                                 accountViewModel.getAccountWithType(
-                                    args.transaction?.fromAccount!!.accountName
+                                    mainViewModel.getTransactionDetailed()?.fromAccount!!.accountName
                                 )
                             }
                         mFromAccountWithType = fromAccountWithType.await()
@@ -379,7 +365,7 @@ class TransactionAddFragment :
                     chkFromAccPending.visibility = View.GONE
                 }
                 chkFromAccPending.isChecked =
-                    args.transaction!!.transaction!!.transFromAccountPending
+                    mainViewModel.getTransactionDetailed()!!.transaction!!.transFromAccountPending
 
             } else {
                 etTransDate.setText(df.getCurrentDateAsString())
@@ -403,15 +389,6 @@ class TransactionAddFragment :
                 }
             }
             gotoCallingFragment()
-//            val direction =
-//                TransactionAddFragmentDirections
-//                    .actionTransactionAddFragmentToTransactionViewFragment(
-//                        args.asset,
-//                        args.payDay,
-//                        null,
-//                        null
-//                    )
-//            mView.findNavController().navigate(direction)
 
         } else {
             Toast.makeText(
@@ -429,7 +406,7 @@ class TransactionAddFragment :
                 mToAccount!!.accountId
             )
         if (!mTransaction.transToAccountPending) {
-            if (toAccountWithType.accountType.keepTotals) {
+            if (toAccountWithType.accountType!!.keepTotals) {
                 transactionViewModel.updateAccountBalance(
                     toAccountWithType.account.accountBalance +
                             mTransaction.transAmount,
@@ -452,7 +429,7 @@ class TransactionAddFragment :
                 mFromAccount!!.accountId
             )
         if (!mTransaction.transFromAccountPending) {
-            if (fromAccountWithType.accountType.keepTotals) {
+            if (fromAccountWithType.accountType!!.keepTotals) {
                 transactionViewModel.updateAccountBalance(
                     fromAccountWithType.account.accountBalance -
                             mTransaction.transAmount,
@@ -466,37 +443,21 @@ class TransactionAddFragment :
     }
 
     private fun gotoCallingFragment() {
-        val fragmentChain = args.callingFragments!!
-            .replace(", $TAG", "")
-        if (args.callingFragments!!.contains(FRAG_TRANSACTIONS)) {
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments()!!
+                .replace(", $TAG", "")
+        )
+        if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTIONS)) {
             val direction =
                 TransactionAddFragmentDirections
-                    .actionTransactionAddFragmentToTransactionViewFragment(
-                        args.asset,
-                        args.payDay,
-                        null,
-                        fragmentChain
-                    )
+                    .actionTransactionAddFragmentToTransactionViewFragment()
             mView.findNavController().navigate(direction)
-        } else if (args.callingFragments!!.contains(FRAG_BUDGET_VIEW)) {
+        } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_BUDGET_VIEW)) {
             val direction =
                 TransactionAddFragmentDirections
-                    .actionTransactionAddFragmentToBudgetViewFragment(
-                        asset = args.asset,
-                        payDay = args.payDay,
-                        callingFragments = fragmentChain
-                    )
+                    .actionTransactionAddFragmentToBudgetViewFragment()
             mView.findNavController().navigate(direction)
-        } /*else if (args.callingFragments!!.contains(FRAG_BUDGET_RULES)) {
-            val direction =
-                TransactionAddFragmentDirections
-                    .actionTransactionAddFragmentToBudgetRuleFragment(
-                        null,
-                        null,
-                        fragmentChain
-                    )
-            mView.findNavController().navigate(direction)
-        }*/
+        }
     }
 
     private fun checkTransaction(): String {
@@ -525,7 +486,7 @@ class TransactionAddFragment :
                 ) {
                     "     Error!!\n" +
                             "Please enter an amount for this transaction"
-                } else if (args.transaction!!.budgetRule == null) {
+                } else if (mainViewModel.getTransactionDetailed()!!.budgetRule == null) {
                     if (saveWithoutBudget()) {
                         "Ok"
                     } else {

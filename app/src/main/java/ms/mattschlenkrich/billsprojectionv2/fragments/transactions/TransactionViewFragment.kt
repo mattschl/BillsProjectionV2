@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.billsprojectionv2.fragments.transactions
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -13,7 +14,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -21,6 +21,7 @@ import ms.mattschlenkrich.billsprojectionv2.adapter.TransactionAdapter
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTIONS
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionViewBinding
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
+import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModel
 
 private const val TAG = FRAG_TRANSACTIONS
@@ -34,9 +35,9 @@ class TransactionViewFragment :
     private val binding get() = _binding!!
     private var mView: View? = null
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
     private lateinit var transactionViewModel: TransactionViewModel
     private lateinit var transactionAdapter: TransactionAdapter
-    private val args: TransactionUpdateFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,6 +47,9 @@ class TransactionViewFragment :
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
+        mainViewModel =
+            mainActivity.mainViewModel
+        Log.d(TAG, "Creating $TAG")
         mView = binding.root
         return binding.root
     }
@@ -61,23 +65,16 @@ class TransactionViewFragment :
         setupRecyclerView()
         binding.fabAddTransaction.setOnClickListener {
             val direction = TransactionViewFragmentDirections
-                .actionTransactionViewFragmentToTransactionAddFragment(
-                    args.asset,
-                    args.payDay,
-                    null,
-                    TAG
-                )
+                .actionTransactionViewFragmentToTransactionAddFragment()
             mView!!.findNavController().navigate(direction)
         }
     }
 
     private fun setupRecyclerView() {
         transactionAdapter = TransactionAdapter(
-            args.asset,
-            args.payDay,
-            mView!!.context,
             mainActivity,
-            TAG
+            mainViewModel,
+            mView!!.context
         )
 
         binding.rvTransactions.apply {

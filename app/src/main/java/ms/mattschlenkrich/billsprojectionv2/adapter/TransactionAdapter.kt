@@ -21,17 +21,15 @@ import ms.mattschlenkrich.billsprojectionv2.databinding.TransactionLinearItemBin
 import ms.mattschlenkrich.billsprojectionv2.fragments.transactions.TransactionViewFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.Transactions
+import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 import java.util.Random
 
 private const val TAG = "TransactionAdapter"
 
 class TransactionAdapter(
-    private val asset: String?,
-    private val payDay: String?,
-//    private val transaction: TransactionDetailed?,
-    private val context: Context,
     private val mainActivity: MainActivity,
-    private val callingFragment: String,
+    private val mainViewModel: MainViewModel,
+    private val context: Context,
 ) : RecyclerView.Adapter<TransactionAdapter.TransactionsViewHolder>() {
 
     private val cf = CommonFunctions()
@@ -171,12 +169,7 @@ class TransactionAdapter(
                     when (pos) {
                         0 -> {
                             val direction = TransactionViewFragmentDirections
-                                .actionTransactionViewFragmentToTransactionUpdateFragment(
-                                    asset,
-                                    payDay,
-                                    transaction,
-                                    callingFragment
-                                )
+                                .actionTransactionViewFragmentToTransactionUpdateFragment()
                             it.findNavController().navigate(direction)
                         }
 

@@ -15,7 +15,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.navArgs
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
@@ -28,6 +27,7 @@ import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetItemUpdate
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModel
+import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 
 private const val TAG = FRAG_BUDGET_ITEM_UPDATE
 
@@ -39,8 +39,8 @@ class BudgetItemUpdateFragment : Fragment(
     private val binding get() = _binding!!
     private var mView: View? = null
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
     private lateinit var budgetItemViewModel: BudgetItemViewModel
-    private val args: BudgetItemUpdateFragmentArgs by navArgs()
     private val cf = CommonFunctions()
     private val df = DateFunctions()
 
@@ -53,6 +53,8 @@ class BudgetItemUpdateFragment : Fragment(
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
+        mainViewModel =
+            mainActivity.mainViewModel
         mView = binding.root
         return binding.root
     }
@@ -131,32 +133,21 @@ class BudgetItemUpdateFragment : Fragment(
     }
 
     private fun chooseAccount(requestedAccount: String) {
-        val fragmentChain =
-            args.callingFragments + ", " + TAG
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments() + ", " + TAG
+        )
+        mainViewModel.setRequestedAccount(requestedAccount)
         val direction = BudgetItemUpdateFragmentDirections
-            .actionBudgetItemUpdateFragmentToAccountsFragment(
-                args.asset,
-                args.payDay,
-                getCurBudgetItemDetailed(),
-                null,
-                null,
-                requestedAccount,
-                fragmentChain
-            )
+            .actionBudgetItemUpdateFragmentToAccountsFragment()
         mView?.findNavController()?.navigate(direction)
     }
 
     private fun chooseBudgetRule() {
-        val fragmentChain =
-            args.callingFragments + ", " + TAG
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments() + ", " + TAG
+        )
         val direction = BudgetItemUpdateFragmentDirections
-            .actionBudgetItemUpdateFragmentToBudgetRuleFragment(
-                args.asset,
-                args.payDay,
-                getCurBudgetItemDetailed(),
-                null,
-                fragmentChain
-            )
+            .actionBudgetItemUpdateFragmentToBudgetRuleFragment()
         mView?.findNavController()?.navigate(direction)
     }
 
@@ -166,9 +157,9 @@ class BudgetItemUpdateFragment : Fragment(
                 getCurBudgetItem()
             return BudgetDetailed(
                 budgetItem,
-                args.budgetItem!!.budgetRule,
-                args.budgetItem!!.toAccount,
-                args.budgetItem!!.fromAccount
+                mainViewModel.getBudgetItem()!!.budgetRule,
+                mainViewModel.getBudgetItem()!!.toAccount,
+                mainViewModel.getBudgetItem()!!.fromAccount
             )
         }
     }
@@ -176,17 +167,15 @@ class BudgetItemUpdateFragment : Fragment(
     private fun getCurBudgetItem(): BudgetItem {
         binding.apply {
             return BudgetItem(
-                if (args.budgetItem!!.budgetRule != null)
-                    args.budgetItem!!.budgetRule!!.ruleId else 0L,
+                if (mainViewModel.getBudgetItem()!!.budgetRule != null)
+                    mainViewModel.getBudgetItem()!!.budgetRule!!.ruleId else 0L,
                 etProjectedDate.text.toString(),
                 etProjectedDate.text.toString(),
                 spPayDays.selectedItem.toString(),
                 etBudgetItemName.text.toString(),
                 chkIsPayDay.isChecked,
-                if (args.budgetItem!!.toAccount != null)
-                    args.budgetItem!!.toAccount!!.accountId else 0L,
-                if (args.budgetItem!!.fromAccount != null)
-                    args.budgetItem!!.fromAccount!!.accountId else 0L,
+                mainViewModel.getBudgetItem()!!.toAccount?.accountId ?: 0L,
+                mainViewModel.getBudgetItem()!!.fromAccount?.accountId ?: 0L,
                 etProjectedAmount.text.toString().toDouble(),
                 biIsPending = false,
                 chkFixedAmount.isChecked,
@@ -208,8 +197,8 @@ class BudgetItemUpdateFragment : Fragment(
             setPositiveButton("Delete") { _, _ ->
                 binding.apply {
                     budgetItemViewModel.deleteBudgetItem(
-                        args.budgetItem!!.budgetItem!!.biRuleId,
-                        args.budgetItem!!.budgetItem!!.biProjectedDate,
+                        mainViewModel.getBudgetItem()!!.budgetItem!!.biRuleId,
+                        mainViewModel.getBudgetItem()!!.budgetItem!!.biProjectedDate,
                         df.getCurrentTimeAsString()
                     )
 
@@ -221,18 +210,16 @@ class BudgetItemUpdateFragment : Fragment(
     }
 
     private fun gotoCallingFragment() {
-        if (args.callingFragments.toString().contains(
+        if (mainViewModel.getCallingFragments()!!.contains(
                 FRAG_BUDGET_VIEW
             )
         ) {
-            val fragmentChain = args.callingFragments!!
-                .replace(", $TAG", "")
+            mainViewModel.setCallingFragments(
+                mainViewModel.getCallingFragments()!!
+                    .replace(", $TAG", "")
+            )
             val direction = BudgetItemUpdateFragmentDirections
-                .actionBudgetItemUpdateFragmentToBudgetViewFragment(
-                    args.asset,
-                    args.payDay,
-                    fragmentChain
-                )
+                .actionBudgetItemUpdateFragmentToBudgetViewFragment()
             mView!!.findNavController().navigate(direction)
         }
     }

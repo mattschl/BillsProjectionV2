@@ -2,7 +2,6 @@ package ms.mattschlenkrich.billsprojectionv2.fragments.budgetView
 
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -16,7 +15,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.navArgs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -36,6 +34,7 @@ import ms.mattschlenkrich.billsprojectionv2.model.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModel
+import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 
 private const val TAG = FRAG_BUDGET_ITEM_ADD
 
@@ -48,9 +47,9 @@ class BudgetItemAddFragment : Fragment(
     private var mView: View? = null
     private lateinit var mainActivity: MainActivity
     private lateinit var budgetItemViewModel: BudgetItemViewModel
+    private lateinit var mainViewModel: MainViewModel
     private lateinit var budgetRuleViewModel: BudgetRuleViewModel
-    private lateinit var budgetItemDetailed: BudgetRuleDetailed
-    private val args: BudgetItemAddFragmentArgs by navArgs()
+    private lateinit var budgetRuleDetailed: BudgetRuleDetailed
 
     private val cf = CommonFunctions()
     private val df = DateFunctions()
@@ -64,6 +63,8 @@ class BudgetItemAddFragment : Fragment(
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
+        mainViewModel =
+            mainActivity.mainViewModel
         mView = binding.root
         return binding.root
     }
@@ -92,7 +93,7 @@ class BudgetItemAddFragment : Fragment(
                 false
             }
         }
-        budgetItemDetailed =
+        budgetRuleDetailed =
             BudgetRuleDetailed(
                 null,
                 null,
@@ -140,7 +141,6 @@ class BudgetItemAddFragment : Fragment(
     }
 
     private fun saveBudgetItem() {
-        Log.d(TAG, "calling Fragment is ${args.callingFragments}")
         val mes = checkBudgetItem()
         if (mes == "Ok") {
             budgetItemViewModel.insertBudgetItem(
@@ -157,20 +157,16 @@ class BudgetItemAddFragment : Fragment(
     }
 
     private fun gotoCallingFragment() {
-        val fragmentChain = args.callingFragments!!
-            .replace(", $TAG", "")
-
-        if (args.callingFragments!!.contains(
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments()!!
+                .replace(", $TAG", "")
+        )
+        if (mainViewModel.getCallingFragments()!!.contains(
                 FRAG_BUDGET_VIEW
             )
         ) {
-            Log.d(TAG, "In gotoCallingFragment: ${args.callingFragments}")
             val direction = BudgetItemAddFragmentDirections
-                .actionBudgetItemAddFragmentToBudgetViewFragment(
-                    args.asset,
-                    args.payDay,
-                    fragmentChain
-                )
+                .actionBudgetItemAddFragmentToBudgetViewFragment()
             mView!!.findNavController().navigate(direction)
         }
     }
@@ -181,10 +177,10 @@ class BudgetItemAddFragment : Fragment(
                 if (etBudgetItemName.text.isNullOrBlank()) {
                     "     Error!!\n" +
                             "Please enter a name or description"
-                } else if (budgetItemDetailed.toAccount == null) {
+                } else if (budgetRuleDetailed.toAccount == null) {
                     "     Error!!\n" +
                             "There needs to be an account money will go to."
-                } else if (budgetItemDetailed.fromAccount == null
+                } else if (budgetRuleDetailed.fromAccount == null
                 ) {
                     "     Error!!\n" +
                             "There needs to be an account money will come from."
@@ -225,56 +221,46 @@ class BudgetItemAddFragment : Fragment(
     }
 
     private fun chooseAccount(requestedAccount: String) {
-        val fragmentChain =
-            args.callingFragments + ", " + TAG
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments() + ", " + TAG
+        )
+        mainViewModel.setRequestedAccount(requestedAccount)
         val direction = BudgetItemAddFragmentDirections
-            .actionBudgetItemAddFragmentToAccountsFragment(
-                args.asset,
-                args.payDay,
-                getCurBudgetDetailed(),
-                null,
-                null,
-                requestedAccount,
-                fragmentChain
-            )
+            .actionBudgetItemAddFragmentToAccountsFragment()
         mView!!.findNavController().navigate(direction)
     }
 
     private fun chooseBudgetRule() {
-        val fragmentChain =
-            args.callingFragments + ", " + TAG
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments() + ", " + TAG
+        )
+        mainViewModel.setBudgetItem(getCurBudgetDetailed())
         val direction = BudgetItemAddFragmentDirections
-            .actionBudgetItemAddFragmentToBudgetRuleFragment(
-                args.asset,
-                args.payDay,
-                getCurBudgetDetailed(),
-                null,
-                fragmentChain
-            )
+            .actionBudgetItemAddFragmentToBudgetRuleFragment()
         mView!!.findNavController().navigate(direction)
     }
 
     private fun getCurBudgetDetailed(): BudgetDetailed {
         return BudgetDetailed(
             getCurBudgetItem(),
-            args.budgetItem?.budgetRule,
-            args.budgetItem?.toAccount,
-            args.budgetItem?.fromAccount
+            mainViewModel.getBudgetItem()?.budgetRule,
+            mainViewModel.getBudgetItem()?.toAccount,
+            mainViewModel.getBudgetItem()?.fromAccount
         )
     }
 
     private fun getCurBudgetItem(): BudgetItem {
         binding.apply {
             return BudgetItem(
-                budgetItemDetailed.budgetRule?.ruleId
+                budgetRuleDetailed.budgetRule?.ruleId
                     ?: cf.generateId(),
                 etProjectedDate.text.toString(),
                 etProjectedDate.text.toString(),
                 spPayDays.selectedItem.toString(),
                 etBudgetItemName.text.toString(),
                 chkIsPayDay.isChecked,
-                budgetItemDetailed.toAccount?.accountId ?: 0L,
-                budgetItemDetailed.fromAccount?.accountId ?: 0L,
+                budgetRuleDetailed.toAccount?.accountId ?: 0L,
+                budgetRuleDetailed.fromAccount?.accountId ?: 0L,
                 if (etProjectedAmount.text.isNotEmpty()) {
                     cf.getDoubleFromDollars(
                         etProjectedAmount.text.toString()
@@ -296,7 +282,7 @@ class BudgetItemAddFragment : Fragment(
     }
 
     private fun fillValues() {
-        if (args.budgetItem != null) {
+        if (mainViewModel.getBudgetItem() != null) {
             fillFromTemp()
         } else {
             fillFromBlank()
@@ -311,71 +297,83 @@ class BudgetItemAddFragment : Fragment(
 
     private fun fillFromTemp() {
         binding.apply {
-            var budgetRuleDetailed: BudgetRuleDetailed? = null
-            etProjectedDate.setText(args.budgetItem?.budgetItem?.biProjectedDate)
-            if (args.budgetItem!!.budgetRule != null) {
-                tvBudgetRule.text = args.budgetItem!!.budgetRule!!.budgetRuleName
+            etProjectedDate.setText(
+                mainViewModel.getBudgetItem()?.budgetItem?.biProjectedDate
+            )
+            if (mainViewModel.getBudgetItem()!!.budgetRule != null) {
+                tvBudgetRule.text =
+                    mainViewModel.getBudgetItem()!!.budgetRule!!.budgetRuleName
                 CoroutineScope(Dispatchers.IO).launch {
                     val mBudgetRuleDetailed =
                         async {
                             budgetRuleViewModel.getBudgetRuleDetailed(
-                                args.budgetItem!!.budgetRule!!.ruleId
+                                mainViewModel.getBudgetItem()!!.budgetRule!!.ruleId
                             )
                         }
-                    budgetItemDetailed.budgetRule =
-                        args.budgetItem!!.budgetRule
+                    budgetRuleDetailed.budgetRule =
+                        mainViewModel.getBudgetItem()!!.budgetRule
                     budgetRuleDetailed =
                         mBudgetRuleDetailed.await()
                 }
             }
             CoroutineScope(Dispatchers.Main).launch {
                 delay(500)
-                if (args.budgetItem!!.budgetItem!!.biBudgetName.isEmpty()) {
+                if (mainViewModel.getBudgetItem()!!.budgetItem!!.biBudgetName.isEmpty()) {
                     etBudgetItemName.setText(
-                        budgetRuleDetailed?.budgetRule?.budgetRuleName
+                        budgetRuleDetailed.budgetRule?.budgetRuleName
                     )
                 } else {
-                    etBudgetItemName.setText(args.budgetItem?.budgetItem?.biBudgetName)
+                    etBudgetItemName.setText(
+                        mainViewModel.getBudgetItem()?.budgetItem?.biBudgetName
+                    )
                 }
-                if (args.budgetItem!!.budgetItem!!.biProjectedAmount == 0.0) {
+                if (mainViewModel.getBudgetItem()!!.budgetItem!!.biProjectedAmount == 0.0) {
                     etProjectedAmount.setText(
                         cf.displayDollars(
-                            budgetRuleDetailed?.budgetRule?.budgetAmount ?: 0.0
+                            budgetRuleDetailed.budgetRule?.budgetAmount ?: 0.0
                         )
                     )
                 } else {
                     etProjectedAmount.setText(
                         cf.displayDollars(
-                            args.budgetItem!!.budgetItem!!.biProjectedAmount
+                            mainViewModel.getBudgetItem()!!.budgetItem!!.biProjectedAmount
                         )
                     )
                 }
-                if (args.budgetItem!!.toAccount != null) {
-                    tvToAccount.text = args.budgetItem!!.toAccount!!.accountName
-                    budgetItemDetailed.toAccount =
-                        args.budgetItem!!.toAccount
+                if (mainViewModel.getBudgetItem()!!.toAccount != null) {
+                    tvToAccount.text =
+                        mainViewModel.getBudgetItem()!!.toAccount!!.accountName
+                    budgetRuleDetailed.toAccount =
+                        mainViewModel.getBudgetItem()!!.toAccount
                 } else {
-                    tvToAccount.text = budgetRuleDetailed?.toAccount?.accountName
-                    budgetItemDetailed.toAccount =
-                        budgetRuleDetailed?.toAccount
+                    tvToAccount.text =
+                        budgetRuleDetailed.toAccount?.accountName
+                    budgetRuleDetailed.toAccount =
+                        budgetRuleDetailed.toAccount
                 }
-                if (args.budgetItem!!.fromAccount != null) {
-                    tvFromAccount.text = args.budgetItem!!.fromAccount!!.accountName
-                    budgetItemDetailed.fromAccount =
-                        args.budgetItem!!.fromAccount
+                if (mainViewModel.getBudgetItem()!!.fromAccount != null) {
+                    tvFromAccount.text =
+                        mainViewModel.getBudgetItem()!!.fromAccount!!.accountName
+                    budgetRuleDetailed.fromAccount =
+                        mainViewModel.getBudgetItem()!!.fromAccount
                 } else {
-                    tvFromAccount.text = budgetRuleDetailed?.fromAccount?.accountName
-                    budgetItemDetailed.fromAccount =
-                        budgetRuleDetailed?.fromAccount
+                    tvFromAccount.text =
+                        budgetRuleDetailed.fromAccount?.accountName
+                    budgetRuleDetailed.fromAccount =
+                        budgetRuleDetailed.fromAccount
                 }
             }
-            chkFixedAmount.isChecked = args.budgetItem!!.budgetItem!!.biIsFixed
-            chkIsAutoPayment.isChecked = args.budgetItem!!.budgetItem!!.biIsAutomatic
-            chkIsPayDay.isChecked = args.budgetItem!!.budgetItem!!.biIsPayDayItem
-            chkIsLocked.isChecked = args.budgetItem!!.budgetItem!!.biLocked
+            chkFixedAmount.isChecked =
+                mainViewModel.getBudgetItem()!!.budgetItem!!.biIsFixed
+            chkIsAutoPayment.isChecked =
+                mainViewModel.getBudgetItem()!!.budgetItem!!.biIsAutomatic
+            chkIsPayDay.isChecked =
+                mainViewModel.getBudgetItem()!!.budgetItem!!.biIsPayDayItem
+            chkIsLocked.isChecked =
+                mainViewModel.getBudgetItem()!!.budgetItem!!.biLocked
             for (i in 0 until spPayDays.adapter.count) {
                 if (spPayDays.getItemAtPosition(i) ==
-                    args.budgetItem!!.budgetItem!!.biPayDay
+                    mainViewModel.getBudgetItem()!!.budgetItem!!.biPayDay
                 ) {
                     spPayDays.setSelection(i)
                     break
