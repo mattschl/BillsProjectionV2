@@ -57,6 +57,11 @@ class AccountUpdateFragment :
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         mView = binding.root
+        createMenu()
+        return mView as View
+    }
+
+    private fun createMenu() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -76,7 +81,6 @@ class AccountUpdateFragment :
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
-        return mView as View
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -117,7 +121,6 @@ class AccountUpdateFragment :
         mainViewModel.setCallingFragments(
             mainViewModel.getCallingFragments() + ", " + TAG
         )
-        mainViewModel.setRequestedAccount("")
         mainViewModel.setAccountWithType(
             AccountWithType(
                 getUpdatedAccount(),

@@ -37,29 +37,26 @@ class AccountAdapter(
     RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() {
 
     private var mBudgetItem =
-        mainViewModel.getBudgetItem()
-            ?: BudgetDetailed(
-                null,
-                null,
-                null,
-                null
-            )
+        BudgetDetailed(
+            mainViewModel.getBudgetItem()?.budgetItem,
+            mainViewModel.getBudgetItem()?.budgetRule,
+            mainViewModel.getBudgetItem()?.toAccount,
+            mainViewModel.getBudgetItem()?.fromAccount
+        )
 
     private var mBudgetRuleDetailed =
-        mainViewModel.getBudgetRuleDetailed()
-            ?: BudgetRuleDetailed(
-                null,
-                null,
-                null
-            )
+        BudgetRuleDetailed(
+            mainViewModel.getBudgetRuleDetailed()?.budgetRule,
+            mainViewModel.getBudgetRuleDetailed()?.toAccount,
+            mainViewModel.getBudgetRuleDetailed()?.fromAccount
+        )
     private var mTransactionDetailed =
-        mainViewModel.getTransactionDetailed()
-            ?: TransactionDetailed(
-                null,
-                null,
-                null,
-                null
-            )
+        TransactionDetailed(
+            mainViewModel.getTransactionDetailed()?.transaction,
+            mainViewModel.getTransactionDetailed()?.budgetRule,
+            mainViewModel.getTransactionDetailed()?.toAccount,
+            mainViewModel.getTransactionDetailed()?.fromAccount
+        )
 
     private val cf = CommonFunctions()
 
@@ -110,7 +107,8 @@ class AccountAdapter(
         Log.d(TAG, "$TAG is entered")
         val curAccount = differ.currentList[position]
 
-        holder.itemBinding.tvAccountName.text = curAccount.account.accountName
+        holder.itemBinding.tvAccountName.text =
+            curAccount.account.accountName
         var info = if (curAccount.account.accountNumber.isNotEmpty()) {
             "# ${curAccount.account.accountNumber}"
         } else {
@@ -182,18 +180,12 @@ class AccountAdapter(
         }
 
         holder.itemView.setOnLongClickListener {
-            mainViewModel.setAccountWithType(
-                curAccount
-            )
-            mainViewModel.setCallingFragments(
-                mainViewModel.getCallingFragments() + ", " + FRAG_ACCOUNTS
-            )
-            gotoUpdateUpdateAccount(curAccount, it)
+            gotoUpdateAccount(curAccount, it)
             false
         }
     }
 
-    private fun gotoUpdateUpdateAccount(
+    private fun gotoUpdateAccount(
         curAccount: AccountWithType,
         it: View
     ) {
