@@ -15,6 +15,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.databinding.AccountTypeLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountTypesFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
+import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 import java.util.Random
 
@@ -112,6 +113,12 @@ class AccountTypeAdapter(
             mainViewModel.setAccountType(
                 curAccountType
             )
+            mainViewModel.setAccountWithType(
+                AccountWithType(
+                    mainViewModel.getAccountWithType()!!.account,
+                    curAccountType
+                )
+            )
             if (mainViewModel.getCallingFragments()!!.contains(FRAG_ACCOUNT_UPDATE)) {
                 val direction = AccountTypesFragmentDirections
                     .actionAccountTypesFragmentToAccountUpdateFragment()
@@ -123,5 +130,4 @@ class AccountTypeAdapter(
             }
         }
     }
-
 }

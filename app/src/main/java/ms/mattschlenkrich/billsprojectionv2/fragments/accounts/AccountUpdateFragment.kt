@@ -117,6 +117,7 @@ class AccountUpdateFragment :
         mainViewModel.setCallingFragments(
             mainViewModel.getCallingFragments() + ", " + TAG
         )
+        mainViewModel.setRequestedAccount("")
         mainViewModel.setAccountWithType(
             AccountWithType(
                 getUpdatedAccount(),

@@ -15,3 +15,26 @@
         sp_package_type.adapter = packageTypesAdapter
 
     }
+
+      <action
+                android:id="@+id/action_budgetRuleFragment_to_budgetRuleAddFragment"
+                app:destination="@id/budgetRuleAddFragment" />
+            <action
+                android:id="@+id/action_budgetRuleFragment_to_budgetRuleUpdateFragment"
+                app:destination="@id/budgetRuleUpdateFragment" />
+            <action
+                android:id="@+id/action_budgetRuleFragment_to_transactionUpdateFragment"
+                app:destination="@id/transactionUpdateFragment"
+                app:popUpTo="@id/transactionUpdateFragment"
+                app:popUpToInclusive="true" />
+            <action
+                android:id="@+id/action_budgetRuleFragment_to_transactionAddFragment"
+                app:destination="@id/transactionAddFragment"
+                app:popUpTo="@id/transactionAddFragment"
+                app:popUpToInclusive="true" />
+            <action
+                android:id="@+id/action_budgetRuleFragment_to_budgetItemAddFragment"
+                app:destination="@id/budgetItemAddFragment" />
+            <action
+                android:id="@+id/action_budgetRuleFragment_to_budgetItemUpdateFragment"
+                app:destination="@id/budgetItemUpdateFragment" />

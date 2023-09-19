@@ -118,6 +118,7 @@
         android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules.BudgetRuleFragment"
         android:label="BudgetRuleFragment"
         tools:layout="@layout/fragment_budget_rule">
+
         <action
             android:id="@+id/action_budgetRuleFragment_to_budgetRuleAddFragment"
             app:destination="@id/budgetRuleAddFragment" />
@@ -125,21 +126,17 @@
             android:id="@+id/action_budgetRuleFragment_to_budgetRuleUpdateFragment"
             app:destination="@id/budgetRuleUpdateFragment" />
         <action
-            android:id="@+id/action_budgetRuleFragment_to_transactionUpdateFragment"
-            app:destination="@id/transactionUpdateFragment"
-            app:popUpTo="@id/transactionUpdateFragment"
-            app:popUpToInclusive="true" />
-        <action
             android:id="@+id/action_budgetRuleFragment_to_transactionAddFragment"
-            app:destination="@id/transactionAddFragment"
-            app:popUpTo="@id/transactionAddFragment"
-            app:popUpToInclusive="true" />
+            app:destination="@id/transactionAddFragment" />
         <action
             android:id="@+id/action_budgetRuleFragment_to_budgetItemAddFragment"
             app:destination="@id/budgetItemAddFragment" />
         <action
             android:id="@+id/action_budgetRuleFragment_to_budgetItemUpdateFragment"
             app:destination="@id/budgetItemUpdateFragment" />
+        <action
+            android:id="@+id/action_budgetRuleFragment_to_transactionUpdateFragment"
+            app:destination="@id/transactionUpdateFragment" />
     </fragment>
     <fragment
         android:id="@+id/budgetRuleAddFragment"
@@ -264,6 +261,16 @@
             android:id="@+id/action_budgetItemUpdateFragment_to_budgetRuleFragment"
             app:destination="@id/budgetRuleFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/startFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.start.StartFragment"
+        android:label="fragment_start"
+        tools:layout="@layout/fragment_start">
+        <action
+            android:id="@+id/action_startFragment_to_budgetViewFragment"
+            app:destination="@id/budgetViewFragment"
+            app:popUpTo="@id/budgetViewFragment" />
+    </fragment>
     <action
         android:id="@+id/action_global_budgetViewFragment"
         app:destination="@id/budgetViewFragment"
@@ -283,14 +290,4 @@
         app:destination="@id/transactionViewFragment"
         app:popUpTo="@id/transactionViewFragment"
         app:popUpToInclusive="true" />
-    <fragment
-        android:id="@+id/startFragment"
-        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.start.StartFragment"
-        android:label="fragment_start"
-        tools:layout="@layout/fragment_start">
-        <action
-            android:id="@+id/action_startFragment_to_budgetViewFragment"
-            app:destination="@id/budgetViewFragment"
-            app:popUpTo="@id/budgetViewFragment" />
-    </fragment>
 </navigation>

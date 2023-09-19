@@ -52,4 +52,11 @@ interface AccountTypeDao {
                 " COLLATE NOCASE ASC"
     )
     fun searchAccountType(query: String): LiveData<List<AccountType>>
+
+    @Query(
+        "SELECT $ACCOUNT_TYPE FROM $TABLE_ACCOUNT_TYPES " +
+                "WHERE $ACCT_IS_DELETED = 0 " +
+                "ORDER BY $ACCOUNT_TYPE "
+    )
+    fun getAccountTypeNames(): List<String>
 }

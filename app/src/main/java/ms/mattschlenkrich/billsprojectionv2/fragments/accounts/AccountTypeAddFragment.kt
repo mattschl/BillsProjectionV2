@@ -14,14 +14,21 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_TYPE_ADD
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountTypeAddBinding
 import ms.mattschlenkrich.billsprojectionv2.model.AccountType
+import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
-import java.util.Random
+import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 
 private const val TAG = FRAG_ACCOUNT_TYPE_ADD
 
@@ -31,10 +38,13 @@ class AccountTypeAddFragment :
     private var _binding: FragmentAccountTypeAddBinding? = null
     private val binding get() = _binding!!
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
 
     private lateinit var accountsViewModel: AccountViewModel
     private lateinit var mView: View
+    private lateinit var accountTypeList: List<String>
     private val df = DateFunctions()
+    private val cf = CommonFunctions()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,6 +56,8 @@ class AccountTypeAddFragment :
         )
         Log.d(TAG, "$TAG is entered")
         mainActivity = (activity as MainActivity)
+        mainViewModel =
+            mainActivity.mainViewModel
         return binding.root
     }
 
@@ -54,6 +66,21 @@ class AccountTypeAddFragment :
         accountsViewModel = mainActivity.accountViewModel
         mainActivity.title = "Add a new Account Type"
         mView = view
+        getAccountTypeList()
+        createMenu()
+    }
+
+    private fun getAccountTypeList() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val typeList =
+                async {
+                    accountsViewModel.getAccountTypeNames()
+                }
+            accountTypeList = typeList.await()
+        }
+    }
+
+    private fun createMenu() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -73,28 +100,33 @@ class AccountTypeAddFragment :
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
-
     }
 
     private fun saveAccountType() {
-        var id =
-            Random().nextInt(Int.MAX_VALUE).toLong()
-        id = if (Random().nextBoolean()) -id
-        else id
-        val accountTypeName = binding.etAccTypeAdd.text.toString().trim()
-        val keepTotals = binding.chkAccTypeAddKeepTotals.isChecked
-        val keepOwing = binding.chkAccTypeAddKeepOwing.isChecked
-        val isAsset = binding.chkAccTypeAddIsAsset.isChecked
-        val displayAsAsset = binding.chkAccTypeAddDisplayAsset.isChecked
-        val allowPending = binding.chkAccTypeAddAllowPending.isChecked
-
-        if (accountTypeName.isNotEmpty()) {
+        if (checkAccountType()) {
             val accountType = AccountType(
-                id, accountTypeName, keepTotals,
-                isAsset, keepOwing, false, displayAsAsset,
-                allowPending, false, df.getCurrentTimeAsString()
+                cf.generateId(),
+                binding.etAccTypeAdd.text.toString().trim(),
+                binding.chkAccTypeAddKeepTotals.isChecked,
+                binding.chkAccTypeAddIsAsset.isChecked,
+                binding.chkAccTypeAddKeepOwing.isChecked,
+                false,
+                binding.chkAccTypeAddDisplayAsset.isChecked,
+                binding.chkAccTypeAddAllowPending.isChecked,
+                false,
+                df.getCurrentTimeAsString()
             )
             accountsViewModel.addAccountType(accountType)
+            mainViewModel.setAccountWithType(
+                AccountWithType(
+                    mainViewModel.getAccountWithType()!!.account,
+                    accountType
+                )
+            )
+            mainViewModel.setCallingFragments(
+                mainViewModel.getCallingFragments()!!
+                    .replace(", $FRAG_ACCOUNT_TYPES", "")
+            )
             val direction = AccountTypeAddFragmentDirections
                 .actionAccountTypeAddFragmentToAccountTypesFragment()
             mView.findNavController().navigate(direction)
@@ -107,6 +139,16 @@ class AccountTypeAddFragment :
             ).show()
 
         }
+    }
+
+    private fun checkAccountType(): Boolean {
+        if (binding.etAccTypeAdd.text.isNullOrBlank()) return false
+        for (accType in accountTypeList) {
+            if (accType == binding.etAccTypeAdd.text.toString()) {
+                return false
+            }
+        }
+        return true
     }
 
     override fun onDestroy() {

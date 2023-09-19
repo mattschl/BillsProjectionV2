@@ -65,10 +65,17 @@ class AccountTypesFragment
 
         setupRecyclerView()
         binding.fabAddAccountType.setOnClickListener {
-            val direction = AccountTypesFragmentDirections
-                .actionAccountTypesFragmentToAccountTypeAddFragment()
-            it.findNavController().navigate(direction)
+            gotoNewAccountTypes(it)
         }
+    }
+
+    private fun gotoNewAccountTypes(it: View) {
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments() + ", " + TAG
+        )
+        val direction = AccountTypesFragmentDirections
+            .actionAccountTypesFragmentToAccountTypeAddFragment()
+        it.findNavController().navigate(direction)
     }
 
     private fun setupRecyclerView() {

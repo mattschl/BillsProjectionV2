@@ -59,7 +59,22 @@ class AccountAddFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        accountsViewModel =
+            mainActivity.accountViewModel
+        CoroutineScope(Dispatchers.IO).launch {
+            accountNameList =
+                accountsViewModel.getAccountNameList()
+        }
+        mainActivity.title = "Add a new Account"
+        fillValues()
+        createMenu()
+        binding.tvAccAddType.setOnClickListener {
+            gotoAccountTypes()
+        }
+        mView = view
+    }
 
+    private fun createMenu() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -79,20 +94,6 @@ class AccountAddFragment :
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
-
-        accountsViewModel =
-            mainActivity.accountViewModel
-        CoroutineScope(Dispatchers.IO).launch {
-            accountNameList =
-                accountsViewModel.getAccountNameList()
-        }
-        mainActivity.title = "Add a new Account"
-        fillValues()
-
-        binding.tvAccAddType.setOnClickListener {
-            gotoAccountTypes()
-        }
-        mView = view
     }
 
     private fun fillValues() {
@@ -174,6 +175,13 @@ class AccountAddFragment :
         mainViewModel.setCallingFragments(
             mainViewModel.getCallingFragments() + ", " + TAG
         )
+        mainViewModel.setRequestedAccount("")
+        mainViewModel.setAccountWithType(
+            AccountWithType(
+                getCurrentAccount(),
+                null
+            )
+        )
         val direction = AccountAddFragmentDirections
             .actionAccountAddFragmentToAccountTypesFragment()
         mView.findNavController().navigate(direction)
@@ -229,7 +237,7 @@ class AccountAddFragment :
             } else if (nameFound) {
                 "     Error!!\n" +
                         "This account rule already exists."
-            } else if (mainViewModel.getAccountWithType()?.accountType != null
+            } else if (mainViewModel.getAccountWithType()?.accountType == null
             ) {
                 "     Error!!\n" +
                         "This account must have an account Type."
