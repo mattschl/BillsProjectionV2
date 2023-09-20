@@ -199,7 +199,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="50dp"
-                    android:text="@string/no_transactions_to_view"
+                    android:text="@string/no_budget_items"
                     android:textColor="@color/black"
                     android:textSize="18sp" />
 

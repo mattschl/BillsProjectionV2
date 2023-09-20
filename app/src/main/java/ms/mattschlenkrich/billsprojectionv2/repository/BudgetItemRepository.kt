@@ -52,4 +52,11 @@ class BudgetItemRepository(private val db: BillsDatabase) {
 
     fun getPayDays() =
         db.getBudgetItemDao().getPayDays()
+
+    suspend fun cancelBudgetItem(
+        budgetRuleId: Long, projectedDate: String, updateTime: String
+    ) =
+        db.getBudgetItemDao().cancelBudgetItem(
+            budgetRuleId, projectedDate, updateTime
+        )
 }

@@ -138,6 +138,9 @@ interface BudgetItemDao {
                 "$TABLE_BUDGET_ITEMS.$BI_FROM_ACCOUNT_ID = " +
                 "fromAccount.accountId " +
                 "WHERE $TABLE_BUDGET_ITEMS.$BI_PAY_DAY = :payDay " +
+                "AND $BI_IS_CANCELLED = 0 " +
+                "AND $BI_IS_DELETED = 0 " +
+                "AND $BI_IS_COMPLETED = 0 " +
                 "AND ($TABLE_BUDGET_ITEMS.$BI_FROM_ACCOUNT_ID = " +
                 "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
                 "WHERE $ACCOUNT_NAME = :asset) " +
@@ -154,4 +157,13 @@ interface BudgetItemDao {
         payDay: String
     )
             : LiveData<List<BudgetDetailed>>
+
+    @Query(
+        "UPDATE $TABLE_BUDGET_ITEMS " +
+                "SET $BI_IS_CANCELLED = 1, " +
+                "$BI_UPDATE_TIME = :updateTime " +
+                "WHERE $BI_PROJECTED_DATE = :projectedDate " +
+                "AND $BI_BUDGET_RULE_ID = :budgetRuleId"
+    )
+    suspend fun cancelBudgetItem(budgetRuleId: Long, projectedDate: String, updateTime: String)
 }

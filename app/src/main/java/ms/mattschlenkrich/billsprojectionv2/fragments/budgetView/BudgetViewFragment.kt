@@ -141,6 +141,9 @@ class BudgetViewFragment : Fragment(
 
     private fun fillBudgetList(asset: String, payDay: String) {
         val budgetViewAdapter = BudgetViewAdapter(
+            this,
+            budgetItemViewModel,
+            mainViewModel,
             asset,
             mView!!.context
         )
@@ -167,7 +170,7 @@ class BudgetViewFragment : Fragment(
         }
     }
 
-    private fun fillBudgetTotals() {
+    fun fillBudgetTotals() {
         fillAssetDetails()
         var debits = 0.0
         var credits = 0.0

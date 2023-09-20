@@ -3,17 +3,32 @@ package ms.mattschlenkrich.billsprojectionv2.adapter
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetViewItemBinding
+import ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetViewFragment
+import ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetViewFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed
+import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModel
+import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
+
+private const val TAG = ADAPTER_BUDGET_VIEW
+private const val PARENT_TAG = FRAG_BUDGET_VIEW
 
 class BudgetViewAdapter(
+    private val budgetViewFragment: BudgetViewFragment,
+    private val budgetItemViewModel: BudgetItemViewModel,
+    private val mainViewModel: MainViewModel,
     private val curAccount: String,
     private val context: Context
 ) : RecyclerView.Adapter<BudgetViewAdapter.BudgetViewHolder>() {
@@ -78,14 +93,16 @@ class BudgetViewAdapter(
         holder.itemBinding.tvFromAccount.text = info
         holder.itemView.setOnClickListener {
             chooseOptionsForBudget(
-                curBudget
+                curBudget, it
             )
         }
     }
 
     private fun chooseOptionsForBudget(
-        curBudget: BudgetDetailed
+        curBudget: BudgetDetailed,
+        it: View
     ) {
+        Log.d(TAG, "Entering options for $TAG")
         AlertDialog.Builder(context)
             .setTitle("Choose action for ${curBudget.budgetItem!!.biBudgetName}")
             .setItems(
@@ -98,11 +115,11 @@ class BudgetViewAdapter(
             ) { _, pos ->
                 when (pos) {
                     0 -> {
-                        performTransaction(curBudget)
+                        performTransaction(curBudget, it)
                     }
 
                     1 -> {
-                        openBudgetItem(curBudget)
+                        openBudgetItem(curBudget, it)
                     }
 
                     2 -> {
@@ -110,7 +127,7 @@ class BudgetViewAdapter(
                     }
 
                     3 -> {
-                        gotoBudgetRule(curBudget)
+                        gotoBudgetRule(curBudget, it)
                     }
                 }
             }
@@ -118,19 +135,31 @@ class BudgetViewAdapter(
             .show()
     }
 
-    private fun gotoBudgetRule(curBudget: BudgetDetailed) {
+    private fun gotoBudgetRule(curBudget: BudgetDetailed, it: View) {
+
 
     }
 
     private fun cancelBudgetItem(curBudget: BudgetDetailed) {
-
+        budgetItemViewModel.cancelBudgetItem(
+            curBudget.budgetItem!!.biRuleId,
+            curBudget.budgetItem.biProjectedDate,
+            df.getCurrentTimeAsString()
+        )
+        budgetViewFragment.fillBudgetTotals()
     }
 
-    private fun openBudgetItem(curBudget: BudgetDetailed) {
-
+    private fun openBudgetItem(curBudget: BudgetDetailed, it: View) {
+        mainViewModel.setBudgetItem(curBudget)
+        mainViewModel.setCallingFragments(
+            PARENT_TAG
+        )
+        val direction = BudgetViewFragmentDirections
+            .actionBudgetViewFragmentToBudgetItemUpdateFragment()
+        it.findNavController().navigate(direction)
     }
 
-    private fun performTransaction(curBudget: BudgetDetailed) {
+    private fun performTransaction(curBudget: BudgetDetailed, it: View) {
 
     }
 }

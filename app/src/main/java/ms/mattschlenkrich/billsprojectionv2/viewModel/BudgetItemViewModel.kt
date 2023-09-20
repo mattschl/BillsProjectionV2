@@ -69,4 +69,13 @@ class BudgetItemViewModel(
 
     fun getPayDays() =
         budgetItemRepository.getPayDays()
+
+    fun cancelBudgetItem(
+        budgetRuleId: Long, projectedDate: String, updateTime: String
+    ) =
+        viewModelScope.launch {
+            budgetItemRepository.cancelBudgetItem(
+                budgetRuleId, projectedDate, updateTime
+            )
+        }
 }
