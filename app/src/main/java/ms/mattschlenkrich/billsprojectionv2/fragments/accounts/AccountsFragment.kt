@@ -74,6 +74,7 @@ class AccountsFragment :
         mainViewModel.setCallingFragments(
             mainViewModel.getCallingFragments() + ", " + TAG
         )
+        mainViewModel.setAccountWithType(null)
         val direction = AccountsFragmentDirections
             .actionAccountsFragmentToAccountAddFragment()
         mView.findNavController().navigate(direction)

@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.databinding.TransactionLinearItemBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.transactions.TransactionViewFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
@@ -168,6 +169,9 @@ class TransactionAdapter(
                 ) { _, pos ->
                     when (pos) {
                         0 -> {
+                            mainViewModel.setCallingFragments(
+                                mainViewModel.getCallingFragments() + ", " + FRAG_ACCOUNTS
+                            )
                             val direction = TransactionViewFragmentDirections
                                 .actionTransactionViewFragmentToTransactionUpdateFragment()
                             it.findNavController().navigate(direction)
@@ -237,7 +241,6 @@ class TransactionAdapter(
                             oldTransaction.transaction.transFromAccountId,
                             df.getCurrentTimeAsString()
                         )
-
                     }
                 }
             }

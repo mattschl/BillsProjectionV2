@@ -308,9 +308,7 @@ class BudgetRuleAddFragment :
                 budgetRuleViewModel.insertBudgetRule(
                     getCurBudgetRule()
                 )
-                val direction = BudgetRuleAddFragmentDirections
-                    .actionBudgetRuleAddFragmentToBudgetRuleFragment()
-                mView.findNavController().navigate(direction)
+                gotoCallingFragment()
             }
         } else {
             Toast.makeText(
@@ -319,6 +317,12 @@ class BudgetRuleAddFragment :
                 Toast.LENGTH_LONG
             ).show()
         }
+    }
+
+    private fun gotoCallingFragment() {
+        val direction = BudgetRuleAddFragmentDirections
+            .actionBudgetRuleAddFragmentToBudgetRuleFragment()
+        mView.findNavController().navigate(direction)
     }
 
     private fun checkBudgetRule(): String {

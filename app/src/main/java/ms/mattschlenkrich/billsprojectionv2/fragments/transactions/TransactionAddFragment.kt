@@ -84,6 +84,25 @@ class TransactionAddFragment :
             mainActivity.accountViewModel
         mainActivity.title = "Add a new Transaction"
         fillValues()
+        createMenu()
+        binding.apply {
+            tvBudgetRule.setOnClickListener {
+                chooseBudgetRule()
+            }
+            tvToAccount.setOnClickListener {
+                chooseToAccount()
+            }
+            tvFromAccount.setOnClickListener {
+                chooseFromAccount()
+            }
+            etTransDate.setOnLongClickListener {
+                chooseDate()
+                false
+            }
+        }
+    }
+
+    private fun createMenu() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -105,21 +124,6 @@ class TransactionAddFragment :
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
-        binding.apply {
-            tvBudgetRule.setOnClickListener {
-                chooseBudgetRule()
-            }
-            tvToAccount.setOnClickListener {
-                chooseToAccount()
-            }
-            tvFromAccount.setOnClickListener {
-                chooseFromAccount()
-            }
-            etTransDate.setOnLongClickListener {
-                chooseDate()
-                false
-            }
-        }
     }
 
     private fun chooseBudgetRule() {

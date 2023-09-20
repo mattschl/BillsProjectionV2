@@ -10,6 +10,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -17,7 +18,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
@@ -26,6 +26,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetItemUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetItem
+import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 
@@ -41,7 +42,9 @@ class BudgetItemUpdateFragment : Fragment(
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var budgetItemViewModel: BudgetItemViewModel
-    private val cf = CommonFunctions()
+    private lateinit var budgetRuleDetailed: BudgetRuleDetailed
+
+    //    private val cf = CommonFunctions()
     private val df = DateFunctions()
 
     override fun onCreateView(
@@ -64,25 +67,13 @@ class BudgetItemUpdateFragment : Fragment(
         budgetItemViewModel =
             mainActivity.budgetItemViewModel
         mainActivity.title = "Update this Budget Item"
-        val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                // Add menu items here
-                menuInflater.inflate(R.menu.delete_menu, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                // Handle the menu selection
-                return when (menuItem.itemId) {
-                    R.id.menu_delete -> {
-                        deleteBudgetItem()
-                        true
-                    }
-
-                    else -> false
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        createMenu()
+        budgetRuleDetailed =
+            BudgetRuleDetailed(
+                null,
+                null,
+                null
+            )
         binding.apply {
             tvBudgetRule.setOnClickListener {
                 chooseBudgetRule()
@@ -103,8 +94,42 @@ class BudgetItemUpdateFragment : Fragment(
         }
     }
 
+    private fun createMenu() {
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                // Add menu items here
+                menuInflater.inflate(R.menu.delete_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                // Handle the menu selection
+                return when (menuItem.itemId) {
+                    R.id.menu_delete -> {
+                        deleteBudgetItem()
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
     private fun updateBudgetItem() {
-        TODO("Not yet implemented")
+        val mess = checkBudgetItem()
+        if (mess == "'Ok") {
+            budgetItemViewModel.updateBudgetItem(
+                getCurBudgetItem()
+            )
+            gotoCallingFragment()
+        } else {
+            Toast.makeText(
+                requireContext(),
+                mess,
+                Toast.LENGTH_LONG
+            ).show()
+        }
     }
 
     private fun chooseDate() {
@@ -137,6 +162,7 @@ class BudgetItemUpdateFragment : Fragment(
             mainViewModel.getCallingFragments() + ", " + TAG
         )
         mainViewModel.setRequestedAccount(requestedAccount)
+        mainViewModel.setBudgetItem(getCurBudgetItemDetailed())
         val direction = BudgetItemUpdateFragmentDirections
             .actionBudgetItemUpdateFragmentToAccountsFragment()
         mView?.findNavController()?.navigate(direction)
@@ -146,6 +172,7 @@ class BudgetItemUpdateFragment : Fragment(
         mainViewModel.setCallingFragments(
             mainViewModel.getCallingFragments() + ", " + TAG
         )
+        mainViewModel.setBudgetItem(getCurBudgetItemDetailed())
         val direction = BudgetItemUpdateFragmentDirections
             .actionBudgetItemUpdateFragmentToBudgetRuleFragment()
         mView?.findNavController()?.navigate(direction)
@@ -221,6 +248,30 @@ class BudgetItemUpdateFragment : Fragment(
             val direction = BudgetItemUpdateFragmentDirections
                 .actionBudgetItemUpdateFragmentToBudgetViewFragment()
             mView!!.findNavController().navigate(direction)
+        }
+    }
+
+    private fun checkBudgetItem(): String {
+        binding.apply {
+            val errorMes =
+                if (etBudgetItemName.text.isNullOrBlank()) {
+                    "     Error!!\n" +
+                            "Please enter a name or description"
+                } else if (budgetRuleDetailed.toAccount == null) {
+                    "     Error!!\n" +
+                            "There needs to be an account money will go to."
+                } else if (budgetRuleDetailed.fromAccount == null
+                ) {
+                    "     Error!!\n" +
+                            "There needs to be an account money will come from."
+                } else if (etProjectedAmount.text.isNullOrEmpty()
+                ) {
+                    "     Error!!\n" +
+                            "Please enter a budget amount (including zero)"
+                } else {
+                    "Ok"
+                }
+            return errorMes
         }
     }
 

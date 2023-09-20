@@ -64,10 +64,18 @@ class TransactionViewFragment :
 
         setupRecyclerView()
         binding.fabAddTransaction.setOnClickListener {
-            val direction = TransactionViewFragmentDirections
-                .actionTransactionViewFragmentToTransactionAddFragment()
-            mView!!.findNavController().navigate(direction)
+            addTransaction()
         }
+    }
+
+    private fun addTransaction() {
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments() + ", " + TAG
+        )
+        mainViewModel.setTransactionDetailed(null)
+        val direction = TransactionViewFragmentDirections
+            .actionTransactionViewFragmentToTransactionAddFragment()
+        mView!!.findNavController().navigate(direction)
     }
 
     private fun setupRecyclerView() {

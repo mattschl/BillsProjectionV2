@@ -77,7 +77,7 @@ class BudgetItemAddFragment : Fragment(
             mainActivity.budgetRuleViewModel
         mainActivity.title = "Add a new Budget Item"
         fillPayDaysLive()
-        fillMenu()
+        createMenu()
         binding.apply {
             tvBudgetRule.setOnClickListener {
                 chooseBudgetRule()
@@ -118,7 +118,7 @@ class BudgetItemAddFragment : Fragment(
         binding.spPayDays.adapter = payDayAdapter
     }
 
-    private fun fillMenu() {
+    private fun createMenu() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -225,6 +225,7 @@ class BudgetItemAddFragment : Fragment(
             mainViewModel.getCallingFragments() + ", " + TAG
         )
         mainViewModel.setRequestedAccount(requestedAccount)
+        mainViewModel.setBudgetItem(getCurBudgetDetailed())
         val direction = BudgetItemAddFragmentDirections
             .actionBudgetItemAddFragmentToAccountsFragment()
         mView!!.findNavController().navigate(direction)

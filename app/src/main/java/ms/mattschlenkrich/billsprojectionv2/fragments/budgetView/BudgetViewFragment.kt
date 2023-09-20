@@ -398,14 +398,7 @@ class BudgetViewFragment : Fragment(
     }
 
     private fun addNewTransaction() {
-        mainViewModel.eraseAll()
-        mainViewModel.setCallingFragments(TAG)
-        mainViewModel.setAsset(
-            binding.spAssetNames.selectedItem.toString()
-        )
-        mainViewModel.setPayDay(
-            binding.spPayDay.selectedItem.toString()
-        )
+        fillMainViewModel()
         val direction =
             BudgetViewFragmentDirections
                 .actionBudgetViewFragmentToTransactionAddFragment()
@@ -413,6 +406,14 @@ class BudgetViewFragment : Fragment(
     }
 
     private fun addNewBudgetItem() {
+        fillMainViewModel()
+        val direction =
+            BudgetViewFragmentDirections
+                .actionBudgetViewFragmentToBudgetItemAddFragment()
+        findNavController().navigate(direction)
+    }
+
+    private fun fillMainViewModel() {
         mainViewModel.eraseAll()
         mainViewModel.setCallingFragments(TAG)
         mainViewModel.setAsset(
@@ -421,10 +422,6 @@ class BudgetViewFragment : Fragment(
         mainViewModel.setPayDay(
             binding.spPayDay.selectedItem.toString()
         )
-        val direction =
-            BudgetViewFragmentDirections
-                .actionBudgetViewFragmentToBudgetItemAddFragment()
-        findNavController().navigate(direction)
     }
 
     override fun onDestroy() {

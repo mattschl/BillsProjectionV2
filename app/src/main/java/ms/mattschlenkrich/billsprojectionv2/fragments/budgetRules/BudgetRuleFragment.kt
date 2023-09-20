@@ -73,6 +73,10 @@ class BudgetRuleFragment :
     }
 
     private fun addNewRule() {
+        mainViewModel.setBudgetRuleDetailed(null)
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments() + ", " + TAG
+        )
         val direction = BudgetRuleFragmentDirections
             .actionBudgetRuleFragmentToBudgetRuleAddFragment()
         mView!!.findNavController().navigate(direction)
