@@ -147,6 +147,8 @@ class BudgetViewFragment : Fragment(
             asset,
             mView!!.context
         )
+        mainViewModel.setAsset(asset)
+        mainViewModel.setPayDay(payDay)
 
         binding.rvBudgetSummary.apply {
             layoutManager = LinearLayoutManager(requireContext())

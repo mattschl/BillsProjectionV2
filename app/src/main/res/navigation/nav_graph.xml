@@ -165,6 +165,9 @@
         <action
             android:id="@+id/action_budgetRuleUpdateFragment_to_accountsFragment"
             app:destination="@id/accountsFragment" />
+        <action
+            android:id="@+id/action_budgetRuleUpdateFragment_to_budgetViewFragment"
+            app:destination="@id/budgetViewFragment" />
     </fragment>
     <fragment
         android:id="@+id/transactionViewFragment"
@@ -227,6 +230,9 @@
         <action
             android:id="@+id/action_budgetViewFragment_to_transactionAddFragment"
             app:destination="@id/transactionAddFragment" />
+        <action
+            android:id="@+id/action_budgetViewFragment_to_budgetRuleUpdateFragment"
+            app:destination="@id/budgetRuleUpdateFragment" />
     </fragment>
     <fragment
         android:id="@+id/budgetItemAddFragment"

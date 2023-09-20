@@ -19,6 +19,7 @@ import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetViewItemBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetViewFragment
 import ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetViewFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 
@@ -136,8 +137,20 @@ class BudgetViewAdapter(
     }
 
     private fun gotoBudgetRule(curBudget: BudgetDetailed, it: View) {
-
-
+        mainViewModel.setBudgetRuleDetailed(
+            BudgetRuleDetailed(
+                curBudget.budgetRule,
+                curBudget.toAccount,
+                curBudget.fromAccount
+            )
+        )
+        mainViewModel.setCallingFragments(
+            PARENT_TAG
+        )
+        it.findNavController().navigate(
+            BudgetViewFragmentDirections
+                .actionBudgetViewFragmentToBudgetRuleUpdateFragment()
+        )
     }
 
     private fun cancelBudgetItem(curBudget: BudgetDetailed) {
@@ -154,9 +167,10 @@ class BudgetViewAdapter(
         mainViewModel.setCallingFragments(
             PARENT_TAG
         )
-        val direction = BudgetViewFragmentDirections
-            .actionBudgetViewFragmentToBudgetItemUpdateFragment()
-        it.findNavController().navigate(direction)
+        it.findNavController().navigate(
+            BudgetViewFragmentDirections
+                .actionBudgetViewFragmentToBudgetItemUpdateFragment()
+        )
     }
 
     private fun performTransaction(curBudget: BudgetDetailed, it: View) {

@@ -10,6 +10,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -18,6 +19,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
@@ -42,9 +44,10 @@ class BudgetItemUpdateFragment : Fragment(
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var budgetItemViewModel: BudgetItemViewModel
-    private lateinit var budgetRuleDetailed: BudgetRuleDetailed
+    private lateinit var mBudgetRuleDetailed: BudgetRuleDetailed
+    private var mPayDays: List<String>? = null
 
-    //    private val cf = CommonFunctions()
+    private val cf = CommonFunctions()
     private val df = DateFunctions()
 
     override fun onCreateView(
@@ -68,12 +71,14 @@ class BudgetItemUpdateFragment : Fragment(
             mainActivity.budgetItemViewModel
         mainActivity.title = "Update this Budget Item"
         createMenu()
-        budgetRuleDetailed =
+        mBudgetRuleDetailed =
             BudgetRuleDetailed(
                 null,
                 null,
                 null
             )
+        fillPayDaysLive()
+        fillValues()
         binding.apply {
             tvBudgetRule.setOnClickListener {
                 chooseBudgetRule()
@@ -90,6 +95,72 @@ class BudgetItemUpdateFragment : Fragment(
             }
             fabUpdateDone.setOnClickListener {
                 updateBudgetItem()
+            }
+        }
+    }
+
+    private fun fillPayDaysLive() {
+        val payDayAdapter =
+            ArrayAdapter<Any>(
+                requireContext(),
+                R.layout.spinner_item_bold
+            )
+        payDayAdapter.setDropDownViewResource(
+            R.layout.spinner_item_bold
+        )
+        budgetItemViewModel.getPayDays().observe(
+            viewLifecycleOwner
+        ) { payDayList ->
+            payDayList?.forEach {
+                payDayAdapter.add(it)
+            }
+        }
+        binding.spPayDays.adapter = payDayAdapter
+    }
+
+    private fun fillValues() {
+        if (mainViewModel.getBudgetItem() != null) {
+            binding.apply {
+                val curBudgetItem = mainViewModel.getBudgetItem()!!
+                etProjectedDate.setText(
+                    curBudgetItem.budgetItem!!.biActualDate
+                )
+                etBudgetItemName.setText(
+                    curBudgetItem.budgetItem.biBudgetName
+                )
+                for (i in 0 until spPayDays.adapter.count) {
+                    if (spPayDays.getItemAtPosition(i) ==
+                        curBudgetItem.budgetItem.biPayDay
+                    ) {
+                        spPayDays.setSelection(i)
+                        break
+                    }
+                }
+                tvBudgetRule.text =
+                    curBudgetItem.budgetRule?.budgetRuleName
+                mBudgetRuleDetailed.budgetRule =
+                    curBudgetItem.budgetRule
+                etProjectedAmount.setText(
+                    cf.displayDollars(
+                        curBudgetItem.budgetItem.biProjectedAmount
+                    )
+                )
+                tvToAccount.text =
+                    curBudgetItem.toAccount?.accountName
+                mBudgetRuleDetailed.toAccount =
+                    curBudgetItem.toAccount
+                tvBiFromAccount.text =
+                    curBudgetItem.fromAccount?.accountName
+                mBudgetRuleDetailed.fromAccount =
+                    curBudgetItem.fromAccount
+                chkFixedAmount.isChecked =
+                    curBudgetItem.budgetItem.biIsFixed
+                chkIsAutoPayment.isChecked =
+                    curBudgetItem.budgetItem.biIsAutomatic
+                chkIsPayDay.isChecked =
+                    curBudgetItem.budgetItem.biIsPayDayItem
+                chkIsLocked.isChecked =
+                    curBudgetItem.budgetItem.biLocked
             }
         }
     }
@@ -257,10 +328,10 @@ class BudgetItemUpdateFragment : Fragment(
                 if (etBudgetItemName.text.isNullOrBlank()) {
                     "     Error!!\n" +
                             "Please enter a name or description"
-                } else if (budgetRuleDetailed.toAccount == null) {
+                } else if (mBudgetRuleDetailed.toAccount == null) {
                     "     Error!!\n" +
                             "There needs to be an account money will go to."
-                } else if (budgetRuleDetailed.fromAccount == null
+                } else if (mBudgetRuleDetailed.fromAccount == null
                 ) {
                     "     Error!!\n" +
                             "There needs to be an account money will come from."

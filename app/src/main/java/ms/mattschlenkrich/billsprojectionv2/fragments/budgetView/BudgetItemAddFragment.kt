@@ -108,6 +108,9 @@ class BudgetItemAddFragment : Fragment(
                 requireContext(),
                 R.layout.spinner_item_bold
             )
+        payDayAdapter.setDropDownViewResource(
+            R.layout.spinner_item_bold
+        )
         budgetItemViewModel.getPayDays().observe(
             viewLifecycleOwner
         ) { payDayList ->

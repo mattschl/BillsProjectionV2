@@ -23,7 +23,9 @@ import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_UPDATE
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetRuleUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
@@ -70,25 +72,7 @@ class BudgetRuleUpdateFragment :
             budgetNameList = budgetRuleViewModel.getBudgetRuleNameList()
         }
         mainActivity.title = "Update Budget Rule"
-        val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                // Add menu items here
-                menuInflater.inflate(R.menu.delete_menu, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                // Handle the menu selection
-                return when (menuItem.itemId) {
-                    R.id.menu_delete -> {
-                        deleteBudgetRule()
-                        true
-                    }
-
-                    else -> false
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        createMenu()
         fillValues()
         binding.apply {
             tvToAccount.setOnClickListener {
@@ -109,6 +93,28 @@ class BudgetRuleUpdateFragment :
                 updateBudgetRule()
             }
         }
+    }
+
+    private fun createMenu() {
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                // Add menu items here
+                menuInflater.inflate(R.menu.delete_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                // Handle the menu selection
+                return when (menuItem.itemId) {
+                    R.id.menu_delete -> {
+                        deleteBudgetRule()
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
     private fun chooseEndDate() {
@@ -333,27 +339,41 @@ class BudgetRuleUpdateFragment :
                     mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.ruleId,
                     df.getCurrentTimeAsString()
                 )
-                gotoBudgetRuleFragment()
+                gotoCallingFragment()
             }
             setNegativeButton("Cancel", null)
         }.create().show()
     }
 
-    private fun gotoBudgetRuleFragment() {
+    private fun gotoCallingFragment() {
+        mainViewModel.setBudgetRuleDetailed(null)
         mainViewModel.setCallingFragments(
             mainViewModel.getCallingFragments()!!
                 .replace(", TAG", "")
         )
-        val direction = BudgetRuleUpdateFragmentDirections
-            .actionBudgetRuleUpdateFragmentToBudgetRuleFragment()
-        mView.findNavController().navigate(direction)
+        if (mainViewModel.getCallingFragments()!!
+                .contains(FRAG_BUDGET_RULES)
+        ) {
+            mView.findNavController().navigate(
+                BudgetRuleUpdateFragmentDirections
+                    .actionBudgetRuleUpdateFragmentToBudgetRuleFragment()
+            )
+        } else if (mainViewModel.getCallingFragments()!!.contains(
+                FRAG_BUDGET_VIEW
+            )
+        ) {
+            mView.findNavController().navigate(
+                BudgetRuleUpdateFragmentDirections
+                    .actionBudgetRuleUpdateFragmentToBudgetViewFragment()
+            )
+        }
     }
 
     private fun updateBudgetRule() {
         val mes = checkBudgetRule()
         if (mes == "Ok") {
             budgetRuleViewModel.updateBudgetRule(getCurBudgetRule())
-            gotoBudgetRuleFragment()
+            gotoCallingFragment()
         } else {
             Toast.makeText(
                 mView.context,
