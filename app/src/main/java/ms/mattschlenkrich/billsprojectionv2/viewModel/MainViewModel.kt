@@ -19,6 +19,7 @@ class MainViewModel(
     private var budgetRuleDetailed: BudgetRuleDetailed? = null
     private var account: AccountWithType? = null
     private var accountType: AccountType? = null
+    private var performTransaction: Boolean = false
     private var requestedAccount: String? = null
     private var callingFragments: String? = null
 
@@ -30,6 +31,7 @@ class MainViewModel(
         budgetRuleDetailed = null
         account = null
         accountType = null
+        performTransaction = false
         requestedAccount = ""
         callingFragments = ""
     }
@@ -104,5 +106,13 @@ class MainViewModel(
 
     fun getAsset(): String? {
         return asset
+    }
+
+    fun setPerformTransaction(performing: Boolean) {
+        performTransaction = performing
+    }
+
+    fun getPerformTransaction(): Boolean {
+        return performTransaction
     }
 }

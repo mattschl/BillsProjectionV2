@@ -225,9 +225,17 @@ class TransactionAddFragment :
         binding.apply {
             if (mainViewModel.getTransactionDetailed() != null) {
                 if (mainViewModel.getTransactionDetailed()!!.transaction != null) {
-                    etDescription.setText(
-                        mainViewModel.getTransactionDetailed()!!.transaction?.transName ?: ""
-                    )
+                    if (mainViewModel.getTransactionDetailed()!!.budgetRule != null &&
+                        mainViewModel.getTransactionDetailed()!!.transaction!!.transName.isBlank()
+                    ) {
+                        etDescription.setText(
+                            mainViewModel.getTransactionDetailed()!!.budgetRule!!.budgetRuleName
+                        )
+                    } else {
+                        etDescription.setText(
+                            mainViewModel.getTransactionDetailed()!!.transaction?.transName ?: ""
+                        )
+                    }
                     etNote.setText(
                         mainViewModel.getTransactionDetailed()!!.transaction!!.transNote
                     )

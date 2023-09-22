@@ -403,6 +403,7 @@ class BudgetViewFragment : Fragment(
     }
 
     private fun addNewTransaction() {
+        mainViewModel.setPerformTransaction(false)
         fillMainViewModel()
         val direction =
             BudgetViewFragmentDirections

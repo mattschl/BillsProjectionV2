@@ -45,7 +45,6 @@ class BudgetItemUpdateFragment : Fragment(
     private lateinit var mainViewModel: MainViewModel
     private lateinit var budgetItemViewModel: BudgetItemViewModel
     private lateinit var mBudgetRuleDetailed: BudgetRuleDetailed
-    private var mPayDays: List<String>? = null
 
     private val cf = CommonFunctions()
     private val df = DateFunctions()
