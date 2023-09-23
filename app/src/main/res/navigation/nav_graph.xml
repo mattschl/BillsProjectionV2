@@ -38,6 +38,9 @@
         <action
             android:id="@+id/action_accountsFragment_to_budgetItemUpdateFragment"
             app:destination="@id/budgetItemUpdateFragment" />
+        <action
+            android:id="@+id/action_accountsFragment_to_transactionPerformFragment"
+            app:destination="@id/transactionPerformFragment" />
     </fragment>
     <fragment
         android:id="@+id/accountUpdateFragment"
@@ -137,6 +140,9 @@
         <action
             android:id="@+id/action_budgetRuleFragment_to_transactionUpdateFragment"
             app:destination="@id/transactionUpdateFragment" />
+        <action
+            android:id="@+id/action_budgetRuleFragment_to_transactionPerformFragment"
+            app:destination="@id/transactionPerformFragment" />
     </fragment>
     <fragment
         android:id="@+id/budgetRuleAddFragment"
@@ -233,6 +239,9 @@
         <action
             android:id="@+id/action_budgetViewFragment_to_budgetRuleUpdateFragment"
             app:destination="@id/budgetRuleUpdateFragment" />
+        <action
+            android:id="@+id/action_budgetViewFragment_to_transactionPerformFragment"
+            app:destination="@id/transactionPerformFragment" />
     </fragment>
     <fragment
         android:id="@+id/budgetItemAddFragment"
@@ -296,4 +305,19 @@
         app:destination="@id/transactionViewFragment"
         app:popUpTo="@id/transactionViewFragment"
         app:popUpToInclusive="true" />
+    <fragment
+        android:id="@+id/transactionPerformFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.transactions.TransactionPerformFragment"
+        android:label="fragment_transaction_perform"
+        tools:layout="@layout/fragment_transaction_perform">
+        <action
+            android:id="@+id/action_transactionPerformFragment_to_budgetViewFragment"
+            app:destination="@id/budgetViewFragment" />
+        <action
+            android:id="@+id/action_transactionPerformFragment_to_budgetRuleFragment"
+            app:destination="@id/budgetRuleFragment" />
+        <action
+            android:id="@+id/action_transactionPerformFragment_to_accountsFragment"
+            app:destination="@id/accountsFragment" />
+    </fragment>
 </navigation>

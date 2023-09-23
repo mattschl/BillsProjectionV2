@@ -85,6 +85,10 @@ class TransactionAddFragment :
         mainActivity.title = "Add a new Transaction"
         fillValues()
         createMenu()
+        createActions()
+    }
+
+    private fun createActions() {
         binding.apply {
             tvBudgetRule.setOnClickListener {
                 chooseBudgetRule()
@@ -133,10 +137,10 @@ class TransactionAddFragment :
         mainViewModel.setTransactionDetailed(
             getTransactionDetailed()
         )
-        val direction =
+        mView.findNavController().navigate(
             TransactionAddFragmentDirections
                 .actionTransactionAddFragmentToBudgetRuleFragment()
-        mView.findNavController().navigate(direction)
+        )
     }
 
     private fun getCurTransaction(): Transactions {
@@ -163,14 +167,12 @@ class TransactionAddFragment :
     }
 
     private fun getTransactionDetailed(): TransactionDetailed {
-        binding.apply {
             return TransactionDetailed(
                 getCurTransaction(),
                 mainViewModel.getTransactionDetailed()?.budgetRule,
                 mainViewModel.getTransactionDetailed()?.toAccount,
                 mainViewModel.getTransactionDetailed()?.fromAccount
             )
-        }
     }
 
     private fun chooseDate() {
@@ -202,7 +204,7 @@ class TransactionAddFragment :
         mainViewModel.setCallingFragments(
             "${mainViewModel.getCallingFragments()}, $TAG"
         )
-        mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
+        mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
         mainViewModel.setTransactionDetailed(getTransactionDetailed())
         val direction = TransactionAddFragmentDirections
             .actionTransactionAddFragmentToAccountsFragment()
@@ -213,7 +215,7 @@ class TransactionAddFragment :
         mainViewModel.setCallingFragments(
             "${mainViewModel.getCallingFragments()}, $TAG"
         )
-        mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
+        mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
         mainViewModel.setTransactionDetailed(getTransactionDetailed())
         val direction = TransactionAddFragmentDirections
             .actionTransactionAddFragmentToAccountsFragment()
@@ -459,7 +461,11 @@ class TransactionAddFragment :
             mainViewModel.getCallingFragments()!!
                 .replace(", $TAG", "")
         )
-        if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTIONS)) {
+        mainViewModel.setTransactionDetailed(null)
+        mainViewModel.setBudgetRuleDetailed(null)
+        if (mainViewModel.getCallingFragments()!!
+                .contains(FRAG_TRANSACTIONS)
+        ) {
             val direction =
                 TransactionAddFragmentDirections
                     .actionTransactionAddFragmentToTransactionViewFragment()

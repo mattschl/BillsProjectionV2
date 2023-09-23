@@ -83,6 +83,75 @@
             app:layout_constraintStart_toStartOf="@+id/tvBudgetRule"
             app:layout_constraintTop_toBottomOf="@+id/tvBudgetRule" />
 
+        <androidx.cardview.widget.CardView
+            android:id="@+id/crdBudgeted"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/material_dynamic_neutral90"
+            app:cardCornerRadius="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etAmount">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/lblBudgetedAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/budgeted"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_info_size"
+                    app:layout_constraintBaseline_toBaselineOf="@id/etBudgetedAmount"
+                    app:layout_constraintEnd_toStartOf="@id/etBudgetedAmount"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+
+                <EditText
+                    android:id="@+id/etBudgetedAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/zero_dollars"
+                    android:importantForAutofill="no"
+                    android:inputType="numberDecimal|numberSigned"
+                    android:minHeight="48dp"
+                    android:selectAllOnFocus="true"
+                    android:textColor="@color/black"
+                    android:textColorHint="#757575"
+                    android:textSize="@dimen/title_text_size"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/lblRemainder"
+                    app:layout_constraintStart_toEndOf="@id/lblBudgetedAmount"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="DuplicateSpeakableTextCheck" />
+
+                <TextView
+                    android:id="@+id/lblRemainder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/remainder"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_info_size"
+                    app:layout_constraintBaseline_toBaselineOf="@id/etBudgetedAmount"
+                    app:layout_constraintEnd_toStartOf="@id/tvRemainder"
+                    app:layout_constraintStart_toEndOf="@id/etBudgetedAmount" />
+
+                <TextView
+                    android:id="@+id/tvRemainder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/zero_dollars"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_heading_size"
+                    app:layout_constraintBaseline_toBaselineOf="@id/etBudgetedAmount"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/lblRemainder" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
         <TextView
             android:id="@+id/lblToAccount"
             android:layout_width="wrap_content"
@@ -201,72 +270,6 @@
             app:layout_constraintStart_toStartOf="@+id/etDescription"
             app:layout_constraintTop_toBottomOf="@id/etDescription"
             tools:ignore="DuplicateSpeakableTextCheck" />
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/crdBudgeted"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/material_dynamic_neutral90"
-            app:cardCornerRadius="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etAmount">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/lblBudgetedAmount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/budgeted"
-                    android:textSize="@dimen/text_info_size"
-                    app:layout_constraintBaseline_toBaselineOf="@id/etBudgetedAmount"
-                    app:layout_constraintEnd_toStartOf="@id/etBudgetedAmount"
-                    app:layout_constraintStart_toStartOf="parent" />
-
-
-                <EditText
-                    android:id="@+id/etBudgetedAmount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/zero_dollars"
-                    android:importantForAutofill="no"
-                    android:inputType="numberDecimal|numberSigned"
-                    android:minHeight="48dp"
-                    android:selectAllOnFocus="true"
-                    android:textColor="@color/black"
-                    android:textColorHint="#757575"
-                    android:textSize="@dimen/title_text_size"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toStartOf="@id/lblRemainder"
-                    app:layout_constraintStart_toEndOf="@id/lblBudgetedAmount"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/lblRemainder"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/remainder"
-                    android:textSize="@dimen/text_info_size"
-                    app:layout_constraintBaseline_toBaselineOf="@id/etBudgetedAmount"
-                    app:layout_constraintEnd_toStartOf="@id/tvRemainder"
-                    app:layout_constraintStart_toEndOf="@id/etBudgetedAmount" />
-
-                <TextView
-                    android:id="@+id/tvRemainder"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/zero_dollars"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/text_heading_size"
-                    app:layout_constraintBaseline_toBaselineOf="@id/etBudgetedAmount"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/lblRemainder" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

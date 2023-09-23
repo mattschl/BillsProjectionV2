@@ -175,13 +175,14 @@ class BudgetViewAdapter(
 
     private fun performTransaction(curBudget: BudgetDetailed, it: View) {
         mainViewModel.setBudgetItem(curBudget)
+        mainViewModel.setTransactionDetailed(null)
         mainViewModel.setCallingFragments(
             PARENT_TAG
         )
         mainViewModel.setPerformTransaction(true)
         it.findNavController().navigate(
             BudgetViewFragmentDirections
-                .actionBudgetViewFragmentToTransactionAddFragment()
+                .actionBudgetViewFragmentToTransactionPerformFragment()
         )
 
     }
