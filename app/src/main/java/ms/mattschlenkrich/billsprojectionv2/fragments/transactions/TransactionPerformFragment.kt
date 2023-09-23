@@ -17,7 +17,6 @@ import androidx.navigation.findNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -29,8 +28,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionPerformBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
-import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetItem
+import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.Transactions
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
@@ -55,8 +54,7 @@ class TransactionPerformFragment : Fragment(
 
     private var mToAccount: Account? = null
     private var mFromAccount: Account? = null
-    private var mToAccountWithType: AccountWithType? = null
-    private var mFromAccountWithType: AccountWithType? = null
+    private var mBudgetRule: BudgetRule? = null
     private val cf = CommonFunctions()
     private val df = DateFunctions()
 
@@ -76,16 +74,16 @@ class TransactionPerformFragment : Fragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        transactionViewModel =
-//            mainActivity.transactionViewModel
-//        accountViewModel =
-//            mainActivity.accountViewModel
-//        budgetItemViewModel =
-//            mainActivity.budgetItemViewModel
-//        mainActivity.title = "Perform a Transaction"
-//        fillValues()
-//        createMenu()
-//        createActions()
+        transactionViewModel =
+            mainActivity.transactionViewModel
+        accountViewModel =
+            mainActivity.accountViewModel
+        budgetItemViewModel =
+            mainActivity.budgetItemViewModel
+        mainActivity.title = "Perform a Transaction"
+        fillValues()
+        createMenu()
+        createActions()
     }
 
     private fun createActions() {
@@ -140,9 +138,14 @@ class TransactionPerformFragment : Fragment(
 
     private fun calculateRemainder() {
         binding.apply {
-            val amt = cf.getDoubleFromDollars(
-                etAmount.text.toString()
-            )
+            val amt =
+                if (etAmount.text.toString().isNotBlank()) {
+                    cf.getDoubleFromDollars(
+                        etAmount.text.toString()
+                    )
+                } else {
+                    0.0
+                }
             val budgeted = cf.getDoubleFromDollars(
                 etBudgetedAmount.text.toString()
             )
@@ -225,7 +228,9 @@ class TransactionPerformFragment : Fragment(
     }
 
     private fun fillValues() {
-        if (mainViewModel.getTransactionDetailed() != null) {
+        if (mainViewModel.getTransactionDetailed() != null &&
+            mainViewModel.getBudgetItem() != null
+        ) {
             fillFromTransaction()
         } else if (mainViewModel.getBudgetItem() != null) {
             fillFromBudgetItem()
@@ -233,73 +238,94 @@ class TransactionPerformFragment : Fragment(
     }
 
     private fun fillFromBudgetItem() {
-        TODO("Not yet implemented")
+        mToAccount = mainViewModel.getBudgetItem()!!.toAccount
+        mFromAccount = mainViewModel.getBudgetItem()!!.fromAccount
+        mBudgetRule = mainViewModel.getBudgetItem()!!.budgetRule
+        binding.apply {
+            val mBudgetItem =
+                mainViewModel.getBudgetItem()!!.budgetItem!!
+            tvBudgetRule.text =
+                mBudgetRule!!.budgetRuleName
+            etDescription.setText(
+                mBudgetItem.biBudgetName
+            )
+            etTransDate.setText(
+                df.getCurrentDateAsString()
+            )
+            etAmount.hint =
+                "Budgeted: ${cf.displayDollars(mBudgetItem.biProjectedAmount)}"
+            tvToAccount.text =
+                mToAccount!!.accountName
+            accountViewModel.getAccountDetailed(
+                mToAccount!!.accountId
+            ).observe(
+                viewLifecycleOwner
+            ) { accWType ->
+                if (accWType.accountType!!.allowPending) {
+                    chkToAccPending.visibility = View.VISIBLE
+                } else {
+                    chkToAccPending.visibility = View.GONE
+                }
+            }
+            tvFromAccount.text =
+                mFromAccount!!.accountName
+            accountViewModel.getAccountDetailed(
+                mFromAccount!!.accountId
+            ).observe(
+                viewLifecycleOwner
+            ) { accWType ->
+                if (accWType.accountType!!.allowPending) {
+                    chkFromAccPending.visibility = View.VISIBLE
+                } else {
+                    chkFromAccPending.visibility = View.GONE
+                }
+            }
+            etBudgetedAmount.setText(
+                cf.displayDollars(
+                    mBudgetItem.biProjectedAmount
+                )
+            )
+            calculateRemainder()
+        }
     }
 
     private fun fillFromTransaction() {
         if (mainViewModel.getTransactionDetailed()!!.transaction != null) {
+            val mTransaction =
+                mainViewModel.getTransactionDetailed()!!.transaction!!
             binding.apply {
                 etDescription.setText(
-                    mainViewModel.getTransactionDetailed()!!.transaction?.transName ?: ""
+                    mTransaction.transName
                 )
                 etNote.setText(
-                    mainViewModel.getTransactionDetailed()!!.transaction!!.transNote
+                    mTransaction.transNote
                 )
                 etTransDate.setText(
-                    mainViewModel.getTransactionDetailed()!!.transaction!!.transDate
+                    mTransaction.transDate
                 )
                 etAmount.setText(
                     cf.displayDollars(
-                        mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount
+                        mTransaction.transAmount
                     )
                 )
-                tvToAccount.text =
-                    mainViewModel.getTransactionDetailed()!!.toAccount!!.accountName
                 mToAccount =
-                    mainViewModel.getTransactionDetailed()!!.fromAccount
-                CoroutineScope(Dispatchers.IO).launch {
-                    val toAccountWithType =
-                        async {
-                            accountViewModel.getAccountWithType(
-                                mainViewModel.getTransactionDetailed()!!.toAccount!!.accountId
-                            )
-                        }
-                    mToAccountWithType = toAccountWithType.await()
-                }
-                CoroutineScope(Dispatchers.Main).launch {
-                    delay(250)
-                    if (mToAccountWithType?.accountType?.allowPending == true) {
-                        chkToAccPending.visibility = View.VISIBLE
-                    } else {
-                        chkToAccPending.visibility = View.GONE
-                    }
-                }
+                    mainViewModel.getTransactionDetailed()!!.toAccount!!
+                tvToAccount.text =
+                    mToAccount!!.accountName
+
                 chkToAccPending.isChecked =
                     mainViewModel.getTransactionDetailed()!!.transaction!!.transToAccountPending
-                tvFromAccount.text =
-                    mainViewModel.getTransactionDetailed()?.fromAccount?.accountName
                 mFromAccount =
-                    mainViewModel.getTransactionDetailed()!!.fromAccount
-                CoroutineScope(Dispatchers.IO).launch {
-                    val fromAccountWithType =
-                        async {
-                            accountViewModel.getAccountWithType(
-                                mainViewModel.getTransactionDetailed()?.fromAccount!!.accountName
-                            )
-                        }
-                    mFromAccountWithType = fromAccountWithType.await()
-                }
-                CoroutineScope(Dispatchers.Main).launch {
-                    delay(250)
-                    if (mFromAccountWithType?.accountType?.allowPending == true) {
-                        chkFromAccPending.visibility = View.VISIBLE
-                    } else {
-                        chkFromAccPending.visibility = View.GONE
-                    }
-                }
+                    mainViewModel.getTransactionDetailed()!!.fromAccount!!
+                tvFromAccount.text =
+                    mFromAccount!!.accountName
                 chkFromAccPending.isChecked =
-                    mainViewModel.getTransactionDetailed()!!.transaction!!.transFromAccountPending
-                etTransDate.setText(df.getCurrentDateAsString())
+                    mainViewModel.getTransactionDetailed()!!
+                        .transaction!!.transFromAccountPending
+                etTransDate.setText(
+                    mainViewModel.getTransactionDetailed()!!
+                        .transaction!!.transDate
+                )
             }
         }
     }
@@ -441,16 +467,17 @@ class TransactionPerformFragment : Fragment(
 
 
     private fun getCurTransaction(): Transactions {
+
         binding.apply {
             return Transactions(
                 cf.generateId(),
                 etTransDate.text.toString(),
                 etDescription.text.toString(),
                 etNote.text.toString(),
-                mainViewModel.getTransactionDetailed()?.budgetRule?.ruleId ?: 0L,
-                mainViewModel.getTransactionDetailed()?.toAccount?.accountId ?: 0L,
+                mBudgetRule?.ruleId ?: 0L,
+                mToAccount?.accountId ?: 0L,
                 chkToAccPending.isChecked,
-                mainViewModel.getTransactionDetailed()?.fromAccount?.accountId ?: 0L,
+                mFromAccount?.accountId ?: 0L,
                 chkFromAccPending.isChecked,
                 if (etAmount.text.isNotEmpty()) {
                     cf.getDoubleFromDollars(etAmount.text.toString())

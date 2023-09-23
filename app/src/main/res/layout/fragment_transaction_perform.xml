@@ -87,7 +87,6 @@
             android:id="@+id/crdBudgeted"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/material_dynamic_neutral90"
             app:cardCornerRadius="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -289,22 +289,19 @@
     <action
         android:id="@+id/action_global_budgetViewFragment"
         app:destination="@id/budgetViewFragment"
-        app:popUpToInclusive="true" />
+        app:popUpTo="@id/budgetViewFragment" />
     <action
         android:id="@+id/action_global_budgetRuleFragment"
         app:destination="@id/budgetRuleFragment"
-        app:popUpTo="@id/budgetRuleFragment"
-        app:popUpToInclusive="true" />
+        app:popUpTo="@id/budgetRuleFragment" />
     <action
         android:id="@+id/action_global_accountsFragment"
         app:destination="@id/accountsFragment"
-        app:popUpTo="@id/accountsFragment"
-        app:popUpToInclusive="true" />
+        app:popUpTo="@id/accountsFragment" />
     <action
         android:id="@+id/action_global_transactionViewFragment"
         app:destination="@id/transactionViewFragment"
-        app:popUpTo="@id/transactionViewFragment"
-        app:popUpToInclusive="true" />
+        app:popUpTo="@id/transactionViewFragment" />
     <fragment
         android:id="@+id/transactionPerformFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.fragments.transactions.TransactionPerformFragment"

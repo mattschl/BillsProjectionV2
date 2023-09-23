@@ -124,6 +124,17 @@ interface AccountDao {
     )
     fun getAccountWithType(accountName: String): AccountWithType
 
+    @Transaction
+    @Query(
+        "SELECT $TABLE_ACCOUNTS.*, $TABLE_ACCOUNT_TYPES.* " +
+                "FROM $TABLE_ACCOUNTS " +
+                "LEFT JOIN $TABLE_ACCOUNT_TYPES ON " +
+                "$TABLE_ACCOUNT_TYPES.$TYPE_ID = " +
+                "$TABLE_ACCOUNTS.$ACCOUNT_TYPE_ID " +
+                "WHERE $TABLE_ACCOUNTS.$ACCOUNT_ID = :accountId  "
+    )
+    fun getAccountDetailed(accountId: Long): LiveData<AccountWithType>
+
     @Query(
         "SELECT * FROM $TABLE_ACCOUNTS " +
                 "WHERE $ACCOUNT_ID = :accountId"

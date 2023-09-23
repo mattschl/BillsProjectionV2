@@ -88,6 +88,9 @@ class AccountViewModel(
     fun getAccountWithType(accountName: String) =
         accountRepository.getAccountWithType(accountName)
 
+    fun getAccountDetailed(accountId: Long) =
+        accountRepository.getAccountDetailed(accountId)
+
     fun getAccount(accountId: Long) =
         accountRepository.getAccount(accountId)
 
