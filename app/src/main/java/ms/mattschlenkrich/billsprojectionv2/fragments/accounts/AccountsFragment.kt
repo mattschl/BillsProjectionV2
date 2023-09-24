@@ -84,7 +84,6 @@ class AccountsFragment :
         accountAdapter = AccountAdapter(
             mainViewModel
         )
-
         binding.rvAccounts.apply {
             layoutManager = StaggeredGridLayoutManager(
                 2,
@@ -114,7 +113,6 @@ class AccountsFragment :
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-
         menuInflater.inflate(R.menu.search_menu, menu)
         val mMenuSearch = menu.findItem(R.id.menu_search)
             .actionView as SearchView

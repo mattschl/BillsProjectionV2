@@ -129,6 +129,13 @@ class TransactionPerformFragment : Fragment(
                     )
                     calculateRemainder()
                 }
+                val mBudgetItem =
+                    mainViewModel.getBudgetItem()
+                mBudgetItem!!.budgetItem!!.biProjectedAmount =
+                    cf.getDoubleFromDollars(
+                        etBudgetedAmount.text.toString()
+                    )
+                mainViewModel.setBudgetItem(mBudgetItem)
             }
         }
     }
@@ -204,9 +211,9 @@ class TransactionPerformFragment : Fragment(
     private fun getTransactionDetailed(): TransactionDetailed {
         return TransactionDetailed(
             getCurTransaction(),
-            mainViewModel.getTransactionDetailed()?.budgetRule,
-            mainViewModel.getTransactionDetailed()?.toAccount,
-            mainViewModel.getTransactionDetailed()?.fromAccount
+            mBudgetRule,
+            mToAccount,
+            mFromAccount
         )
     }
 
@@ -276,6 +283,9 @@ class TransactionPerformFragment : Fragment(
         if (mainViewModel.getTransactionDetailed()!!.transaction != null) {
             val mTransaction =
                 mainViewModel.getTransactionDetailed()!!.transaction!!
+            mBudgetRule = mainViewModel.getTransactionDetailed()!!.budgetRule
+            mToAccount = mainViewModel.getTransactionDetailed()!!.toAccount
+            mFromAccount = mainViewModel.getTransactionDetailed()!!.fromAccount
             binding.apply {
                 etDescription.setText(
                     mTransaction.transName
@@ -291,8 +301,13 @@ class TransactionPerformFragment : Fragment(
                         mTransaction.transAmount
                     )
                 )
+                etBudgetedAmount.setText(
+                    cf.displayDollars(
+                        mainViewModel.getBudgetItem()!!.budgetItem!!.biProjectedAmount
+                    )
+                )
                 mBudgetRule =
-                    mainViewModel.getTransactionDetailed()!!.budgetRule!!
+                    mainViewModel.getTransactionDetailed()!!.budgetRule
                 tvBudgetRule.text =
                     mBudgetRule!!.budgetRuleName
                 mToAccount =
@@ -335,6 +350,7 @@ class TransactionPerformFragment : Fragment(
                         .transaction!!.transDate
                 )
             }
+            calculateRemainder()
         }
     }
 
@@ -475,7 +491,6 @@ class TransactionPerformFragment : Fragment(
 
 
     private fun getCurTransaction(): Transactions {
-
         binding.apply {
             return Transactions(
                 cf.generateId(),

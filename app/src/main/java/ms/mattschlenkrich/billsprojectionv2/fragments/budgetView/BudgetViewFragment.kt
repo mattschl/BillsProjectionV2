@@ -156,19 +156,19 @@ class BudgetViewFragment : Fragment(
             ).observe(
                 viewLifecycleOwner
             ) { budgetItems ->
+                budgetList.clear()
                 budgetViewAdapter.differ.submitList(budgetItems)
                 updateUi(budgetItems)
-                budgetList.clear()
                 budgetItems.listIterator().forEach {
                     budgetList.add(it)
                 }
+                fillAssetDetails()
                 fillBudgetTotals()
             }
         }
     }
 
     fun fillBudgetTotals() {
-        fillAssetDetails()
         var debits = 0.0
         var credits = 0.0
         var fixedExpenses = 0.0

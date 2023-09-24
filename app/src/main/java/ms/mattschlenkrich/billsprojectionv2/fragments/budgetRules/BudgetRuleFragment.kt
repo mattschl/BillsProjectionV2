@@ -65,7 +65,6 @@ class BudgetRuleFragment :
         mainActivity.title = "Choose a Budget Rule"
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
-
         setupRecyclerView()
         binding.fabAddNew.setOnClickListener {
             addNewRule()
@@ -118,7 +117,6 @@ class BudgetRuleFragment :
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-
         menuInflater.inflate(R.menu.search_menu, menu)
         val mMenuSearch = menu.findItem(R.id.menu_search)
             .actionView as SearchView

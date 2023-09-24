@@ -64,7 +64,7 @@ data class BudgetItem(
     val biToAccountId: Long,
     val biFromAccountId: Long,
     @ColumnInfo(defaultValue = "0.0")
-    val biProjectedAmount: Double,
+    var biProjectedAmount: Double,
     @ColumnInfo(defaultValue = "0")
     val biIsPending: Boolean,
     @ColumnInfo(defaultValue = "0")
