@@ -17,6 +17,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_PERFORM
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
@@ -247,6 +248,13 @@ class AccountAdapter(
                 AccountsFragmentDirections
                     .actionAccountsFragmentToBudgetItemUpdateFragment()
             it.findNavController().navigate(direction)
+        } else if (mainViewModel.getCallingFragments()!!
+                .contains(FRAG_TRANS_PERFORM)
+        ) {
+            it.findNavController().navigate(
+                AccountsFragmentDirections
+                    .actionAccountsFragmentToTransactionPerformFragment()
+            )
         }
     }
 }

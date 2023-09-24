@@ -163,6 +163,8 @@ class BudgetViewAdapter(
     }
 
     private fun openBudgetItem(curBudget: BudgetDetailed, it: View) {
+        mainViewModel.setAsset(curAccount)
+        mainViewModel.setPayDay(curBudget.budgetItem!!.biPayDay)
         mainViewModel.setBudgetItem(curBudget)
         mainViewModel.setCallingFragments(
             PARENT_TAG

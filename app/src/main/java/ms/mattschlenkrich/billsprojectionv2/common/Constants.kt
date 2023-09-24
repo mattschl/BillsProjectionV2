@@ -117,6 +117,8 @@ const val TRANS_UPDATE_TIME = "transUpdateTime"
 const val REQUEST_TO_ACCOUNT = "toAccount"
 const val REQUEST_FROM_ACCOUNT = "fromAccount"
 
+const val ANSWER_OK = "Ok"
+
 const val DAY_MONDAY = "Monday"
 const val DAY_TUESDAY = "Tuesday"
 const val DAY_WEDNESDAY = "Wednesday"

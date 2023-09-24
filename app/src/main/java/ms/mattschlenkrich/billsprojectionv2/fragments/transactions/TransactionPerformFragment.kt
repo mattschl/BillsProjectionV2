@@ -88,9 +88,6 @@ class TransactionPerformFragment : Fragment(
 
     private fun createActions() {
         binding.apply {
-            tvBudgetRule.setOnClickListener {
-                chooseBudgetRule()
-            }
             tvToAccount.setOnClickListener {
                 chooseToAccount()
             }
@@ -204,20 +201,6 @@ class TransactionPerformFragment : Fragment(
         )
     }
 
-
-    private fun chooseBudgetRule() {
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments() + "', " + TAG
-        )
-        mainViewModel.setTransactionDetailed(
-            getTransactionDetailed()
-        )
-        mView.findNavController().navigate(
-            TransactionPerformFragmentDirections
-                .actionTransactionPerformFragmentToBudgetRuleFragment()
-        )
-    }
-
     private fun getTransactionDetailed(): TransactionDetailed {
         return TransactionDetailed(
             getCurTransaction(),
@@ -308,17 +291,42 @@ class TransactionPerformFragment : Fragment(
                         mTransaction.transAmount
                     )
                 )
+                mBudgetRule =
+                    mainViewModel.getTransactionDetailed()!!.budgetRule!!
+                tvBudgetRule.text =
+                    mBudgetRule!!.budgetRuleName
                 mToAccount =
                     mainViewModel.getTransactionDetailed()!!.toAccount!!
                 tvToAccount.text =
                     mToAccount!!.accountName
-
+                accountViewModel.getAccountDetailed(
+                    mToAccount!!.accountId
+                ).observe(
+                    viewLifecycleOwner
+                ) { accWType ->
+                    if (accWType.accountType!!.allowPending) {
+                        chkToAccPending.visibility = View.VISIBLE
+                    } else {
+                        chkToAccPending.visibility = View.GONE
+                    }
+                }
                 chkToAccPending.isChecked =
                     mainViewModel.getTransactionDetailed()!!.transaction!!.transToAccountPending
                 mFromAccount =
                     mainViewModel.getTransactionDetailed()!!.fromAccount!!
                 tvFromAccount.text =
                     mFromAccount!!.accountName
+                accountViewModel.getAccountDetailed(
+                    mFromAccount!!.accountId
+                ).observe(
+                    viewLifecycleOwner
+                ) { accWType ->
+                    if (accWType.accountType!!.allowPending) {
+                        chkFromAccPending.visibility = View.VISIBLE
+                    } else {
+                        chkFromAccPending.visibility = View.GONE
+                    }
+                }
                 chkFromAccPending.isChecked =
                     mainViewModel.getTransactionDetailed()!!
                         .transaction!!.transFromAccountPending

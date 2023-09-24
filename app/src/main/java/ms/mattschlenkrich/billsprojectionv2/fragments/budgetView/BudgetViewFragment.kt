@@ -88,13 +88,13 @@ class BudgetViewFragment : Fragment(
     }
 
     private fun resumeHistory() {
-        if (mainViewModel.getAsset()!!.isNotBlank()) {
-            binding.apply {
-                CoroutineScope(Dispatchers.Main).launch {
-                    delay(500)
+        if (mainViewModel.getAsset()!! != "") {
+            CoroutineScope(Dispatchers.Main).launch {
+                binding.apply {
+                    delay(250)
                     for (i in 0 until spAssetNames.adapter.count) {
                         if (spAssetNames.getItemAtPosition(i).toString() ==
-                            mainViewModel.getAsset()
+                            mainViewModel.getAsset()!!
                         ) {
                             spAssetNames.setSelection(i)
                             break
@@ -116,7 +116,6 @@ class BudgetViewFragment : Fragment(
                 }
             }
         }
-
     }
 
     private fun selectPayDay() {
@@ -147,14 +146,10 @@ class BudgetViewFragment : Fragment(
             asset,
             mView!!.context
         )
-        mainViewModel.setAsset(asset)
-        mainViewModel.setPayDay(payDay)
-
         binding.rvBudgetSummary.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = budgetViewAdapter
         }
-
         activity?.let {
             budgetItemViewModel.getBudgetItems(
                 asset, payDay
@@ -363,21 +358,8 @@ class BudgetViewFragment : Fragment(
             assetList?.forEach {
                 assetAdapter.add(it)
             }
-
         }
-        binding.apply {
-            spAssetNames.adapter = assetAdapter
-            if (!mainViewModel.getAsset().isNullOrEmpty()) {
-                for (i in 0 until spAssetNames.adapter.count) {
-                    if (spAssetNames.getItemAtPosition(i).toString() ==
-                        mainViewModel.getAsset()
-                    ) {
-                        spAssetNames.setSelection(i)
-                        break
-                    }
-                }
-            }
-        }
+        binding.spAssetNames.adapter = assetAdapter
     }
 
     private fun addAction() {

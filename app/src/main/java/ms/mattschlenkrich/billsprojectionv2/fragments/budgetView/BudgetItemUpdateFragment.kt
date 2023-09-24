@@ -17,8 +17,13 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_UPDATE
@@ -78,6 +83,10 @@ class BudgetItemUpdateFragment : Fragment(
             )
         fillPayDaysLive()
         fillValues()
+        createActions()
+    }
+
+    private fun createActions() {
         binding.apply {
             tvBudgetRule.setOnClickListener {
                 chooseBudgetRule()
@@ -127,14 +136,6 @@ class BudgetItemUpdateFragment : Fragment(
                 etBudgetItemName.setText(
                     curBudgetItem.budgetItem.biBudgetName
                 )
-                for (i in 0 until spPayDays.adapter.count) {
-                    if (spPayDays.getItemAtPosition(i) ==
-                        curBudgetItem.budgetItem.biPayDay
-                    ) {
-                        spPayDays.setSelection(i)
-                        break
-                    }
-                }
                 tvBudgetRule.text =
                     curBudgetItem.budgetRule?.budgetRuleName
                 mBudgetRuleDetailed.budgetRule =
@@ -160,6 +161,17 @@ class BudgetItemUpdateFragment : Fragment(
                     curBudgetItem.budgetItem.biIsPayDayItem
                 chkIsLocked.isChecked =
                     curBudgetItem.budgetItem.biLocked
+                CoroutineScope(Dispatchers.Main).launch {
+                    delay(250)
+                    for (i in 0 until spPayDays.adapter.count) {
+                        if (spPayDays.getItemAtPosition(i) ==
+                            curBudgetItem.budgetItem.biPayDay
+                        ) {
+                            spPayDays.setSelection(i)
+                            break
+                        }
+                    }
+                }
             }
         }
     }
@@ -188,7 +200,7 @@ class BudgetItemUpdateFragment : Fragment(
 
     private fun updateBudgetItem() {
         val mess = checkBudgetItem()
-        if (mess == "'Ok") {
+        if (mess == ANSWER_OK) {
             budgetItemViewModel.updateBudgetItem(
                 getCurBudgetItem()
             )
@@ -273,7 +285,7 @@ class BudgetItemUpdateFragment : Fragment(
                 chkIsPayDay.isChecked,
                 mainViewModel.getBudgetItem()!!.toAccount?.accountId ?: 0L,
                 mainViewModel.getBudgetItem()!!.fromAccount?.accountId ?: 0L,
-                etProjectedAmount.text.toString().toDouble(),
+                cf.getDoubleFromDollars(etProjectedAmount.text.toString()),
                 biIsPending = false,
                 chkFixedAmount.isChecked,
                 chkIsAutoPayment.isChecked,
@@ -339,7 +351,7 @@ class BudgetItemUpdateFragment : Fragment(
                     "     Error!!\n" +
                             "Please enter a budget amount (including zero)"
                 } else {
-                    "Ok"
+                    ANSWER_OK
                 }
             return errorMes
         }
