@@ -114,7 +114,8 @@
             android:minHeight="48dp"
             android:text="@string/pending"
             app:layout_constraintBaseline_toBaselineOf="@id/tvToAccount"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:ignore="DuplicateSpeakableTextCheck" />
 
 
         <TextView

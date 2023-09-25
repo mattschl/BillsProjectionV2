@@ -33,6 +33,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionAddBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
+import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.Transactions
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
@@ -53,6 +54,7 @@ class TransactionAddFragment :
     private lateinit var accountViewModel: AccountViewModel
     private var success = false
 
+    private var mBudgetRule: BudgetRule? = null
     private var mToAccount: Account? = null
     private var mFromAccount: Account? = null
     private var mToAccountWithType: AccountWithType? = null
@@ -145,15 +147,21 @@ class TransactionAddFragment :
 
     private fun getCurTransaction(): Transactions {
         binding.apply {
+            Log.d(
+                TAG, "trying to create transaction " +
+                        "budgetRuleId: ${mainViewModel.getTransactionDetailed()?.budgetRule?.ruleId}, " +
+                        "toAccountId: ${mainViewModel.getTransactionDetailed()?.toAccount?.accountId}, " +
+                        "fromAccountId: ${mainViewModel.getTransactionDetailed()?.toAccount?.accountId}"
+            )
             return Transactions(
                 cf.generateId(),
                 etTransDate.text.toString(),
                 etDescription.text.toString(),
                 etNote.text.toString(),
                 mainViewModel.getTransactionDetailed()?.budgetRule?.ruleId ?: 0L,
-                mainViewModel.getTransactionDetailed()?.toAccount?.accountId ?: 0L,
+                mToAccount?.accountId ?: 0L,
                 chkToAccPending.isChecked,
-                mainViewModel.getTransactionDetailed()?.fromAccount?.accountId ?: 0L,
+                mFromAccount?.accountId ?: 0L,
                 chkFromAccPending.isChecked,
                 if (etAmount.text.isNotEmpty()) {
                     cf.getDoubleFromDollars(etAmount.text.toString())
@@ -167,12 +175,12 @@ class TransactionAddFragment :
     }
 
     private fun getTransactionDetailed(): TransactionDetailed {
-            return TransactionDetailed(
-                getCurTransaction(),
-                mainViewModel.getTransactionDetailed()?.budgetRule,
-                mainViewModel.getTransactionDetailed()?.toAccount,
-                mainViewModel.getTransactionDetailed()?.fromAccount
-            )
+        return TransactionDetailed(
+            getCurTransaction(),
+            mainViewModel.getTransactionDetailed()?.budgetRule,
+            mainViewModel.getTransactionDetailed()?.toAccount,
+            mainViewModel.getTransactionDetailed()?.fromAccount
+        )
     }
 
     private fun chooseDate() {
@@ -266,6 +274,7 @@ class TransactionAddFragment :
 
                 }
                 if (mainViewModel.getTransactionDetailed()!!.budgetRule != null) {
+                    mBudgetRule = mainViewModel.getTransactionDetailed()!!.budgetRule
                     tvBudgetRule.text =
                         mainViewModel.getTransactionDetailed()!!.budgetRule!!.budgetRuleName
                     if (mainViewModel.getTransactionDetailed()!!.toAccount == null) {
@@ -394,16 +403,7 @@ class TransactionAddFragment :
             transactionViewModel.insertTransaction(
                 mTransaction
             )
-            CoroutineScope(Dispatchers.IO).launch {
-                val go = async {
-                    updateAccounts(mTransaction)
-                }
-                if (go.await()) {
-                    success = true
-                }
-            }
-            gotoCallingFragment()
-
+            updateAccounts(mTransaction)
         } else {
             Toast.makeText(
                 mView.context,
@@ -415,44 +415,36 @@ class TransactionAddFragment :
 
 
     private fun updateAccounts(mTransaction: Transactions): Boolean {
-        val toAccountWithType =
-            accountViewModel.getAccountWithType(
-                mToAccount!!.accountId
-            )
         if (!mTransaction.transToAccountPending) {
-            if (toAccountWithType.accountType!!.keepTotals) {
+            if (mToAccountWithType!!.accountType!!.keepTotals) {
                 transactionViewModel.updateAccountBalance(
-                    toAccountWithType.account.accountBalance +
+                    mToAccountWithType!!.account.accountBalance +
                             mTransaction.transAmount,
                     mToAccount!!.accountId,
                     df.getCurrentTimeAsString()
                 )
                 Log.d(TAG, "updating toAccountBalance")
             }
-            if (toAccountWithType.accountType.tallyOwing) {
+            if (mToAccountWithType!!.accountType!!.tallyOwing) {
                 transactionViewModel.updateAccountOwing(
-                    toAccountWithType.account.accountOwing -
+                    mToAccountWithType!!.account.accountOwing -
                             mTransaction.transAmount,
                     mToAccount!!.accountId,
                     df.getCurrentTimeAsString()
                 )
             }
         }
-        val fromAccountWithType =
-            accountViewModel.getAccountWithType(
-                mFromAccount!!.accountId
-            )
         if (!mTransaction.transFromAccountPending) {
-            if (fromAccountWithType.accountType!!.keepTotals) {
+            if (mFromAccountWithType!!.accountType!!.keepTotals) {
                 transactionViewModel.updateAccountBalance(
-                    fromAccountWithType.account.accountBalance -
+                    mFromAccountWithType!!.account.accountBalance -
                             mTransaction.transAmount,
                     mFromAccount!!.accountId,
                     df.getCurrentTimeAsString()
                 )
             }
-            gotoCallingFragment()
         }
+        gotoCallingFragment()
         return true
     }
 

@@ -20,6 +20,7 @@ import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 import java.util.Random
 
 private const val TAG = ADAPTER_ACCOUNT_TYPE
+private const val PARENT_TAG = FRAG_ACCOUNT_TYPES
 
 class AccountTypeAdapter(
     private val mainViewModel: MainViewModel
@@ -99,14 +100,15 @@ class AccountTypeAdapter(
 
         holder.itemView.setOnLongClickListener {
             mainViewModel.setCallingFragments(
-                mainViewModel.getCallingFragments() + ", " + FRAG_ACCOUNT_TYPES
+                mainViewModel.getCallingFragments() + ", " + PARENT_TAG
             )
             mainViewModel.setAccountType(
                 curAccountType
             )
-            val direction = AccountTypesFragmentDirections
-                .actionAccountTypesFragmentToAccountTypeUpdateFragment()
-            it.findNavController().navigate(direction)
+            it.findNavController().navigate(
+                AccountTypesFragmentDirections
+                    .actionAccountTypesFragmentToAccountTypeUpdateFragment()
+            )
             false
         }
         holder.itemView.setOnClickListener {
@@ -120,13 +122,15 @@ class AccountTypeAdapter(
                 )
             )
             if (mainViewModel.getCallingFragments()!!.contains(FRAG_ACCOUNT_UPDATE)) {
-                val direction = AccountTypesFragmentDirections
-                    .actionAccountTypesFragmentToAccountUpdateFragment()
-                it.findNavController().navigate(direction)
+                it.findNavController().navigate(
+                    AccountTypesFragmentDirections
+                        .actionAccountTypesFragmentToAccountUpdateFragment()
+                )
             } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_ACCOUNT_ADD)) {
-                val direction = AccountTypesFragmentDirections
-                    .actionAccountTypesFragmentToAccountAddFragment()
-                it.findNavController().navigate(direction)
+                it.findNavController().navigate(
+                    AccountTypesFragmentDirections
+                        .actionAccountTypesFragmentToAccountAddFragment()
+                )
             }
         }
     }

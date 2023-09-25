@@ -1,7 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.adapter
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -84,7 +83,6 @@ class BudgetRuleAdapter(
         holder.itemBinding.tvFromAccount.text = info
         val amount =
             cf.displayDollars(budgetRuleDetailed.budgetRule!!.budgetAmount)
-        Log.d(TAG, "Amount is ${budgetRuleDetailed.budgetRule!!.budgetAmount}")
         val frequencyTypes =
             context.resources.getStringArray(R.array.frequency_types)
         val frequencyType =
@@ -112,6 +110,10 @@ class BudgetRuleAdapter(
                 mainViewModel.getBudgetItem()
             mBudgetDetailed?.budgetRule =
                 budgetRuleDetailed!!.budgetRule
+            mainViewModel.setCallingFragments(
+                mainViewModel.getCallingFragments()!!
+                    .replace(", $PARENT_TAG", "")
+            )
             mainViewModel.setBudgetItem(mBudgetDetailed)
             gotoCallingFragment(it)
         }
@@ -120,6 +122,7 @@ class BudgetRuleAdapter(
             mainViewModel.setCallingFragments(
                 mainViewModel.getCallingFragments() + ", " + FRAG_BUDGET_RULES
             )
+            mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
             val direction = BudgetRuleFragmentDirections
                 .actionBudgetRuleFragmentToBudgetRuleUpdateFragment()
             it.findNavController().navigate(direction)

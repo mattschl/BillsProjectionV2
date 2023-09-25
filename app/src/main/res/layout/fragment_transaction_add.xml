@@ -112,7 +112,8 @@
             android:text="@string/pending"
             app:layout_constraintBaseline_toBaselineOf="@id/tvToAccount"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/tvToAccount" />
+            app:layout_constraintStart_toEndOf="@id/tvToAccount"
+            tools:ignore="DuplicateSpeakableTextCheck" />
 
         <TextView
             android:id="@+id/lblFromAccount"

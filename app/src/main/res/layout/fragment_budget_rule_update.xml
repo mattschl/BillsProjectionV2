@@ -248,7 +248,8 @@
                 android:textSize="@dimen/text_heading_size"
                 app:layout_constraintBaseline_toBaselineOf="@+id/spDayOfWeek"
                 app:layout_constraintEnd_toStartOf="@+id/spDayOfWeek"
-                app:layout_constraintStart_toEndOf="@+id/etFrequencyCount" />
+                app:layout_constraintStart_toEndOf="@+id/etFrequencyCount"
+                tools:ignore="PrivateResource" />
 
             <Spinner
                 android:id="@+id/spDayOfWeek"

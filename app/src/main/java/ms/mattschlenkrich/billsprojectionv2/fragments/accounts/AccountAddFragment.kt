@@ -175,7 +175,6 @@ class AccountAddFragment :
         mainViewModel.setCallingFragments(
             mainViewModel.getCallingFragments() + ", " + TAG
         )
-        mainViewModel.setRequestedAccount("")
         mainViewModel.setAccountWithType(
             AccountWithType(
                 getCurrentAccount(),
