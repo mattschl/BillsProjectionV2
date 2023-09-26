@@ -20,14 +20,17 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.adapter.BudgetViewAdapter
+import ms.mattschlenkrich.billsprojectionv2.adapter.TransactionPendingAdapter
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetViewBinding
 import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
+import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModel
 
 private const val TAG = FRAG_BUDGET_VIEW
 
@@ -42,11 +45,13 @@ class BudgetViewFragment : Fragment(
     private lateinit var mainViewModel: MainViewModel
     private lateinit var budgetItemViewModel: BudgetItemViewModel
     private lateinit var accountViewModel: AccountViewModel
+    private lateinit var transactionViewModel: TransactionViewModel
     private val cf = CommonFunctions()
 
     //    private lateinit var assetList: List<String>
     private lateinit var curAsset: AccountWithType
     private val budgetList = ArrayList<BudgetDetailed>()
+    private val pendingList = ArrayList<TransactionDetailed>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,6 +74,8 @@ class BudgetViewFragment : Fragment(
             mainActivity.budgetItemViewModel
         accountViewModel =
             mainActivity.accountViewModel
+        transactionViewModel =
+            mainActivity.transactionViewModel
         mView = binding.root
         return binding.root
     }
@@ -245,15 +252,17 @@ class BudgetViewFragment : Fragment(
     }
 
     private fun updateUi(budgetItems: List<BudgetDetailed>?) {
-        if (budgetItems.isNullOrEmpty()) {
-            binding.crdNoTransactions.visibility = View.VISIBLE
-            binding.rvBudgetSummary.visibility = View.GONE
-        } else {
-            binding.crdNoTransactions.visibility = View.GONE
-            binding.rvBudgetSummary.visibility = View.VISIBLE
-
+        binding.apply {
+            if (budgetItems.isNullOrEmpty()) {
+                crdNoTransactions.visibility = View.VISIBLE
+                rvBudgetSummary.visibility = View.GONE
+                lblBudgeted.visibility = View.GONE
+            } else {
+                binding.crdNoTransactions.visibility = View.GONE
+                binding.rvBudgetSummary.visibility = View.VISIBLE
+                lblBudgeted.visibility = View.VISIBLE
+            }
         }
-
     }
 
     private fun selectAsset() {
@@ -276,13 +285,54 @@ class BudgetViewFragment : Fragment(
                         }
                         clearCurrentDisplay()
                         fillPayDaysLive(spAssetNames.selectedItem.toString())
-
+                        setupPendingList(spAssetNames.selectedItem.toString())
                     }
 
                     override fun onNothingSelected(p0: AdapterView<*>?) {
                         //not needed
                     }
                 }
+        }
+    }
+
+    private fun setupPendingList(asset: String) {
+        val transactionPendingAdapter =
+            TransactionPendingAdapter(
+                asset,
+                mainViewModel,
+                mView!!.context
+            )
+        binding.rvPending.apply {
+            layoutManager =
+                LinearLayoutManager(requireContext())
+            adapter = transactionPendingAdapter
+        }
+        activity?.let {
+            transactionViewModel.getPendingTransactionsDetailed(
+                asset
+            ).observe(
+                viewLifecycleOwner
+            ) { transactions ->
+                pendingList.clear()
+                transactionPendingAdapter.differ.submitList(transactions)
+                updatePendingUI(transactions)
+                transactions.listIterator().forEach {
+                    pendingList.add(it)
+                }
+            }
+        }
+    }
+
+    private fun updatePendingUI(transactions: List<TransactionDetailed>?) {
+        binding.apply {
+            if (transactions.isNullOrEmpty()) {
+                rvPending.visibility = View.GONE
+                lblPending.visibility = View.GONE
+            } else {
+                rvPending.visibility = View.VISIBLE
+                lblPending.visibility = View.VISIBLE
+                lblPending.setTextColor(Color.RED)
+            }
         }
     }
 

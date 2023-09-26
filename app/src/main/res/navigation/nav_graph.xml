@@ -265,6 +265,9 @@
         <action
             android:id="@+id/action_budgetViewFragment_to_transactionPerformFragment"
             app:destination="@id/transactionPerformFragment" />
+        <action
+            android:id="@+id/action_budgetViewFragment_to_transactionUpdateFragment"
+            app:destination="@id/transactionUpdateFragment" />
     </fragment>
     <fragment
         android:id="@+id/budgetItemAddFragment"

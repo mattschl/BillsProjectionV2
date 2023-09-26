@@ -65,4 +65,7 @@ class TransactionViewModel(
             newOwing, accountId, updateTime
         )
     }
+
+    fun getPendingTransactionsDetailed(asset: String) =
+        transactionRepository.getPendingTransactionsDetailed(asset)
 }

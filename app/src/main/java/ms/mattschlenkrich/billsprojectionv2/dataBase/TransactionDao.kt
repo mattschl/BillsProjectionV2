@@ -9,6 +9,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_BALANCE
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_NAME
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_OWING
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_UPDATE_TIME
 import ms.mattschlenkrich.billsprojectionv2.common.RULE_ID
@@ -17,10 +18,12 @@ import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_TRANSACTION
 import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_DATE
 import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_FROM_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_FROM_ACCOUNT_PENDING
 import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_ID
 import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_NAME
 import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_NOTE
 import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_TO_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_TO_ACCOUNT_PENDING
 import ms.mattschlenkrich.billsprojectionv2.common.TRANS_BUDGET_RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.common.TRANS_IS_DELETED
 import ms.mattschlenkrich.billsprojectionv2.common.TRANS_UPDATE_TIME
@@ -32,50 +35,6 @@ import ms.mattschlenkrich.billsprojectionv2.model.Transactions
 interface TransactionDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTransaction(transaction: Transactions)
-
-//    @Transaction
-//    @Query(
-//        "INSERT INTO $TABLE_TRANSACTION " +
-//                "($TRANSACTION_ID, " +
-//                "$TRANSACTION_DATE, " +
-//                "$TRANS_BUDGET_RULE_ID, " +
-//                "$TRANSACTION_TO_ACCOUNT_ID, " +
-//                "$TRANSACTION_TO_ACCOUNT_PENDING, " +
-//                "$TRANSACTION_FROM_ACCOUNT_ID, " +
-//                "$TRANSACTION_FROM_ACCOUNT_PENDING, " +
-//                "$TRANSACTION_NAME, " +
-//                "$TRANSACTION_NOTE, " +
-//                "$TRANSACTION_AMOUNT," +
-//                "$TRANS_IS_DELETED, " +
-//                "$TRANS_UPDATE_TIME) " +
-//                "VALUES (" +
-//                ":transId, " +
-//                ":transDate, " +
-//                ":bRuleId, " +
-//                ":toAccountId, " +
-//                ":toAccountPending,  " +
-//                ":fromAccountId, " +
-//                ":fromAccountPending, " +
-//                ":transName, " +
-//                ":transNote, " +
-//                ":transAmount, " +
-//                ":isDelete, " +
-//                ":updateTime); "
-//    )
-//    suspend fun insertTransaction(
-//        transId: Long,
-//        transDate: String,
-//        bRuleId: Long,
-//        toAccountId: Long,
-//        toAccountPending: Boolean,
-//        fromAccountId: Long,
-//        fromAccountPending: Boolean,
-//        transName: String,
-//        transNote: String,
-//        transAmount: Double,
-//        isDelete: Boolean,
-//        updateTime: String,
-//    )
 
     @Update
     suspend fun updateTransaction(transaction: Transactions)
@@ -206,4 +165,37 @@ interface TransactionDao {
         accountId: Long,
         updateTime: String
     )
+
+    @Transaction
+    @Query(
+        "SELECT $TABLE_TRANSACTION.*," +
+                "budgetRule.*,  " +
+                "toAccount.*," +
+                "fromAccount.* " +
+                "FROM $TABLE_TRANSACTION " +
+                "LEFT JOIN $TABLE_BUDGET_RULES as budgetRule on " +
+                "$TABLE_TRANSACTION.$TRANS_BUDGET_RULE_ID = " +
+                "budgetRule.$RULE_ID " +
+                "LEFT JOIN $TABLE_ACCOUNTS as toAccount on " +
+                "$TABLE_TRANSACTION.$TRANSACTION_TO_ACCOUNT_ID =" +
+                "toAccount.$ACCOUNT_ID " +
+                "LEFT JOIN $TABLE_ACCOUNTS as fromAccount on " +
+                "$TABLE_TRANSACTION.$TRANSACTION_FROM_ACCOUNT_ID = " +
+                "fromAccount.$ACCOUNT_ID " +
+                "WHERE $TABLE_TRANSACTION.$TRANS_IS_DELETED = 0 " +
+                "AND (" +
+                "($TABLE_TRANSACTION.$TRANSACTION_TO_ACCOUNT_ID = " +
+                "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
+                "WHERE $ACCOUNT_NAME = :asset) " +
+                "AND $TABLE_TRANSACTION.$TRANSACTION_TO_ACCOUNT_PENDING = 1)" +
+                "OR ($TABLE_TRANSACTION.$TRANSACTION_FROM_ACCOUNT_ID = " +
+                "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
+                "WHERE $ACCOUNT_NAME = :asset) " +
+                "AND $TABLE_TRANSACTION.$TRANSACTION_FROM_ACCOUNT_PENDING = 1)" +
+                ")" +
+                "ORDER BY $TABLE_TRANSACTION.$TRANSACTION_DATE ASC, " +
+                "$TABLE_TRANSACTION.$TRANS_UPDATE_TIME DESC"
+    )
+    fun getPendingTransactionsDetailed(asset: String):
+            LiveData<List<TransactionDetailed>>
 }

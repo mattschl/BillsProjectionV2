@@ -7,25 +7,6 @@ class TransactionRepository(private val db: BillsDatabase) {
     suspend fun insertTransaction(transaction: Transactions) =
         db.getTransactionDao().insertTransaction(transaction)
 
-//    suspend fun insertTransaction(
-//        transId: Long,
-//        transDate: String,
-//        bRuleId: Long,
-//        toAccountId: Long,
-//        toAccountPending: Boolean,
-//        fromAccountId: Long,
-//        fromAccountPending: Boolean,
-//        transName: String,
-//        transNote: String,
-//        transAmount: Double,
-//        isDelete: Boolean,
-//        updateTime: String,
-//    ) = db.getTransactionDao().insertTransaction(
-//        transId, transDate, bRuleId, toAccountId,
-//        toAccountPending, fromAccountId, fromAccountPending,
-//        transName, transNote, transAmount, isDelete, updateTime
-//    )
-
     suspend fun updateTransaction(transaction: Transactions) =
         db.getTransactionDao().updateTransaction(transaction)
 
@@ -67,4 +48,7 @@ class TransactionRepository(private val db: BillsDatabase) {
     ) = db.getTransactionDao().updateAccountOwing(
         newOwing, accountId, updateTime
     )
+
+    fun getPendingTransactionsDetailed(asset: String) =
+        db.getTransactionDao().getPendingTransactionsDetailed(asset)
 }

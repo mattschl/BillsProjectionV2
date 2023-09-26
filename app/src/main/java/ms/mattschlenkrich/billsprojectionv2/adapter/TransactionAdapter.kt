@@ -15,9 +15,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_TRANSACTION
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNTS
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTIONS
 import ms.mattschlenkrich.billsprojectionv2.databinding.TransactionLinearItemBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.transactions.TransactionViewFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
@@ -25,7 +26,8 @@ import ms.mattschlenkrich.billsprojectionv2.model.Transactions
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 import java.util.Random
 
-private const val TAG = "TransactionAdapter"
+private const val TAG = ADAPTER_TRANSACTION
+private const val PARENT_TAG = FRAG_TRANSACTIONS
 
 class TransactionAdapter(
     private val mainActivity: MainActivity,
@@ -51,12 +53,6 @@ class TransactionAdapter(
                 oldItem: TransactionDetailed,
                 newItem: TransactionDetailed
             ): Boolean {
-                Log.d(
-                    TAG, "transId = ${oldItem.transaction?.transId} \n" +
-                            "rulId = ${oldItem.budgetRule?.ruleId} \n" +
-                            "toAccountId = ${oldItem.toAccount?.accountId} \n" +
-                            "fromAccountId = ${oldItem.fromAccount?.accountId}"
-                )
                 return oldItem.transaction?.transId ==
                         newItem.transaction?.transId &&
                         oldItem.budgetRule?.ruleId ==
@@ -99,7 +95,6 @@ class TransactionAdapter(
         holder: TransactionsViewHolder,
         position: Int,
     ) {
-        Log.d(TAG, "position = $position")
         val transaction =
             differ.currentList[
                 position
@@ -137,6 +132,13 @@ class TransactionAdapter(
                 Color.BLACK
             )
         }
+        if (transaction.transaction.transToAccountPending &&
+            transaction.transaction.transFromAccountPending
+        ) {
+            holder.itemBinding.tvToAccount.setLines(2)
+            holder.itemBinding.tvFromAccount.setLines(2)
+
+        }
         holder.itemBinding.tvFromAccount.text = info
         if (transaction.transaction.transNote.isEmpty()) {
             holder.itemBinding.tvTransInfo.visibility = View.GONE
@@ -170,11 +172,13 @@ class TransactionAdapter(
                     when (pos) {
                         0 -> {
                             mainViewModel.setCallingFragments(
-                                mainViewModel.getCallingFragments() + ", " + FRAG_ACCOUNTS
+                                mainViewModel.getCallingFragments() + ", " + PARENT_TAG
                             )
-                            val direction = TransactionViewFragmentDirections
-                                .actionTransactionViewFragmentToTransactionUpdateFragment()
-                            it.findNavController().navigate(direction)
+                            mainViewModel.setTransactionDetailed(transaction)
+                            it.findNavController().navigate(
+                                TransactionViewFragmentDirections
+                                    .actionTransactionViewFragmentToTransactionUpdateFragment()
+                            )
                         }
 
                         1 -> {

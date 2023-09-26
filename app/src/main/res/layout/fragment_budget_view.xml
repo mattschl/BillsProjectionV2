@@ -30,6 +30,8 @@
                     android:layout_height="48dp"
                     android:text="@string/choose_a_budget_asset"
                     android:textSize="@dimen/text_info_size"
+                    android:maxWidth="@dimen/text_box_width"
+                    android:textAlignment="center"
                     app:layout_constraintBaseline_toBaselineOf="@id/spAssetNames"
                     app:layout_constraintEnd_toStartOf="@id/spAssetNames"
                     app:layout_constraintStart_toStartOf="parent" />
@@ -39,6 +41,7 @@
                     android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:layout_marginStart="15dp"
+                    android:maxWidth="@dimen/text_box_width"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/lblAssetName"
                     app:layout_constraintTop_toTopOf="parent"
@@ -50,6 +53,8 @@
                     android:layout_height="wrap_content"
                     android:text="@string/choose_a_pay_day"
                     android:textSize="@dimen/text_info_size"
+                    android:maxWidth="@dimen/text_box_width"
+                    android:textAlignment="center"
                     app:layout_constraintBaseline_toBaselineOf="@id/spPayDay"
                     app:layout_constraintEnd_toStartOf="@id/spPayDay"
                     app:layout_constraintStart_toStartOf="parent" />
@@ -60,6 +65,7 @@
                     android:layout_height="48dp"
                     android:layout_marginStart="15dp"
                     app:layout_constraintEnd_toEndOf="parent"
+                    android:maxWidth="@dimen/text_box_width"
                     app:layout_constraintStart_toEndOf="@id/lblPayDay"
                     app:layout_constraintTop_toBottomOf="@id/spAssetNames" />
 
@@ -70,6 +76,8 @@
                     android:layout_height="48dp"
                     android:text="@string/balance_in_account"
                     android:textSize="@dimen/text_info_size"
+                    android:maxWidth="@dimen/text_box_width"
+                    android:textAlignment="center"
                     app:layout_constraintBaseline_toBaselineOf="@id/tvBalanceOwing"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/lblAssetName" />
@@ -94,6 +102,8 @@
                     android:text="@string/credits"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_info_size"
+                    android:maxWidth="@dimen/text_box_width"
+                    android:textAlignment="center"
                     app:layout_constraintEnd_toStartOf="@id/tvDebits"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvBalanceOwing" />
@@ -105,6 +115,8 @@
                     android:text="@string/debits"
                     android:textColor="@color/deep_red"
                     android:textSize="@dimen/text_info_size"
+                    android:maxWidth="@dimen/text_box_width"
+                    android:textAlignment="center"
                     app:layout_constraintBaseline_toBaselineOf="@id/tvCredits"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/tvCredits" />
@@ -116,6 +128,8 @@
                     android:text="@string/fixed_expenses"
                     android:textColor="@color/deep_red"
                     android:textSize="@dimen/text_info_size"
+                    android:maxWidth="@dimen/text_box_width"
+                    android:textAlignment="center"
                     app:layout_constraintEnd_toStartOf="@id/tvDiscretionaryExpenses"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvCredits" />
@@ -127,6 +141,8 @@
                     android:text="@string/discretionary_expenses"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_info_size"
+                    android:maxWidth="@dimen/text_box_width"
+                    android:textAlignment="center"
                     app:layout_constraintBaseline_toBaselineOf="@id/tvFixedExpenses"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/tvFixedExpenses" />
@@ -139,9 +155,11 @@
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_info_size"
                     android:textStyle="bold"
+                    android:maxWidth="@dimen/text_box_width"
+                    android:textAlignment="center"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tvFixedExpenses" />
+                    app:layout_constraintTop_toBottomOf="@id/tvDiscretionaryExpenses" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -151,8 +169,9 @@
             android:id="@+id/lblPending"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/pending"
+            android:text="@string/pending_lined"
             android:textAlignment="center"
+            android:textStyle="bold"
             android:textColor="@color/deep_red"
             android:textSize="@dimen/text_heading_size"
             android:visibility="gone"
@@ -168,6 +187,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lblPending" />
 
+        <TextView
+            android:id="@+id/lblBudgeted"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/budgeted_lined"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_heading_size"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rvPending" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvBudgetSummary"
             android:layout_width="match_parent"
@@ -176,7 +209,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/rvPending" />
+            app:layout_constraintTop_toBottomOf="@id/lblBudgeted" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/crdNoTransactions"

@@ -36,6 +36,7 @@ const val ADAPTER_ACCOUNT = "AccountAdapter"
 const val ADAPTER_ACCOUNT_TYPE = "AccountTypeAdapter"
 const val ADAPTER_TRANSACTION = "TransactionAdapter"
 const val ADAPTER_BUDGET_VIEW = "BudgetViewAdapter"
+const val ADAPTER_PENDING = "TransactionPendingAdapter"
 
 const val TABLE_ACCOUNT_TYPES = "accountTypes"
 const val TYPE_ID = "typeId"
