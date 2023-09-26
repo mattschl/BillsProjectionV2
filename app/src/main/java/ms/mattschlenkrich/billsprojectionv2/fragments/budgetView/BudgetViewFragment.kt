@@ -300,7 +300,8 @@ class BudgetViewFragment : Fragment(
             TransactionPendingAdapter(
                 asset,
                 mainViewModel,
-                mView!!.context
+                mainActivity,
+                mView!!.context,
             )
         binding.rvPending.apply {
             layoutManager =

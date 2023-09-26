@@ -11,6 +11,11 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_PENDING
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
@@ -18,6 +23,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.databinding.PendingTransactionItemBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetViewFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.Transactions
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 
 private const val TAG = ADAPTER_PENDING
@@ -26,11 +32,16 @@ private const val PARENT_TAG = FRAG_BUDGET_VIEW
 class TransactionPendingAdapter(
     private val curAccount: String,
     private val mainViewModel: MainViewModel,
+    val mainActivity: MainActivity,
     private val context: Context
 ) : RecyclerView.Adapter<TransactionPendingAdapter.TransactionPendingHolder>() {
 
     val cf = CommonFunctions()
     val df = DateFunctions()
+    val accountViewModel =
+        mainActivity.accountViewModel
+    private val transactionViewModel =
+        mainActivity.transactionViewModel
 
     class TransactionPendingHolder(val itemBinding: PendingTransactionItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -113,7 +124,6 @@ class TransactionPendingAdapter(
                             completeTransaction(
                                 pendingTransaction,
                                 curAccount,
-                                it
                             )
                         }
 
@@ -135,7 +145,7 @@ class TransactionPendingAdapter(
         it: View,
     ) {
         mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments() + ", " + PARENT_TAG
+            PARENT_TAG
         )
         mainViewModel.setTransactionDetailed(transaction)
         it.findNavController().navigate(
@@ -145,10 +155,97 @@ class TransactionPendingAdapter(
     }
 
     private fun completeTransaction(
-        pendingTransaction: TransactionDetailed?,
+        transaction: TransactionDetailed?,
         curAccount: String,
-        it: View,
     ) {
+        if (transaction!!.toAccount!!.accountName ==
+            curAccount
+        ) {
+            CoroutineScope(Dispatchers.IO).launch {
+                transactionViewModel.updateTransaction(
+                    Transactions(
+                        transaction.transaction!!.transId,
+                        transaction.transaction.transDate,
+                        transaction.transaction.transName,
+                        transaction.transaction.transNote,
+                        transaction.transaction.transRuleId,
+                        transaction.transaction.transToAccountId,
+                        false,
+                        transaction.transaction.transFromAccountId,
+                        transaction.transaction.transFromAccountPending,
+                        transaction.transaction.transAmount,
+                        transaction.transaction.transIsDeleted,
+                        df.getCurrentTimeAsString()
+                    )
+                )
+                val account =
+                    async {
+                        accountViewModel.getAccountWithType(
+                            curAccount
+                        )
+                    }
+                val accountDetailed =
+                    account.await()
+                if (accountDetailed.accountType!!.keepTotals) {
+                    transactionViewModel.updateAccountBalance(
+                        accountDetailed.account.accountBalance +
+                                transaction.transaction.transAmount,
+                        accountDetailed.account.accountId,
+                        df.getCurrentTimeAsString()
+                    )
+                } else if (accountDetailed.accountType.tallyOwing) {
+                    transactionViewModel.updateAccountOwing(
+                        accountDetailed.account.accountOwing -
+                                transaction.transaction.transAmount,
+                        accountDetailed.account.accountId,
+                        df.getCurrentTimeAsString()
 
+                    )
+                }
+            }
+        } else {
+            CoroutineScope(Dispatchers.IO).launch {
+                transactionViewModel.updateTransaction(
+                    Transactions(
+                        transaction.transaction!!.transId,
+                        transaction.transaction.transDate,
+                        transaction.transaction.transName,
+                        transaction.transaction.transNote,
+                        transaction.transaction.transRuleId,
+                        transaction.transaction.transToAccountId,
+                        transaction.transaction.transToAccountPending,
+                        transaction.transaction.transFromAccountId,
+                        false,
+                        transaction.transaction.transAmount,
+                        transaction.transaction.transIsDeleted,
+                        df.getCurrentTimeAsString()
+                    )
+                )
+                val account =
+                    async {
+                        accountViewModel.getAccountWithType(
+                            curAccount
+                        )
+                    }
+                val accountDetailed =
+                    account.await()
+                if (accountDetailed.accountType!!.keepTotals) {
+                    transactionViewModel.updateAccountBalance(
+                        accountDetailed.account.accountBalance -
+                                transaction.transaction.transAmount,
+                        accountDetailed.account.accountId,
+                        df.getCurrentTimeAsString()
+                    )
+                } else if (accountDetailed.accountType.tallyOwing) {
+                    transactionViewModel.updateAccountOwing(
+                        accountDetailed.account.accountOwing +
+                                transaction.transaction.transAmount,
+                        accountDetailed.account.accountId,
+                        df.getCurrentTimeAsString()
+
+                    )
+                }
+            }
+        }
     }
 }
