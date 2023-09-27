@@ -35,17 +35,6 @@ class BudgetItemViewModel(
             )
         }
 
-//    fun updatePayDay(
-//        payDay: String,
-//        updateTime: String,
-//        budgetRuleId: Long,
-//        projectedDate: String
-//    ) = viewModelScope.launch {
-//        budgetItemRepository.updatePayDay(
-//            payDay, updateTime, budgetRuleId, projectedDate
-//        )
-//    }
-
     fun getPayDaysActive() =
         budgetItemRepository.getPayDaysActive()
 

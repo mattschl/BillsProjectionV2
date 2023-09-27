@@ -14,7 +14,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
@@ -145,7 +144,7 @@ class BudgetViewFragment : Fragment(
         }
     }
 
-    private fun fillBudgetList(asset: String, payDay: String) {
+    fun fillBudgetList(asset: String, payDay: String) {
         val budgetViewAdapter = BudgetViewAdapter(
             this,
             budgetItemViewModel,
@@ -275,17 +274,16 @@ class BudgetViewFragment : Fragment(
                         p2: Int,
                         p3: Long
                     ) {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            val asset = async {
-                                accountViewModel.getAccountWithType(
-                                    spAssetNames.selectedItem.toString()
-                                )
-                            }
-                            curAsset = asset.await()
+                        accountViewModel.getAccountDetailed(
+                            spAssetNames.selectedItem.toString()
+                        ).observe(
+                            viewLifecycleOwner
+                        ) { account ->
+                            curAsset = account
                         }
                         clearCurrentDisplay()
                         fillPayDaysLive(spAssetNames.selectedItem.toString())
-                        setupPendingList(spAssetNames.selectedItem.toString())
+                        setupPendingList()
                     }
 
                     override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -295,12 +293,13 @@ class BudgetViewFragment : Fragment(
         }
     }
 
-    private fun setupPendingList(asset: String) {
+    fun setupPendingList() {
         val transactionPendingAdapter =
             TransactionPendingAdapter(
-                asset,
+                binding.spAssetNames.selectedItem.toString(),
                 mainViewModel,
                 mainActivity,
+                this,
                 mView!!.context,
             )
         binding.rvPending.apply {
@@ -310,7 +309,7 @@ class BudgetViewFragment : Fragment(
         }
         activity?.let {
             transactionViewModel.getPendingTransactionsDetailed(
-                asset
+                binding.spAssetNames.selectedItem.toString()
             ).observe(
                 viewLifecycleOwner
             ) { transactions ->
@@ -320,7 +319,31 @@ class BudgetViewFragment : Fragment(
                 transactions.listIterator().forEach {
                     pendingList.add(it)
                 }
+                updatePendingTotal()
+                fillAssetDetails()
+                fillBudgetTotals()
             }
+        }
+    }
+
+    private fun updatePendingTotal() {
+        var pendingAmount = 0.0
+        for (item in pendingList) {
+            if (item.transaction!!.transToAccountPending) {
+                pendingAmount += item.transaction.transAmount
+            } else {
+                pendingAmount -= item.transaction.transAmount
+            }
+        }
+        val display = "------------- Pending: " +
+                "${cf.displayDollars(pendingAmount)} -------------"
+        binding.apply {
+            if (pendingAmount < 0.0) {
+                lblPending.setTextColor(Color.RED)
+            } else {
+                lblPending.setTextColor(Color.BLACK)
+            }
+            lblPending.text = display
         }
     }
 

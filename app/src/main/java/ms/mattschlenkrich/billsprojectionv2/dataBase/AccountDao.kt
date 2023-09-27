@@ -25,7 +25,7 @@ interface AccountDao {
     @Query(
         "SELECT $ACCOUNT_NAME FROM $TABLE_ACCOUNTS"
     )
-    fun getAccountNameList(): List<String>
+    fun getAccountNameList(): LiveData<List<String>>
 
     @Query(
         "UPDATE $TABLE_ACCOUNTS " +
@@ -134,6 +134,19 @@ interface AccountDao {
                 "WHERE $TABLE_ACCOUNTS.$ACCOUNT_ID = :accountId  "
     )
     fun getAccountDetailed(accountId: Long): LiveData<AccountWithType>
+
+    @Transaction
+    @Query(
+        "SELECT $TABLE_ACCOUNTS.*, $TABLE_ACCOUNT_TYPES.* " +
+                "FROM $TABLE_ACCOUNTS " +
+                "LEFT JOIN $TABLE_ACCOUNT_TYPES ON " +
+                "$TABLE_ACCOUNT_TYPES.$TYPE_ID = " +
+                "$TABLE_ACCOUNTS.$ACCOUNT_TYPE_ID " +
+                "WHERE $TABLE_ACCOUNTS.$ACCOUNT_ID = " +
+                "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
+                "WHERE $ACCOUNT_NAME = :accountName)"
+    )
+    fun getAccountDetailed(accountName: String): LiveData<AccountWithType>
 
     @Query(
         "SELECT * FROM $TABLE_ACCOUNTS " +

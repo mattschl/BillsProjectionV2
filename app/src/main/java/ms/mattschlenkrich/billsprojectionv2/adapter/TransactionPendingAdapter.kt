@@ -21,6 +21,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.databinding.PendingTransactionItemBinding
+import ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetViewFragment
 import ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetViewFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.Transactions
@@ -33,6 +34,7 @@ class TransactionPendingAdapter(
     private val curAccount: String,
     private val mainViewModel: MainViewModel,
     val mainActivity: MainActivity,
+    private val budgetViewFragment: BudgetViewFragment,
     private val context: Context
 ) : RecyclerView.Adapter<TransactionPendingAdapter.TransactionPendingHolder>() {
 
@@ -247,5 +249,8 @@ class TransactionPendingAdapter(
                 }
             }
         }
+        budgetViewFragment.fillBudgetTotals()
+        budgetViewFragment.setupPendingList()
     }
+
 }

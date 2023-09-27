@@ -6,7 +6,6 @@ import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 
 class AccountRepository(private val db: BillsDatabase) {
 
-    //Account queries connected to @AccountDao
     suspend fun insertAccount(account: Account) =
         db.getAccountDao().insertAccount(account)
 
@@ -16,25 +15,9 @@ class AccountRepository(private val db: BillsDatabase) {
     suspend fun deleteAccount(accountId: Long, updateTime: String) =
         db.getAccountDao().deleteAccount(accountId, updateTime)
 
-    fun getActiveAccounts() =
-        db.getAccountDao().getActiveAccounts()
-
-    fun getActiveAccountsDetailed() =
-        db.getAccountDao().getActiveAccountsDetailed()
-
-    fun findAccount(accountId: Long) =
-        db.getAccountDao().findAccount(accountId)
-
-    fun findAccountByName(accountName: String) =
-        db.getAccountDao().findAccountByName(accountName)
-
-    fun searchAccounts(query: String?) =
-        db.getAccountDao().searchAccounts(query)
-
     fun getAccountNameList() =
         db.getAccountDao().getAccountNameList()
 
-    //AccountType queries connected with AccountCategoriesDao
     suspend fun insertAccountType(accountType: AccountType) =
         db.getAccountTypesDao().insertAccountType(accountType)
 
@@ -43,12 +26,6 @@ class AccountRepository(private val db: BillsDatabase) {
 
     suspend fun deleteAccountType(accountTypeId: Long, updateTime: String) =
         db.getAccountTypesDao().deleteAccountType(accountTypeId, updateTime)
-
-    fun findAccountType(accountTypeId: Long) =
-        db.getAccountTypesDao().findAccountType(accountTypeId)
-
-    fun findAccountTypeByName(accountTypeName: String) =
-        db.getAccountTypesDao().findAccountTypeByName(accountTypeName)
 
     fun getActiveAccountTypes() =
         db.getAccountTypesDao().getActiveAccountTypes()
@@ -70,6 +47,9 @@ class AccountRepository(private val db: BillsDatabase) {
 
     fun getAccountDetailed(accountId: Long) =
         db.getAccountDao().getAccountDetailed(accountId)
+
+    fun getAccountDetailed(accountName: String) =
+        db.getAccountDao().getAccountDetailed(accountName)
 
     fun getAccount(accountId: Long) =
         db.getAccountDao().getAccount(accountId)

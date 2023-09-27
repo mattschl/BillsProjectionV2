@@ -31,25 +31,8 @@ class AccountViewModel(
     fun getAccountNameList() =
         accountRepository.getAccountNameList()
 
-    fun getActiveAccounts() =
-        accountRepository.getActiveAccounts()
-
-    fun getActiveAccountsDetailed() =
-        accountRepository.getActiveAccountsDetailed()
-
     fun getAccountsWithType() =
         accountRepository.getAccountsWithType()
-
-    fun findAccount(accountId: Long) =
-        accountRepository.findAccount(accountId)
-
-    fun findAccountByName(accountName: String) =
-        accountRepository.findAccountByName(accountName)
-
-
-    fun searchAccounts(query: String) =
-        accountRepository.searchAccounts(query)
-
 
     fun addAccountType(accountType: AccountType) =
         viewModelScope.launch {
@@ -65,12 +48,6 @@ class AccountViewModel(
         viewModelScope.launch {
             accountRepository.deleteAccountType(accountTypeId, updateTime)
         }
-
-    fun findAccountType(accountTypeId: Long) =
-        accountRepository.findAccountType(accountTypeId)
-
-    fun findAccountTypeByName(accountTypeName: String) =
-        accountRepository.findAccountTypeByName(accountTypeName)
 
     fun getActiveAccountTypes() =
         accountRepository.getActiveAccountTypes()
@@ -90,6 +67,9 @@ class AccountViewModel(
 
     fun getAccountDetailed(accountId: Long) =
         accountRepository.getAccountDetailed(accountId)
+
+    fun getAccountDetailed(accountName: String) =
+        accountRepository.getAccountDetailed(accountName)
 
     fun getAccount(accountId: Long) =
         accountRepository.getAccount(accountId)

@@ -52,20 +52,6 @@ interface BudgetItemDao {
         updateTime: String
     )
 
-//    @Query(
-//        "UPDATE $TABLE_BUDGET_ITEMS " +
-//                "SET $BI_PAY_DAY = :payDay," +
-//                "$BI_UPDATE_TIME = :updateTime " +
-//                "WHERE $BI_BUDGET_RULE_ID = :budgetRuleId " +
-//                "AND $BI_PROJECTED_DATE = :projectedDate;"
-//    )
-//    suspend fun updatePayDay(
-//        payDay: String,
-//        updateTime: String,
-//        budgetRuleId: Long,
-//        projectedDate: String
-//    )
-
     @Query(
         "SELECT DISTINCT $BI_PROJECTED_DATE FROM $TABLE_BUDGET_ITEMS " +
                 "WHERE $BI_IS_PAY_DAY_ITEM = 1 " +
