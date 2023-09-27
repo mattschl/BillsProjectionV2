@@ -13,9 +13,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
@@ -39,7 +36,7 @@ class AccountAddFragment :
 
     private lateinit var accountsViewModel: AccountViewModel
     private lateinit var mView: View
-    private var accountNameList: List<String>? = null
+    private var accountNameList = ArrayList<String>()
     private val cf = CommonFunctions()
     private val df = DateFunctions()
 
@@ -61,10 +58,15 @@ class AccountAddFragment :
         super.onViewCreated(view, savedInstanceState)
         accountsViewModel =
             mainActivity.accountViewModel
-        CoroutineScope(Dispatchers.IO).launch {
-            accountNameList =
-                accountsViewModel.getAccountNameList()
+        accountsViewModel.getAccountNameList().observe(
+            viewLifecycleOwner
+        ) { accounts ->
+            accountNameList.clear()
+            accounts.listIterator().forEach {
+                accountNameList.add(it)
+            }
         }
+
         mainActivity.title = "Add a new Account"
         fillValues()
         createMenu()
@@ -220,9 +222,9 @@ class AccountAddFragment :
             val nameIsBlank =
                 etAccAddName.text.isNullOrEmpty()
             var nameFound = false
-            if (accountNameList!!.isNotEmpty() && !nameIsBlank) {
-                for (i in 0 until accountNameList!!.size) {
-                    if (accountNameList!![i] ==
+            if (accountNameList.isNotEmpty() && !nameIsBlank) {
+                for (i in 0 until accountNameList.size) {
+                    if (accountNameList[i] ==
                         etAccAddName.text.toString().trim()
                     ) {
                         nameFound = true

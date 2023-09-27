@@ -15,9 +15,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
@@ -44,7 +41,7 @@ class AccountUpdateFragment :
 
     private val cf = CommonFunctions()
     private val df = DateFunctions()
-    private var accountNameList: List<String>? = null
+    private var accountNameList = ArrayList<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -87,9 +84,15 @@ class AccountUpdateFragment :
         super.onViewCreated(view, savedInstanceState)
         accountsViewModel =
             (activity as MainActivity).accountViewModel
-        CoroutineScope(Dispatchers.IO).launch {
-            accountNameList = accountsViewModel.getAccountNameList()
+        accountsViewModel.getAccountNameList().observe(
+            viewLifecycleOwner
+        ) { accounts ->
+            accountNameList.clear()
+            accounts.listIterator().forEach {
+                accountNameList.add(it)
+            }
         }
+
         mainActivity.title = "Update Account"
         fillValues()
         binding.drpAccountUpdateType.setOnClickListener {
@@ -138,11 +141,11 @@ class AccountUpdateFragment :
             val nameIsBlank =
                 edAccountUpdateName.text.isNullOrBlank()
             var nameFound = false
-            if (accountNameList!!.isNotEmpty() && !nameIsBlank) {
-                for (i in 0 until accountNameList!!.size) {
-                    if (accountNameList!![i] ==
+            if (accountNameList.isNotEmpty() && !nameIsBlank) {
+                for (i in 0 until accountNameList.size) {
+                    if (accountNameList[i] ==
                         edAccountUpdateName.text.toString() &&
-                        accountNameList!![i] !=
+                        accountNameList[i] !=
                         mainViewModel.getAccountWithType()!!.account.accountName
                     ) {
                         nameFound = true
