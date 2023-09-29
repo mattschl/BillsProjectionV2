@@ -39,7 +39,7 @@ class BudgetViewFragment : Fragment(
 
     private var _binding: FragmentBudgetViewBinding? = null
     private val binding get() = _binding!!
-    private var mView: View? = null
+    private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var budgetItemViewModel: BudgetItemViewModel
@@ -150,7 +150,7 @@ class BudgetViewFragment : Fragment(
             budgetItemViewModel,
             mainViewModel,
             asset,
-            mView!!.context
+            mView.context
         )
         binding.rvBudgetSummary.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -300,7 +300,7 @@ class BudgetViewFragment : Fragment(
                 mainViewModel,
                 mainActivity,
                 this,
-                mView!!.context,
+                mView.context,
             )
         binding.rvPending.apply {
             layoutManager =
@@ -438,7 +438,7 @@ class BudgetViewFragment : Fragment(
     }
 
     private fun addAction() {
-        AlertDialog.Builder(mView!!.context)
+        AlertDialog.Builder(mView.context)
             .setTitle(getString(R.string.choose_an_action))
             .setItems(
                 arrayOf(

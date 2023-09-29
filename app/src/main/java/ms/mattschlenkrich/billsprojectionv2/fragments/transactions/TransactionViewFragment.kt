@@ -33,7 +33,7 @@ class TransactionViewFragment :
 
     private var _binding: FragmentTransactionViewBinding? = null
     private val binding get() = _binding!!
-    private var mView: View? = null
+    private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var transactionViewModel: TransactionViewModel
@@ -147,7 +147,10 @@ class TransactionViewFragment :
             .searchActiveTransactionsDetailed(searchQuery)
             .observe(
                 this
-            ) { list -> transactionAdapter.differ.submitList(list) }
+            ) { list ->
+                transactionAdapter.differ.submitList(list)
+                //
+            }
     }
 
     override fun onDestroy() {
