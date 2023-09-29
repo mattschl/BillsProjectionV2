@@ -352,6 +352,7 @@ class BudgetViewFragment : Fragment(
             if (transactions.isNullOrEmpty()) {
                 rvPending.visibility = View.GONE
                 lblPending.visibility = View.GONE
+                lblPending.setTextColor(Color.BLACK)
             } else {
                 rvPending.visibility = View.VISIBLE
                 lblPending.visibility = View.VISIBLE

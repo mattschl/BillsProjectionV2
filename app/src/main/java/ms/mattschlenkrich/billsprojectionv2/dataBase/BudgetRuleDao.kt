@@ -51,7 +51,7 @@ interface BudgetRuleDao {
         "SELECT * FROM $TABLE_BUDGET_RULES " +
                 "WHERE $BUD_IS_DELETED = 0 " +
                 "ORDER BY $BUD_IS_PAY_DAY DESC, " +
-                "$BUDGET_RULE_NAME"
+                "$BUDGET_RULE_NAME;"
     )
     suspend fun getBudgetRulesActive():
             List<BudgetRule>
