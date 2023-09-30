@@ -371,4 +371,7 @@
             android:id="@+id/action_transactionAverageFragment_to_accountsFragment"
             app:destination="@id/accountsFragment" />
     </fragment>
+    <action
+        android:id="@+id/action_global_transactionAverageFragment"
+        app:destination="@id/transactionAverageFragment" />
 </navigation>

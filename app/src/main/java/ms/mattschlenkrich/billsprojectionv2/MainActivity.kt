@@ -95,6 +95,11 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
 
+                R.id.navigation_analysis -> {
+                    gotoAnalysis()
+                    true
+                }
+
                 else -> {
                     false
                 }
@@ -106,6 +111,15 @@ class MainActivity : AppCompatActivity() {
         setupTransactionViewModel()
         setupBudgetItemViewModel()
 
+    }
+
+    private fun gotoAnalysis() {
+        mainViewModel.eraseAll()
+        val direction =
+            NavGraphDirections
+                .actionGlobalTransactionAverageFragment()
+        findNavController(R.id.fragment_container_view)
+            .navigate(direction)
     }
 
     private fun setMainViewModel() {

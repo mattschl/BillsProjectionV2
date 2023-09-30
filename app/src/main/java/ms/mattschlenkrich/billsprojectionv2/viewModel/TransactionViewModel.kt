@@ -43,6 +43,9 @@ class TransactionViewModel(
     fun getActiveTransactionsDetailed() =
         transactionRepository.getActiveTransactionsDetailed()
 
+    fun getActiveTransactionsDetailed(budgetRuleId: Long) =
+        transactionRepository.getActiveTransactionsDetailed(budgetRuleId)
+
     fun searchActiveTransactionsDetailed(query: String?) =
         transactionRepository.searchActiveTransactionsDetailed(query)
 
@@ -68,4 +71,7 @@ class TransactionViewModel(
 
     fun getPendingTransactionsDetailed(asset: String) =
         transactionRepository.getPendingTransactionsDetailed(asset)
+
+    fun getMaxTransactionByBudgetRule(budgetRuleId: Long) =
+        transactionRepository.getMaxTransactionByBudgetRule(budgetRuleId)
 }

@@ -16,6 +16,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_TRANSACTION
+import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_AMOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_DATE
 import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_FROM_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_FROM_ACCOUNT_PENDING
@@ -68,6 +69,30 @@ interface TransactionDao {
                 "$TABLE_TRANSACTION.$TRANS_UPDATE_TIME DESC"
     )
     fun getActiveTransactionsDetailed():
+            LiveData<List<TransactionDetailed>>
+
+    @Transaction
+    @Query(
+        "SELECT $TABLE_TRANSACTION.*," +
+                "budgetRule.*,  " +
+                "toAccount.*," +
+                "fromAccount.* " +
+                "FROM $TABLE_TRANSACTION " +
+                "LEFT JOIN $TABLE_BUDGET_RULES as budgetRule on " +
+                "$TABLE_TRANSACTION.$TRANS_BUDGET_RULE_ID = " +
+                "budgetRule.$RULE_ID " +
+                "LEFT JOIN $TABLE_ACCOUNTS as toAccount on " +
+                "$TABLE_TRANSACTION.$TRANSACTION_TO_ACCOUNT_ID =" +
+                "toAccount.$ACCOUNT_ID " +
+                "LEFT JOIN $TABLE_ACCOUNTS as fromAccount on " +
+                "$TABLE_TRANSACTION.$TRANSACTION_FROM_ACCOUNT_ID = " +
+                "fromAccount.$ACCOUNT_ID " +
+                "WHERE $TABLE_TRANSACTION.$TRANS_IS_DELETED = 0 " +
+                "AND $TABLE_TRANSACTION.$TRANS_BUDGET_RULE_ID = :budgetRuleId " +
+                "ORDER BY $TABLE_TRANSACTION.$TRANSACTION_DATE DESC, " +
+                "$TABLE_TRANSACTION.$TRANS_UPDATE_TIME DESC"
+    )
+    fun getActiveTransactionsDetailed(budgetRuleId: Long):
             LiveData<List<TransactionDetailed>>
 
     @Transaction
@@ -198,4 +223,13 @@ interface TransactionDao {
     )
     fun getPendingTransactionsDetailed(asset: String):
             LiveData<List<TransactionDetailed>>
+
+    @Query(
+        "SELECT MAX($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
+                "WHERE $TRANS_BUDGET_RULE_ID = :budgetRuleId " +
+                "AND $TRANS_IS_DELETED = 0"
+    )
+    fun getMaxTransactionByBudgetRule(budgetRuleId: Long):
+            LiveData<Double>
+
 }

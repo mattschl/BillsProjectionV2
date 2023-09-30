@@ -125,4 +125,6 @@
     <string name="show_all">Show All</string>
     <string name="last_month">Last Month</string>
     <string name="choose_date_range">Choose Date Range</string>
+    <string name="date_range">Date Range</string>
+    <string name="analysis">Analysis</string>
 </resources>

@@ -79,36 +79,47 @@
                     android:id="@+id/radioTime"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    app:flow_horizontalAlign="center"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvAccount">
 
-                    <androidx.appcompat.widget.LinearLayoutCompat
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
                         <RadioButton
+                            android:id="@+id/rdShowAll"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/top_margin_medium"
                             android:minHeight="@dimen/text_target_size"
-                            android:text="@string/show_all" />
+                            android:text="@string/show_all"
+                            app:layout_constraintEnd_toStartOf="@id/rdLastMonth"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
 
                         <RadioButton
+                            android:id="@+id/rdLastMonth"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/top_margin_medium"
                             android:minHeight="@dimen/text_target_size"
-                            android:text="@string/last_month" />
+                            android:text="@string/last_month"
+                            app:layout_constraintEnd_toStartOf="@id/rdDateRange"
+                            app:layout_constraintStart_toEndOf="@id/rdShowAll"
+                            app:layout_constraintTop_toTopOf="parent" />
 
                         <RadioButton
+                            android:id="@+id/rdDateRange"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/top_margin_medium"
                             android:minHeight="@dimen/text_target_size"
-                            android:text="@string/choose_date_range" />
-                    </androidx.appcompat.widget.LinearLayoutCompat>
+                            android:text="@string/date_range"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/rdLastMonth"
+                            app:layout_constraintTop_toTopOf="parent" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
                 </RadioGroup>
 
                 <TextView

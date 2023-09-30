@@ -12,6 +12,11 @@
         android:title="@string/transactions" />
 
     <item
+        android:id="@+id/navigation_analysis"
+        android:icon="@drawable/ic_analysis"
+        android:title="@string/analysis" />
+
+    <item
         android:id="@+id/navigation_accounts"
         android:icon="@drawable/ic_accounts"
         android:title="@string/accounts" />

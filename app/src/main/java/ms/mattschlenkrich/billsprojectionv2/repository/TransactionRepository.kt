@@ -18,6 +18,9 @@ class TransactionRepository(private val db: BillsDatabase) {
     fun getActiveTransactionsDetailed() =
         db.getTransactionDao().getActiveTransactionsDetailed()
 
+    fun getActiveTransactionsDetailed(budgetRuleId: Long) =
+        db.getTransactionDao().getActiveTransactionsDetailed(budgetRuleId)
+
     fun getTransactionDetailed(transId: Long) =
         db.getTransactionDao().getTransactionDetailed(transId)
 
@@ -51,4 +54,7 @@ class TransactionRepository(private val db: BillsDatabase) {
 
     fun getPendingTransactionsDetailed(asset: String) =
         db.getTransactionDao().getPendingTransactionsDetailed(asset)
+
+    fun getMaxTransactionByBudgetRule(budgetRuleId: Long) =
+        db.getTransactionDao().getMaxTransactionByBudgetRule(budgetRuleId)
 }
