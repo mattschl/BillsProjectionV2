@@ -162,27 +162,21 @@ class BudgetRuleUpdateFragment :
     }
 
     private fun getCurBudgetRule(): BudgetRule {
-        val toAccId = if (mainViewModel.getBudgetRuleDetailed() == null) {
-            0L
-        } else {
+        val toAccId =
             if (mainViewModel.getBudgetRuleDetailed()!!.toAccount == null) {
                 0L
             } else {
                 mainViewModel.getBudgetRuleDetailed()!!.toAccount!!.accountId
             }
-        }
-        val fromAccId = if (mainViewModel.getBudgetRuleDetailed() == null) {
-            0L
-        } else {
+        val fromAccId =
             if (mainViewModel.getBudgetRuleDetailed()!!.fromAccount == null) {
                 0L
             } else {
                 mainViewModel.getBudgetRuleDetailed()!!.fromAccount!!.accountId
             }
-        }
         binding.apply {
             return BudgetRule(
-                cf.generateId(),
+                mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.ruleId,
                 etBudgetName.text.toString().trim(),
                 toAccId,
                 fromAccId,

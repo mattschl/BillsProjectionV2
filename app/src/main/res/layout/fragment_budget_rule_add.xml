@@ -242,7 +242,7 @@
                 android:id="@+id/lblOn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/on"
+                android:text="@string/on_day"
                 android:textSize="@dimen/text_heading_size"
                 app:layout_constraintBaseline_toBaselineOf="@+id/spDayOfWeek"
                 app:layout_constraintEnd_toStartOf="@+id/spDayOfWeek"

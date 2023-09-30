@@ -75,14 +75,14 @@ class TransactionViewFragment :
         mainViewModel.setTransactionDetailed(null)
         val direction = TransactionViewFragmentDirections
             .actionTransactionViewFragmentToTransactionAddFragment()
-        mView!!.findNavController().navigate(direction)
+        mView.findNavController().navigate(direction)
     }
 
     private fun setupRecyclerView() {
         transactionAdapter = TransactionAdapter(
             mainActivity,
             mainViewModel,
-            mView!!.context
+            mView.context
         )
 
         binding.rvTransactions.apply {

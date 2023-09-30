@@ -8,14 +8,278 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <androidx.cardview.widget.CardView
+            android:id="@+id/crdCriteria"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:elevation="10dp"
+            android:padding="@dimen/top_margin_medium"
+            app:cardCornerRadius="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/lblBudgetRule"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxWidth="@dimen/text_box_width"
+                    android:text="@string/budget_rule"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/text_info_size"
+                    app:layout_constraintBaseline_toBaselineOf="@id/tvBudgetRule"
+                    app:layout_constraintEnd_toStartOf="@id/tvBudgetRule"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvBudgetRule"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxWidth="@dimen/text_box_wide"
+                    android:minHeight="@dimen/text_target_size"
+                    android:text="@string/no_budget_rule_selected"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/text_heading_size"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/lblBudgetRule"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/lblAccount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxWidth="@dimen/text_box_width"
+                    android:text="@string/account_name"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/text_info_size"
+                    app:layout_constraintBaseline_toBaselineOf="@id/tvAccount"
+                    app:layout_constraintEnd_toStartOf="@id/tvAccount"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvAccount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxWidth="@dimen/text_box_wide"
+                    android:minHeight="@dimen/text_target_size"
+                    android:text="@string/no_account_selected"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/text_heading_size"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/lblAccount"
+                    app:layout_constraintTop_toBottomOf="@id/tvBudgetRule" />
+
+                <RadioGroup
+                    android:id="@+id/radioTime"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:flow_horizontalAlign="center"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvAccount">
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <RadioButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/top_margin_medium"
+                            android:minHeight="@dimen/text_target_size"
+                            android:text="@string/show_all" />
+
+                        <RadioButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/top_margin_medium"
+                            android:minHeight="@dimen/text_target_size"
+                            android:text="@string/last_month" />
+
+                        <RadioButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/top_margin_medium"
+                            android:minHeight="@dimen/text_target_size"
+                            android:text="@string/choose_date_range" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+                </RadioGroup>
+
+                <TextView
+                    android:id="@+id/lblStartDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/start_date"
+                    android:visibility="gone"
+                    app:layout_constraintBaseline_toBaselineOf="@id/tvStartDate"
+                    app:layout_constraintEnd_toStartOf="@id/tvStartDate"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <EditText
+                    android:id="@+id/tvStartDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:importantForAutofill="no"
+                    android:inputType="date"
+                    android:maxWidth="@dimen/text_box_width"
+                    android:minHeight="@dimen/text_target_size"
+                    android:text="@string/start_date"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toStartOf="@id/lblEndDate"
+                    app:layout_constraintStart_toEndOf="@id/lblStartDate"
+                    app:layout_constraintTop_toBottomOf="@id/radioTime"
+                    tools:ignore="LabelFor" />
+
+                <TextView
+                    android:id="@+id/lblEndDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/end_date"
+                    android:visibility="gone"
+                    app:layout_constraintBaseline_toBaselineOf="@id/tvStartDate"
+                    app:layout_constraintEnd_toStartOf="@id/tvEndDate"
+                    app:layout_constraintStart_toEndOf="@id/tvStartDate" />
+
+                <EditText
+                    android:id="@+id/tvEndDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:importantForAutofill="no"
+                    android:inputType="date"
+                    android:maxWidth="@dimen/text_box_width"
+                    android:minHeight="@dimen/text_target_size"
+                    android:text="@string/end_date"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/lblEndDate"
+                    app:layout_constraintTop_toBottomOf="@id/radioTime"
+                    tools:ignore="LabelFor" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/crdAnalysis"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:elevation="10dp"
+            android:padding="@dimen/top_margin_medium"
+            app:cardCornerRadius="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/crdCriteria">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/lblAverage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/average_per_month"
+                    app:layout_constraintEnd_toStartOf="@id/tvAverage"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvAverage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxWidth="@dimen/text_box_wide"
+                    android:text="@string/zero_dollars"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/text_heading_size"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/lblHighest"
+                    app:layout_constraintStart_toEndOf="@id/lblAverage"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/lblHighest"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/highest"
+                    app:layout_constraintEnd_toStartOf="@id/tvHighest"
+                    app:layout_constraintStart_toEndOf="@id/tvAverage"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvHighest"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxWidth="@dimen/text_box_wide"
+                    android:text="@string/zero_dollars"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/text_heading_size"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/lblHighest"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/lblLowest"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lowest"
+                    app:layout_constraintEnd_toStartOf="@id/tvLowest"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvAverage" />
+
+                <TextView
+                    android:id="@+id/tvLowest"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxWidth="@dimen/text_box_wide"
+                    android:text="@string/zero_dollars"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/text_heading_size"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/lblRecent"
+                    app:layout_constraintStart_toEndOf="@id/lblLowest"
+                    app:layout_constraintTop_toBottomOf="@id/tvAverage" />
+
+                <TextView
+                    android:id="@+id/lblRecent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/most_recent"
+                    app:layout_constraintEnd_toStartOf="@id/tvRecent"
+                    app:layout_constraintStart_toEndOf="@id/tvLowest"
+                    app:layout_constraintTop_toBottomOf="@id/tvAverage" />
+
+                <TextView
+                    android:id="@+id/tvRecent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxWidth="@dimen/text_box_wide"
+                    android:text="@string/zero_dollars"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/text_heading_size"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/lblRecent"
+                    app:layout_constraintTop_toBottomOf="@id/tvAverage" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvTransactions"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/crdAnalysis" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

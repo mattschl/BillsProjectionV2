@@ -83,6 +83,7 @@ class BudgetRuleFragment :
 
     private fun setupRecyclerView() {
         budgetRuleAdapter = BudgetRuleAdapter(
+            budgetRuleViewModel,
             mainViewModel,
             mView!!.context,
         )

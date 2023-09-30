@@ -49,7 +49,7 @@
     <string name="scheduling_rules">Scheduling Rules</string>
     <string name="monthly">Monthly</string>
     <string name="week_day">Week Day</string>
-    <string name="on">On</string>
+    <string name="on_day">On</string>
     <string name="lead_days">Lead Days</string>
     <string name="one">1</string>
     <string name="zero">0</string>
@@ -115,4 +115,14 @@
     <string name="remainder">Remainder</string>
     <string name="budgeted_lined">---------- Budgeted ---------</string>
     <string name="pending_lined">---------- Pending ----------</string>
+    <string name="average">Average</string>
+    <string name="no_budget_rule_selected">No Budget Rule Selected</string>
+    <string name="no_account_selected">No Account Selected</string>
+    <string name="average_per_month">average per Month</string>
+    <string name="highest">Highest</string>
+    <string name="lowest">Lowest</string>
+    <string name="most_recent">Most Recent</string>
+    <string name="show_all">Show All</string>
+    <string name="last_month">Last Month</string>
+    <string name="choose_date_range">Choose Date Range</string>
 </resources>

@@ -1,6 +1,8 @@
 package ms.mattschlenkrich.billsprojectionv2.adapter
 
+import android.app.AlertDialog
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_BUDGET_RULE
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
@@ -19,17 +22,20 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetRuleLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules.BudgetRuleFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
+import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 
 private const val TAG = ADAPTER_BUDGET_RULE
 private const val PARENT_TAG = FRAG_BUDGET_RULES
 
 class BudgetRuleAdapter(
+    private val budgetRuleViewModel: BudgetRuleViewModel,
     private val mainViewModel: MainViewModel,
     private val context: Context
 ) : RecyclerView.Adapter<BudgetRuleAdapter.BudgetRuleViewHolder>() {
 
     private val cf = CommonFunctions()
+    private val df = DateFunctions()
 
     class BudgetRuleViewHolder(
         val itemBinding: BudgetRuleLayoutBinding
@@ -58,6 +64,7 @@ class BudgetRuleAdapter(
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
     ): BudgetRuleViewHolder {
+        Log.d(TAG, "starting $TAG")
         return BudgetRuleViewHolder(
             BudgetRuleLayoutBinding.inflate(
                 LayoutInflater.from(parent.context),
@@ -119,15 +126,63 @@ class BudgetRuleAdapter(
         }
 
         holder.itemView.setOnLongClickListener {
-            mainViewModel.setCallingFragments(
-                mainViewModel.getCallingFragments() + ", " + FRAG_BUDGET_RULES
-            )
-            mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
-            val direction = BudgetRuleFragmentDirections
-                .actionBudgetRuleFragmentToBudgetRuleUpdateFragment()
-            it.findNavController().navigate(direction)
+            AlertDialog.Builder(context)
+                .setTitle(
+                    "Choose an action for " +
+                            budgetRuleDetailed.budgetRule!!.budgetRuleName
+                )
+                .setItems(
+                    arrayOf(
+                        "Edit this Budget Rule",
+                        "Delete this Budget Rule",
+                        "View a summary of transactions for this rule"
+                    )
+                ) { _, pos ->
+                    when (pos) {
+                        0 -> editBudgetRule(budgetRuleDetailed, it)
+                        1 -> deleteBudgetRule(budgetRuleDetailed)
+                        2 -> gotoAverages(budgetRuleDetailed, it)
+                    }
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
             false
         }
+    }
+
+    private fun gotoAverages(
+        budgetRuleDetailed: BudgetRuleDetailed,
+        it: View
+    ) {
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments() + ", " + FRAG_BUDGET_RULES
+        )
+        mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
+        mainViewModel.setAccountWithType(null)
+        it.findNavController().navigate(
+            BudgetRuleFragmentDirections
+                .actionBudgetRuleFragmentToTransactionAverageFragment()
+        )
+    }
+
+    private fun deleteBudgetRule(budgetRuleDetailed: BudgetRuleDetailed?) {
+        budgetRuleViewModel.deleteBudgetRule(
+            budgetRuleDetailed!!.budgetRule!!.ruleId,
+            df.getCurrentTimeAsString()
+        )
+    }
+
+    private fun editBudgetRule(
+        budgetRuleDetailed: BudgetRuleDetailed?,
+        it: View
+    ) {
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments() + ", " + FRAG_BUDGET_RULES
+        )
+        mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
+        val direction = BudgetRuleFragmentDirections
+            .actionBudgetRuleFragmentToBudgetRuleUpdateFragment()
+        it.findNavController().navigate(direction)
     }
 
     private fun gotoCallingFragment(it: View) {
