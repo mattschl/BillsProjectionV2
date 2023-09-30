@@ -5,7 +5,6 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/startFragment">
 
-
     <fragment
         android:id="@+id/accountUpdateFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountUpdateFragment"
@@ -340,6 +339,21 @@
             android:id="@+id/action_transactionPerformFragment_to_accountsFragment"
             app:destination="@id/accountsFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/transactionAverageFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.transactions.TransactionAverageFragment"
+        android:label="fragment_transaction_average"
+        tools:layout="@layout/fragment_transaction_average">
+        <action
+            android:id="@+id/action_transactionAverageFragment_to_budgetRuleFragment"
+            app:destination="@id/budgetRuleFragment" />
+        <action
+            android:id="@+id/action_transactionAverageFragment_to_transactionViewFragment"
+            app:destination="@id/transactionViewFragment" />
+        <action
+            android:id="@+id/action_transactionAverageFragment_to_accountsFragment"
+            app:destination="@id/accountsFragment" />
+    </fragment>
     <action
         android:id="@+id/action_global_budgetViewFragment"
         app:destination="@id/budgetViewFragment"
@@ -356,21 +370,6 @@
         android:id="@+id/action_global_transactionViewFragment"
         app:destination="@id/transactionViewFragment"
         app:popUpTo="@id/transactionViewFragment" />
-    <fragment
-        android:id="@+id/transactionAverageFragment"
-        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.transactions.TransactionAverageFragment"
-        android:label="fragment_transaction_average"
-        tools:layout="@layout/fragment_transaction_average">
-        <action
-            android:id="@+id/action_transactionAverageFragment_to_budgetRuleFragment"
-            app:destination="@id/budgetRuleFragment" />
-        <action
-            android:id="@+id/action_transactionAverageFragment_to_transactionViewFragment"
-            app:destination="@id/transactionViewFragment" />
-        <action
-            android:id="@+id/action_transactionAverageFragment_to_accountsFragment"
-            app:destination="@id/accountsFragment" />
-    </fragment>
     <action
         android:id="@+id/action_global_transactionAverageFragment"
         app:destination="@id/transactionAverageFragment" />

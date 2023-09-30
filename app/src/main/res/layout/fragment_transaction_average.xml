@@ -43,6 +43,7 @@
                     android:minHeight="@dimen/text_target_size"
                     android:text="@string/no_budget_rule_selected"
                     android:textAlignment="center"
+                    android:textColor="@color/black"
                     android:textSize="@dimen/text_heading_size"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -69,6 +70,7 @@
                     android:minHeight="@dimen/text_target_size"
                     android:text="@string/no_account_selected"
                     android:textAlignment="center"
+                    android:textColor="@color/black"
                     android:textSize="@dimen/text_heading_size"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -206,6 +208,7 @@
                     android:layout_height="wrap_content"
                     android:maxWidth="@dimen/text_box_wide"
                     android:text="@string/zero_dollars"
+                    android:textColor="@color/black"
                     android:textAlignment="center"
                     android:textSize="@dimen/text_heading_size"
                     android:textStyle="bold"
@@ -229,6 +232,7 @@
                     android:maxWidth="@dimen/text_box_wide"
                     android:text="@string/zero_dollars"
                     android:textAlignment="center"
+                    android:textColor="@color/black"
                     android:textSize="@dimen/text_heading_size"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -249,6 +253,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:maxWidth="@dimen/text_box_wide"
+                    android:textColor="@color/black"
                     android:text="@string/zero_dollars"
                     android:textAlignment="center"
                     android:textSize="@dimen/text_heading_size"
@@ -273,11 +278,58 @@
                     android:maxWidth="@dimen/text_box_wide"
                     android:text="@string/zero_dollars"
                     android:textAlignment="center"
+                    android:textColor="@color/black"
                     android:textSize="@dimen/text_heading_size"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/lblRecent"
                     app:layout_constraintTop_toBottomOf="@id/tvAverage" />
+
+                <TextView
+                    android:id="@+id/lblTotalCredits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/total_credits"
+                    app:layout_constraintBaseline_toBaselineOf="@id/tvTotalCredits"
+                    app:layout_constraintEnd_toStartOf="@id/tvTotalCredits"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvTotalCredits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxWidth="@dimen/text_box_wide"
+                    android:text="@string/zero_dollars"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_heading_size"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/lblTotalDebits"
+                    app:layout_constraintStart_toEndOf="@id/lblTotalCredits"
+                    app:layout_constraintTop_toBottomOf="@id/tvLowest" />
+
+                <TextView
+                    android:id="@+id/lblTotalDebits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/total_debits"
+                    app:layout_constraintBaseline_toBaselineOf="@id/lblTotalCredits"
+                    app:layout_constraintEnd_toStartOf="@id/tvTotalDebits"
+                    app:layout_constraintStart_toEndOf="@id/tvTotalCredits" />
+
+                <TextView
+                    android:id="@+id/tvTotalDebits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxWidth="@dimen/text_box_wide"
+                    android:text="@string/zero_dollars"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_heading_size"
+                    android:textStyle="bold"
+                    app:layout_constraintBaseline_toBaselineOf="@id/lblTotalCredits"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/lblTotalDebits" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

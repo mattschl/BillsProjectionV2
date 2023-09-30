@@ -74,7 +74,7 @@ interface TransactionDao {
     @Transaction
     @Query(
         "SELECT $TABLE_TRANSACTION.*," +
-                "budgetRule.*,  " +
+                "budgetRule.*, " +
                 "toAccount.*," +
                 "fromAccount.* " +
                 "FROM $TABLE_TRANSACTION " +
@@ -93,6 +93,34 @@ interface TransactionDao {
                 "$TABLE_TRANSACTION.$TRANS_UPDATE_TIME DESC"
     )
     fun getActiveTransactionsDetailed(budgetRuleId: Long):
+            LiveData<List<TransactionDetailed>>
+
+    @Transaction
+    @Query(
+        "SELECT $TABLE_TRANSACTION.*," +
+                "budgetRule.*,  " +
+                "toAccount.*," +
+                "fromAccount.* " +
+                "FROM $TABLE_TRANSACTION " +
+                "LEFT JOIN $TABLE_BUDGET_RULES as budgetRule on " +
+                "$TABLE_TRANSACTION.$TRANS_BUDGET_RULE_ID = " +
+                "budgetRule.$RULE_ID " +
+                "LEFT JOIN $TABLE_ACCOUNTS as toAccount on " +
+                "$TABLE_TRANSACTION.$TRANSACTION_TO_ACCOUNT_ID =" +
+                "toAccount.$ACCOUNT_ID " +
+                "LEFT JOIN $TABLE_ACCOUNTS as fromAccount on " +
+                "$TABLE_TRANSACTION.$TRANSACTION_FROM_ACCOUNT_ID = " +
+                "fromAccount.$ACCOUNT_ID " +
+                "WHERE $TABLE_TRANSACTION.$TRANS_IS_DELETED = 0 " +
+                "AND $TABLE_TRANSACTION.$TRANS_BUDGET_RULE_ID = :budgetRuleId " +
+                "AND $TABLE_TRANSACTION.$TRANSACTION_DATE >= :startDate " +
+                "AND $TABLE_TRANSACTION.$TRANSACTION_DATE <= :endDate " +
+                "ORDER BY $TABLE_TRANSACTION.$TRANSACTION_DATE DESC, " +
+                "$TABLE_TRANSACTION.$TRANS_UPDATE_TIME DESC"
+    )
+    fun getActiveTransactionsDetailed(
+        budgetRuleId: Long, startDate: String, endDate: String
+    ):
             LiveData<List<TransactionDetailed>>
 
     @Transaction
@@ -232,4 +260,19 @@ interface TransactionDao {
     fun getMaxTransactionByBudgetRule(budgetRuleId: Long):
             LiveData<Double>
 
+    @Query(
+        "SELECT MIN($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
+                "WHERE $TRANS_BUDGET_RULE_ID = :budgetRuleId " +
+                "AND $TRANS_IS_DELETED = 0"
+    )
+    fun getMinTransactionByBudgetRule(budgetRuleId: Long):
+            LiveData<Double>
+
+    @Query(
+        "SELECT SUM($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
+                "WHERE $TRANS_BUDGET_RULE_ID = :budgetRuleId " +
+                "AND $TRANS_IS_DELETED = 0"
+    )
+    fun getSumTransactionByBudgetRule(budgetRuleId: Long):
+            LiveData<Double>
 }

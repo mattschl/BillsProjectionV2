@@ -127,4 +127,7 @@
     <string name="choose_date_range">Choose Date Range</string>
     <string name="date_range">Date Range</string>
     <string name="analysis">Analysis</string>
+    <string name="total_credits">Total Credits</string>
+    <string name="total_debits">Total Debits</string>
+    <string name="total">Total</string>
 </resources>

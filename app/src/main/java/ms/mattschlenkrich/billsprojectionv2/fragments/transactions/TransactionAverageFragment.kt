@@ -1,17 +1,28 @@
 package ms.mattschlenkrich.billsprojectionv2.fragments.transactions
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.adapter.TransactionAnalysisAdapter
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionAverageBinding
+import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModel
+
+private const val TAG = FRAG_TRANSACTION_ANALYSIS
 
 class TransactionAverageFragment : Fragment(
     R.layout.fragment_transaction_average
@@ -23,6 +34,7 @@ class TransactionAverageFragment : Fragment(
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var transactionViewModel: TransactionViewModel
+    private lateinit var transactionAdapter: TransactionAnalysisAdapter
     private val cf = CommonFunctions()
     private val df = DateFunctions()
 
@@ -37,12 +49,14 @@ class TransactionAverageFragment : Fragment(
         mainViewModel =
             mainActivity.mainViewModel
         mView = binding.root
+        Log.d(TAG, "creating $TAG")
         return binding.root
 
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        mainActivity.title = "Transaction analysis"
         transactionViewModel =
             mainActivity.transactionViewModel
         setStartValues()
@@ -103,11 +117,86 @@ class TransactionAverageFragment : Fragment(
     }
 
     private fun fillFromBudgetRule() {
+        var total = 0.0
+        var startDate: String
+        var endDate: String
+        val transList = ArrayList<TransactionDetailed>()
+        val budgetRule =
+            mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!
         binding.apply {
             tvBudgetRule.text =
-                mainViewModel.getBudgetRuleDetailed()?.budgetRule?.budgetRuleName
+                budgetRule.budgetRuleName
             tvAccount.text =
                 getString(R.string.no_account_selected)
+            transactionViewModel.getMaxTransactionByBudgetRule(
+                budgetRule.ruleId
+            ).observe(
+                viewLifecycleOwner
+            ) { max ->
+                tvHighest.text =
+                    cf.displayDollars(max)
+            }
+            transactionViewModel.getMinTransactionByBudgetRule(
+                budgetRule.ruleId
+            ).observe(
+                viewLifecycleOwner
+            ) { min ->
+                tvLowest.text =
+                    cf.displayDollars(min)
+            }
+            transactionViewModel.getSumTransactionByBudgetRule(
+                budgetRule.ruleId
+            ).observe(viewLifecycleOwner) { sum ->
+                tvTotalCredits.text =
+                    cf.displayDollars(sum)
+                total = sum
+                lblTotalCredits.text =
+                    getString(R.string.total)
+                lblTotalDebits.visibility = View.GONE
+                tvTotalDebits.visibility = View.GONE
+            }
+            transactionAdapter = TransactionAnalysisAdapter(
+                mainActivity,
+                mainViewModel,
+                mView.context
+            )
+            rvTransactions.apply {
+                layoutManager = LinearLayoutManager(
+                    requireContext()
+                )
+                adapter = transactionAdapter
+            }
+            activity.let {
+                transactionViewModel.getActiveTransactionsDetailed(
+                    budgetRule.ruleId
+                ).observe(
+                    viewLifecycleOwner
+                ) { transactionList ->
+                    transactionAdapter.differ.submitList(
+                        transactionList
+                    )
+                    transList.clear()
+                    transactionList.forEach {
+                        transList.add(it)
+                    }
+
+                }
+                CoroutineScope(Dispatchers.Main).launch {
+                    delay(250)
+                    endDate = transList.first()
+                        .transaction!!.transDate
+                    startDate = transList.last()
+                        .transaction!!.transDate
+                    val months =
+                        df.getMonthsBetween(startDate, endDate)
+                    tvAverage.text =
+                        cf.displayDollars(total / months)
+                    tvRecent.text =
+                        cf.displayDollars(
+                            transList.first().transaction!!.transAmount
+                        )
+                }
+            }
         }
     }
 

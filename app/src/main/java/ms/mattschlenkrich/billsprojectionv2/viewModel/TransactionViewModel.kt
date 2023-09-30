@@ -46,6 +46,13 @@ class TransactionViewModel(
     fun getActiveTransactionsDetailed(budgetRuleId: Long) =
         transactionRepository.getActiveTransactionsDetailed(budgetRuleId)
 
+    fun getActiveTransactionsDetailed(
+        budgetRuleId: Long, startDate: String, endDate: String
+    ) =
+        transactionRepository.getActiveTransactionsDetailed(
+            budgetRuleId, startDate, endDate
+        )
+
     fun searchActiveTransactionsDetailed(query: String?) =
         transactionRepository.searchActiveTransactionsDetailed(query)
 
@@ -74,4 +81,10 @@ class TransactionViewModel(
 
     fun getMaxTransactionByBudgetRule(budgetRuleId: Long) =
         transactionRepository.getMaxTransactionByBudgetRule(budgetRuleId)
+
+    fun getMinTransactionByBudgetRule(budgetRuleId: Long) =
+        transactionRepository.getMinTransactionByBudgetRule(budgetRuleId)
+
+    fun getSumTransactionByBudgetRule(budgetRuleId: Long) =
+        transactionRepository.getSumTransactionByBudgetRule(budgetRuleId)
 }

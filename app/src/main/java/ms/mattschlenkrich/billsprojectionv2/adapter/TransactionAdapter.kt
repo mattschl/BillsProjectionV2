@@ -30,7 +30,7 @@ private const val TAG = ADAPTER_TRANSACTION
 private const val PARENT_TAG = FRAG_TRANSACTIONS
 
 class TransactionAdapter(
-    private val mainActivity: MainActivity,
+    val mainActivity: MainActivity,
     private val mainViewModel: MainViewModel,
     private val context: Context,
 ) : RecyclerView.Adapter<TransactionAdapter.TransactionsViewHolder>() {
@@ -83,7 +83,6 @@ class TransactionAdapter(
                 LayoutInflater.from(parent.context),
                 parent, false
             )
-
         )
     }
 

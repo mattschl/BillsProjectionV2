@@ -21,6 +21,13 @@ class TransactionRepository(private val db: BillsDatabase) {
     fun getActiveTransactionsDetailed(budgetRuleId: Long) =
         db.getTransactionDao().getActiveTransactionsDetailed(budgetRuleId)
 
+    fun getActiveTransactionsDetailed(
+        budgetRuleId: Long, startDate: String, endDate: String
+    ) =
+        db.getTransactionDao().getActiveTransactionsDetailed(
+            budgetRuleId, startDate, endDate
+        )
+
     fun getTransactionDetailed(transId: Long) =
         db.getTransactionDao().getTransactionDetailed(transId)
 
@@ -57,4 +64,10 @@ class TransactionRepository(private val db: BillsDatabase) {
 
     fun getMaxTransactionByBudgetRule(budgetRuleId: Long) =
         db.getTransactionDao().getMaxTransactionByBudgetRule(budgetRuleId)
+
+    fun getMinTransactionByBudgetRule(budgetRuleId: Long) =
+        db.getTransactionDao().getMinTransactionByBudgetRule(budgetRuleId)
+
+    fun getSumTransactionByBudgetRule(budgetRuleId: Long) =
+        db.getTransactionDao().getSumTransactionByBudgetRule(budgetRuleId)
 }

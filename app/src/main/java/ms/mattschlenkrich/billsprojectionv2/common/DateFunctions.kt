@@ -6,6 +6,8 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
+private const val TAG = "DateFunctions"
+
 @Suppress("unused")
 class DateFunctions {
     private val dateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
@@ -38,5 +40,15 @@ class DateFunctions {
 
     fun getDateStringFromDate(date: Date): String {
         return dateFormat.format(date)
+    }
+
+    fun getMonthsBetween(startDate: String, endDate: String): Int {
+        val start = LocalDate.parse(startDate)
+        val end = LocalDate.parse(endDate)
+        return end.monthValue + end.year - start.monthValue - start.year + 1
+    }
+
+    fun getFirstOfMonth(date: String): String {
+        return date.dropLast(2) + "01"
     }
 }
