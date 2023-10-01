@@ -317,4 +317,45 @@ interface TransactionDao {
         endDate: String
     ):
             LiveData<Double>
+
+    @Transaction
+    @Query(
+        "SELECT $TABLE_TRANSACTION.*," +
+                "budgetRule.*,  " +
+                "toAccount.*," +
+                "fromAccount.* " +
+                "FROM $TABLE_TRANSACTION " +
+                "LEFT JOIN $TABLE_BUDGET_RULES as budgetRule on " +
+                "$TABLE_TRANSACTION.$TRANS_BUDGET_RULE_ID = " +
+                "budgetRule.$RULE_ID " +
+                "LEFT JOIN $TABLE_ACCOUNTS as toAccount on " +
+                "$TABLE_TRANSACTION.$TRANSACTION_TO_ACCOUNT_ID =" +
+                "toAccount.$ACCOUNT_ID " +
+                "LEFT JOIN $TABLE_ACCOUNTS as fromAccount on " +
+                "$TABLE_TRANSACTION.$TRANSACTION_FROM_ACCOUNT_ID = " +
+                "fromAccount.$ACCOUNT_ID " +
+                "WHERE ($TABLE_TRANSACTION.$TRANSACTION_TO_ACCOUNT_ID = :accountId " +
+                "OR $TABLE_TRANSACTION.$TRANSACTION_FROM_ACCOUNT_ID = :accountId) " +
+                "AND $TABLE_TRANSACTION.$TRANS_IS_DELETED = 0 " +
+                "ORDER BY $TABLE_TRANSACTION.$TRANSACTION_DATE DESC, " +
+                "$TABLE_TRANSACTION.$TRANS_UPDATE_TIME DESC"
+    )
+    fun getActiveTransactionByAccount(accountId: Long):
+            LiveData<List<TransactionDetailed>>
+
+    @Query(
+        "SELECT SUM($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
+                "WHERE $TRANSACTION_TO_ACCOUNT_ID = :accountId " +
+                "AND $TRANS_IS_DELETED = 0"
+    )
+    fun getSumTransactionToAccount(accountId: Long):
+            LiveData<Double>
+
+    @Query(
+        "SELECT SUM($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
+                "WHERE $TRANSACTION_FROM_ACCOUNT_ID = :accountId " +
+                "AND $TRANS_IS_DELETED = 0"
+    )
+    fun getSumTransactionFromAccount(accountId: Long):
+            LiveData<Double>
 }

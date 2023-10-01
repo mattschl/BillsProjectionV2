@@ -1,21 +1,27 @@
 package ms.mattschlenkrich.billsprojectionv2.adapter
 
+import android.app.AlertDialog
+import android.content.Context
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_UPDATE
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_PERFORM
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
@@ -34,7 +40,9 @@ private const val TAG = ADAPTER_ACCOUNT
 private const val PARENT_TAG = FRAG_ACCOUNTS
 
 class AccountAdapter(
-    private val mainViewModel: MainViewModel
+    val mainActivity: MainActivity,
+    private val mainViewModel: MainViewModel,
+    private val context: Context
 ) :
     RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() {
 
@@ -59,8 +67,10 @@ class AccountAdapter(
             mainViewModel.getTransactionDetailed()?.toAccount,
             mainViewModel.getTransactionDetailed()?.fromAccount
         )
+    private val accountViewModel = mainActivity.accountViewModel
 
     private val cf = CommonFunctions()
+    private val df = DateFunctions()
 
     class AccountViewHolder(val itemBinding: AccountLayoutBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -182,9 +192,55 @@ class AccountAdapter(
             }
         }
         holder.itemView.setOnLongClickListener {
-            gotoUpdateAccount(curAccount, it)
+            if (!mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_ANALYSIS)) {
+                AlertDialog.Builder(context)
+                    .setTitle(
+                        "Choose an action for" +
+                                curAccount.account.accountName
+                    )
+                    .setItems(
+                        arrayOf(
+                            "Edit this Account",
+                            "Delete this Account",
+                            "View a summary of Transactions using this Account"
+                        )
+                    ) { _, pos ->
+                        when (pos) {
+                            0 -> gotoUpdateAccount(curAccount, it)
+                            1 -> deleteAccount(curAccount)
+                            2 -> gotoAverage(curAccount, it)
+                        }
+
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            } else {
+                Toast.makeText(
+                    context,
+                    "Editing is not allowed right now",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
             false
         }
+    }
+
+    private fun gotoAverage(curAccount: AccountWithType, it: View) {
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments() + ", " + PARENT_TAG
+        )
+        mainViewModel.setBudgetRuleDetailed(null)
+        mainViewModel.setAccountWithType(curAccount)
+        it.findNavController().navigate(
+            AccountsFragmentDirections
+                .actionAccountsFragmentToTransactionAverageFragment()
+        )
+    }
+
+    private fun deleteAccount(curAccount: AccountWithType) {
+        accountViewModel.deleteAccount(
+            curAccount.account.accountId, df.getCurrentTimeAsString()
+        )
     }
 
     private fun gotoUpdateAccount(

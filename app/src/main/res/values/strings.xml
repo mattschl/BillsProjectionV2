@@ -131,4 +131,6 @@
     <string name="total_debits">Total Debits</string>
     <string name="total">Total</string>
     <string name="go">GO</string>
+    <string name="credit_average">Credit Average</string>
+    <string name="debit_average">Debit Average</string>
 </resources>

@@ -114,4 +114,13 @@ class TransactionViewModel(
         transactionRepository.getSumTransactionByBudgetRule(
             budgetRuleId, startDate, endDate
         )
+
+    fun getActiveTransactionByAccount(accountId: Long) =
+        transactionRepository.getActiveTransactionByAccount(accountId)
+
+    fun getSumTransactionToAccount(accountId: Long) =
+        transactionRepository.getSumTransactionToAccount(accountId)
+
+    fun getSumTransactionFromAccount(accountId: Long) =
+        transactionRepository.getSumTransactionFromAccount(accountId)
 }

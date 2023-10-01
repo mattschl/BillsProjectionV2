@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
@@ -17,6 +18,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetRuleLayoutBinding
@@ -108,6 +110,9 @@ class BudgetRuleAdapter(
                 mainViewModel.getCallingFragments()!!
                     .replace(", $PARENT_TAG", "")
             )
+            mainViewModel.setBudgetRuleDetailed(
+                budgetRuleDetailed
+            )
             val mTransaction =
                 mainViewModel.getTransactionDetailed()
             mTransaction?.budgetRule =
@@ -117,6 +122,7 @@ class BudgetRuleAdapter(
                 mainViewModel.getBudgetItem()
             mBudgetDetailed?.budgetRule =
                 budgetRuleDetailed!!.budgetRule
+
             mainViewModel.setCallingFragments(
                 mainViewModel.getCallingFragments()!!
                     .replace(", $PARENT_TAG", "")
@@ -126,26 +132,34 @@ class BudgetRuleAdapter(
         }
 
         holder.itemView.setOnLongClickListener {
-            AlertDialog.Builder(context)
-                .setTitle(
-                    "Choose an action for " +
-                            budgetRuleDetailed.budgetRule!!.budgetRuleName
-                )
-                .setItems(
-                    arrayOf(
-                        "Edit this Budget Rule",
-                        "Delete this Budget Rule",
-                        "View a summary of transactions for this rule"
+            if (!mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_ANALYSIS)) {
+                AlertDialog.Builder(context)
+                    .setTitle(
+                        "Choose an action for " +
+                                budgetRuleDetailed.budgetRule!!.budgetRuleName
                     )
-                ) { _, pos ->
-                    when (pos) {
-                        0 -> editBudgetRule(budgetRuleDetailed, it)
-                        1 -> deleteBudgetRule(budgetRuleDetailed)
-                        2 -> gotoAverages(budgetRuleDetailed, it)
+                    .setItems(
+                        arrayOf(
+                            "Edit this Budget Rule",
+                            "Delete this Budget Rule",
+                            "View a summary of transactions for this rule"
+                        )
+                    ) { _, pos ->
+                        when (pos) {
+                            0 -> editBudgetRule(budgetRuleDetailed, it)
+                            1 -> deleteBudgetRule(budgetRuleDetailed)
+                            2 -> gotoAverages(budgetRuleDetailed, it)
+                        }
                     }
-                }
-                .setNegativeButton("Cancel", null)
-                .show()
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            } else {
+                Toast.makeText(
+                    context,
+                    "Editing is not allowed right now",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
             false
         }
     }
@@ -212,6 +226,13 @@ class BudgetRuleAdapter(
                 BudgetRuleFragmentDirections
                     .actionBudgetRuleFragmentToBudgetItemUpdateFragment()
             it.findNavController().navigate(direction)
+        } else if (mainViewModel.getCallingFragments()!!
+                .contains(FRAG_TRANSACTION_ANALYSIS)
+        ) {
+            it.findNavController().navigate(
+                BudgetRuleFragmentDirections
+                    .actionBudgetRuleFragmentToTransactionAverageFragment()
+            )
         }
     }
 }

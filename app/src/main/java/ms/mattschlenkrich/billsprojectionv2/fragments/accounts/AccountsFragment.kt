@@ -82,7 +82,9 @@ class AccountsFragment :
 
     private fun setUpRecyclerView() {
         accountAdapter = AccountAdapter(
-            mainViewModel
+            mainActivity,
+            mainViewModel,
+            mView.context
         )
         binding.rvAccounts.apply {
             layoutManager = StaggeredGridLayoutManager(
