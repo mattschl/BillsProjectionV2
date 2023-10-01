@@ -79,7 +79,13 @@ class TransactionAverageFragment : Fragment(
     }
 
     private fun gotoAccount() {
-        TODO("Not yet implemented")
+        mainViewModel.setCallingFragments(TAG)
+        mainViewModel.setAccountWithType(null)
+        mainViewModel.setBudgetRuleDetailed(null)
+        mView.findNavController().navigate(
+            TransactionAverageFragmentDirections
+                .actionTransactionAverageFragmentToAccountsFragment()
+        )
     }
 
     private fun gotoBudgetRule() {
@@ -154,8 +160,8 @@ class TransactionAverageFragment : Fragment(
 
                     }
                 CoroutineScope(Dispatchers.Main).launch {
+                    delay(250)
                     if (transList.size > 0) {
-                        delay(250)
                         endDate = transList.first().transaction!!.transDate
                         startDate = transList.last().transaction!!.transDate
                         val months = df.getMonthsBetween(startDate, endDate)
@@ -361,15 +367,17 @@ class TransactionAverageFragment : Fragment(
                 }
                 CoroutineScope(Dispatchers.Main).launch {
                     delay(250)
-                    val months =
-                        df.getMonthsBetween(startDate, endDate)
-                    lblAverage.text = getString(R.string.average)
-                    tvAverage.text =
-                        cf.displayDollars(total / months)
-                    tvRecent.text =
-                        cf.displayDollars(
-                            transList.first().transaction!!.transAmount
-                        )
+                    if (transList.size > 0) {
+                        val months =
+                            df.getMonthsBetween(startDate, endDate)
+                        lblAverage.text = getString(R.string.average)
+                        tvAverage.text =
+                            cf.displayDollars(total / months)
+                        tvRecent.text =
+                            cf.displayDollars(
+                                transList.first().transaction!!.transAmount
+                            )
+                    }
                 }
             }
         }

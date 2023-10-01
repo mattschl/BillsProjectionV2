@@ -166,28 +166,31 @@ class AccountAdapter(
         holder.itemBinding.ibAccountColor.setBackgroundColor(color)
 
         holder.itemView.setOnClickListener {
-            Log.d(TAG, "requested Account is ${mainViewModel.getRequestedAccount()}")
-            when (mainViewModel.getRequestedAccount()) {
-                REQUEST_TO_ACCOUNT -> {
-                    mBudgetRuleDetailed.toAccount = curAccount.account
-                    mainViewModel.setBudgetRuleDetailed(mBudgetRuleDetailed)
-                    mTransactionDetailed.toAccount = curAccount.account
-                    mainViewModel.setTransactionDetailed(mTransactionDetailed)
-                    mBudgetItem.toAccount = curAccount.account
-                    mainViewModel.setBudgetItem(mBudgetItem)
-                    gotoCallingFragment(it)
+            if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_ANALYSIS)) {
+                gotoTransactionAverage(curAccount, it)
+            } else {
+                when (mainViewModel.getRequestedAccount()) {
+                    REQUEST_TO_ACCOUNT -> {
+                        mBudgetRuleDetailed.toAccount = curAccount.account
+                        mainViewModel.setBudgetRuleDetailed(mBudgetRuleDetailed)
+                        mTransactionDetailed.toAccount = curAccount.account
+                        mainViewModel.setTransactionDetailed(mTransactionDetailed)
+                        mBudgetItem.toAccount = curAccount.account
+                        mainViewModel.setBudgetItem(mBudgetItem)
+                        gotoCallingFragment(it)
 
-                }
+                    }
 
-                REQUEST_FROM_ACCOUNT -> {
-                    mBudgetRuleDetailed.fromAccount = curAccount.account
-                    mainViewModel.setBudgetRuleDetailed(mBudgetRuleDetailed)
-                    mTransactionDetailed.fromAccount = curAccount.account
-                    mainViewModel.setTransactionDetailed(mTransactionDetailed)
-                    mBudgetItem.fromAccount = curAccount.account
-                    mainViewModel.setBudgetItem(mBudgetItem)
-                    gotoCallingFragment(it)
+                    REQUEST_FROM_ACCOUNT -> {
+                        mBudgetRuleDetailed.fromAccount = curAccount.account
+                        mainViewModel.setBudgetRuleDetailed(mBudgetRuleDetailed)
+                        mTransactionDetailed.fromAccount = curAccount.account
+                        mainViewModel.setTransactionDetailed(mTransactionDetailed)
+                        mBudgetItem.fromAccount = curAccount.account
+                        mainViewModel.setBudgetItem(mBudgetItem)
+                        gotoCallingFragment(it)
 
+                    }
                 }
             }
         }
@@ -223,6 +226,16 @@ class AccountAdapter(
             }
             false
         }
+    }
+
+    private fun gotoTransactionAverage(curAccount: AccountWithType, it: View) {
+        mainViewModel.setCallingFragments(mainViewModel.getCallingFragments() + ", " + PARENT_TAG)
+        mainViewModel.setAccountWithType(curAccount)
+        mainViewModel.setBudgetRuleDetailed(null)
+        it.findNavController().navigate(
+            AccountsFragmentDirections
+                .actionAccountsFragmentToTransactionAverageFragment()
+        )
     }
 
     private fun gotoAverage(curAccount: AccountWithType, it: View) {

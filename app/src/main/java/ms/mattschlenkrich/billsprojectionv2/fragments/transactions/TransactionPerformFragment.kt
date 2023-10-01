@@ -379,6 +379,7 @@ class TransactionPerformFragment : Fragment(
     }
 
     private fun performTransaction() {
+        calculateRemainder()
         val mes = checkTransaction()
         if (mes == "Ok") {
             val mTransaction = getCurTransaction()
