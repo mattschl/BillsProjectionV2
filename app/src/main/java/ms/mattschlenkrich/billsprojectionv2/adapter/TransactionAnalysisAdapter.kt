@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.billsprojectionv2.adapter
 
-import android.content.Context
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,29 +8,26 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_TRANSACTION_ANALYSIS
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
 import ms.mattschlenkrich.billsprojectionv2.databinding.TransactionLinearItemBinding
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
-import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 import java.util.Random
 
 private const val TAG = ADAPTER_TRANSACTION_ANALYSIS
-private const val PARENT_TAG = FRAG_TRANSACTION_ANALYSIS
+//private const val PARENT_TAG = FRAG_TRANSACTION_ANALYSIS
 
 class TransactionAnalysisAdapter(
-    val mainActivity: MainActivity,
-    private val mainViewModel: MainViewModel,
-    private val context: Context,
+//    val mainActivity: MainActivity,
+//    private val mainViewModel: MainViewModel,
+//    private val context: Context,
 ) : RecyclerView.Adapter<TransactionAnalysisAdapter.TransViewHolder>() {
 
     private val cf = CommonFunctions()
     private val df = DateFunctions()
-    private val transactionViewModel =
-        mainActivity.transactionViewModel
+//    private val transactionViewModel =
+//        mainActivity.transactionViewModel
 
     class TransViewHolder(
         val itemBinding: TransactionLinearItemBinding
@@ -67,8 +63,8 @@ class TransactionAnalysisAdapter(
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): TransactionAnalysisAdapter.TransViewHolder {
-        return TransactionAnalysisAdapter.TransViewHolder(
+    ): TransViewHolder {
+        return TransViewHolder(
             TransactionLinearItemBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent, false
@@ -81,7 +77,7 @@ class TransactionAnalysisAdapter(
     }
 
     override fun onBindViewHolder(
-        holder: TransactionAnalysisAdapter.TransViewHolder,
+        holder: TransViewHolder,
         position: Int,
     ) {
         val transaction =

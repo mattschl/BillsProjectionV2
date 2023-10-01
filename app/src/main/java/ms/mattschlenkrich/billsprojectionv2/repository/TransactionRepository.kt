@@ -65,9 +65,36 @@ class TransactionRepository(private val db: BillsDatabase) {
     fun getMaxTransactionByBudgetRule(budgetRuleId: Long) =
         db.getTransactionDao().getMaxTransactionByBudgetRule(budgetRuleId)
 
+    fun getMaxTransactionByBudgetRule(
+        budgetRuleId: Long,
+        startDate: String,
+        endDate: String
+    ) =
+        db.getTransactionDao().getMaxTransactionByBudgetRule(
+            budgetRuleId, startDate, endDate
+        )
+
     fun getMinTransactionByBudgetRule(budgetRuleId: Long) =
         db.getTransactionDao().getMinTransactionByBudgetRule(budgetRuleId)
 
+    fun getMinTransactionByBudgetRule(
+        budgetRuleId: Long,
+        startDate: String,
+        endDate: String
+    ) =
+        db.getTransactionDao().getMinTransactionByBudgetRule(
+            budgetRuleId, startDate, endDate
+        )
+
     fun getSumTransactionByBudgetRule(budgetRuleId: Long) =
         db.getTransactionDao().getSumTransactionByBudgetRule(budgetRuleId)
+
+    fun getSumTransactionByBudgetRule(
+        budgetRuleId: Long,
+        startDate: String,
+        endDate: String
+    ) =
+        db.getTransactionDao().getSumTransactionByBudgetRule(
+            budgetRuleId, startDate, endDate
+        )
 }

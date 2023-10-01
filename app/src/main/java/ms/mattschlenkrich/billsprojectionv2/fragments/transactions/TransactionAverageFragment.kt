@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.fragments.transactions
 
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -60,16 +61,15 @@ class TransactionAverageFragment : Fragment(
         transactionViewModel =
             mainActivity.transactionViewModel
         setStartValues()
+        setRadioOptions()
     }
 
     private fun setStartValues() {
-        setRadioOptions()
         if (mainViewModel.getBudgetRuleDetailed() != null) {
             fillFromBudgetRule()
         } else if (mainViewModel.getAccountWithType() != null) {
             fillFromAccount()
         }
-
     }
 
     private fun fillFromAccount() {
@@ -78,26 +78,206 @@ class TransactionAverageFragment : Fragment(
 
     private fun setRadioOptions() {
         binding.apply {
-            rdShowAll.isChecked = true
             rdShowAll.setOnClickListener {
                 rdShowAll.isChecked = true
                 rdLastMonth.isChecked = false
                 rdDateRange.isChecked = false
                 setDateRangeVisibility(false)
+                setStartValues()
             }
             rdLastMonth.setOnClickListener {
                 rdShowAll.isChecked = false
                 rdLastMonth.isChecked = true
                 rdDateRange.isChecked = false
                 setDateRangeVisibility(false)
+                setValuesLastMonth()
             }
             rdDateRange.setOnClickListener {
                 rdShowAll.isChecked = false
                 rdLastMonth.isChecked = false
                 rdDateRange.isChecked = true
                 setDateRangeVisibility(true)
+                tvStartDate.setText(
+                    df.getFirstOfMonth(
+                        df.getCurrentDateAsString()
+                    )
+                )
+                tvEndDate.setText(
+                    df.getCurrentDateAsString()
+                )
+                tvStartDate.setOnLongClickListener {
+                    chooseStartDate()
+                    false
+                }
+                tvEndDate.setOnLongClickListener {
+                    chooseEndDate()
+                    false
+                }
+                btnFill.setOnClickListener {
+                    if (mainViewModel.getBudgetRuleDetailed() != null) {
+                        fillFromBudgetRuleAndDates(
+                            tvStartDate.text.toString(),
+                            tvEndDate.text.toString()
+                        )
+                    } else if (mainViewModel.getAccountWithType() != null) {
+                        fillFromAccountAndDates(
+                            tvStartDate.text.toString(),
+                            tvEndDate.text.toString()
+                        )
+                    }
+                }
+            }
+            rdShowAll.isChecked = true
+        }
+    }
+
+    private fun chooseEndDate() {
+        binding.apply {
+            val curDateAll = tvEndDate.text.toString()
+                .split("-")
+            val datePickerDialog = DatePickerDialog(
+                requireContext(),
+                { _, year, monthOfYear, dayOfMonth ->
+                    val month = monthOfYear + 1
+                    val display = "$year-${
+                        month.toString()
+                            .padStart(2, '0')
+                    }-${
+                        dayOfMonth.toString().padStart(2, '0')
+                    }"
+                    tvEndDate.setText(display)
+                },
+                curDateAll[0].toInt(),
+                curDateAll[1].toInt() - 1,
+                curDateAll[2].toInt()
+            )
+            datePickerDialog.setTitle("Choose the end date")
+            datePickerDialog.show()
+        }
+    }
+
+    private fun chooseStartDate() {
+        binding.apply {
+            val curDateAll = tvStartDate.text.toString()
+                .split("-")
+            val datePickerDialog = DatePickerDialog(
+                requireContext(),
+                { _, year, monthOfYear, dayOfMonth ->
+                    val month = monthOfYear + 1
+                    val display = "$year-${
+                        month.toString()
+                            .padStart(2, '0')
+                    }-${
+                        dayOfMonth.toString().padStart(2, '0')
+                    }"
+                    tvStartDate.setText(display)
+                },
+                curDateAll[0].toInt(),
+                curDateAll[1].toInt() - 1,
+                curDateAll[2].toInt()
+            )
+            datePickerDialog.setTitle("Choose the start date")
+            datePickerDialog.show()
+        }
+    }
+
+    private fun setValuesLastMonth() {
+        val startDate = df.getFirstOfMonth(
+            df.getCurrentDateAsString()
+        )
+        val endDate = df.getCurrentDateAsString()
+        if (mainViewModel.getBudgetRuleDetailed() != null) {
+            fillFromBudgetRuleAndDates(startDate, endDate)
+        } else if (mainViewModel.getAccountWithType() != null) {
+            fillFromAccountAndDates(startDate, endDate)
+        }
+    }
+
+    private fun fillFromAccountAndDates(startDate: String, endDate: String) {
+
+    }
+
+    private fun fillFromBudgetRuleAndDates(startDate: String, endDate: String) {
+        var total = 0.0
+        val transList = ArrayList<TransactionDetailed>()
+        val budgetRule =
+            mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!
+        binding.apply {
+            tvBudgetRule.text =
+                budgetRule.budgetRuleName
+            tvAccount.text =
+                getString(R.string.no_account_selected)
+
+            transactionViewModel.getMaxTransactionByBudgetRule(
+                budgetRule.ruleId,
+                startDate, endDate
+            ).observe(
+                viewLifecycleOwner
+            ) { max ->
+                tvHighest.text =
+                    cf.displayDollars(max)
+            }
+            transactionViewModel.getMinTransactionByBudgetRule(
+                budgetRule.ruleId,
+                startDate, endDate
+            ).observe(
+                viewLifecycleOwner
+            ) { min ->
+                tvLowest.text =
+                    cf.displayDollars(min)
+            }
+            transactionViewModel.getSumTransactionByBudgetRule(
+                budgetRule.ruleId,
+                startDate, endDate
+            ).observe(viewLifecycleOwner) { sum ->
+                tvTotalCredits.text =
+                    cf.displayDollars(sum)
+                total = sum
+                lblTotalCredits.text =
+                    getString(R.string.total)
+                lblTotalDebits.visibility = View.GONE
+                tvTotalDebits.visibility = View.GONE
+            }
+            transactionAdapter = TransactionAnalysisAdapter(
+//                mainActivity,
+//                mainViewModel,
+//                mView.context
+            )
+            rvTransactions.apply {
+                layoutManager = LinearLayoutManager(
+                    requireContext()
+                )
+                adapter = transactionAdapter
+            }
+            activity.let {
+                transactionViewModel.getActiveTransactionsDetailed(
+                    budgetRule.ruleId, startDate, endDate
+                ).observe(
+                    viewLifecycleOwner
+                ) { transactionList ->
+                    transactionAdapter.differ.submitList(
+                        transactionList
+                    )
+                    transList.clear()
+                    transactionList.forEach {
+                        transList.add(it)
+                    }
+
+                }
+                CoroutineScope(Dispatchers.Main).launch {
+                    delay(250)
+                    val months =
+                        df.getMonthsBetween(startDate, endDate)
+                    tvAverage.text =
+                        cf.displayDollars(total / months)
+                    tvRecent.text =
+                        cf.displayDollars(
+                            transList.first().transaction!!.transAmount
+                        )
+                }
             }
         }
+
     }
 
     private fun setDateRangeVisibility(visible: Boolean) {
@@ -107,11 +287,13 @@ class TransactionAverageFragment : Fragment(
                 lblEndDate.visibility = View.VISIBLE
                 tvStartDate.visibility = View.VISIBLE
                 tvEndDate.visibility = View.VISIBLE
+                btnFill.visibility = View.VISIBLE
             } else {
                 lblStartDate.visibility = View.GONE
                 lblEndDate.visibility = View.GONE
                 tvStartDate.visibility = View.GONE
                 tvEndDate.visibility = View.GONE
+                btnFill.visibility = View.GONE
             }
         }
     }
@@ -156,9 +338,9 @@ class TransactionAverageFragment : Fragment(
                 tvTotalDebits.visibility = View.GONE
             }
             transactionAdapter = TransactionAnalysisAdapter(
-                mainActivity,
-                mainViewModel,
-                mView.context
+//                mainActivity,
+//                mainViewModel,
+//                mView.context
             )
             rvTransactions.apply {
                 layoutManager = LinearLayoutManager(

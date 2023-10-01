@@ -261,6 +261,20 @@ interface TransactionDao {
             LiveData<Double>
 
     @Query(
+        "SELECT MAX($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
+                "WHERE $TRANS_BUDGET_RULE_ID = :budgetRuleId " +
+                "AND $TRANSACTION_DATE >= :startDate " +
+                "AND $TRANSACTION_DATE <= :endDate " +
+                "AND $TRANS_IS_DELETED = 0"
+    )
+    fun getMaxTransactionByBudgetRule(
+        budgetRuleId: Long,
+        startDate: String,
+        endDate: String
+    ):
+            LiveData<Double>
+
+    @Query(
         "SELECT MIN($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
                 "WHERE $TRANS_BUDGET_RULE_ID = :budgetRuleId " +
                 "AND $TRANS_IS_DELETED = 0"
@@ -269,10 +283,38 @@ interface TransactionDao {
             LiveData<Double>
 
     @Query(
+        "SELECT MIN($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
+                "WHERE $TRANS_BUDGET_RULE_ID = :budgetRuleId " +
+                "AND $TRANSACTION_DATE >= :startDate " +
+                "AND $TRANS_UPDATE_TIME <= :endDate " +
+                "AND $TRANS_IS_DELETED = 0"
+    )
+    fun getMinTransactionByBudgetRule(
+        budgetRuleId: Long,
+        startDate: String,
+        endDate: String
+    ):
+            LiveData<Double>
+
+    @Query(
         "SELECT SUM($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
                 "WHERE $TRANS_BUDGET_RULE_ID = :budgetRuleId " +
                 "AND $TRANS_IS_DELETED = 0"
     )
     fun getSumTransactionByBudgetRule(budgetRuleId: Long):
+            LiveData<Double>
+
+    @Query(
+        "SELECT SUM($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
+                "WHERE $TRANS_BUDGET_RULE_ID = :budgetRuleId " +
+                "AND $TRANSACTION_DATE >= :startDate " +
+                "AND $TRANSACTION_DATE <= :endDate " +
+                "AND $TRANS_IS_DELETED = 0"
+    )
+    fun getSumTransactionByBudgetRule(
+        budgetRuleId: Long,
+        startDate: String,
+        endDate: String
+    ):
             LiveData<Double>
 }
