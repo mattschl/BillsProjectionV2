@@ -12,42 +12,31 @@ class BudgetItemRepository(private val db: BillsDatabase) {
         db.getBudgetItemDao().updateBudgetItem(budgetItem)
 
     suspend fun deleteBudgetItem(
-        budgetRulId: Long,
-        projectedDate: String,
-        updateTime: String
-    ) =
-        db.getBudgetItemDao().deleteBudgetItem(
-            budgetRulId,
-            projectedDate,
-            updateTime
-        )
+        budgetRulId: Long, projectedDate: String, updateTime: String
+    ) = db.getBudgetItemDao().deleteBudgetItem(
+        budgetRulId, projectedDate, updateTime
+    )
 
-    fun getPayDaysActive() =
-        db.getBudgetItemDao().getPayDaysActive()
+    fun getPayDaysActive() = db.getBudgetItemDao().getPayDaysActive()
 
     suspend fun deleteFutureBudgetItems(
-        currentDate: String,
-        updateTime: String
+        currentDate: String, updateTime: String
     ) = db.getBudgetItemDao().deleteFutureBudgetItems(
         currentDate, updateTime
     )
 
-    fun getAssetsForBudget() =
-        db.getBudgetItemDao().getAssetsForBudget()
+    fun getAssetsForBudget() = db.getBudgetItemDao().getAssetsForBudget()
 
-    fun getPayDays(asset: String) =
-        db.getBudgetItemDao().getPayDays(asset)
+    fun getPayDays(asset: String) = db.getBudgetItemDao().getPayDays(asset)
 
     fun getBudgetItems(asset: String, payDay: String) =
         db.getBudgetItemDao().getBudgetItems(asset, payDay)
 
-    fun getPayDays() =
-        db.getBudgetItemDao().getPayDays()
+    fun getPayDays() = db.getBudgetItemDao().getPayDays()
 
     suspend fun cancelBudgetItem(
         budgetRuleId: Long, projectedDate: String, updateTime: String
-    ) =
-        db.getBudgetItemDao().cancelBudgetItem(
-            budgetRuleId, projectedDate, updateTime
-        )
+    ) = db.getBudgetItemDao().cancelBudgetItem(
+        budgetRuleId, projectedDate, updateTime
+    )
 }

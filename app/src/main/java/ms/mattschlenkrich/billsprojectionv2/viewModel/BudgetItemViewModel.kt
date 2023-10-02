@@ -8,63 +8,47 @@ import ms.mattschlenkrich.billsprojectionv2.model.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.repository.BudgetItemRepository
 
 class BudgetItemViewModel(
-    app: Application,
-    private val budgetItemRepository: BudgetItemRepository
+    app: Application, private val budgetItemRepository: BudgetItemRepository
 ) : AndroidViewModel(app) {
 
-    fun insertBudgetItem(budgetItem: BudgetItem) =
-        viewModelScope.launch {
-            budgetItemRepository.insertBudgetItem(budgetItem)
-        }
+    fun insertBudgetItem(budgetItem: BudgetItem) = viewModelScope.launch {
+        budgetItemRepository.insertBudgetItem(budgetItem)
+    }
 
-    fun updateBudgetItem(budgetItem: BudgetItem) =
-        viewModelScope.launch {
-            budgetItemRepository.updateBudgetItem(budgetItem)
-        }
+    fun updateBudgetItem(budgetItem: BudgetItem) = viewModelScope.launch {
+        budgetItemRepository.updateBudgetItem(budgetItem)
+    }
 
     fun deleteBudgetItem(
-        budgetRulId: Long,
-        projectedDate: String,
-        updateTime: String
-    ) =
-        viewModelScope.launch {
-            budgetItemRepository.deleteBudgetItem(
-                budgetRulId,
-                projectedDate,
-                updateTime
-            )
-        }
-
-    fun getPayDaysActive() =
-        budgetItemRepository.getPayDaysActive()
-
-    fun deleteFutureBudgetItems(
-        currentDate: String,
-        updateTime: String
+        budgetRulId: Long, projectedDate: String, updateTime: String
     ) = viewModelScope.launch {
+        budgetItemRepository.deleteBudgetItem(
+            budgetRulId, projectedDate, updateTime
+        )
+    }
+
+    fun getPayDaysActive() = budgetItemRepository.getPayDaysActive()
+
+    fun deleteFutureBudgetItems(currentDate: String, updateTime: String) = viewModelScope.launch {
         budgetItemRepository.deleteFutureBudgetItems(
             currentDate, updateTime
         )
     }
 
-    fun getAssetsForBudget() =
-        budgetItemRepository.getAssetsForBudget()
+    fun getAssetsForBudget() = budgetItemRepository.getAssetsForBudget()
 
-    fun getPayDays(asset: String) =
-        budgetItemRepository.getPayDays(asset)
+    fun getPayDays(asset: String) = budgetItemRepository.getPayDays(asset)
 
     fun getBudgetItems(asset: String, payDay: String) =
         budgetItemRepository.getBudgetItems(asset, payDay)
 
-    fun getPayDays() =
-        budgetItemRepository.getPayDays()
+    fun getPayDays() = budgetItemRepository.getPayDays()
 
     fun cancelBudgetItem(
         budgetRuleId: Long, projectedDate: String, updateTime: String
-    ) =
-        viewModelScope.launch {
-            budgetItemRepository.cancelBudgetItem(
-                budgetRuleId, projectedDate, updateTime
-            )
-        }
+    ) = viewModelScope.launch {
+        budgetItemRepository.cancelBudgetItem(
+            budgetRuleId, projectedDate, updateTime
+        )
+    }
 }

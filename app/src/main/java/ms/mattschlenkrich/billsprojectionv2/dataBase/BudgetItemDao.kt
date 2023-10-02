@@ -19,6 +19,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_COMPLETED
 import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_DELETED
 import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_MANUALLY_ENTERED
 import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_PAY_DAY_ITEM
+import ms.mattschlenkrich.billsprojectionv2.common.BI_LOCKED
 import ms.mattschlenkrich.billsprojectionv2.common.BI_PAY_DAY
 import ms.mattschlenkrich.billsprojectionv2.common.BI_PROJECTED_DATE
 import ms.mattschlenkrich.billsprojectionv2.common.BI_TO_ACCOUNT_ID
@@ -47,8 +48,7 @@ interface BudgetItemDao {
                 "AND $BI_PROJECTED_DATE = :projectedDate"
     )
     suspend fun deleteBudgetItem(
-        budgetRulId: Long,
-        projectedDate: String,
+        budgetRulId: Long, projectedDate: String,
         updateTime: String
     )
 
@@ -92,12 +92,12 @@ interface BudgetItemDao {
                 "SET $BI_IS_DELETED = 1, " +
                 "$BI_UPDATE_TIME = :updateTime " +
                 "WHERE $BI_ACTUAL_DATE > :currentDate " +
-                "AND $BI_IS_MANUALLY_ENTERED = 0"
+                "AND $BI_IS_MANUALLY_ENTERED = 0 " +
+                "AND $BI_IS_COMPLETED = 0 " +
+                "AND $BI_IS_CANCELLED = 0 " +
+                "AND $BI_LOCKED = 0"
     )
-    suspend fun deleteFutureBudgetItems(
-        currentDate: String,
-        updateTime: String
-    )
+    suspend fun deleteFutureBudgetItems(currentDate: String, updateTime: String)
 
     @Query(
         "SELECT $ACCOUNT_NAME FROM $TABLE_ACCOUNTS " +
@@ -138,10 +138,7 @@ interface BudgetItemDao {
                 "$TABLE_BUDGET_ITEMS.$BI_ACTUAL_DATE , " +
                 "$TABLE_BUDGET_ITEMS.$BI_BUDGET_NAME ;"
     )
-    fun getBudgetItems(
-        asset: String,
-        payDay: String
-    )
+    fun getBudgetItems(asset: String, payDay: String)
             : LiveData<List<BudgetDetailed>>
 
     @Query(
@@ -151,5 +148,7 @@ interface BudgetItemDao {
                 "WHERE $BI_PROJECTED_DATE = :projectedDate " +
                 "AND $BI_BUDGET_RULE_ID = :budgetRuleId"
     )
-    suspend fun cancelBudgetItem(budgetRuleId: Long, projectedDate: String, updateTime: String)
+    suspend fun cancelBudgetItem(
+        budgetRuleId: Long, projectedDate: String, updateTime: String
+    )
 }
