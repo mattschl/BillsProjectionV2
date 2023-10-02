@@ -276,7 +276,7 @@ class BudgetItemAddFragment : Fragment(
                 chkFixedAmount.isChecked,
                 chkIsAutoPayment.isChecked,
                 biManuallyEntered = true,
-                biLocked = chkIsLocked.isChecked,
+                biLocked = true,
                 biIsCompleted = false,
                 biIsCancelled = false,
                 biIsDeleted = false,

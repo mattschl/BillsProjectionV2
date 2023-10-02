@@ -479,12 +479,16 @@ class BudgetViewFragment : Fragment(
     private fun fillMainViewModel() {
         mainViewModel.eraseAll()
         mainViewModel.setCallingFragments(TAG)
-        mainViewModel.setAsset(
-            binding.spAssetNames.selectedItem.toString()
-        )
-        mainViewModel.setPayDay(
-            binding.spPayDay.selectedItem.toString()
-        )
+        if (binding.spAssetNames.adapter.count > 0) {
+            mainViewModel.setAsset(
+                binding.spAssetNames.selectedItem.toString()
+            )
+        }
+        if (binding.spPayDay.adapter.count > 0) {
+            mainViewModel.setPayDay(
+                binding.spPayDay.selectedItem.toString()
+            )
+        }
     }
 
     override fun onDestroy() {

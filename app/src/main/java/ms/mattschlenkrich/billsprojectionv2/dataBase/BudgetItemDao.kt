@@ -42,8 +42,8 @@ interface BudgetItemDao {
     @Query(
         "UPDATE $TABLE_BUDGET_ITEMS " +
                 "SET $BI_IS_DELETED = 1, " +
-                "$BI_UPDATE_TIME = :updateTime, " +
-                "$BI_BUDGET_RULE_ID = :budgetRulId " +
+                "$BI_UPDATE_TIME = :updateTime " +
+                "WHERE $BI_BUDGET_RULE_ID = :budgetRulId " +
                 "AND $BI_PROJECTED_DATE = :projectedDate"
     )
     suspend fun deleteBudgetItem(
