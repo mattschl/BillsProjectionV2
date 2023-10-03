@@ -51,4 +51,18 @@ class BudgetItemViewModel(
             budgetRuleId, projectedDate, updateTime
         )
     }
+
+    fun getBudgetItemWritable(budgetRuleId: Long, projectedDate: String) =
+        budgetItemRepository.getBudgetItemWritable(budgetRuleId, projectedDate)
+
+    fun rewriteBudgetItem(
+        budgetRuleId: Long, projectedDate: String, actualDate: String, payDay: String,
+        budgetName: String, isPayDay: Boolean, toAccountId: Long, fromAccountId: Long,
+        projectedAmount: Double, isFixed: Boolean, isAutomatic: Boolean, updateTime: String
+    ) =
+        budgetItemRepository.rewriteBudgetItem(
+            budgetRuleId, projectedDate, actualDate, payDay, budgetName, isPayDay, toAccountId,
+            fromAccountId, projectedAmount, isFixed, isAutomatic, updateTime
+        )
+
 }

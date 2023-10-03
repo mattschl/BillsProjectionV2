@@ -14,13 +14,16 @@ import ms.mattschlenkrich.billsprojectionv2.common.BI_ACTUAL_DATE
 import ms.mattschlenkrich.billsprojectionv2.common.BI_BUDGET_NAME
 import ms.mattschlenkrich.billsprojectionv2.common.BI_BUDGET_RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.common.BI_FROM_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_AUTOMATIC
 import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_CANCELLED
 import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_COMPLETED
 import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_DELETED
+import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_FIXED
 import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_MANUALLY_ENTERED
 import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_PAY_DAY_ITEM
 import ms.mattschlenkrich.billsprojectionv2.common.BI_LOCKED
 import ms.mattschlenkrich.billsprojectionv2.common.BI_PAY_DAY
+import ms.mattschlenkrich.billsprojectionv2.common.BI_PROJECTED_AMOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.BI_PROJECTED_DATE
 import ms.mattschlenkrich.billsprojectionv2.common.BI_TO_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.common.BI_UPDATE_TIME
@@ -34,7 +37,7 @@ import ms.mattschlenkrich.billsprojectionv2.model.BudgetItem
 @Dao
 interface BudgetItemDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertBudgetItem(budgetItem: BudgetItem)
 
     @Update
@@ -150,5 +153,44 @@ interface BudgetItemDao {
     )
     suspend fun cancelBudgetItem(
         budgetRuleId: Long, projectedDate: String, updateTime: String
+    )
+
+    @Query(
+        "SELECT * FROM $TABLE_BUDGET_ITEMS " +
+                "WHERE $BI_BUDGET_RULE_ID = :budgetRuleId " +
+                "AND $BI_PROJECTED_DATE = :projectedDate " +
+                "AND $BI_IS_CANCELLED = 0 " +
+                "AND $BI_IS_COMPLETED = 0 " +
+                "AND $BI_IS_CANCELLED = 0 " +
+                "AND $BI_IS_MANUALLY_ENTERED = 0 " +
+                "AND $BI_LOCKED = 0;"
+    )
+    fun getBudgetItemWritable(budgetRuleId: Long, projectedDate: String):
+            BudgetItem?
+
+    @Query(
+        "UPDATE $TABLE_BUDGET_ITEMS " +
+                "SET $BI_ACTUAL_DATE = :actualDate ," +
+                "$BI_PAY_DAY = :payDay," +
+                "$BI_BUDGET_NAME = :budgetName, " +
+                "$BI_IS_PAY_DAY_ITEM = :isPayDay," +
+                "$BI_TO_ACCOUNT_ID = :toAccountId, " +
+                "$BI_FROM_ACCOUNT_ID = :fromAccountId, " +
+                "$BI_PROJECTED_AMOUNT = :projectedAmount, " +
+                "$BI_IS_FIXED = :isFixed, " +
+                "$BI_IS_AUTOMATIC = :isAutomatic, " +
+                "$BI_IS_DELETED = 0, " +
+                "$BI_UPDATE_TIME = :updateTime " +
+                "WHERE $BI_BUDGET_RULE_ID = :budgetRuleId " +
+                "AND $BI_PROJECTED_DATE = :projectedDate " +
+                "AND $BI_IS_MANUALLY_ENTERED = 0 " +
+                "AND $BI_IS_CANCELLED = 0 " +
+                "AND $BI_IS_COMPLETED = 0 " +
+                "AND $BI_LOCKED = 0;"
+    )
+    fun rewriteBudgetItem(
+        budgetRuleId: Long, projectedDate: String, actualDate: String, payDay: String,
+        budgetName: String, isPayDay: Boolean, toAccountId: Long, fromAccountId: Long,
+        projectedAmount: Double, isFixed: Boolean, isAutomatic: Boolean, updateTime: String
     )
 }

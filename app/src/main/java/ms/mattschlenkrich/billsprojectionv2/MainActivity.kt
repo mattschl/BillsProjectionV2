@@ -12,6 +12,9 @@ import androidx.core.view.MenuProvider
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.dataBase.BillsDatabase
 import ms.mattschlenkrich.billsprojectionv2.databinding.ActivityMainBinding
 import ms.mattschlenkrich.billsprojectionv2.projections.UpdateBudgetPredictions
@@ -191,8 +194,7 @@ class MainActivity : AppCompatActivity() {
     ) {
         val updateBudgetPredictions =
             UpdateBudgetPredictions(this)
-        Log.d(TAG, "Doing the update passing the date $display")
-        updateBudgetPredictions.updatePredictions(display)
+        CoroutineScope(Dispatchers.IO).launch { updateBudgetPredictions.updatePredictions(display) }
     }
 
     private fun setupBudgetItemViewModel() {

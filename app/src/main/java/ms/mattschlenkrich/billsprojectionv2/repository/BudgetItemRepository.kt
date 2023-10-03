@@ -39,4 +39,16 @@ class BudgetItemRepository(private val db: BillsDatabase) {
     ) = db.getBudgetItemDao().cancelBudgetItem(
         budgetRuleId, projectedDate, updateTime
     )
+
+    fun getBudgetItemWritable(budgetRuleId: Long, projectedDate: String) =
+        db.getBudgetItemDao().getBudgetItemWritable(budgetRuleId, projectedDate)
+
+    fun rewriteBudgetItem(
+        budgetRuleId: Long, projectedDate: String, actualDate: String, payDay: String,
+        budgetName: String, isPayDay: Boolean, toAccountId: Long, fromAccountId: Long,
+        projectedAmount: Double, isFixed: Boolean, isAutomatic: Boolean, updateTime: String
+    ) = db.getBudgetItemDao().rewriteBudgetItem(
+        budgetRuleId, projectedDate, actualDate, payDay, budgetName, isPayDay,
+        toAccountId, fromAccountId, projectedAmount, isFixed, isAutomatic, updateTime
+    )
 }
