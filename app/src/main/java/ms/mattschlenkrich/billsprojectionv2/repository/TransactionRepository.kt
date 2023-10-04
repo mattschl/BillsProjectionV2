@@ -101,9 +101,30 @@ class TransactionRepository(private val db: BillsDatabase) {
     fun getActiveTransactionByAccount(accountId: Long) =
         db.getTransactionDao().getActiveTransactionByAccount(accountId)
 
+    fun getActiveTransactionByAccount(
+        accountId: Long, startDate: String, endDate: String
+    ) =
+        db.getTransactionDao().getActiveTransactionByAccount(
+            accountId, startDate, endDate
+        )
+
     fun getSumTransactionToAccount(accountId: Long) =
         db.getTransactionDao().getSumTransactionToAccount(accountId)
 
+    fun getSumTransactionToAccount(
+        accountId: Long, startDate: String, endDate: String
+    ) =
+        db.getTransactionDao().getSumTransactionToAccount(
+            accountId, startDate, endDate
+        )
+
     fun getSumTransactionFromAccount(accountId: Long) =
         db.getTransactionDao().getSumTransactionFromAccount(accountId)
+
+    fun getSumTransactionFromAccount(
+        accountId: Long, startDate: String, endDate: String
+    ) =
+        db.getTransactionDao().getSumTransactionFromAccount(
+            accountId, startDate, endDate
+        )
 }

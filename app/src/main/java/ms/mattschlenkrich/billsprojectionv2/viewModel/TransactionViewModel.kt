@@ -118,9 +118,30 @@ class TransactionViewModel(
     fun getActiveTransactionByAccount(accountId: Long) =
         transactionRepository.getActiveTransactionByAccount(accountId)
 
+    fun getActiveTransactionByAccount(
+        accountId: Long, startDate: String, endDate: String
+    ) =
+        transactionRepository.getActiveTransactionByAccount(
+            accountId, startDate, endDate
+        )
+
     fun getSumTransactionToAccount(accountId: Long) =
         transactionRepository.getSumTransactionToAccount(accountId)
 
+    fun getSumTransactionToAccount(
+        accountId: Long, startDate: String, endDate: String
+    ) =
+        transactionRepository.getSumTransactionToAccount(
+            accountId, startDate, endDate
+        )
+
     fun getSumTransactionFromAccount(accountId: Long) =
         transactionRepository.getSumTransactionFromAccount(accountId)
+
+    fun getSumTransactionFromAccount(
+        accountId: Long, startDate: String, endDate: String
+    ) =
+        transactionRepository.getSumTransactionFromAccount(
+            accountId, startDate, endDate
+        )
 }

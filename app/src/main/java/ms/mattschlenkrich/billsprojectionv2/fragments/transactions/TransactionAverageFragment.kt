@@ -157,7 +157,6 @@ class TransactionAverageFragment : Fragment(
                         transactionList.forEach {
                             transList.add(it)
                         }
-
                     }
                 CoroutineScope(Dispatchers.Main).launch {
                     delay(250)
@@ -295,7 +294,65 @@ class TransactionAverageFragment : Fragment(
     }
 
     private fun fillFromAccountAndDates(startDate: String, endDate: String) {
-        TODO("Not yet implemented")
+        var totalCredits = 0.0
+        var totalDebits = 0.0
+        val account =
+            mainViewModel.getAccountWithType()!!.account
+        val transList = ArrayList<TransactionDetailed>()
+        binding.apply {
+            tvBudgetRule.text = getString(R.string.no_budget_rule_selected)
+            tvAccount.text = account.accountName
+            transactionViewModel.getSumTransactionToAccount(
+                account.accountId, startDate, endDate
+            ).observe(viewLifecycleOwner) { sum ->
+                tvTotalCredits.text = cf.displayDollars(sum)
+                tvTotalCredits.visibility = View.VISIBLE
+                lblTotalCredits.text = getString(R.string.total_credits)
+                lblTotalCredits.visibility = View.VISIBLE
+                totalCredits = sum
+            }
+            transactionViewModel.getSumTransactionFromAccount(
+                account.accountId, startDate, endDate
+            ).observe(viewLifecycleOwner) { sum ->
+                tvTotalDebits.text = cf.displayDollars(-sum)
+                tvTotalDebits.visibility = View.VISIBLE
+                tvTotalDebits.setTextColor(Color.RED)
+                lblTotalDebits.text = getString(R.string.total_debits)
+                lblTotalDebits.visibility = View.VISIBLE
+                lblTotalDebits.setTextColor(Color.RED)
+                totalDebits = sum
+            }
+            transactionAdapter = TransactionAnalysisAdapter()
+            rvTransactions.apply {
+                layoutManager = LinearLayoutManager(requireContext())
+                adapter = transactionAdapter
+            }
+            activity.let {
+                transactionViewModel.getActiveTransactionByAccount(
+                    account.accountId, startDate, endDate
+                ).observe(viewLifecycleOwner) { transactionList ->
+                    transactionAdapter.differ.submitList(transactionList)
+                    transList.clear()
+                    transactionList.forEach {
+                        transList.add(it)
+                    }
+                }
+                CoroutineScope(Dispatchers.Main).launch {
+                    delay(500)
+                    if (transList.size > 0) {
+                        val end = transList.first().transaction!!.transDate
+                        val start = transList.last().transaction!!.transDate
+                        val months = df.getMonthsBetween(start, end)
+                        lblAverage.text = getString(R.string.credit_average)
+                        tvAverage.text = cf.displayDollars(totalCredits / months)
+                        lblHighest.text = getString(R.string.debit_average)
+                        lblHighest.setTextColor(Color.RED)
+                        tvHighest.text = cf.displayDollars(totalDebits / months)
+                        tvHighest.setTextColor(Color.RED)
+                    }
+                }
+            }
+        }
     }
 
     private fun fillFromBudgetRuleAndDates(startDate: String, endDate: String) {
@@ -304,11 +361,8 @@ class TransactionAverageFragment : Fragment(
         val budgetRule =
             mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!
         binding.apply {
-            tvBudgetRule.text =
-                budgetRule.budgetRuleName
-            tvAccount.text =
-                getString(R.string.no_account_selected)
-
+            tvBudgetRule.text = budgetRule.budgetRuleName
+            tvAccount.text = getString(R.string.no_account_selected)
             transactionViewModel.getMaxTransactionByBudgetRule(
                 budgetRule.ruleId,
                 startDate, endDate
