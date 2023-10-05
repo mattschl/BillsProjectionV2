@@ -65,4 +65,21 @@ class BudgetItemViewModel(
             fromAccountId, projectedAmount, isFixed, isAutomatic, updateTime
         )
 
+    fun lockUnlockBudgetItem(
+        lock: Boolean, budgetRuleId: Long, payDay: String, updateTime: String
+    ) =
+        viewModelScope.launch {
+            budgetItemRepository.lockUnlockBudgetItem(
+                lock, budgetRuleId, payDay, updateTime
+            )
+        }
+
+    fun lockUnlockBudgetItem(
+        lock: Boolean, payDay: String, updateTime: String
+    ) =
+        viewModelScope.launch {
+            budgetItemRepository.lockUnlockBudgetItem(
+                lock, payDay, updateTime
+            )
+        }
 }

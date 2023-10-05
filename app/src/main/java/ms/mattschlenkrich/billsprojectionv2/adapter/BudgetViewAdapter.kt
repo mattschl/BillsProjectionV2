@@ -11,6 +11,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
@@ -22,6 +23,7 @@ import ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
+import java.util.Random
 
 private const val TAG = ADAPTER_BUDGET_VIEW
 private const val PARENT_TAG = FRAG_BUDGET_VIEW
@@ -92,11 +94,78 @@ class BudgetViewAdapter(
         holder.itemBinding.tvToAccount.text = info
         info = "From: " + curBudget.fromAccount!!.accountName
         holder.itemBinding.tvFromAccount.text = info
+        if (curBudget.budgetItem.biLocked) {
+            holder.itemBinding.imgLocked.setImageResource(
+                R.drawable.ic_liocked_foreground
+            )
+        } else {
+            holder.itemBinding.imgLocked.setImageResource(
+                R.drawable.ic_unlocked_foreground
+            )
+        }
+        val random = Random()
+        val color = Color.argb(
+            255,
+            random.nextInt(256),
+            random.nextInt(256),
+            random.nextInt(256)
+        )
+        holder.itemBinding.ibColor.setBackgroundColor(color)
+        holder.itemBinding.imgLocked.setOnClickListener {
+            chooseLockUnlock(curBudget)
+        }
         holder.itemView.setOnClickListener {
             chooseOptionsForBudget(
                 curBudget, it
             )
         }
+    }
+
+    private fun chooseLockUnlock(budgetItem: BudgetDetailed) {
+        AlertDialog.Builder(context)
+            .setTitle("Lock or Unlock")
+            .setItems(
+                arrayOf(
+                    "LOCK ${budgetItem.budgetItem!!.biBudgetName}",
+                    "UN Lock  ${budgetItem.budgetItem.biBudgetName}",
+                    "LOCK all items for this payday",
+                    "UN Lock all items for this payday"
+                )
+            ) { _, pos ->
+                when (pos) {
+                    0 -> {
+                        budgetItemViewModel.lockUnlockBudgetItem(
+                            true, budgetItem.budgetItem.biRuleId,
+                            budgetItem.budgetItem.biPayDay,
+                            df.getCurrentTimeAsString()
+                        )
+                    }
+
+                    1 -> {
+                        budgetItemViewModel.lockUnlockBudgetItem(
+                            false, budgetItem.budgetItem.biRuleId,
+                            budgetItem.budgetItem.biPayDay,
+                            df.getCurrentTimeAsString()
+                        )
+                    }
+
+                    2 -> {
+                        budgetItemViewModel.lockUnlockBudgetItem(
+                            true, budgetItem.budgetItem.biPayDay,
+                            df.getCurrentTimeAsString()
+                        )
+                    }
+
+                    3 -> {
+                        budgetItemViewModel.lockUnlockBudgetItem(
+                            false, budgetItem.budgetItem.biPayDay,
+                            df.getCurrentTimeAsString()
+                        )
+                    }
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun chooseOptionsForBudget(

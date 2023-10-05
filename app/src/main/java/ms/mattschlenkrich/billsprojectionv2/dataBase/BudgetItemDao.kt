@@ -193,4 +193,25 @@ interface BudgetItemDao {
         budgetName: String, isPayDay: Boolean, toAccountId: Long, fromAccountId: Long,
         projectedAmount: Double, isFixed: Boolean, isAutomatic: Boolean, updateTime: String
     )
+
+    @Query(
+        "UPDATE $TABLE_BUDGET_ITEMS " +
+                "SET $BI_LOCKED = :lock," +
+                "$BI_UPDATE_TIME = :updateTime " +
+                "WHERE $BI_BUDGET_RULE_ID = :budgetRuleId " +
+                "AND $BI_PAY_DAY = :payDay"
+    )
+    suspend fun lockUnlockBudgetItem(
+        lock: Boolean, budgetRuleId: Long, payDay: String, updateTime: String
+    )
+
+    @Query(
+        "UPDATE $TABLE_BUDGET_ITEMS " +
+                "SET $BI_LOCKED = :lock," +
+                "$BI_UPDATE_TIME = :updateTime " +
+                "WHERE $BI_PAY_DAY = :payDay"
+    )
+    suspend fun lockUnlockBudgetItem(
+        lock: Boolean, payDay: String, updateTime: String
+    )
 }

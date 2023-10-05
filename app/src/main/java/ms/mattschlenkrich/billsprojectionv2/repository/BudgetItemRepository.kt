@@ -51,4 +51,18 @@ class BudgetItemRepository(private val db: BillsDatabase) {
         budgetRuleId, projectedDate, actualDate, payDay, budgetName, isPayDay,
         toAccountId, fromAccountId, projectedAmount, isFixed, isAutomatic, updateTime
     )
+
+    suspend fun lockUnlockBudgetItem(
+        lock: Boolean, budgetRuleId: Long, payDay: String, updateTime: String
+    ) =
+        db.getBudgetItemDao().lockUnlockBudgetItem(
+            lock, budgetRuleId, payDay, updateTime
+        )
+
+    suspend fun lockUnlockBudgetItem(
+        lock: Boolean, payDay: String, updateTime: String
+    ) =
+        db.getBudgetItemDao().lockUnlockBudgetItem(
+            lock, payDay, updateTime
+        )
 }

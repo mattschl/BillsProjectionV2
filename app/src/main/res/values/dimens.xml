@@ -11,4 +11,5 @@
     <dimen name="text_box_width">160dp</dimen>
     <dimen name="text_box_wide">200dp</dimen>
     <dimen name="text_target_size">50dp</dimen>
+    <dimen name="touch_size">50dp</dimen>
 </resources>
