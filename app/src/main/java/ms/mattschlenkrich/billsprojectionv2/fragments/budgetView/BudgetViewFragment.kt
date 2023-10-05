@@ -414,6 +414,7 @@ class BudgetViewFragment : Fragment(
         budgetItemViewModel.getPayDays(asset).observe(
             viewLifecycleOwner
         ) { payDayList ->
+            payDayAdapter.clear()
             payDayList?.forEach {
                 payDayAdapter.add(it)
             }
@@ -430,6 +431,7 @@ class BudgetViewFragment : Fragment(
         budgetItemViewModel.getAssetsForBudget().observe(
             viewLifecycleOwner
         ) { assetList ->
+            assetAdapter.clear()
             assetList?.forEach {
                 assetAdapter.add(it)
             }
