@@ -27,6 +27,7 @@ class UpdateBudgetPredictions(
 
     fun updatePredictions(stopDate: String) {
         //1. Delete the future dates not already locked
+        val waitTime = 200L
         runBlocking {
             deleteFutureItems()
         }
@@ -60,6 +61,9 @@ class UpdateBudgetPredictions(
                                     rule,
                                     date.toString()
                                 )
+                            }
+                            runBlocking {
+                                delay(waitTime)
                             }
                             runBlocking {
                                 budgetItemViewModel.rewriteBudgetItem(
@@ -107,7 +111,9 @@ class UpdateBudgetPredictions(
                                         date.toString()
                                     )
                                 }
-
+                                runBlocking {
+                                    delay(waitTime)
+                                }
                                 runBlocking {
                                     budgetItemViewModel.rewriteBudgetItem(
                                         rule.ruleId,
@@ -170,6 +176,9 @@ class UpdateBudgetPredictions(
                                                 date.toString(),
                                                 payDays[d]
                                             )
+                                        }
+                                        runBlocking {
+                                            delay(waitTime)
                                         }
                                         runBlocking {
                                             budgetItemViewModel.rewriteBudgetItem(
