@@ -52,7 +52,6 @@ class TransactionAddFragment :
     private lateinit var mainViewModel: MainViewModel
     private lateinit var transactionViewModel: TransactionViewModel
     private lateinit var accountViewModel: AccountViewModel
-    private var success = false
 
     private var mBudgetRule: BudgetRule? = null
     private var mToAccount: Account? = null
@@ -438,6 +437,14 @@ class TransactionAddFragment :
             if (mFromAccountWithType!!.accountType!!.keepTotals) {
                 transactionViewModel.updateAccountBalance(
                     mFromAccountWithType!!.account.accountBalance -
+                            mTransaction.transAmount,
+                    mFromAccount!!.accountId,
+                    df.getCurrentTimeAsString()
+                )
+            }
+            if (mFromAccountWithType!!.accountType!!.tallyOwing) {
+                transactionViewModel.updateAccountOwing(
+                    mFromAccountWithType!!.account.accountOwing +
                             mTransaction.transAmount,
                     mFromAccount!!.accountId,
                     df.getCurrentTimeAsString()
