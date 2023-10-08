@@ -24,8 +24,6 @@ class MainViewModel(
     private var callingFragments: String? = null
 
     fun eraseAll() {
-        asset = ""
-        payDay = ""
         budgetItem = null
         transactionDetailed = null
         budgetRuleDetailed = null

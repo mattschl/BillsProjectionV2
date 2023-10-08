@@ -4,223 +4,235 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".fragments.transactions.TransactionUpdateFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/lblDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/date"
-            app:layout_constraintBaseline_toBaselineOf="@id/etTransDate"
-            app:layout_constraintEnd_toStartOf="@id/etTransDate"
-            app:layout_constraintStart_toStartOf="parent" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/etTransDate"
-            android:layout_width="150dp"
-            android:layout_height="48dp"
-            android:hint="@string/date"
-            android:importantForAutofill="no"
-            android:inputType="date"
-            android:selectAllOnFocus="true"
-            android:textAlignment="center"
-            android:textColor="@color/black"
-            android:textSize="@dimen/text_heading_size"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/lblDate"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="DuplicateSpeakableTextCheck" />
+            <TextView
+                android:id="@+id/lblDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/date"
+                app:layout_constraintBaseline_toBaselineOf="@id/etTransDate"
+                app:layout_constraintEnd_toStartOf="@id/etTransDate"
+                app:layout_constraintStart_toStartOf="parent" />
 
-        <TextView
-            android:id="@+id/lblBudgetRule"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/budget_rule"
-            android:textSize="@dimen/text_info_size"
-            app:layout_constraintBaseline_toBaselineOf="@+id/tvBudgetRule"
-            app:layout_constraintEnd_toEndOf="@+id/lblDate"
-            app:layout_constraintStart_toStartOf="@+id/lblDate" />
+            <EditText
+                android:id="@+id/etTransDate"
+                android:layout_width="150dp"
+                android:layout_height="48dp"
+                android:hint="@string/date"
+                android:importantForAutofill="no"
+                android:inputType="date"
+                android:selectAllOnFocus="true"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_heading_size"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/lblDate"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="DuplicateSpeakableTextCheck" />
 
-        <TextView
-            android:id="@+id/tvBudgetRule"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minHeight="48dp"
-            android:padding="@dimen/padding_start_end"
-            android:text="@string/choose_a_budget_rule"
-            android:textColor="@color/black"
-            android:textSize="@dimen/text_heading_size"
-            app:layout_constraintEnd_toEndOf="@+id/etTransDate"
-            app:layout_constraintStart_toStartOf="@+id/etTransDate"
-            app:layout_constraintTop_toBottomOf="@+id/etTransDate" />
+            <TextView
+                android:id="@+id/lblBudgetRule"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/budget_rule"
+                android:textSize="@dimen/text_info_size"
+                app:layout_constraintBaseline_toBaselineOf="@+id/tvBudgetRule"
+                app:layout_constraintEnd_toEndOf="@+id/lblDate"
+                app:layout_constraintStart_toStartOf="@+id/lblDate" />
 
-
-        <TextView
-            android:id="@+id/lblAmount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/amount"
-            android:textSize="@dimen/text_info_size"
-            app:layout_constraintBaseline_toBaselineOf="@+id/etAmount"
-            app:layout_constraintEnd_toEndOf="@+id/lblBudgetRule"
-            app:layout_constraintStart_toStartOf="@+id/lblBudgetRule" />
-
-        <EditText
-            android:id="@+id/etAmount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="@string/transaction_amount"
-            android:importantForAutofill="no"
-            android:inputType="numberDecimal|numberSigned"
-            android:minHeight="48dp"
-            android:selectAllOnFocus="true"
-            android:textColor="@color/black"
-            android:textColorHint="#757575"
-            android:textSize="@dimen/title_text_size"
-            app:layout_constraintEnd_toEndOf="@+id/tvBudgetRule"
-            app:layout_constraintStart_toStartOf="@+id/tvBudgetRule"
-            app:layout_constraintTop_toBottomOf="@+id/tvBudgetRule" />
+            <TextView
+                android:id="@+id/tvBudgetRule"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:padding="@dimen/padding_start_end"
+                android:text="@string/choose_a_budget_rule"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_heading_size"
+                app:layout_constraintEnd_toEndOf="@+id/etTransDate"
+                app:layout_constraintStart_toStartOf="@+id/etTransDate"
+                app:layout_constraintTop_toBottomOf="@+id/etTransDate" />
 
 
-        <TextView
-            android:id="@+id/lblToAccount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/to_this_account"
-            android:textSize="@dimen/text_info_size"
-            app:layout_constraintBaseline_toBaselineOf="@+id/tvToAccount"
-            app:layout_constraintEnd_toStartOf="@id/tvToAccount"
-            app:layout_constraintStart_toStartOf="parent" />
+            <TextView
+                android:id="@+id/lblAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/amount"
+                android:textSize="@dimen/text_info_size"
+                app:layout_constraintBaseline_toBaselineOf="@+id/etAmount"
+                app:layout_constraintEnd_toEndOf="@+id/lblBudgetRule"
+                app:layout_constraintStart_toStartOf="@+id/lblBudgetRule" />
 
-        <TextView
-            android:id="@+id/tvToAccount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minHeight="48dp"
-            android:padding="@dimen/padding_start_end"
-            android:text="@string/choose_an_account"
-            android:textColor="@color/black"
-            android:textSize="@dimen/text_heading_size"
-            app:layout_constraintEnd_toStartOf="@id/chkToAccountPending"
-            app:layout_constraintStart_toEndOf="@id/lblToAccount"
-            app:layout_constraintTop_toBottomOf="@+id/etAmount" />
-
-        <CheckBox
-            android:id="@+id/chkToAccountPending"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minHeight="48dp"
-            android:text="@string/pending"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvToAccount"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:ignore="DuplicateSpeakableTextCheck" />
+            <EditText
+                android:id="@+id/etAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/transaction_amount"
+                android:importantForAutofill="no"
+                android:inputType="numberDecimal|numberSigned"
+                android:minHeight="48dp"
+                android:selectAllOnFocus="true"
+                android:textColor="@color/black"
+                android:textColorHint="#757575"
+                android:textSize="@dimen/title_text_size"
+                app:layout_constraintEnd_toEndOf="@+id/tvBudgetRule"
+                app:layout_constraintStart_toStartOf="@+id/tvBudgetRule"
+                app:layout_constraintTop_toBottomOf="@+id/tvBudgetRule" />
 
 
-        <TextView
-            android:id="@+id/lblFromAccount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/from_this_account"
-            android:textSize="@dimen/text_info_size"
-            app:layout_constraintBaseline_toBaselineOf="@+id/tvFromAccount"
-            app:layout_constraintEnd_toStartOf="@id/tvFromAccount"
-            app:layout_constraintStart_toStartOf="parent" />
+            <TextView
+                android:id="@+id/lblToAccount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/to_this_account"
+                android:textSize="@dimen/text_info_size"
+                app:layout_constraintBaseline_toBaselineOf="@+id/tvToAccount"
+                app:layout_constraintEnd_toStartOf="@id/tvToAccount"
+                app:layout_constraintStart_toStartOf="parent" />
 
-        <TextView
-            android:id="@+id/tvFromAccount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minHeight="48dp"
-            android:padding="@dimen/padding_start_end"
-            android:text="@string/choose_an_account"
-            android:textColor="@color/black"
-            android:textSize="@dimen/text_heading_size"
-            app:layout_constraintEnd_toStartOf="@id/chkFromAccountPending"
-            app:layout_constraintStart_toEndOf="@id/lblFromAccount"
-            app:layout_constraintTop_toBottomOf="@+id/tvToAccount" />
+            <TextView
+                android:id="@+id/tvToAccount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:padding="@dimen/padding_start_end"
+                android:text="@string/choose_an_account"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_heading_size"
+                app:layout_constraintEnd_toStartOf="@id/chkToAccountPending"
+                app:layout_constraintStart_toEndOf="@id/lblToAccount"
+                app:layout_constraintTop_toBottomOf="@+id/etAmount" />
 
-        <CheckBox
-            android:id="@+id/chkFromAccountPending"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minHeight="48dp"
-            android:text="@string/pending"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvFromAccount"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/tvFromAccount" />
-
-        <TextView
-            android:id="@+id/lblDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/description"
-            android:textSize="@dimen/text_info_size"
-            app:layout_constraintBaseline_toBaselineOf="@+id/etDescription"
-            app:layout_constraintEnd_toStartOf="@id/etDescription"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <EditText
-            android:id="@+id/etDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="@string/enter_description"
-            android:importantForAutofill="no"
-            android:inputType="text"
-            android:minHeight="48dp"
-            android:selectAllOnFocus="true"
-            android:textColor="@color/black"
-            android:textColorHint="#757575"
-            android:textSize="@dimen/title_text_size"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/lblDescription"
-            app:layout_constraintTop_toBottomOf="@id/tvFromAccount"
-            tools:ignore="DuplicateSpeakableTextCheck" />
-
-        <TextView
-            android:id="@+id/lblNote"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/notes"
-            android:textSize="@dimen/text_info_size"
-            app:layout_constraintBaseline_toBaselineOf="@+id/etNote"
-            app:layout_constraintEnd_toStartOf="@id/etNote"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <EditText
-            android:id="@+id/etNote"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="@string/enter_notes"
-            android:importantForAutofill="no"
-            android:inputType="text"
-            android:minHeight="48dp"
-            android:selectAllOnFocus="true"
-            android:textColor="@color/black"
-            android:textColorHint="#757575"
-            android:textSize="@dimen/title_text_size"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/lblNote"
-            app:layout_constraintTop_toBottomOf="@id/etDescription"
-            tools:ignore="DuplicateSpeakableTextCheck" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabUpdateDone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
-            android:backgroundTint="@color/deep_red"
-            android:clickable="true"
-            android:contentDescription="@string/berstyle"
-            android:focusable="true"
-            android:src="@drawable/ic_done"
-            android:tintMode="@color/white"
-            app:borderWidth="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <CheckBox
+                android:id="@+id/chkToAccountPending"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:text="@string/pending"
+                app:layout_constraintBaseline_toBaselineOf="@id/tvToAccount"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:ignore="DuplicateSpeakableTextCheck" />
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/lblFromAccount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/from_this_account"
+                android:textSize="@dimen/text_info_size"
+                app:layout_constraintBaseline_toBaselineOf="@+id/tvFromAccount"
+                app:layout_constraintEnd_toStartOf="@id/tvFromAccount"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/tvFromAccount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:padding="@dimen/padding_start_end"
+                android:text="@string/choose_an_account"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_heading_size"
+                app:layout_constraintEnd_toStartOf="@id/chkFromAccountPending"
+                app:layout_constraintStart_toEndOf="@id/lblFromAccount"
+                app:layout_constraintTop_toBottomOf="@+id/tvToAccount" />
+
+            <CheckBox
+                android:id="@+id/chkFromAccountPending"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:text="@string/pending"
+                app:layout_constraintBaseline_toBaselineOf="@id/tvFromAccount"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tvFromAccount" />
+
+            <TextView
+                android:id="@+id/lblDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/description"
+                android:textSize="@dimen/text_info_size"
+                app:layout_constraintBaseline_toBaselineOf="@+id/etDescription"
+                app:layout_constraintEnd_toStartOf="@id/etDescription"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <EditText
+                android:id="@+id/etDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/enter_description"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:minHeight="48dp"
+                android:selectAllOnFocus="true"
+                android:textColor="@color/black"
+                android:textColorHint="#757575"
+                android:textSize="@dimen/title_text_size"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/lblDescription"
+                app:layout_constraintTop_toBottomOf="@id/tvFromAccount"
+                tools:ignore="DuplicateSpeakableTextCheck" />
+
+            <TextView
+                android:id="@+id/lblNote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/notes"
+                android:textSize="@dimen/text_info_size"
+                app:layout_constraintBaseline_toBaselineOf="@+id/etNote"
+                app:layout_constraintEnd_toStartOf="@id/etNote"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <EditText
+                android:id="@+id/etNote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/enter_notes"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:minHeight="48dp"
+                android:selectAllOnFocus="true"
+                android:textColor="@color/black"
+                android:textColorHint="#757575"
+                android:textSize="@dimen/title_text_size"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/lblNote"
+                app:layout_constraintTop_toBottomOf="@id/etDescription"
+                tools:ignore="DuplicateSpeakableTextCheck" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/view_spacer"
+                android:shadowColor="@color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/etNote" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabUpdateDone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:backgroundTint="@color/deep_red"
+                android:clickable="true"
+                android:contentDescription="@string/berstyle"
+                android:focusable="true"
+                android:src="@drawable/ic_done"
+                android:tintMode="@color/white"
+                app:borderWidth="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 </layout>

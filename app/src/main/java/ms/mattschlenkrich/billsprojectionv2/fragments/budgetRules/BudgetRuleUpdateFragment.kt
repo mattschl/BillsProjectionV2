@@ -26,6 +26,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
+import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
+import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetRuleUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
@@ -232,6 +234,7 @@ class BudgetRuleUpdateFragment :
         mainViewModel.setBudgetRuleDetailed(
             getBudgetRuleDetailed()
         )
+        mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
         val direction =
             BudgetRuleUpdateFragmentDirections
                 .actionBudgetRuleUpdateFragmentToAccountsFragment()
@@ -245,6 +248,7 @@ class BudgetRuleUpdateFragment :
         mainViewModel.setBudgetRuleDetailed(
             getBudgetRuleDetailed()
         )
+        mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
         val direction = BudgetRuleUpdateFragmentDirections
             .actionBudgetRuleUpdateFragmentToAccountsFragment()
         mView.findNavController().navigate(direction)

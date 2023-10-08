@@ -272,14 +272,18 @@ class AccountAdapter(
     }
 
     private fun gotoCallingFragment(it: View) {
-//        Log.d(TAG, "calling Fragments is ${mainViewModel.getCallingFragments()} " +
-//                "before replace")
-//        mainViewModel.setCallingFragments(
-//            mainViewModel.getCallingFragments()!!
-//                .replace(", $FRAG_ACCOUNTS", "")
-//        )
-//        Log.d(TAG, "_______calling Fragments is ${mainViewModel.getCallingFragments()} " +
-//                "AFTER replace")
+        Log.d(
+            TAG, "calling Fragments is ${mainViewModel.getCallingFragments()} " +
+                    "before replace"
+        )
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments()!!
+                .replace(", $FRAG_ACCOUNTS", "")
+        )
+        Log.d(
+            TAG, "_______calling Fragments is ${mainViewModel.getCallingFragments()} " +
+                    "AFTER replace"
+        )
         if (mainViewModel.getCallingFragments()!!
                 .contains(FRAG_BUDGET_RULE_ADD)
         ) {

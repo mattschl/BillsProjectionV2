@@ -4,218 +4,223 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".fragments.budgetView.BudgetItemAddFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/lblProjectedDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/projected_date"
-            android:textSize="@dimen/text_info_size"
-            app:layout_constraintBaseline_toBaselineOf="@id/etProjectedDate"
-            app:layout_constraintEnd_toStartOf="@id/etProjectedDate"
-            app:layout_constraintStart_toStartOf="parent" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/etProjectedDate"
-            android:layout_width="150dp"
-            android:layout_height="48dp"
-            android:hint="@string/date"
-            android:importantForAutofill="no"
-            android:inputType="date"
-            android:selectAllOnFocus="true"
-            android:textAlignment="center"
-            android:textColor="@color/black"
-            android:textSize="@dimen/text_heading_size"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/lblProjectedDate"
-            app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+                android:id="@+id/lblProjectedDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/projected_date"
+                android:textSize="@dimen/text_info_size"
+                app:layout_constraintBaseline_toBaselineOf="@id/etProjectedDate"
+                app:layout_constraintEnd_toStartOf="@id/etProjectedDate"
+                app:layout_constraintStart_toStartOf="parent" />
 
-        <TextView
-            android:id="@+id/lblBudgetDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/budget_description"
-            android:textSize="@dimen/text_info_size"
-            app:layout_constraintBaseline_toBaselineOf="@id/etBudgetItemName"
-            app:layout_constraintEnd_toEndOf="@+id/lblProjectedDate"
-            app:layout_constraintStart_toStartOf="@+id/lblProjectedDate" />
+            <EditText
+                android:id="@+id/etProjectedDate"
+                android:layout_width="150dp"
+                android:layout_height="48dp"
+                android:hint="@string/date"
+                android:importantForAutofill="no"
+                android:inputType="date"
+                android:selectAllOnFocus="true"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_heading_size"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/lblProjectedDate"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/etBudgetItemName"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:hint="@string/description"
-            android:importantForAutofill="no"
-            android:inputType="text"
-            android:minWidth="150dp"
-            android:selectAllOnFocus="true"
-            android:textAlignment="center"
-            android:textColor="@color/black"
-            android:textSize="@dimen/title_text_size"
-            app:layout_constraintEnd_toEndOf="@+id/etProjectedDate"
-            app:layout_constraintStart_toStartOf="@+id/etProjectedDate"
-            app:layout_constraintTop_toBottomOf="@id/etProjectedDate" />
+            <TextView
+                android:id="@+id/lblBudgetDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/budget_description"
+                android:textSize="@dimen/text_info_size"
+                app:layout_constraintBaseline_toBaselineOf="@id/etBudgetItemName"
+                app:layout_constraintEnd_toEndOf="@+id/lblProjectedDate"
+                app:layout_constraintStart_toStartOf="@+id/lblProjectedDate" />
 
-        <TextView
-            android:id="@+id/lblPayDay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/pay_day"
-            android:textSize="@dimen/text_info_size"
-            app:layout_constraintBaseline_toBaselineOf="@id/spPayDays"
-            app:layout_constraintEnd_toEndOf="@+id/lblBudgetDescription"
-            app:layout_constraintStart_toStartOf="@+id/lblBudgetDescription" />
+            <EditText
+                android:id="@+id/etBudgetItemName"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:hint="@string/description"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:minWidth="150dp"
+                android:selectAllOnFocus="true"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="@dimen/title_text_size"
+                app:layout_constraintEnd_toEndOf="@+id/etProjectedDate"
+                app:layout_constraintStart_toStartOf="@+id/etProjectedDate"
+                app:layout_constraintTop_toBottomOf="@id/etProjectedDate" />
 
-        <Spinner
-            android:id="@+id/spPayDays"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="150dp"
-            android:minHeight="48dp"
-            app:layout_constraintEnd_toEndOf="@+id/etBudgetItemName"
-            app:layout_constraintStart_toStartOf="@+id/etBudgetItemName"
-            app:layout_constraintTop_toBottomOf="@id/etBudgetItemName" />
+            <TextView
+                android:id="@+id/lblPayDay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pay_day"
+                android:textSize="@dimen/text_info_size"
+                app:layout_constraintBaseline_toBaselineOf="@id/spPayDays"
+                app:layout_constraintEnd_toEndOf="@+id/lblBudgetDescription"
+                app:layout_constraintStart_toStartOf="@+id/lblBudgetDescription" />
 
-        <TextView
-            android:id="@+id/lblBudgetRule"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/budget_rule"
-            android:textSize="@dimen/text_info_size"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvBudgetRule"
-            app:layout_constraintEnd_toEndOf="@+id/lblPayDay"
-            app:layout_constraintStart_toStartOf="@+id/lblPayDay" />
+            <Spinner
+                android:id="@+id/spPayDays"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="150dp"
+                android:minHeight="48dp"
+                app:layout_constraintEnd_toEndOf="@+id/etBudgetItemName"
+                app:layout_constraintStart_toStartOf="@+id/etBudgetItemName"
+                app:layout_constraintTop_toBottomOf="@id/etBudgetItemName" />
 
-        <TextView
-            android:id="@+id/tvBudgetRule"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="150dp"
-            android:minHeight="48dp"
-            android:padding="@dimen/padding_start_end"
-            android:text="@string/choose_a_budget_rule"
-            android:textColor="@color/black"
-            android:textSize="@dimen/text_heading_size"
-            app:layout_constraintEnd_toEndOf="@+id/spPayDays"
-            app:layout_constraintStart_toStartOf="@+id/spPayDays"
-            app:layout_constraintTop_toBottomOf="@id/spPayDays" />
+            <TextView
+                android:id="@+id/lblBudgetRule"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/budget_rule"
+                android:textSize="@dimen/text_info_size"
+                app:layout_constraintBaseline_toBaselineOf="@id/tvBudgetRule"
+                app:layout_constraintEnd_toEndOf="@+id/lblPayDay"
+                app:layout_constraintStart_toStartOf="@+id/lblPayDay" />
 
-        <TextView
-            android:id="@+id/lblToAccount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/to_this_account"
-            android:textSize="@dimen/text_info_size"
-            app:layout_constraintEnd_toEndOf="@+id/lblBudgetRule"
-            app:layout_constraintStart_toStartOf="@+id/lblBudgetRule"
-            app:layout_constraintTop_toBottomOf="@id/tvBudgetRule" />
+            <TextView
+                android:id="@+id/tvBudgetRule"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="150dp"
+                android:minHeight="48dp"
+                android:padding="@dimen/padding_start_end"
+                android:text="@string/choose_a_budget_rule"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_heading_size"
+                app:layout_constraintEnd_toEndOf="@+id/spPayDays"
+                app:layout_constraintStart_toStartOf="@+id/spPayDays"
+                app:layout_constraintTop_toBottomOf="@id/spPayDays" />
 
-        <TextView
-            android:id="@+id/tvToAccount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="150dp"
-            android:minHeight="48dp"
-            android:text="@string/choose_an_account"
-            android:textAlignment="center"
-            android:textColor="@color/black"
-            android:textSize="@dimen/text_heading_size"
-            app:layout_constraintEnd_toEndOf="@+id/tvBudgetRule"
-            app:layout_constraintStart_toStartOf="@+id/tvBudgetRule"
-            app:layout_constraintTop_toBottomOf="@id/tvBudgetRule" />
+            <TextView
+                android:id="@+id/lblToAccount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/to_this_account"
+                android:textSize="@dimen/text_info_size"
+                app:layout_constraintEnd_toEndOf="@+id/lblBudgetRule"
+                app:layout_constraintStart_toStartOf="@+id/lblBudgetRule"
+                app:layout_constraintTop_toBottomOf="@id/tvBudgetRule" />
 
-        <TextView
-            android:id="@+id/lblProjectedAmount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/projected_amount"
-            android:textSize="@dimen/text_info_size"
-            app:layout_constraintBaseline_toBaselineOf="@+id/etProjectedAmount"
-            app:layout_constraintEnd_toStartOf="@+id/etProjectedAmount"
-            app:layout_constraintStart_toStartOf="parent" />
+            <TextView
+                android:id="@+id/tvToAccount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="150dp"
+                android:minHeight="48dp"
+                android:text="@string/choose_an_account"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_heading_size"
+                app:layout_constraintEnd_toEndOf="@+id/tvBudgetRule"
+                app:layout_constraintStart_toStartOf="@+id/tvBudgetRule"
+                app:layout_constraintTop_toBottomOf="@id/tvBudgetRule" />
 
-        <EditText
-            android:id="@+id/etProjectedAmount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:importantForAutofill="no"
-            android:inputType="numberDecimal|numberSigned"
-            android:minWidth="150dp"
-            android:minHeight="48dp"
-            android:selectAllOnFocus="true"
-            android:text="@string/zero_dollars"
-            android:textAlignment="center"
-            android:textColor="@color/black"
-            android:textSize="@dimen/text_heading_size"
-            app:layout_constraintEnd_toStartOf="@+id/chkFixedAmount"
-            app:layout_constraintStart_toEndOf="@id/lblProjectedAmount"
-            app:layout_constraintTop_toBottomOf="@+id/tvFromAccount" />
+            <TextView
+                android:id="@+id/lblProjectedAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/projected_amount"
+                android:textSize="@dimen/text_info_size"
+                app:layout_constraintBaseline_toBaselineOf="@+id/etProjectedAmount"
+                app:layout_constraintEnd_toStartOf="@+id/etProjectedAmount"
+                app:layout_constraintStart_toStartOf="parent" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/from_this_account"
-            android:textSize="@dimen/text_info_size"
-            app:layout_constraintEnd_toEndOf="@+id/lblToAccount"
-            app:layout_constraintStart_toStartOf="@+id/lblToAccount"
-            app:layout_constraintTop_toBottomOf="@id/tvToAccount" />
+            <EditText
+                android:id="@+id/etProjectedAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:importantForAutofill="no"
+                android:inputType="numberDecimal|numberSigned"
+                android:minWidth="150dp"
+                android:minHeight="48dp"
+                android:selectAllOnFocus="true"
+                android:text="@string/zero_dollars"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_heading_size"
+                app:layout_constraintEnd_toStartOf="@+id/chkFixedAmount"
+                app:layout_constraintStart_toEndOf="@id/lblProjectedAmount"
+                app:layout_constraintTop_toBottomOf="@+id/tvFromAccount" />
 
-        <TextView
-            android:id="@+id/tvFromAccount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="150dp"
-            android:minHeight="48dp"
-            android:text="@string/choose_an_account"
-            android:textAlignment="center"
-            android:textColor="@color/black"
-            android:textSize="@dimen/text_heading_size"
-            app:layout_constraintEnd_toEndOf="@+id/tvToAccount"
-            app:layout_constraintStart_toStartOf="@+id/tvToAccount"
-            app:layout_constraintTop_toBottomOf="@id/tvToAccount" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/from_this_account"
+                android:textSize="@dimen/text_info_size"
+                app:layout_constraintEnd_toEndOf="@+id/lblToAccount"
+                app:layout_constraintStart_toStartOf="@+id/lblToAccount"
+                app:layout_constraintTop_toBottomOf="@id/tvToAccount" />
 
-        <CheckBox
-            android:id="@+id/chkFixedAmount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/fixed_amount"
-            android:textSize="@dimen/text_info_size"
-            app:layout_constraintBaseline_toBaselineOf="@id/etProjectedAmount"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/etProjectedAmount" />
+            <TextView
+                android:id="@+id/tvFromAccount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="150dp"
+                android:minHeight="48dp"
+                android:text="@string/choose_an_account"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_heading_size"
+                app:layout_constraintEnd_toEndOf="@+id/tvToAccount"
+                app:layout_constraintStart_toStartOf="@+id/tvToAccount"
+                app:layout_constraintTop_toBottomOf="@id/tvToAccount" />
 
-        <CheckBox
-            android:id="@+id/chkIsPayDay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/pay_day"
-            android:textSize="@dimen/text_info_size"
-            app:layout_constraintEnd_toStartOf="@id/chkIsAutoPayment"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etProjectedAmount" />
+            <CheckBox
+                android:id="@+id/chkFixedAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/fixed_amount"
+                android:textSize="@dimen/text_info_size"
+                app:layout_constraintBaseline_toBaselineOf="@id/etProjectedAmount"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/etProjectedAmount" />
 
-        <CheckBox
-            android:id="@+id/chkIsAutoPayment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/automatic"
-            android:textSize="@dimen/text_info_size"
-            app:layout_constraintBaseline_toBaselineOf="@+id/chkIsPayDay"
-            app:layout_constraintEnd_toStartOf="@id/chkIsLocked"
-            app:layout_constraintStart_toEndOf="@id/chkIsPayDay" />
+            <CheckBox
+                android:id="@+id/chkIsPayDay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pay_day"
+                android:textSize="@dimen/text_info_size"
+                app:layout_constraintEnd_toStartOf="@id/chkIsAutoPayment"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etProjectedAmount" />
 
-        <CheckBox
-            android:id="@+id/chkIsLocked"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/lock"
-            android:textSize="@dimen/text_info_size"
-            app:layout_constraintBaseline_toBaselineOf="@+id/chkIsPayDay"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/chkIsAutoPayment" />
+            <CheckBox
+                android:id="@+id/chkIsAutoPayment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/automatic"
+                android:textSize="@dimen/text_info_size"
+                app:layout_constraintBaseline_toBaselineOf="@+id/chkIsPayDay"
+                app:layout_constraintEnd_toStartOf="@id/chkIsLocked"
+                app:layout_constraintStart_toEndOf="@id/chkIsPayDay" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <CheckBox
+                android:id="@+id/chkIsLocked"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lock"
+                android:textSize="@dimen/text_info_size"
+                app:layout_constraintBaseline_toBaselineOf="@+id/chkIsPayDay"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/chkIsAutoPayment" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 </layout>

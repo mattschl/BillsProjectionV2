@@ -10,6 +10,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
@@ -86,6 +87,9 @@ class BudgetViewFragment : Fragment(
             fabAddAction.setOnClickListener {
                 addAction()
             }
+            tvBalanceOwing.setOnClickListener {
+                gotoAccount()
+            }
         }
         fillAssetsLive()
         selectAsset()
@@ -93,34 +97,50 @@ class BudgetViewFragment : Fragment(
         resumeHistory()
     }
 
+    private fun gotoAccount() {
+        setToReturn()
+        mainViewModel.setAccountWithType(curAsset)
+        mView.findNavController().navigate(
+            BudgetViewFragmentDirections.actionBudgetViewFragmentToAccountUpdateFragment()
+        )
+    }
+
     private fun resumeHistory() {
-        if (mainViewModel.getAsset()!! != "") {
+        val waitTime = 500L
+        var assetPos = 0
+        var payDayPos = 0
+        binding.apply {
             CoroutineScope(Dispatchers.Main).launch {
-                binding.apply {
-                    delay(250)
-                    for (i in 0 until spAssetNames.adapter.count) {
-                        if (spAssetNames.getItemAtPosition(i).toString() ==
-                            mainViewModel.getAsset()!!
-                        ) {
-                            spAssetNames.setSelection(i)
-                            break
-                        }
-                    }
-                    delay(500)
-                    if (mainViewModel.getPayDay() != null &&
-                        spPayDay.adapter != null
+                delay(waitTime)
+                Log.d(
+                    TAG,
+                    "Found ${mainViewModel.getAsset()} size is ${spAssetNames.adapter.count}"
+                )
+                for (i in 0 until spAssetNames.adapter.count) {
+                    Log.d(TAG, "looping: $i item is ${spAssetNames.getItemAtPosition(i)}")
+                    if (spAssetNames.getItemAtPosition(i).toString() ==
+                        mainViewModel.getAsset()!!
                     ) {
-                        for (i in 0 until spPayDay.adapter.count) {
-                            if (spPayDay.getItemAtPosition(i).toString() ==
-                                mainViewModel.getPayDay()
-                            ) {
-                                spPayDay.setSelection(i)
-                                break
-                            }
-                        }
+                        Log.d(TAG, "assetPos is$assetPos")
+                        assetPos = i
+//                        break
                     }
                 }
             }
+            spAssetNames.setSelection(assetPos)
+            CoroutineScope(Dispatchers.IO).launch {
+                delay(waitTime * 2)
+                Log.d(TAG, "found ${mainViewModel.getPayDay()} size is ${spPayDay.adapter.count}")
+                for (i in 0 until spPayDay.adapter.count) {
+                    if (spPayDay.getItemAtPosition(i).toString() ==
+                        mainViewModel.getPayDay()
+                    ) {
+                        payDayPos = i
+//                        break
+                    }
+                }
+            }
+            spPayDay.setSelection(payDayPos)
         }
     }
 
@@ -131,6 +151,7 @@ class BudgetViewFragment : Fragment(
                     override fun onItemSelected(
                         p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long
                     ) {
+                        mainViewModel.setPayDay(spPayDay.selectedItem.toString())
                         fillBudgetList(
                             spAssetNames.selectedItem.toString(),
                             spPayDay.selectedItem.toString()
@@ -274,6 +295,7 @@ class BudgetViewFragment : Fragment(
                         p2: Int,
                         p3: Long
                     ) {
+                        mainViewModel.setAsset(spAssetNames.selectedItem.toString())
                         accountViewModel.getAccountDetailed(
                             spAssetNames.selectedItem.toString()
                         ).observe(
@@ -462,8 +484,8 @@ class BudgetViewFragment : Fragment(
     }
 
     private fun addNewTransaction() {
+        setToReturn()
         mainViewModel.setPerformTransaction(false)
-        fillMainViewModel()
         val direction =
             BudgetViewFragmentDirections
                 .actionBudgetViewFragmentToTransactionAddFragment()
@@ -471,25 +493,16 @@ class BudgetViewFragment : Fragment(
     }
 
     private fun addNewBudgetItem() {
-        fillMainViewModel()
+        setToReturn()
         val direction =
             BudgetViewFragmentDirections
                 .actionBudgetViewFragmentToBudgetItemAddFragment()
         findNavController().navigate(direction)
     }
 
-    private fun fillMainViewModel() {
-        mainViewModel.eraseAll()
-        mainViewModel.setCallingFragments(TAG)
-        if (binding.spAssetNames.adapter.count > 0) {
-            mainViewModel.setAsset(
-                binding.spAssetNames.selectedItem.toString()
-            )
-        }
-        if (binding.spPayDay.adapter.count > 0) {
-            mainViewModel.setPayDay(
-                binding.spPayDay.selectedItem.toString()
-            )
+    private fun setToReturn() {
+        binding.apply {
+            mainViewModel.setCallingFragments(TAG)
         }
     }
 

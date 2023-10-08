@@ -19,7 +19,9 @@ import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
@@ -36,7 +38,7 @@ class AccountUpdateFragment :
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
 
-    private var mView: View? = null
+    private lateinit var mView: View
     private lateinit var accountsViewModel: AccountViewModel
 
     private val cf = CommonFunctions()
@@ -132,7 +134,7 @@ class AccountUpdateFragment :
         )
         val direction = AccountUpdateFragmentDirections
             .actionAccountUpdateFragmentToAccountTypesFragment()
-        mView?.findNavController()?.navigate(direction)
+        mView.findNavController().navigate(direction)
 
     }
 
@@ -176,7 +178,7 @@ class AccountUpdateFragment :
             val name = binding.edAccountUpdateName.text.trim().toString()
             if (name == mainViewModel.getAccountWithType()!!.account.accountName.trim()) {
                 accountsViewModel.updateAccount(getUpdatedAccount())
-                gotoAccountFragment()
+                gotoCallingFragment()
             } else if (name != mainViewModel.getAccountWithType()!!.account.accountName.trim()) {
                 AlertDialog.Builder(activity).apply {
                     setTitle("Rename Account?")
@@ -187,7 +189,8 @@ class AccountUpdateFragment :
                     )
                     setPositiveButton("Update Account") { _, _ ->
                         accountsViewModel.updateAccount(getUpdatedAccount())
-                        gotoAccountFragment()
+                        gotoCallingFragment()
+
                     }
                     setNegativeButton("Cancel", null)
                 }.create().show()
@@ -202,14 +205,20 @@ class AccountUpdateFragment :
 
     }
 
-    private fun gotoAccountFragment() {
+    private fun gotoCallingFragment() {
         mainViewModel.setCallingFragments(
             mainViewModel.getCallingFragments()!!
                 .replace(", $TAG", "")
         )
-        val direction = AccountUpdateFragmentDirections
-            .actionAccountUpdateFragmentToAccountsFragment()
-        mView?.findNavController()?.navigate(direction)
+        if (mainViewModel.getCallingFragments()!!.contains(FRAG_ACCOUNTS)) {
+            val direction = AccountUpdateFragmentDirections
+                .actionAccountUpdateFragmentToAccountsFragment()
+            mView.findNavController().navigate(direction)
+        } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_BUDGET_VIEW)) {
+            mView.findNavController().navigate(
+                AccountUpdateFragmentDirections.actionAccountUpdateFragmentToBudgetViewFragment()
+            )
+        }
     }
 
     private fun fillValues() {
