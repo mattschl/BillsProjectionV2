@@ -96,6 +96,32 @@
                     app:layout_constraintTop_toBottomOf="@id/spPayDay" />
 
                 <TextView
+                    android:id="@+id/lblAvailable"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxWidth="@dimen/text_box_width"
+                    android:text="@string/available"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/text_info_size"
+                    app:layout_constraintEnd_toStartOf="@id/tvAvailable"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvBalanceOwing" />
+
+                <TextView
+                    android:id="@+id/tvAvailable"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:text="@string/zero_dollars"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_heading_size"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/lblAvailable"
+                    app:layout_constraintTop_toBottomOf="@id/tvBalanceOwing" />
+
+
+                <TextView
                     android:id="@+id/tvCredits"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -106,7 +132,7 @@
                     android:textAlignment="center"
                     app:layout_constraintEnd_toStartOf="@id/tvDebits"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tvBalanceOwing" />
+                    app:layout_constraintTop_toBottomOf="@id/tvAvailable" />
 
                 <TextView
                     android:id="@+id/tvDebits"

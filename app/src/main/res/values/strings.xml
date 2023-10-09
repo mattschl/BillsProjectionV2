@@ -133,4 +133,5 @@
     <string name="go">GO</string>
     <string name="credit_average">Credit Average</string>
     <string name="debit_average">Debit Average</string>
+    <string name="available">Available</string>
 </resources>

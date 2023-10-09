@@ -52,7 +52,7 @@ class BudgetViewFragment : Fragment(
     private lateinit var curAsset: AccountWithType
     private val budgetList = ArrayList<BudgetDetailed>()
     private val pendingList = ArrayList<TransactionDetailed>()
-
+    private var pendingAmount = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,42 +105,41 @@ class BudgetViewFragment : Fragment(
         )
     }
 
+    private fun findAssetToReturn(): Int {
+        var pos = 0
+        binding.apply {
+            for (i in 0 until spAssetNames.adapter.count) {
+                if (spAssetNames.getItemAtPosition(i) == mainViewModel.getAsset()) {
+                    pos = i
+                }
+            }
+        }
+        return pos
+    }
+
+    private fun findPayDayToReturn(): Int {
+        var pos = 0
+        binding.apply {
+            for (i in 0 until spPayDay.adapter.count) {
+                if (spPayDay.getItemAtPosition(i) == mainViewModel.getPayDay()) {
+                    pos = i
+                }
+            }
+        }
+        return pos
+    }
+
     private fun resumeHistory() {
-        val waitTime = 500L
-        var assetPos = 0
-        var payDayPos = 0
+        val waitTime = 350L
         binding.apply {
             CoroutineScope(Dispatchers.Main).launch {
                 delay(waitTime)
-                Log.d(
-                    TAG,
-                    "Found ${mainViewModel.getAsset()} size is ${spAssetNames.adapter.count}"
-                )
-                for (i in 0 until spAssetNames.adapter.count) {
-                    Log.d(TAG, "looping: $i item is ${spAssetNames.getItemAtPosition(i)}")
-                    if (spAssetNames.getItemAtPosition(i).toString() ==
-                        mainViewModel.getAsset()!!
-                    ) {
-                        Log.d(TAG, "assetPos is$assetPos")
-                        assetPos = i
-//                        break
-                    }
-                }
+                Log.d(TAG, "before check")
+                spAssetNames.setSelection(findAssetToReturn())
+                delay(waitTime)
+                Log.d(TAG, "in the middle")
+                spPayDay.setSelection(findPayDayToReturn())
             }
-            spAssetNames.setSelection(assetPos)
-            CoroutineScope(Dispatchers.IO).launch {
-                delay(waitTime * 2)
-                Log.d(TAG, "found ${mainViewModel.getPayDay()} size is ${spPayDay.adapter.count}")
-                for (i in 0 until spPayDay.adapter.count) {
-                    if (spPayDay.getItemAtPosition(i).toString() ==
-                        mainViewModel.getPayDay()
-                    ) {
-                        payDayPos = i
-//                        break
-                    }
-                }
-            }
-            spPayDay.setSelection(payDayPos)
         }
     }
 
@@ -151,7 +150,6 @@ class BudgetViewFragment : Fragment(
                     override fun onItemSelected(
                         p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long
                     ) {
-                        mainViewModel.setPayDay(spPayDay.selectedItem.toString())
                         fillBudgetList(
                             spAssetNames.selectedItem.toString(),
                             spPayDay.selectedItem.toString()
@@ -200,6 +198,7 @@ class BudgetViewFragment : Fragment(
         var credits = 0.0
         var fixedExpenses = 0.0
         var otherExpenses = 0.0
+        @Suppress("UNUSED_VARIABLE") var available = 0.0
         for (details in budgetList) {
             if (details.toAccount!!.accountName ==
                 curAsset.account.accountName
@@ -295,7 +294,6 @@ class BudgetViewFragment : Fragment(
                         p2: Int,
                         p3: Long
                     ) {
-                        mainViewModel.setAsset(spAssetNames.selectedItem.toString())
                         accountViewModel.getAccountDetailed(
                             spAssetNames.selectedItem.toString()
                         ).observe(
@@ -349,7 +347,7 @@ class BudgetViewFragment : Fragment(
     }
 
     private fun updatePendingTotal() {
-        var pendingAmount = 0.0
+        pendingAmount = 0.0
         for (item in pendingList) {
             if (item.transaction!!.transToAccountPending) {
                 pendingAmount += item.transaction.transAmount
@@ -400,6 +398,8 @@ class BudgetViewFragment : Fragment(
     private fun fillAssetDetails() {
         binding.apply {
             if (curAsset.accountType!!.keepTotals) {
+                lblAvailable.visibility = View.GONE
+                tvAvailable.visibility = View.GONE
                 lblBalanceOwing.text =
                     getString(R.string.balance_in_account)
                 if (curAsset.account.accountBalance >= 0.0) {
@@ -410,6 +410,16 @@ class BudgetViewFragment : Fragment(
                 tvBalanceOwing.text =
                     cf.displayDollars(curAsset.account.accountBalance)
             } else if (curAsset.accountType!!.tallyOwing) {
+                val creditLimit = curAsset.account.accountCreditLimit
+                lblAvailable.visibility = View.VISIBLE
+                tvAvailable.visibility = View.VISIBLE
+                val available = creditLimit + pendingAmount - curAsset.account.accountOwing
+                val availableReal = if (available > creditLimit) {
+                    creditLimit
+                } else {
+                    available
+                }
+                tvAvailable.text = cf.displayDollars(availableReal)
                 if (curAsset.account.accountOwing >= 0.0) {
                     lblBalanceOwing.text =
                         getString(R.string.balance_owing)
@@ -503,6 +513,8 @@ class BudgetViewFragment : Fragment(
     private fun setToReturn() {
         binding.apply {
             mainViewModel.setCallingFragments(TAG)
+            mainViewModel.setAsset(spAssetNames.selectedItem.toString())
+            mainViewModel.setPayDay(spPayDay.selectedItem.toString())
         }
     }
 
