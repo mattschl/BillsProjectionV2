@@ -218,6 +218,7 @@ class BudgetViewFragment : Fragment(
         }
         var surplus = credits - debits
         binding.apply {
+            ibDivider.setBackgroundColor(Color.BLACK)
             if (spPayDay.selectedItemId == 0L) {
                 if (curAsset.accountType!!.keepTotals) {
                     surplus += curAsset.account.accountBalance

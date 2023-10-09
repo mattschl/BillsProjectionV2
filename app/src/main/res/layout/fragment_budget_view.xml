@@ -88,7 +88,8 @@
                     android:layout_height="48dp"
                     android:layout_marginStart="15dp"
                     android:text="@string/zero_dollars"
-                    android:textAlignment="center"
+                    android:textAlignment="textStart"
+                    android:textStyle="bold"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_heading_size"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -100,12 +101,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:maxWidth="@dimen/text_box_width"
-                    android:text="@string/available"
+                    android:text="@string/available_credit"
                     android:textAlignment="center"
                     android:textSize="@dimen/text_info_size"
                     app:layout_constraintEnd_toStartOf="@id/tvAvailable"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tvBalanceOwing" />
+                    app:layout_constraintTop_toBottomOf="@+id/tvSurplusOrDeficit" />
 
                 <TextView
                     android:id="@+id/tvAvailable"
@@ -118,7 +119,7 @@
                     android:textSize="@dimen/text_heading_size"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/lblAvailable"
-                    app:layout_constraintTop_toBottomOf="@id/tvBalanceOwing" />
+                    app:layout_constraintTop_toBottomOf="@+id/tvSurplusOrDeficit" />
 
 
                 <TextView
@@ -173,19 +174,30 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/tvFixedExpenses" />
 
+                <View
+                    android:id="@+id/ibDivider"
+                    android:layout_width="0dp"
+                    android:layout_height="5dp"
+                    android:layout_marginStart="@dimen/margin_medium"
+                    android:layout_marginEnd="@dimen/margin_medium"
+                    android:shadowColor="@color/black"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvBalanceOwing" />
+
                 <TextView
                     android:id="@+id/tvSurplusOrDeficit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/surplus_or_deficit"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/text_info_size"
-                    android:textStyle="bold"
                     android:maxWidth="@dimen/text_box_width"
+                    android:text="@string/surplus_or_deficit"
                     android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_heading_size"
+                    android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tvDiscretionaryExpenses" />
+                    app:layout_constraintTop_toBottomOf="@+id/ibDivider" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
