@@ -100,7 +100,9 @@
     <string name="instructions_no_budget_items">To fill in the budget,
         you will need to create Budget Rules and update the budget.\n
         It is important to have a Budget Rule that is a pay day
-        to create pay day periods for the budget.</string>
+        to create pay day periods for the budget.\n
+        Some sample data has been added. They can be edited by
+        long clicking on them. Most items will have a long click option.</string>
     <string name="instructions_no_transactions">Add transactions to discover your spending habits
         so that you can create some Budget Rules to take control of your spending.</string>
     <string name="automatic">Automatic</string>

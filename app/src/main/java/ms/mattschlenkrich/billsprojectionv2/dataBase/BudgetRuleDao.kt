@@ -105,7 +105,8 @@ interface BudgetRuleDao {
                 "LEFT JOIN $TABLE_ACCOUNTS as fromAccount on " +
                 "$TABLE_BUDGET_RULES.$BUD_FROM_ACCOUNT_ID = " +
                 "fromAccount.$ACCOUNT_ID " +
-                "WHERE $TABLE_BUDGET_RULES.ruleId = :ruleId;"
+                "WHERE $TABLE_BUDGET_RULES.ruleId = :ruleId " +
+                "AND $TABLE_BUDGET_RULES.$BUD_IS_DELETED = 0;"
     )
     fun getBudgetRuleDetailed(ruleId: Long): BudgetRuleDetailed
 

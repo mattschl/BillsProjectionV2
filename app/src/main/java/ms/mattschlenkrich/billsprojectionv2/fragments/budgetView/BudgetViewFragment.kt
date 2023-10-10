@@ -108,9 +108,11 @@ class BudgetViewFragment : Fragment(
     private fun findAssetToReturn(): Int {
         var pos = 0
         binding.apply {
-            for (i in 0 until spAssetNames.adapter.count) {
-                if (spAssetNames.getItemAtPosition(i) == mainViewModel.getAsset()) {
-                    pos = i
+            if (spAssetNames.adapter != null) {
+                for (i in 0 until spAssetNames.adapter.count) {
+                    if (spAssetNames.getItemAtPosition(i) == mainViewModel.getAsset()) {
+                        pos = i
+                    }
                 }
             }
         }
@@ -120,9 +122,11 @@ class BudgetViewFragment : Fragment(
     private fun findPayDayToReturn(): Int {
         var pos = 0
         binding.apply {
-            for (i in 0 until spPayDay.adapter.count) {
-                if (spPayDay.getItemAtPosition(i) == mainViewModel.getPayDay()) {
-                    pos = i
+            if (spPayDay.adapter != null) {
+                for (i in 0 until spPayDay.adapter.count) {
+                    if (spPayDay.getItemAtPosition(i) == mainViewModel.getPayDay()) {
+                        pos = i
+                    }
                 }
             }
         }
@@ -130,7 +134,7 @@ class BudgetViewFragment : Fragment(
     }
 
     private fun resumeHistory() {
-        val waitTime = 350L
+        val waitTime = 500L
         binding.apply {
             CoroutineScope(Dispatchers.Main).launch {
                 delay(waitTime)
