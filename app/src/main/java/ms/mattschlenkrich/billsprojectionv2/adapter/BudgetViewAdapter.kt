@@ -33,6 +33,7 @@ class BudgetViewAdapter(
     private val budgetItemViewModel: BudgetItemViewModel,
     private val mainViewModel: MainViewModel,
     private val curAccount: String,
+    private val curPayDay: String,
     private val context: Context
 ) : RecyclerView.Adapter<BudgetViewAdapter.BudgetViewHolder>() {
 
@@ -213,9 +214,7 @@ class BudgetViewAdapter(
                 curBudget.fromAccount
             )
         )
-        mainViewModel.setCallingFragments(
-            PARENT_TAG
-        )
+        setToReturn()
         it.findNavController().navigate(
             BudgetViewFragmentDirections
                 .actionBudgetViewFragmentToBudgetRuleUpdateFragment()
@@ -232,12 +231,8 @@ class BudgetViewAdapter(
     }
 
     private fun openBudgetItem(curBudget: BudgetDetailed, it: View) {
-        mainViewModel.setAsset(curAccount)
-        mainViewModel.setPayDay(curBudget.budgetItem!!.biPayDay)
         mainViewModel.setBudgetItem(curBudget)
-        mainViewModel.setCallingFragments(
-            PARENT_TAG
-        )
+        setToReturn()
         it.findNavController().navigate(
             BudgetViewFragmentDirections
                 .actionBudgetViewFragmentToBudgetItemUpdateFragment()
@@ -247,14 +242,19 @@ class BudgetViewAdapter(
     private fun performTransaction(curBudget: BudgetDetailed, it: View) {
         mainViewModel.setBudgetItem(curBudget)
         mainViewModel.setTransactionDetailed(null)
-        mainViewModel.setCallingFragments(
-            PARENT_TAG
-        )
-        mainViewModel.setPerformTransaction(true)
+        setToReturn()
         it.findNavController().navigate(
             BudgetViewFragmentDirections
                 .actionBudgetViewFragmentToTransactionPerformFragment()
         )
 
+    }
+
+    private fun setToReturn() {
+        mainViewModel.setCallingFragments(
+            PARENT_TAG
+        )
+        mainViewModel.setAsset(curAccount)
+        mainViewModel.setPayDay(curPayDay)
     }
 }

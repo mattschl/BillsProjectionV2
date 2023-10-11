@@ -12,16 +12,15 @@ class MainViewModel(
     app: Application,
 ) : AndroidViewModel(app) {
 
-    private var asset: String? = null
-    private var payDay: String? = null
+    private var asset: String? = ""
+    private var payDay: String? = ""
     private var budgetItem: BudgetDetailed? = null
     private var transactionDetailed: TransactionDetailed? = null
     private var budgetRuleDetailed: BudgetRuleDetailed? = null
     private var account: AccountWithType? = null
     private var accountType: AccountType? = null
-    private var performTransaction: Boolean = false
-    private var requestedAccount: String? = null
-    private var callingFragments: String? = null
+    private var requestedAccount: String? = ""
+    private var callingFragments: String? = ""
 
     fun eraseAll() {
         budgetItem = null
@@ -29,7 +28,6 @@ class MainViewModel(
         budgetRuleDetailed = null
         account = null
         accountType = null
-        performTransaction = false
         requestedAccount = ""
         callingFragments = ""
     }
@@ -104,13 +102,5 @@ class MainViewModel(
 
     fun getAsset(): String? {
         return asset
-    }
-
-    fun setPerformTransaction(performing: Boolean) {
-        performTransaction = performing
-    }
-
-    fun getPerformTransaction(): Boolean {
-        return performTransaction
     }
 }

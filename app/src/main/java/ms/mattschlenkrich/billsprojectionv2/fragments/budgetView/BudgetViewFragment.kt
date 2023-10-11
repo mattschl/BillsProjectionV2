@@ -138,10 +138,10 @@ class BudgetViewFragment : Fragment(
         binding.apply {
             CoroutineScope(Dispatchers.Main).launch {
                 delay(waitTime)
-                Log.d(TAG, "before check")
+                Log.d(TAG, "before check ${mainViewModel.getAsset()}")
                 spAssetNames.setSelection(findAssetToReturn())
                 delay(waitTime)
-                Log.d(TAG, "in the middle")
+                Log.d(TAG, "in the middle ${mainViewModel.getPayDay()}")
                 spPayDay.setSelection(findPayDayToReturn())
             }
         }
@@ -173,6 +173,7 @@ class BudgetViewFragment : Fragment(
             budgetItemViewModel,
             mainViewModel,
             asset,
+            payDay,
             mView.context
         )
         binding.rvBudgetSummary.apply {
@@ -500,7 +501,6 @@ class BudgetViewFragment : Fragment(
 
     private fun addNewTransaction() {
         setToReturn()
-        mainViewModel.setPerformTransaction(false)
         val direction =
             BudgetViewFragmentDirections
                 .actionBudgetViewFragmentToTransactionAddFragment()

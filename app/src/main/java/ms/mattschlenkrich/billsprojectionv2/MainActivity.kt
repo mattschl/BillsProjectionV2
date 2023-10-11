@@ -132,7 +132,6 @@ class MainActivity : AppCompatActivity() {
             this,
             mainViewModelFactory
         )[MainViewModel::class.java]
-        mainViewModel.eraseAll()
     }
 
     private fun gotoBudgetView() {
