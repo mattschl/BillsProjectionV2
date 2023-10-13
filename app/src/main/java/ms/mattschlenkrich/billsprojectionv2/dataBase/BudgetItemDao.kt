@@ -178,18 +178,18 @@ interface BudgetItemDao {
         budgetRuleId: Long, projectedDate: String, updateTime: String
     )
 
-    @Query(
-        "SELECT * FROM $TABLE_BUDGET_ITEMS " +
-                "WHERE $BI_BUDGET_RULE_ID = :budgetRuleId " +
-                "AND $BI_PROJECTED_DATE = :projectedDate " +
-                "AND $BI_IS_CANCELLED = 0 " +
-                "AND $BI_IS_COMPLETED = 0 " +
-                "AND $BI_IS_CANCELLED = 0 " +
-                "AND $BI_IS_MANUALLY_ENTERED = 0 " +
-                "AND $BI_LOCKED = 0;"
-    )
-    fun getBudgetItemWritable(budgetRuleId: Long, projectedDate: String):
-            BudgetItem?
+//    @Query(
+//        "SELECT * FROM $TABLE_BUDGET_ITEMS " +
+//                "WHERE $BI_BUDGET_RULE_ID = :budgetRuleId " +
+//                "AND $BI_PROJECTED_DATE = :projectedDate " +
+//                "AND $BI_IS_CANCELLED = 0 " +
+//                "AND $BI_IS_COMPLETED = 0 " +
+//                "AND $BI_IS_CANCELLED = 0 " +
+//                "AND $BI_IS_MANUALLY_ENTERED = 0 " +
+//                "AND $BI_LOCKED = 0;"
+//    )
+//    fun getBudgetItemWritable(budgetRuleId: Long, projectedDate: String):
+//            BudgetItem?
 
     @Query(
         "UPDATE $TABLE_BUDGET_ITEMS " +

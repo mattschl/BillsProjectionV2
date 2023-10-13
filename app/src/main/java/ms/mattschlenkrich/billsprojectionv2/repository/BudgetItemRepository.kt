@@ -43,8 +43,8 @@ class BudgetItemRepository(private val db: BillsDatabase) {
         budgetRuleId, projectedDate, updateTime
     )
 
-    fun getBudgetItemWritable(budgetRuleId: Long, projectedDate: String) =
-        db.getBudgetItemDao().getBudgetItemWritable(budgetRuleId, projectedDate)
+//    fun getBudgetItemWritable(budgetRuleId: Long, projectedDate: String) =
+//        db.getBudgetItemDao().getBudgetItemWritable(budgetRuleId, projectedDate)
 
     fun rewriteBudgetItem(
         budgetRuleId: Long, projectedDate: String, actualDate: String, payDay: String,
