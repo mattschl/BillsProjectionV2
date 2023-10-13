@@ -9,7 +9,7 @@
             android:id="@+id/lblActualDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/projected_date"
+            android:text="@string/date"
             android:textSize="@dimen/text_info_size"
             app:layout_constraintEnd_toStartOf="@id/tvActualDate"
             app:layout_constraintStart_toStartOf="parent"

@@ -144,6 +144,29 @@ interface BudgetItemDao {
     fun getBudgetItems(asset: String, payDay: String)
             : LiveData<List<BudgetDetailed>>
 
+    @Transaction
+    @Query(
+        "SELECT $TABLE_BUDGET_ITEMS.*, budgetRule.*, " +
+                "toAccount.*, fromAccount.* " +
+                "FROM $TABLE_BUDGET_ITEMS " +
+                "LEFT JOIN $TABLE_BUDGET_RULES as budgetRule ON " +
+                "$TABLE_BUDGET_ITEMS.$BI_BUDGET_RULE_ID = " +
+                "budgetRule.ruleId " +
+                "LEFT JOIN $TABLE_ACCOUNTS as toAccount ON " +
+                "$TABLE_BUDGET_ITEMS.$BI_TO_ACCOUNT_ID = " +
+                "toAccount.accountId " +
+                "LEFT JOIN $TABLE_ACCOUNTS as fromAccount ON " +
+                "$TABLE_BUDGET_ITEMS.$BI_FROM_ACCOUNT_ID = " +
+                "fromAccount.accountId " +
+                "WHERE $TABLE_BUDGET_ITEMS.$BI_BUDGET_RULE_ID = :budgetRuleId " +
+                "AND $BI_IS_CANCELLED = 0 " +
+                "AND $BI_IS_DELETED = 0 " +
+                "AND $BI_IS_COMPLETED = 0 " +
+                "ORDER BY $TABLE_BUDGET_ITEMS.$BI_ACTUAL_DATE;"
+    )
+    fun getBudgetItems(budgetRuleId: Long)
+            : LiveData<List<BudgetDetailed>>
+
     @Query(
         "UPDATE $TABLE_BUDGET_ITEMS " +
                 "SET $BI_IS_CANCELLED = 1, " +

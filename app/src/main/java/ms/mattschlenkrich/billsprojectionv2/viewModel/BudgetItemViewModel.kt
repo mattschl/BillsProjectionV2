@@ -42,6 +42,9 @@ class BudgetItemViewModel(
     fun getBudgetItems(asset: String, payDay: String) =
         budgetItemRepository.getBudgetItems(asset, payDay)
 
+    fun getBudgetItems(budgetRuleId: Long) =
+        budgetItemRepository.getBudgetItems(budgetRuleId)
+
     fun getPayDays() = budgetItemRepository.getPayDays()
 
     fun cancelBudgetItem(

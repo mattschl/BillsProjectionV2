@@ -140,7 +140,7 @@ class BudgetRuleAdapter(
                     )
                     .setItems(
                         arrayOf(
-                            "Edit this Budget Rule",
+                            "View or Edit this Budget Rule",
                             "Delete this Budget Rule",
                             "View a summary of transactions for this rule"
                         )

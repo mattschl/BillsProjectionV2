@@ -16,11 +16,13 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.adapter.BudgetRuleDatesAdapter
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
@@ -31,6 +33,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetRuleUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
+import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 
@@ -44,6 +47,7 @@ class BudgetRuleUpdateFragment :
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var budgetRuleViewModel: BudgetRuleViewModel
+    private lateinit var budgetItemViewModel: BudgetItemViewModel
     private lateinit var mView: View
 
     private var budgetNameList: List<String>? = null
@@ -70,6 +74,8 @@ class BudgetRuleUpdateFragment :
         super.onViewCreated(view, savedInstanceState)
         budgetRuleViewModel =
             mainActivity.budgetRuleViewModel
+        budgetItemViewModel =
+            mainActivity.budgetItemViewModel
         CoroutineScope(Dispatchers.IO).launch {
             budgetNameList = budgetRuleViewModel.getBudgetRuleNameList()
         }
@@ -300,6 +306,24 @@ class BudgetRuleUpdateFragment :
             } else {
                 etStartDate.setText(df.getCurrentDateAsString())
                 etEndDate.setText(df.getCurrentDateAsString())
+            }
+        }
+        fillDateRecycler(mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.ruleId)
+    }
+
+    private fun fillDateRecycler(budgetRuleId: Long) {
+        val budgetRuleDatesAdapter = BudgetRuleDatesAdapter()
+//        val budgetList = ArrayList<BudgetDetailed>()
+        binding.rvProjectedDates.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = budgetRuleDatesAdapter
+        }
+        activity?.let {
+            budgetItemViewModel.getBudgetItems(budgetRuleId).observe(
+                viewLifecycleOwner
+            ) { budgetItems ->
+//                budgetList.clear()
+                budgetRuleDatesAdapter.differ.submitList(budgetItems)
             }
         }
     }

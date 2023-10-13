@@ -32,6 +32,9 @@ class BudgetItemRepository(private val db: BillsDatabase) {
     fun getBudgetItems(asset: String, payDay: String) =
         db.getBudgetItemDao().getBudgetItems(asset, payDay)
 
+    fun getBudgetItems(budgetRuleId: Long) =
+        db.getBudgetItemDao().getBudgetItems(budgetRuleId)
+
     fun getPayDays() = db.getBudgetItemDao().getPayDays()
 
     suspend fun cancelBudgetItem(
