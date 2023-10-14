@@ -115,8 +115,8 @@
     <string name="no_discretionary_expenses">No Discretionary Expenses</string>
     <string name="no_budget_items">No Budget Items to View</string>
     <string name="remainder">Remainder</string>
-    <string name="budgeted_lined">---------- Budgeted ---------</string>
-    <string name="pending_lined">---------- Pending ----------</string>
+    <string name="budgeted_lined">---------------- Budgeted --------------</string>
+    <string name="pending_lined">-------------- Pending --------------</string>
     <string name="average">Average</string>
     <string name="no_budget_rule_selected">No Budget Rule Selected</string>
     <string name="no_account_selected">No Account Selected</string>

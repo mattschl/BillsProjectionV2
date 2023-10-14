@@ -28,13 +28,14 @@
                     android:id="@+id/lblAssetName"
                     android:layout_width="wrap_content"
                     android:layout_height="48dp"
-                    android:text="@string/choose_a_budget_asset"
-                    android:textSize="@dimen/text_info_size"
                     android:maxWidth="@dimen/text_box_width"
+                    android:text="@string/choose_a_budget_asset"
                     android:textAlignment="center"
+                    android:textSize="@dimen/text_info_size"
                     app:layout_constraintBaseline_toBaselineOf="@id/spAssetNames"
                     app:layout_constraintEnd_toStartOf="@id/spAssetNames"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    tools:ignore="TextSizeCheck" />
 
                 <Spinner
                     android:id="@+id/spAssetNames"
@@ -92,87 +93,23 @@
                     android:textStyle="bold"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_heading_size"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/tvSurplusOrDeficit"
                     app:layout_constraintStart_toEndOf="@id/lblBalanceOwing"
                     app:layout_constraintTop_toBottomOf="@id/spPayDay" />
 
                 <TextView
-                    android:id="@+id/lblAvailable"
+                    android:id="@+id/tvSurplusOrDeficit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:maxWidth="@dimen/text_box_width"
-                    android:text="@string/available_credit"
-                    android:textAlignment="center"
-                    android:textSize="@dimen/text_info_size"
-                    app:layout_constraintEnd_toStartOf="@id/tvAvailable"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvSurplusOrDeficit" />
-
-                <TextView
-                    android:id="@+id/tvAvailable"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
-                    android:text="@string/zero_dollars"
+                    android:text="@string/surplus_or_deficit"
                     android:textAlignment="center"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_heading_size"
+                    android:textStyle="bold"
+                    app:layout_constraintBaseline_toBaselineOf="@id/tvBalanceOwing"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/lblAvailable"
-                    app:layout_constraintTop_toBottomOf="@+id/tvSurplusOrDeficit" />
-
-
-                <TextView
-                    android:id="@+id/tvCredits"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/credits"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/text_info_size"
-                    android:maxWidth="@dimen/text_box_width"
-                    android:textAlignment="center"
-                    app:layout_constraintEnd_toStartOf="@id/tvDebits"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tvAvailable" />
-
-                <TextView
-                    android:id="@+id/tvDebits"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/debits"
-                    android:textColor="@color/deep_red"
-                    android:textSize="@dimen/text_info_size"
-                    android:maxWidth="@dimen/text_box_width"
-                    android:textAlignment="center"
-                    app:layout_constraintBaseline_toBaselineOf="@id/tvCredits"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/tvCredits" />
-
-                <TextView
-                    android:id="@+id/tvFixedExpenses"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/fixed_expenses"
-                    android:textColor="@color/deep_red"
-                    android:textSize="@dimen/text_info_size"
-                    android:maxWidth="@dimen/text_box_width"
-                    android:textAlignment="center"
-                    app:layout_constraintEnd_toStartOf="@id/tvDiscretionaryExpenses"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tvCredits" />
-
-                <TextView
-                    android:id="@+id/tvDiscretionaryExpenses"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/discretionary_expenses"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/text_info_size"
-                    android:maxWidth="@dimen/text_box_width"
-                    android:textAlignment="center"
-                    app:layout_constraintBaseline_toBaselineOf="@id/tvFixedExpenses"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/tvFixedExpenses" />
+                    app:layout_constraintStart_toEndOf="@id/tvBalanceOwing" />
 
                 <View
                     android:id="@+id/ibDivider"
@@ -186,18 +123,82 @@
                     app:layout_constraintTop_toBottomOf="@id/tvBalanceOwing" />
 
                 <TextView
-                    android:id="@+id/tvSurplusOrDeficit"
+                    android:id="@+id/lblAvailable"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:maxWidth="@dimen/text_box_width"
-                    android:text="@string/surplus_or_deficit"
+                    android:text="@string/available_credit"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/text_info_size"
+                    app:layout_constraintEnd_toStartOf="@id/tvAvailable"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/ibDivider" />
+
+                <TextView
+                    android:id="@+id/tvAvailable"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:text="@string/zero_dollars"
                     android:textAlignment="center"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_heading_size"
-                    android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/lblAvailable"
                     app:layout_constraintTop_toBottomOf="@+id/ibDivider" />
+
+
+                <TextView
+                    android:id="@+id/tvCredits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/credits"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_info_size"
+                    android:maxWidth="@dimen/text_box_wide"
+                    android:textAlignment="center"
+                    app:layout_constraintEnd_toStartOf="@id/tvDebits"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvAvailable" />
+
+                <TextView
+                    android:id="@+id/tvDebits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/debits"
+                    android:textColor="@color/deep_red"
+                    android:textSize="@dimen/text_info_size"
+                    android:maxWidth="@dimen/text_box_wide"
+                    android:textAlignment="center"
+                    app:layout_constraintBaseline_toBaselineOf="@id/tvCredits"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/tvCredits" />
+
+                <TextView
+                    android:id="@+id/tvFixedExpenses"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/fixed_expenses"
+                    android:textColor="@color/deep_red"
+                    android:textSize="@dimen/text_info_size"
+                    android:maxWidth="@dimen/text_box_wide"
+                    android:textAlignment="center"
+                    app:layout_constraintEnd_toStartOf="@id/tvDiscretionaryExpenses"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvCredits" />
+
+                <TextView
+                    android:id="@+id/tvDiscretionaryExpenses"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/discretionary_expenses"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_info_size"
+                    android:maxWidth="@dimen/text_box_wide"
+                    android:textAlignment="center"
+                    app:layout_constraintBaseline_toBaselineOf="@id/tvFixedExpenses"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/tvFixedExpenses" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -219,8 +220,10 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvPending"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/text_box_width"
             android:visibility="gone"
+            android:scrollbarSize="15dp"
+            android:scrollbars="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lblPending" />
@@ -244,6 +247,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:visibility="gone"
+            android:scrollbarSize="15dp"
+            android:scrollbars="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

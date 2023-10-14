@@ -13,4 +13,5 @@
     <dimen name="text_target_size">50dp</dimen>
     <dimen name="touch_size">50dp</dimen>
     <dimen name="margin_medium">20dp</dimen>
+    <dimen name="recycler_height_small">120dp</dimen>
 </resources>
