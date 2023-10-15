@@ -40,11 +40,11 @@ android {
         dataBinding = true
     }
 
-    productFlavors {
-        'Full display' {
-            dimension 'Full'
-        }
-    }
+//    productFlavors {
+//        'Full display' {
+//            dimension 'Full'
+//        }
+//    }
 }
 
 dependencies {

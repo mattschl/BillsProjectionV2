@@ -14,4 +14,11 @@
     <dimen name="touch_size">50dp</dimen>
     <dimen name="margin_medium">20dp</dimen>
     <dimen name="recycler_height_small">120dp</dimen>
+    <dimen name="top_margin">4dp</dimen>
+    <dimen name="text_size_title">20sp</dimen>
+    <dimen name="text_size_calc">24sp</dimen>
+    <dimen name="text_size_normal">16sp</dimen>
+    <dimen name="normal_margin">10dp</dimen>
+    <dimen name="Large_margin">24dp</dimen>
+    <dimen name="nav_header_vertical_spacing">8dp</dimen>
 </resources>

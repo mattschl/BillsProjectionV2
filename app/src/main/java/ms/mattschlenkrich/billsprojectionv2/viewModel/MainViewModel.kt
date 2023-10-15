@@ -21,6 +21,8 @@ class MainViewModel(
     private var accountType: AccountType? = null
     private var requestedAccount: String? = ""
     private var callingFragments: String? = ""
+    private var returnTo: String? = ""
+    private var transferNum: Double? = 0.0
 
     fun eraseAll() {
         budgetItem = null
@@ -30,6 +32,24 @@ class MainViewModel(
         accountType = null
         requestedAccount = ""
         callingFragments = ""
+        returnTo = ""
+        transferNum = 0.0
+    }
+
+    fun setReturnTo(newReturnTo: String?) {
+        returnTo = newReturnTo
+    }
+
+    fun getReturnTo(): String? {
+        return returnTo
+    }
+
+    fun setTransferNum(newNum: Double?) {
+        transferNum = newNum
+    }
+
+    fun getTransferNum(): Double? {
+        return transferNum
     }
 
     fun setCallingFragments(newCallingFragments: String?) {

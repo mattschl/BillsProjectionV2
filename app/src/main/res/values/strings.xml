@@ -115,7 +115,7 @@
     <string name="no_discretionary_expenses">No Discretionary Expenses</string>
     <string name="no_budget_items">No Budget Items to View</string>
     <string name="remainder">Remainder</string>
-    <string name="budgeted_lined">---------------- Budgeted --------------</string>
+    <string name="budgeted_lined">---------- Scheduled Expenses ----------</string>
     <string name="pending_lined">-------------- Pending --------------</string>
     <string name="average">Average</string>
     <string name="no_budget_rule_selected">No Budget Rule Selected</string>
@@ -136,4 +136,25 @@
     <string name="credit_average">Credit Average</string>
     <string name="debit_average">Debit Average</string>
     <string name="available_credit">Available Credit</string>
+    <string name="results">Result</string>
+    <string name="zero_digit">0</string>
+    <string name="seven">7</string>
+    <string name="eight">9</string>
+    <string name="nine">9</string>
+    <string name="divide">/</string>
+    <string name="backspace"><![CDATA[<<]]></string>
+    <string name="four">4</string>
+    <string name="five">5</string>
+    <string name="six">6</string>
+    <string name="clear_1">C</string>
+    <string name="two">2</string>
+    <string name="three">3</string>
+    <string name="minus">-</string>
+    <string name="clear_all">CA</string>
+    <string name="period">.</string>
+    <string name="negation">+/-</string>
+    <string name="plus">+</string>
+    <string name="equals_spaced">" ="</string>
+    <string name="transfer_result">transfer result</string>
+    <string name="calculator">Calculator</string>
 </resources>

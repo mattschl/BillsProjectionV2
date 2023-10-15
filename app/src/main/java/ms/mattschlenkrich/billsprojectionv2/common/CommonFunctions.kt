@@ -5,7 +5,9 @@ import java.util.Locale
 import java.util.Random
 
 class CommonFunctions {
+    private val currencyFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
     private val dollarFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
+    private val numberDisplay: NumberFormat = NumberFormat.getNumberInstance(Locale.CANADA)
 
     fun getDoubleFromDollars(dollars: String): Double {
         return dollars.trim()
@@ -16,6 +18,14 @@ class CommonFunctions {
 
     fun displayDollars(num: Double): String {
         return dollarFormat.format(num)
+    }
+
+    fun getNumberFromDouble(num: Double): String {
+        return numberDisplay.format(num)
+    }
+
+    fun getDollarsFromDouble(num: Double): String {
+        return currencyFormat.format(num)
     }
 
     fun generateId(): Long {
