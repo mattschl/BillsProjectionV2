@@ -205,6 +205,9 @@
             app:destination="@id/budgetViewFragment"
             app:popUpTo="@id/budgetViewFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_budgetRuleUpdateFragment_to_calcFragment"
+            app:destination="@id/calcFragment" />
     </fragment>
     <fragment
         android:id="@+id/transactionViewFragment"
@@ -344,6 +347,9 @@
         <action
             android:id="@+id/action_transactionPerformFragment_to_accountsFragment"
             app:destination="@id/accountsFragment" />
+        <action
+            android:id="@+id/action_transactionPerformFragment_to_calcFragment"
+            app:destination="@id/calcFragment" />
     </fragment>
     <fragment
         android:id="@+id/transactionAverageFragment"
@@ -379,4 +385,16 @@
     <action
         android:id="@+id/action_global_transactionAverageFragment"
         app:destination="@id/transactionAverageFragment" />
+    <fragment
+        android:id="@+id/calcFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.calc.CalcFragment"
+        android:label="fragment_calc"
+        tools:layout="@layout/fragment_calc">
+        <action
+            android:id="@+id/action_calcFragment_to_transactionPerformFragment"
+            app:destination="@id/transactionPerformFragment" />
+        <action
+            android:id="@+id/action_calcFragment_to_budgetRuleUpdateFragment"
+            app:destination="@id/budgetRuleUpdateFragment" />
+    </fragment>
 </navigation>

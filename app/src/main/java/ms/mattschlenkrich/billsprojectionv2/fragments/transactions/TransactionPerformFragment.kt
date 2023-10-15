@@ -98,6 +98,10 @@ class TransactionPerformFragment : Fragment(
                 chooseDate()
                 false
             }
+            etAmount.setOnLongClickListener {
+                gotoCalc()
+                false
+            }
             etAmount.setOnFocusChangeListener { _, b ->
                 if (!b && etAmount.text.toString().isEmpty()) {
                     etAmount.setText(
@@ -138,6 +142,22 @@ class TransactionPerformFragment : Fragment(
                 mainViewModel.setBudgetItem(mBudgetItem)
             }
         }
+    }
+
+    private fun gotoCalc() {
+        mainViewModel.setTransferNum(
+            cf.getDoubleFromDollars(
+                binding.etAmount.text.toString().ifBlank {
+                    "0.0"
+                }
+            )
+        )
+        mainViewModel.setReturnTo(TAG)
+        mainViewModel.setTransactionDetailed(getTransactionDetailed())
+        mView.findNavController().navigate(
+            TransactionPerformFragmentDirections
+                .actionTransactionPerformFragmentToCalcFragment()
+        )
     }
 
     private fun calculateRemainder() {
@@ -218,13 +238,13 @@ class TransactionPerformFragment : Fragment(
     }
 
     private fun fillValues() {
-        if (mainViewModel.getTransactionDetailed() != null &&
-            mainViewModel.getBudgetItem() != null
+        if (mainViewModel.getTransactionDetailed() != null
         ) {
             fillFromTransaction()
         } else if (mainViewModel.getBudgetItem() != null) {
             fillFromBudgetItem()
         }
+
     }
 
     private fun fillFromBudgetItem() {
@@ -298,7 +318,11 @@ class TransactionPerformFragment : Fragment(
                 )
                 etAmount.setText(
                     cf.displayDollars(
-                        mTransaction.transAmount
+                        if (mainViewModel.getTransferNum()!! != 0.0) {
+                            mainViewModel.getTransferNum()!!
+                        } else {
+                            mTransaction.transAmount
+                        }
                     )
                 )
                 etBudgetedAmount.setText(

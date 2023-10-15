@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
@@ -68,7 +69,7 @@ class CalcFragment : Fragment(R.layout.fragment_calc) {
         result.add(0.0)
         setNumberActions()
         setOperatorActions()
-        if (mainViewModel.getTransferNum()?.isNaN() == true) {
+        if (!mainViewModel.getTransferNum()!!.isNaN()) {
             binding.tvDisplay.text =
                 cf.getNumberFromDouble(mainViewModel.getTransferNum()!!.toDouble())
         }
@@ -77,15 +78,18 @@ class CalcFragment : Fragment(R.layout.fragment_calc) {
     }
 
     private fun setTransferActions() {
-        val returnNum = result[counter]
         binding.btnTransfer.setOnClickListener {
+            mainViewModel.setTransferNum(result[counter])
             when (mainViewModel.getReturnTo()) {
                 FRAG_TRANS_ADD -> {
                     //goto fragment
                 }
 
                 FRAG_TRANS_PERFORM -> {
-                    //goto
+                    mView.findNavController().navigate(
+                        CalcFragmentDirections
+                            .actionCalcFragmentToTransactionPerformFragment()
+                    )
                 }
 
                 FRAG_BUDGET_RULE_ADD -> {
@@ -109,7 +113,10 @@ class CalcFragment : Fragment(R.layout.fragment_calc) {
                 }
 
                 FRAG_BUDGET_RULE_UPDATE -> {
-                    //goto
+                    mView.findNavController().navigate(
+                        CalcFragmentDirections
+                            .actionCalcFragmentToBudgetRuleUpdateFragment()
+                    )
                 }
             }
         }
