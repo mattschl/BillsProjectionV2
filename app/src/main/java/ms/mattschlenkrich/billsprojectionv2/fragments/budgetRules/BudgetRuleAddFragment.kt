@@ -93,7 +93,27 @@ class BudgetRuleAddFragment :
                 chooseEndDate()
                 false
             }
+            etAmount.setOnLongClickListener {
+                gotoCalc()
+                false
+            }
         }
+    }
+
+    private fun gotoCalc() {
+        mainViewModel.setTransferNum(
+            cf.getDoubleFromDollars(
+                binding.etAmount.text.toString().ifBlank {
+                    "0.0"
+                }
+            )
+        )
+        mainViewModel.setReturnTo(TAG)
+        mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
+        mView.findNavController().navigate(
+            BudgetRuleAddFragmentDirections
+                .actionBudgetRuleAddFragmentToCalcFragment()
+        )
     }
 
     private fun fillMenu() {
@@ -237,7 +257,11 @@ class BudgetRuleAddFragment :
                     )
                     etAmount.setText(
                         cf.displayDollars(
-                            mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budgetAmount
+                            if (mainViewModel.getTransferNum()!! != 0.0) {
+                                mainViewModel.getTransferNum()!!
+                            } else {
+                                mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budgetAmount
+                            }
                         )
                     )
                     if (mainViewModel.getBudgetRuleDetailed()!!.toAccount != null) {

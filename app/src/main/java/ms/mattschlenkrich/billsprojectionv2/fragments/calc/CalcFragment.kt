@@ -82,7 +82,10 @@ class CalcFragment : Fragment(R.layout.fragment_calc) {
             mainViewModel.setTransferNum(result[counter])
             when (mainViewModel.getReturnTo()) {
                 FRAG_TRANS_ADD -> {
-                    //goto fragment
+                    mView.findNavController().navigate(
+                        CalcFragmentDirections
+                            .actionCalcFragmentToTransactionAddFragment()
+                    )
                 }
 
                 FRAG_TRANS_PERFORM -> {
@@ -93,7 +96,10 @@ class CalcFragment : Fragment(R.layout.fragment_calc) {
                 }
 
                 FRAG_BUDGET_RULE_ADD -> {
-                    //goto
+                    mView.findNavController().navigate(
+                        CalcFragmentDirections
+                            .actionCalcFragmentToBudgetRuleAddFragment()
+                    )
                 }
 
                 FRAG_BUDGET_ITEM_ADD -> {
@@ -101,7 +107,10 @@ class CalcFragment : Fragment(R.layout.fragment_calc) {
                 }
 
                 FRAG_TRANS_UPDATE -> {
-                    //goto
+                    mView.findNavController().navigate(
+                        CalcFragmentDirections
+                            .actionCalcFragmentToTransactionUpdateFragment()
+                    )
                 }
 
                 FRAG_ACCOUNT_UPDATE -> {

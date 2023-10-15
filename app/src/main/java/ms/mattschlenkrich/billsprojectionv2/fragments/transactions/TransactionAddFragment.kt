@@ -104,7 +104,27 @@ class TransactionAddFragment :
                 chooseDate()
                 false
             }
+            etAmount.setOnLongClickListener {
+                gotoCalc()
+                false
+            }
         }
+    }
+
+    private fun gotoCalc() {
+        mainViewModel.setTransferNum(
+            cf.getDoubleFromDollars(
+                binding.etAmount.text.toString().ifBlank {
+                    "0.0"
+                }
+            )
+        )
+        mainViewModel.setReturnTo(TAG)
+        mainViewModel.setTransactionDetailed(getTransactionDetailed())
+        mView.findNavController().navigate(
+            TransactionAddFragmentDirections
+                .actionTransactionAddFragmentToCalcFragment()
+        )
     }
 
     private fun createMenu() {
@@ -263,14 +283,15 @@ class TransactionAddFragment :
                                     mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount
                                 )
                             }
-                    if (mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount != 0.0) {
                         etAmount.setText(
                             cf.displayDollars(
-                                mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount
+                                if (mainViewModel.getTransferNum()!! != 0.0) {
+                                    mainViewModel.getTransferNum()!!
+                                } else {
+                                    mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount
+                                }
                             )
                         )
-                    }
-
                 }
                 if (mainViewModel.getTransactionDetailed()!!.budgetRule != null) {
                     mBudgetRule = mainViewModel.getTransactionDetailed()!!.budgetRule

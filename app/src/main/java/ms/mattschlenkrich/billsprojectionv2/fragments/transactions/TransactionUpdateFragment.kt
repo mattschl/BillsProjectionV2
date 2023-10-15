@@ -107,7 +107,27 @@ class TransactionUpdateFragment :
             fabUpdateDone.setOnClickListener {
                 updateTransaction()
             }
+            etAmount.setOnLongClickListener {
+                gotoCalc()
+                false
+            }
         }
+    }
+
+    private fun gotoCalc() {
+        mainViewModel.setTransferNum(
+            cf.getDoubleFromDollars(
+                binding.etAmount.text.toString().ifBlank {
+                    "0.0"
+                }
+            )
+        )
+        mainViewModel.setReturnTo(TAG)
+        mainViewModel.setTransactionDetailed(getCurTransDetailed())
+        mView.findNavController().navigate(
+            TransactionUpdateFragmentDirections
+                .actionTransactionUpdateFragmentToCalcFragment()
+        )
     }
 
     private fun updateTransaction() {
@@ -287,7 +307,11 @@ class TransactionUpdateFragment :
                     )
                     etAmount.setText(
                         cf.displayDollars(
-                            mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount
+                            if (mainViewModel.getTransferNum()!! != 0.0) {
+                                mainViewModel.getTransferNum()!!
+                            } else {
+                                mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount
+                            }
                         )
                     )
                     etDescription.setText(
