@@ -108,7 +108,14 @@ class TransactionAddFragment :
                 gotoCalc()
                 false
             }
+            btnSplit.setOnClickListener {
+                splitTransactions()
+            }
         }
+    }
+
+    private fun splitTransactions() {
+        //TODO: not yet
     }
 
     private fun gotoCalc() {

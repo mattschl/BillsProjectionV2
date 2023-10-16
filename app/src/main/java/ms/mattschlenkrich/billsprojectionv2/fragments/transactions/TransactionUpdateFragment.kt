@@ -70,26 +70,12 @@ class TransactionUpdateFragment :
         accountViewModel =
             mainActivity.accountViewModel
         mainActivity.title = "Update this Transaction"
-        val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                // Add menu items here
-                menuInflater.inflate(R.menu.delete_menu, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                // Handle the menu selection
-                return when (menuItem.itemId) {
-                    R.id.menu_delete -> {
-                        deleteTransaction()
-                        true
-                    }
-
-                    else -> false
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        createMenu()
         fillValues()
+        createActions()
+    }
+
+    private fun createActions() {
         binding.apply {
             tvBudgetRule.setOnClickListener {
                 chooseBudgetRule()
@@ -112,6 +98,28 @@ class TransactionUpdateFragment :
                 false
             }
         }
+    }
+
+    private fun createMenu() {
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                // Add menu items here
+                menuInflater.inflate(R.menu.delete_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                // Handle the menu selection
+                return when (menuItem.itemId) {
+                    R.id.menu_delete -> {
+                        deleteTransaction()
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
     private fun gotoCalc() {

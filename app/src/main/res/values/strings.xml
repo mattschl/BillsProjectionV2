@@ -157,4 +157,6 @@
     <string name="equals_spaced">" ="</string>
     <string name="transfer_result">transfer result</string>
     <string name="calculator">Calculator</string>
+    <string name="split">Split</string>
+    <string name="original_amount">Original Amount</string>
 </resources>

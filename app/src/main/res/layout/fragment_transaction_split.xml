@@ -2,13 +2,16 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".fragments.transactions.TransactionAddFragment">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.transactions.TransactionSplitFragment">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -67,8 +70,8 @@
                 android:text="@string/amount"
                 android:textSize="@dimen/text_info_size"
                 app:layout_constraintBaseline_toBaselineOf="@+id/etAmount"
-                app:layout_constraintEnd_toStartOf="@id/etAmount"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintEnd_toEndOf="@+id/lblBudgetRule"
+                app:layout_constraintStart_toStartOf="@+id/lblBudgetRule" />
 
             <EditText
                 android:id="@+id/etAmount"
@@ -82,19 +85,74 @@
                 android:textColor="@color/black"
                 android:textColorHint="#757575"
                 android:textSize="@dimen/title_text_size"
-                app:layout_constraintEnd_toStartOf="@id/btnSplit"
-                app:layout_constraintStart_toEndOf="@id/lblAmount"
+                app:layout_constraintEnd_toEndOf="@+id/tvBudgetRule"
+                app:layout_constraintStart_toStartOf="@+id/tvBudgetRule"
                 app:layout_constraintTop_toBottomOf="@+id/tvBudgetRule" />
 
-            <Button
-                android:id="@+id/btnSplit"
-                android:layout_width="wrap_content"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/crdBudgeted"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:enabled="false"
-                android:text="@string/split"
-                app:layout_constraintBaseline_toBaselineOf="@id/etAmount"
+                app:cardCornerRadius="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/etAmount" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/etAmount">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/lblOriginalAmount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/original_amount"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_info_size"
+                        app:layout_constraintBaseline_toBaselineOf="@id/tvOriginalAmount"
+                        app:layout_constraintEnd_toStartOf="@id/tvOriginalAmount"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+
+                    <TextView
+                        android:id="@+id/tvOriginalAmount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/zero_dollars"
+                        android:minHeight="48dp"
+                        android:selectAllOnFocus="true"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/title_text_size"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@id/lblRemainder"
+                        app:layout_constraintStart_toEndOf="@id/lblOriginalAmount"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:ignore="DuplicateSpeakableTextCheck" />
+
+                    <TextView
+                        android:id="@+id/lblRemainder"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/remainder"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_info_size"
+                        app:layout_constraintBaseline_toBaselineOf="@id/tvOriginalAmount"
+                        app:layout_constraintEnd_toStartOf="@id/tvRemainder"
+                        app:layout_constraintStart_toEndOf="@id/tvOriginalAmount" />
+
+                    <TextView
+                        android:id="@+id/tvRemainder"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/zero_dollars"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_heading_size"
+                        app:layout_constraintBaseline_toBaselineOf="@id/tvOriginalAmount"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/lblRemainder" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
 
             <TextView
                 android:id="@+id/lblToAccount"
@@ -116,7 +174,7 @@
                 android:textSize="@dimen/text_heading_size"
                 app:layout_constraintEnd_toStartOf="@id/chkToAccPending"
                 app:layout_constraintStart_toEndOf="@id/lblToAccount"
-                app:layout_constraintTop_toBottomOf="@+id/etAmount" />
+                app:layout_constraintTop_toBottomOf="@+id/crdBudgeted" />
 
             <CheckBox
                 android:id="@+id/chkToAccPending"
@@ -217,4 +275,5 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
+
 </layout>
