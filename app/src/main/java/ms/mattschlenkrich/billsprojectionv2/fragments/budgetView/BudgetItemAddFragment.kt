@@ -44,7 +44,7 @@ class BudgetItemAddFragment : Fragment(
 
     private var _binding: FragmentBudgetItemAddBinding? = null
     private val binding get() = _binding!!
-    private var mView: View? = null
+    private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var budgetItemViewModel: BudgetItemViewModel
     private lateinit var mainViewModel: MainViewModel
@@ -78,6 +78,17 @@ class BudgetItemAddFragment : Fragment(
         mainActivity.title = "Add a new Budget Item"
         fillPayDaysLive()
         createMenu()
+        createActions()
+        budgetRuleDetailed =
+            BudgetRuleDetailed(
+                null,
+                null,
+                null
+            )
+        fillValues()
+    }
+
+    private fun createActions() {
         binding.apply {
             tvBudgetRule.setOnClickListener {
                 chooseBudgetRule()
@@ -92,14 +103,27 @@ class BudgetItemAddFragment : Fragment(
                 chooseDate()
                 false
             }
+            etProjectedAmount.setOnLongClickListener {
+                gotoCalc()
+                false
+            }
         }
-        budgetRuleDetailed =
-            BudgetRuleDetailed(
-                null,
-                null,
-                null
+    }
+
+    private fun gotoCalc() {
+        mainViewModel.setTransferNum(
+            cf.getDoubleFromDollars(
+                binding.etProjectedAmount.text.toString().ifBlank {
+                    "0.0"
+                }
             )
-        fillValues()
+        )
+        mainViewModel.setReturnTo(TAG)
+        mainViewModel.setBudgetItem(getCurBudgetDetailed())
+        mView.findNavController().navigate(
+            BudgetItemAddFragmentDirections
+                .actionBudgetItemAddFragmentToCalcFragment()
+        )
     }
 
     private fun fillPayDaysLive() {
@@ -170,7 +194,7 @@ class BudgetItemAddFragment : Fragment(
         ) {
             val direction = BudgetItemAddFragmentDirections
                 .actionBudgetItemAddFragmentToBudgetViewFragment()
-            mView!!.findNavController().navigate(direction)
+            mView.findNavController().navigate(direction)
         }
     }
 
@@ -203,7 +227,7 @@ class BudgetItemAddFragment : Fragment(
             val curDateAll = etProjectedDate.text.toString()
                 .split("-")
             val datePickerDialog = DatePickerDialog(
-                mView!!.context,
+                mView.context,
                 { _, year, monthOfYear, dayOfMonth ->
                     val month = monthOfYear + 1
                     val display = "$year-${
@@ -231,7 +255,7 @@ class BudgetItemAddFragment : Fragment(
         mainViewModel.setBudgetItem(getCurBudgetDetailed())
         val direction = BudgetItemAddFragmentDirections
             .actionBudgetItemAddFragmentToAccountsFragment()
-        mView!!.findNavController().navigate(direction)
+        mView.findNavController().navigate(direction)
     }
 
     private fun chooseBudgetRule() {
@@ -241,7 +265,7 @@ class BudgetItemAddFragment : Fragment(
         mainViewModel.setBudgetItem(getCurBudgetDetailed())
         val direction = BudgetItemAddFragmentDirections
             .actionBudgetItemAddFragmentToBudgetRuleFragment()
-        mView!!.findNavController().navigate(direction)
+        mView.findNavController().navigate(direction)
     }
 
     private fun getCurBudgetDetailed(): BudgetDetailed {
@@ -334,13 +358,21 @@ class BudgetItemAddFragment : Fragment(
                 if (mainViewModel.getBudgetItem()!!.budgetItem!!.biProjectedAmount == 0.0) {
                     etProjectedAmount.setText(
                         cf.displayDollars(
-                            budgetRuleDetailed.budgetRule?.budgetAmount ?: 0.0
+                            if (mainViewModel.getTransferNum()!! != 0.0) {
+                                mainViewModel.getTransferNum()!!
+                            } else {
+                                budgetRuleDetailed.budgetRule?.budgetAmount ?: 0.0
+                            }
                         )
                     )
                 } else {
                     etProjectedAmount.setText(
                         cf.displayDollars(
-                            mainViewModel.getBudgetItem()!!.budgetItem!!.biProjectedAmount
+                            if (mainViewModel.getTransferNum()!! != 0.0) {
+                                mainViewModel.getTransferNum()!!
+                            } else {
+                                mainViewModel.getBudgetItem()!!.budgetItem!!.biProjectedAmount
+                            }
                         )
                     )
                 }

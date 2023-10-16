@@ -21,6 +21,9 @@
         <action
             android:id="@+id/action_accountUpdateFragment_to_budgetViewFragment"
             app:destination="@id/budgetViewFragment" />
+        <action
+            android:id="@+id/action_accountUpdateFragment_to_calcFragment"
+            app:destination="@id/calcFragment" />
     </fragment>
     <fragment
         android:id="@+id/accountsFragment"
@@ -85,6 +88,9 @@
         <action
             android:id="@+id/action_accountAddFragment_to_accountTypesFragment"
             app:destination="@id/accountTypesFragment" />
+        <action
+            android:id="@+id/action_accountAddFragment_to_calcFragment"
+            app:destination="@id/calcFragment" />
 
     </fragment>
     <fragment
@@ -311,6 +317,9 @@
         <action
             android:id="@+id/action_budgetItemAddFragment_to_budgetRuleFragment"
             app:destination="@id/budgetRuleFragment" />
+        <action
+            android:id="@+id/action_budgetItemAddFragment_to_calcFragment"
+            app:destination="@id/calcFragment" />
     </fragment>
     <fragment
         android:id="@+id/budgetItemUpdateFragment"
@@ -328,6 +337,9 @@
         <action
             android:id="@+id/action_budgetItemUpdateFragment_to_budgetRuleFragment"
             app:destination="@id/budgetRuleFragment" />
+        <action
+            android:id="@+id/action_budgetItemUpdateFragment_to_calcFragment"
+            app:destination="@id/calcFragment" />
     </fragment>
     <fragment
         android:id="@+id/startFragment"
@@ -414,5 +426,17 @@
         <action
             android:id="@+id/action_calcFragment_to_transactionAddFragment"
             app:destination="@id/transactionAddFragment" />
+        <action
+            android:id="@+id/action_calcFragment_to_budgetItemAddFragment"
+            app:destination="@id/budgetItemAddFragment" />
+        <action
+            android:id="@+id/action_calcFragment_to_budgetItemUpdateFragment"
+            app:destination="@id/budgetItemUpdateFragment" />
+        <action
+            android:id="@+id/action_calcFragment_to_accountUpdateFragment"
+            app:destination="@id/accountUpdateFragment" />
+        <action
+            android:id="@+id/action_calcFragment_to_accountAddFragment"
+            app:destination="@id/accountAddFragment" />
     </fragment>
 </navigation>

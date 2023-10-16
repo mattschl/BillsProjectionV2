@@ -17,11 +17,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.BALANCE
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGETED
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
+import ms.mattschlenkrich.billsprojectionv2.common.OWING
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
@@ -57,7 +60,25 @@ class AccountUpdateFragment :
         mainViewModel = mainActivity.mainViewModel
         mView = binding.root
         createMenu()
-        return mView as View
+        return mView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        accountsViewModel =
+            (activity as MainActivity).accountViewModel
+        accountsViewModel.getAccountNameList().observe(
+            viewLifecycleOwner
+        ) { accounts ->
+            accountNameList.clear()
+            accounts.listIterator().forEach {
+                accountNameList.add(it)
+            }
+        }
+
+        mainActivity.title = "Update Account"
+        fillValues()
+        setActions()
     }
 
     private fun createMenu() {
@@ -82,27 +103,72 @@ class AccountUpdateFragment :
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        accountsViewModel =
-            (activity as MainActivity).accountViewModel
-        accountsViewModel.getAccountNameList().observe(
-            viewLifecycleOwner
-        ) { accounts ->
-            accountNameList.clear()
-            accounts.listIterator().forEach {
-                accountNameList.add(it)
+    private fun setActions() {
+        binding.apply {
+            drpAccountUpdateType.setOnClickListener {
+                gotoAccountTypes()
+            }
+            fabAccountUpdateDone.setOnClickListener {
+                updateAccount()
+            }
+            edAccountUpdateBalance.setOnLongClickListener {
+                gotoCalc(BALANCE)
+                false
+            }
+            edAccountUpdateOwing.setOnLongClickListener {
+                gotoCalc(OWING)
+                false
+            }
+            edAccountUpdateBudgeted.setOnLongClickListener {
+                gotoCalc(BUDGETED)
+                false
             }
         }
+    }
 
-        mainActivity.title = "Update Account"
-        fillValues()
-        binding.drpAccountUpdateType.setOnClickListener {
-            gotoAccountTypes()
+    private fun gotoCalc(type: String) {
+        when (type) {
+            BALANCE -> {
+                mainViewModel.setTransferNum(
+                    cf.getDoubleFromDollars(
+                        binding.edAccountUpdateBalance.text.toString().ifBlank {
+                            "0.0"
+                        }
+                    )
+                )
+            }
+
+            OWING -> {
+                mainViewModel.setTransferNum(
+                    cf.getDoubleFromDollars(
+                        binding.edAccountUpdateOwing.text.toString().ifBlank {
+                            "0.0"
+                        }
+                    )
+                )
+            }
+
+            BUDGETED -> {
+                mainViewModel.setTransferNum(
+                    cf.getDoubleFromDollars(
+                        binding.edAccountUpdateBudgeted.text.toString().ifBlank {
+                            "0.0"
+                        }
+                    )
+                )
+            }
         }
-        binding.fabAccountUpdateDone.setOnClickListener {
-            updateAccount()
-        }
+        mainViewModel.setReturnTo("$TAG, $type")
+        mainViewModel.setAccountWithType(
+            AccountWithType(
+                getUpdatedAccount(),
+                mainViewModel.getAccountWithType()!!.accountType
+            )
+        )
+        mView.findNavController().navigate(
+            AccountUpdateFragmentDirections
+                .actionAccountUpdateFragmentToCalcFragment()
+        )
     }
 
     private fun getUpdatedAccount(): Account {
@@ -197,7 +263,7 @@ class AccountUpdateFragment :
             }
         } else {
             Toast.makeText(
-                mView!!.context,
+                mView.context,
                 mess,
                 Toast.LENGTH_LONG
             ).show()
@@ -235,17 +301,36 @@ class AccountUpdateFragment :
             }
             edAccountUpdateBalance.setText(
                 cf.displayDollars(
-                    mainViewModel.getAccountWithType()!!.account.accountBalance
+                    if (mainViewModel.getTransferNum()!! != 0.0 &&
+                        mainViewModel.getReturnTo()!!.contains(BALANCE)
+                    ) {
+                        mainViewModel.getTransferNum()!!
+                    } else {
+                        mainViewModel.getAccountWithType()!!.account.accountBalance
+                    }
                 )
             )
             edAccountUpdateOwing.setText(
                 cf.displayDollars(
-                    mainViewModel.getAccountWithType()!!.account.accountOwing
+                    if (mainViewModel.getTransferNum()!! != 0.0 &&
+                        mainViewModel.getReturnTo()!!.contains(OWING)
+
+                    ) {
+                        mainViewModel.getTransferNum()!!
+                    } else {
+                        mainViewModel.getAccountWithType()!!.account.accountOwing
+                    }
                 )
             )
             edAccountUpdateBudgeted.setText(
                 cf.displayDollars(
-                    mainViewModel.getAccountWithType()!!.account.accBudgetedAmount
+                    if (mainViewModel.getTransferNum()!! != 0.0 &&
+                        mainViewModel.getReturnTo()!!.contains(BUDGETED)
+                    ) {
+                        mainViewModel.getTransferNum()!!
+                    } else {
+                        mainViewModel.getAccountWithType()!!.account.accBudgetedAmount
+                    }
                 )
             )
             etAccUpdateLimit.setText(
@@ -280,7 +365,7 @@ class AccountUpdateFragment :
         )
         val direction = AccountUpdateFragmentDirections
             .actionAccountUpdateFragmentToAccountsFragment()
-        mView?.findNavController()?.navigate(direction)
+        mView.findNavController().navigate(direction)
     }
 
     override fun onDestroy() {

@@ -141,3 +141,7 @@ const val INTERVAL_ON_PAY_DAY = "On Payday"
 const val INTERVAL_SPECIAL = "Special"
 const val INTERVAL_ONE_TIME = "One Time"
 
+const val BALANCE = "Balance"
+const val OWING = "Owing"
+const val BUDGETED = "Budgeted"
+

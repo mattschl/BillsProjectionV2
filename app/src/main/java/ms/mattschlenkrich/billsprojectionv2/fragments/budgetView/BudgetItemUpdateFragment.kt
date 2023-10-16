@@ -45,7 +45,7 @@ class BudgetItemUpdateFragment : Fragment(
 
     private var _binding: FragmentBudgetItemUpdateBinding? = null
     private val binding get() = _binding!!
-    private var mView: View? = null
+    private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var budgetItemViewModel: BudgetItemViewModel
@@ -104,7 +104,27 @@ class BudgetItemUpdateFragment : Fragment(
             fabUpdateDone.setOnClickListener {
                 updateBudgetItem()
             }
+            etProjectedAmount.setOnLongClickListener {
+                gotoCalc()
+                false
+            }
         }
+    }
+
+    private fun gotoCalc() {
+        mainViewModel.setTransferNum(
+            cf.getDoubleFromDollars(
+                binding.etProjectedAmount.text.toString().ifBlank {
+                    "0.0"
+                }
+            )
+        )
+        mainViewModel.setReturnTo(TAG)
+        mainViewModel.setBudgetItem(getCurBudgetItemDetailed())
+        mView.findNavController().navigate(
+            BudgetItemUpdateFragmentDirections
+                .actionBudgetItemUpdateFragmentToCalcFragment()
+        )
     }
 
     private fun fillPayDaysLive() {
@@ -142,7 +162,11 @@ class BudgetItemUpdateFragment : Fragment(
                     curBudgetItem.budgetRule
                 etProjectedAmount.setText(
                     cf.displayDollars(
-                        curBudgetItem.budgetItem.biProjectedAmount
+                        if (mainViewModel.getTransferNum()!! != 0.0) {
+                            mainViewModel.getTransferNum()!!
+                        } else {
+                            curBudgetItem.budgetItem.biProjectedAmount
+                        }
                     )
                 )
                 tvToAccount.text =
@@ -219,7 +243,7 @@ class BudgetItemUpdateFragment : Fragment(
             val curDateAll = etProjectedDate.text.toString()
                 .split("-")
             val datePickerDialog = DatePickerDialog(
-                mView!!.context,
+                mView.context,
                 { _, year, monthOfYear, dayOfMonth ->
                     val month = monthOfYear + 1
                     val display = "$year-${
@@ -247,7 +271,7 @@ class BudgetItemUpdateFragment : Fragment(
         mainViewModel.setBudgetItem(getCurBudgetItemDetailed())
         val direction = BudgetItemUpdateFragmentDirections
             .actionBudgetItemUpdateFragmentToAccountsFragment()
-        mView?.findNavController()?.navigate(direction)
+        mView.findNavController().navigate(direction)
     }
 
     private fun chooseBudgetRule() {
@@ -257,7 +281,7 @@ class BudgetItemUpdateFragment : Fragment(
         mainViewModel.setBudgetItem(getCurBudgetItemDetailed())
         val direction = BudgetItemUpdateFragmentDirections
             .actionBudgetItemUpdateFragmentToBudgetRuleFragment()
-        mView?.findNavController()?.navigate(direction)
+        mView.findNavController().navigate(direction)
     }
 
     private fun getCurBudgetItemDetailed(): BudgetDetailed {
@@ -329,7 +353,7 @@ class BudgetItemUpdateFragment : Fragment(
             )
             val direction = BudgetItemUpdateFragmentDirections
                 .actionBudgetItemUpdateFragmentToBudgetViewFragment()
-            mView!!.findNavController().navigate(direction)
+            mView.findNavController().navigate(direction)
         }
     }
 

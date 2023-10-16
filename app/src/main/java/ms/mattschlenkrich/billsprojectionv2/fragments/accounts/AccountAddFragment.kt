@@ -15,9 +15,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.BALANCE
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGETED
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_ADD
+import ms.mattschlenkrich.billsprojectionv2.common.OWING
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountAddBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
@@ -56,6 +59,7 @@ class AccountAddFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        mView = view
         accountsViewModel =
             mainActivity.accountViewModel
         accountsViewModel.getAccountNameList().observe(
@@ -70,10 +74,72 @@ class AccountAddFragment :
         mainActivity.title = "Add a new Account"
         fillValues()
         createMenu()
-        binding.tvAccAddType.setOnClickListener {
-            gotoAccountTypes()
+        createActions()
+    }
+
+    private fun createActions() {
+        binding.apply {
+            tvAccAddType.setOnClickListener {
+                gotoAccountTypes()
+            }
+            etAccAddBalance.setOnLongClickListener {
+                gotoCalc(BALANCE)
+                false
+            }
+            etAccAddOwing.setOnLongClickListener {
+                gotoCalc(OWING)
+                false
+            }
+            etAccAddBudgeted.setOnLongClickListener {
+                gotoCalc(BUDGETED)
+                false
+            }
         }
-        mView = view
+    }
+
+    private fun gotoCalc(type: String) {
+        when (type) {
+            BALANCE -> {
+                mainViewModel.setTransferNum(
+                    cf.getDoubleFromDollars(
+                        binding.etAccAddBalance.text.toString().ifBlank {
+                            "0.0"
+                        }
+                    )
+                )
+            }
+
+            OWING -> {
+                mainViewModel.setTransferNum(
+                    cf.getDoubleFromDollars(
+                        binding.etAccAddOwing.text.toString().ifBlank {
+                            "0.0"
+                        }
+                    )
+                )
+            }
+
+            BUDGETED -> {
+                mainViewModel.setTransferNum(
+                    cf.getDoubleFromDollars(
+                        binding.etAccAddBudgeted.text.toString().ifBlank {
+                            "0.0"
+                        }
+                    )
+                )
+            }
+        }
+        mainViewModel.setReturnTo("$TAG, $type")
+        mainViewModel.setAccountWithType(
+            AccountWithType(
+                getCurrentAccount(),
+                mainViewModel.getAccountWithType()?.accountType
+            )
+        )
+        mView.findNavController().navigate(
+            AccountAddFragmentDirections
+                .actionAccountAddFragmentToCalcFragment()
+        )
     }
 
     private fun createMenu() {
@@ -109,17 +175,36 @@ class AccountAddFragment :
                 )
                 etAccAddBalance.setText(
                     cf.displayDollars(
-                        mainViewModel.getAccountWithType()!!.account.accountBalance
+                        if (mainViewModel.getTransferNum()!! != 0.0 &&
+                            mainViewModel.getReturnTo()!!.contains(BALANCE)
+                        ) {
+                            mainViewModel.getTransferNum()!!
+                        } else {
+                            mainViewModel.getAccountWithType()!!.account.accountBalance
+                        }
                     )
                 )
                 etAccAddOwing.setText(
                     cf.displayDollars(
-                        mainViewModel.getAccountWithType()!!.account.accountOwing
+                        if (mainViewModel.getTransferNum()!! != 0.0 &&
+                            mainViewModel.getReturnTo()!!.contains(OWING)
+
+                        ) {
+                            mainViewModel.getTransferNum()!!
+                        } else {
+                            mainViewModel.getAccountWithType()!!.account.accountOwing
+                        }
                     )
                 )
                 etAccAddBudgeted.setText(
                     cf.displayDollars(
-                        mainViewModel.getAccountWithType()!!.account.accBudgetedAmount
+                        if (mainViewModel.getTransferNum()!! != 0.0 &&
+                            mainViewModel.getReturnTo()!!.contains(BUDGETED)
+                        ) {
+                            mainViewModel.getTransferNum()!!
+                        } else {
+                            mainViewModel.getAccountWithType()!!.account.accBudgetedAmount
+                        }
                     )
                 )
                 etAccAddLimit.setText(

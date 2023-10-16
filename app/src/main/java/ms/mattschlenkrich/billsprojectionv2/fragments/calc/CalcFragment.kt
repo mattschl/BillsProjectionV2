@@ -11,6 +11,7 @@ import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAGMENT_CALC
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_UPDATE
@@ -103,7 +104,10 @@ class CalcFragment : Fragment(R.layout.fragment_calc) {
                 }
 
                 FRAG_BUDGET_ITEM_ADD -> {
-                    //goto
+                    mView.findNavController().navigate(
+                        CalcFragmentDirections
+                            .actionCalcFragmentToBudgetItemAddFragment()
+                    )
                 }
 
                 FRAG_TRANS_UPDATE -> {
@@ -113,12 +117,11 @@ class CalcFragment : Fragment(R.layout.fragment_calc) {
                     )
                 }
 
-                FRAG_ACCOUNT_UPDATE -> {
-                    //goto
-                }
-
                 FRAG_BUDGET_ITEM_UPDATE -> {
-                    //goto
+                    mView.findNavController().navigate(
+                        CalcFragmentDirections
+                            .actionCalcFragmentToBudgetItemUpdateFragment()
+                    )
                 }
 
                 FRAG_BUDGET_RULE_UPDATE -> {
@@ -126,6 +129,21 @@ class CalcFragment : Fragment(R.layout.fragment_calc) {
                         CalcFragmentDirections
                             .actionCalcFragmentToBudgetRuleUpdateFragment()
                     )
+                }
+
+                else -> {
+                    if (mainViewModel.getReturnTo()!!.contains(FRAG_ACCOUNT_UPDATE)) {
+                        mView.findNavController().navigate(
+                            CalcFragmentDirections
+                                .actionCalcFragmentToAccountUpdateFragment()
+                        )
+                    } else if (mainViewModel.getReturnTo()!!.contains(FRAG_ACCOUNT_ADD)) {
+
+                        mView.findNavController().navigate(
+                            CalcFragmentDirections
+                                .actionCalcFragmentToAccountAddFragment()
+                        )
+                    }
                 }
             }
         }
