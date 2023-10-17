@@ -30,6 +30,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTIONS
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
+import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionAddBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
@@ -84,8 +85,8 @@ class TransactionAddFragment :
         accountViewModel =
             mainActivity.accountViewModel
         mainActivity.title = "Add a new Transaction"
-        fillValues()
         createMenu()
+        fillValues()
         createActions()
     }
 
@@ -331,7 +332,7 @@ class TransactionAddFragment :
                 if (mainViewModel.getTransactionDetailed()!!.budgetRule != null) {
                     mBudgetRule = mainViewModel.getTransactionDetailed()!!.budgetRule
                     tvBudgetRule.text =
-                        mainViewModel.getTransactionDetailed()!!.budgetRule!!.budgetRuleName
+                        mBudgetRule!!.budgetRuleName
                     if (mainViewModel.getTransactionDetailed()!!.toAccount == null) {
                         if (mainViewModel.getTransactionDetailed()!!.budgetRule!!.budToAccountId != 0L) {
                             CoroutineScope(Dispatchers.IO).launch {
@@ -351,7 +352,7 @@ class TransactionAddFragment :
                                 mToAccountWithType = toAccountWithType.await()
                             }
                             CoroutineScope(Dispatchers.Main).launch {
-                                delay(1000)
+                                delay(WAIT_250)
                                 tvToAccount.text = mToAccount?.accountName
                                 if (mToAccountWithType?.accountType?.allowPending == true) {
                                     chkToAccPending.visibility = View.VISIBLE
@@ -380,7 +381,7 @@ class TransactionAddFragment :
                                 mFromAccountWithType = fromAccountWithType.await()
                             }
                             CoroutineScope(Dispatchers.Main).launch {
-                                delay(1000)
+                                delay(WAIT_250)
                                 tvFromAccount.text = mFromAccount?.accountName
                                 if (mFromAccountWithType?.accountType?.allowPending == true) {
                                     chkFromAccPending.visibility = View.VISIBLE
@@ -388,7 +389,6 @@ class TransactionAddFragment :
                                     chkFromAccPending.visibility = View.GONE
                                 }
                             }
-
                         }
                     }
                 }
@@ -407,7 +407,7 @@ class TransactionAddFragment :
                         mToAccountWithType = toAccountWithType.await()
                     }
                     CoroutineScope(Dispatchers.Main).launch {
-                        delay(250)
+                        delay(WAIT_250)
                         if (mToAccountWithType?.accountType?.allowPending == true) {
                             chkToAccPending.visibility = View.VISIBLE
                         } else {
@@ -432,7 +432,7 @@ class TransactionAddFragment :
                         mFromAccountWithType = fromAccountWithType.await()
                     }
                     CoroutineScope(Dispatchers.Main).launch {
-                        delay(250)
+                        delay(WAIT_250)
                         if (mFromAccountWithType?.accountType?.allowPending == true) {
                             chkFromAccPending.visibility = View.VISIBLE
                         } else {
@@ -441,6 +441,7 @@ class TransactionAddFragment :
                     }
                 } else {
                     chkFromAccPending.visibility = View.GONE
+                    chkToAccPending.visibility = View.GONE
                 }
                 chkFromAccPending.isChecked =
                     mainViewModel.getTransactionDetailed()!!.transaction!!.transFromAccountPending

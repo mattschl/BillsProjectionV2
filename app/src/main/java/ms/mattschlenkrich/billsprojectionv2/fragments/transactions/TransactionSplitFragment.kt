@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.fragments.transactions
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,16 +9,25 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_SPLIT
+import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
+import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
+import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionSplitBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
@@ -80,6 +90,12 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
             tvBudgetRule.setOnClickListener {
                 chooseBudgetRule()
             }
+            tvToAccount.setOnClickListener {
+                chooseToAccount()
+            }
+            tvFromAccount.setOnClickListener {
+                chooseFromAccount()
+            }
             etAmount.setOnLongClickListener {
                 gotoCalc()
                 false
@@ -90,6 +106,30 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
                 }
             }
         }
+    }
+
+    private fun chooseFromAccount() {
+        mainViewModel.setCallingFragments(
+            "${mainViewModel.getCallingFragments()}, $TAG"
+        )
+        mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
+        mainViewModel.setSplitTransactionDetailed(getSplitTransDetailed())
+        mView.findNavController().navigate(
+            TransactionSplitFragmentDirections
+                .actionTransactionSplitFragmentToAccountsFragment()
+        )
+    }
+
+    private fun chooseToAccount() {
+        mainViewModel.setCallingFragments(
+            "${mainViewModel.getCallingFragments()}, $TAG"
+        )
+        mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
+        mainViewModel.setSplitTransactionDetailed(getSplitTransDetailed())
+        mView.findNavController().navigate(
+            TransactionSplitFragmentDirections
+                .actionTransactionSplitFragmentToAccountsFragment()
+        )
     }
 
     private fun chooseBudgetRule() {
@@ -182,12 +222,124 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
                         if (mainViewModel.getTransferNum()!! != 0.0) {
                             mainViewModel.getTransferNum()!!
                         } else {
-                            mainViewModel.getSplitTransactionDetailed()!!.transaction!!.transAmount
+                            mainViewModel.getSplitTransactionDetailed()?.transaction?.transAmount
                         }
                     )
                 )
                 mainViewModel.setTransferNum(0.0)
                 updateAmountDisplay()
+                if (mainViewModel.getSplitTransactionDetailed()?.budgetRule != null) {
+                    mBudgetRule = mainViewModel.getSplitTransactionDetailed()!!.budgetRule!!
+                    tvBudgetRule.text = mBudgetRule!!.budgetRuleName
+                    if (mainViewModel.getSplitTransactionDetailed()!!.toAccount != null) {
+                        if (mBudgetRule!!.budToAccountId != 0L) {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val toAccount =
+                                    async {
+                                        accountViewModel.getAccount(
+                                            mBudgetRule!!.budToAccountId
+                                        )
+                                    }
+                                mToAccount = toAccount.await()
+                                val toAccountWithType =
+                                    async {
+                                        accountViewModel.getAccountWithType(
+                                            mBudgetRule!!.budgetRuleName
+                                        )
+                                    }
+                                mToAccountWithType = toAccountWithType.await()
+                            }
+                            CoroutineScope(Dispatchers.Main).launch {
+                                delay(WAIT_250)
+                                tvToAccount.text = mToAccount?.accountName
+                                if (mToAccountWithType?.accountType?.allowPending == true) {
+                                    chkToAccPending.visibility = View.VISIBLE
+                                } else {
+                                    chkToAccPending.visibility = View.GONE
+                                }
+                            }
+                        }
+                    }
+                    if (mainViewModel.getSplitTransactionDetailed()!!.fromAccount != null) {
+                        if (mBudgetRule!!.budFromAccountId != 0L) {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val fromAccount =
+                                    async {
+                                        accountViewModel.getAccount(
+                                            mBudgetRule!!.budToAccountId
+                                        )
+                                    }
+                                mFromAccount = fromAccount.await()
+                                val fromAccountWithType =
+                                    async {
+                                        accountViewModel.getAccountWithType(
+                                            mBudgetRule!!.budFromAccountId
+                                        )
+                                    }
+                                mFromAccountWithType = fromAccountWithType.await()
+                            }
+                        }
+                        CoroutineScope(Dispatchers.Main).launch {
+                            delay(WAIT_250)
+                            tvFromAccount.text = mFromAccount?.accountName
+                            if (mFromAccountWithType?.accountType?.allowPending == true) {
+                                chkFromAccPending.visibility = View.VISIBLE
+                            } else {
+                                chkFromAccPending.visibility = View.GONE
+                            }
+                        }
+                    }
+                }
+                if (mainViewModel.getSplitTransactionDetailed()?.toAccount != null) {
+                    mToAccount = mainViewModel.getSplitTransactionDetailed()!!.toAccount
+                    tvToAccount.text = mToAccount!!.accountName
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val toAccountWithType =
+                            async {
+                                accountViewModel.getAccountWithType(
+                                    mToAccount!!.accountName
+                                )
+                            }
+                        mToAccountWithType = toAccountWithType.await()
+                    }
+                    CoroutineScope(Dispatchers.Main).launch {
+                        delay(WAIT_250)
+                        if (mToAccountWithType?.accountType?.allowPending == true) {
+                            chkToAccPending.visibility = View.VISIBLE
+                        } else {
+                            chkToAccPending.visibility = View.GONE
+                        }
+                    }
+                }
+                chkToAccPending.isChecked =
+                    mainViewModel.getSplitTransactionDetailed()!!.transaction!!.transToAccountPending
+                if (mainViewModel.getSplitTransactionDetailed()?.fromAccount != null) {
+                    mFromAccount =
+                        mainViewModel.getSplitTransactionDetailed()!!.fromAccount
+                    tvFromAccount.text = mFromAccount!!.accountName
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val fromAccountWithType =
+                            async {
+                                accountViewModel.getAccountWithType(
+                                    mFromAccount!!.accountId
+                                )
+                            }
+                        mFromAccountWithType = fromAccountWithType.await()
+                    }
+                    CoroutineScope(Dispatchers.Main).launch {
+                        delay(WAIT_250)
+                        if (mFromAccountWithType?.accountType?.allowPending == true) {
+                            chkFromAccPending.visibility = View.VISIBLE
+                        } else {
+                            chkFromAccPending.visibility = View.GONE
+                        }
+                    }
+                } else {
+                    chkFromAccPending.visibility = View.GONE
+                    chkToAccPending.visibility = View.GONE
+                }
+                chkFromAccPending.isChecked =
+                    mainViewModel.getSplitTransactionDetailed()!!.transaction!!.transFromAccountPending
             }
         }
     }
@@ -217,7 +369,7 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
                 return when (menuItem.itemId) {
                     R.id.menu_save -> {
                         menuItem.isEnabled = false
-                        splitTransaction()
+                        saveTransaction()
                         menuItem.isEnabled = true
                         true
                     }
@@ -228,8 +380,122 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    private fun splitTransaction() {
+    private fun saveTransaction() {
+        val mes = checkTransactions()
+        if (mes == "Ok") {
+            val mTransaction = getCurTransaction()
+            transactionViewModel.insertTransaction(
+                mTransaction
+            )
+            updateAccounts(mTransaction)
+        } else {
+            Toast.makeText(
+                mView.context,
+                mes,
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun updateAccounts(mTransaction: Transactions): Boolean {
+        if (!mTransaction.transToAccountPending) {
+            if (mToAccountWithType!!.accountType!!.keepTotals) {
+                transactionViewModel.updateAccountBalance(
+                    mToAccountWithType!!.account.accountBalance +
+                            mTransaction.transAmount,
+                    mToAccount!!.accountId,
+                    df.getCurrentTimeAsString()
+                )
+                Log.d(TAG, "updating toAccountBalance")
+            }
+            if (mToAccountWithType!!.accountType!!.tallyOwing) {
+                transactionViewModel.updateAccountOwing(
+                    mToAccountWithType!!.account.accountOwing -
+                            mTransaction.transAmount,
+                    mToAccount!!.accountId,
+                    df.getCurrentTimeAsString()
+                )
+            }
+        }
+        if (!mTransaction.transFromAccountPending) {
+            if (mFromAccountWithType!!.accountType!!.keepTotals) {
+                transactionViewModel.updateAccountBalance(
+                    mFromAccountWithType!!.account.accountBalance -
+                            mTransaction.transAmount,
+                    mFromAccount!!.accountId,
+                    df.getCurrentTimeAsString()
+                )
+            }
+            if (mFromAccountWithType!!.accountType!!.tallyOwing) {
+                transactionViewModel.updateAccountOwing(
+                    mFromAccountWithType!!.account.accountOwing +
+                            mTransaction.transAmount,
+                    mFromAccount!!.accountId,
+                    df.getCurrentTimeAsString()
+                )
+            }
+        }
+        gotoCallingFragment()
+        return true
+    }
+
+    private fun gotoCallingFragment() {
         TODO("Not yet implemented")
+    }
+
+    private fun checkTransactions(): String {
+        binding.apply {
+            val amount =
+                if (etAmount.text.isNotEmpty()) {
+                    cf.getDoubleFromDollars(etAmount.text.toString())
+                } else {
+                    0.0
+                }
+            val errorMes =
+                if (etDescription.text.isNullOrBlank()
+                ) {
+                    "     Error!!\n" +
+                            "Please enter a description"
+                } else if (mToAccount == null
+                ) {
+                    "     Error!!\n" +
+                            "There needs to be an account money will go to."
+                } else if (mFromAccount == null
+                ) {
+                    "     Error!!\n" +
+                            "There needs to be an account money will come from."
+                } else if (etAmount.text.isNullOrEmpty() ||
+                    amount == 0.0
+                ) {
+                    "     Error!!\n" +
+                            "Please enter an amount for this transaction"
+                } else if (mainViewModel.getSplitTransactionDetailed()!!.budgetRule == null) {
+                    if (saveWithoutBudget()) {
+                        "Ok"
+                    } else {
+                        "Choose a Budget Rule"
+                    }
+                } else {
+                    "Ok"
+                }
+            return errorMes
+        }
+    }
+
+    private fun saveWithoutBudget(): Boolean {
+        var bool = false
+        AlertDialog.Builder(activity).apply {
+            setMessage(
+                "There is no Budget Rule!" +
+                        "Budget Rules are used to update the budget."
+            )
+            setPositiveButton("Save anyway") { _, _ ->
+
+                bool = true
+            }
+            setNegativeButton("Retry", null)
+        }.create().show()
+        return bool
     }
 
     override fun onDestroy() {

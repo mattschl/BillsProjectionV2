@@ -74,6 +74,9 @@
         <action
             android:id="@+id/action_accountsFragment_to_transactionAverageFragment"
             app:destination="@id/transactionAverageFragment" />
+        <action
+            android:id="@+id/action_accountsFragment_to_transactionSplitFragment"
+            app:destination="@id/transactionSplitFragment" />
     </fragment>
     <fragment
         android:id="@+id/accountAddFragment"
@@ -462,5 +465,8 @@
         <action
             android:id="@+id/action_transactionSplitFragment_to_budgetRuleFragment"
             app:destination="@id/budgetRuleFragment" />
+        <action
+            android:id="@+id/action_transactionSplitFragment_to_accountsFragment"
+            app:destination="@id/accountsFragment" />
     </fragment>
 </navigation>

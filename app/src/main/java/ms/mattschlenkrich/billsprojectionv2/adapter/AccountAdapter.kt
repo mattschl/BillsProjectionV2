@@ -22,6 +22,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_SPLIT
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_PERFORM
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
@@ -66,6 +67,13 @@ class AccountAdapter(
             mainViewModel.getTransactionDetailed()?.budgetRule,
             mainViewModel.getTransactionDetailed()?.toAccount,
             mainViewModel.getTransactionDetailed()?.fromAccount
+        )
+    private var mSplitTransactionDetailed =
+        TransactionDetailed(
+            mainViewModel.getSplitTransactionDetailed()?.transaction,
+            mainViewModel.getSplitTransactionDetailed()?.budgetRule,
+            mainViewModel.getSplitTransactionDetailed()?.toAccount,
+            mainViewModel.getSplitTransactionDetailed()?.fromAccount
         )
     private val accountViewModel = mainActivity.accountViewModel
 
@@ -173,8 +181,15 @@ class AccountAdapter(
                     REQUEST_TO_ACCOUNT -> {
                         mBudgetRuleDetailed.toAccount = curAccount.account
                         mainViewModel.setBudgetRuleDetailed(mBudgetRuleDetailed)
-                        mTransactionDetailed.toAccount = curAccount.account
-                        mainViewModel.setTransactionDetailed(mTransactionDetailed)
+                        if (mainViewModel.getCallingFragments()!!
+                                .contains(FRAG_TRANSACTION_SPLIT)
+                        ) {
+                            mSplitTransactionDetailed.toAccount = curAccount.account
+                            mainViewModel.setSplitTransactionDetailed(mSplitTransactionDetailed)
+                        } else {
+                            mTransactionDetailed.toAccount = curAccount.account
+                            mainViewModel.setTransactionDetailed(mTransactionDetailed)
+                        }
                         mBudgetItem.toAccount = curAccount.account
                         mainViewModel.setBudgetItem(mBudgetItem)
                         gotoCallingFragment(it)
@@ -184,8 +199,15 @@ class AccountAdapter(
                     REQUEST_FROM_ACCOUNT -> {
                         mBudgetRuleDetailed.fromAccount = curAccount.account
                         mainViewModel.setBudgetRuleDetailed(mBudgetRuleDetailed)
-                        mTransactionDetailed.fromAccount = curAccount.account
-                        mainViewModel.setTransactionDetailed(mTransactionDetailed)
+                        if (mainViewModel.getCallingFragments()!!
+                                .contains(FRAG_TRANSACTION_SPLIT)
+                        ) {
+                            mSplitTransactionDetailed.fromAccount = curAccount.account
+                            mainViewModel.setSplitTransactionDetailed(mSplitTransactionDetailed)
+                        } else {
+                            mTransactionDetailed.fromAccount = curAccount.account
+                            mainViewModel.setTransactionDetailed(mTransactionDetailed)
+                        }
                         mBudgetItem.fromAccount = curAccount.account
                         mainViewModel.setBudgetItem(mBudgetItem)
                         gotoCallingFragment(it)
@@ -272,18 +294,16 @@ class AccountAdapter(
     }
 
     private fun gotoCallingFragment(it: View) {
-        Log.d(
-            TAG, "calling Fragments is ${mainViewModel.getCallingFragments()} " +
-                    "before replace"
-        )
         mainViewModel.setCallingFragments(
             mainViewModel.getCallingFragments()!!
                 .replace(", $FRAG_ACCOUNTS", "")
         )
-        Log.d(
-            TAG, "_______calling Fragments is ${mainViewModel.getCallingFragments()} " +
-                    "AFTER replace"
-        )
+        if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_SPLIT)) {
+            it.findNavController().navigate(
+                AccountsFragmentDirections
+                    .actionAccountsFragmentToTransactionSplitFragment()
+            )
+        }
         if (mainViewModel.getCallingFragments()!!
                 .contains(FRAG_BUDGET_RULE_ADD)
         ) {
