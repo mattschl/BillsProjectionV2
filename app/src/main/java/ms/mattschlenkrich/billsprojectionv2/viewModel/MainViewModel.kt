@@ -16,6 +16,7 @@ class MainViewModel(
     private var payDay: String? = ""
     private var budgetItem: BudgetDetailed? = null
     private var transactionDetailed: TransactionDetailed? = null
+    private var splitTransactionDetailed: TransactionDetailed? = null
     private var budgetRuleDetailed: BudgetRuleDetailed? = null
     private var account: AccountWithType? = null
     private var accountType: AccountType? = null
@@ -27,6 +28,7 @@ class MainViewModel(
     fun eraseAll() {
         budgetItem = null
         transactionDetailed = null
+        splitTransactionDetailed = null
         budgetRuleDetailed = null
         account = null
         accountType = null
@@ -34,6 +36,14 @@ class MainViewModel(
         callingFragments = ""
         returnTo = ""
         transferNum = 0.0
+    }
+
+    fun setSplitTransactionDetailed(newTransaction: TransactionDetailed?) {
+        splitTransactionDetailed = newTransaction
+    }
+
+    fun getSplitTransactionDetailed(): TransactionDetailed? {
+        return splitTransactionDetailed
     }
 
     fun setReturnTo(newReturnTo: String?) {

@@ -297,6 +297,7 @@ class BudgetRuleUpdateFragment :
                             }
                         )
                     )
+                    mainViewModel.setTransferNum(0.0)
                     if (mainViewModel.getBudgetRuleDetailed()!!.toAccount != null) {
                         tvToAccount.text =
                             mainViewModel.getBudgetRuleDetailed()!!.toAccount!!.accountName

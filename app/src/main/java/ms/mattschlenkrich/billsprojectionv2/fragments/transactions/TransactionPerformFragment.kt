@@ -325,6 +325,7 @@ class TransactionPerformFragment : Fragment(
                         }
                     )
                 )
+                mainViewModel.setTransferNum(0.0)
                 etBudgetedAmount.setText(
                     cf.displayDollars(
                         mainViewModel.getBudgetItem()!!.budgetItem!!.biProjectedAmount

@@ -17,6 +17,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_UPDATE
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_SPLIT
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_PERFORM
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
@@ -128,6 +129,13 @@ class CalcFragment : Fragment(R.layout.fragment_calc) {
                     mView.findNavController().navigate(
                         CalcFragmentDirections
                             .actionCalcFragmentToBudgetRuleUpdateFragment()
+                    )
+                }
+
+                FRAG_TRANSACTION_SPLIT -> {
+                    mView.findNavController().navigate(
+                        CalcFragmentDirections
+                            .actionCalcFragmentToTransactionSplitFragment()
                     )
                 }
 

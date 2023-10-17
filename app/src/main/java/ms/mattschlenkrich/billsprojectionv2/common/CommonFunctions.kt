@@ -16,9 +16,14 @@ class CommonFunctions {
             .toDouble()
     }
 
-    fun displayDollars(num: Double): String {
-        return dollarFormat.format(num)
+    fun displayDollars(num: Double?): String {
+        if (num != null) {
+            return dollarFormat.format(num)
+        } else {
+            return dollarFormat.format(0.0)
+        }
     }
+
 
     fun getNumberFromDouble(num: Double): String {
         return numberDisplay.format(num)

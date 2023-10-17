@@ -108,14 +108,40 @@ class TransactionAddFragment :
                 gotoCalc()
                 false
             }
+            etAmount.setOnFocusChangeListener { _, b ->
+                if (!b) {
+                    updateAmountDisplay()
+                }
+            }
             btnSplit.setOnClickListener {
                 splitTransactions()
             }
         }
     }
 
+    private fun updateAmountDisplay() {
+        binding.apply {
+            btnSplit.isEnabled = etAmount.text.toString().isNotEmpty() &&
+                    cf.getDoubleFromDollars(etAmount.text.toString()) != 0.0
+            etAmount.setText(
+                cf.displayDollars(
+                    cf.getDoubleFromDollars(
+                        etAmount.text.toString()
+                    )
+                )
+            )
+        }
+    }
+
     private fun splitTransactions() {
-        //TODO: not yet
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments() + ", " + TAG
+        )
+        mainViewModel.setTransactionDetailed(getTransactionDetailed())
+        mView.findNavController().navigate(
+            TransactionAddFragmentDirections
+                .actionTransactionAddFragmentToTransactionSplitFragment()
+        )
     }
 
     private fun gotoCalc() {
@@ -290,15 +316,17 @@ class TransactionAddFragment :
                                     mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount
                                 )
                             }
-                        etAmount.setText(
-                            cf.displayDollars(
-                                if (mainViewModel.getTransferNum()!! != 0.0) {
-                                    mainViewModel.getTransferNum()!!
-                                } else {
-                                    mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount
-                                }
-                            )
+                    etAmount.setText(
+                        cf.displayDollars(
+                            if (mainViewModel.getTransferNum()!! != 0.0) {
+                                mainViewModel.getTransferNum()!!
+                            } else {
+                                mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount
+                            }
                         )
+                    )
+                    mainViewModel.setTransferNum(0.0)
+                    updateAmountDisplay()
                 }
                 if (mainViewModel.getTransactionDetailed()!!.budgetRule != null) {
                     mBudgetRule = mainViewModel.getTransactionDetailed()!!.budgetRule

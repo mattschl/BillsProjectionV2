@@ -19,6 +19,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_SPLIT
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetRuleLayoutBinding
@@ -113,21 +114,31 @@ class BudgetRuleAdapter(
             mainViewModel.setBudgetRuleDetailed(
                 budgetRuleDetailed
             )
-            val mTransaction =
-                mainViewModel.getTransactionDetailed()
-            mTransaction?.budgetRule =
-                budgetRuleDetailed.budgetRule
-            mainViewModel.setTransactionDetailed(mTransaction)
-            val mBudgetDetailed =
-                mainViewModel.getBudgetItem()
-            mBudgetDetailed?.budgetRule =
-                budgetRuleDetailed!!.budgetRule
-
-            mainViewModel.setCallingFragments(
+            if (mainViewModel.getCallingFragments()!!
+                    .contains(FRAG_TRANSACTION_SPLIT)
+            ) {
+                val mTransactionSplit = mainViewModel.getSplitTransactionDetailed()
+                mTransactionSplit?.budgetRule =
+                    budgetRuleDetailed.budgetRule
+                mainViewModel.setSplitTransactionDetailed(mTransactionSplit)
+            } else {
+                val mTransaction =
+                    mainViewModel.getTransactionDetailed()
+                mTransaction?.budgetRule =
+                    budgetRuleDetailed.budgetRule
+                mainViewModel.setTransactionDetailed(mTransaction)
+            }
+            if (mainViewModel.getCallingFragments()!!
+                    .contains(FRAG_BUDGET_ITEM_ADD) ||
                 mainViewModel.getCallingFragments()!!
-                    .replace(", $PARENT_TAG", "")
-            )
-            mainViewModel.setBudgetItem(mBudgetDetailed)
+                    .contains(FRAG_BUDGET_ITEM_UPDATE)
+            ) {
+                val mBudgetDetailed =
+                    mainViewModel.getBudgetItem()
+                mBudgetDetailed?.budgetRule =
+                    budgetRuleDetailed!!.budgetRule
+                mainViewModel.setBudgetItem(mBudgetDetailed)
+            }
             gotoCallingFragment(it)
         }
 
@@ -200,34 +211,35 @@ class BudgetRuleAdapter(
     }
 
     private fun gotoCallingFragment(it: View) {
-        if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANS_ADD)) {
+        if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_SPLIT)) {
+            it.findNavController().navigate(
+                BudgetRuleFragmentDirections
+                    .actionBudgetRuleFragmentToTransactionSplitFragment()
+            )
+        } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANS_ADD)) {
             val direction =
                 BudgetRuleFragmentDirections
                     .actionBudgetRuleFragmentToTransactionAddFragment()
             it.findNavController().navigate(direction)
-        } else if (mainViewModel.getCallingFragments()!!
-                .contains(FRAG_TRANS_UPDATE)
+        } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANS_UPDATE)
         ) {
             val direction =
                 BudgetRuleFragmentDirections
                     .actionBudgetRuleFragmentToTransactionUpdateFragment()
             it.findNavController().navigate(direction)
-        } else if (mainViewModel.getCallingFragments()!!
-                .contains(FRAG_BUDGET_ITEM_ADD)
+        } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_BUDGET_ITEM_ADD)
         ) {
             val direction =
                 BudgetRuleFragmentDirections
                     .actionBudgetRuleFragmentToBudgetItemAddFragment()
             it.findNavController().navigate(direction)
-        } else if (mainViewModel.getCallingFragments()!!
-                .contains(FRAG_BUDGET_ITEM_UPDATE)
+        } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_BUDGET_ITEM_UPDATE)
         ) {
             val direction =
                 BudgetRuleFragmentDirections
                     .actionBudgetRuleFragmentToBudgetItemUpdateFragment()
             it.findNavController().navigate(direction)
-        } else if (mainViewModel.getCallingFragments()!!
-                .contains(FRAG_TRANSACTION_ANALYSIS)
+        } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_ANALYSIS)
         ) {
             it.findNavController().navigate(
                 BudgetRuleFragmentDirections

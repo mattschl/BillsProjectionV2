@@ -376,6 +376,7 @@ class BudgetItemAddFragment : Fragment(
                         )
                     )
                 }
+                mainViewModel.setTransferNum(0.0)
                 if (mainViewModel.getBudgetItem()!!.toAccount != null) {
                     tvToAccount.text =
                         mainViewModel.getBudgetItem()!!.toAccount!!.accountName

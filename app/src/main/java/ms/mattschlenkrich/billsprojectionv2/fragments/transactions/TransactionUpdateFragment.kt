@@ -322,6 +322,7 @@ class TransactionUpdateFragment :
                             }
                         )
                     )
+                    mainViewModel.setTransferNum(0.0)
                     etDescription.setText(
                         mainViewModel.getTransactionDetailed()!!.transaction!!.transName
                     )

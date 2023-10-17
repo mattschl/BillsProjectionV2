@@ -169,6 +169,7 @@ class BudgetItemUpdateFragment : Fragment(
                         }
                     )
                 )
+                mainViewModel.setTransferNum(0.0)
                 tvToAccount.text =
                     curBudgetItem.toAccount?.accountName
                 mBudgetRuleDetailed.toAccount =

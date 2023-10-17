@@ -207,6 +207,7 @@ class AccountAddFragment :
                         }
                     )
                 )
+                mainViewModel.setTransferNum(0.0)
                 etAccAddLimit.setText(
                     cf.displayDollars(
                         mainViewModel.getAccountWithType()!!.account.accountCreditLimit

@@ -178,6 +178,9 @@
         <action
             android:id="@+id/action_budgetRuleFragment_to_transactionAverageFragment"
             app:destination="@id/transactionAverageFragment" />
+        <action
+            android:id="@+id/action_budgetRuleFragment_to_transactionSplitFragment"
+            app:destination="@id/transactionSplitFragment" />
     </fragment>
     <fragment
         android:id="@+id/budgetRuleAddFragment"
@@ -255,6 +258,9 @@
         <action
             android:id="@+id/action_transactionAddFragment_to_calcFragment"
             app:destination="@id/calcFragment" />
+        <action
+            android:id="@+id/action_transactionAddFragment_to_transactionSplitFragment"
+            app:destination="@id/transactionSplitFragment" />
     </fragment>
     <fragment
         android:id="@+id/transactionUpdateFragment"
@@ -438,5 +444,23 @@
         <action
             android:id="@+id/action_calcFragment_to_accountAddFragment"
             app:destination="@id/accountAddFragment" />
+        <action
+            android:id="@+id/action_calcFragment_to_transactionSplitFragment"
+            app:destination="@id/transactionSplitFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/transactionSplitFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.transactions.TransactionSplitFragment"
+        android:label="fragment_transaction_split"
+        tools:layout="@layout/fragment_transaction_split">
+        <action
+            android:id="@+id/action_transactionSplitFragment_to_calcFragment"
+            app:destination="@id/calcFragment" />
+        <action
+            android:id="@+id/action_transactionSplitFragment_to_transactionAddFragment"
+            app:destination="@id/transactionAddFragment" />
+        <action
+            android:id="@+id/action_transactionSplitFragment_to_budgetRuleFragment"
+            app:destination="@id/budgetRuleFragment" />
     </fragment>
 </navigation>
