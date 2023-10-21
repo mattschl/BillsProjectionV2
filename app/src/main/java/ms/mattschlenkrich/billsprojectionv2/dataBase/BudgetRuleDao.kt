@@ -54,7 +54,7 @@ interface BudgetRuleDao {
                 "$BUDGET_RULE_NAME;"
     )
     suspend fun getBudgetRulesActive():
-            LiveData<List<BudgetRule>>
+            List<BudgetRule>
 
     @Transaction
     @Query(
@@ -108,7 +108,7 @@ interface BudgetRuleDao {
                 "WHERE $TABLE_BUDGET_RULES.ruleId = :ruleId " +
                 "AND $TABLE_BUDGET_RULES.$BUD_IS_DELETED = 0;"
     )
-    fun getBudgetRuleDetailed(ruleId: Long): LiveData<BudgetRuleDetailed>
+    fun getBudgetRuleDetailed(ruleId: Long): BudgetRuleDetailed
 
     @Transaction
     @Query(

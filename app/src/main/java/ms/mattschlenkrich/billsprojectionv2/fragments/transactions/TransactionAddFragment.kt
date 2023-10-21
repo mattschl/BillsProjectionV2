@@ -16,6 +16,11 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
@@ -25,6 +30,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTIONS
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
+import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionAddBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
 import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
@@ -340,37 +346,63 @@ class TransactionAddFragment :
                         mBudgetRule!!.budgetRuleName
                     if (mainViewModel.getTransactionDetailed()!!.toAccount == null) {
                         if (mainViewModel.getTransactionDetailed()!!.budgetRule!!.budToAccountId != 0L) {
-                            accountViewModel.getAccount(
-                                mainViewModel.getTransactionDetailed()!!.budgetRule!!.budToAccountId
-                            ).observe(viewLifecycleOwner) {
-                                mToAccount = it
-                                tvToAccount.text = it.accountName
+
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val acc = async {
+                                    accountViewModel.getAccount(
+                                        mainViewModel.getTransactionDetailed()!!.budgetRule!!.budToAccountId
+                                    )
+                                }
+                                mToAccount = acc.await()
                             }
-                            accountViewModel.getAccountWithType(
-                                mainViewModel.getTransactionDetailed()!!.budgetRule!!.budToAccountId
-                            ).observe(viewLifecycleOwner) {
-                                mToAccountWithType = it
-                                if (it.accountType!!.allowPending) {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                delay(WAIT_250)
+                                tvToAccount.text = mToAccount!!.accountName
+                            }
+
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val acc = async {
+                                    accountViewModel.getAccountWithType(
+                                        mainViewModel.getTransactionDetailed()!!.budgetRule!!.budToAccountId
+                                    )
+                                }
+                                mToAccountWithType = acc.await()
+                            }
+                            CoroutineScope(Dispatchers.Main).launch {
+                                delay(WAIT_250)
+                                if (mToAccountWithType!!.accountType!!.allowPending) {
                                     chkToAccPending.visibility = View.VISIBLE
                                 } else {
                                     chkToAccPending.visibility = View.GONE
                                 }
-
                             }
                         }
                     }
                     if (mainViewModel.getTransactionDetailed()!!.fromAccount == null) {
                         if (mainViewModel.getTransactionDetailed()!!.budgetRule!!.budFromAccountId != 0L) {
-                            accountViewModel.getAccount(
-                                mainViewModel.getTransactionDetailed()!!.budgetRule!!.budFromAccountId
-                            ).observe(viewLifecycleOwner) {
-                                tvFromAccount.text = it.accountName
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val acc = async {
+                                    accountViewModel.getAccount(
+                                        mainViewModel.getTransactionDetailed()!!.budgetRule!!.budFromAccountId
+                                    )
+                                }
+                                mFromAccount = acc.await()
                             }
-                            accountViewModel.getAccountWithType(
-                                mainViewModel.getTransactionDetailed()!!.budgetRule!!.budFromAccountId
-                            ).observe(viewLifecycleOwner) {
-                                mFromAccountWithType = it
-                                if (it.accountType!!.allowPending) {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                delay(WAIT_250)
+                                tvFromAccount.text = mFromAccount!!.accountName
+                            }
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val acc = async {
+                                    accountViewModel.getAccountWithType(
+                                        mainViewModel.getTransactionDetailed()!!.budgetRule!!.budFromAccountId
+                                    )
+                                }
+                                mFromAccountWithType = acc.await()
+                            }
+                            CoroutineScope(Dispatchers.Main).launch {
+                                delay(WAIT_250)
+                                if (mFromAccountWithType!!.accountType!!.allowPending) {
                                     chkFromAccPending.visibility = View.VISIBLE
                                 } else {
                                     chkFromAccPending.visibility = View.GONE
@@ -384,11 +416,17 @@ class TransactionAddFragment :
                         mainViewModel.getTransactionDetailed()!!.toAccount
                     tvToAccount.text =
                         mainViewModel.getTransactionDetailed()!!.toAccount!!.accountName
-                    accountViewModel.getAccountWithType(
-                        mainViewModel.getTransactionDetailed()!!.toAccount!!.accountName
-                    ).observe(viewLifecycleOwner) {
-                        mToAccountWithType = it
-                        if (it.accountType!!.allowPending) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val acc = async {
+                            accountViewModel.getAccountWithType(
+                                mainViewModel.getTransactionDetailed()!!.toAccount!!.accountName
+                            )
+                        }
+                        mToAccountWithType = acc.await()
+                    }
+                    CoroutineScope(Dispatchers.Main).launch {
+                        delay(WAIT_250)
+                        if (mToAccountWithType!!.accountType!!.allowPending) {
                             chkToAccPending.visibility = View.VISIBLE
                         } else {
                             chkToAccPending.visibility = View.GONE
@@ -402,11 +440,17 @@ class TransactionAddFragment :
                         mainViewModel.getTransactionDetailed()!!.fromAccount
                     tvFromAccount.text =
                         mainViewModel.getTransactionDetailed()?.fromAccount!!.accountName
-                    accountViewModel.getAccountWithType(
-                        mainViewModel.getTransactionDetailed()?.fromAccount!!.accountName
-                    ).observe(viewLifecycleOwner) {
-                        mFromAccountWithType = it
-                        if (it.accountType!!.allowPending) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val acc = async {
+                            accountViewModel.getAccountWithType(
+                                mainViewModel.getTransactionDetailed()?.fromAccount!!.accountName
+                            )
+                        }
+                        mFromAccountWithType = acc.await()
+                    }
+                    CoroutineScope(Dispatchers.Main).launch {
+                        delay(WAIT_250)
+                        if (mFromAccountWithType!!.accountType!!.allowPending) {
                             chkFromAccPending.visibility = View.VISIBLE
                         } else {
                             chkFromAccPending.visibility = View.GONE

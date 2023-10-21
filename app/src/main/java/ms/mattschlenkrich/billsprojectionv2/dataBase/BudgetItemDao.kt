@@ -62,7 +62,7 @@ interface BudgetItemDao {
                 "AND $BI_IS_CANCELLED = 0 " +
                 "ORDER BY $BI_PROJECTED_DATE; "
     )
-    fun getPayDaysActive(): LiveData<List<String>>
+    fun getPayDaysActive(): List<String>
 
     @Query(
         "SELECT DISTINCT $BI_PAY_DAY FROM $TABLE_BUDGET_ITEMS " +

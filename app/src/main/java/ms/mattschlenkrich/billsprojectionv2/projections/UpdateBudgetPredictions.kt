@@ -88,7 +88,7 @@ class UpdateBudgetPredictions(
                         }
                     val payDays =
                         payDayList.await()
-                    if (payDays.isNotEmpty()) {
+                    if (payDayList.await().isNotEmpty()) {
                         for (rule in rulesOnPayDay) {
                             val endDate =
                                 if (rule.budEndDate!! > stopDate) {

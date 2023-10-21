@@ -15,6 +15,10 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
@@ -326,10 +330,13 @@ class BudgetItemAddFragment : Fragment(
             if (mainViewModel.getBudgetItem()!!.budgetRule != null) {
                 tvBudgetRule.text =
                     mainViewModel.getBudgetItem()!!.budgetRule!!.budgetRuleName
-                budgetRuleViewModel.getBudgetRuleDetailed(
-                    mainViewModel.getBudgetItem()!!.budgetRule!!.ruleId
-                ).observe(viewLifecycleOwner) {
-                    budgetRuleDetailed = it
+                CoroutineScope(Dispatchers.IO).launch {
+                    val rule = async {
+                        budgetRuleViewModel.getBudgetRuleDetailed(
+                            mainViewModel.getBudgetItem()!!.budgetRule!!.ruleId
+                        )
+                    }
+                    budgetRuleDetailed = rule.await()
                     if (mainViewModel.getBudgetItem()!!.budgetItem!!.biBudgetName.isEmpty()) {
                         etBudgetItemName.setText(
                             budgetRuleDetailed.budgetRule?.budgetRuleName

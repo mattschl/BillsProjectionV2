@@ -279,7 +279,7 @@ class CalcFragment : Fragment(R.layout.fragment_calc) {
                 ) {
                     0.0
                 } else {
-                    tvDisplay.text.toString().toDouble()
+                   cf.getDoubleFromDollars(tvDisplay.text.toString())
                 }
             if (operator[counter] == "") {
                 formula[counter] = tvDisplay.text.toString()

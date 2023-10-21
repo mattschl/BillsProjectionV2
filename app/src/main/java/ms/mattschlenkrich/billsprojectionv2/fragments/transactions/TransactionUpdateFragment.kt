@@ -428,47 +428,55 @@ class TransactionUpdateFragment :
             }
         }
         if (!newTransaction.transToAccountPending) {
-            val toAccountWithType =
-                accountViewModel.getAccountWithType(
-                    newTransaction.transToAccountId
-                )
-            if (toAccountWithType.accountType!!.keepTotals) {
-                transactionViewModel.updateAccountBalance(
-                    toAccountWithType.account.accountBalance +
-                            newTransaction.transAmount,
-                    newTransaction.transToAccountId,
-                    df.getCurrentTimeAsString()
-                )
+            CoroutineScope(Dispatchers.IO).launch {
+                val acc = async {
+                    accountViewModel.getAccountWithType(
+                        newTransaction.transToAccountId
+                    )
+                }
+                if (acc.await().accountType!!.keepTotals) {
+                    transactionViewModel.updateAccountBalance(
+                        acc.await().account.accountBalance +
+                                newTransaction.transAmount,
+                        newTransaction.transToAccountId,
+                        df.getCurrentTimeAsString()
+                    )
+                }
+                if (acc.await().accountType!!.tallyOwing) {
+                    transactionViewModel.updateAccountOwing(
+                        acc.await().account.accountOwing -
+                                newTransaction.transAmount,
+                        newTransaction.transToAccountId,
+                        df.getCurrentTimeAsString()
+                    )
+                }
             }
-            if (toAccountWithType.accountType.tallyOwing) {
-                transactionViewModel.updateAccountOwing(
-                    toAccountWithType.account.accountOwing -
-                            newTransaction.transAmount,
-                    newTransaction.transToAccountId,
-                    df.getCurrentTimeAsString()
-                )
-            }
+
         }
         if (!newTransaction.transFromAccountPending) {
-            val fromAccountWithType =
-                accountViewModel.getAccountWithType(
-                    newTransaction.transFromAccountId
-                )
-            if (fromAccountWithType.accountType!!.keepTotals) {
-                transactionViewModel.updateAccountBalance(
-                    fromAccountWithType.account.accountBalance -
-                            newTransaction.transAmount,
-                    newTransaction.transFromAccountId,
-                    df.getCurrentTimeAsString()
-                )
-            }
-            if (fromAccountWithType.accountType.tallyOwing) {
-                transactionViewModel.updateAccountOwing(
-                    fromAccountWithType.account.accountOwing +
-                            newTransaction.transAmount,
-                    newTransaction.transFromAccountId,
-                    df.getCurrentTimeAsString()
-                )
+
+            CoroutineScope(Dispatchers.IO).launch {
+                val acc = async {
+                    accountViewModel.getAccountWithType(
+                        newTransaction.transFromAccountId
+                    )
+                }
+                if (acc.await().accountType!!.keepTotals) {
+                    transactionViewModel.updateAccountBalance(
+                        acc.await().account.accountBalance -
+                                newTransaction.transAmount,
+                        newTransaction.transFromAccountId,
+                        df.getCurrentTimeAsString()
+                    )
+                }
+                if (acc.await().accountType!!.tallyOwing) {
+                    transactionViewModel.updateAccountOwing(
+                        acc.await().account.accountOwing +
+                                newTransaction.transAmount,
+                        newTransaction.transFromAccountId,
+                        df.getCurrentTimeAsString()
+                    )
+                }
             }
         }
         return true
