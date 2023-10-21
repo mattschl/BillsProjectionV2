@@ -327,6 +327,9 @@ class BudgetRuleUpdateFragment :
                     spDayOfWeek.setSelection(
                         mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budDayOfWeekId
                     )
+                    etLeadDays.setText(
+                        mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budLeadDays
+                    )
                 }
             } else {
                 etStartDate.setText(df.getCurrentDateAsString())

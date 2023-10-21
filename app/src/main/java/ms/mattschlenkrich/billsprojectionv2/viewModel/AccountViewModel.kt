@@ -52,7 +52,6 @@ class AccountViewModel(
     fun getActiveAccountTypes() =
         accountRepository.getActiveAccountTypes()
 
-
     fun searchAccountTypes(query: String) =
         accountRepository.searchAccountType(query)
 

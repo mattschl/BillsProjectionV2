@@ -109,7 +109,7 @@ interface AccountDao {
                 "$TABLE_ACCOUNTS.$ACCOUNT_TYPE_ID " +
                 "WHERE $TABLE_ACCOUNTS.$ACCOUNT_ID = :accountId  "
     )
-    fun getAccountWithType(accountId: Long): AccountWithType
+    fun getAccountWithType(accountId: Long): LiveData<AccountWithType>
 
     @Transaction
     @Query(
@@ -122,7 +122,7 @@ interface AccountDao {
                 "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
                 "WHERE $ACCOUNT_NAME = :accountName)"
     )
-    fun getAccountWithType(accountName: String): AccountWithType
+    fun getAccountWithType(accountName: String): LiveData<AccountWithType>
 
     @Transaction
     @Query(
@@ -152,6 +152,7 @@ interface AccountDao {
         "SELECT * FROM $TABLE_ACCOUNTS " +
                 "WHERE $ACCOUNT_ID = :accountId"
     )
-    fun getAccount(accountId: Long): Account
+    fun getAccount(accountId: Long): LiveData<Account>
+
 
 }

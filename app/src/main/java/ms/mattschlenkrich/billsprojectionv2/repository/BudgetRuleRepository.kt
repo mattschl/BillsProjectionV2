@@ -28,4 +28,7 @@ class BudgetRuleRepository(private val db: BillsDatabase) {
 
     fun getBudgetRuleDetailed(ruleId: Long) =
         db.getBudgetRuleDao().getBudgetRuleDetailed(ruleId)
+
+    fun getBudgetRuleFullLive(ruleId: Long) =
+        db.getBudgetRuleDao().getBudgetRuleFullLive(ruleId)
 }

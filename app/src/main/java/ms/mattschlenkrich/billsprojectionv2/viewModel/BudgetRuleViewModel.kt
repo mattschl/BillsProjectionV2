@@ -41,4 +41,7 @@ class BudgetRuleViewModel(
 
     fun getBudgetRuleDetailed(ruleId: Long) =
         budgetRuleRepository.getBudgetRuleDetailed(ruleId)
+
+    fun getBudgetRuleFullLive(ruleId: Long) =
+        budgetRuleRepository.getBudgetRuleFullLive(ruleId)
 }

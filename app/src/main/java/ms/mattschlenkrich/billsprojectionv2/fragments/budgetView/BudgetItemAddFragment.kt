@@ -15,11 +15,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
@@ -331,73 +326,64 @@ class BudgetItemAddFragment : Fragment(
             if (mainViewModel.getBudgetItem()!!.budgetRule != null) {
                 tvBudgetRule.text =
                     mainViewModel.getBudgetItem()!!.budgetRule!!.budgetRuleName
-                CoroutineScope(Dispatchers.IO).launch {
-                    val mBudgetRuleDetailed =
-                        async {
-                            budgetRuleViewModel.getBudgetRuleDetailed(
-                                mainViewModel.getBudgetItem()!!.budgetRule!!.ruleId
+                budgetRuleViewModel.getBudgetRuleDetailed(
+                    mainViewModel.getBudgetItem()!!.budgetRule!!.ruleId
+                ).observe(viewLifecycleOwner) {
+                    budgetRuleDetailed = it
+                    if (mainViewModel.getBudgetItem()!!.budgetItem!!.biBudgetName.isEmpty()) {
+                        etBudgetItemName.setText(
+                            budgetRuleDetailed.budgetRule?.budgetRuleName
+                        )
+                    } else {
+                        etBudgetItemName.setText(
+                            mainViewModel.getBudgetItem()?.budgetItem?.biBudgetName
+                        )
+                    }
+
+                    if (mainViewModel.getBudgetItem()!!.budgetItem!!.biProjectedAmount == 0.0) {
+                        etProjectedAmount.setText(
+                            cf.displayDollars(
+                                if (mainViewModel.getTransferNum()!! != 0.0) {
+                                    mainViewModel.getTransferNum()!!
+                                } else {
+                                    budgetRuleDetailed.budgetRule?.budgetAmount ?: 0.0
+                                }
                             )
-                        }
-                    budgetRuleDetailed.budgetRule =
-                        mainViewModel.getBudgetItem()!!.budgetRule
-                    budgetRuleDetailed =
-                        mBudgetRuleDetailed.await()
-                }
-            }
-            CoroutineScope(Dispatchers.Main).launch {
-                delay(500)
-                if (mainViewModel.getBudgetItem()!!.budgetItem!!.biBudgetName.isEmpty()) {
-                    etBudgetItemName.setText(
-                        budgetRuleDetailed.budgetRule?.budgetRuleName
-                    )
-                } else {
-                    etBudgetItemName.setText(
-                        mainViewModel.getBudgetItem()?.budgetItem?.biBudgetName
-                    )
-                }
-                if (mainViewModel.getBudgetItem()!!.budgetItem!!.biProjectedAmount == 0.0) {
-                    etProjectedAmount.setText(
-                        cf.displayDollars(
-                            if (mainViewModel.getTransferNum()!! != 0.0) {
-                                mainViewModel.getTransferNum()!!
-                            } else {
-                                budgetRuleDetailed.budgetRule?.budgetAmount ?: 0.0
-                            }
                         )
-                    )
-                } else {
-                    etProjectedAmount.setText(
-                        cf.displayDollars(
-                            if (mainViewModel.getTransferNum()!! != 0.0) {
-                                mainViewModel.getTransferNum()!!
-                            } else {
-                                mainViewModel.getBudgetItem()!!.budgetItem!!.biProjectedAmount
-                            }
+                    } else {
+                        etProjectedAmount.setText(
+                            cf.displayDollars(
+                                if (mainViewModel.getTransferNum()!! != 0.0) {
+                                    mainViewModel.getTransferNum()!!
+                                } else {
+                                    mainViewModel.getBudgetItem()!!.budgetItem!!.biProjectedAmount
+                                }
+                            )
                         )
-                    )
-                }
-                mainViewModel.setTransferNum(0.0)
-                if (mainViewModel.getBudgetItem()!!.toAccount != null) {
-                    tvToAccount.text =
-                        mainViewModel.getBudgetItem()!!.toAccount!!.accountName
-                    budgetRuleDetailed.toAccount =
-                        mainViewModel.getBudgetItem()!!.toAccount
-                } else {
-                    tvToAccount.text =
-                        budgetRuleDetailed.toAccount?.accountName
-                    budgetRuleDetailed.toAccount =
-                        budgetRuleDetailed.toAccount
-                }
-                if (mainViewModel.getBudgetItem()!!.fromAccount != null) {
-                    tvFromAccount.text =
-                        mainViewModel.getBudgetItem()!!.fromAccount!!.accountName
-                    budgetRuleDetailed.fromAccount =
-                        mainViewModel.getBudgetItem()!!.fromAccount
-                } else {
-                    tvFromAccount.text =
-                        budgetRuleDetailed.fromAccount?.accountName
-                    budgetRuleDetailed.fromAccount =
-                        budgetRuleDetailed.fromAccount
+                    }
+                    mainViewModel.setTransferNum(0.0)
+                    if (mainViewModel.getBudgetItem()!!.toAccount != null) {
+                        tvToAccount.text =
+                            mainViewModel.getBudgetItem()!!.toAccount!!.accountName
+                        budgetRuleDetailed.toAccount =
+                            mainViewModel.getBudgetItem()!!.toAccount
+                    } else {
+                        tvToAccount.text =
+                            budgetRuleDetailed.toAccount?.accountName
+                        budgetRuleDetailed.toAccount =
+                            budgetRuleDetailed.toAccount
+                    }
+                    if (mainViewModel.getBudgetItem()!!.fromAccount != null) {
+                        tvFromAccount.text =
+                            mainViewModel.getBudgetItem()!!.fromAccount!!.accountName
+                        budgetRuleDetailed.fromAccount =
+                            mainViewModel.getBudgetItem()!!.fromAccount
+                    } else {
+                        tvFromAccount.text =
+                            budgetRuleDetailed.fromAccount?.accountName
+                        budgetRuleDetailed.fromAccount =
+                            budgetRuleDetailed.fromAccount
+                    }
                 }
             }
             chkFixedAmount.isChecked =

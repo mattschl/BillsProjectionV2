@@ -10,18 +10,19 @@ class CommonFunctions {
     private val numberDisplay: NumberFormat = NumberFormat.getNumberInstance(Locale.CANADA)
 
     fun getDoubleFromDollars(dollars: String): Double {
-        return dollars.trim()
-            .replace("$", "")
-            .replace(",", "")
-            .toDouble()
+        return if (dollars != "") {
+            dollars.trim()
+                .replace("$", "")
+                .replace(",", "")
+                .toDouble()
+        } else {
+            0.0
+        }
     }
 
-    fun displayDollars(num: Double?): String {
-        if (num != null) {
-            return dollarFormat.format(num)
-        } else {
-            return dollarFormat.format(0.0)
-        }
+    fun displayDollars(num: Double): String {
+        return dollarFormat.format(num)
+
     }
 
 

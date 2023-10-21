@@ -501,6 +501,7 @@ class BudgetViewFragment : Fragment(
 
     private fun addNewTransaction() {
         setToReturn()
+        mainViewModel.setTransactionDetailed(null)
         val direction =
             BudgetViewFragmentDirections
                 .actionBudgetViewFragmentToTransactionAddFragment()
