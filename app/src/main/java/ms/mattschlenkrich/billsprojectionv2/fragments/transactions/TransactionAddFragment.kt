@@ -466,7 +466,10 @@ class TransactionAddFragment :
             } else {
                 etTransDate.setText(df.getCurrentDateAsString())
             }
-            updateAmountDisplay()
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(WAIT_250)
+                updateAmountDisplay()
+            }
         }
     }
 
@@ -531,6 +534,7 @@ class TransactionAddFragment :
     }
 
     private fun gotoCallingFragment() {
+        updateAmountDisplay()
         mainViewModel.setCallingFragments(
             mainViewModel.getCallingFragments()!!
                 .replace(", $TAG", "")

@@ -20,6 +20,7 @@ import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_SPLIT
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionSplitBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
@@ -154,7 +155,7 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
                 mainViewModel.getTransactionDetailed()?.budgetRule?.ruleId ?: 0L,
                 mToAccount?.accountId ?: 0L,
                 chkToAccPending.isChecked,
-                mFromAccount?.accountId ?: 0L,
+                mFromAccount.accountId,
                 chkFromAccPending.isChecked,
                 if (etAmount.text.isNotEmpty()) {
                     cf.getDoubleFromDollars(etAmount.text.toString())
@@ -376,19 +377,19 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
             }
         }
         if (!mTransaction.transFromAccountPending) {
-            if (mFromAccountWithType!!.accountType!!.keepTotals) {
+            if (mFromAccountWithType.accountType!!.keepTotals) {
                 transactionViewModel.updateAccountBalance(
-                    mFromAccountWithType!!.account.accountBalance -
+                    mFromAccountWithType.account.accountBalance -
                             mTransaction.transAmount,
-                    mFromAccount!!.accountId,
+                    mFromAccount.accountId,
                     df.getCurrentTimeAsString()
                 )
             }
-            if (mFromAccountWithType!!.accountType!!.tallyOwing) {
+            if (mFromAccountWithType.accountType!!.tallyOwing) {
                 transactionViewModel.updateAccountOwing(
-                    mFromAccountWithType!!.account.accountOwing +
+                    mFromAccountWithType.account.accountOwing +
                             mTransaction.transAmount,
-                    mFromAccount!!.accountId,
+                    mFromAccount.accountId,
                     df.getCurrentTimeAsString()
                 )
             }
@@ -398,7 +399,24 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
     }
 
     private fun gotoCallingFragment() {
-        TODO("Not yet implemented")
+        val updateTransaction = mainViewModel.getTransactionDetailed()!!.transaction!!
+        updateTransaction.transAmount =
+            cf.getDoubleFromDollars(binding.tvRemainder.text.toString())
+        mainViewModel.setTransactionDetailed(
+            TransactionDetailed(
+                updateTransaction,
+                mainViewModel.getTransactionDetailed()!!.budgetRule,
+                mainViewModel.getTransactionDetailed()!!.toAccount,
+                mainViewModel.getTransactionDetailed()!!.fromAccount
+            )
+        )
+        mainViewModel.setSplitTransactionDetailed(null)
+        if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANS_ADD)) {
+            mView.findNavController().navigate(
+                TransactionSplitFragmentDirections
+                    .actionTransactionSplitFragmentToTransactionAddFragment()
+            )
+        }
     }
 
     private fun checkTransactions(): String {
@@ -418,10 +436,6 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
                 ) {
                     "     Error!!\n" +
                             "There needs to be an account money will go to."
-                } else if (mFromAccount == null
-                ) {
-                    "     Error!!\n" +
-                            "There needs to be an account money will come from."
                 } else if (etAmount.text.isNullOrEmpty() ||
                     amount == 0.0
                 ) {

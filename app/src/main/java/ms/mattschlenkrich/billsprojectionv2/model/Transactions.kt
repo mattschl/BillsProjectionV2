@@ -60,7 +60,7 @@ data class Transactions(
     @ColumnInfo(defaultValue = "0.0")
     var transFromAccountPending: Boolean,
     @ColumnInfo(defaultValue = "0.0")
-    val transAmount: Double,
+    var transAmount: Double,
     @ColumnInfo(defaultValue = "0")
     val transIsDeleted: Boolean,
     val transUpdateTime: String,
