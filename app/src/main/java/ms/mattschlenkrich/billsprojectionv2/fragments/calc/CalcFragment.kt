@@ -83,6 +83,14 @@ class CalcFragment : Fragment(R.layout.fragment_calc) {
         binding.btnTransfer.setOnClickListener {
             mainViewModel.setTransferNum(result[counter])
             when (mainViewModel.getReturnTo()) {
+
+                FRAG_TRANSACTION_SPLIT -> {
+                    mView.findNavController().navigate(
+                        CalcFragmentDirections
+                            .actionCalcFragmentToTransactionSplitFragment()
+                    )
+                }
+
                 FRAG_TRANS_ADD -> {
                     mView.findNavController().navigate(
                         CalcFragmentDirections
@@ -129,13 +137,6 @@ class CalcFragment : Fragment(R.layout.fragment_calc) {
                     mView.findNavController().navigate(
                         CalcFragmentDirections
                             .actionCalcFragmentToBudgetRuleUpdateFragment()
-                    )
-                }
-
-                FRAG_TRANSACTION_SPLIT -> {
-                    mView.findNavController().navigate(
-                        CalcFragmentDirections
-                            .actionCalcFragmentToTransactionSplitFragment()
                     )
                 }
 

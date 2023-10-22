@@ -130,7 +130,9 @@ class TransactionAddFragment :
 
     private fun splitTransactions() {
         mainViewModel.setSplitTransactionDetailed(null)
-        if (mFromAccount != null && cf.getDoubleFromDollars(binding.etAmount.text.toString()) > 2.0) {
+        if (mFromAccount != null &&
+            cf.getDoubleFromDollars(binding.etAmount.text.toString()) > 2.0
+        ) {
             mainViewModel.setCallingFragments(
                 mainViewModel.getCallingFragments() + ", " + TAG
             )

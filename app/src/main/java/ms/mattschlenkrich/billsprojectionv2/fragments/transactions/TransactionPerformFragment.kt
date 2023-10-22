@@ -133,14 +133,38 @@ class TransactionPerformFragment : Fragment(
                     )
                     calculateRemainder()
                 }
-                val mBudgetItem =
-                    mainViewModel.getBudgetItem()
-                mBudgetItem!!.budgetItem!!.biProjectedAmount =
-                    cf.getDoubleFromDollars(
-                        etBudgetedAmount.text.toString()
-                    )
-                mainViewModel.setBudgetItem(mBudgetItem)
+                if (cf.getDoubleFromDollars(etBudgetedAmount.text.toString()) !=
+                    mainViewModel.getBudgetItem()!!.budgetItem!!.biProjectedAmount
+                ) {
+                    val mBudgetItem =
+                        mainViewModel.getBudgetItem()
+                    mBudgetItem!!.budgetItem!!.biProjectedAmount =
+                        cf.getDoubleFromDollars(
+                            etBudgetedAmount.text.toString()
+                        )
+                    mainViewModel.setBudgetItem(mBudgetItem)
+                }
             }
+            btnSplit.setOnClickListener {
+                splitTransaction()
+            }
+        }
+    }
+
+    private fun splitTransaction() {
+        mainViewModel.setSplitTransactionDetailed(null)
+        mainViewModel.setTransferNum(0.0)
+        if (mFromAccount != null &&
+            cf.getDoubleFromDollars(binding.etAmount.text.toString()) > 2.0
+        ) {
+            mainViewModel.setCallingFragments(
+                mainViewModel.getCallingFragments() + ", " + TAG
+            )
+            mainViewModel.setTransactionDetailed(getTransactionDetailed())
+            mView.findNavController().navigate(
+                TransactionPerformFragmentDirections
+                    .actionTransactionPerformFragmentToTransactionSplitFragment()
+            )
         }
     }
 
@@ -175,7 +199,7 @@ class TransactionPerformFragment : Fragment(
             )
             tvRemainder.text =
                 cf.displayDollars(budgeted - amt)
-
+            btnSplit.isEnabled = amt > 0 && mFromAccount != null
         }
     }
 

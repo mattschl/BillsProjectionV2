@@ -380,6 +380,9 @@
         <action
             android:id="@+id/action_transactionPerformFragment_to_calcFragment"
             app:destination="@id/calcFragment" />
+        <action
+            android:id="@+id/action_transactionPerformFragment_to_transactionSplitFragment"
+            app:destination="@id/transactionSplitFragment" />
     </fragment>
     <fragment
         android:id="@+id/transactionAverageFragment"
@@ -468,5 +471,8 @@
         <action
             android:id="@+id/action_transactionSplitFragment_to_accountsFragment"
             app:destination="@id/accountsFragment" />
+        <action
+            android:id="@+id/action_transactionSplitFragment_to_transactionPerformFragment"
+            app:destination="@id/transactionPerformFragment" />
     </fragment>
 </navigation>

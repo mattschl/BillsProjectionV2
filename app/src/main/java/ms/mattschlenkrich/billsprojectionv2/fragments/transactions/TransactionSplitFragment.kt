@@ -21,6 +21,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_SPLIT
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_PERFORM
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionSplitBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
@@ -399,12 +400,12 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
     }
 
     private fun gotoCallingFragment() {
-        val updateTransaction = mainViewModel.getTransactionDetailed()!!.transaction!!
-        updateTransaction.transAmount =
+        val oldTransaction = mainViewModel.getTransactionDetailed()!!.transaction!!
+        oldTransaction.transAmount =
             cf.getDoubleFromDollars(binding.tvRemainder.text.toString())
         mainViewModel.setTransactionDetailed(
             TransactionDetailed(
-                updateTransaction,
+                oldTransaction,
                 mainViewModel.getTransactionDetailed()!!.budgetRule,
                 mainViewModel.getTransactionDetailed()!!.toAccount,
                 mainViewModel.getTransactionDetailed()!!.fromAccount
@@ -415,6 +416,11 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
             mView.findNavController().navigate(
                 TransactionSplitFragmentDirections
                     .actionTransactionSplitFragmentToTransactionAddFragment()
+            )
+        } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANS_PERFORM)) {
+            mView.findNavController().navigate(
+                TransactionSplitFragmentDirections
+                    .actionTransactionSplitFragmentToTransactionPerformFragment()
             )
         }
     }
