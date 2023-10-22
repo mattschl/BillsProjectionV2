@@ -92,8 +92,8 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
                 gotoCalc()
                 false
             }
-            etAmount.setOnFocusChangeListener { _, _ ->
-                updateAmountsDisplay()
+            etAmount.setOnFocusChangeListener { _, b ->
+                if (!b) updateAmountsDisplay()
             }
             etDescription.setOnFocusChangeListener { _, _ ->
                 updateAmountsDisplay()

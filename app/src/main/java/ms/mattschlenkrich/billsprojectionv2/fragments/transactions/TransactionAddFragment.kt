@@ -109,8 +109,9 @@ class TransactionAddFragment :
                 gotoCalc()
                 false
             }
-            etAmount.setOnFocusChangeListener { _, _ ->
-                updateAmountDisplay()
+            etAmount.setOnFocusChangeListener { _, b ->
+                if (!b)
+                    updateAmountDisplay()
             }
             etDescription.setOnFocusChangeListener { _, _ ->
                 updateAmountDisplay()
