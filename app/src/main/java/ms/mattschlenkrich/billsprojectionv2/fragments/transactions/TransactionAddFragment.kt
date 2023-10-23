@@ -228,9 +228,10 @@ class TransactionAddFragment :
 
     private fun updateAmountDisplay() {
         binding.apply {
-            btnSplit.isEnabled = etAmount.text.toString().isNotEmpty() &&
-                    cf.getDoubleFromDollars(etAmount.text.toString()) > 0.0 &&
-                    mFromAccount != null
+            btnSplit.isEnabled =
+                etAmount.text.toString().isNotEmpty() &&
+                        cf.getDoubleFromDollars(etAmount.text.toString()) > 0.0 &&
+                        mFromAccount != null
             etAmount.setText(
                 cf.displayDollars(
                     cf.getDoubleFromDollars(
@@ -345,8 +346,7 @@ class TransactionAddFragment :
                 }
                 if (mainViewModel.getTransactionDetailed()!!.budgetRule != null) {
                     mBudgetRule = mainViewModel.getTransactionDetailed()!!.budgetRule
-                    tvBudgetRule.text =
-                        mBudgetRule!!.budgetRuleName
+                    tvBudgetRule.text = mBudgetRule!!.budgetRuleName
                     if (mainViewModel.getTransactionDetailed()!!.toAccount == null) {
                         if (mainViewModel.getTransactionDetailed()!!.budgetRule!!.budToAccountId != 0L) {
 
@@ -394,21 +394,21 @@ class TransactionAddFragment :
                             CoroutineScope(Dispatchers.Main).launch {
                                 delay(WAIT_250)
                                 tvFromAccount.text = mFromAccount!!.accountName
-                            }
-                            CoroutineScope(Dispatchers.IO).launch {
-                                val acc = async {
-                                    accountViewModel.getAccountWithType(
-                                        mainViewModel.getTransactionDetailed()!!.budgetRule!!.budFromAccountId
-                                    )
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    val acc = async {
+                                        accountViewModel.getAccountWithType(
+                                            mFromAccount!!.accountName
+                                        )
+                                    }
+                                    mFromAccountWithType = acc.await()
                                 }
-                                mFromAccountWithType = acc.await()
-                            }
-                            CoroutineScope(Dispatchers.Main).launch {
-                                delay(WAIT_250)
-                                if (mFromAccountWithType!!.accountType!!.allowPending) {
-                                    chkFromAccPending.visibility = View.VISIBLE
-                                } else {
-                                    chkFromAccPending.visibility = View.GONE
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    delay(WAIT_250)
+                                    if (mFromAccountWithType!!.accountType!!.allowPending) {
+                                        chkFromAccPending.visibility = View.VISIBLE
+                                    } else {
+                                        chkFromAccPending.visibility = View.GONE
+                                    }
                                 }
                             }
                         }

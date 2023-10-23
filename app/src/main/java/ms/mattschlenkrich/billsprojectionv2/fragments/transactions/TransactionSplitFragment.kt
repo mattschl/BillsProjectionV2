@@ -22,6 +22,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_SPLIT
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_PERFORM
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionSplitBinding
 import ms.mattschlenkrich.billsprojectionv2.model.Account
@@ -341,6 +342,7 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
     }
 
     private fun saveTransaction() {
+        updateAmountsDisplay()
         val mes = checkTransactions()
         if (mes == "Ok") {
             val mTransaction = getCurTransaction()
@@ -377,7 +379,9 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
                 )
             }
         }
-        if (!mTransaction.transFromAccountPending) {
+        if (!mTransaction.transFromAccountPending &&
+            !mainViewModel.getUpdatingTransaction()
+        ) {
             if (mFromAccountWithType.accountType!!.keepTotals) {
                 transactionViewModel.updateAccountBalance(
                     mFromAccountWithType.account.accountBalance -
@@ -413,14 +417,22 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
         )
         mainViewModel.setSplitTransactionDetailed(null)
         if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANS_ADD)) {
+            mainViewModel.setUpdatingTransaction(false)
             mView.findNavController().navigate(
                 TransactionSplitFragmentDirections
                     .actionTransactionSplitFragmentToTransactionAddFragment()
             )
         } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANS_PERFORM)) {
+            mainViewModel.setUpdatingTransaction(false)
             mView.findNavController().navigate(
                 TransactionSplitFragmentDirections
                     .actionTransactionSplitFragmentToTransactionPerformFragment()
+            )
+        } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANS_UPDATE)) {
+            mainViewModel.setUpdatingTransaction(true)
+            mView.findNavController().navigate(
+                TransactionSplitFragmentDirections
+                    .actionTransactionSplitFragmentToTransactionViewFragment()
             )
         }
     }
@@ -434,7 +446,12 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
                     0.0
                 }
             val errorMes =
-                if (etDescription.text.isNullOrBlank()
+                if (cf.getDoubleFromDollars(etAmount.text.toString()) >=
+                    cf.getDoubleFromDollars(tvOriginalAmount.text.toString())
+                ) {
+                    "     Error!!\n" +
+                            "The amount of a split transaction must be less than the original!"
+                } else if (etDescription.text.isNullOrBlank()
                 ) {
                     "     Error!!\n" +
                             "Please enter a description"
@@ -448,8 +465,8 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
                     "     Error!!\n" +
                             "Please enter an amount for this transaction"
                 } else if (mainViewModel.getSplitTransactionDetailed()!!.budgetRule == null) {
-                    if (saveWithoutBudget()) {
-                        "Ok"
+                    if (!saveWithoutBudget()) {
+                        "Choose a Budget Rule"
                     } else {
                         "Choose a Budget Rule"
                     }
@@ -461,19 +478,14 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
     }
 
     private fun saveWithoutBudget(): Boolean {
-        var bool = false
         AlertDialog.Builder(activity).apply {
             setMessage(
                 "There is no Budget Rule!" +
                         "Budget Rules are used to update the budget."
             )
-            setPositiveButton("Save anyway") { _, _ ->
-
-                bool = true
-            }
             setNegativeButton("Retry", null)
         }.create().show()
-        return bool
+        return false
     }
 
     override fun onDestroy() {

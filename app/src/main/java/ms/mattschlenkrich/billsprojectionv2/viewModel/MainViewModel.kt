@@ -24,6 +24,7 @@ class MainViewModel(
     private var callingFragments: String? = ""
     private var returnTo: String? = ""
     private var transferNum: Double? = 0.0
+    private var updatingTransaction: Boolean = false
 
     fun eraseAll() {
         budgetItem = null
@@ -36,6 +37,14 @@ class MainViewModel(
         callingFragments = ""
         returnTo = ""
         transferNum = 0.0
+    }
+
+    fun setUpdatingTransaction(update: Boolean) {
+        updatingTransaction = update
+    }
+
+    fun getUpdatingTransaction(): Boolean {
+        return updatingTransaction
     }
 
     fun setSplitTransactionDetailed(newTransaction: TransactionDetailed?) {

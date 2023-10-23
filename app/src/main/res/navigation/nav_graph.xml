@@ -238,6 +238,9 @@
         <action
             android:id="@+id/action_transactionViewFragment_to_transactionAverageFragment"
             app:destination="@id/transactionAverageFragment" />
+        <action
+            android:id="@+id/action_transactionViewFragment_to_transactionSplitFragment"
+            app:destination="@id/transactionSplitFragment" />
     </fragment>
     <fragment
         android:id="@+id/transactionAddFragment"
@@ -282,6 +285,9 @@
         <action
             android:id="@+id/action_transactionUpdateFragment_to_calcFragment"
             app:destination="@id/calcFragment" />
+        <action
+            android:id="@+id/action_transactionUpdateFragment_to_transactionSplitFragment"
+            app:destination="@id/transactionSplitFragment" />
     </fragment>
     <fragment
         android:id="@+id/budgetViewFragment"
@@ -474,5 +480,11 @@
         <action
             android:id="@+id/action_transactionSplitFragment_to_transactionPerformFragment"
             app:destination="@id/transactionPerformFragment" />
+        <action
+            android:id="@+id/action_transactionSplitFragment_to_transactionUpdateFragment"
+            app:destination="@id/transactionUpdateFragment" />
+        <action
+            android:id="@+id/action_transactionSplitFragment_to_transactionViewFragment"
+            app:destination="@id/transactionViewFragment" />
     </fragment>
 </navigation>
