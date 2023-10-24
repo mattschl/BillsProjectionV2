@@ -122,21 +122,25 @@ class TransactionAverageFragment : Fragment(
 
             transactionViewModel.getSumTransactionToAccount(account.accountId)
                 .observe(viewLifecycleOwner) { sum ->
-                    tvTotalCredits.text = cf.displayDollars(sum)
-                    tvTotalCredits.visibility = View.VISIBLE
-                    lblTotalCredits.text = getString(R.string.total_credits)
-                    lblTotalCredits.visibility = View.VISIBLE
-                    totalCredits = sum
+                    if (sum != null && !sum.isNaN()) {
+                        tvTotalCredits.text = cf.displayDollars(sum)
+                        tvTotalCredits.visibility = View.VISIBLE
+                        lblTotalCredits.text = getString(R.string.total_credits)
+                        lblTotalCredits.visibility = View.VISIBLE
+                        totalCredits = sum
+                    }
                 }
             transactionViewModel.getSumTransactionFromAccount(account.accountId)
                 .observe(viewLifecycleOwner) { sum ->
-                    tvTotalDebits.text = cf.displayDollars(-sum)
-                    tvTotalDebits.visibility = View.VISIBLE
-                    tvTotalDebits.setTextColor(Color.RED)
-                    lblTotalDebits.text = getString(R.string.total_debits)
-                    lblTotalDebits.visibility = View.VISIBLE
-                    lblTotalDebits.setTextColor(Color.RED)
-                    totalDebits = sum
+                    if (sum != null && sum.isNaN()) {
+                        tvTotalDebits.text = cf.displayDollars(-sum)
+                        tvTotalDebits.visibility = View.VISIBLE
+                        tvTotalDebits.setTextColor(Color.RED)
+                        lblTotalDebits.text = getString(R.string.total_debits)
+                        lblTotalDebits.visibility = View.VISIBLE
+                        lblTotalDebits.setTextColor(Color.RED)
+                        totalDebits = sum
+                    }
                 }
             transactionAdapter = TransactionAnalysisAdapter(
 //                mainActivity,
@@ -305,22 +309,26 @@ class TransactionAverageFragment : Fragment(
             transactionViewModel.getSumTransactionToAccount(
                 account.accountId, startDate, endDate
             ).observe(viewLifecycleOwner) { sum ->
-                tvTotalCredits.text = cf.displayDollars(sum)
-                tvTotalCredits.visibility = View.VISIBLE
-                lblTotalCredits.text = getString(R.string.total_credits)
-                lblTotalCredits.visibility = View.VISIBLE
-                totalCredits = sum
+                if (sum != null && !sum.isNaN()) {
+                    tvTotalCredits.text = cf.displayDollars(sum)
+                    tvTotalCredits.visibility = View.VISIBLE
+                    lblTotalCredits.text = getString(R.string.total_credits)
+                    lblTotalCredits.visibility = View.VISIBLE
+                    totalCredits = sum
+                }
             }
             transactionViewModel.getSumTransactionFromAccount(
                 account.accountId, startDate, endDate
             ).observe(viewLifecycleOwner) { sum ->
-                tvTotalDebits.text = cf.displayDollars(-sum)
-                tvTotalDebits.visibility = View.VISIBLE
-                tvTotalDebits.setTextColor(Color.RED)
-                lblTotalDebits.text = getString(R.string.total_debits)
-                lblTotalDebits.visibility = View.VISIBLE
-                lblTotalDebits.setTextColor(Color.RED)
-                totalDebits = sum
+                if (sum != null && !sum.isNaN()) {
+                    tvTotalDebits.text = cf.displayDollars(-sum)
+                    tvTotalDebits.visibility = View.VISIBLE
+                    tvTotalDebits.setTextColor(Color.RED)
+                    lblTotalDebits.text = getString(R.string.total_debits)
+                    lblTotalDebits.visibility = View.VISIBLE
+                    lblTotalDebits.setTextColor(Color.RED)
+                    totalDebits = sum
+                }
             }
             transactionAdapter = TransactionAnalysisAdapter()
             rvTransactions.apply {
@@ -369,8 +377,9 @@ class TransactionAverageFragment : Fragment(
             ).observe(
                 viewLifecycleOwner
             ) { max ->
-                tvHighest.text =
-                    cf.displayDollars(max)
+                if (max != null && !max.isNaN()) {
+                    tvHighest.text = cf.displayDollars(max)
+                }
             }
             transactionViewModel.getMinTransactionByBudgetRule(
                 budgetRule.ruleId,
@@ -378,20 +387,22 @@ class TransactionAverageFragment : Fragment(
             ).observe(
                 viewLifecycleOwner
             ) { min ->
-                tvLowest.text =
-                    cf.displayDollars(min)
+                if (min != null && !min.isNaN()) {
+                    tvLowest.text =
+                        cf.displayDollars(min)
+                }
             }
             transactionViewModel.getSumTransactionByBudgetRule(
                 budgetRule.ruleId,
                 startDate, endDate
             ).observe(viewLifecycleOwner) { sum ->
-                tvTotalCredits.text =
-                    cf.displayDollars(sum)
-                total = sum
-                lblTotalCredits.text =
-                    getString(R.string.total)
-                lblTotalDebits.visibility = View.GONE
-                tvTotalDebits.visibility = View.GONE
+                if (sum != null && !sum.isNaN()) {
+                    tvTotalCredits.text = cf.displayDollars(sum)
+                    total = sum
+                    lblTotalCredits.text = getString(R.string.total)
+                    lblTotalDebits.visibility = View.GONE
+                    tvTotalDebits.visibility = View.GONE
+                }
             }
             transactionAdapter = TransactionAnalysisAdapter(
 //                mainActivity,
@@ -473,23 +484,27 @@ class TransactionAverageFragment : Fragment(
             ).observe(
                 viewLifecycleOwner
             ) { max ->
-                tvHighest.text =
-                    cf.displayDollars(max)
+                if (max != null && !max.isNaN()) {
+                    tvHighest.text = cf.displayDollars(max)
+                }
             }
             transactionViewModel.getMinTransactionByBudgetRule(budgetRule.ruleId)
                 .observe(viewLifecycleOwner) { min ->
-                    tvLowest.text = cf.displayDollars(min)
+                    if (min != null && !min.isNaN()) {
+                        tvLowest.text = cf.displayDollars(min)
+                    }
                 }
             transactionViewModel.getSumTransactionByBudgetRule(
                 budgetRule.ruleId
             ).observe(viewLifecycleOwner) { sum ->
-                tvTotalCredits.text =
-                    cf.displayDollars(sum)
-                total = sum
-                lblTotalCredits.text =
-                    getString(R.string.total)
-                lblTotalDebits.visibility = View.GONE
-                tvTotalDebits.visibility = View.GONE
+                if (sum != null && !sum.isNaN()) {
+                    tvTotalCredits.text = cf.displayDollars(sum)
+                    total = sum
+                    lblTotalCredits.text =
+                        getString(R.string.total)
+                    lblTotalDebits.visibility = View.GONE
+                    tvTotalDebits.visibility = View.GONE
+                }
             }
             transactionAdapter = TransactionAnalysisAdapter(
 //                mainActivity,
@@ -523,7 +538,7 @@ class TransactionAverageFragment : Fragment(
                         endDate = transList.first().transaction!!.transDate
                         startDate = transList.last().transaction!!.transDate
                         val months = df.getMonthsBetween(startDate, endDate)
-                        lblAverage.text = getString(R.string.total)
+                        lblAverage.text = getString(R.string.average_per_month)
                         tvAverage.text =
                             cf.displayDollars(total / months)
                         lblHighest.text = getString(R.string.highest)

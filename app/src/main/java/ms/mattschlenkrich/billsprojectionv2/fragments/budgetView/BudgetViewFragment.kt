@@ -97,6 +97,14 @@ class BudgetViewFragment : Fragment(
         resumeHistory()
     }
 
+    override fun onStop() {
+        binding.apply {
+            mainViewModel.setAsset(spAssetNames.selectedItem.toString())
+            mainViewModel.setPayDay(spPayDay.selectedItem.toString())
+        }
+        super.onStop()
+    }
+
     private fun gotoAccount() {
         setToReturn()
         mainViewModel.setAccountWithType(curAsset)
@@ -154,6 +162,7 @@ class BudgetViewFragment : Fragment(
                     override fun onItemSelected(
                         p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long
                     ) {
+                        mainViewModel.setPayDay(spPayDay.selectedItem.toString())
                         fillBudgetList(
                             spAssetNames.selectedItem.toString(),
                             spPayDay.selectedItem.toString()
@@ -306,6 +315,7 @@ class BudgetViewFragment : Fragment(
                             viewLifecycleOwner
                         ) { account ->
                             curAsset = account
+                            mainViewModel.setAsset(account.account.accountName)
                         }
                         clearCurrentDisplay()
                         fillPayDaysLive(spAssetNames.selectedItem.toString())

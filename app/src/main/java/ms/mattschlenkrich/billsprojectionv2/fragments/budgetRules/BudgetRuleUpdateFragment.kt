@@ -328,7 +328,7 @@ class BudgetRuleUpdateFragment :
                         mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budDayOfWeekId
                     )
                     etLeadDays.setText(
-                        mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budLeadDays
+                        mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budLeadDays.toString()
                     )
                 }
             } else {

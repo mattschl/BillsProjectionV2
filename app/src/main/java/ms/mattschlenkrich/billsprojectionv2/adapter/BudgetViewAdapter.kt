@@ -84,6 +84,14 @@ class BudgetViewAdapter(
         holder.itemBinding.tvDate.text =
             df.getDisplayDate(curBudget.budgetItem!!.biActualDate)
         holder.itemBinding.tvName.text = curBudget.budgetItem.biBudgetName
+        if (curBudget.budgetItem.biIsFixed) {
+            val newText = curBudget.budgetItem.biBudgetName + "\n*Fixed*"
+            holder.itemBinding.tvName.text = newText
+            holder.itemBinding.tvName.setTextColor(Color.RED)
+        } else {
+            holder.itemBinding.tvName.text = curBudget.budgetItem.biBudgetName
+            holder.itemBinding.tvName.setTextColor(Color.BLACK)
+        }
         holder.itemBinding.tvAmount.text =
             cf.displayDollars(curBudget.budgetItem.biProjectedAmount)
         if (curBudget.toAccount!!.accountName == curAccount) {
