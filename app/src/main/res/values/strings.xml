@@ -159,4 +159,7 @@
     <string name="calculator">Calculator</string>
     <string name="split">Split</string>
     <string name="original_amount">Original Amount</string>
+    <string name="regular_monthly_budget">Regular Monthly Budget</string>
+    <string name="occasional_budget">Occasional Budget</string>
+    <string name="yearly_budget">Yearly Budget</string>
 </resources>

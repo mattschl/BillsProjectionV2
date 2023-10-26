@@ -83,6 +83,14 @@ class BudgetViewFragment : Fragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mainActivity.title = "View The Budget"
+        createActions()
+        fillAssetsLive()
+        selectAsset()
+        selectPayDay()
+        resumeHistory()
+    }
+
+    private fun createActions() {
         binding.apply {
             fabAddAction.setOnClickListener {
                 addAction()
@@ -91,10 +99,6 @@ class BudgetViewFragment : Fragment(
                 gotoAccount()
             }
         }
-        fillAssetsLive()
-        selectAsset()
-        selectPayDay()
-        resumeHistory()
     }
 
     override fun onStop() {

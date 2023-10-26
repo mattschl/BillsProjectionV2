@@ -31,6 +31,7 @@ const val FRAG_TRANS_PERFORM = "TransactionPerform"
 const val FRAG_BUDGET_VIEW = "BudgetView"
 const val FRAG_BUDGET_ITEM_ADD = "BudgetItemAdd"
 const val FRAG_BUDGET_ITEM_UPDATE = "BudgetItemUpdate"
+const val FRAG_BUDGET_LIST = "BudgetList"
 const val FRAG_TRANSACTION_ANALYSIS = "TransactionAnalysis"
 const val FRAG_TRANSACTION_SPLIT = "TransactionSplit"
 
@@ -141,6 +142,13 @@ const val INTERVAL_YEARLY = "Yearly"
 const val INTERVAL_ON_PAY_DAY = "On Payday"
 const val INTERVAL_SPECIAL = "Special"
 const val INTERVAL_ONE_TIME = "One Time"
+
+const val FREQ_MONTHLY = 0
+const val FREQ_WEEKLY = 1
+const val FREQ_YEARLY = 2
+const val FREQ_PAYDAY = 3
+const val FREQ_MANUALLY = 4
+const val FREQ_SPECIAL = 5
 
 const val BALANCE = "Balance"
 const val OWING = "Owing"
