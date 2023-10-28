@@ -162,4 +162,5 @@
     <string name="regular_monthly_budget">Regular Monthly Budget</string>
     <string name="occasional_budget">Occasional Budget</string>
     <string name="yearly_budget">Yearly Budget</string>
+    <string name="view_current_budget_summary">View Current budget Summary</string>
 </resources>

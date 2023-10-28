@@ -487,4 +487,12 @@
             android:id="@+id/action_transactionSplitFragment_to_transactionViewFragment"
             app:destination="@id/transactionViewFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/budgetListFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetListFragment"
+        android:label="fragment_budget_list"
+        tools:layout="@layout/fragment_budget_list" />
+    <action
+        android:id="@+id/action_global_budgetListFragment"
+        app:destination="@id/budgetListFragment" />
 </navigation>

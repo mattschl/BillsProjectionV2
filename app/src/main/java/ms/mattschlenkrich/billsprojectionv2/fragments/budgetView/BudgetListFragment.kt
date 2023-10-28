@@ -63,10 +63,12 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
             if (monthlyVisible) {
                 monthlyVisible = false
                 rvMonthly.visibility = View.GONE
+                imgMonthlyArrow.setImageResource(R.drawable.ic_arrow_up_24)
             } else {
                 monthlyVisible = true
                 rvMonthly.visibility = View.VISIBLE
                 fillMonthly()
+                imgMonthlyArrow.setImageResource(R.drawable.ic_arrow_down_24)
             }
         }
     }

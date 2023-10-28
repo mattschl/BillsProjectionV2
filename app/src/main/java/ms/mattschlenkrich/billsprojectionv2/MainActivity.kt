@@ -56,6 +56,7 @@ class MainActivity : AppCompatActivity() {
         addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menu.add(getString(R.string.update_budget_predictions))
+                menu.add(getString(R.string.view_current_budget_summary))
                 menu.add("Bills Projection ${BuildConfig.VERSION_NAME}")
             }
 
@@ -64,6 +65,11 @@ class MainActivity : AppCompatActivity() {
 
                     getString(R.string.update_budget_predictions) -> {
                         updateBudget()
+                        true
+                    }
+
+                    getString(R.string.view_current_budget_summary) -> {
+                        gotoBudgetList()
                         true
                     }
 
@@ -114,6 +120,13 @@ class MainActivity : AppCompatActivity() {
         setupTransactionViewModel()
         setupBudgetItemViewModel()
 
+    }
+
+    private fun gotoBudgetList() {
+        val direction = NavGraphDirections
+            .actionGlobalBudgetListFragment()
+        findNavController(R.id.fragment_container_view)
+            .navigate(direction)
     }
 
     private fun gotoAnalysis() {
