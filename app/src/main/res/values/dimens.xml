@@ -8,7 +8,7 @@
     <dimen name="text_heading_size">18sp</dimen>
     <dimen name="title_text_size">20sp</dimen>
     <dimen name="margin_large">36dp</dimen>
-    <dimen name="text_box_width">160dp</dimen>
+    <dimen name="text_box_width">150dp</dimen>
     <dimen name="text_box_wide">200dp</dimen>
     <dimen name="text_target_size">50dp</dimen>
     <dimen name="touch_size">50dp</dimen>
@@ -21,4 +21,5 @@
     <dimen name="normal_margin">10dp</dimen>
     <dimen name="Large_margin">24dp</dimen>
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
+    <dimen name="text_box_narrow">120dp</dimen>
 </resources>

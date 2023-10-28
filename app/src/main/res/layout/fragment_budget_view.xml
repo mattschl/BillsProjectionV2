@@ -75,13 +75,14 @@
                     android:id="@+id/lblBalanceOwing"
                     android:layout_width="wrap_content"
                     android:layout_height="48dp"
+                    android:maxWidth="@dimen/text_box_narrow"
                     android:text="@string/balance_in_account"
-                    android:textSize="@dimen/text_info_size"
-                    android:maxWidth="@dimen/text_box_width"
                     android:textAlignment="center"
+                    android:textSize="@dimen/text_info_size"
                     app:layout_constraintBaseline_toBaselineOf="@id/tvBalanceOwing"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/lblAssetName" />
+                    app:layout_constraintTop_toBottomOf="@id/lblAssetName"
+                    tools:ignore="TextSizeCheck" />
 
                 <TextView
                     android:id="@+id/tvBalanceOwing"
@@ -101,7 +102,7 @@
                     android:id="@+id/tvSurplusOrDeficit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:maxWidth="@dimen/text_box_width"
+                    android:maxWidth="@dimen/text_box_narrow"
                     android:text="@string/surplus_or_deficit"
                     android:textAlignment="center"
                     android:textColor="@color/black"
