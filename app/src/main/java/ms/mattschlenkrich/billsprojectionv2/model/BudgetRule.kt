@@ -83,3 +83,5 @@ data class BudgetRuleDetailed(
     )
     var fromAccount: Account?
 ) : Parcelable
+
+

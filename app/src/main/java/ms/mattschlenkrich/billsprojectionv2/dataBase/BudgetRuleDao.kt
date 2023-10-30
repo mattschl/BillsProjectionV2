@@ -13,6 +13,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.BUD_IS_DELETED
 import ms.mattschlenkrich.billsprojectionv2.common.BUD_IS_PAY_DAY
 import ms.mattschlenkrich.billsprojectionv2.common.BUD_TO_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.common.BUD_UPDATE_TIME
+import ms.mattschlenkrich.billsprojectionv2.common.FREQ_MONTHLY
+import ms.mattschlenkrich.billsprojectionv2.common.FREQ_WEEKLY
 import ms.mattschlenkrich.billsprojectionv2.common.RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_RULES
@@ -127,4 +129,30 @@ interface BudgetRuleDao {
     )
     fun getBudgetRuleFullLive(ruleId: Long): LiveData<BudgetRuleDetailed>
 
+    @Transaction
+    @Query(
+        "SELECT $TABLE_BUDGET_RULES.*, " +
+                "toAccount.* , " +
+                "fromAccount.*  " +
+                "FROM $TABLE_BUDGET_RULES  " +
+                "LEFT JOIN $TABLE_ACCOUNTS as toAccount on " +
+                "$TABLE_BUDGET_RULES.$BUD_TO_ACCOUNT_ID = " +
+                "toAccount.$ACCOUNT_ID " +
+                "LEFT JOIN $TABLE_ACCOUNTS as fromAccount on " +
+                "$TABLE_BUDGET_RULES.$BUD_FROM_ACCOUNT_ID = " +
+                "fromAccount.$ACCOUNT_ID " +
+                "WHERE $TABLE_BUDGET_RULES.budIsDeleted = 0 " +
+                "AND (" +
+                "($TABLE_BUDGET_RULES.budFrequencyTypeId == $FREQ_WEEKLY AND " +
+                "$TABLE_BUDGET_RULES.budFrequencyCount <= 4) " +
+                "OR ($TABLE_BUDGET_RULES.budFrequencyTypeId == $FREQ_MONTHLY AND " +
+                "$TABLE_BUDGET_RULES.budFrequencyCount == 1)" +
+                ") AND $TABLE_BUDGET_RULES.budEndDate >= :today " +
+                "AND $TABLE_BUDGET_RULES.budStartDate <= :today " +
+                "ORDER BY $TABLE_BUDGET_RULES.budFrequencyCount DESC, " +
+                "$TABLE_BUDGET_RULES.$BUDGET_RULE_NAME " +
+                "COLLATE NOCASE ASC"
+    )
+    fun getBudgetRulesMonthly(today: String):
+            LiveData<List<BudgetRuleDetailed>>
 }

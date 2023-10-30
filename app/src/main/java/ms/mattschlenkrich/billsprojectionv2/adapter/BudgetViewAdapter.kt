@@ -43,7 +43,7 @@ class BudgetViewAdapter(
     class BudgetViewHolder(val itemBinding: BudgetViewItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
 
-    private val differCalBack =
+    private val differCallBack =
         object : DiffUtil.ItemCallback<BudgetDetailed>() {
             override fun areContentsTheSame(
                 oldItem: BudgetDetailed,
@@ -61,7 +61,7 @@ class BudgetViewAdapter(
             }
         }
 
-    val differ = AsyncListDiffer(this, differCalBack)
+    val differ = AsyncListDiffer(this, differCallBack)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BudgetViewHolder {
         return BudgetViewHolder(
