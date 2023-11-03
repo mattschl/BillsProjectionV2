@@ -84,4 +84,18 @@ data class BudgetRuleDetailed(
     var fromAccount: Account?
 ) : Parcelable
 
-
+@Parcelize
+data class BudgetRuleComplete(
+    @Embedded
+    var budgetRule: BudgetRule?,
+    @Relation(
+        parentColumn = BUD_TO_ACCOUNT_ID,
+        entityColumn = ACCOUNT_ID
+    )
+    var toAccount: AccountAndType?,
+    @Relation(
+        parentColumn = BUD_FROM_ACCOUNT_ID,
+        entityColumn = ACCOUNT_ID
+    )
+    var fromAccount: AccountAndType?
+) : Parcelable

@@ -7,11 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.adapter.BudgetListAdapter
@@ -20,10 +15,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_LIST
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_MONTHLY
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_WEEKLY
-import ms.mattschlenkrich.billsprojectionv2.common.WAIT_500
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetListBinding
-import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleComplete
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
@@ -39,9 +32,9 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     private lateinit var budgetRuleViewModel: BudgetRuleViewModel
     private lateinit var accountViewModel: AccountViewModel
     private var monthlyVisible = false
-    private val budgetsMonthly = ArrayList<BudgetRuleDetailed>()
-    private val budgetsOccasionally = ArrayList<BudgetRuleDetailed>()
-    private val budgetsYearly = ArrayList<BudgetRuleDetailed>()
+    private val budgetsMonthly = ArrayList<BudgetRuleComplete>()
+    private val budgetsOccasionally = ArrayList<BudgetRuleComplete>()
+    private val budgetsYearly = ArrayList<BudgetRuleComplete>()
     val cf = CommonFunctions()
     val df = DateFunctions()
 
@@ -93,8 +86,6 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     }
 
     private fun fillMonthly() {
-        var totalCredits = 0.0
-        var totalDebits = 0.0
         activity?.let {
             //create and load a budgetNotablyAdapter
             val budgetListAdapter = BudgetListAdapter(
@@ -105,7 +96,7 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
                     LinearLayoutManager(requireContext())
                 adapter = budgetListAdapter
             }
-            budgetRuleViewModel.getBudgetRulesMonthly(df.getCurrentDateAsString())
+            budgetRuleViewModel.getBudgetRulesCompleteMonthly(df.getCurrentDateAsString())
                 .observe(viewLifecycleOwner) { rules ->
                     budgetListAdapter.differ.submitList(rules)
                     budgetsMonthly.clear()
@@ -122,36 +113,22 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
             var totalCredits = 0.0
             var totalDebits = 0.0
             for (budget in budgetsMonthly) {
-                var toAccount: AccountWithType? = null
-                var fromAccount: AccountWithType? = null
-                CoroutineScope(Dispatchers.IO).launch {
-                    val toAccountWithType = async {
-                        accountViewModel.getAccountWithType(budget.toAccount!!.accountName)
+                if (budget.budgetRule!!.budFrequencyTypeId == FREQ_MONTHLY) {
+                    if (budget.toAccount!!.accountType!!.isAsset) {
+                        totalCredits += budget.budgetRule!!.budgetAmount
                     }
-                    toAccount = toAccountWithType.await()
-                    val fromAccountWithType = async {
-                        accountViewModel.getAccountWithType(budget.fromAccount!!.accountName)
+                    if (budget.fromAccount!!.accountType!!.isAsset) {
+                        totalDebits += budget.budgetRule!!.budgetAmount
                     }
-                    fromAccount = fromAccountWithType.await()
-                }
-                CoroutineScope(Dispatchers.Main).launch {
-                    delay(WAIT_500 * 2)
-                    if (budget.budgetRule!!.budFrequencyTypeId == FREQ_MONTHLY) {
-                        if (toAccount!!.accountType!!.isAsset) {
-                            totalCredits += budget.budgetRule!!.budgetAmount
-                        }
-                        if (fromAccount!!.accountType!!.isAsset) {
-                            totalDebits += budget.budgetRule!!.budgetAmount
-                        }
-                    } else if (budget.budgetRule!!.budFrequencyTypeId == FREQ_WEEKLY) {
-                        if (toAccount!!.accountType!!.isAsset) {
-                            totalCredits += budget.budgetRule!!.budgetAmount * 4 /
-                                    budget.budgetRule!!.budFrequencyCount
-                        }
-                        if (fromAccount!!.accountType!!.isAsset) {
-                            totalDebits += budget.budgetRule!!.budgetAmount * 4 /
-                                    budget.budgetRule!!.budFrequencyCount
-                        }
+                } else if (budget.budgetRule!!.budFrequencyTypeId == FREQ_WEEKLY) {
+                    if (budget.toAccount!!.accountType!!.isAsset) {
+                        totalCredits += budget.budgetRule!!.budgetAmount * 4 /
+                                budget.budgetRule!!.budFrequencyCount
+                    }
+                    if (budget.fromAccount!!.accountType!!.isAsset) {
+                        totalDebits += budget.budgetRule!!.budgetAmount * 4 /
+                                budget.budgetRule!!.budFrequencyCount
+                    }
                     }
                     var info = "Credits: " + cf.displayDollars(totalCredits)
                     tvCreditsMonthly.text = info
@@ -165,7 +142,7 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
                         tvTotalMonthly.setTextColor(Color.RED)
                     }
                     tvTotalMonthly.text = info
-                }
+
 
             }
         }

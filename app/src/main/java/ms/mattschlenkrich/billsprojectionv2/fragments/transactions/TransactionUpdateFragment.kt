@@ -482,17 +482,17 @@ class TransactionUpdateFragment :
                 mainViewModel.getTransactionDetailed()!!.transaction!!.transFromAccountId
             )
         if (!oldTransaction.transaction.transToAccountPending) {
-            if (oldTransaction.toAccountAndType.keepTotals) {
+            if (oldTransaction.toAccountAndType.accountType!!.keepTotals) {
                 transactionViewModel.updateAccountBalance(
-                    oldTransaction.toAccountAndType.accountBalance -
+                    oldTransaction.toAccountAndType.account.accountBalance -
                             oldTransaction.transaction.transAmount,
                     oldTransaction.transaction.transToAccountId,
                     df.getCurrentTimeAsString()
                 )
             }
-            if (oldTransaction.toAccountAndType.tallyOwing) {
+            if (oldTransaction.toAccountAndType.accountType!!.tallyOwing) {
                 transactionViewModel.updateAccountOwing(
-                    oldTransaction.toAccountAndType.accountOwing +
+                    oldTransaction.toAccountAndType.account.accountOwing +
                             oldTransaction.transaction.transAmount,
                     oldTransaction.transaction.transToAccountId,
                     df.getCurrentTimeAsString()
@@ -501,17 +501,17 @@ class TransactionUpdateFragment :
             if (!oldTransaction.transaction.transFromAccountPending &&
                 !mainViewModel.getUpdatingTransaction()
             ) {
-                if (oldTransaction.fromAccountAndType.keepTotals) {
+                if (oldTransaction.fromAccountAndType.accountType!!.keepTotals) {
                     transactionViewModel.updateAccountBalance(
-                        oldTransaction.fromAccountAndType.accountBalance +
+                        oldTransaction.fromAccountAndType.account.accountBalance +
                                 oldTransaction.transaction.transAmount,
                         oldTransaction.transaction.transFromAccountId,
                         df.getCurrentTimeAsString()
                     )
                 }
-                if (oldTransaction.fromAccountAndType.tallyOwing) {
+                if (oldTransaction.fromAccountAndType.accountType!!.tallyOwing) {
                     transactionViewModel.updateAccountOwing(
-                        oldTransaction.fromAccountAndType.accountOwing -
+                        oldTransaction.fromAccountAndType.account.accountOwing -
                                 oldTransaction.transaction.transAmount,
                         oldTransaction.transaction.transFromAccountId,
                         df.getCurrentTimeAsString()
@@ -583,34 +583,34 @@ class TransactionUpdateFragment :
                 mainViewModel.getTransactionDetailed()!!.transaction!!.transFromAccountId
             )
         if (!oldTransaction.transaction.transToAccountPending) {
-            if (oldTransaction.toAccountAndType.keepTotals) {
+            if (oldTransaction.toAccountAndType.accountType!!.keepTotals) {
                 transactionViewModel.updateAccountBalance(
-                    oldTransaction.toAccountAndType.accountBalance -
+                    oldTransaction.toAccountAndType.account.accountBalance -
                             oldTransaction.transaction.transAmount,
                     oldTransaction.transaction.transToAccountId,
                     df.getCurrentTimeAsString()
                 )
             }
-            if (oldTransaction.toAccountAndType.tallyOwing) {
+            if (oldTransaction.toAccountAndType.accountType!!.tallyOwing) {
                 transactionViewModel.updateAccountOwing(
-                    oldTransaction.toAccountAndType.accountOwing +
+                    oldTransaction.toAccountAndType.account.accountOwing +
                             oldTransaction.transaction.transAmount,
                     oldTransaction.transaction.transToAccountId,
                     df.getCurrentTimeAsString()
                 )
             }
             if (!oldTransaction.transaction.transFromAccountPending) {
-                if (oldTransaction.fromAccountAndType.keepTotals) {
+                if (oldTransaction.fromAccountAndType.accountType!!.keepTotals) {
                     transactionViewModel.updateAccountBalance(
-                        oldTransaction.fromAccountAndType.accountBalance +
+                        oldTransaction.fromAccountAndType.account.accountBalance +
                                 oldTransaction.transaction.transAmount,
                         oldTransaction.transaction.transFromAccountId,
                         df.getCurrentTimeAsString()
                     )
                 }
-                if (oldTransaction.fromAccountAndType.tallyOwing) {
+                if (oldTransaction.fromAccountAndType.accountType!!.tallyOwing) {
                     transactionViewModel.updateAccountOwing(
-                        oldTransaction.fromAccountAndType.accountOwing -
+                        oldTransaction.fromAccountAndType.account.accountOwing -
                                 oldTransaction.transaction.transAmount,
                         oldTransaction.transaction.transFromAccountId,
                         df.getCurrentTimeAsString()

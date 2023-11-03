@@ -96,26 +96,14 @@ data class Account(
 )
 @Parcelize
 data class AccountAndType(
-    val accountId: Long,
-    val accountName: String,
-    val accountNumber: String,
-    val accountTypeId: Long,
-    val accBudgetedAmount: Double,
-    val accountBalance: Double,
-    val accountOwing: Double,
-    val accountCreditLimit: Double,
-    val accIsDeleted: Boolean,
-    val accUpdateTime: String,
-    val typeId: Long,
-    val accountType: String,
-    val keepTotals: Boolean,
-    val isAsset: Boolean,
-    val tallyOwing: Boolean,
-    val keepMileage: Boolean,
-    val displayAsAsset: Boolean,
-    val allowPending: Boolean,
-    val acctIsDeleted: Boolean,
-    val acctUpdateTime: String,
+    @Embedded
+    val account: Account,
+    @Relation(
+        entity = AccountType::class,
+        parentColumn = ACCOUNT_TYPE_ID,
+        entityColumn = TYPE_ID,
+    )
+    val accountType: AccountType?,
 ) : Parcelable
 
 @Parcelize
@@ -129,4 +117,3 @@ data class AccountWithType(
     )
     val accountType: AccountType?,
 ) : Parcelable
-

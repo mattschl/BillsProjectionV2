@@ -47,4 +47,7 @@ class BudgetRuleViewModel(
 
     fun getBudgetRulesMonthly(today: String) =
         budgetRuleRepository.getBudgetRulesMonthly(today)
+
+    fun getBudgetRulesCompleteMonthly(today: String) =
+        budgetRuleRepository.getBudgetRulesCompletMonthly(today)
 }

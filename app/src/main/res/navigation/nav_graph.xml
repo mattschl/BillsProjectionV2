@@ -223,6 +223,9 @@
         <action
             android:id="@+id/action_budgetRuleUpdateFragment_to_calcFragment"
             app:destination="@id/calcFragment" />
+        <action
+            android:id="@+id/action_budgetRuleUpdateFragment_to_budgetListFragment"
+            app:destination="@id/budgetListFragment" />
     </fragment>
     <fragment
         android:id="@+id/transactionViewFragment"
@@ -491,7 +494,11 @@
         android:id="@+id/budgetListFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetListFragment"
         android:label="fragment_budget_list"
-        tools:layout="@layout/fragment_budget_list" />
+        tools:layout="@layout/fragment_budget_list">
+        <action
+            android:id="@+id/action_budgetListFragment_to_budgetRuleUpdateFragment"
+            app:destination="@id/budgetRuleUpdateFragment" />
+    </fragment>
     <action
         android:id="@+id/action_global_budgetListFragment"
         app:destination="@id/budgetListFragment" />
