@@ -20,6 +20,7 @@ import ms.mattschlenkrich.billsprojectionv2.adapter.TransactionAnalysisAdapter
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
+import ms.mattschlenkrich.billsprojectionv2.common.WAIT_500
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionAverageBinding
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
@@ -123,23 +124,23 @@ class TransactionAverageFragment : Fragment(
             transactionViewModel.getSumTransactionToAccount(account.accountId)
                 .observe(viewLifecycleOwner) { sum ->
                     if (sum != null && !sum.isNaN()) {
-                        tvTotalCredits.text = cf.displayDollars(sum)
+                        totalCredits = sum
+                        tvTotalCredits.text = cf.displayDollars(totalCredits)
                         tvTotalCredits.visibility = View.VISIBLE
                         lblTotalCredits.text = getString(R.string.total_credits)
                         lblTotalCredits.visibility = View.VISIBLE
-                        totalCredits = sum
                     }
                 }
             transactionViewModel.getSumTransactionFromAccount(account.accountId)
                 .observe(viewLifecycleOwner) { sum ->
                     if (sum != null && sum.isNaN()) {
-                        tvTotalDebits.text = cf.displayDollars(-sum)
+                        totalDebits = sum
+                        tvTotalDebits.text = cf.displayDollars(-totalDebits)
                         tvTotalDebits.visibility = View.VISIBLE
                         tvTotalDebits.setTextColor(Color.RED)
                         lblTotalDebits.text = getString(R.string.total_debits)
                         lblTotalDebits.visibility = View.VISIBLE
                         lblTotalDebits.setTextColor(Color.RED)
-                        totalDebits = sum
                     }
                 }
             transactionAdapter = TransactionAnalysisAdapter(
@@ -163,7 +164,7 @@ class TransactionAverageFragment : Fragment(
                         }
                     }
                 CoroutineScope(Dispatchers.Main).launch {
-                    delay(250)
+                    delay(WAIT_500)
                     if (transList.size > 0) {
                         endDate = transList.first().transaction!!.transDate
                         startDate = transList.last().transaction!!.transDate

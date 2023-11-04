@@ -2,6 +2,7 @@ package ms.mattschlenkrich.billsprojectionv2.fragments.budgetView
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.adapter.BudgetListAdapter
+import ms.mattschlenkrich.billsprojectionv2.adapter.BudgetListMonthlyAdapter
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_LIST
@@ -88,7 +89,7 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     private fun fillMonthly() {
         activity?.let {
             //create and load a budgetNotablyAdapter
-            val budgetListAdapter = BudgetListAdapter(
+            val budgetListAdapter = BudgetListMonthlyAdapter(
                 mainActivity, accountViewModel, mainViewModel, mView,
             )
             binding.rvMonthly.apply {
@@ -98,11 +99,16 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
             }
             budgetRuleViewModel.getBudgetRulesCompleteMonthly(df.getCurrentDateAsString())
                 .observe(viewLifecycleOwner) { rules ->
-                    budgetListAdapter.differ.submitList(rules)
                     budgetsMonthly.clear()
                     rules.listIterator().forEach {
                         budgetsMonthly.add(it)
+                        Log.d(
+                            TAG, "rule is ${it.budgetRule!!.budgetRuleName} " +
+                                    "toAccount asset is ${it.toAccount!!.accountType!!.isAsset} " +
+                                    "fromAccount asset is ${it.fromAccount!!.accountType!!.isAsset}"
+                        )
                     }
+                    budgetListAdapter.differ.submitList(budgetsMonthly)
                     fillMonthlyTotals()
                 }
         }
@@ -113,35 +119,38 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
             var totalCredits = 0.0
             var totalDebits = 0.0
             for (budget in budgetsMonthly) {
-                if (budget.budgetRule!!.budFrequencyTypeId == FREQ_MONTHLY) {
-                    if (budget.toAccount!!.accountType!!.isAsset) {
-                        totalCredits += budget.budgetRule!!.budgetAmount
-                    }
-                    if (budget.fromAccount!!.accountType!!.isAsset) {
-                        totalDebits += budget.budgetRule!!.budgetAmount
-                    }
-                } else if (budget.budgetRule!!.budFrequencyTypeId == FREQ_WEEKLY) {
-                    if (budget.toAccount!!.accountType!!.isAsset) {
-                        totalCredits += budget.budgetRule!!.budgetAmount * 4 /
+                val amt = when (budget.budgetRule!!.budFrequencyTypeId) {
+                    FREQ_WEEKLY -> {
+                        budget.budgetRule!!.budgetAmount * 4 /
                                 budget.budgetRule!!.budFrequencyCount
                     }
-                    if (budget.fromAccount!!.accountType!!.isAsset) {
-                        totalDebits += budget.budgetRule!!.budgetAmount * 4 /
-                                budget.budgetRule!!.budFrequencyCount
+
+                    FREQ_MONTHLY -> {
+                        budget.budgetRule!!.budgetAmount
                     }
+
+                    else -> {
+                        0.0
                     }
-                    var info = "Credits: " + cf.displayDollars(totalCredits)
-                    tvCreditsMonthly.text = info
-                    info = "Debits: " + cf.displayDollars(totalDebits)
-                    tvDebitsMonthly.text = info
-                    if (totalCredits >= totalDebits) {
-                        info = "Surplus of " + cf.displayDollars(totalCredits - totalDebits)
-                        tvTotalMonthly.setTextColor(Color.BLACK)
-                    } else {
-                        info = "DEFICIT of " + cf.displayDollars(totalDebits - totalCredits)
-                        tvTotalMonthly.setTextColor(Color.RED)
-                    }
-                    tvTotalMonthly.text = info
+                }
+                if (budget.toAccount!!.accountType!!.displayAsAsset) {
+                    totalCredits += amt
+                }
+                if (budget.fromAccount!!.accountType!!.displayAsAsset) {
+                    totalDebits += amt
+                }
+                var info = "Credits: " + cf.displayDollars(totalCredits)
+                tvCreditsMonthly.text = info
+                info = "Debits: " + cf.displayDollars(totalDebits)
+                tvDebitsMonthly.text = info
+                if (totalCredits >= totalDebits) {
+                    info = "Surplus of " + cf.displayDollars(totalCredits - totalDebits)
+                    tvTotalMonthly.setTextColor(Color.BLACK)
+                } else {
+                    info = "DEFICIT of " + cf.displayDollars(totalDebits - totalCredits)
+                    tvTotalMonthly.setTextColor(Color.RED)
+                }
+                tvTotalMonthly.text = info
 
 
             }

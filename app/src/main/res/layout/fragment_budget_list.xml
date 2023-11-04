@@ -51,7 +51,7 @@
                         android:id="@+id/tvCreditsMonthly"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:maxWidth="@dimen/text_box_width"
+                        android:maxWidth="@dimen/text_box_narrow"
                         android:text="@string/credits"
                         android:textSize="@dimen/text_info_size" />
 
@@ -60,7 +60,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/margin_medium"
-                        android:maxWidth="@dimen/text_box_width"
+                        android:maxWidth="@dimen/text_box_narrow"
                         android:text="@string/debits"
                         android:textSize="@dimen/text_info_size" />
 
@@ -69,7 +69,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/margin_medium"
-                        android:maxWidth="@dimen/text_box_width"
+                        android:maxWidth="@dimen/text_box_narrow"
                         android:text="@string/surplus_or_deficit"
                         android:textSize="@dimen/text_info_size" />
 
@@ -121,7 +121,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/margin_large"
-                    android:text="@string/yearly_budget"
+                    android:text="@string/annual_budget"
                     android:textSize="@dimen/title_text_size"
                     android:textStyle="bold" />
 

@@ -36,7 +36,7 @@ const val FRAG_TRANSACTION_ANALYSIS = "TransactionAnalysis"
 const val FRAG_TRANSACTION_SPLIT = "TransactionSplit"
 
 const val ADAPTER_BUDGET_RULE = "BudgetRuleAdapter"
-const val ADAPTER_BUDGET_LIST = "BudgetListAdapter"
+const val ADAPTER_BUDGET_LIST = "BudgetListMonthlyAdapter"
 const val ADAPTER_ACCOUNT = "AccountAdapter"
 const val ADAPTER_ACCOUNT_TYPE = "AccountTypeAdapter"
 const val ADAPTER_TRANSACTION = "TransactionAdapter"

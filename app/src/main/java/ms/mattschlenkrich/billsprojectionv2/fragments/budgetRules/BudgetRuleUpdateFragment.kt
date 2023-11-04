@@ -440,8 +440,7 @@ class BudgetRuleUpdateFragment :
             if (budgetNameList!!.isNotEmpty() && !nameIsBlank) {
                 for (i in 0 until budgetNameList!!.size) {
                     if (budgetNameList!![i] ==
-                        etBudgetName.text.toString() &&
-                        budgetNameList!![i] !=
+                        etBudgetName.text.toString() && budgetNameList!![i] !=
                         mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budgetRuleName
                     ) {
                         nameFound = true
