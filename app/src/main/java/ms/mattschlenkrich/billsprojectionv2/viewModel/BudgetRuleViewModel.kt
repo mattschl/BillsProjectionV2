@@ -53,4 +53,7 @@ class BudgetRuleViewModel(
 
     fun getBudgetRulesCompletedOccasional(today: String) =
         budgetRuleRepository.getBudgetRulesCompletedOccasional(today)
+
+    fun getBudgetRulesCompletedAnnually(today: String) =
+        budgetRuleRepository.getBudgetRulesCompletedAnnually(today)
 }

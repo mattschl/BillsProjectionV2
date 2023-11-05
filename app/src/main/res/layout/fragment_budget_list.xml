@@ -157,7 +157,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/lblYearly"
+                    android:id="@+id/lblAnnual"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/margin_large"
@@ -166,7 +166,7 @@
                     android:textStyle="bold" />
 
                 <ImageButton
-                    android:id="@+id/imgYearlyArrow"
+                    android:id="@+id/imgAnnualArrow"
                     android:layout_width="@dimen/touch_size"
                     android:layout_height="@dimen/touch_size"
                     android:src="@drawable/ic_arrow_down_24"
@@ -174,8 +174,48 @@
 
             </LinearLayout>
 
+            <androidx.cardview.widget.CardView
+                android:id="@+id/crdSummaryAnnual"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvCreditsAnnual"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxWidth="@dimen/text_box_narrow"
+                        android:text="@string/credits"
+                        android:textSize="@dimen/text_info_size" />
+
+                    <TextView
+                        android:id="@+id/tvDebitsAnnual"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_medium"
+                        android:maxWidth="@dimen/text_box_narrow"
+                        android:text="@string/debits"
+                        android:textSize="@dimen/text_info_size" />
+
+                    <TextView
+                        android:id="@+id/tvTotalAnnual"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_medium"
+                        android:maxWidth="@dimen/text_box_narrow"
+                        android:text="@string/surplus_or_deficit"
+                        android:textSize="@dimen/text_info_size" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvYearly"
+                android:id="@+id/rvAnnual"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone" />

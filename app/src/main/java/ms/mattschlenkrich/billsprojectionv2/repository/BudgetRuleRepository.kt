@@ -40,4 +40,7 @@ class BudgetRuleRepository(private val db: BillsDatabase) {
 
     fun getBudgetRulesCompletedOccasional(today: String) =
         db.getBudgetRuleDao().getBudgetRulesCompletedOccasional(today)
+
+    fun getBudgetRulesCompletedAnnually(today: String) =
+        db.getBudgetRuleDao().getBudgetRulesCompletedAnnually(today)
 }

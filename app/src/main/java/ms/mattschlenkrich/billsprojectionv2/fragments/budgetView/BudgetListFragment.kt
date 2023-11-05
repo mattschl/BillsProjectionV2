@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.adapter.BudgetListAnnualAdapter
 import ms.mattschlenkrich.billsprojectionv2.adapter.BudgetListMonthlyAdapter
 import ms.mattschlenkrich.billsprojectionv2.adapter.BudgetListOccasionalAdapter
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
@@ -33,9 +34,10 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     private lateinit var accountViewModel: AccountViewModel
     private var monthlyVisible = false
     private var occasionalVisible = false
+    private var annualVisible = false
     private val budgetsMonthly = ArrayList<BudgetRuleComplete>()
     private val budgetsOccasional = ArrayList<BudgetRuleComplete>()
-    private val budgetsYearly = ArrayList<BudgetRuleComplete>()
+    private val budgetsAnnual = ArrayList<BudgetRuleComplete>()
     val cf = CommonFunctions()
     val df = DateFunctions()
 
@@ -58,7 +60,6 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
         super.onViewCreated(view, savedInstanceState)
         mainActivity.title = "View the complete budget"
         createActions()
-
     }
 
     private fun createActions() {
@@ -68,6 +69,77 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
             }
             imgOccasionalArrow.setOnClickListener {
                 toggleOccasional()
+            }
+            imgAnnualArrow.setOnClickListener {
+                toggleAnnual()
+            }
+        }
+    }
+
+    private fun toggleAnnual() {
+        binding.apply {
+            if (annualVisible) {
+                annualVisible = false
+                rvAnnual.visibility = View.GONE
+                crdSummaryAnnual.visibility = View.GONE
+                imgAnnualArrow.setImageResource(R.drawable.ic_arrow_down_24)
+            } else {
+                annualVisible = true
+                rvAnnual.visibility = View.VISIBLE
+                crdSummaryAnnual.visibility = View.VISIBLE
+                imgAnnualArrow.setImageResource(R.drawable.ic_arrow_up_24)
+                fillAnnual()
+            }
+        }
+    }
+
+    private fun fillAnnual() {
+        activity.let {
+            val budgetListAnnualAdapter = BudgetListAnnualAdapter(
+                mainViewModel, mView
+            )
+            binding.rvAnnual.apply {
+                layoutManager = LinearLayoutManager(requireContext())
+                adapter = budgetListAnnualAdapter
+            }
+            budgetRuleViewModel.getBudgetRulesCompletedAnnually(
+                df.getCurrentDateAsString()
+            ).observe(viewLifecycleOwner) { rules ->
+                budgetsAnnual.clear()
+                rules.listIterator().forEach {
+                    budgetsAnnual.add(it)
+                }
+                budgetListAnnualAdapter.differ.submitList(budgetsAnnual)
+                fillAnnualTotals()
+            }
+        }
+    }
+
+    private fun fillAnnualTotals() {
+        binding.apply {
+            var totalCredits = 0.0
+            var totalDebits = 0.0
+            for (budget in budgetsAnnual) {
+                val amt = budget.budgetRule!!.budgetAmount / 12 /
+                        budget.budgetRule!!.budFrequencyCount
+                if (budget.toAccount!!.accountType!!.displayAsAsset) {
+                    totalCredits += amt
+                }
+                if (budget.fromAccount!!.accountType!!.displayAsAsset) {
+                    totalDebits += amt
+                }
+                var info = "Credits: " + cf.displayDollars(totalCredits)
+                tvDebitsAnnual.text = info
+                info = "Debits: " + cf.displayDollars(totalDebits)
+                tvCreditsAnnual.text = info
+                if (totalCredits >= totalDebits) {
+                    info = "Surplus of " + cf.displayDollars(totalCredits - totalDebits)
+                    tvTotalOccasional.setTextColor(Color.BLACK)
+                } else {
+                    info = "DEFICIT of " + cf.displayDollars(totalDebits - totalCredits)
+                    tvTotalOccasional.setTextColor(Color.RED)
+                }
+                tvTotalAnnual.text = info
             }
         }
     }

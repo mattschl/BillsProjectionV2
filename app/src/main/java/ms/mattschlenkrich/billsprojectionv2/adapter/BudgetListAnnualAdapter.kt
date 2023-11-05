@@ -10,8 +10,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.FREQ_MONTHLY
-import ms.mattschlenkrich.billsprojectionv2.common.FREQ_WEEKLY
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetListItemBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetListFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleComplete
@@ -19,11 +17,10 @@ import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 import java.util.Random
 
-class BudgetListOccasionalAdapter(
+class BudgetListAnnualAdapter(
     private val mainViewModel: MainViewModel,
-    private val parentView: View,
-) : RecyclerView.Adapter<BudgetListOccasionalAdapter.BudgetListHolder>() {
-
+    private val parentView: View
+) : RecyclerView.Adapter<BudgetListAnnualAdapter.BudgetListHolder>() {
     val cf = CommonFunctions()
     val df = DateFunctions()
 
@@ -54,7 +51,8 @@ class BudgetListOccasionalAdapter(
         }
     val differ = AsyncListDiffer(this, differCallBack)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BudgetListHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
+            BudgetListHolder {
         return BudgetListHolder(
             (
                     BudgetListItemBinding.inflate(
@@ -72,7 +70,7 @@ class BudgetListOccasionalAdapter(
 
     override fun onBindViewHolder(holder: BudgetListHolder, position: Int) {
         val curRule = differ.currentList[position]
-        var info: String
+        var info = ""
         curRule.apply {
             holder.itemBinding.llOthers.visibility = View.VISIBLE
             holder.itemBinding.tvBudgetName.text =
@@ -87,39 +85,12 @@ class BudgetListOccasionalAdapter(
                 random.nextInt(256)
             )
             holder.itemBinding.ibColor.setBackgroundColor(color)
-            info = when (budgetRule!!.budFrequencyTypeId) {
-                FREQ_WEEKLY -> {
-                    "Weekly x " + budgetRule!!.budFrequencyCount
-                }
-
-                FREQ_MONTHLY -> {
-                    "Monthly x " + budgetRule!!.budFrequencyCount
-                }
-
-                else -> {
-                    ""
-                }
-            }
+            info = "Annually every ${budgetRule!!.budFrequencyCount} years"
             holder.itemBinding.tvFrequency.text = info
-            info = when (budgetRule!!.budFrequencyTypeId) {
-                FREQ_WEEKLY -> {
-                    "Average/month: " + cf.displayDollars(
-                        budgetRule!!.budgetAmount * 4 /
-                                budgetRule!!.budFrequencyCount
-                    )
-                }
-
-                FREQ_MONTHLY -> {
-                    "Average/month: " + cf.displayDollars(
-                        budgetRule!!.budgetAmount /
-                                budgetRule!!.budFrequencyCount
-                    )
-                }
-
-                else -> {
-                    ""
-                }
-            }
+            info = "Average/month: " + cf.displayDollars(
+                budgetRule!!.budgetAmount / 12 /
+                        budgetRule!!.budFrequencyCount
+            )
             holder.itemBinding.tvAverage.text = info
             holder.itemView.setOnLongClickListener {
                 gotoBudgetRule(curRule)
