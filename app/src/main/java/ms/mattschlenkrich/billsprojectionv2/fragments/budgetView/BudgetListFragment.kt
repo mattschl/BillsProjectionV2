@@ -114,7 +114,41 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
 
     private fun fillOccasionalTotals() {
         binding.apply {
+            var totalCredits = 0.0
+            var totalDebits = 0.0
+            for (budget in budgetsOccasional) {
+                val amt = when (budget.budgetRule!!.budFrequencyTypeId) {
+                    FREQ_WEEKLY -> {
+                        budget.budgetRule!!.budgetAmount * 4 /
+                                budget.budgetRule!!.budFrequencyCount
+                    }
 
+                    FREQ_MONTHLY -> {
+                        budget.budgetRule!!.budgetAmount /
+                                budget.budgetRule!!.budFrequencyCount
+                    }
+
+                    else -> 0.0
+                }
+                if (budget.toAccount!!.accountType!!.displayAsAsset) {
+                    totalCredits += amt
+                }
+                if (budget.fromAccount!!.accountType!!.displayAsAsset) {
+                    totalDebits += amt
+                }
+                var info = "Credits: " + cf.displayDollars(totalCredits)
+                tvCreditsOccasional.text = info
+                info = "Debits: " + cf.displayDollars(totalDebits)
+                tvDebitsOccasional.text = info
+                if (totalCredits >= totalDebits) {
+                    info = "Surplus of " + cf.displayDollars(totalCredits - totalDebits)
+                    tvTotalOccasional.setTextColor(Color.BLACK)
+                } else {
+                    info = "DEFICIT of " + cf.displayDollars(totalDebits - totalCredits)
+                    tvTotalOccasional.setTextColor(Color.RED)
+                }
+                tvTotalOccasional.text = info
+            }
         }
     }
 
@@ -194,12 +228,9 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
                     tvTotalMonthly.setTextColor(Color.RED)
                 }
                 tvTotalMonthly.text = info
-
-
             }
         }
     }
-
 
     override fun onDestroy() {
         super.onDestroy()

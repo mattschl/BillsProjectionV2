@@ -96,14 +96,14 @@ class BudgetListMonthlyAdapter(
             if (toAccount!!.accountType!!.displayAsAsset && fromAccount!!.accountType!!.displayAsAsset) {
                 info = "NA"
             } else if (toAccount!!.accountType!!.isAsset) {
-                info = "Credit: " + cf.displayDollars(amt)
                 holder.itemBinding.tvAmount.setTextColor(Color.BLACK)
+                info = cf.displayDollars(amt)
             } else if (fromAccount!!.accountType!!.isAsset || fromAccount!!.accountType!!.displayAsAsset) {
-                info = "Debit: " + cf.displayDollars(amt)
                 holder.itemBinding.tvAmount.setTextColor(Color.RED)
+                info = cf.displayDollars(amt)
             }
             if (curRule.budgetRule!!.budFixedAmount) {
-                info = "(fixed) $info"
+                info = "(f)   $info"
             }
             holder.itemBinding.tvAmount.text = info
             val random = Random()

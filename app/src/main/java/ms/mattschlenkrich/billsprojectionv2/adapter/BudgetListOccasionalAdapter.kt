@@ -55,7 +55,7 @@ class BudgetListOccasionalAdapter(
     val differ = AsyncListDiffer(this, differCallBack)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BudgetListHolder {
-        return BudgetListOccasionalAdapter.BudgetListHolder(
+        return BudgetListHolder(
             (
                     BudgetListItemBinding.inflate(
                         LayoutInflater.from(parent.context),
@@ -110,7 +110,7 @@ class BudgetListOccasionalAdapter(
                 }
 
                 FREQ_MONTHLY -> {
-                    "Average: " + cf.displayDollars(
+                    "Average/month: " + cf.displayDollars(
                         budgetRule!!.budgetAmount /
                                 budgetRule!!.budFrequencyCount
                     )

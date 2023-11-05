@@ -233,12 +233,15 @@
                 android:layout_height="48dp"
                 android:importantForAutofill="no"
                 android:inputType="number"
-                android:padding="@dimen/padding_start_end"
+                android:paddingStart="@dimen/padding_start_end"
+                android:paddingEnd="@dimen/padding_start_end"
+                android:selectAllOnFocus="true"
                 android:text="@string/one"
                 android:textSize="@dimen/text_heading_size"
                 app:layout_constraintEnd_toStartOf="@id/spDayOfWeek"
                 app:layout_constraintStart_toEndOf="@+id/spFrequencyType"
-                app:layout_constraintTop_toTopOf="@+id/spFrequencyType" />
+                app:layout_constraintTop_toTopOf="@+id/spFrequencyType"
+                tools:ignore="RtlSymmetry" />
 
             <TextView
                 android:id="@+id/lblOn"
