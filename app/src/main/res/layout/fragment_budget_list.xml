@@ -105,6 +105,46 @@
 
             </LinearLayout>
 
+            <androidx.cardview.widget.CardView
+                android:id="@+id/crdSummaryOccasional"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvCreditsOccasional"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxWidth="@dimen/text_box_narrow"
+                        android:text="@string/credits"
+                        android:textSize="@dimen/text_info_size" />
+
+                    <TextView
+                        android:id="@+id/tvDebitsOccasional"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_medium"
+                        android:maxWidth="@dimen/text_box_narrow"
+                        android:text="@string/debits"
+                        android:textSize="@dimen/text_info_size" />
+
+                    <TextView
+                        android:id="@+id/tvTotalOccasional"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_medium"
+                        android:maxWidth="@dimen/text_box_narrow"
+                        android:text="@string/surplus_or_deficit"
+                        android:textSize="@dimen/text_info_size" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvOccasional"
                 android:layout_width="match_parent"

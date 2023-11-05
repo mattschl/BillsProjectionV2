@@ -8,7 +8,6 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_BUDGET_LIST
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_MONTHLY
@@ -20,13 +19,10 @@ import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 import java.util.Random
 
-private const val TAG = ADAPTER_BUDGET_LIST
-//private const val PARENT_TAG = FRAG_BUDGET_LIST
-
-class BudgetListMonthlyAdapter(
+class BudgetListOccasionalAdapter(
     private val mainViewModel: MainViewModel,
     private val parentView: View,
-) : RecyclerView.Adapter<BudgetListMonthlyAdapter.BudgetListHolder>() {
+) : RecyclerView.Adapter<BudgetListOccasionalAdapter.BudgetListHolder>() {
 
     val cf = CommonFunctions()
     val df = DateFunctions()
@@ -59,7 +55,7 @@ class BudgetListMonthlyAdapter(
     val differ = AsyncListDiffer(this, differCallBack)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BudgetListHolder {
-        return BudgetListHolder(
+        return BudgetListOccasionalAdapter.BudgetListHolder(
             (
                     BudgetListItemBinding.inflate(
                         LayoutInflater.from(parent.context),
@@ -76,33 +72,12 @@ class BudgetListMonthlyAdapter(
 
     override fun onBindViewHolder(holder: BudgetListHolder, position: Int) {
         val curRule = differ.currentList[position]
-        var info = ""
+        var info: String
         curRule.apply {
-            holder.itemBinding.llOthers.visibility = View.GONE
+            holder.itemBinding.llOthers.visibility = View.VISIBLE
             holder.itemBinding.tvBudgetName.text =
                 budgetRule!!.budgetRuleName
-            val amt = when (budgetRule!!.budFrequencyTypeId) {
-                FREQ_WEEKLY -> {
-                    budgetRule!!.budgetAmount * 4 / budgetRule!!.budFrequencyCount
-                }
-
-                FREQ_MONTHLY -> {
-                    budgetRule!!.budgetAmount
-                }
-
-                else -> {
-                    0.0
-                }
-            }
-            if (toAccount!!.accountType!!.displayAsAsset && fromAccount!!.accountType!!.displayAsAsset) {
-                info = "NA"
-            } else if (toAccount!!.accountType!!.isAsset) {
-                info = "Credit: " + cf.displayDollars(amt)
-                holder.itemBinding.tvAmount.setTextColor(Color.BLACK)
-            } else if (fromAccount!!.accountType!!.isAsset || fromAccount!!.accountType!!.displayAsAsset) {
-                info = "Debit: " + cf.displayDollars(amt)
-                holder.itemBinding.tvAmount.setTextColor(Color.RED)
-            }
+            info = cf.displayDollars(budgetRule!!.budgetAmount)
             holder.itemBinding.tvAmount.text = info
             val random = Random()
             val color = Color.argb(
@@ -112,6 +87,40 @@ class BudgetListMonthlyAdapter(
                 random.nextInt(256)
             )
             holder.itemBinding.ibColor.setBackgroundColor(color)
+            info = when (budgetRule!!.budFrequencyTypeId) {
+                FREQ_WEEKLY -> {
+                    "Weekly x " + budgetRule!!.budFrequencyCount
+                }
+
+                FREQ_MONTHLY -> {
+                    "Monthly x " + budgetRule!!.budFrequencyCount
+                }
+
+                else -> {
+                    ""
+                }
+            }
+            holder.itemBinding.tvFrequency.text = info
+            info = when (budgetRule!!.budFrequencyTypeId) {
+                FREQ_WEEKLY -> {
+                    "Average: " + cf.displayDollars(
+                        budgetRule!!.budgetAmount * 4 /
+                                budgetRule!!.budFrequencyCount
+                    )
+                }
+
+                FREQ_MONTHLY -> {
+                    "Average: " + cf.displayDollars(
+                        budgetRule!!.budgetAmount /
+                                budgetRule!!.budFrequencyCount
+                    )
+                }
+
+                else -> {
+                    ""
+                }
+            }
+            holder.itemBinding.tvAverage.text = info
             holder.itemView.setOnLongClickListener {
                 gotoBudgetRule(curRule)
                 false

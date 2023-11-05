@@ -6,16 +6,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <View
-            android:id="@+id/ibColor"
-            android:layout_width="0dp"
-            android:layout_height="5dp"
-            android:layout_marginStart="@dimen/margin_medium"
-            android:layout_marginEnd="@dimen/margin_medium"
-            app:layout_constraintEnd_toStartOf="@id/imgLocked"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvFromAccount" />
-
         <TextView
             android:id="@+id/tvDate"
             android:layout_width="wrap_content"
@@ -84,6 +74,16 @@
             app:layout_constraintBaseline_toBaselineOf="@id/tvToAccount"
             app:layout_constraintEnd_toStartOf="@id/imgLocked"
             app:layout_constraintStart_toEndOf="@id/tvToAccount" />
+
+        <View
+            android:id="@+id/ibColor"
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginEnd="@dimen/margin_medium"
+            app:layout_constraintEnd_toStartOf="@id/imgLocked"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvFromAccount" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

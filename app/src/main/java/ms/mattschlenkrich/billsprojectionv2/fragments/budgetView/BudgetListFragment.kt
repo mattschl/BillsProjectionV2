@@ -2,7 +2,6 @@ package ms.mattschlenkrich.billsprojectionv2.fragments.budgetView
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.adapter.BudgetListMonthlyAdapter
+import ms.mattschlenkrich.billsprojectionv2.adapter.BudgetListOccasionalAdapter
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_LIST
@@ -33,8 +33,9 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     private lateinit var budgetRuleViewModel: BudgetRuleViewModel
     private lateinit var accountViewModel: AccountViewModel
     private var monthlyVisible = false
+    private var occasionalVisible = false
     private val budgetsMonthly = ArrayList<BudgetRuleComplete>()
-    private val budgetsOccasionally = ArrayList<BudgetRuleComplete>()
+    private val budgetsOccasional = ArrayList<BudgetRuleComplete>()
     private val budgetsYearly = ArrayList<BudgetRuleComplete>()
     val cf = CommonFunctions()
     val df = DateFunctions()
@@ -66,7 +67,54 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
             imgMonthlyArrow.setOnClickListener {
                 toggleMonthly()
             }
+            imgOccasionalArrow.setOnClickListener {
+                toggleOccasional()
+            }
         }
+    }
+
+    private fun toggleOccasional() {
+        binding.apply {
+            if (occasionalVisible) {
+                occasionalVisible = false
+                rvOccasional.visibility = View.GONE
+                crdSummaryOccasional.visibility = View.GONE
+                imgOccasionalArrow.setImageResource(R.drawable.ic_arrow_down_24)
+            } else {
+                occasionalVisible = true
+                rvOccasional.visibility = View.VISIBLE
+                crdSummaryOccasional.visibility = View.VISIBLE
+                imgOccasionalArrow.setImageResource(R.drawable.ic_arrow_up_24)
+                fillOccasional()
+            }
+        }
+    }
+
+    private fun fillOccasional() {
+        activity.let {
+            val budgetListOccasionalAdapter = BudgetListOccasionalAdapter(
+                mainViewModel, mView
+            )
+            binding.rvOccasional.apply {
+                layoutManager =
+                    LinearLayoutManager(requireContext())
+                adapter = budgetListOccasionalAdapter
+            }
+            budgetRuleViewModel.getBudgetRulesCompletedOccasional(
+                df.getCurrentDateAsString()
+            ).observe(viewLifecycleOwner) { rules ->
+                budgetsOccasional.clear()
+                rules.listIterator().forEach {
+                    budgetsOccasional.add(it)
+                }
+                budgetListOccasionalAdapter.differ.submitList(budgetsOccasional)
+                fillOccasionalTotals()
+            }
+        }
+    }
+
+    private fun fillOccasionalTotals() {
+        //TODO("Not yet implemented")
     }
 
     private fun toggleMonthly() {
@@ -75,12 +123,12 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
                 monthlyVisible = false
                 rvMonthly.visibility = View.GONE
                 crdSummaryMonthly.visibility = View.GONE
-                imgMonthlyArrow.setImageResource(R.drawable.ic_arrow_up_24)
+                imgMonthlyArrow.setImageResource(R.drawable.ic_arrow_down_24)
             } else {
                 monthlyVisible = true
                 rvMonthly.visibility = View.VISIBLE
                 crdSummaryMonthly.visibility = View.VISIBLE
-                imgMonthlyArrow.setImageResource(R.drawable.ic_arrow_down_24)
+                imgMonthlyArrow.setImageResource(R.drawable.ic_arrow_up_24)
                 fillMonthly()
             }
         }
@@ -88,27 +136,21 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
 
     private fun fillMonthly() {
         activity?.let {
-            //create and load a budgetNotablyAdapter
-            val budgetListAdapter = BudgetListMonthlyAdapter(
-                mainActivity, accountViewModel, mainViewModel, mView,
+            val budgetListMonthlyAdapter = BudgetListMonthlyAdapter(
+                mainViewModel, mView,
             )
             binding.rvMonthly.apply {
                 layoutManager =
                     LinearLayoutManager(requireContext())
-                adapter = budgetListAdapter
+                adapter = budgetListMonthlyAdapter
             }
             budgetRuleViewModel.getBudgetRulesCompleteMonthly(df.getCurrentDateAsString())
                 .observe(viewLifecycleOwner) { rules ->
                     budgetsMonthly.clear()
                     rules.listIterator().forEach {
                         budgetsMonthly.add(it)
-                        Log.d(
-                            TAG, "rule is ${it.budgetRule!!.budgetRuleName} " +
-                                    "toAccount asset is ${it.toAccount!!.accountType!!.isAsset} " +
-                                    "fromAccount asset is ${it.fromAccount!!.accountType!!.isAsset}"
-                        )
                     }
-                    budgetListAdapter.differ.submitList(budgetsMonthly)
+                    budgetListMonthlyAdapter.differ.submitList(budgetsMonthly)
                     fillMonthlyTotals()
                 }
         }
