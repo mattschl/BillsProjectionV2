@@ -9,6 +9,7 @@ import androidx.room.Update
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_TYPE_ID
 import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_RULE_NAME
+import ms.mattschlenkrich.billsprojectionv2.common.BUD_FIXED_AMOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.BUD_FROM_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.common.BUD_IS_DELETED
 import ms.mattschlenkrich.billsprojectionv2.common.BUD_IS_PAY_DAY
@@ -190,7 +191,9 @@ interface BudgetRuleDao {
                 "$TABLE_BUDGET_RULES.budFrequencyCount == 1)" +
                 ") AND $TABLE_BUDGET_RULES.budEndDate >= :today " +
                 "AND $TABLE_BUDGET_RULES.budStartDate <= :today " +
-                "ORDER BY $TABLE_BUDGET_RULES.budFrequencyCount DESC, " +
+                "ORDER BY $TABLE_BUDGET_RULES.$BUD_IS_PAY_DAY DESC, " +
+                "$TABLE_BUDGET_RULES.$BUD_FIXED_AMOUNT DESC, " +
+                "$TABLE_BUDGET_RULES.budFrequencyTypeId DESC, " +
                 "$TABLE_BUDGET_RULES.$BUDGET_RULE_NAME " +
                 "COLLATE NOCASE ASC"
     )
@@ -227,7 +230,9 @@ interface BudgetRuleDao {
                 "$TABLE_BUDGET_RULES.budFrequencyCount > 1)" +
                 ") AND $TABLE_BUDGET_RULES.budEndDate >= :today " +
                 "AND $TABLE_BUDGET_RULES.budStartDate <= :today " +
-                "ORDER BY $TABLE_BUDGET_RULES.budFrequencyCount DESC, " +
+                "ORDER BY $TABLE_BUDGET_RULES.$BUD_IS_PAY_DAY DESC, " +
+                "$TABLE_BUDGET_RULES.$BUD_FIXED_AMOUNT DESC, " +
+                "$TABLE_BUDGET_RULES.budFrequencyCount DESC, " +
                 "$TABLE_BUDGET_RULES.$BUDGET_RULE_NAME " +
                 "COLLATE NOCASE ASC"
     )

@@ -13,7 +13,6 @@ import ms.mattschlenkrich.billsprojectionv2.adapter.BudgetListMonthlyAdapter
 import ms.mattschlenkrich.billsprojectionv2.adapter.BudgetListOccasionalAdapter
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_LIST
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_MONTHLY
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_WEEKLY
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetListBinding
@@ -22,7 +21,7 @@ import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 
-private const val TAG = FRAG_BUDGET_LIST
+//private const val TAG = FRAG_BUDGET_LIST
 
 class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     private var _binding: FragmentBudgetListBinding? = null
@@ -114,7 +113,9 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     }
 
     private fun fillOccasionalTotals() {
-        //TODO("Not yet implemented")
+        binding.apply {
+
+        }
     }
 
     private fun toggleMonthly() {

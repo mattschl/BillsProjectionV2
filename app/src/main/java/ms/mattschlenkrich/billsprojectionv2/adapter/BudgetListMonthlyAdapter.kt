@@ -8,7 +8,6 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_BUDGET_LIST
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_MONTHLY
@@ -20,7 +19,7 @@ import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 import java.util.Random
 
-private const val TAG = ADAPTER_BUDGET_LIST
+//private const val TAG = ADAPTER_BUDGET_LIST
 //private const val PARENT_TAG = FRAG_BUDGET_LIST
 
 class BudgetListMonthlyAdapter(
@@ -102,6 +101,9 @@ class BudgetListMonthlyAdapter(
             } else if (fromAccount!!.accountType!!.isAsset || fromAccount!!.accountType!!.displayAsAsset) {
                 info = "Debit: " + cf.displayDollars(amt)
                 holder.itemBinding.tvAmount.setTextColor(Color.RED)
+            }
+            if (curRule.budgetRule!!.budFixedAmount) {
+                info = "(fixed) $info"
             }
             holder.itemBinding.tvAmount.text = info
             val random = Random()
