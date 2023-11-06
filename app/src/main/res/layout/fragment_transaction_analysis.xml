@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".fragments.transactions.TransactionAverageFragment">
+    tools:context=".fragments.transactions.TransactionAnalysisFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -106,7 +106,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/top_margin_medium"
                             android:minHeight="@dimen/text_target_size"
-                            android:text="@string/last_month"
+                            android:text="@string/previous_month"
                             app:layout_constraintEnd_toStartOf="@id/rdDateRange"
                             app:layout_constraintStart_toEndOf="@id/rdShowAll"
                             app:layout_constraintTop_toTopOf="parent" />

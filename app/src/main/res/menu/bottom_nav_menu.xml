@@ -25,5 +25,4 @@
         android:id="@+id/navigation_budget_rules"
         android:icon="@drawable/ic_budget_rules"
         android:title="@string/budget_rules" />
-
 </menu>

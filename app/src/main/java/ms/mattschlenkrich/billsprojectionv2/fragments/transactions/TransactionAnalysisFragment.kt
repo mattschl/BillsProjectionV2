@@ -20,19 +20,20 @@ import ms.mattschlenkrich.billsprojectionv2.adapter.TransactionAnalysisAdapter
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
+import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_500
-import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionAverageBinding
+import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionAnalysisBinding
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModel
 
 private const val TAG = FRAG_TRANSACTION_ANALYSIS
 
-class TransactionAverageFragment : Fragment(
-    R.layout.fragment_transaction_average
+class TransactionAnalysisFragment : Fragment(
+    R.layout.fragment_transaction_analysis
 ) {
 
-    private var _binding: FragmentTransactionAverageBinding? = null
+    private var _binding: FragmentTransactionAnalysisBinding? = null
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
@@ -46,7 +47,7 @@ class TransactionAverageFragment : Fragment(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentTransactionAverageBinding.inflate(
+        _binding = FragmentTransactionAnalysisBinding.inflate(
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
@@ -84,7 +85,7 @@ class TransactionAverageFragment : Fragment(
         mainViewModel.setAccountWithType(null)
         mainViewModel.setBudgetRuleDetailed(null)
         mView.findNavController().navigate(
-            TransactionAverageFragmentDirections
+            TransactionAnalysisFragmentDirections
                 .actionTransactionAverageFragmentToAccountsFragment()
         )
     }
@@ -94,7 +95,7 @@ class TransactionAverageFragment : Fragment(
         mainViewModel.setAccountWithType(null)
         mainViewModel.setBudgetRuleDetailed(null)
         mView.findNavController().navigate(
-            TransactionAverageFragmentDirections
+            TransactionAnalysisFragmentDirections
                 .actionTransactionAverageFragmentToBudgetRuleFragment()
         )
     }
@@ -110,8 +111,6 @@ class TransactionAverageFragment : Fragment(
     private fun fillFromAccount() {
         var totalCredits = 0.0
         var totalDebits = 0.0
-        var startDate: String
-        var endDate: String
         val transList = ArrayList<TransactionDetailed>()
         val account =
             mainViewModel.getAccountWithType()!!.account
@@ -120,27 +119,26 @@ class TransactionAverageFragment : Fragment(
                 getString(R.string.no_budget_rule_selected)
             tvAccount.text =
                 account.accountName
-
             transactionViewModel.getSumTransactionToAccount(account.accountId)
                 .observe(viewLifecycleOwner) { sum ->
                     if (sum != null && !sum.isNaN()) {
-                        totalCredits = sum
                         tvTotalCredits.text = cf.displayDollars(totalCredits)
                         tvTotalCredits.visibility = View.VISIBLE
                         lblTotalCredits.text = getString(R.string.total_credits)
                         lblTotalCredits.visibility = View.VISIBLE
+                        totalCredits = sum
                     }
                 }
             transactionViewModel.getSumTransactionFromAccount(account.accountId)
                 .observe(viewLifecycleOwner) { sum ->
-                    if (sum != null && sum.isNaN()) {
-                        totalDebits = sum
-                        tvTotalDebits.text = cf.displayDollars(-totalDebits)
+                    if (sum != null && !sum.isNaN()) {
+                        tvTotalDebits.text = cf.displayDollars(sum)
                         tvTotalDebits.visibility = View.VISIBLE
                         tvTotalDebits.setTextColor(Color.RED)
                         lblTotalDebits.text = getString(R.string.total_debits)
                         lblTotalDebits.visibility = View.VISIBLE
                         lblTotalDebits.setTextColor(Color.RED)
+                        totalDebits = sum
                     }
                 }
             transactionAdapter = TransactionAnalysisAdapter(
@@ -164,10 +162,10 @@ class TransactionAverageFragment : Fragment(
                         }
                     }
                 CoroutineScope(Dispatchers.Main).launch {
-                    delay(WAIT_500)
+                    delay(WAIT_250)
                     if (transList.size > 0) {
-                        endDate = transList.first().transaction!!.transDate
-                        startDate = transList.last().transaction!!.transDate
+                        val endDate = transList.first().transaction!!.transDate
+                        val startDate = transList.last().transaction!!.transDate
                         val months = df.getMonthsBetween(startDate, endDate)
                         lblAverage.text = getString(R.string.credit_average)
                         tvAverage.text = cf.displayDollars(totalCredits / months)
@@ -287,10 +285,10 @@ class TransactionAverageFragment : Fragment(
     }
 
     private fun setValuesLastMonth() {
-        val startDate = df.getFirstOfMonth(
+        val startDate = df.getFirstOfPreviousMonth(
             df.getCurrentDateAsString()
         )
-        val endDate = df.getCurrentDateAsString()
+        val endDate = df.getLastOfPreviousMonth(df.getCurrentDateAsString())
         if (mainViewModel.getBudgetRuleDetailed() != null) {
             fillFromBudgetRuleAndDates(startDate, endDate)
         } else if (mainViewModel.getAccountWithType() != null) {
@@ -347,7 +345,7 @@ class TransactionAverageFragment : Fragment(
                     }
                 }
                 CoroutineScope(Dispatchers.Main).launch {
-                    delay(500)
+                    delay(WAIT_250)
                     if (transList.size > 0) {
                         val end = transList.first().transaction!!.transDate
                         val start = transList.last().transaction!!.transDate
@@ -432,7 +430,7 @@ class TransactionAverageFragment : Fragment(
 
                 }
                 CoroutineScope(Dispatchers.Main).launch {
-                    delay(250)
+                    delay(WAIT_500)
                     if (transList.size > 0) {
                         val months =
                             df.getMonthsBetween(startDate, endDate)
@@ -534,7 +532,7 @@ class TransactionAverageFragment : Fragment(
 
                 }
                 CoroutineScope(Dispatchers.Main).launch {
-                    delay(250)
+                    delay(WAIT_250)
                     if (transList.size > 0) {
                         endDate = transList.first().transaction!!.transDate
                         startDate = transList.last().transaction!!.transDate

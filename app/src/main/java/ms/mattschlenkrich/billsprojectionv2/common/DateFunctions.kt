@@ -51,4 +51,19 @@ class DateFunctions {
     fun getFirstOfMonth(date: String): String {
         return date.dropLast(2) + "01"
     }
+
+    fun getLastOfMonth(date: String): String {
+        val mDate = LocalDate.parse(getFirstOfMonth(date))
+        return mDate.plusMonths(1).minusDays(1).toString()
+    }
+
+    fun getFirstOfPreviousMonth(date: String): String {
+        val mDate = LocalDate.parse(date)
+        return getFirstOfMonth(mDate.minusMonths(1).toString())
+    }
+
+    fun getLastOfPreviousMonth(date: String): String {
+        val mDate = LocalDate.parse(date).minusMonths(1)
+        return getLastOfMonth(mDate.toString())
+    }
 }

@@ -164,4 +164,6 @@
     <string name="yearly_budget">Yearly Budget</string>
     <string name="view_current_budget_summary">View Current budget Summary</string>
     <string name="annual_budget">Annual Budget</string>
+    <string name="budget_summary">Budget Summary</string>
+    <string name="previous_month">Previous Month</string>
 </resources>

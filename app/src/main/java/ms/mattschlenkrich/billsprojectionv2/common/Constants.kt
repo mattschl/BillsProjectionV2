@@ -157,4 +157,5 @@ const val BUDGETED = "Budgeted"
 
 const val WAIT_250 = 250L
 const val WAIT_500 = 500L
+const val WAIT_1000 = 1000L
 

@@ -395,9 +395,9 @@
     </fragment>
     <fragment
         android:id="@+id/transactionAverageFragment"
-        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.transactions.TransactionAverageFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.transactions.TransactionAnalysisFragment"
         android:label="fragment_transaction_average"
-        tools:layout="@layout/fragment_transaction_average">
+        tools:layout="@layout/fragment_transaction_analysis">
         <action
             android:id="@+id/action_transactionAverageFragment_to_budgetRuleFragment"
             app:destination="@id/budgetRuleFragment" />

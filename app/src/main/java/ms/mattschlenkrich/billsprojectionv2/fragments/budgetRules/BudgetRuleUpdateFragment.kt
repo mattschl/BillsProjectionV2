@@ -396,7 +396,6 @@ class BudgetRuleUpdateFragment :
     }
 
     private fun gotoCallingFragment() {
-        mainViewModel.setBudgetRuleDetailed(null)
         mainViewModel.setCallingFragments(
             mainViewModel.getCallingFragments()!!
                 .replace(", TAG", "")
@@ -404,6 +403,7 @@ class BudgetRuleUpdateFragment :
         if (mainViewModel.getCallingFragments()!!
                 .contains(FRAG_BUDGET_RULES)
         ) {
+            mainViewModel.setBudgetRuleDetailed(null)
             mView.findNavController().navigate(
                 BudgetRuleUpdateFragmentDirections
                     .actionBudgetRuleUpdateFragmentToBudgetRuleFragment()
@@ -412,6 +412,7 @@ class BudgetRuleUpdateFragment :
                 FRAG_BUDGET_VIEW
             )
         ) {
+            mainViewModel.setBudgetRuleDetailed(null)
             mView.findNavController().navigate(
                 BudgetRuleUpdateFragmentDirections
                     .actionBudgetRuleUpdateFragmentToBudgetViewFragment()
