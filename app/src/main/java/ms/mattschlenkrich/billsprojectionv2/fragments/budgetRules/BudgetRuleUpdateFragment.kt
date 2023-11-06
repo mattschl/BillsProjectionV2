@@ -64,18 +64,15 @@ class BudgetRuleUpdateFragment :
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
-        mainViewModel =
-            mainActivity.mainViewModel
+        mainViewModel = mainActivity.mainViewModel
         mView = binding.root
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        budgetRuleViewModel =
-            mainActivity.budgetRuleViewModel
-        budgetItemViewModel =
-            mainActivity.budgetItemViewModel
+        budgetRuleViewModel = mainActivity.budgetRuleViewModel
+        budgetItemViewModel = mainActivity.budgetItemViewModel
         CoroutineScope(Dispatchers.IO).launch {
             budgetNameList = budgetRuleViewModel.getBudgetRuleNameList()
         }
