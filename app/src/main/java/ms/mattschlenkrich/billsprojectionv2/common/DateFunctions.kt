@@ -6,7 +6,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-private const val TAG = "DateFunctions"
+//private const val TAG = "DateFunctions"
 
 @Suppress("unused")
 class DateFunctions {
@@ -33,10 +33,9 @@ class DateFunctions {
 
     fun getDisplayDate(date: String): String {
         return displayDateString.format(
-            dateChecker.parse(date)
+            dateChecker.parse(date)!!
         )
     }
-
 
     fun getDateStringFromDate(date: Date): String {
         return dateFormat.format(date)
@@ -52,7 +51,7 @@ class DateFunctions {
         return date.dropLast(2) + "01"
     }
 
-    fun getLastOfMonth(date: String): String {
+    private fun getLastOfMonth(date: String): String {
         val mDate = LocalDate.parse(getFirstOfMonth(date))
         return mDate.plusMonths(1).minusDays(1).toString()
     }

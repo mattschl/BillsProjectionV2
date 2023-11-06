@@ -51,8 +51,7 @@ class TransactionAnalysisFragment : Fragment(
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
-        mainViewModel =
-            mainActivity.mainViewModel
+        mainViewModel = mainActivity.mainViewModel
         mView = binding.root
         Log.d(TAG, "creating $TAG")
         return binding.root
@@ -62,8 +61,7 @@ class TransactionAnalysisFragment : Fragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mainActivity.title = "Transaction analysis"
-        transactionViewModel =
-            mainActivity.transactionViewModel
+        transactionViewModel = mainActivity.transactionViewModel
         setStartValues()
         setRadioOptions()
         setGotoOptions()
@@ -122,7 +120,7 @@ class TransactionAnalysisFragment : Fragment(
             transactionViewModel.getSumTransactionToAccount(account.accountId)
                 .observe(viewLifecycleOwner) { sum ->
                     if (sum != null && !sum.isNaN()) {
-                        tvTotalCredits.text = cf.displayDollars(totalCredits)
+                        tvTotalCredits.text = cf.displayDollars(sum)
                         tvTotalCredits.visibility = View.VISIBLE
                         lblTotalCredits.text = getString(R.string.total_credits)
                         lblTotalCredits.visibility = View.VISIBLE
@@ -141,11 +139,15 @@ class TransactionAnalysisFragment : Fragment(
                         totalDebits = sum
                     }
                 }
-            transactionAdapter = TransactionAnalysisAdapter(
-//                mainActivity,
-//                mainViewModel,
-//                mView.context
-            )
+            transactionViewModel.getMaxTransactionByAccount(account.accountId)
+                .observe(viewLifecycleOwner) { max ->
+                    tvHighest.text = cf.displayDollars(max)
+                }
+            transactionViewModel.getMinTransactionByAccount(account.accountId)
+                .observe(viewLifecycleOwner) { min ->
+                    tvLowest.text = cf.displayDollars(min)
+                }
+            transactionAdapter = TransactionAnalysisAdapter()
             rvTransactions.apply {
                 layoutManager = LinearLayoutManager(
                     requireContext()
@@ -167,6 +169,9 @@ class TransactionAnalysisFragment : Fragment(
                         val endDate = transList.first().transaction!!.transDate
                         val startDate = transList.last().transaction!!.transDate
                         val months = df.getMonthsBetween(startDate, endDate)
+                        tvRecent.text = cf.displayDollars(
+                            transList.first().transaction!!.transAmount
+                        )
                         lblAverage.text = getString(R.string.credit_average)
                         tvAverage.text = cf.displayDollars(totalCredits / months)
                         lblHighest.text = getString(R.string.debit_average)
@@ -329,6 +334,17 @@ class TransactionAnalysisFragment : Fragment(
                     totalDebits = sum
                 }
             }
+            transactionViewModel.getMaxTransactionByAccount(
+                account.accountId, startDate, endDate
+            ).observe(viewLifecycleOwner) { max ->
+                tvHighest.text = cf.displayDollars(max)
+            }
+            transactionViewModel.getMinTransactionByAccount(
+                account.accountId, startDate, endDate
+            )
+                .observe(viewLifecycleOwner) { min ->
+                    tvLowest.text = cf.displayDollars(min)
+                }
             transactionAdapter = TransactionAnalysisAdapter()
             rvTransactions.apply {
                 layoutManager = LinearLayoutManager(requireContext())
@@ -350,6 +366,9 @@ class TransactionAnalysisFragment : Fragment(
                         val end = transList.first().transaction!!.transDate
                         val start = transList.last().transaction!!.transDate
                         val months = df.getMonthsBetween(start, end)
+                        tvRecent.text = cf.displayDollars(
+                            transList.first().transaction!!.transAmount
+                        )
                         lblAverage.text = getString(R.string.credit_average)
                         tvAverage.text = cf.displayDollars(totalCredits / months)
                         lblHighest.text = getString(R.string.debit_average)
@@ -403,11 +422,7 @@ class TransactionAnalysisFragment : Fragment(
                     tvTotalDebits.visibility = View.GONE
                 }
             }
-            transactionAdapter = TransactionAnalysisAdapter(
-//                mainActivity,
-//                mainViewModel,
-//                mView.context
-            )
+            transactionAdapter = TransactionAnalysisAdapter()
             rvTransactions.apply {
                 layoutManager = LinearLayoutManager(
                     requireContext()
@@ -505,11 +520,7 @@ class TransactionAnalysisFragment : Fragment(
                     tvTotalDebits.visibility = View.GONE
                 }
             }
-            transactionAdapter = TransactionAnalysisAdapter(
-//                mainActivity,
-//                mainViewModel,
-//                mView.context
-            )
+            transactionAdapter = TransactionAnalysisAdapter()
             rvTransactions.apply {
                 layoutManager = LinearLayoutManager(
                     requireContext()

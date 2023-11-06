@@ -144,4 +144,24 @@ class TransactionViewModel(
         transactionRepository.getSumTransactionFromAccount(
             accountId, startDate, endDate
         )
+
+    fun getMaxTransactionByAccount(accountId: Long) =
+        transactionRepository.getMaxTransactionByAccount(accountId)
+
+    fun getMaxTransactionByAccount(
+        accountId: Long, startDate: String, endDate: String
+    ) =
+        transactionRepository.getMaxTransactionByAccount(
+            accountId, startDate, endDate
+        )
+
+    fun getMinTransactionByAccount(accountId: Long) =
+        transactionRepository.getMinTransactionByAccount(accountId)
+
+    fun getMinTransactionByAccount(
+        accountId: Long, startDate: String, endDate: String
+    ) =
+        transactionRepository.getMinTransactionByAccount(
+            accountId, startDate, endDate
+        )
 }

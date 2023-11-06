@@ -120,8 +120,7 @@ interface TransactionDao {
     )
     fun getActiveTransactionsDetailed(
         budgetRuleId: Long, startDate: String, endDate: String
-    ):
-            LiveData<List<TransactionDetailed>>
+    ): LiveData<List<TransactionDetailed>>
 
     @Transaction
     @Query(
@@ -271,8 +270,52 @@ interface TransactionDao {
         budgetRuleId: Long,
         startDate: String,
         endDate: String
+    ): LiveData<Double>
+
+    @Query(
+        "SELECT MAX($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
+                "WHERE ($TRANSACTION_TO_ACCOUNT_ID = :accountId " +
+                "OR $TRANSACTION_FROM_ACCOUNT_ID = :accountId) " +
+                "AND $TRANS_IS_DELETED = 0"
+    )
+    fun getMaxTransactionByAccount(accountId: Long):
+            LiveData<Double>
+
+    @Query(
+        "SELECT MAX($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
+                "WHERE ($TRANSACTION_TO_ACCOUNT_ID = :accountId " +
+                "OR $TRANSACTION_FROM_ACCOUNT_ID = :accountId) " +
+                "AND $TRANSACTION_DATE <= :endDate " +
+                "AND $TRANSACTION_DATE >= :startDate " +
+                "AND $TRANS_IS_DELETED = 0"
+    )
+    fun getMaxTransactionByAccount(
+        accountId: Long, startDate: String, endDate: String
     ):
             LiveData<Double>
+
+    @Query(
+        "SELECT MIN($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
+                "WHERE ($TRANSACTION_TO_ACCOUNT_ID = :accountId " +
+                "OR $TRANSACTION_FROM_ACCOUNT_ID = :accountId) " +
+                "AND $TRANS_IS_DELETED = 0"
+    )
+    fun getMinTransactionByAccount(accountId: Long):
+            LiveData<Double>
+
+    @Query(
+        "SELECT MIN($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
+                "WHERE ($TRANSACTION_TO_ACCOUNT_ID = :accountId " +
+                "OR $TRANSACTION_FROM_ACCOUNT_ID = :accountId) " +
+                "AND $TRANSACTION_DATE <= :endDate " +
+                "AND $TRANSACTION_DATE >= :startDate " +
+                "AND $TRANS_IS_DELETED = 0"
+    )
+    fun getMinTransactionByAccount(
+        accountId: Long, startDate: String, endDate: String
+    ):
+            LiveData<Double>
+
 
     @Query(
         "SELECT MIN($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
@@ -293,8 +336,7 @@ interface TransactionDao {
         budgetRuleId: Long,
         startDate: String,
         endDate: String
-    ):
-            LiveData<Double>
+    ): LiveData<Double>
 
     @Query(
         "SELECT SUM($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
@@ -315,8 +357,7 @@ interface TransactionDao {
         budgetRuleId: Long,
         startDate: String,
         endDate: String
-    ):
-            LiveData<Double>
+    ): LiveData<Double>
 
     @Transaction
     @Query(
@@ -369,8 +410,7 @@ interface TransactionDao {
     )
     fun getActiveTransactionByAccount(
         accountId: Long, startDate: String, endDate: String
-    ):
-            LiveData<List<TransactionDetailed>>
+    ): LiveData<List<TransactionDetailed>>
 
     @Query(
         "SELECT SUM($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
@@ -410,6 +450,5 @@ interface TransactionDao {
     )
     fun getSumTransactionFromAccount(
         accountId: Long, startDate: String, endDate: String
-    ):
-            LiveData<Double>
+    ): LiveData<Double>
 }

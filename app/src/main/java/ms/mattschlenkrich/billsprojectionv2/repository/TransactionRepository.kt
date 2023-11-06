@@ -127,4 +127,24 @@ class TransactionRepository(private val db: BillsDatabase) {
         db.getTransactionDao().getSumTransactionFromAccount(
             accountId, startDate, endDate
         )
+
+    fun getMaxTransactionByAccount(accountId: Long) =
+        db.getTransactionDao().getMaxTransactionByAccount(accountId)
+
+    fun getMaxTransactionByAccount(
+        accountId: Long, startDate: String, endDate: String
+    ) =
+        db.getTransactionDao().getMaxTransactionByAccount(
+            accountId, startDate, endDate
+        )
+
+    fun getMinTransactionByAccount(accountId: Long) =
+        db.getTransactionDao().getMinTransactionByAccount(accountId)
+
+    fun getMinTransactionByAccount(
+        accountId: Long, startDate: String, endDate: String
+    ) =
+        db.getTransactionDao().getMinTransactionByAccount(
+            accountId, startDate, endDate
+        )
 }
