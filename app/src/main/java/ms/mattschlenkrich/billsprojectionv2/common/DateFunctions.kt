@@ -14,6 +14,7 @@ class DateFunctions {
     private val timeFormatter = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
     private val dateChecker = SimpleDateFormat(DATE_CHECK, Locale.CANADA)
     private val displayDateString = SimpleDateFormat(DISPLAY_DATE, Locale.CANADA)
+    private val displayDateWithYear = SimpleDateFormat(DISPLAY_DATE_WITH_YEAR, Locale.CANADA)
 
     fun getCurrentTimeAsString(): String {
         return timeFormatter.format(Calendar.getInstance().time)
@@ -35,6 +36,22 @@ class DateFunctions {
         return displayDateString.format(
             dateChecker.parse(date)!!
         )
+    }
+
+    private fun getDisplayDateWithYear(date: String): String {
+        return displayDateWithYear.format(
+            dateChecker.parse(date)!!
+        )
+    }
+
+    fun getDisplayDateInComingYear(date: String): String {
+        var mDate = LocalDate.parse(date)
+//        Log.d(TAG, "FIRST date is $mDate")
+        while (mDate.toString() < getCurrentDateAsString()) {
+            mDate = mDate.plusYears(1)
+//            Log.d(TAG, "new date is $mDate")
+        }
+        return getDisplayDateWithYear(mDate.toString())
     }
 
     fun getDateStringFromDate(date: Date): String {

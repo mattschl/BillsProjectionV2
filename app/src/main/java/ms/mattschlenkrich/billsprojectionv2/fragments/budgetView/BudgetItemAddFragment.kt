@@ -339,7 +339,7 @@ class BudgetItemAddFragment : Fragment(
                     budgetRuleDetailed = rule.await()
                     if (mainViewModel.getBudgetItem()!!.budgetItem!!.biBudgetName.isEmpty()) {
                         etBudgetItemName.setText(
-                            budgetRuleDetailed.budgetRule?.budgetRuleName
+                            rule.await().budgetRule?.budgetRuleName
                         )
                     } else {
                         etBudgetItemName.setText(
@@ -353,7 +353,7 @@ class BudgetItemAddFragment : Fragment(
                                 if (mainViewModel.getTransferNum()!! != 0.0) {
                                     mainViewModel.getTransferNum()!!
                                 } else {
-                                    budgetRuleDetailed.budgetRule?.budgetAmount ?: 0.0
+                                    rule.await().budgetRule?.budgetAmount ?: 0.0
                                 }
                             )
                         )
@@ -372,23 +372,23 @@ class BudgetItemAddFragment : Fragment(
                     if (mainViewModel.getBudgetItem()!!.toAccount != null) {
                         tvToAccount.text =
                             mainViewModel.getBudgetItem()!!.toAccount!!.accountName
-                        budgetRuleDetailed.toAccount =
+                        rule.await().toAccount =
                             mainViewModel.getBudgetItem()!!.toAccount
                     } else {
                         tvToAccount.text =
                             budgetRuleDetailed.toAccount?.accountName
-                        budgetRuleDetailed.toAccount =
+                        rule.await().toAccount =
                             budgetRuleDetailed.toAccount
                     }
                     if (mainViewModel.getBudgetItem()!!.fromAccount != null) {
                         tvFromAccount.text =
                             mainViewModel.getBudgetItem()!!.fromAccount!!.accountName
-                        budgetRuleDetailed.fromAccount =
+                        rule.await().fromAccount =
                             mainViewModel.getBudgetItem()!!.fromAccount
                     } else {
                         tvFromAccount.text =
                             budgetRuleDetailed.fromAccount?.accountName
-                        budgetRuleDetailed.fromAccount =
+                        rule.await().fromAccount =
                             budgetRuleDetailed.fromAccount
                     }
                 }

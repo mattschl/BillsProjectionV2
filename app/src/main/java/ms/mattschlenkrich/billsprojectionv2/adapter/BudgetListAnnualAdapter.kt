@@ -70,11 +70,11 @@ class BudgetListAnnualAdapter(
 
     override fun onBindViewHolder(holder: BudgetListHolder, position: Int) {
         val curRule = differ.currentList[position]
-        var info = ""
         curRule.apply {
             holder.itemBinding.llOthers.visibility = View.VISIBLE
-            holder.itemBinding.tvBudgetName.text =
-                budgetRule!!.budgetRuleName
+            var info = budgetRule!!.budgetRuleName + " - " +
+                    df.getDisplayDateInComingYear(budgetRule!!.budStartDate)
+            holder.itemBinding.tvBudgetName.text = info
             info = cf.displayDollars(budgetRule!!.budgetAmount)
             holder.itemBinding.tvAmount.text = info
             val random = Random()

@@ -22,7 +22,6 @@ class CommonFunctions {
 
     fun displayDollars(num: Double): String {
         return dollarFormat.format(num)
-
     }
 
 

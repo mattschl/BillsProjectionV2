@@ -191,7 +191,6 @@ interface BudgetRuleDao {
                 "OR ($TABLE_BUDGET_RULES.budFrequencyTypeId == $FREQ_MONTHLY AND " +
                 "$TABLE_BUDGET_RULES.budFrequencyCount == 1)" +
                 ") AND $TABLE_BUDGET_RULES.budEndDate >= :today " +
-                "AND $TABLE_BUDGET_RULES.budStartDate <= :today " +
                 "ORDER BY $TABLE_BUDGET_RULES.$BUD_IS_PAY_DAY DESC, " +
                 "$TABLE_BUDGET_RULES.$BUD_FIXED_AMOUNT DESC, " +
                 "$TABLE_BUDGET_RULES.budFrequencyTypeId DESC, " +
@@ -230,7 +229,6 @@ interface BudgetRuleDao {
                 "OR ($TABLE_BUDGET_RULES.budFrequencyTypeId == $FREQ_MONTHLY AND " +
                 "$TABLE_BUDGET_RULES.budFrequencyCount > 1)" +
                 ") AND $TABLE_BUDGET_RULES.budEndDate >= :today " +
-                "AND $TABLE_BUDGET_RULES.budStartDate <= :today " +
                 "ORDER BY $TABLE_BUDGET_RULES.$BUD_IS_PAY_DAY DESC, " +
                 "$TABLE_BUDGET_RULES.$BUD_FIXED_AMOUNT DESC, " +
                 "$TABLE_BUDGET_RULES.budFrequencyCount DESC, " +
@@ -265,7 +263,6 @@ interface BudgetRuleDao {
                 "WHERE $TABLE_BUDGET_RULES.budIsDeleted = 0 " +
                 "AND $TABLE_BUDGET_RULES.budFrequencyTypeId == $FREQ_YEARLY " +
                 "AND $TABLE_BUDGET_RULES.budEndDate >= :today " +
-                "AND $TABLE_BUDGET_RULES.budStartDate <= :today " +
                 "ORDER BY $TABLE_BUDGET_RULES.$BUD_IS_PAY_DAY DESC, " +
                 "$TABLE_BUDGET_RULES.budFrequencyCount ASC, " +
                 "$TABLE_BUDGET_RULES.$BUDGET_RULE_NAME " +
