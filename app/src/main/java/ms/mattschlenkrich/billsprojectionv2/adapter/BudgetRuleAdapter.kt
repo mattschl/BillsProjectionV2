@@ -2,6 +2,7 @@ package ms.mattschlenkrich.billsprojectionv2.adapter
 
 import android.app.AlertDialog
 import android.content.Context
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -27,6 +28,7 @@ import ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules.BudgetRuleFrag
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
+import java.util.Random
 
 private const val TAG = ADAPTER_BUDGET_RULE
 private const val PARENT_TAG = FRAG_BUDGET_RULES
@@ -105,7 +107,14 @@ class BudgetRuleAdapter(
                 " X " + budgetRuleDetailed.budgetRule!!.budFrequencyCount +
                 "\nOn " + dayOfWeek
         holder.itemBinding.tvInfo.text = info
-
+        val random = Random()
+        val color = Color.argb(
+            255,
+            random.nextInt(256),
+            random.nextInt(256),
+            random.nextInt(256)
+        )
+        holder.itemBinding.ibColor.setBackgroundColor(color)
         holder.itemView.setOnClickListener {
             mainViewModel.setCallingFragments(
                 mainViewModel.getCallingFragments()!!

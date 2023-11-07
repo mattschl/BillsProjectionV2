@@ -103,8 +103,8 @@ class BudgetViewFragment : Fragment(
 
     override fun onStop() {
         binding.apply {
-            mainViewModel.setAsset(spAssetNames.selectedItem.toString())
-            mainViewModel.setPayDay(spPayDay.selectedItem.toString())
+            mainViewModel.setAsset(spAssetNames.selectedItem?.toString())
+            mainViewModel.setPayDay(spPayDay.selectedItem?.toString())
         }
         super.onStop()
     }
