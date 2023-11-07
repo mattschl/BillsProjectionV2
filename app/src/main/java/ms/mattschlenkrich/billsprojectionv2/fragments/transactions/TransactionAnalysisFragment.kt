@@ -141,11 +141,11 @@ class TransactionAnalysisFragment : Fragment(
                 }
             transactionViewModel.getMaxTransactionByAccount(account.accountId)
                 .observe(viewLifecycleOwner) { max ->
-                    tvHighest.text = cf.displayDollars(max)
+                    if (max != null) tvHighest.text = cf.displayDollars(max)
                 }
             transactionViewModel.getMinTransactionByAccount(account.accountId)
                 .observe(viewLifecycleOwner) { min ->
-                    tvLowest.text = cf.displayDollars(min)
+                    if (min != null) tvLowest.text = cf.displayDollars(min)
                 }
             transactionAdapter = TransactionAnalysisAdapter()
             rvTransactions.apply {
@@ -337,13 +337,13 @@ class TransactionAnalysisFragment : Fragment(
             transactionViewModel.getMaxTransactionByAccount(
                 account.accountId, startDate, endDate
             ).observe(viewLifecycleOwner) { max ->
-                tvHighest.text = cf.displayDollars(max)
+                if (max != null) tvHighest.text = cf.displayDollars(max)
             }
             transactionViewModel.getMinTransactionByAccount(
                 account.accountId, startDate, endDate
             )
                 .observe(viewLifecycleOwner) { min ->
-                    tvLowest.text = cf.displayDollars(min)
+                    if (min != null) tvLowest.text = cf.displayDollars(min)
                 }
             transactionAdapter = TransactionAnalysisAdapter()
             rvTransactions.apply {
@@ -395,9 +395,7 @@ class TransactionAnalysisFragment : Fragment(
             ).observe(
                 viewLifecycleOwner
             ) { max ->
-                if (max != null && !max.isNaN()) {
-                    tvHighest.text = cf.displayDollars(max)
-                }
+                if (max != null) tvHighest.text = cf.displayDollars(max)
             }
             transactionViewModel.getMinTransactionByBudgetRule(
                 budgetRule.ruleId,
@@ -405,10 +403,7 @@ class TransactionAnalysisFragment : Fragment(
             ).observe(
                 viewLifecycleOwner
             ) { min ->
-                if (min != null && !min.isNaN()) {
-                    tvLowest.text =
-                        cf.displayDollars(min)
-                }
+                if (min != null) tvLowest.text = cf.displayDollars(min)
             }
             transactionViewModel.getSumTransactionByBudgetRule(
                 budgetRule.ruleId,
@@ -504,14 +499,12 @@ class TransactionAnalysisFragment : Fragment(
             }
             transactionViewModel.getMinTransactionByBudgetRule(budgetRule.ruleId)
                 .observe(viewLifecycleOwner) { min ->
-                    if (min != null && !min.isNaN()) {
-                        tvLowest.text = cf.displayDollars(min)
-                    }
+                    if (min != null) tvLowest.text = cf.displayDollars(min)
                 }
             transactionViewModel.getSumTransactionByBudgetRule(
                 budgetRule.ruleId
             ).observe(viewLifecycleOwner) { sum ->
-                if (sum != null && !sum.isNaN()) {
+                if (sum != null) {
                     tvTotalCredits.text = cf.displayDollars(sum)
                     total = sum
                     lblTotalCredits.text =
