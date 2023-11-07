@@ -7,6 +7,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_IS_DELETED
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_NAME
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_TYPE_ID
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_UPDATE_TIME
+import ms.mattschlenkrich.billsprojectionv2.common.ACCT_DISPLAY_AS_ASSET
+import ms.mattschlenkrich.billsprojectionv2.common.IS_ASSET
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.common.TYPE_ID
@@ -95,7 +97,9 @@ interface AccountDao {
                 "$TABLE_ACCOUNT_TYPES.$TYPE_ID = " +
                 "$TABLE_ACCOUNTS.$ACCOUNT_TYPE_ID " +
                 "WHERE $TABLE_ACCOUNTS.$ACCOUNT_IS_DELETED = 0  " +
-                "ORDER BY $TABLE_ACCOUNTS.$ACCOUNT_NAME " +
+                "ORDER BY $TABLE_ACCOUNT_TYPES.$ACCT_DISPLAY_AS_ASSET DESC, " +
+                "$TABLE_ACCOUNT_TYPES.$IS_ASSET DESC, " +
+                " $TABLE_ACCOUNTS.$ACCOUNT_NAME " +
                 "COLLATE NOCASE ASC "
     )
     fun getAccountsWithType(): LiveData<List<AccountWithType>>

@@ -27,6 +27,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.BI_PROJECTED_AMOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.BI_PROJECTED_DATE
 import ms.mattschlenkrich.billsprojectionv2.common.BI_TO_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.common.BI_UPDATE_TIME
+import ms.mattschlenkrich.billsprojectionv2.common.IS_ASSET
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_ITEMS
@@ -108,7 +109,8 @@ interface BudgetItemDao {
                 "$TABLE_ACCOUNTS.accountTypeId = " +
                 "$TABLE_ACCOUNT_TYPES.typeId " +
                 "WHERE $TABLE_ACCOUNT_TYPES.$ACCT_DISPLAY_AS_ASSET = 1 " +
-                "ORDER BY $TABLE_ACCOUNTS.$ACCOUNT_NAME COLLATE NOCASE;"
+                "ORDER BY $TABLE_ACCOUNT_TYPES.$IS_ASSET DESC, " +
+                "$TABLE_ACCOUNTS.$ACCOUNT_NAME COLLATE NOCASE;"
     )
     fun getAssetsForBudget(): LiveData<List<String>>
 
