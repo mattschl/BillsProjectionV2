@@ -52,7 +52,9 @@ abstract class BillsDatabase : RoomDatabase() {
                 context.applicationContext,
                 BillsDatabase::class.java,
                 DB_NAME
-            ).build()
+            )
+                .createFromAsset("bills2.db")
+                .build()
         }
     }
 }

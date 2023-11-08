@@ -54,6 +54,11 @@ class DateFunctions {
         return getDisplayDateWithYear(mDate.toString())
     }
 
+    fun getDisplayDateInComingYear(date: String, count: Long): String {
+        val mDate = LocalDate.parse(date)
+        return getDisplayDateWithYear(mDate.plusYears(count).toString())
+    }
+
     fun getDateStringFromDate(date: Date): String {
         return dateFormat.format(date)
     }

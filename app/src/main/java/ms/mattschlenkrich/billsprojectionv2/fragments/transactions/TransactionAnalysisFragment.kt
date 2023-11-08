@@ -20,7 +20,6 @@ import ms.mattschlenkrich.billsprojectionv2.adapter.TransactionAnalysisAdapter
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
-import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_500
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionAnalysisBinding
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
@@ -109,7 +108,6 @@ class TransactionAnalysisFragment : Fragment(
     private fun fillFromAccount() {
         var totalCredits = 0.0
         var totalDebits = 0.0
-        val transList = ArrayList<TransactionDetailed>()
         val account =
             mainViewModel.getAccountWithType()!!.account
         binding.apply {
@@ -158,28 +156,31 @@ class TransactionAnalysisFragment : Fragment(
                 transactionViewModel.getActiveTransactionByAccount(account.accountId)
                     .observe(viewLifecycleOwner) { transactionList ->
                         transactionAdapter.differ.submitList(transactionList)
-                        transList.clear()
-                        transactionList.forEach {
-                            transList.add(it)
-                        }
+                        fillAnalysisFromAccount(transactionList, totalCredits, totalDebits)
                     }
-                CoroutineScope(Dispatchers.Main).launch {
-                    delay(WAIT_250)
-                    if (transList.size > 0) {
-                        val endDate = transList.first().transaction!!.transDate
-                        val startDate = transList.last().transaction!!.transDate
-                        val months = df.getMonthsBetween(startDate, endDate)
-                        tvRecent.text = cf.displayDollars(
-                            transList.first().transaction!!.transAmount
-                        )
-                        lblAverage.text = getString(R.string.credit_average)
-                        tvAverage.text = cf.displayDollars(totalCredits / months)
-                        lblHighest.text = getString(R.string.debit_average)
-                        lblHighest.setTextColor(Color.RED)
-                        tvHighest.text = cf.displayDollars(totalDebits / months)
-                        tvHighest.setTextColor(Color.RED)
-                    }
-                }
+            }
+        }
+    }
+
+    private fun fillAnalysisFromAccount(
+        transList: List<TransactionDetailed>,
+        totalCredits: Double,
+        totalDebits: Double
+    ) {
+        if (transList.isNotEmpty()) {
+            binding.apply {
+                val endDate = transList.first().transaction!!.transDate
+                val startDate = transList.last().transaction!!.transDate
+                val months = df.getMonthsBetween(startDate, endDate)
+                tvRecent.text = cf.displayDollars(
+                    transList.first().transaction!!.transAmount
+                )
+                lblAverage.text = getString(R.string.credit_average)
+                tvAverage.text = cf.displayDollars(totalCredits / months)
+                lblHighest.text = getString(R.string.debit_average)
+                lblHighest.setTextColor(Color.RED)
+                tvHighest.text = cf.displayDollars(totalDebits / months)
+                tvHighest.setTextColor(Color.RED)
             }
         }
     }
@@ -306,7 +307,6 @@ class TransactionAnalysisFragment : Fragment(
         var totalDebits = 0.0
         val account =
             mainViewModel.getAccountWithType()!!.account
-        val transList = ArrayList<TransactionDetailed>()
         binding.apply {
             tvBudgetRule.text = getString(R.string.no_budget_rule_selected)
             tvAccount.text = account.accountName
@@ -355,40 +355,30 @@ class TransactionAnalysisFragment : Fragment(
                     account.accountId, startDate, endDate
                 ).observe(viewLifecycleOwner) { transactionList ->
                     transactionAdapter.differ.submitList(transactionList)
-                    transList.clear()
-                    transactionList.forEach {
-                        transList.add(it)
-                    }
-                }
-                CoroutineScope(Dispatchers.Main).launch {
-                    delay(WAIT_250)
-                    if (transList.size > 0) {
-                        val end = transList.first().transaction!!.transDate
-                        val start = transList.last().transaction!!.transDate
-                        val months = df.getMonthsBetween(start, end)
-                        tvRecent.text = cf.displayDollars(
-                            transList.first().transaction!!.transAmount
-                        )
-                        lblAverage.text = getString(R.string.credit_average)
-                        tvAverage.text = cf.displayDollars(totalCredits / months)
-                        lblHighest.text = getString(R.string.debit_average)
-                        lblHighest.setTextColor(Color.RED)
-                        tvHighest.text = cf.displayDollars(totalDebits / months)
-                        tvHighest.setTextColor(Color.RED)
-                    }
+                    fillAnalysisFromAccount(transactionList, totalCredits, totalDebits)
                 }
             }
         }
     }
 
+
     private fun fillFromBudgetRuleAndDates(startDate: String, endDate: String) {
-        var total = 0.0
-        val transList = ArrayList<TransactionDetailed>()
         val budgetRule =
             mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!
         binding.apply {
             tvBudgetRule.text = budgetRule.budgetRuleName
             tvAccount.text = getString(R.string.no_account_selected)
+            transactionViewModel.getSumTransactionByBudgetRule(
+                budgetRule.ruleId,
+                startDate, endDate
+            ).observe(viewLifecycleOwner) { sum ->
+                if (sum != null) {
+                    tvTotalCredits.text = cf.displayDollars(sum)
+                    lblTotalCredits.text = getString(R.string.total)
+                    lblTotalDebits.visibility = View.GONE
+                    tvTotalDebits.visibility = View.GONE
+                }
+            }
             transactionViewModel.getMaxTransactionByBudgetRule(
                 budgetRule.ruleId,
                 startDate, endDate
@@ -404,18 +394,6 @@ class TransactionAnalysisFragment : Fragment(
                 viewLifecycleOwner
             ) { min ->
                 if (min != null) tvLowest.text = cf.displayDollars(min)
-            }
-            transactionViewModel.getSumTransactionByBudgetRule(
-                budgetRule.ruleId,
-                startDate, endDate
-            ).observe(viewLifecycleOwner) { sum ->
-                if (sum != null && !sum.isNaN()) {
-                    tvTotalCredits.text = cf.displayDollars(sum)
-                    total = sum
-                    lblTotalCredits.text = getString(R.string.total)
-                    lblTotalDebits.visibility = View.GONE
-                    tvTotalDebits.visibility = View.GONE
-                }
             }
             transactionAdapter = TransactionAnalysisAdapter()
             rvTransactions.apply {
@@ -433,29 +411,40 @@ class TransactionAnalysisFragment : Fragment(
                     transactionAdapter.differ.submitList(
                         transactionList
                     )
-                    transList.clear()
-                    transactionList.forEach {
-                        transList.add(it)
-                    }
+                    fillAnalysisFromBudgetRule(transactionList)
 
                 }
                 CoroutineScope(Dispatchers.Main).launch {
                     delay(WAIT_500)
-                    if (transList.size > 0) {
-                        val months =
-                            df.getMonthsBetween(startDate, endDate)
-                        lblAverage.text = getString(R.string.average)
-                        tvAverage.text =
-                            cf.displayDollars(total / months)
-                        tvRecent.text =
-                            cf.displayDollars(
-                                transList.first().transaction!!.transAmount
-                            )
-                    }
                 }
             }
         }
 
+    }
+
+    private fun fillAnalysisFromBudgetRule(
+        transList: List<TransactionDetailed>,
+    ) {
+        if (transList.isNotEmpty()) {
+            binding.apply {
+                var totals = 0.0
+                for (trans in transList) {
+                    totals += trans.transaction!!.transAmount
+                }
+                val endDate = transList.first().transaction!!.transDate
+                val startDate = transList.last().transaction!!.transDate
+                val months =
+                    df.getMonthsBetween(startDate, endDate)
+                lblAverage.text = getString(R.string.average)
+                tvAverage.text =
+                    cf.displayDollars(totals / months)
+
+                tvRecent.text =
+                    cf.displayDollars(
+                        transList.first().transaction!!.transAmount
+                    )
+            }
+        }
     }
 
     private fun setDateRangeVisibility(visible: Boolean) {
@@ -477,13 +466,20 @@ class TransactionAnalysisFragment : Fragment(
     }
 
     private fun fillFromBudgetRule() {
-        var total = 0.0
-        var startDate: String
-        var endDate: String
-        val transList = ArrayList<TransactionDetailed>()
         val budgetRule =
             mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!
         binding.apply {
+            transactionViewModel.getSumTransactionByBudgetRule(
+                budgetRule.ruleId
+            ).observe(viewLifecycleOwner) { sum ->
+                if (sum != null) {
+                    tvTotalCredits.text = cf.displayDollars(sum)
+                    lblTotalCredits.text =
+                        getString(R.string.total)
+                    lblTotalDebits.visibility = View.GONE
+                    tvTotalDebits.visibility = View.GONE
+                }
+            }
             tvBudgetRule.text =
                 budgetRule.budgetRuleName
             tvAccount.text =
@@ -501,18 +497,6 @@ class TransactionAnalysisFragment : Fragment(
                 .observe(viewLifecycleOwner) { min ->
                     if (min != null) tvLowest.text = cf.displayDollars(min)
                 }
-            transactionViewModel.getSumTransactionByBudgetRule(
-                budgetRule.ruleId
-            ).observe(viewLifecycleOwner) { sum ->
-                if (sum != null) {
-                    tvTotalCredits.text = cf.displayDollars(sum)
-                    total = sum
-                    lblTotalCredits.text =
-                        getString(R.string.total)
-                    lblTotalDebits.visibility = View.GONE
-                    tvTotalDebits.visibility = View.GONE
-                }
-            }
             transactionAdapter = TransactionAnalysisAdapter()
             rvTransactions.apply {
                 layoutManager = LinearLayoutManager(
@@ -520,37 +504,13 @@ class TransactionAnalysisFragment : Fragment(
                 )
                 adapter = transactionAdapter
             }
-            activity.let {
-                transactionViewModel.getActiveTransactionsDetailed(
-                    budgetRule.ruleId
-                ).observe(
-                    viewLifecycleOwner
-                ) { transactionList ->
-                    transactionAdapter.differ.submitList(
-                        transactionList
-                    )
-                    transList.clear()
-                    transactionList.forEach {
-                        transList.add(it)
-                    }
-
-                }
-                CoroutineScope(Dispatchers.Main).launch {
-                    delay(WAIT_250)
-                    if (transList.size > 0) {
-                        endDate = transList.first().transaction!!.transDate
-                        startDate = transList.last().transaction!!.transDate
-                        val months = df.getMonthsBetween(startDate, endDate)
-                        lblAverage.text = getString(R.string.average_per_month)
-                        tvAverage.text =
-                            cf.displayDollars(total / months)
-                        lblHighest.text = getString(R.string.highest)
-                        tvRecent.text =
-                            cf.displayDollars(
-                                transList.first().transaction!!.transAmount
-                            )
-                    }
-                }
+            transactionViewModel.getActiveTransactionsDetailed(
+                budgetRule.ruleId
+            ).observe(
+                viewLifecycleOwner
+            ) { transactionList ->
+                transactionAdapter.differ.submitList(transactionList)
+                fillAnalysisFromBudgetRule(transactionList)
             }
         }
     }

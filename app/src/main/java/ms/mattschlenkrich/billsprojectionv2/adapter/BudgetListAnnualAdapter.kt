@@ -72,8 +72,15 @@ class BudgetListAnnualAdapter(
         val curRule = differ.currentList[position]
         curRule.apply {
             holder.itemBinding.llOthers.visibility = View.VISIBLE
-            var info = budgetRule!!.budgetRuleName + " - " +
-                    df.getDisplayDateInComingYear(budgetRule!!.budStartDate)
+            var info = if (curRule.budgetRule!!.budFrequencyCount > 1) {
+                budgetRule!!.budgetRuleName + " - " +
+                        df.getDisplayDateInComingYear(
+                            budgetRule!!.budStartDate, budgetRule!!.budFrequencyCount.toLong()
+                        )
+            } else {
+                budgetRule!!.budgetRuleName + " - " +
+                        df.getDisplayDateInComingYear(budgetRule!!.budStartDate)
+            }
             holder.itemBinding.tvBudgetName.text = info
             info = cf.displayDollars(budgetRule!!.budgetAmount)
             holder.itemBinding.tvAmount.text = info
