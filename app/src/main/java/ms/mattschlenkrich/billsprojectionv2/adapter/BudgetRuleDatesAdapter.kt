@@ -1,15 +1,22 @@
 package ms.mattschlenkrich.billsprojectionv2.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetDateItemBinding
+import ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules.BudgetRuleUpdateFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed
+import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 
-class BudgetRuleDatesAdapter :
+class BudgetRuleDatesAdapter(
+    private val mainViewModel: MainViewModel,
+    private val mView: View
+) :
     RecyclerView.Adapter<BudgetRuleDatesAdapter.DateViewHolder>() {
 
     private val df = DateFunctions()
@@ -55,6 +62,16 @@ class BudgetRuleDatesAdapter :
             df.getDisplayDate(curItem.budgetItem!!.biActualDate)
         holder.itemBinding.tvPayDay.text =
             df.getDisplayDate(curItem.budgetItem.biPayDay)
+        holder.itemView.setOnClickListener {
+            gotoBudgetItem(curItem)
+        }
+    }
 
+    private fun gotoBudgetItem(curItem: BudgetDetailed?) {
+        mainViewModel.setBudgetItem(curItem)
+        mView.findNavController().navigate(
+            BudgetRuleUpdateFragmentDirections
+                .actionBudgetRuleUpdateFragmentToBudgetItemUpdateFragment()
+        )
     }
 }

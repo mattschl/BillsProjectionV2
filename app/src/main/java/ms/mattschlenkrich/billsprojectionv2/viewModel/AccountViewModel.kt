@@ -34,6 +34,9 @@ class AccountViewModel(
     fun getAccountsWithType() =
         accountRepository.getAccountsWithType()
 
+    fun getAccountAndType(accountId: Long) =
+        accountRepository.getAccountAndType(accountId)
+
     fun addAccountType(accountType: AccountType) =
         viewModelScope.launch {
             accountRepository.insertAccountType(accountType)

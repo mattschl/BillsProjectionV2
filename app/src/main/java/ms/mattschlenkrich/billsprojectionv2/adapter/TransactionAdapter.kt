@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_TRANSACTION
@@ -39,8 +40,8 @@ class TransactionAdapter(
     private val df = DateFunctions()
     private val transactionViewModel =
         mainActivity.transactionViewModel
-    private val accountViewModel =
-        mainActivity.accountViewModel
+//    private val accountViewModel =
+//        mainActivity.accountViewModel
 
 
     class TransactionsViewHolder(
@@ -174,6 +175,16 @@ class TransactionAdapter(
                                 mainViewModel.getCallingFragments() + ", " + PARENT_TAG
                             )
                             mainViewModel.setTransactionDetailed(transaction)
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val oldTransactionFull = async {
+                                    transactionViewModel.getTransactionFull(
+                                        transaction.transaction.transId,
+                                        transaction.transaction.transToAccountId,
+                                        transaction.transaction.transFromAccountId
+                                    )
+                                }
+                                mainViewModel.setOldTransaction(oldTransactionFull.await())
+                            }
                             it.findNavController().navigate(
                                 TransactionViewFragmentDirections
                                     .actionTransactionViewFragmentToTransactionUpdateFragment()

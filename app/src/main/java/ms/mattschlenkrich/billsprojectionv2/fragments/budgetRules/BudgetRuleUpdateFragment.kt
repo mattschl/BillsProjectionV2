@@ -337,7 +337,7 @@ class BudgetRuleUpdateFragment :
     }
 
     private fun fillDateRecycler(budgetRuleId: Long) {
-        val budgetRuleDatesAdapter = BudgetRuleDatesAdapter()
+        val budgetRuleDatesAdapter = BudgetRuleDatesAdapter(mainViewModel, mView)
 //        val budgetList = ArrayList<BudgetDetailed>()
         binding.rvProjectedDates.apply {
             layoutManager = LinearLayoutManager(requireContext())

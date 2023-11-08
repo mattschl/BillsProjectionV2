@@ -2,7 +2,6 @@ package ms.mattschlenkrich.billsprojectionv2.fragments.budgetView
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -53,11 +52,6 @@ class BudgetViewFragment : Fragment(
     private val budgetList = ArrayList<BudgetDetailed>()
     private val pendingList = ArrayList<TransactionDetailed>()
     private var pendingAmount = 0.0
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Log.d(TAG, "building BudgetViewFragment")
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -150,10 +144,8 @@ class BudgetViewFragment : Fragment(
         binding.apply {
             CoroutineScope(Dispatchers.Main).launch {
                 delay(waitTime)
-                Log.d(TAG, "before check ${mainViewModel.getAsset()}")
                 spAssetNames.setSelection(findAssetToReturn())
                 delay(waitTime)
-                Log.d(TAG, "in the middle ${mainViewModel.getPayDay()}")
                 spPayDay.setSelection(findPayDayToReturn())
             }
         }

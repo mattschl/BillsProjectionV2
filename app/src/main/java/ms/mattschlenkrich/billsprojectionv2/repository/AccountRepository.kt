@@ -45,6 +45,9 @@ class AccountRepository(private val db: BillsDatabase) {
     fun getAccountWithType(accountName: String) =
         db.getAccountDao().getAccountWithType(accountName)
 
+    fun getAccountAndType(accountId: Long) =
+        db.getAccountDao().getAccountAndType(accountId)
+
     fun getAccountDetailed(accountId: Long) =
         db.getAccountDao().getAccountDetailed(accountId)
 

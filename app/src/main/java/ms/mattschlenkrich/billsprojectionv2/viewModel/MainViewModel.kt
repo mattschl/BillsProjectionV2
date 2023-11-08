@@ -7,6 +7,7 @@ import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.TransactionFull
 
 class MainViewModel(
     app: Application,
@@ -15,6 +16,7 @@ class MainViewModel(
     private var asset: String? = ""
     private var payDay: String? = ""
     private var budgetItem: BudgetDetailed? = null
+    private var oldTransactionFull: TransactionFull? = null
     private var transactionDetailed: TransactionDetailed? = null
     private var splitTransactionDetailed: TransactionDetailed? = null
     private var budgetRuleDetailed: BudgetRuleDetailed? = null
@@ -28,6 +30,7 @@ class MainViewModel(
 
     fun eraseAll() {
         budgetItem = null
+        oldTransactionFull = null
         transactionDetailed = null
         splitTransactionDetailed = null
         budgetRuleDetailed = null
@@ -37,6 +40,14 @@ class MainViewModel(
         callingFragments = ""
         returnTo = ""
         transferNum = 0.0
+    }
+
+    fun setOldTransaction(newTransactionFull: TransactionFull) {
+        oldTransactionFull = newTransactionFull
+    }
+
+    fun getOldTransaction(): TransactionFull? {
+        return oldTransactionFull
     }
 
     fun setUpdatingTransaction(update: Boolean) {
