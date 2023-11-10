@@ -407,6 +407,10 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
         val oldTransaction = mainViewModel.getTransactionDetailed()!!.transaction!!
         oldTransaction.transAmount =
             cf.getDoubleFromDollars(binding.tvRemainder.text.toString())
+        if (mainViewModel.getUpdatingTransaction()) {
+            transactionViewModel.updateTransaction(oldTransaction)
+        }
+        mainViewModel.setUpdatingTransaction(false)
         mainViewModel.setTransactionDetailed(
             TransactionDetailed(
                 oldTransaction,
