@@ -78,8 +78,15 @@ class BudgetListMonthlyAdapter(
         var info = ""
         curRule.apply {
             holder.itemBinding.llOthers.visibility = View.GONE
-            holder.itemBinding.tvBudgetName.text =
-                budgetRule!!.budgetRuleName
+            if (budgetRule!!.budFrequencyTypeId == FREQ_MONTHLY) {
+                info = budgetRule!!.budgetRuleName +
+                        " - monthly"
+            } else if (budgetRule!!.budFrequencyTypeId == FREQ_WEEKLY) {
+                info = budgetRule!!.budgetRuleName + " - weekly x " +
+                        budgetRule!!.budFrequencyCount
+
+            }
+            holder.itemBinding.tvBudgetName.text = info
             val amt = when (budgetRule!!.budFrequencyTypeId) {
                 FREQ_WEEKLY -> {
                     budgetRule!!.budgetAmount * 4 / budgetRule!!.budFrequencyCount

@@ -59,6 +59,22 @@ class DateFunctions {
         return getDisplayDateWithYear(mDate.plusYears(count).toString())
     }
 
+    fun getNextMonthlyDate(startDate: String, interval: Int): String {
+        var mDate = LocalDate.parse(startDate)
+        while (mDate.toString() < getCurrentDateAsString()) {
+            mDate = mDate.plusMonths(interval.toLong())
+        }
+        return getDisplayDateWithYear(mDate.toString())
+    }
+
+    fun getNextWeeklyDate(startDate: String, interval: Int): String {
+        var mDate = LocalDate.parse(startDate)
+        while (mDate.toString() < getCurrentDateAsString()) {
+            mDate = mDate.plusWeeks(interval.toLong())
+        }
+        return getDisplayDateWithYear(mDate.toString())
+    }
+
     fun getDateStringFromDate(date: Date): String {
         return dateFormat.format(date)
     }

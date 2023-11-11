@@ -72,11 +72,21 @@ class BudgetListOccasionalAdapter(
 
     override fun onBindViewHolder(holder: BudgetListHolder, position: Int) {
         val curRule = differ.currentList[position]
-        var info: String
+        var info = ""
         curRule.apply {
             holder.itemBinding.llOthers.visibility = View.VISIBLE
-            holder.itemBinding.tvBudgetName.text =
-                budgetRule!!.budgetRuleName
+            if (budgetRule!!.budFrequencyTypeId == FREQ_MONTHLY) {
+                info = budgetRule!!.budgetRuleName + " - " + df.getNextMonthlyDate(
+                    budgetRule!!.budStartDate,
+                    budgetRule!!.budFrequencyCount
+                )
+            } else if (budgetRule!!.budFrequencyTypeId == FREQ_WEEKLY) {
+                info = budgetRule!!.budgetRuleName + " - " + df.getNextWeeklyDate(
+                    budgetRule!!.budStartDate,
+                    budgetRule!!.budFrequencyCount
+                )
+            }
+            holder.itemBinding.tvBudgetName.text = info
             info = cf.displayDollars(budgetRule!!.budgetAmount)
             holder.itemBinding.tvAmount.text = info
             val random = Random()
