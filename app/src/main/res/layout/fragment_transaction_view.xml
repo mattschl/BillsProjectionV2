@@ -62,17 +62,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:padding="50dp"
+                    android:padding="@dimen/margin_medium"
                     android:text="@string/no_transactions_to_view"
                     android:textColor="@color/black"
-                    android:textSize="18sp" />
+                    android:textSize="@dimen/title_text_size" />
 
                 <TextView
                     android:id="@+id/tvNoTransInstructions"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="50dp"
+                    android:gravity="start"
+                    android:padding="@dimen/margin_medium"
                     android:text="@string/instructions_no_transactions"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_info_size"

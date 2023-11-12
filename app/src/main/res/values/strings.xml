@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Bills Projection V2</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="image">image</string>
     <string name="no_accounts_to_view">No Accounts to view</string>
     <string name="account_name">Account Name</string>
@@ -98,13 +97,23 @@
     <string name="allow_transactions_pending">Allow transactions pending</string>
     <string name="choose_the_projected_date">Choose the Projected Date</string>
     <string name="instructions_no_budget_items">To fill in the budget,
-        you will need to create Budget Rules and update the budget.\n
+        you will need to update Budget Rules according to your circumstances.\n\n
         It is important to have a Budget Rule that is a pay day
-        to create pay day periods for the budget.\n
-        Some sample data has been added. They can be edited by
-        long clicking on them. Most items will have a long click option.</string>
-    <string name="instructions_no_transactions">Add transactions to discover your spending habits
-        so that you can create some Budget Rules to take control of your spending.</string>
+        to create pay day periods for the budget.\n\n
+        This view will help you to plan where your money will go for each pay day.\n\n
+        Some sample data has been added.
+        They can be edited by long clicking on them.
+        Most items will have a long click option.\n\n
+        If you consistently keep track you will see trends that could be changed to
+        better use your resources.\n\n
+        Be sure to include annual and occasional expenses so you are not caught by surprise.\n\n
+        When you feel your budget rules are correct,
+        update budget predictions from the options on the top right to populate this view.</string>
+    <string name="instructions_no_transactions">Add transactions to discover your spending habits.
+        Then you can track your spending on the Analysis view.
+        Use this data to update the Budget Rules according to your needs.\n\n
+        The key to controlling your spending is to track it and then make realistic budgets.\n\n
+        </string>
     <string name="automatic">Automatic</string>
     <string name="lock">Lock</string>
     <string name="balance_owing">Balance Owing</string>
