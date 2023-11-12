@@ -494,23 +494,31 @@
     <action
         android:id="@+id/action_global_budgetViewFragment"
         app:destination="@id/budgetViewFragment"
-        app:popUpTo="@id/budgetViewFragment" />
+        app:popUpTo="@id/budgetViewFragment"
+        app:popUpToInclusive="true" />
     <action
         android:id="@+id/action_global_budgetRuleFragment"
         app:destination="@id/budgetRuleFragment"
-        app:popUpTo="@id/budgetRuleFragment" />
+        app:popUpTo="@id/budgetRuleFragment"
+        app:popUpToInclusive="true" />
     <action
         android:id="@+id/action_global_accountsFragment"
         app:destination="@id/accountsFragment"
-        app:popUpTo="@id/accountsFragment" />
+        app:popUpTo="@id/accountsFragment"
+        app:popUpToInclusive="true" />
     <action
         android:id="@+id/action_global_transactionViewFragment"
         app:destination="@id/transactionViewFragment"
-        app:popUpTo="@id/transactionViewFragment" />
+        app:popUpTo="@id/transactionViewFragment"
+        app:popUpToInclusive="true" />
     <action
         android:id="@+id/action_global_transactionAverageFragment"
-        app:destination="@id/transactionAverageFragment" />
+        app:destination="@id/transactionAverageFragment"
+        app:popUpTo="@id/transactionAverageFragment"
+        app:popUpToInclusive="true" />
     <action
         android:id="@+id/action_global_budgetListFragment"
-        app:destination="@id/budgetListFragment" />
+        app:destination="@id/budgetListFragment"
+        app:popUpTo="@id/budgetListFragment"
+        app:popUpToInclusive="true" />
 </navigation>
