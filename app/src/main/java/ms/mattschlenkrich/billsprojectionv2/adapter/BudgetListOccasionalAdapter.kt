@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.adapter
 
+import android.app.AlertDialog
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
@@ -10,17 +11,22 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_LIST
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_MONTHLY
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_WEEKLY
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetListItemBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetListFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleComplete
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
+import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 import java.util.Random
 
+private const val PARENT_TAG = FRAG_BUDGET_LIST
+
 class BudgetListOccasionalAdapter(
     private val mainViewModel: MainViewModel,
+    private val budgetRuleViewModel: BudgetRuleViewModel,
     private val parentView: View,
 ) : RecyclerView.Adapter<BudgetListOccasionalAdapter.BudgetListHolder>() {
 
@@ -132,19 +138,65 @@ class BudgetListOccasionalAdapter(
             }
             holder.itemBinding.tvAverage.text = info
             holder.itemView.setOnLongClickListener {
-                gotoBudgetRule(curRule)
+                AlertDialog.Builder(parentView.context)
+                    .setTitle(
+                        "Choose an action for " +
+                                curRule.budgetRule!!.budgetRuleName
+                    )
+                    .setItems(
+                        arrayOf(
+                            "View or Edit this Budget Rule",
+                            "Delete this Budget Rule",
+                            "View a summary of transactions for this rule"
+                        )
+                    ) { _, pos ->
+                        when (pos) {
+                            0 -> editBudgetRule(curRule)
+                            1 -> deleteBudgetRule(curRule)
+                            2 -> gotoAverages(curRule)
+                        }
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
                 false
             }
         }
     }
 
-    private fun gotoBudgetRule(curRule: BudgetRuleComplete) {
+    private fun gotoAverages(curRule: BudgetRuleComplete) {
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments() + ", " + PARENT_TAG
+        )
+        mainViewModel.setBudgetRuleDetailed(
+            BudgetRuleDetailed(
+                curRule.budgetRule!!,
+                curRule.toAccount!!.account,
+                curRule.fromAccount!!.account
+            )
+        )
+        mainViewModel.setAccountWithType(null)
+        parentView.findNavController().navigate(
+            BudgetListFragmentDirections
+                .actionBudgetListFragmentToTransactionAverageFragment()
+        )
+    }
+
+    private fun deleteBudgetRule(curRule: BudgetRuleComplete) {
+        budgetRuleViewModel.deleteBudgetRule(
+            curRule.budgetRule!!.ruleId,
+            df.getCurrentTimeAsString()
+        )
+    }
+
+
+    private fun editBudgetRule(curRule: BudgetRuleComplete) {
         val budgetRule = BudgetRuleDetailed(
             curRule.budgetRule!!,
             curRule.toAccount!!.account,
             curRule.fromAccount!!.account
         )
         mainViewModel.setBudgetRuleDetailed(budgetRule)
+        mainViewModel.setCallingFragments(PARENT_TAG)
         parentView.findNavController().navigate(
             BudgetListFragmentDirections
                 .actionBudgetListFragmentToBudgetRuleUpdateFragment()

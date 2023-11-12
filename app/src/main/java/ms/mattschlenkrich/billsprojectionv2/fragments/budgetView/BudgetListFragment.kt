@@ -96,7 +96,7 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     private fun fillAnnual() {
         activity.let {
             val budgetListAnnualAdapter = BudgetListAnnualAdapter(
-                mainViewModel, mView
+                mainViewModel, budgetRuleViewModel, mView
             )
             binding.rvAnnual.apply {
                 layoutManager = LinearLayoutManager(requireContext())
@@ -164,7 +164,7 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     private fun fillOccasional() {
         activity.let {
             val budgetListOccasionalAdapter = BudgetListOccasionalAdapter(
-                mainViewModel, mView
+                mainViewModel, budgetRuleViewModel, mView
             )
             binding.rvOccasional.apply {
                 layoutManager =
@@ -244,7 +244,7 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     private fun fillMonthly() {
         activity?.let {
             val budgetListMonthlyAdapter = BudgetListMonthlyAdapter(
-                mainViewModel, mView,
+                mainViewModel, budgetRuleViewModel, mView,
             )
             binding.rvMonthly.apply {
                 layoutManager =

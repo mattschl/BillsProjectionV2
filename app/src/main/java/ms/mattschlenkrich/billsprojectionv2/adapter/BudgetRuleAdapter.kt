@@ -199,9 +199,9 @@ class BudgetRuleAdapter(
         )
     }
 
-    private fun deleteBudgetRule(budgetRuleDetailed: BudgetRuleDetailed?) {
+    private fun deleteBudgetRule(budgetRuleDetailed: BudgetRuleDetailed) {
         budgetRuleViewModel.deleteBudgetRule(
-            budgetRuleDetailed!!.budgetRule!!.ruleId,
+            budgetRuleDetailed.budgetRule!!.ruleId,
             df.getCurrentTimeAsString()
         )
     }

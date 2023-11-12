@@ -25,6 +25,7 @@ import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.adapter.BudgetRuleDatesAdapter
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_LIST
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
@@ -413,6 +414,15 @@ class BudgetRuleUpdateFragment :
             mView.findNavController().navigate(
                 BudgetRuleUpdateFragmentDirections
                     .actionBudgetRuleUpdateFragmentToBudgetViewFragment()
+            )
+        } else if (mainViewModel.getCallingFragments()!!.contains(
+                FRAG_BUDGET_LIST
+            )
+        ) {
+            mainViewModel.setBudgetRuleDetailed(null)
+            mView.findNavController().navigate(
+                BudgetRuleUpdateFragmentDirections
+                    .actionBudgetRuleUpdateFragmentToBudgetListFragment()
             )
         }
     }
