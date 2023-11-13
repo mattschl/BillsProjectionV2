@@ -25,6 +25,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_large"
+                android:text="@string/general"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_heading_size" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:padding="@dimen/margin_medium"
+                android:text="@string/general_instructions"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_info_size"
+                tools:ignore="VisualLintLongText" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_large"
                 android:text="@string/budget_view_help"
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_heading_size" />

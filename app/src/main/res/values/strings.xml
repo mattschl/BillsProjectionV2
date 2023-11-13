@@ -101,9 +101,8 @@
         It is important to have a Budget Rule that is a pay day
         to create pay day periods for the budget.\n\n
         This view will help you to plan where your money will go for each pay day.\n\n
-        Some sample data has been added.
-        They can be edited by long clicking on them.
-        Most items will have a long click option.\n\n
+        They can be edited by long tapping on them.
+        Most items will have a long tap option.\n\n
         If you consistently keep track you will see trends that could be changed to
         better use your resources.\n\n
         Be sure to include annual and occasional expenses so you are not caught by surprise.\n\n
@@ -115,6 +114,8 @@
         Then you can track your spending on the Analysis view.
         Use this data to update the Budget Rules according to your needs.\n\n
         The key to controlling your spending is to track it and then make realistic budgets.\n\n
+        If you add a transaction that will be recurring,
+        add a Budget Rule for it to remind you of the next time it comes due.
         </string>
     <string name="instructions_no_transactions_for_analysis">Add transactions in Budget View or Transaction View.
         Then you can track your spending patterns here.\n\n
@@ -187,8 +188,27 @@
     <string name="help_text">Help text</string>
     <string name="budget_view_help">Budget View Help</string>
     <string name="transaction_view_help">Transaction View Help</string>
-    <string name="help">Help</string>
+    <string name="help">Help Text</string>
     <string name="choose_a_budget_rule_or_account">Choose a Budget rule or Account</string>
     <string name="analysis_view_help">Analysis View Help</string>
     <string name="nothing_to_view_choose">Nothing to view.\n\n Choose an account or budget rule that contains activity.</string>
+    <string name="general">General</string>
+    <string name="general_instructions">The key to using this app is to use it consistently to track
+     all your expenses regularly.\n\n
+    Step 1. Decide where money is going and coming from - these will be Accounts.
+        Go to the Accounts tab at the bottom and rename, add, edit or delete accordingly.
+        Long tap on items to view or edit them.\n\n
+    Step 2. Figure out as many recurring transactions that will take place.
+        ie. Groceries, rent, car loan … etc. Especially you want to create pay days!\n
+        Go to the budget rules and rename, add or delete items accordingly.
+    Log tap on items to view or edit them.\n
+    TIP: View a summary of what the budget looks like by going to the upper right menu
+    and choosing \"View Current Budget Summary\".\n\n
+    Step 3. Enter transactions as they come along and after a few months you can see an
+    analysis of accounts and budget rules. This will help you to fine tune your Budget Rules.\n\n
+    Step 4. Regularly look at the Budget View to determine what expenses are scheduled.
+        Tap on any item to make a transaction on that item.
+        The Budget View will automatically update as you perform transactions so it is
+         preferable that you enter transactions from here.
+     Check what will come out on future paydays. Notice the surpluses or deficits.</string>
 </resources>
