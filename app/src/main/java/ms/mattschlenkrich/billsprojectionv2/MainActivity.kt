@@ -57,6 +57,7 @@ class MainActivity : AppCompatActivity() {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menu.add(getString(R.string.update_budget_predictions))
                 menu.add(getString(R.string.view_current_budget_summary))
+                menu.add(getString(R.string.help))
                 menu.add("Bills Projection ${BuildConfig.VERSION_NAME}")
             }
 
@@ -70,6 +71,11 @@ class MainActivity : AppCompatActivity() {
 
                     getString(R.string.view_current_budget_summary) -> {
                         gotoBudgetList()
+                        true
+                    }
+
+                    getString(R.string.help) -> {
+                        gotoHelp()
                         true
                     }
 
@@ -120,6 +126,12 @@ class MainActivity : AppCompatActivity() {
         setupTransactionViewModel()
         setupBudgetItemViewModel()
 
+    }
+
+    private fun gotoHelp() {
+        findNavController(R.id.fragment_container_view).navigate(
+            NavGraphDirections.actionGlobalHelpFragment()
+        )
     }
 
     private fun gotoBudgetList() {

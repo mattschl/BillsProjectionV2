@@ -157,7 +157,20 @@ class TransactionAnalysisFragment : Fragment(
                     .observe(viewLifecycleOwner) { transactionList ->
                         transactionAdapter.differ.submitList(transactionList)
                         fillAnalysisFromAccount(transactionList, totalCredits, totalDebits)
+                        updateUiHelpText(transactionList)
                     }
+            }
+        }
+    }
+
+    private fun updateUiHelpText(transactionList: List<TransactionDetailed>) {
+        binding.apply {
+            if (transactionList.isEmpty()) {
+                rvTransactions.visibility = View.GONE
+                crdTransactionAnalysisHelp.visibility = View.VISIBLE
+            } else {
+                rvTransactions.visibility = View.VISIBLE
+                crdTransactionAnalysisHelp.visibility = View.GONE
             }
         }
     }
@@ -356,6 +369,7 @@ class TransactionAnalysisFragment : Fragment(
                 ).observe(viewLifecycleOwner) { transactionList ->
                     transactionAdapter.differ.submitList(transactionList)
                     fillAnalysisFromAccount(transactionList, totalCredits, totalDebits)
+                    updateUiHelpText(transactionList)
                 }
             }
         }
@@ -412,7 +426,7 @@ class TransactionAnalysisFragment : Fragment(
                         transactionList
                     )
                     fillAnalysisFromBudgetRule(transactionList)
-
+                    updateUiHelpText(transactionList)
                 }
                 CoroutineScope(Dispatchers.Main).launch {
                     delay(WAIT_500)
@@ -511,6 +525,7 @@ class TransactionAnalysisFragment : Fragment(
             ) { transactionList ->
                 transactionAdapter.differ.submitList(transactionList)
                 fillAnalysisFromBudgetRule(transactionList)
+                updateUiHelpText(transactionList)
             }
         }
     }

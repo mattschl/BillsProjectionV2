@@ -108,11 +108,19 @@
         better use your resources.\n\n
         Be sure to include annual and occasional expenses so you are not caught by surprise.\n\n
         When you feel your budget rules are correct,
-        update budget predictions from the options on the top right to populate this view.</string>
+        update budget predictions from the options on the top right to populate this view.\n\n
+        To view Budget according to the budget rules,
+        go to the top right menu and choose View Current Budget Summary.</string>
     <string name="instructions_no_transactions">Add transactions to discover your spending habits.
         Then you can track your spending on the Analysis view.
         Use this data to update the Budget Rules according to your needs.\n\n
         The key to controlling your spending is to track it and then make realistic budgets.\n\n
+        </string>
+    <string name="instructions_no_transactions_for_analysis">Add transactions in Budget View or Transaction View.
+        Then you can track your spending patterns here.\n\n
+        Use this data to update the Budget Rules according to your needs.\n\n
+        The key to controlling your spending is to track it and then make realistic budgets. Then
+        to monitor your spending throughout the month using the Budget View.\n\n
         </string>
     <string name="automatic">Automatic</string>
     <string name="lock">Lock</string>
@@ -175,4 +183,12 @@
     <string name="annual_budget">Annual Budget</string>
     <string name="budget_summary">Budget Summary</string>
     <string name="previous_month">Previous Month</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="help_text">Help text</string>
+    <string name="budget_view_help">Budget View Help</string>
+    <string name="transaction_view_help">Transaction View Help</string>
+    <string name="help">Help</string>
+    <string name="choose_a_budget_rule_or_account">Choose a Budget rule or Account</string>
+    <string name="analysis_view_help">Analysis View Help</string>
+    <string name="nothing_to_view_choose">Nothing to view.\n\n Choose an account or budget rule that contains activity.</string>
 </resources>

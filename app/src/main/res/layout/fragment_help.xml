@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".common.HelpFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/help_text"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="@dimen/title_text_size"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_large"
+                android:text="@string/budget_view_help"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_heading_size" />
+
+            <TextView
+                android:id="@+id/tvNoBudgetItemsInstructions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:padding="@dimen/margin_medium"
+                android:text="@string/instructions_no_budget_items"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_info_size"
+                tools:ignore="VisualLintLongText" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_large"
+                android:text="@string/transaction_view_help"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_heading_size" />
+
+            <TextView
+                android:id="@+id/tvNoTransInstructions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:padding="@dimen/margin_medium"
+                android:text="@string/instructions_no_transactions"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_info_size"
+                tools:ignore="VisualLintLongText" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_large"
+                android:text="@string/analysis_view_help"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_heading_size" />
+
+
+            <TextView
+                android:id="@+id/tvNoTransToAnalyzeInstructions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:padding="@dimen/margin_medium"
+                android:text="@string/instructions_no_transactions_for_analysis"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_info_size"
+                tools:ignore="VisualLintLongText" />
+        </LinearLayout>
+    </ScrollView>
+</layout>
