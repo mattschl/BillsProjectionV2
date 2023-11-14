@@ -59,6 +59,7 @@ class MainActivity : AppCompatActivity() {
                 menu.add(getString(R.string.view_current_budget_summary))
                 menu.add(getString(R.string.help))
                 menu.add("${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME}")
+                menu.add("    ")
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -79,8 +80,14 @@ class MainActivity : AppCompatActivity() {
                         true
                     }
 
+                    "${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME}" -> {
+                        //do nothing
+                        true
+                    }
+
                     else -> {
-                        false
+                        Log.d(TAG, "other was called")
+                        true
                     }
                 }
 
