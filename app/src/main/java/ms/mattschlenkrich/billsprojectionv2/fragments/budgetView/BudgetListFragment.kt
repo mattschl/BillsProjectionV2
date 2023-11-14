@@ -267,6 +267,7 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
         binding.apply {
             var totalCredits = 0.0
             var totalDebits = 0.0
+            var totalFixed = 0.0
             for (budget in budgetsMonthly) {
                 val amt = when (budget.budgetRule!!.budFrequencyTypeId) {
                     FREQ_WEEKLY -> {
@@ -284,14 +285,23 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
                 }
                 if (budget.toAccount!!.accountType!!.displayAsAsset) {
                     totalCredits += amt
+                    if (budget.budgetRule!!.budFixedAmount) {
+                        totalFixed += amt
+                    }
                 }
                 if (budget.fromAccount!!.accountType!!.displayAsAsset) {
                     totalDebits += amt
+                    if (budget.budgetRule!!.budFixedAmount) {
+                        totalFixed -= amt
+                    }
                 }
+
                 var info = "Credits: " + cf.displayDollars(totalCredits)
                 tvCreditsMonthly.text = info
                 info = "Debits: " + cf.displayDollars(totalDebits)
                 tvDebitsMonthly.text = info
+                info = "Fixed: " + cf.displayDollars(totalFixed)
+                tvFixedMonthly.text = info
                 if (totalCredits >= totalDebits) {
                     info = "Surplus of " + cf.displayDollars(totalCredits - totalDebits)
                     tvTotalMonthly.setTextColor(Color.BLACK)

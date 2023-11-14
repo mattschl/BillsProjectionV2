@@ -519,6 +519,11 @@
             android:id="@+id/action_budgetListFragment_to_transactionAverageFragment"
             app:destination="@id/transactionAverageFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/helpFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.common.HelpFragment"
+        android:label="fragment_help"
+        tools:layout="@layout/fragment_help" />
     <action
         android:id="@+id/action_global_budgetViewFragment"
         app:destination="@id/budgetViewFragment"
@@ -549,11 +554,6 @@
         app:destination="@id/budgetListFragment"
         app:popUpTo="@id/budgetListFragment"
         app:popUpToInclusive="true" />
-    <fragment
-        android:id="@+id/helpFragment"
-        android:name="ms.mattschlenkrich.billsprojectionv2.common.HelpFragment"
-        android:label="fragment_help"
-        tools:layout="@layout/fragment_help" />
     <action
         android:id="@+id/action_global_helpFragment"
         app:destination="@id/helpFragment" />

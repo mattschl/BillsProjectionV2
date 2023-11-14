@@ -21,5 +21,6 @@
     <dimen name="normal_margin">10dp</dimen>
     <dimen name="Large_margin">24dp</dimen>
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
-    <dimen name="text_box_narrow">120dp</dimen>
+    <dimen name="text_box_narrow">100dp</dimen>
+    <dimen name="margin_small">10dp</dimen>
 </resources>

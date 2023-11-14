@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Bills Projection V2</string>
+    <string name="app_name">Bills Projection</string>
     <string name="image">image</string>
     <string name="no_accounts_to_view">No Accounts to view</string>
     <string name="account_name">Account Name</string>
@@ -170,4 +170,5 @@
     <string name="accounts_help">Accounts Help</string>
     <string name="budget_rule_help">Budget Rule Help</string>
     <string name="current_budget_summary">Current Budget Summary</string>
+    <string name="fixed">Fixed</string>
 </resources>

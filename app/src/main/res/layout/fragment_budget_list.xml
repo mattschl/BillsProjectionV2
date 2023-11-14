@@ -59,16 +59,25 @@
                         android:id="@+id/tvDebitsMonthly"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/margin_medium"
+                        android:layout_marginStart="@dimen/margin_small"
                         android:maxWidth="@dimen/text_box_narrow"
                         android:text="@string/debits"
+                        android:textSize="@dimen/text_info_size" />
+
+                    <TextView
+                        android:id="@+id/tvFixedMonthly"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:maxWidth="@dimen/text_box_narrow"
+                        android:text="@string/fixed"
                         android:textSize="@dimen/text_info_size" />
 
                     <TextView
                         android:id="@+id/tvTotalMonthly"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/margin_medium"
+                        android:layout_marginStart="@dimen/margin_small"
                         android:maxWidth="@dimen/text_box_narrow"
                         android:text="@string/surplus_or_deficit"
                         android:textSize="@dimen/text_info_size" />

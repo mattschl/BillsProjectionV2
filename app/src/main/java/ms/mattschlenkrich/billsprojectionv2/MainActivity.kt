@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
                 menu.add(getString(R.string.update_budget_predictions))
                 menu.add(getString(R.string.view_current_budget_summary))
                 menu.add(getString(R.string.help))
-                menu.add("Bills Projection ${BuildConfig.VERSION_NAME}")
+                menu.add("${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME}")
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
