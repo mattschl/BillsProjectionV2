@@ -73,7 +73,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="start"
                     android:padding="@dimen/margin_medium"
-                    android:text="@string/instructions_no_transactions"
+                    android:text="@string/instructions_transaction_view"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_info_size"
                     tools:ignore="VisualLintLongText" />

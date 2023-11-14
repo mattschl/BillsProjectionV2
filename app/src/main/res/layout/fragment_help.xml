@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="start"
                 android:padding="@dimen/margin_medium"
-                android:text="@string/general_instructions"
+                android:text="@string/instructions_general"
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_info_size"
                 tools:ignore="VisualLintLongText" />
@@ -48,12 +48,11 @@
                 android:textSize="@dimen/text_heading_size" />
 
             <TextView
-                android:id="@+id/tvNoBudgetItemsInstructions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="start"
                 android:padding="@dimen/margin_medium"
-                android:text="@string/instructions_no_budget_items"
+                android:text="@string/instructions_budget_view"
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_info_size"
                 tools:ignore="VisualLintLongText" />
@@ -67,12 +66,11 @@
                 android:textSize="@dimen/text_heading_size" />
 
             <TextView
-                android:id="@+id/tvNoTransInstructions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="start"
                 android:padding="@dimen/margin_medium"
-                android:text="@string/instructions_no_transactions"
+                android:text="@string/instructions_transaction_view"
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_info_size"
                 tools:ignore="VisualLintLongText" />
@@ -87,12 +85,68 @@
 
 
             <TextView
-                android:id="@+id/tvNoTransToAnalyzeInstructions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="start"
                 android:padding="@dimen/margin_medium"
-                android:text="@string/instructions_no_transactions_for_analysis"
+                android:text="@string/instructions_transactions_analysis_view"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_info_size"
+                tools:ignore="VisualLintLongText" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_large"
+                android:text="@string/accounts_help"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_heading_size" />
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:padding="@dimen/margin_medium"
+                android:text="@string/instruction_accounts"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_info_size"
+                tools:ignore="VisualLintLongText" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_large"
+                android:text="@string/budget_rule_help"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_heading_size" />
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:padding="@dimen/margin_medium"
+                android:text="@string/instructions_budget_rules"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_info_size"
+                tools:ignore="VisualLintLongText" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_large"
+                android:text="@string/current_budget_summary"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_heading_size" />
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:padding="@dimen/margin_medium"
+                android:text="@string/instructions_budget_list"
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_info_size"
                 tools:ignore="VisualLintLongText" />

@@ -1,0 +1,98 @@
+<resources>
+    <string name="instruction_accounts">
+        Use the \"Accounts\" tab to work with accounts.\n\n
+        Add an account by tapping the \"+\" (or add) button on the bottom of the screen.
+        Long tap on an existing account to edit or delete it.\n\n
+        Type in the account name (these must be unique) and if desired an account number
+         or identifier.\n\n
+        Tap on Account Type to see a list of available account types. (This list may be edited,
+        but this will impact how accounts are used by the database.)\n\n
+        Add other information such as balance, owing, budgeted and credit limit.
+        (The budgeted amount is not used by the database and is for your information only.)
+    </string>
+    <string name="instructions_budget_rules">
+        Use the \"Budget Rules\" tab to work with Budget Rules.\n\n
+        Add a Budget Rule by tapping the \"+\" (or add) button on the bottom of the screen.
+        Long tap on an existing Budget Rule to edit or delete it.\n\n
+        Type in the Budget Rule name. (must be unique)\n\n
+        Tap to add a \"to\" account and a \"from\" account.
+        This will be a default of how a transaction will be performed from the Budget View.
+        This may be change when actually performing the transaction.\n
+        ie. Instead of a bank account, use a credit card.\n\n
+        The amount is the amount budgeted during a pay period or at the time scheduled.
+        This may be set to zero just so it appears on the Budget View.\n
+        If this is a fixed amount that must be paid you can check \"Fixed amount\".
+        This is used to determine which expenses are absolute musts on the Budget.\n\n
+        If this rule is a pay day mark it as \"Make a Pay Day\".
+        This will schedule the Pay days accordingly.\n\n
+        \"Automatic Payment\" is not used at this time.\n\n
+        SCHEDULING: \n
+        This is the important part of the Budget Rule!\n
+        Fill in the start date and do not forget an end date.\n
+        Fill in the frequency and the frequency count with a day of week.
+        (Note: If weekly is used the day of week is ignored.)\n\n
+        The last item is the \"Days Before Due Date\".
+        This will move the scheduled date forward to allow for payments to go through,
+         or just to notify you in advance of occasional or annual items.\n\n
+        Looking at the sample items will familiarize you with what the options are for.\n\n
+        NOTE: the actual budget predictions must be updated manually every so often
+         as you adjust and fine tune the budget.
+         Tap on the menu on the top right and tap \"Update Budget Predictions\" and wait for the
+        database to update.
+    </string>
+    <string name="instructions_budget_view">To fill in the budget,
+        you will need to update Budget Rules according to your circumstances.\n\n
+        It is important to have a Budget Rule that is a pay day
+        to create pay day periods for the budget.\n
+        This view will help you to plan where your money will go for each pay period.\n\n
+        They can be edited by long tapping on them.
+        Most items will have a long tap option.\n
+        If you consistently keep track you will see trends that could be changed to
+        better use your resources.\n
+        Be sure to include annual and occasional expenses so you are not caught by surprise.\n\n
+        When you feel your budget rules are correct,
+        update budget predictions from the options on the top right to populate this view.
+        It is a good idea to \"lock\" items for the current pay period to prevent losing any
+        changes you have made.\n\n
+        To view a Budget monthly, occasional and annual summary,
+        go to the top right menu and choose View Current Budget Summary.
+    </string>
+    <string name="instructions_transaction_view">Add transactions to discover your spending habits.
+        Then you can track your spending on the Analysis view.
+        Use this data to update the Budget Rules according to your needs.\n\n
+        The key to controlling your spending is to track it and then make realistic budgets.\n\n
+        If you add a transaction that will be recurring,
+        add a Budget Rule for it to remind you of the next time it comes due.
+        </string>
+    <string name="instructions_transactions_analysis_view">Add transactions in Budget View or Transaction View.
+        Then you can track your spending patterns here.\n\n
+        Use this data to update the Budget Rules according to your needs.\n\n
+        The key to controlling your spending is to track it and then make realistic budgets. Then
+        to monitor your spending throughout the month using the Budget View.\n\n
+        </string>
+    <string name="instructions_general">The key to using this app is to use it consistently to track
+     all your expenses regularly.\n\n
+    Step 1. Decide where money is going and coming from - these will be Accounts.
+        Go to the Accounts tab at the bottom and rename, add, edit or delete accordingly.
+        Long tap on items to view or edit them.\n\n
+    Step 2. Figure out as many recurring transactions that will take place.
+        ie. Groceries, rent, car loan … etc. Especially you want to create pay days!\n
+        Go to the budget rules and rename, add or delete items accordingly.
+    Log tap on items to view or edit them.\n
+    TIP: View a summary of what the budget looks like by going to the upper right menu
+    and choosing \"View Current Budget Summary\".\n\n
+    Step 3. Enter transactions as they come along and after a few months you can see an
+    analysis of accounts and budget rules. This will help you to fine tune your Budget Rules.\n\n
+    Step 4. Regularly look at the Budget View to determine what expenses are scheduled.
+        Tap on any item to make a transaction on that item.
+        The Budget View will automatically update as you perform transactions so it is
+         preferable that you enter transactions from here.
+     Check what will come out on future paydays. Notice the surpluses or deficits.
+</string>
+    <string name="instructions_budget_list">fine tune the current budget
+        by going to the options menu on the top right
+        and tapping \"View Current Budget Summary\"\n\n
+        This gives you a place to view how your monthly income and expenses look.
+        Long tapping an item will allow you some options to adjust the budget.\n\n
+    </string>
+</resources>

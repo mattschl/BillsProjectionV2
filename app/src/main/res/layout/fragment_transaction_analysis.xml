@@ -391,7 +391,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="start"
                         android:padding="@dimen/margin_medium"
-                        android:text="@string/instructions_no_transactions_for_analysis"
+                        android:text="@string/instructions_transactions_analysis_view"
                         android:textColor="@color/black"
                         android:textSize="@dimen/text_info_size"
                         tools:ignore="VisualLintLongText" />
