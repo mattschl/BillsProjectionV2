@@ -171,4 +171,5 @@
     <string name="budget_rule_help">Budget Rule Help</string>
     <string name="current_budget_summary">Current Budget Summary</string>
     <string name="fixed">Fixed</string>
+    <string name="pay_check">Pay Check</string>
 </resources>

@@ -58,8 +58,8 @@ class MainActivity : AppCompatActivity() {
                 menu.add(getString(R.string.update_budget_predictions))
                 menu.add(getString(R.string.view_current_budget_summary))
                 menu.add(getString(R.string.help))
+//                menu.add(getString(R.string.pay_check))
                 menu.add("${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME}")
-                menu.add("    ")
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -80,14 +80,14 @@ class MainActivity : AppCompatActivity() {
                         true
                     }
 
-                    "${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME}" -> {
-                        //do nothing
-                        true
-                    }
+//                    getString(R.string.pay_check) -> {
+//                        //future module
+//                        true
+//                    }
 
                     else -> {
                         Log.d(TAG, "other was called")
-                        true
+                        false
                     }
                 }
 
