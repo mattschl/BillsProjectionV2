@@ -11,8 +11,6 @@ import ms.mattschlenkrich.billsprojectionv2.common.PAY_PERIOD_CUTOFF_DATE
 import ms.mattschlenkrich.billsprojectionv2.common.PAY_PERIOD_EMPLOYER_ID
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_EMPLOYERS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_WORK_DATES
-import ms.mattschlenkrich.billsprojectionv2.common.TABLE_WORK_EXTRA_PER_DAY
-import ms.mattschlenkrich.billsprojectionv2.common.TABLE_WORK_EXTRA_PER_HOUR
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_WORK_PAY_PERIODS
 import ms.mattschlenkrich.billsprojectionv2.common.WORK_DATES_CUTOFF_DATE
 import ms.mattschlenkrich.billsprojectionv2.common.WORK_DATES_DATE
@@ -29,7 +27,6 @@ data class Employers(
     val employerIsDeleted: Boolean,
     val employerUpdateTime: String,
 ) : Parcelable
-
 
 @Entity(
     tableName = TABLE_WORK_PAY_PERIODS,
@@ -59,7 +56,7 @@ data class WorkPayPeriods(
             childColumns = [WORK_DATES_EMPLOYER_ID]
         ),
         ForeignKey(
-            WorkPayPeriods::class,
+            entity = WorkPayPeriods::class,
             parentColumns = [PAY_PERIOD_CUTOFF_DATE],
             childColumns = [WORK_DATES_CUTOFF_DATE]
         )
@@ -79,30 +76,3 @@ data class WorkDates(
     val wdUpdateTime: String,
 ) : Parcelable
 
-@Entity(
-    tableName = TABLE_WORK_EXTRA_PER_DAY
-)
-@Parcelize
-data class WorkExtrasPerDay(
-    @PrimaryKey
-    val workExtraDayId: Long,
-    val wedEmployerId: Long,
-    val wedName: String,
-    val wedValue: Double,
-    @ColumnInfo(defaultValue = "0")
-    val wedIsDeleted: Boolean,
-    val wedUpdateTime: String,
-) : Parcelable
-
-@Entity(tableName = TABLE_WORK_EXTRA_PER_HOUR)
-@Parcelize
-data class WorkExtrasPerHour(
-    @PrimaryKey
-    val workExtraHourId: Long,
-    val wehEmployerId: Long,
-    val wehName: String,
-    val wehValue: Double,
-    @ColumnInfo(defaultValue = "0")
-    val wehIsDeleted: Boolean,
-    val wehUpdateTime: String,
-) : Parcelable
