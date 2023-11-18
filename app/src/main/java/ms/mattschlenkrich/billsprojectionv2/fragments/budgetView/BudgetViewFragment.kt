@@ -50,7 +50,6 @@ class BudgetViewFragment : Fragment(
     //    private lateinit var assetList: List<String>
     private lateinit var curAsset: AccountWithType
     private val budgetList = ArrayList<BudgetDetailed>()
-    private val pendingList = ArrayList<TransactionDetailed>()
     private var pendingAmount = 0.0
 
     override fun onCreateView(
@@ -345,31 +344,26 @@ class BudgetViewFragment : Fragment(
             ).observe(
                 viewLifecycleOwner
             ) { transactions ->
-                pendingList.clear()
                 transactionPendingAdapter.differ.submitList(transactions)
                 updatePendingUI(transactions)
-                transactions.listIterator().forEach {
-                    pendingList.add(it)
-                }
-                updatePendingTotal()
+                updatePendingTotal(transactions)
                 fillAssetDetails()
                 fillBudgetTotals()
             }
         }
     }
 
-    private fun updatePendingTotal() {
+    private fun updatePendingTotal(transactions: List<TransactionDetailed>) {
         pendingAmount = 0.0
-        for (item in pendingList) {
+        for (item in transactions) {
             if (item.transaction!!.transToAccountPending) {
                 pendingAmount += item.transaction.transAmount
             } else {
                 pendingAmount -= item.transaction.transAmount
             }
         }
-        val display = "------------- Pending: " +
-                "${cf.displayDollars(pendingAmount)} -------------"
         binding.apply {
+            val display = "------------- Pending: ${cf.displayDollars(pendingAmount)} -------------"
             if (pendingAmount < 0.0) {
                 lblPending.setTextColor(Color.RED)
             } else {
@@ -388,6 +382,9 @@ class BudgetViewFragment : Fragment(
             } else {
                 rvPending.visibility = View.VISIBLE
                 lblPending.visibility = View.VISIBLE
+                if (transactions.size > 3) {
+                    rvPending.layoutParams.height = 300
+                }
                 lblPending.setTextColor(Color.RED)
             }
         }

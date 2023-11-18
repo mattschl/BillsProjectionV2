@@ -11,10 +11,15 @@ import ms.mattschlenkrich.billsprojectionv2.common.PAY_PERIOD_CUTOFF_DATE
 import ms.mattschlenkrich.billsprojectionv2.common.PAY_PERIOD_EMPLOYER_ID
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_EMPLOYERS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_WORK_DATES
+import ms.mattschlenkrich.billsprojectionv2.common.TABLE_WORK_DATES_EXTRAS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_WORK_PAY_PERIODS
 import ms.mattschlenkrich.billsprojectionv2.common.WORK_DATES_CUTOFF_DATE
 import ms.mattschlenkrich.billsprojectionv2.common.WORK_DATES_DATE
 import ms.mattschlenkrich.billsprojectionv2.common.WORK_DATES_EMPLOYER_ID
+import ms.mattschlenkrich.billsprojectionv2.common.WORK_DATES_EXTRAS_DATE
+import ms.mattschlenkrich.billsprojectionv2.common.WORK_DATES_EXTRAS_EMPLOYER_ID
+import ms.mattschlenkrich.billsprojectionv2.common.WORK_DATES_EXTRA_ID
+import ms.mattschlenkrich.billsprojectionv2.common.WORK_EXTRA_ID
 
 @Entity(
     tableName = TABLE_EMPLOYERS
@@ -74,5 +79,35 @@ data class WorkDates(
     @ColumnInfo(defaultValue = "0")
     val wdIsDeleted: Boolean,
     val wdUpdateTime: String,
+) : Parcelable
+
+@Entity(
+    tableName = TABLE_WORK_DATES_EXTRAS,
+    primaryKeys = [WORK_DATES_EXTRAS_EMPLOYER_ID, WORK_DATES_EXTRAS_DATE, WORK_DATES_EXTRA_ID],
+    foreignKeys = [
+        ForeignKey(
+            entity = Employers::class,
+            parentColumns = [EMPLOYER_ID],
+            childColumns = [WORK_DATES_EMPLOYER_ID]
+        ), ForeignKey(
+            entity = WorkDates::class,
+            parentColumns = [WORK_DATES_DATE],
+            childColumns = [WORK_DATES_EXTRAS_DATE]
+        ), ForeignKey(
+            entity = WorkExtrasDefinitions::class,
+            parentColumns = [WORK_EXTRA_ID],
+            childColumns = [WORK_DATES_EXTRA_ID]
+        )
+    ]
+)
+@Parcelize
+data class WorkDatesExtras(
+    val wdeEmployerId: Long,
+    val wdeDate: String,
+    val wdeExtraId: Long,
+    val wdeValue: Double,
+    @ColumnInfo(defaultValue = "0")
+    val wdeIsDeleted: Boolean,
+    val wdeUpdateTime: String,
 ) : Parcelable
 

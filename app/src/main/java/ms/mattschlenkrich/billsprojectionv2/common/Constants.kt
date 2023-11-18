@@ -145,18 +145,31 @@ const val WORK_DATES_STAT_HOURS = "wdStatHours"
 const val WORK_DATES_IS_DELETED = "wdIsDeleted"
 const val WORK_DATES_UPDATE_TIME = "wdUpdateTime"
 
-const val TABLE_WORK_EXTRAS = "workExtrasPerDay"
+const val TABLE_WORK_EXTRAS_DEFINITIONS = "workExtrasDefinitions"
 const val WORK_EXTRA_ID = "workExtraId"
 const val WORK_EXTRA_EMPLOYER_ID = "weEmployerId"
 const val WORK_EXTRA_NAME = "weName"
 const val WORK_EXTRA_VALUE = "weValue"
 const val WORK_EXTRA_FREQUENCY = "weFrequency"
 const val WORK_EXTRA_IS_CREDIT = "weIsCredit"
+const val WORK_EXTRA_IS_DEFAULT = "weIsDefault"
 const val WORK_EXTRA_IS_DELETED = "wedIsDeleted"
 const val WORK_EXTRA_UPDATE_TIME = "weUpdateTime"
 
 const val TABLE_WORK_EXTRA_FREQUENCIES = "workExtraFrequencies"
 const val WORK_EXTRA_FREQUENCY_NAME = "workExtraFrequencyName"
+
+const val TABLE_WORK_DATES_EXTRAS = "workDatesExtras"
+const val WORK_DATES_EXTRAS_EMPLOYER_ID = "wdeEmployerId"
+const val WORK_DATES_EXTRAS_DATE = "wdeDate"
+const val WORK_DATES_EXTRA_ID = "wdeExtraId"
+const val WORK_DATES_EXTRAS_IS_DELETED = "wdeIsDeleted"
+const val WORK_DATES_EXTRAS_UPDATE_TIME = "wdeUpdateTime"
+
+
+const val WORK_EXTRA_FREQUENCY_HOURLY = "hourly"
+const val WORK_EXTRA_FREQUENCY_DAILY = "daily"
+const val WORK_EXTRA_FREQUENCY_PER_PAY = "per pay"
 
 const val REQUEST_TO_ACCOUNT = "toAccount"
 const val REQUEST_FROM_ACCOUNT = "fromAccount"
