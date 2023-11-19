@@ -38,6 +38,7 @@ data class WorkExtrasDefinitions(
     @ColumnInfo(defaultValue = "1")
     val weIsDefault: Boolean,
     @ColumnInfo(defaultValue = "0")
+    val weEffectiveDate: String,
     val weIsDeleted: Boolean,
     val weUpdateTime: String,
 ) : Parcelable

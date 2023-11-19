@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
@@ -384,6 +385,8 @@ class BudgetViewFragment : Fragment(
                 lblPending.visibility = View.VISIBLE
                 if (transactions.size > 3) {
                     rvPending.layoutParams.height = 300
+                } else {
+                    rvPending.layoutParams.height = LayoutParams.WRAP_CONTENT
                 }
                 lblPending.setTextColor(Color.RED)
             }

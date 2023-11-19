@@ -13,6 +13,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.TABLE_EMPLOYERS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_WORK_DATES
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_WORK_DATES_EXTRAS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_WORK_PAY_PERIODS
+import ms.mattschlenkrich.billsprojectionv2.common.TABLE_WORK_PAY_PERIOD_EXTRAS
 import ms.mattschlenkrich.billsprojectionv2.common.WORK_DATES_CUTOFF_DATE
 import ms.mattschlenkrich.billsprojectionv2.common.WORK_DATES_DATE
 import ms.mattschlenkrich.billsprojectionv2.common.WORK_DATES_EMPLOYER_ID
@@ -20,6 +21,9 @@ import ms.mattschlenkrich.billsprojectionv2.common.WORK_DATES_EXTRAS_DATE
 import ms.mattschlenkrich.billsprojectionv2.common.WORK_DATES_EXTRAS_EMPLOYER_ID
 import ms.mattschlenkrich.billsprojectionv2.common.WORK_DATES_EXTRA_ID
 import ms.mattschlenkrich.billsprojectionv2.common.WORK_EXTRA_ID
+import ms.mattschlenkrich.billsprojectionv2.common.WORK_PAY_PERIOD_EXTRA_CUTOFF_DATE
+import ms.mattschlenkrich.billsprojectionv2.common.WORK_PAY_PERIOD_EXTRA_EMPLOYER_ID
+import ms.mattschlenkrich.billsprojectionv2.common.WORK_PAY_PERIOD_EXTRA_ID
 
 @Entity(
     tableName = TABLE_EMPLOYERS
@@ -104,10 +108,34 @@ data class WorkDates(
 data class WorkDatesExtras(
     val wdeEmployerId: Long,
     val wdeDate: String,
-    val wdeExtraId: Long,
+    val wdeId: Long,
+    val wdeName: String,
     val wdeValue: Double,
     @ColumnInfo(defaultValue = "0")
     val wdeIsDeleted: Boolean,
     val wdeUpdateTime: String,
 ) : Parcelable
 
+@Entity(
+    tableName = TABLE_WORK_PAY_PERIOD_EXTRAS,
+    primaryKeys = [
+        WORK_PAY_PERIOD_EXTRA_EMPLOYER_ID,
+        WORK_PAY_PERIOD_EXTRA_CUTOFF_DATE,
+        WORK_PAY_PERIOD_EXTRA_ID],
+    foreignKeys = [ForeignKey(
+        entity = WorkPayPeriods::class,
+        parentColumns = [PAY_PERIOD_EMPLOYER_ID, PAY_PERIOD_CUTOFF_DATE],
+        childColumns = [WORK_PAY_PERIOD_EXTRA_EMPLOYER_ID,
+            WORK_PAY_PERIOD_EXTRA_CUTOFF_DATE]
+    )]
+)
+@Parcelize
+data class WorkPayPeriodExtras(
+    val ppeEmployerId: Long,
+    val ppeCutoffDate: String,
+    val ppeExtraId: Long,
+    val ppeName: String,
+    val ppeValue: Double,
+    val ppeIsDeleted: Boolean,
+    val ppeUpdateTime: String,
+) : Parcelable
