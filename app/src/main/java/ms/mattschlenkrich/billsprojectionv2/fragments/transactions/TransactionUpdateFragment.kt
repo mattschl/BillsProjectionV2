@@ -56,6 +56,8 @@ class TransactionUpdateFragment :
     private val cf = CommonFunctions()
     private val df = DateFunctions()
 
+//    private var mOldTransactionFull: TransactionFull? = null
+private var mTransaction: Transactions? = null
     private var mBudgetRule: BudgetRule? = null
     private var mToAccount: Account? = null
     private var mFromAccount: Account? = null
@@ -351,9 +353,9 @@ class TransactionUpdateFragment :
     private fun getCurTransDetailed(): TransactionDetailed {
         return TransactionDetailed(
             getCurTransaction(),
-            mainViewModel.getTransactionDetailed()?.budgetRule,
-            mainViewModel.getTransactionDetailed()?.toAccount,
-            mainViewModel.getTransactionDetailed()?.fromAccount
+            mBudgetRule,
+            mToAccount,
+            mFromAccount
         )
 
     }
@@ -361,14 +363,14 @@ class TransactionUpdateFragment :
     private fun getCurTransaction(): Transactions {
         binding.apply {
             return Transactions(
-                mainViewModel.getTransactionDetailed()!!.transaction!!.transId,
+                mTransaction!!.transId,
                 etTransDate.text.toString(),
                 etDescription.text.toString(),
                 etNote.text.toString(),
-                mainViewModel.getTransactionDetailed()!!.budgetRule!!.ruleId,
-                mainViewModel.getTransactionDetailed()!!.toAccount!!.accountId,
+                mBudgetRule!!.ruleId,
+                mToAccount!!.accountId,
                 chkToAccountPending.isChecked,
-                mainViewModel.getTransactionDetailed()!!.fromAccount!!.accountId,
+                mFromAccount!!.accountId,
                 chkFromAccountPending.isChecked,
                 cf.getDoubleFromDollars(etAmount.text.toString()),
                 false,
@@ -379,8 +381,27 @@ class TransactionUpdateFragment :
 
     private fun fillValues() {
         binding.apply {
-            if (mainViewModel.getTransactionDetailed() != null) {
+            if (mainViewModel.getOldTransaction() != null &&
+                mainViewModel.getTransactionDetailed() == null
+            ) {
+                val transFull = mainViewModel.getOldTransaction()!!
+                mTransaction = transFull.transaction
+                etTransDate.setText(mTransaction!!.transDate)
+                etAmount.setText(cf.displayDollars(mTransaction!!.transAmount))
+                etDescription.setText(mTransaction!!.transName)
+                etNote.setText(mTransaction!!.transNote)
+                mBudgetRule = transFull.budgetRule
+                tvBudgetRule.text = mBudgetRule!!.budgetRuleName
+                mToAccount = transFull.toAccountAndType.account
+                tvToAccount.text = mToAccount!!.accountName
+                chkToAccountPending.isChecked = mTransaction!!.transToAccountPending
+                mFromAccount = transFull.fromAccountAndType.account
+                tvFromAccount.text = mFromAccount!!.accountName
+                chkFromAccountPending.isChecked = mTransaction!!.transFromAccountPending
+                updateAmountDisplay()
+            } else if (mainViewModel.getTransactionDetailed() != null) {
                 if (mainViewModel.getTransactionDetailed()!!.transaction != null) {
+                    mTransaction = mainViewModel.getTransactionDetailed()!!.transaction
                     etTransDate.setText(
                         mainViewModel.getTransactionDetailed()!!.transaction!!.transDate
                     )
@@ -434,7 +455,7 @@ class TransactionUpdateFragment :
                     CoroutineScope(Dispatchers.IO).launch {
                         val acc = async {
                             accountViewModel.getAccountWithType(
-                                mainViewModel.getTransactionDetailed()!!.budgetRule!!.budFromAccountId
+                                mFromAccount!!.accountId
                             )
                         }
                         mFromAccountWithType = acc.await()

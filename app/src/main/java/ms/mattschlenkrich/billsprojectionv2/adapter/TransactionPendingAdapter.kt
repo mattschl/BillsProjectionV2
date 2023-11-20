@@ -14,12 +14,14 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_PENDING
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
+import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.databinding.PendingTransactionItemBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetViewFragment
 import ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetViewFragmentDirections
@@ -143,17 +145,31 @@ class TransactionPendingAdapter(
     }
 
     private fun editTransaction(
-        transaction: TransactionDetailed?,
+        transaction: TransactionDetailed,
         it: View,
     ) {
         mainViewModel.setCallingFragments(
             PARENT_TAG
         )
-        mainViewModel.setTransactionDetailed(transaction)
-        it.findNavController().navigate(
-            BudgetViewFragmentDirections
-                .actionBudgetViewFragmentToTransactionUpdateFragment()
-        )
+        mainViewModel.setTransactionDetailed(null)
+        CoroutineScope(Dispatchers.IO).launch {
+            val transactionFull = async {
+                transactionViewModel.getTransactionFull(
+                    transaction.transaction!!.transId,
+                    transaction.transaction.transToAccountId,
+                    transaction.transaction.transFromAccountId
+                )
+            }
+            mainViewModel.setOldTransaction(transactionFull.await())
+
+        }
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_250)
+            it.findNavController().navigate(
+                BudgetViewFragmentDirections
+                    .actionBudgetViewFragmentToTransactionUpdateFragment()
+            )
+        }
     }
 
     private fun completeTransaction(

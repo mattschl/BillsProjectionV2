@@ -42,7 +42,7 @@ class MainViewModel(
         transferNum = 0.0
     }
 
-    fun setOldTransaction(newTransactionFull: TransactionFull) {
+    fun setOldTransaction(newTransactionFull: TransactionFull?) {
         oldTransactionFull = newTransactionFull
     }
 
