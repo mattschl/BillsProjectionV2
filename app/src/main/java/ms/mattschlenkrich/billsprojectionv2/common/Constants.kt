@@ -198,6 +198,13 @@ const val WORK_PAY_PERIOD_EXTRA_VALUE = "ppeValue"
 const val WORK_PAY_PERIOD_EXTRA_IS_DELETED = "ppeIsDeleted"
 const val WORK_PAY_PERIOD_EXTRA_UPDATE_TIME = "ppeUpdateTime"
 
+const val TABLE_WORK_PAY_PERIOD_TAX = "workPayPeriodTax"
+const val PAY_PERIOD_TAX_CUTOFF_DATE = "wppCutoffDate"
+const val PAY_PERIOD_TAX_EMPLOYER_ID = "wppEmployerId"
+const val PAY_PERIOD_TAX_TYPE = "wppTaxType"
+const val PAY_PERIOD_TAX_IS_DELETED = "wppIsDeleted"
+const val PAY_PERIOD_TAX_UPDATE_TIME = "wppUpdateTime"
+
 const val REQUEST_TO_ACCOUNT = "toAccount"
 const val REQUEST_FROM_ACCOUNT = "fromAccount"
 

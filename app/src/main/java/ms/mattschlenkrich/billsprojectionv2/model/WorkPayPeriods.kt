@@ -9,11 +9,15 @@ import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.billsprojectionv2.common.EMPLOYER_ID
 import ms.mattschlenkrich.billsprojectionv2.common.PAY_PERIOD_CUTOFF_DATE
 import ms.mattschlenkrich.billsprojectionv2.common.PAY_PERIOD_EMPLOYER_ID
+import ms.mattschlenkrich.billsprojectionv2.common.PAY_PERIOD_TAX_CUTOFF_DATE
+import ms.mattschlenkrich.billsprojectionv2.common.PAY_PERIOD_TAX_EMPLOYER_ID
+import ms.mattschlenkrich.billsprojectionv2.common.PAY_PERIOD_TAX_TYPE
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_EMPLOYERS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_WORK_DATES
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_WORK_DATES_EXTRAS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_WORK_PAY_PERIODS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_WORK_PAY_PERIOD_EXTRAS
+import ms.mattschlenkrich.billsprojectionv2.common.TABLE_WORK_PAY_PERIOD_TAX
 import ms.mattschlenkrich.billsprojectionv2.common.WORK_DATES_CUTOFF_DATE
 import ms.mattschlenkrich.billsprojectionv2.common.WORK_DATES_DATE
 import ms.mattschlenkrich.billsprojectionv2.common.WORK_DATES_EMPLOYER_ID
@@ -24,6 +28,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.WORK_EXTRA_ID
 import ms.mattschlenkrich.billsprojectionv2.common.WORK_PAY_PERIOD_EXTRA_CUTOFF_DATE
 import ms.mattschlenkrich.billsprojectionv2.common.WORK_PAY_PERIOD_EXTRA_EMPLOYER_ID
 import ms.mattschlenkrich.billsprojectionv2.common.WORK_PAY_PERIOD_EXTRA_ID
+import ms.mattschlenkrich.billsprojectionv2.common.WORK_TAX_TYPE
 
 @Entity(
     tableName = TABLE_EMPLOYERS
@@ -138,4 +143,25 @@ data class WorkPayPeriodExtras(
     val ppeValue: Double,
     val ppeIsDeleted: Boolean,
     val ppeUpdateTime: String,
+) : Parcelable
+
+@Entity(
+    tableName = TABLE_WORK_PAY_PERIOD_TAX,
+    foreignKeys = [ForeignKey(
+        entity = WorkPayPeriods::class,
+        parentColumns = [PAY_PERIOD_CUTOFF_DATE, PAY_PERIOD_EMPLOYER_ID],
+        childColumns = [PAY_PERIOD_TAX_CUTOFF_DATE, PAY_PERIOD_TAX_EMPLOYER_ID]
+    ), ForeignKey(
+        entity = WorkTaxTypes::class,
+        parentColumns = [WORK_TAX_TYPE],
+        childColumns = [PAY_PERIOD_TAX_TYPE]
+    )]
+)
+@Parcelize
+data class WorkPayPeriodTax(
+    val wppCutoffDate: String,
+    val wppEmployerId: Long,
+    val wppTaxType: String,
+    val wppIsDeleted: Boolean,
+    val wppUpdateTime: String,
 ) : Parcelable
