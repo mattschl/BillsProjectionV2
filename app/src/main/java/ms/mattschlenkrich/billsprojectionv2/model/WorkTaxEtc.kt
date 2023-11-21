@@ -5,6 +5,10 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
+import ms.mattschlenkrich.billsprojectionv2.common.EMPLOYER_ID
+import ms.mattschlenkrich.billsprojectionv2.common.EMPLOYER_TAX_RULES_EMPLOYER_ID
+import ms.mattschlenkrich.billsprojectionv2.common.EMPLOYER_TAX_RULES_TAX_TYPE
+import ms.mattschlenkrich.billsprojectionv2.common.TABLE_EMPLOYER_TAX_RULES
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_WORK_TAX_RULES
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_WORK_TAX_TYPES
 import ms.mattschlenkrich.billsprojectionv2.common.WORK_TAX_RULE_TYPE
@@ -45,7 +49,16 @@ data class WorkTaxRules(
 ) : Parcelable
 
 @Entity(
-
+    tableName = TABLE_EMPLOYER_TAX_RULES,
+    foreignKeys = [ForeignKey(
+        entity = Employers::class,
+        parentColumns = [EMPLOYER_ID],
+        childColumns = [EMPLOYER_TAX_RULES_EMPLOYER_ID]
+    ), ForeignKey(
+        entity = WorkTaxTypes::class,
+        parentColumns = [WORK_TAX_TYPE],
+        childColumns = [EMPLOYER_TAX_RULES_TAX_TYPE]
+    )]
 )
 @Parcelize
 data class EmployerTaxRules(

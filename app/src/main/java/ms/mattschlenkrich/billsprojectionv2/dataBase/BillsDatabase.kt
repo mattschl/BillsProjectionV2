@@ -1,11 +1,9 @@
 package ms.mattschlenkrich.billsprojectionv2.dataBase
 
 import android.content.Context
-import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import ms.mattschlenkrich.billsprojectionv2.common.BILLS_DATABASE
 import ms.mattschlenkrich.billsprojectionv2.common.DB_NAME
 import ms.mattschlenkrich.billsprojectionv2.common.DB_VERSION
 import ms.mattschlenkrich.billsprojectionv2.model.Account
@@ -14,8 +12,6 @@ import ms.mattschlenkrich.billsprojectionv2.model.AccountType
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.model.Transactions
-
-private const val TAG = BILLS_DATABASE
 
 @Database(
     entities = [
@@ -43,7 +39,6 @@ abstract class BillsDatabase : RoomDatabase() {
             instance ?: synchronized(LOCK) {
                 instance ?: createDataBase(context).also {
                     instance = it
-                    Log.d(TAG, "operator is invoked")
                 }
             }
 

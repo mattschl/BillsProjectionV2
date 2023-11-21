@@ -3,7 +3,9 @@
 package ms.mattschlenkrich.billsprojectionv2.common
 
 const val DB_NAME = "bills2.db"
+const val PAY_DB_NAME = "pay.db"
 const val DB_VERSION = 1
+const val PAY_DB_VERSION = 1
 const val BILLS_DATABASE = "BillsDatabase"
 
 const val SQLITE_DATE = "yyyy-LL-dd"
@@ -126,6 +128,13 @@ const val EMPLOYER_ID = "employerId"
 const val EMPLOYER_NAME = "employerName"
 const val EMPLOYER_IS_DELETED = "employerIsDeleted"
 const val EMPLOYER_UPDATE_TIME = "employerUpdateTime"
+
+const val TABLE_EMPLOYER_TAX_RULES = "employerTaxRules"
+const val EMPLOYER_TAX_RULES_EMPLOYER_ID = "etrEmployerId"
+const val EMPLOYER_TAX_RULES_TAX_TYPE = "etrTaxType"
+const val EMPLOYER_TAX_RULES_INCLUDE = "etrInclude"
+const val EMPLOYER_TAX_RULES_IS_DELETED = "etrIsDeleted"
+const val EMPLOYER_TAX_RULES_UPDATE_TIME = "etrUpdateTime"
 
 
 const val TABLE_WORK_PAY_PERIODS = "workPayPeriods"
