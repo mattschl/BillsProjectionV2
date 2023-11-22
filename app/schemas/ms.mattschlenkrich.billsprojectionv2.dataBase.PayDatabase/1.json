@@ -1,0 +1,690 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "f038bfe6214416bda0d28731de87394a",
+    "entities": [
+      {
+        "tableName": "employers",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`employerId` INTEGER NOT NULL, `employerName` TEXT NOT NULL, `employerIsDeleted` INTEGER NOT NULL, `employerUpdateTime` TEXT NOT NULL, PRIMARY KEY(`employerId`))",
+        "fields": [
+          {
+            "fieldPath": "employerId",
+            "columnName": "employerId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "employerName",
+            "columnName": "employerName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "employerIsDeleted",
+            "columnName": "employerIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "employerUpdateTime",
+            "columnName": "employerUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "employerId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "workPayPeriods",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ppCutoffDate` TEXT NOT NULL, `ppEmployerId` INTEGER NOT NULL, `ppIsDeleted` INTEGER NOT NULL DEFAULT 0, `ppUpdateTime` TEXT NOT NULL, PRIMARY KEY(`ppCutoffDate`, `ppEmployerId`), FOREIGN KEY(`ppEmployerId`) REFERENCES `employers`(`employerId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "ppCutoffDate",
+            "columnName": "ppCutoffDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ppEmployerId",
+            "columnName": "ppEmployerId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ppIsDeleted",
+            "columnName": "ppIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "ppUpdateTime",
+            "columnName": "ppUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "ppCutoffDate",
+            "ppEmployerId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "employers",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "ppEmployerId"
+            ],
+            "referencedColumns": [
+              "employerId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "workDates",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`wdEmployerId` INTEGER NOT NULL, `wdCutoffDate` TEXT NOT NULL, `wdDate` TEXT NOT NULL, `wdRegHours` REAL NOT NULL, `wdOtHours` REAL NOT NULL, `wdDblOtHours` REAL NOT NULL, `wdStatHours` REAL NOT NULL, `wdIsDeleted` INTEGER NOT NULL DEFAULT 0, `wdUpdateTime` TEXT NOT NULL, PRIMARY KEY(`wdEmployerId`, `wdCutoffDate`, `wdDate`), FOREIGN KEY(`wdEmployerId`, `wdCutoffDate`) REFERENCES `workPayPeriods`(`ppEmployerId`, `ppCutoffDate`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "wdEmployerId",
+            "columnName": "wdEmployerId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdCutoffDate",
+            "columnName": "wdCutoffDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdDate",
+            "columnName": "wdDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdRegHours",
+            "columnName": "wdRegHours",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdOtHours",
+            "columnName": "wdOtHours",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdDblOtHours",
+            "columnName": "wdDblOtHours",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdStatHours",
+            "columnName": "wdStatHours",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdIsDeleted",
+            "columnName": "wdIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "wdUpdateTime",
+            "columnName": "wdUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "wdEmployerId",
+            "wdCutoffDate",
+            "wdDate"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "workPayPeriods",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "wdEmployerId",
+              "wdCutoffDate"
+            ],
+            "referencedColumns": [
+              "ppEmployerId",
+              "ppCutoffDate"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "workDatesExtras",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`wdeEmployerId` INTEGER NOT NULL, `wdeDate` TEXT NOT NULL, `wdeId` INTEGER NOT NULL, `wdeName` TEXT NOT NULL, `wdeValue` REAL NOT NULL, `wdeIsDeleted` INTEGER NOT NULL DEFAULT 0, `wdeUpdateTime` TEXT NOT NULL, PRIMARY KEY(`wdeEmployerId`, `wdeDate`, `wdeId`), FOREIGN KEY(`wdeEmployerId`, `wdeDate`) REFERENCES `workDates`(`wdEmployerId`, `wdDate`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`wdeId`) REFERENCES `workExtrasDefinitions`(`workExtraId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "wdeEmployerId",
+            "columnName": "wdeEmployerId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdeDate",
+            "columnName": "wdeDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdeId",
+            "columnName": "wdeId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdeName",
+            "columnName": "wdeName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdeValue",
+            "columnName": "wdeValue",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wdeIsDeleted",
+            "columnName": "wdeIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "wdeUpdateTime",
+            "columnName": "wdeUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "wdeEmployerId",
+            "wdeDate",
+            "wdeId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "workDates",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "wdeEmployerId",
+              "wdeDate"
+            ],
+            "referencedColumns": [
+              "wdEmployerId",
+              "wdDate"
+            ]
+          },
+          {
+            "table": "workExtrasDefinitions",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "wdeId"
+            ],
+            "referencedColumns": [
+              "workExtraId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "workPayPeriodExtras",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ppeEmployerId` INTEGER NOT NULL, `ppeCutoffDate` TEXT NOT NULL, `ppeExtraId` INTEGER NOT NULL, `ppeName` TEXT NOT NULL, `ppeValue` REAL NOT NULL, `ppeIsDeleted` INTEGER NOT NULL, `ppeUpdateTime` TEXT NOT NULL, PRIMARY KEY(`ppeEmployerId`, `ppeCutoffDate`, `ppeExtraId`), FOREIGN KEY(`ppeEmployerId`, `ppeCutoffDate`) REFERENCES `workPayPeriods`(`ppEmployerId`, `ppCutoffDate`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "ppeEmployerId",
+            "columnName": "ppeEmployerId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ppeCutoffDate",
+            "columnName": "ppeCutoffDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ppeExtraId",
+            "columnName": "ppeExtraId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ppeName",
+            "columnName": "ppeName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ppeValue",
+            "columnName": "ppeValue",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ppeIsDeleted",
+            "columnName": "ppeIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ppeUpdateTime",
+            "columnName": "ppeUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "ppeEmployerId",
+            "ppeCutoffDate",
+            "ppeExtraId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "workPayPeriods",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "ppeEmployerId",
+              "ppeCutoffDate"
+            ],
+            "referencedColumns": [
+              "ppEmployerId",
+              "ppCutoffDate"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "workPayPeriodTax",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`wppCutoffDate` TEXT NOT NULL, `wppEmployerId` INTEGER NOT NULL, `wppTaxType` TEXT NOT NULL, `wppIsDeleted` INTEGER NOT NULL, `wppUpdateTime` TEXT NOT NULL, PRIMARY KEY(`wppCutoffDate`, `wppEmployerId`, `wppTaxType`), FOREIGN KEY(`wppCutoffDate`, `wppEmployerId`) REFERENCES `workPayPeriods`(`ppCutoffDate`, `ppEmployerId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`wppTaxType`) REFERENCES `workTaxTypes`(`workTaxType`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "wppCutoffDate",
+            "columnName": "wppCutoffDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wppEmployerId",
+            "columnName": "wppEmployerId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wppTaxType",
+            "columnName": "wppTaxType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wppIsDeleted",
+            "columnName": "wppIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wppUpdateTime",
+            "columnName": "wppUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "wppCutoffDate",
+            "wppEmployerId",
+            "wppTaxType"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "workPayPeriods",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "wppCutoffDate",
+              "wppEmployerId"
+            ],
+            "referencedColumns": [
+              "ppCutoffDate",
+              "ppEmployerId"
+            ]
+          },
+          {
+            "table": "workTaxTypes",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "wppTaxType"
+            ],
+            "referencedColumns": [
+              "workTaxType"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "workExtrasDefinitions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`workExtraId` INTEGER NOT NULL, `weEmployerId` INTEGER NOT NULL, `weName` TEXT NOT NULL, `weFrequency` TEXT NOT NULL, `weValue` REAL NOT NULL, `weIsCredit` INTEGER NOT NULL DEFAULT 1, `weIsDefault` INTEGER NOT NULL DEFAULT 1, `weEffectiveDate` TEXT NOT NULL DEFAULT '0', `weIsDeleted` INTEGER NOT NULL, `weUpdateTime` TEXT NOT NULL, PRIMARY KEY(`workExtraId`), FOREIGN KEY(`weFrequency`) REFERENCES `workExtraFrequencies`(`workExtraFrequencyName`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`weEmployerId`) REFERENCES `employers`(`employerId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "workExtraId",
+            "columnName": "workExtraId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weEmployerId",
+            "columnName": "weEmployerId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weName",
+            "columnName": "weName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weFrequency",
+            "columnName": "weFrequency",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weValue",
+            "columnName": "weValue",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weIsCredit",
+            "columnName": "weIsCredit",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "weIsDefault",
+            "columnName": "weIsDefault",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "weEffectiveDate",
+            "columnName": "weEffectiveDate",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'0'"
+          },
+          {
+            "fieldPath": "weIsDeleted",
+            "columnName": "weIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weUpdateTime",
+            "columnName": "weUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "workExtraId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "workExtraFrequencies",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "weFrequency"
+            ],
+            "referencedColumns": [
+              "workExtraFrequencyName"
+            ]
+          },
+          {
+            "table": "employers",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "weEmployerId"
+            ],
+            "referencedColumns": [
+              "employerId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "workExtraFrequencies",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`workExtraFrequencyName` TEXT NOT NULL, PRIMARY KEY(`workExtraFrequencyName`))",
+        "fields": [
+          {
+            "fieldPath": "workExtraFrequencyName",
+            "columnName": "workExtraFrequencyName",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "workExtraFrequencyName"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "workTaxRules",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`workTaxRuleId` INTEGER NOT NULL, `workTaxRuleType` TEXT NOT NULL, `wtPercent` REAL NOT NULL, `wtHasExemption` INTEGER NOT NULL, `wtExemptionAmount` REAL NOT NULL, `wtHasBracket` INTEGER NOT NULL, `wtBracketAmount` REAL NOT NULL, `wtEffectiveDate` TEXT NOT NULL, `wtIsDeleted` INTEGER NOT NULL, `wtUpdateTime` TEXT NOT NULL, PRIMARY KEY(`workTaxRuleId`), FOREIGN KEY(`workTaxRuleType`) REFERENCES `workTaxTypes`(`workTaxType`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "workTaxRuleId",
+            "columnName": "workTaxRuleId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "workTaxRuleType",
+            "columnName": "workTaxRuleType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wtPercent",
+            "columnName": "wtPercent",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wtHasExemption",
+            "columnName": "wtHasExemption",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wtExemptionAmount",
+            "columnName": "wtExemptionAmount",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wtHasBracket",
+            "columnName": "wtHasBracket",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wtBracketAmount",
+            "columnName": "wtBracketAmount",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wtEffectiveDate",
+            "columnName": "wtEffectiveDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wtIsDeleted",
+            "columnName": "wtIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wtUpdateTime",
+            "columnName": "wtUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "workTaxRuleId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "workTaxTypes",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "workTaxRuleType"
+            ],
+            "referencedColumns": [
+              "workTaxType"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "employerTaxRules",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`etrEmployerId` INTEGER NOT NULL, `etrTaxType` TEXT NOT NULL, `etrInclude` INTEGER NOT NULL, `etrIsDeleted` INTEGER NOT NULL, `etrUpdateTime` TEXT NOT NULL, PRIMARY KEY(`etrEmployerId`, `etrTaxType`), FOREIGN KEY(`etrEmployerId`) REFERENCES `employers`(`employerId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`etrTaxType`) REFERENCES `workTaxTypes`(`workTaxType`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "etrEmployerId",
+            "columnName": "etrEmployerId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "etrTaxType",
+            "columnName": "etrTaxType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "etrInclude",
+            "columnName": "etrInclude",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "etrIsDeleted",
+            "columnName": "etrIsDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "etrUpdateTime",
+            "columnName": "etrUpdateTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "etrEmployerId",
+            "etrTaxType"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "employers",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "etrEmployerId"
+            ],
+            "referencedColumns": [
+              "employerId"
+            ]
+          },
+          {
+            "table": "workTaxTypes",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "etrTaxType"
+            ],
+            "referencedColumns": [
+              "workTaxType"
+            ]
+          }
+        ]
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f038bfe6214416bda0d28731de87394a')"
+    ]
+  }
+}

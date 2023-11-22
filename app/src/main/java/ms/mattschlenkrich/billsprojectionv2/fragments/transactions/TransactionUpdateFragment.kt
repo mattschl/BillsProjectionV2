@@ -24,6 +24,8 @@ import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
@@ -56,8 +58,8 @@ class TransactionUpdateFragment :
     private val cf = CommonFunctions()
     private val df = DateFunctions()
 
-//    private var mOldTransactionFull: TransactionFull? = null
-private var mTransaction: Transactions? = null
+    //    private var mOldTransactionFull: TransactionFull? = null
+    private var mTransaction: Transactions? = null
     private var mBudgetRule: BudgetRule? = null
     private var mToAccount: Account? = null
     private var mFromAccount: Account? = null
@@ -231,10 +233,7 @@ private var mTransaction: Transactions? = null
                     mainViewModel.getCallingFragments()!!
                         .replace(", $TAG", "")
                 )
-                val direction =
-                    TransactionUpdateFragmentDirections
-                        .actionTransactionUpdateFragmentToTransactionViewFragment()
-                mView.findNavController().navigate(direction)
+                gotoCallingFragment()
             } else {
                 Toast.makeText(
                     mView.context,
@@ -268,11 +267,11 @@ private var mTransaction: Transactions? = null
                 if (etDescription.text.isNullOrBlank()) {
                     "     ERROR!!\n" +
                             "Please enter a description."
-                } else if (mainViewModel.getTransactionDetailed()?.toAccount == null
+                } else if (mToAccount == null
                 ) {
                     "     Error!!\n" +
                             "There needs to be an account money will go to."
-                } else if (mainViewModel.getTransactionDetailed()?.fromAccount == null
+                } else if (mFromAccount == null
                 ) {
                     "     Error!!\n" +
                             "There needs to be an account money will come from."
@@ -281,7 +280,7 @@ private var mTransaction: Transactions? = null
                 ) {
                     "     Error!!\n" +
                             "Please enter an amount fr this transaction"
-                } else if (mainViewModel.getTransactionDetailed()?.budgetRule == null) {
+                } else if (mBudgetRule == null) {
                     if (saveWithoutBudget()) {
                         "Ok"
                     } else {
@@ -495,13 +494,30 @@ private var mTransaction: Transactions? = null
                         FRAG_TRANS_UPDATE, ""
                     )
                 )
-                val direction =
-                    TransactionUpdateFragmentDirections
-                        .actionTransactionUpdateFragmentToTransactionViewFragment()
-                mView.findNavController().navigate(direction)
+                gotoCallingFragment()
             }
             setNegativeButton("Cancel", null)
         }.create().show()
+    }
+
+    private fun gotoCallingFragment() {
+        if (mainViewModel.getCallingFragments()!!.contains(
+                FRAG_BUDGET_VIEW
+            )
+        ) {
+            mView.findNavController().navigate(
+                TransactionUpdateFragmentDirections
+                    .actionTransactionUpdateFragmentToBudgetViewFragment()
+            )
+        } else if (mainViewModel.getCallingFragments()!!.contains(
+                FRAG_TRANSACTION_VIEW
+            )
+        ) {
+            val direction =
+                TransactionUpdateFragmentDirections
+                    .actionTransactionUpdateFragmentToTransactionViewFragment()
+            mView.findNavController().navigate(direction)
+        }
     }
 
     private fun updateAccountsNew(

@@ -26,7 +26,7 @@ import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTIONS
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
@@ -545,7 +545,7 @@ class TransactionAddFragment :
         mainViewModel.setTransactionDetailed(null)
         mainViewModel.setBudgetRuleDetailed(null)
         if (mainViewModel.getCallingFragments()!!
-                .contains(FRAG_TRANSACTIONS)
+                .contains(FRAG_TRANSACTION_VIEW)
         ) {
             val direction =
                 TransactionAddFragmentDirections

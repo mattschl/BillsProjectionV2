@@ -301,6 +301,9 @@
         <action
             android:id="@+id/action_transactionUpdateFragment_to_transactionSplitFragment"
             app:destination="@id/transactionSplitFragment" />
+        <action
+            android:id="@+id/action_transactionUpdateFragment_to_budgetViewFragment"
+            app:destination="@id/budgetViewFragment" />
     </fragment>
     <fragment
         android:id="@+id/budgetViewFragment"

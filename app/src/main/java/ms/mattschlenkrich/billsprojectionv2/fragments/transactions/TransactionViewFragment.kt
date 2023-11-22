@@ -18,13 +18,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.adapter.TransactionAdapter
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTIONS
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionViewBinding
 import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModel
 
-private const val TAG = FRAG_TRANSACTIONS
+private const val TAG = FRAG_TRANSACTION_VIEW
 
 class TransactionViewFragment :
     Fragment(R.layout.fragment_transaction_view),
