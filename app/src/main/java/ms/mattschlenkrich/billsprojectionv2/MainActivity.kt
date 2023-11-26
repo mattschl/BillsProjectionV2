@@ -132,7 +132,6 @@ class MainActivity : AppCompatActivity() {
         setupBudgetRuleViewModel()
         setupTransactionViewModel()
         setupBudgetItemViewModel()
-
     }
 
     private fun gotoHelp() {
