@@ -35,7 +35,6 @@ import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModelFactor
 import java.time.LocalDate
 
 private const val TAG = "MainActivity"
-
 class MainActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityMainBinding
@@ -53,6 +52,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         mView = binding.root
         Log.d(TAG, "MainActivity is started")
+
         addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menu.add(getString(R.string.update_budget_predictions))
@@ -132,6 +132,11 @@ class MainActivity : AppCompatActivity() {
         setupBudgetRuleViewModel()
         setupTransactionViewModel()
         setupBudgetItemViewModel()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
     }
 
     private fun gotoHelp() {

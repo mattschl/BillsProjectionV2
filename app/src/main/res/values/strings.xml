@@ -172,4 +172,5 @@
     <string name="current_budget_summary">Current Budget Summary</string>
     <string name="fixed">Fixed</string>
     <string name="pay_check">Pay Check</string>
+    <string name="start">start</string>
 </resources>
