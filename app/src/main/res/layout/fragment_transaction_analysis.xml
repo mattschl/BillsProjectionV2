@@ -78,13 +78,59 @@
                         app:layout_constraintStart_toEndOf="@id/lblAccount"
                         app:layout_constraintTop_toBottomOf="@id/tvBudgetRule" />
 
+
+                    <CheckBox
+                        android:id="@+id/chkSearch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxWidth="@dimen/text_box_wide"
+                        android:text="@string/use_search_criteria"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_info_size"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@id/etSearch"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvAccount" />
+
+                    <EditText
+                        android:id="@+id/etSearch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/enter_criteria"
+                        android:importantForAutofill="no"
+                        android:inputType="text"
+                        android:maxWidth="@dimen/text_box_wide"
+                        android:minHeight="@dimen/text_target_size"
+                        android:selectAllOnFocus="true"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_heading_size"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toStartOf="@id/btnSearch"
+                        app:layout_constraintStart_toEndOf="@id/chkSearch"
+                        app:layout_constraintTop_toBottomOf="@id/tvAccount" />
+
+                    <Button
+                        android:id="@+id/btnSearch"
+                        android:layout_width="65dp"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/deep_red"
+                        android:text="@string/go"
+                        android:visibility="gone"
+                        app:layout_constraintBaseline_toBaselineOf="@id/etSearch"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/etSearch" />
+
+
                     <RadioGroup
                         android:id="@+id/radioTime"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tvAccount">
+                        app:layout_constraintTop_toBottomOf="@id/chkSearch">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"

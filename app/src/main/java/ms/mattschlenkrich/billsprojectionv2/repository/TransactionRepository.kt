@@ -147,4 +147,13 @@ class TransactionRepository(private val db: BillsDatabase) {
         db.getTransactionDao().getMinTransactionByAccount(
             accountId, startDate, endDate
         )
+
+    fun getActiveTransactionBySearch(
+        query: String?, startDate: String, endDate: String
+    ) = db.getTransactionDao().getActiveTransactionBySearch(
+        query, startDate, endDate
+    )
+
+    fun getActiveTransactionBySearch(query: String?) =
+        db.getTransactionDao().getActiveTransactionBySearch(query)
 }

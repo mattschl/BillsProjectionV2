@@ -38,7 +38,7 @@ class TransactionAnalysisFragment : Fragment(
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var transactionViewModel: TransactionViewModel
-    private lateinit var transactionAdapter: TransactionAnalysisAdapter
+    private var transactionAdapter: TransactionAnalysisAdapter? = null
     private val cf = CommonFunctions()
     private val df = DateFunctions()
 
@@ -64,6 +64,59 @@ class TransactionAnalysisFragment : Fragment(
         setStartValues()
         setRadioOptions()
         setGotoOptions()
+        setSearchAction()
+        setSearchListener()
+    }
+
+    private fun setSearchListener() {
+        binding.apply {
+            btnSearch.setOnClickListener {
+                transactionAdapter = null
+                transactionAdapter = TransactionAnalysisAdapter()
+                if (etSearch.text.isNotEmpty()) {
+                    rvTransactions.apply {
+                        layoutManager = LinearLayoutManager(
+                            requireContext()
+                        )
+                        adapter = transactionAdapter
+                    }
+                    val searchQuery = "%${etSearch.text.toString()}%"
+                    activity?.let {
+                        transactionViewModel.getActiveTransactionBySearch(
+                            searchQuery
+                        ).observe(viewLifecycleOwner) { transList ->
+                            transactionAdapter!!.differ.submitList(transList)
+                            fillAnalysisFromSearch(transList)
+                            updateUiHelpText(transList)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun fillAnalysisFromSearch(transList: List<TransactionDetailed>) {
+        if (transList.isNotEmpty()) {
+            binding.apply {
+
+            }
+        }
+    }
+
+    private fun setSearchAction() {
+        binding.apply {
+            chkSearch.setOnClickListener {
+                if (chkSearch.isChecked) {
+                    etSearch.visibility = View.VISIBLE
+                    btnSearch.visibility = View.VISIBLE
+                } else {
+                    etSearch.visibility = View.GONE
+                    btnSearch.visibility = View.GONE
+                    etSearch.text = null
+                    transactionAdapter = null
+                }
+            }
+        }
     }
 
     private fun setGotoOptions() {
@@ -145,6 +198,7 @@ class TransactionAnalysisFragment : Fragment(
                 .observe(viewLifecycleOwner) { min ->
                     if (min != null) tvLowest.text = cf.displayDollars(min)
                 }
+            transactionAdapter = null
             transactionAdapter = TransactionAnalysisAdapter()
             rvTransactions.apply {
                 layoutManager = LinearLayoutManager(
@@ -152,10 +206,10 @@ class TransactionAnalysisFragment : Fragment(
                 )
                 adapter = transactionAdapter
             }
-            activity.let {
+            activity?.let {
                 transactionViewModel.getActiveTransactionByAccount(account.accountId)
                     .observe(viewLifecycleOwner) { transactionList ->
-                        transactionAdapter.differ.submitList(transactionList)
+                        transactionAdapter!!.differ.submitList(transactionList)
                         fillAnalysisFromAccount(transactionList, totalCredits, totalDebits)
                         updateUiHelpText(transactionList)
                     }
@@ -358,6 +412,7 @@ class TransactionAnalysisFragment : Fragment(
                 .observe(viewLifecycleOwner) { min ->
                     if (min != null) tvLowest.text = cf.displayDollars(min)
                 }
+            transactionAdapter = null
             transactionAdapter = TransactionAnalysisAdapter()
             rvTransactions.apply {
                 layoutManager = LinearLayoutManager(requireContext())
@@ -367,7 +422,7 @@ class TransactionAnalysisFragment : Fragment(
                 transactionViewModel.getActiveTransactionByAccount(
                     account.accountId, startDate, endDate
                 ).observe(viewLifecycleOwner) { transactionList ->
-                    transactionAdapter.differ.submitList(transactionList)
+                    transactionAdapter!!.differ.submitList(transactionList)
                     fillAnalysisFromAccount(transactionList, totalCredits, totalDebits)
                     updateUiHelpText(transactionList)
                 }
@@ -409,6 +464,7 @@ class TransactionAnalysisFragment : Fragment(
             ) { min ->
                 if (min != null) tvLowest.text = cf.displayDollars(min)
             }
+            transactionAdapter = null
             transactionAdapter = TransactionAnalysisAdapter()
             rvTransactions.apply {
                 layoutManager = LinearLayoutManager(
@@ -422,7 +478,7 @@ class TransactionAnalysisFragment : Fragment(
                 ).observe(
                     viewLifecycleOwner
                 ) { transactionList ->
-                    transactionAdapter.differ.submitList(
+                    transactionAdapter!!.differ.submitList(
                         transactionList
                     )
                     fillAnalysisFromBudgetRule(transactionList)
@@ -511,6 +567,7 @@ class TransactionAnalysisFragment : Fragment(
                 .observe(viewLifecycleOwner) { min ->
                     if (min != null) tvLowest.text = cf.displayDollars(min)
                 }
+            transactionAdapter = null
             transactionAdapter = TransactionAnalysisAdapter()
             rvTransactions.apply {
                 layoutManager = LinearLayoutManager(
@@ -523,7 +580,7 @@ class TransactionAnalysisFragment : Fragment(
             ).observe(
                 viewLifecycleOwner
             ) { transactionList ->
-                transactionAdapter.differ.submitList(transactionList)
+                transactionAdapter!!.differ.submitList(transactionList)
                 fillAnalysisFromBudgetRule(transactionList)
                 updateUiHelpText(transactionList)
             }

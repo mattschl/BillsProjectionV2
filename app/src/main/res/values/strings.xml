@@ -173,4 +173,7 @@
     <string name="fixed">Fixed</string>
     <string name="pay_check">Pay Check</string>
     <string name="start">start</string>
+    <string name="search_criteria">Search Criteria</string>
+    <string name="use_search_criteria">Use Search Criteria</string>
+    <string name="enter_criteria">Enter Criteria</string>
 </resources>

@@ -164,4 +164,13 @@ class TransactionViewModel(
         transactionRepository.getMinTransactionByAccount(
             accountId, startDate, endDate
         )
+
+    fun getActiveTransactionBySearch(
+        query: String?, startDate: String, endDate: String
+    ) = transactionRepository.getActiveTransactionBySearch(
+        query, startDate, endDate
+    )
+
+    fun getActiveTransactionBySearch(query: String?) =
+        transactionRepository.getActiveTransactionBySearch(query)
 }

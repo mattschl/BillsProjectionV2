@@ -451,4 +451,58 @@ interface TransactionDao {
     fun getSumTransactionFromAccount(
         accountId: Long, startDate: String, endDate: String
     ): LiveData<Double>
+
+
+    @Transaction
+    @Query(
+        "SELECT $TABLE_TRANSACTION.*, " +
+                "budgetRule.*, " +
+                "toAccount.*, " +
+                "fromAccount.* " +
+                "FROM $TABLE_TRANSACTION " +
+                "LEFT JOIN $TABLE_BUDGET_RULES AS budgetRule ON " +
+                "$TABLE_TRANSACTION.transRuleId = " +
+                "budgetRule.ruleId " +
+                "LEFT JOIN $TABLE_ACCOUNTS AS toAccount ON " +
+                "$TABLE_TRANSACTION.transToAccountId = " +
+                "toAccount.accountId " +
+                "LEFT JOIN $TABLE_ACCOUNTS AS fromAccount ON " +
+                "$TABLE_TRANSACTION.transFromAccountId = " +
+                "fromAccount.accountId " +
+                "WHERE ($TABLE_TRANSACTION.transName LIKE :query OR " +
+                "$TABLE_TRANSACTION.transNote LIKE :query ) AND " +
+                "$TABLE_TRANSACTION.transIsDeleted =  0 " +
+                "AND $TABLE_TRANSACTION.$TRANSACTION_DATE >= :startDate " +
+                "AND $TABLE_TRANSACTION.$TRANSACTION_DATE <= :endDate " +
+                "ORDER BY $TABLE_TRANSACTION.$TRANSACTION_DATE DESC, " +
+                "$TABLE_TRANSACTION.transUpdateTime DESC"
+    )
+    fun getActiveTransactionBySearch(
+        query: String?, startDate: String, endDate: String
+    ): LiveData<List<TransactionDetailed>>
+
+    @Transaction
+    @Query(
+        "SELECT $TABLE_TRANSACTION.*, " +
+                "budgetRule.*, " +
+                "toAccount.*, " +
+                "fromAccount.* " +
+                "FROM $TABLE_TRANSACTION " +
+                "LEFT JOIN $TABLE_BUDGET_RULES AS budgetRule ON " +
+                "$TABLE_TRANSACTION.transRuleId = " +
+                "budgetRule.ruleId " +
+                "LEFT JOIN $TABLE_ACCOUNTS AS toAccount ON " +
+                "$TABLE_TRANSACTION.transToAccountId = " +
+                "toAccount.accountId " +
+                "LEFT JOIN $TABLE_ACCOUNTS AS fromAccount ON " +
+                "$TABLE_TRANSACTION.transFromAccountId = " +
+                "fromAccount.accountId " +
+                "WHERE ($TABLE_TRANSACTION.transName LIKE :query OR " +
+                "$TABLE_TRANSACTION.transNote LIKE :query ) AND " +
+                "$TABLE_TRANSACTION.transIsDeleted =  0 " +
+                "ORDER BY $TABLE_TRANSACTION.$TRANSACTION_DATE DESC, " +
+                "$TABLE_TRANSACTION.transUpdateTime DESC"
+    )
+    fun getActiveTransactionBySearch(query: String?):
+            LiveData<List<TransactionDetailed>>
 }
