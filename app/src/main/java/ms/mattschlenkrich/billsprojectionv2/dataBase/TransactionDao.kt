@@ -505,4 +505,70 @@ interface TransactionDao {
     )
     fun getActiveTransactionBySearch(query: String?):
             LiveData<List<TransactionDetailed>>
+
+    @Query(
+        "SELECT SUM($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
+                "WHERE ($TABLE_TRANSACTION.transName LIKE :query OR " +
+                "$TABLE_TRANSACTION.transNote LIKE :query ) AND " +
+                "$TABLE_TRANSACTION.transIsDeleted =  0 " +
+                "AND $TABLE_TRANSACTION.$TRANSACTION_DATE >= :startDate " +
+                "AND $TABLE_TRANSACTION.$TRANSACTION_DATE <= :endDate "
+    )
+    fun getSumTransactionBySearch(
+        query: String?, startDate: String, endDate: String
+    ):
+            LiveData<Double>
+
+    @Query(
+        "SELECT SUM($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
+                "WHERE ($TABLE_TRANSACTION.transName LIKE :query OR " +
+                "$TABLE_TRANSACTION.transNote LIKE :query ) AND " +
+                "$TABLE_TRANSACTION.transIsDeleted =  0 "
+    )
+    fun getSumTransactionBySearch(query: String?):
+            LiveData<Double>
+
+    @Query(
+        "SELECT MAX($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
+                "WHERE ($TABLE_TRANSACTION.transName LIKE :query OR " +
+                "$TABLE_TRANSACTION.transNote LIKE :query ) AND " +
+                "$TABLE_TRANSACTION.transIsDeleted =  0 "
+    )
+    fun getMaxTransactionBySearch(query: String?):
+            LiveData<Double>
+
+    @Query(
+        "SELECT MAX($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
+                "WHERE ($TABLE_TRANSACTION.transName LIKE :query OR " +
+                "$TABLE_TRANSACTION.transNote LIKE :query ) AND " +
+                "$TABLE_TRANSACTION.transIsDeleted =  0 " +
+                "AND $TABLE_TRANSACTION.$TRANSACTION_DATE >= :startDate " +
+                "AND $TABLE_TRANSACTION.$TRANSACTION_DATE <= :endDate "
+    )
+    fun getMaxTransactionBySearch(
+        query: String?, startDate: String, endDate: String
+    ):
+            LiveData<Double>
+
+    @Query(
+        "SELECT MIN($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
+                "WHERE ($TABLE_TRANSACTION.transName LIKE :query OR " +
+                "$TABLE_TRANSACTION.transNote LIKE :query ) AND " +
+                "$TABLE_TRANSACTION.transIsDeleted =  0 "
+    )
+    fun getMinTransactionBySearch(query: String?):
+            LiveData<Double>
+
+    @Query(
+        "SELECT MIN($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
+                "WHERE ($TABLE_TRANSACTION.transName LIKE :query OR " +
+                "$TABLE_TRANSACTION.transNote LIKE :query ) AND " +
+                "$TABLE_TRANSACTION.transIsDeleted =  0 " +
+                "AND $TABLE_TRANSACTION.$TRANSACTION_DATE >= :startDate " +
+                "AND $TABLE_TRANSACTION.$TRANSACTION_DATE <= :endDate "
+    )
+    fun getMinTransactionBySearch(
+        query: String?, startDate: String, endDate: String
+    ):
+            LiveData<Double>
 }

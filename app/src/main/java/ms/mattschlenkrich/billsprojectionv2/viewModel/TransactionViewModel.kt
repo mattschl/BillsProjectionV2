@@ -173,4 +173,28 @@ class TransactionViewModel(
 
     fun getActiveTransactionBySearch(query: String?) =
         transactionRepository.getActiveTransactionBySearch(query)
+
+    fun getSumTransactionBySearch(query: String?) =
+        transactionRepository.getSumTransactionBySearch(query)
+
+    fun getSumTransactionBySearch(
+        query: String?, startDate: String, endDate: String
+    ) =
+        transactionRepository.getSumTransactionBySearch(query, startDate, endDate)
+
+    fun getMaxTransactionBySearch(query: String?) =
+        transactionRepository.getMaxTransactionBySearch(query)
+
+    fun getMaxTransactionBySearch(
+        query: String?, startDate: String, endDate: String
+    ) =
+        transactionRepository.getMaxTransactionBySearch(query, startDate, endDate)
+
+    fun getMinTransactionBySearch(query: String?) =
+        transactionRepository.getMinTransactionBySearch(query)
+
+    fun getMinTransactionBySearch(
+        query: String?, startDate: String, endDate: String
+    ) =
+        transactionRepository.getMinTransactionBySearch(query, startDate, endDate)
 }

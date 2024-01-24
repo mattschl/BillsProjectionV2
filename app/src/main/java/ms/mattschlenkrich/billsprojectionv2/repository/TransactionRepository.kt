@@ -156,4 +156,29 @@ class TransactionRepository(private val db: BillsDatabase) {
 
     fun getActiveTransactionBySearch(query: String?) =
         db.getTransactionDao().getActiveTransactionBySearch(query)
+
+
+    fun getSumTransactionBySearch(query: String?) =
+        db.getTransactionDao().getSumTransactionBySearch(query)
+
+    fun getSumTransactionBySearch(
+        query: String?, startDate: String, endDate: String
+    ) =
+        db.getTransactionDao().getSumTransactionBySearch(query, startDate, endDate)
+
+    fun getMaxTransactionBySearch(query: String?) =
+        db.getTransactionDao().getMaxTransactionBySearch(query)
+
+    fun getMaxTransactionBySearch(
+        query: String?, startDate: String, endDate: String
+    ) =
+        db.getTransactionDao().getMaxTransactionBySearch(query, startDate, endDate)
+
+    fun getMinTransactionBySearch(query: String?) =
+        db.getTransactionDao().getMinTransactionBySearch(query)
+
+    fun getMinTransactionBySearch(
+        query: String?, startDate: String, endDate: String
+    ) =
+        db.getTransactionDao().getMinTransactionBySearch(query, startDate, endDate)
 }
