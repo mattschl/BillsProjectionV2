@@ -95,14 +95,6 @@ class BudgetViewFragment : Fragment(
         }
     }
 
-    override fun onStop() {
-        binding.apply {
-            mainViewModel.setAsset(spAssetNames.selectedItem?.toString())
-            mainViewModel.setPayDay(spPayDay.selectedItem?.toString())
-        }
-        super.onStop()
-    }
-
     private fun gotoAccount() {
         setToReturn()
         mainViewModel.setAccountWithType(curAsset)
@@ -111,42 +103,32 @@ class BudgetViewFragment : Fragment(
         )
     }
 
-    private fun findAssetToReturn(): Int {
-        var pos = 0
-        binding.apply {
-            if (spAssetNames.adapter != null) {
-                for (i in 0 until spAssetNames.adapter.count) {
-                    if (spAssetNames.getItemAtPosition(i) == mainViewModel.getAsset()) {
-                        pos = i
-                    }
-                }
-            }
-        }
-        return pos
-    }
-
-    private fun findPayDayToReturn(): Int {
-        var pos = 0
-        binding.apply {
-            if (spPayDay.adapter != null) {
-                for (i in 0 until spPayDay.adapter.count) {
-                    if (spPayDay.getItemAtPosition(i) == mainViewModel.getPayDay()) {
-                        pos = i
-                    }
-                }
-            }
-        }
-        return pos
-    }
-
     private fun resumeHistory() {
-        val waitTime = 500L
+        val waitTime = 250L
         binding.apply {
             CoroutineScope(Dispatchers.Main).launch {
                 delay(waitTime)
-                spAssetNames.setSelection(findAssetToReturn())
+                if (spAssetNames.adapter != null) {
+                    for (i in 0 until spAssetNames.adapter.count) {
+                        if (spAssetNames.getItemAtPosition(i).toString() ==
+                            mainViewModel.getReturnToAsset()
+                        ) {
+                            spAssetNames.setSelection(i)
+                            break
+                        }
+                    }
+                }
                 delay(waitTime)
-                spPayDay.setSelection(findPayDayToReturn())
+                if (spPayDay.adapter != null) {
+                    for (i in 0 until spPayDay.adapter.count) {
+                        if (spPayDay.getItemAtPosition(i).toString() ==
+                            mainViewModel.getReturnToPayDay()
+                        ) {
+                            spPayDay.setSelection(i)
+                            break
+                        }
+                    }
+                }
             }
         }
     }
@@ -158,7 +140,6 @@ class BudgetViewFragment : Fragment(
                     override fun onItemSelected(
                         p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long
                     ) {
-                        mainViewModel.setPayDay(spPayDay.selectedItem.toString())
                         fillBudgetList(
                             spAssetNames.selectedItem.toString(),
                             spPayDay.selectedItem.toString()
@@ -311,7 +292,6 @@ class BudgetViewFragment : Fragment(
                             viewLifecycleOwner
                         ) { account ->
                             curAsset = account
-                            mainViewModel.setAsset(account.account.accountName)
                         }
                         clearCurrentDisplay()
                         fillPayDaysLive(spAssetNames.selectedItem.toString())
@@ -525,9 +505,17 @@ class BudgetViewFragment : Fragment(
     private fun setToReturn() {
         binding.apply {
             mainViewModel.setCallingFragments(TAG)
-            mainViewModel.setAsset(spAssetNames.selectedItem.toString())
-            mainViewModel.setPayDay(spPayDay.selectedItem.toString())
+//            mainViewModel.setReturnToAsset(spAssetNames.selectedItem.toString())
+//            mainViewModel.setReturnToPayDay(spPayDay.selectedItem.toString())
         }
+    }
+
+    override fun onStop() {
+        binding.apply {
+            mainViewModel.setReturnToAsset(spAssetNames.selectedItem.toString())
+            mainViewModel.setReturnToPayDay(spPayDay.selectedItem.toString())
+        }
+        super.onStop()
     }
 
     override fun onDestroy() {

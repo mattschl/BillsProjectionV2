@@ -262,7 +262,7 @@ class BudgetViewAdapter(
         mainViewModel.setCallingFragments(
             PARENT_TAG
         )
-        mainViewModel.setAsset(curAccount)
-        mainViewModel.setPayDay(curPayDay)
+        mainViewModel.setReturnToAsset(curAccount)
+        mainViewModel.setReturnToPayDay(curPayDay)
     }
 }

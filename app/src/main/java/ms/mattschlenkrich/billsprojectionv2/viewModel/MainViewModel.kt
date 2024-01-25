@@ -13,8 +13,6 @@ class MainViewModel(
     app: Application,
 ) : AndroidViewModel(app) {
 
-    private var asset: String? = ""
-    private var payDay: String? = ""
     private var budgetItem: BudgetDetailed? = null
     private var oldTransactionFull: TransactionFull? = null
     private var transactionDetailed: TransactionDetailed? = null
@@ -25,8 +23,26 @@ class MainViewModel(
     private var requestedAccount: String? = ""
     private var callingFragments: String? = ""
     private var returnTo: String? = ""
+    private var returnToAsset: String? = ""
+    private var returnToPayDay: String? = null
     private var transferNum: Double? = 0.0
     private var updatingTransaction: Boolean = false
+
+    fun setReturnToAsset(newAsset: String?) {
+        returnToAsset = newAsset
+    }
+
+    fun getReturnToAsset(): String? {
+        return returnToAsset
+    }
+
+    fun setReturnToPayDay(newPayDay: String?) {
+        returnToPayDay = newPayDay
+    }
+
+    fun getReturnToPayDay(): String? {
+        return returnToPayDay
+    }
 
     fun eraseAll() {
         budgetItem = null
@@ -138,19 +154,4 @@ class MainViewModel(
         return budgetItem
     }
 
-    fun setPayDay(newPayDay: String?) {
-        payDay = newPayDay
-    }
-
-    fun getPayDay(): String? {
-        return payDay
-    }
-
-    fun setAsset(newAsset: String?) {
-        asset = newAsset
-    }
-
-    fun getAsset(): String? {
-        return asset
-    }
 }
