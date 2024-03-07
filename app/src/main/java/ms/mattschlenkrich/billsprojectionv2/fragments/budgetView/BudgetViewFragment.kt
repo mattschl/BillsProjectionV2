@@ -185,81 +185,82 @@ class BudgetViewFragment : Fragment(
     }
 
     fun fillBudgetTotals() {
-        var debits = 0.0
-        var credits = 0.0
-        var fixedExpenses = 0.0
-        var otherExpenses = 0.0
-        @Suppress("UNUSED_VARIABLE") var available = 0.0
-        for (details in budgetList) {
-            if (details.toAccount!!.accountName ==
-                curAsset.account.accountName
-            ) {
-                credits += details.budgetItem!!.biProjectedAmount
-            } else {
-                debits += details.budgetItem!!.biProjectedAmount
-            }
-            if (details.fromAccount!!.accountName == curAsset.account.accountName) {
-                if (details.budgetItem.biIsFixed
-                ) {
-                    fixedExpenses += details.budgetItem.biProjectedAmount
-                } else {
-                    otherExpenses += details.budgetItem.biProjectedAmount
-                }
-            }
-        }
-        var surplus = credits - debits
         binding.apply {
-            ibDivider.setBackgroundColor(Color.BLACK)
-            if (spPayDay.selectedItemId == 0L) {
-                if (curAsset.accountType!!.keepTotals) {
-                    surplus += curAsset.account.accountBalance
+            if (spPayDay.adapter.count > 0) {
+                var debits = 0.0
+                var credits = 0.0
+                var fixedExpenses = 0.0
+                var otherExpenses = 0.0
+                @Suppress("UNUSED_VARIABLE") var available = 0.0
+                for (details in budgetList) {
+                    if (details.toAccount!!.accountName ==
+                        curAsset.account.accountName
+                    ) {
+                        credits += details.budgetItem!!.biProjectedAmount
+                    } else {
+                        debits += details.budgetItem!!.biProjectedAmount
+                    }
+                    if (details.fromAccount!!.accountName == curAsset.account.accountName) {
+                        if (details.budgetItem.biIsFixed
+                        ) {
+                            fixedExpenses += details.budgetItem.biProjectedAmount
+                        } else {
+                            otherExpenses += details.budgetItem.biProjectedAmount
+                        }
+                    }
+                }
+                var surplus = credits - debits
+                ibDivider.setBackgroundColor(Color.BLACK)
+                if (spPayDay.selectedItemId == 0L) {
+                    if (curAsset.accountType!!.keepTotals) {
+                        surplus += curAsset.account.accountBalance
+                    } else {
+                        surplus -= curAsset.account.accountOwing
+                    }
+                }
+                if (credits > 0.0) {
+                    val display = "Credits: ${cf.displayDollars(credits)}"
+                    tvCredits.text = display
+                    tvCredits.setTextColor(Color.BLACK)
                 } else {
-                    surplus -= curAsset.account.accountOwing
+                    tvCredits.text = getString(R.string.no_credits)
+                    tvCredits.setTextColor(Color.DKGRAY)
+                }
+                if (debits > 0.0) {
+                    val display = "Debits: ${cf.displayDollars(debits)}"
+                    tvDebits.text = display
+                    tvDebits.setTextColor(Color.RED)
+                } else {
+                    tvDebits.text = getString(R.string.no_debits)
+                    tvDebits.setTextColor(Color.DKGRAY)
+                }
+                if (fixedExpenses > 0.0) {
+                    val display = "Fixed Expenses: ${cf.displayDollars(fixedExpenses)}"
+                    tvFixedExpenses.text = display
+                    tvFixedExpenses.setTextColor(Color.RED)
+                } else {
+                    tvFixedExpenses.text = getString(R.string.no_fixed_expenses)
+                    tvFixedExpenses.setTextColor(Color.DKGRAY)
+                }
+                if (otherExpenses > 0.0) {
+                    val display = "Discretionary: ${cf.displayDollars(otherExpenses)}"
+                    tvDiscretionaryExpenses.text = display
+                    tvDiscretionaryExpenses.setTextColor(Color.BLUE)
+                } else {
+                    tvDiscretionaryExpenses.text = getString(R.string.no_discretionary_expenses)
+                    tvDiscretionaryExpenses.setTextColor(Color.DKGRAY)
+                }
+                if (surplus >= 0.0) {
+                    val display = "Surplus of ${cf.displayDollars(surplus)}"
+                    tvSurplusOrDeficit.text = display
+                    tvSurplusOrDeficit.setTextColor(Color.BLACK)
+                } else {
+                    val display = "DEFICIT of ${cf.displayDollars(-surplus)}"
+                    tvSurplusOrDeficit.text = display
+                    tvSurplusOrDeficit.setTextColor(Color.RED)
                 }
             }
-            if (credits > 0.0) {
-                val display = "Credits: ${cf.displayDollars(credits)}"
-                tvCredits.text = display
-                tvCredits.setTextColor(Color.BLACK)
-            } else {
-                tvCredits.text = getString(R.string.no_credits)
-                tvCredits.setTextColor(Color.DKGRAY)
-            }
-            if (debits > 0.0) {
-                val display = "Debits: ${cf.displayDollars(debits)}"
-                tvDebits.text = display
-                tvDebits.setTextColor(Color.RED)
-            } else {
-                tvDebits.text = getString(R.string.no_debits)
-                tvDebits.setTextColor(Color.DKGRAY)
-            }
-            if (fixedExpenses > 0.0) {
-                val display = "Fixed Expenses: ${cf.displayDollars(fixedExpenses)}"
-                tvFixedExpenses.text = display
-                tvFixedExpenses.setTextColor(Color.RED)
-            } else {
-                tvFixedExpenses.text = getString(R.string.no_fixed_expenses)
-                tvFixedExpenses.setTextColor(Color.DKGRAY)
-            }
-            if (otherExpenses > 0.0) {
-                val display = "Discretionary: ${cf.displayDollars(otherExpenses)}"
-                tvDiscretionaryExpenses.text = display
-                tvDiscretionaryExpenses.setTextColor(Color.BLUE)
-            } else {
-                tvDiscretionaryExpenses.text = getString(R.string.no_discretionary_expenses)
-                tvDiscretionaryExpenses.setTextColor(Color.DKGRAY)
-            }
-            if (surplus >= 0.0) {
-                val display = "Surplus of ${cf.displayDollars(surplus)}"
-                tvSurplusOrDeficit.text = display
-                tvSurplusOrDeficit.setTextColor(Color.BLACK)
-            } else {
-                val display = "DEFICIT of ${cf.displayDollars(-surplus)}"
-                tvSurplusOrDeficit.text = display
-                tvSurplusOrDeficit.setTextColor(Color.RED)
-            }
         }
-
     }
 
     private fun updateUi(budgetItems: List<BudgetDetailed>?) {
@@ -442,8 +443,21 @@ class BudgetViewFragment : Fragment(
             payDayList?.forEach {
                 payDayAdapter.add(it)
             }
+            hidePayDays(payDayList)
         }
         binding.spPayDay.adapter = payDayAdapter
+    }
+
+    private fun hidePayDays(list: List<Any>) {
+        binding.apply {
+            if (list.isEmpty()) {
+                lblPayDay.visibility = View.GONE
+                spPayDay.visibility = View.GONE
+            } else {
+                lblPayDay.visibility = View.VISIBLE
+                spPayDay.visibility = View.VISIBLE
+            }
+        }
     }
 
     private fun fillAssetsLive() {
@@ -513,7 +527,9 @@ class BudgetViewFragment : Fragment(
     override fun onStop() {
         binding.apply {
             mainViewModel.setReturnToAsset(spAssetNames.selectedItem.toString())
-            mainViewModel.setReturnToPayDay(spPayDay.selectedItem.toString())
+            if (spPayDay.adapter.count > 0) {
+                mainViewModel.setReturnToPayDay(spPayDay.selectedItem.toString())
+            }
         }
         super.onStop()
     }

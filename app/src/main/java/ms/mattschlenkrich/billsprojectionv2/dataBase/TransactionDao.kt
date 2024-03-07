@@ -483,25 +483,25 @@ interface TransactionDao {
 
     @Transaction
     @Query(
-        "SELECT $TABLE_TRANSACTION.*, " +
+        "SELECT trans.*, " +
                 "budgetRule.*, " +
                 "toAccount.*, " +
                 "fromAccount.* " +
-                "FROM $TABLE_TRANSACTION " +
+                "FROM $TABLE_TRANSACTION AS trans " +
                 "LEFT JOIN $TABLE_BUDGET_RULES AS budgetRule ON " +
-                "$TABLE_TRANSACTION.transRuleId = " +
+                "trans.transRuleId = " +
                 "budgetRule.ruleId " +
                 "LEFT JOIN $TABLE_ACCOUNTS AS toAccount ON " +
-                "$TABLE_TRANSACTION.transToAccountId = " +
+                "trans.transToAccountId = " +
                 "toAccount.accountId " +
                 "LEFT JOIN $TABLE_ACCOUNTS AS fromAccount ON " +
-                "$TABLE_TRANSACTION.transFromAccountId = " +
+                "trans.transFromAccountId = " +
                 "fromAccount.accountId " +
-                "WHERE ($TABLE_TRANSACTION.transName LIKE :query OR " +
-                "$TABLE_TRANSACTION.transNote LIKE :query ) AND " +
-                "$TABLE_TRANSACTION.transIsDeleted =  0 " +
-                "ORDER BY $TABLE_TRANSACTION.$TRANSACTION_DATE DESC, " +
-                "$TABLE_TRANSACTION.transUpdateTime DESC"
+                "WHERE (trans.transName LIKE :query OR " +
+                "trans.transNote LIKE :query ) AND " +
+                "trans.transIsDeleted =  0 " +
+                "ORDER BY trans.transDate DESC, " +
+                "trans.transUpdateTime DESC"
     )
     fun getActiveTransactionBySearch(query: String?):
             LiveData<List<TransactionDetailed>>
