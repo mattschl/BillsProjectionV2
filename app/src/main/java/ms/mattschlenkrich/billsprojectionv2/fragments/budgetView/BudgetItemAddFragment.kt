@@ -17,7 +17,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -27,6 +27,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
+import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetItemAddBinding
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed
 import ms.mattschlenkrich.billsprojectionv2.model.BudgetItem
@@ -331,15 +332,17 @@ class BudgetItemAddFragment : Fragment(
                 tvBudgetRule.text =
                     mainViewModel.getBudgetItem()!!.budgetRule!!.budgetRuleName
                 CoroutineScope(Dispatchers.IO).launch {
-                    val rule = async {
+                    budgetRuleDetailed =
                         budgetRuleViewModel.getBudgetRuleDetailed(
                             mainViewModel.getBudgetItem()!!.budgetRule!!.ruleId
                         )
-                    }
-                    budgetRuleDetailed = rule.await()
+
+                }
+                CoroutineScope(Dispatchers.Main).launch {
+                    delay(WAIT_250)
                     if (mainViewModel.getBudgetItem()!!.budgetItem!!.biBudgetName.isEmpty()) {
                         etBudgetItemName.setText(
-                            rule.await().budgetRule?.budgetRuleName
+                            budgetRuleDetailed.budgetRule?.budgetRuleName
                         )
                     } else {
                         etBudgetItemName.setText(
@@ -353,7 +356,7 @@ class BudgetItemAddFragment : Fragment(
                                 if (mainViewModel.getTransferNum()!! != 0.0) {
                                     mainViewModel.getTransferNum()!!
                                 } else {
-                                    rule.await().budgetRule?.budgetAmount ?: 0.0
+                                    budgetRuleDetailed.budgetRule?.budgetAmount ?: 0.0
                                 }
                             )
                         )
@@ -372,23 +375,23 @@ class BudgetItemAddFragment : Fragment(
                     if (mainViewModel.getBudgetItem()!!.toAccount != null) {
                         tvToAccount.text =
                             mainViewModel.getBudgetItem()!!.toAccount!!.accountName
-                        rule.await().toAccount =
+                        budgetRuleDetailed.toAccount =
                             mainViewModel.getBudgetItem()!!.toAccount
                     } else {
                         tvToAccount.text =
                             budgetRuleDetailed.toAccount?.accountName
-                        rule.await().toAccount =
+                        budgetRuleDetailed.toAccount =
                             budgetRuleDetailed.toAccount
                     }
                     if (mainViewModel.getBudgetItem()!!.fromAccount != null) {
                         tvFromAccount.text =
                             mainViewModel.getBudgetItem()!!.fromAccount!!.accountName
-                        rule.await().fromAccount =
+                        budgetRuleDetailed.fromAccount =
                             mainViewModel.getBudgetItem()!!.fromAccount
                     } else {
                         tvFromAccount.text =
                             budgetRuleDetailed.fromAccount?.accountName
-                        rule.await().fromAccount =
+                        budgetRuleDetailed.fromAccount =
                             budgetRuleDetailed.fromAccount
                     }
                 }
