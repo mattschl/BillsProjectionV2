@@ -437,6 +437,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="start"
                         android:padding="@dimen/margin_medium"
+                        android:visibility="gone"
                         android:text="@string/instructions_transactions_analysis_view"
                         android:textColor="@color/black"
                         android:textSize="@dimen/text_info_size"

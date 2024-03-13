@@ -297,6 +297,9 @@ class TransactionPerformFragment : Fragment(
             ) { accWType ->
                 if (accWType.accountType!!.allowPending) {
                     chkToAccPending.visibility = View.VISIBLE
+                    if (accWType.accountType.tallyOwing) {
+                        chkToAccPending.isChecked = true
+                    }
                 } else {
                     chkToAccPending.visibility = View.GONE
                 }
@@ -310,6 +313,9 @@ class TransactionPerformFragment : Fragment(
             ) { accWType ->
                 if (accWType.accountType!!.allowPending) {
                     chkFromAccPending.visibility = View.VISIBLE
+                    if (accWType.accountType.tallyOwing) {
+                        chkFromAccPending.isChecked = true
+                    }
                 } else {
                     chkFromAccPending.visibility = View.GONE
                 }
