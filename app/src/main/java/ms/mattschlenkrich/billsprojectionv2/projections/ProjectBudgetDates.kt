@@ -182,7 +182,7 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
             var workingDate: LocalDate
             workingDate = LocalDate.parse(startDate)
              do {
-                 if (workingDate > LocalDate.now()) {
+                 if (workingDate > LocalDate.now().minusMonths(interval).plusDays(1)) {
                      datesToFix.add(workingDate)
                  }
                  workingDate = workingDate.plusMonths(interval)
@@ -202,7 +202,7 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
             var workingDate: LocalDate
             workingDate = LocalDate.parse(startDate)
             while (workingDate <= LocalDate.parse(endDate)) {
-                if (workingDate > LocalDate.now()) {
+                if (workingDate > LocalDate.now().minusWeeks(interval)) {
                     dates.add(workingDate)
                 }
                 workingDate = workingDate.plusWeeks(interval)
@@ -224,7 +224,7 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
             var workingDate: LocalDate
             workingDate = LocalDate.parse(startDate)
             while (workingDate <= LocalDate.parse(endDate)) {
-                if (workingDate > LocalDate.now()) {
+                if (workingDate > LocalDate.now().minusWeeks(1)) {
                     datesToFix.add(workingDate)
                 }
                 workingDate = workingDate.plusYears(interval)

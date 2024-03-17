@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.billsprojectionv2.fragments.transactions
 
-import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.util.Log
@@ -585,12 +584,13 @@ class TransactionAddFragment :
                 ) {
                     "     Error!!\n" +
                             "Please enter an amount for this transaction"
-                } else if (mainViewModel.getTransactionDetailed()!!.budgetRule == null) {
-                    if (saveWithoutBudget()) {
-                        "Ok"
-                    } else {
-                        "Choose a Budget Rule"
-                    }
+                    //TODO: Find a way to display a message and suspend until after a choice is made
+//                } else if (mainViewModel.getTransactionDetailed()!!.budgetRule == null) {
+//                    if (saveWithoutBudget()) {
+//                        "Ok"
+//                    } else {
+//                        "Choose a Budget Rule"
+//                    }
                 } else {
                     "Ok"
                 }
@@ -598,21 +598,18 @@ class TransactionAddFragment :
         }
     }
 
-    private fun saveWithoutBudget(): Boolean {
-        var bool = false
-        AlertDialog.Builder(activity).apply {
-            setMessage(
-                "There is no Budget Rule!" +
-                        "Budget Rules are used to update the budget."
-            )
-            setPositiveButton("Save anyway") { _, _ ->
-
-                bool = true
-            }
-            setNegativeButton("Retry", null)
-        }.create().show()
-        return bool
-    }
+//    private fun saveWithoutBudget(): Boolean {
+//        AlertDialog.Builder(activity).apply {
+//            setMessage(
+//                "There is no Budget Rule!" +
+//                        "Budget Rules are used to update the budget. " +
+//                        "If you want to attach this to a budget rule " +
+//                        "you will hav to edit it later."
+//            )
+//            setNegativeButton("Ok", null)
+//        }.create().show()
+//        return true
+//    }
 
     override fun onDestroy() {
         super.onDestroy()

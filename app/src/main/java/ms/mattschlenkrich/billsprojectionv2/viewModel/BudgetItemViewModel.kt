@@ -27,6 +27,13 @@ class BudgetItemViewModel(
         )
     }
 
+    fun killFutureBudgetItems(currentDate: String, updateTime: String) =
+        viewModelScope.launch {
+            budgetItemRepository.killFutureBudgetItems(
+                currentDate, updateTime
+            )
+        }
+
     fun getPayDaysActive() = budgetItemRepository.getPayDaysActive()
 
 

@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.util.Log
@@ -57,6 +58,7 @@ class MainActivity : AppCompatActivity() {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menu.add(getString(R.string.update_budget_predictions))
                 menu.add(getString(R.string.view_current_budget_summary))
+                menu.add(getString(R.string.delete_future_predictions))
                 menu.add(getString(R.string.help))
 //                menu.add(getString(R.string.pay_check))
                 menu.add("${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME}")
@@ -72,6 +74,11 @@ class MainActivity : AppCompatActivity() {
 
                     getString(R.string.view_current_budget_summary) -> {
                         gotoBudgetList()
+                        true
+                    }
+
+                    getString(R.string.delete_future_predictions) -> {
+                        chooseDeleteFuturePredictions()
                         true
                     }
 
@@ -132,6 +139,23 @@ class MainActivity : AppCompatActivity() {
         setupBudgetRuleViewModel()
         setupTransactionViewModel()
         setupBudgetItemViewModel()
+    }
+
+    private fun chooseDeleteFuturePredictions() {
+        AlertDialog.Builder(this).apply {
+            setTitle("*Warning*! Confirm Delete?")
+            setMessage(
+                "This action should only be done when you do a drastic change. " +
+                        "Such as a change in payday source. " +
+                        "Any manually entered items will be overwritten!! " +
+                        "This action cannot be undone!"
+            )
+            setPositiveButton("Continue") { _, _ ->
+                deleteFuturePredictions()
+            }
+            setNegativeButton("Cancel", null)
+            create()
+        }.show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -202,7 +226,6 @@ class MainActivity : AppCompatActivity() {
         findNavController(R.id.fragment_container_view)
             .navigate(direction)
     }
-
     private fun updateBudget() {
         val stopDateAll = LocalDate.now()
             .plusMonths(4).toString()
@@ -220,7 +243,7 @@ class MainActivity : AppCompatActivity() {
             stopDateAll[1].toInt() - 1,
             stopDateAll[2].toInt()
         )
-        datePickerDialog.setTitle("Pick a date to project forward to.")
+        datePickerDialog.setTitle(getString(R.string.pick_a_date_to_project_forward_to))
         datePickerDialog.show()
     }
 
@@ -229,7 +252,17 @@ class MainActivity : AppCompatActivity() {
     ) {
         val updateBudgetPredictions =
             UpdateBudgetPredictions(this)
-        CoroutineScope(Dispatchers.IO).launch { updateBudgetPredictions.updatePredictions(display) }
+        CoroutineScope(Dispatchers.IO).launch {
+            updateBudgetPredictions.updatePredictions(display)
+        }
+    }
+
+    private fun deleteFuturePredictions() {
+        val updateBudgetPredictions =
+            UpdateBudgetPredictions(this)
+        CoroutineScope(Dispatchers.IO).launch {
+            updateBudgetPredictions.killPredictions()
+        }
     }
 
     private fun setupBudgetItemViewModel() {

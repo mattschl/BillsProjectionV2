@@ -24,6 +24,14 @@ class UpdateBudgetPredictions(
     private val df = DateFunctions()
     private val projectBudgetDates = ProjectBudgetDates(mainActivity)
 
+    fun killPredictions(): Boolean {
+        val startDate = LocalDate.now().minusWeeks(2).toString()
+        budgetItemViewModel.killFutureBudgetItems(
+            startDate,
+            df.getCurrentTimeAsString()
+        )
+        return true
+    }
 
     fun updatePredictions(stopDate: String) {
         //1. Delete the future dates not already locked
@@ -57,7 +65,7 @@ class UpdateBudgetPredictions(
                         for (date in payDates) {
                             Log.d(TAG, "adding ${rule.budgetRuleName} date is $date")
                             runBlocking {
-                                insertRule(
+                                insertItemFromRule(
                                     rule,
                                     date.toString()
                                 )
@@ -106,7 +114,7 @@ class UpdateBudgetPredictions(
                             for (date in payDates) {
                                 Log.d(TAG, "adding ${rule.budgetRuleName} date is $date")
                                 runBlocking {
-                                    insertRule(
+                                    insertItemFromRule(
                                         rule,
                                         date.toString()
                                     )
@@ -171,7 +179,7 @@ class UpdateBudgetPredictions(
                                             "adding ${rule.budgetRuleName} date is $date"
                                         )
                                         runBlocking {
-                                            insertRule(
+                                            insertItemFromRule(
                                                 rule,
                                                 date.toString(),
                                                 payDays[d]
@@ -252,7 +260,7 @@ class UpdateBudgetPredictions(
         return true
     }
 
-    private fun insertRule(rule: BudgetRule, projectedDate: String): Boolean {
+    private fun insertItemFromRule(rule: BudgetRule, projectedDate: String): Boolean {
         budgetItemViewModel.insertBudgetItem(
             BudgetItem(
                 rule.ruleId,
@@ -278,7 +286,7 @@ class UpdateBudgetPredictions(
         return true
     }
 
-    private fun insertRule(
+    private fun insertItemFromRule(
         rule: BudgetRule,
         projectedDate: String,
         payDay: String

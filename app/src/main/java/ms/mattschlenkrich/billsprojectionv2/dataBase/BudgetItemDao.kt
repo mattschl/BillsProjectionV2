@@ -103,6 +103,20 @@ interface BudgetItemDao {
     )
     suspend fun deleteFutureBudgetItems(currentDate: String, updateTime: String)
 
+
+    @Query(
+        "UPDATE $TABLE_BUDGET_ITEMS " +
+                "SET $BI_IS_DELETED = 1, " +
+                "$BI_UPDATE_TIME = :updateTime, " +
+                "$BI_IS_FIXED = 0, " +
+                "$BI_LOCKED = 0, " +
+                "$BI_IS_MANUALLY_ENTERED = 0 " +
+                "WHERE $BI_ACTUAL_DATE >= :currentDate " +
+                "AND $BI_IS_COMPLETED = 0 " +
+                "AND $BI_IS_CANCELLED = 0 "
+    )
+    suspend fun killFutureBudgetItems(currentDate: String, updateTime: String)
+
     @Query(
         "SELECT $ACCOUNT_NAME FROM $TABLE_ACCOUNTS " +
                 "LEFT JOIN $TABLE_ACCOUNT_TYPES ON " +
