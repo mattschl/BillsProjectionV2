@@ -2,7 +2,6 @@ package ms.mattschlenkrich.billsprojectionv2.fragments.transactions
 
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -198,12 +197,6 @@ class TransactionAddFragment :
 
     private fun getCurTransaction(): Transactions {
         binding.apply {
-            Log.d(
-                TAG, "trying to create transaction " +
-                        "budgetRuleId: ${mainViewModel.getTransactionDetailed()?.budgetRule?.ruleId}, " +
-                        "toAccountId: ${mainViewModel.getTransactionDetailed()?.toAccount?.accountId}, " +
-                        "fromAccountId: ${mainViewModel.getTransactionDetailed()?.toAccount?.accountId}"
-            )
             return Transactions(
                 cf.generateId(),
                 etTransDate.text.toString(),
@@ -302,165 +295,22 @@ class TransactionAddFragment :
         binding.apply {
             if (mainViewModel.getTransactionDetailed() != null) {
                 if (mainViewModel.getTransactionDetailed()!!.transaction != null) {
-                    if (mainViewModel.getTransactionDetailed()!!.budgetRule != null &&
-                        mainViewModel.getTransactionDetailed()!!.transaction!!.transName.isBlank()
-                    ) {
-                        etDescription.setText(
-                            mainViewModel.getTransactionDetailed()!!.budgetRule!!.budgetRuleName
-                        )
-                    } else {
-                        etDescription.setText(
-                            mainViewModel.getTransactionDetailed()!!.transaction?.transName ?: ""
-                        )
-                    }
-                    etNote.setText(
-                        mainViewModel.getTransactionDetailed()!!.transaction!!.transNote
-                    )
-                    etTransDate.setText(
-                        mainViewModel.getTransactionDetailed()!!.transaction!!.transDate
-                    )
-                    etAmount.hint = "Budgeted " +
-                            if (mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount == 0.0 &&
-                                mainViewModel.getTransactionDetailed()!!.budgetRule != null
-                            ) {
-                                cf.displayDollars(
-                                    mainViewModel.getTransactionDetailed()!!.budgetRule!!.budgetAmount
-                                )
-                            } else {
-                                cf.displayDollars(
-                                    mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount
-                                )
-                            }
-                    etAmount.setText(
-                        cf.displayDollars(
-                            if (mainViewModel.getTransferNum()!! != 0.0) {
-                                mainViewModel.getTransferNum()!!
-                            } else {
-                                mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount
-                            }
-                        )
-                    )
-                    mainViewModel.setTransferNum(0.0)
-
+                    fillFromTransactionDetailed()
                 }
                 if (mainViewModel.getTransactionDetailed()!!.budgetRule != null) {
-                    mBudgetRule = mainViewModel.getTransactionDetailed()!!.budgetRule
-                    tvBudgetRule.text = mBudgetRule!!.budgetRuleName
-                    if (mainViewModel.getTransactionDetailed()!!.toAccount == null) {
-                        if (mainViewModel.getTransactionDetailed()!!.budgetRule!!.budToAccountId != 0L) {
-
-                            CoroutineScope(Dispatchers.IO).launch {
-                                val acc = async {
-                                    accountViewModel.getAccount(
-                                        mainViewModel.getTransactionDetailed()!!.budgetRule!!.budToAccountId
-                                    )
-                                }
-                                mToAccount = acc.await()
-                            }
-                            CoroutineScope(Dispatchers.Main).launch {
-                                delay(WAIT_250)
-                                tvToAccount.text = mToAccount!!.accountName
-                            }
-
-                            CoroutineScope(Dispatchers.IO).launch {
-                                val acc = async {
-                                    accountViewModel.getAccountWithType(
-                                        mainViewModel.getTransactionDetailed()!!.budgetRule!!.budToAccountId
-                                    )
-                                }
-                                mToAccountWithType = acc.await()
-                            }
-                            CoroutineScope(Dispatchers.Main).launch {
-                                delay(WAIT_250)
-                                if (mToAccountWithType!!.accountType!!.allowPending) {
-                                    chkToAccPending.visibility = View.VISIBLE
-                                } else {
-                                    chkToAccPending.visibility = View.GONE
-                                }
-                            }
-                        }
-                    }
-                    if (mainViewModel.getTransactionDetailed()!!.fromAccount == null) {
-                        if (mainViewModel.getTransactionDetailed()!!.budgetRule!!.budFromAccountId != 0L) {
-                            CoroutineScope(Dispatchers.IO).launch {
-                                val acc = async {
-                                    accountViewModel.getAccount(
-                                        mainViewModel.getTransactionDetailed()!!.budgetRule!!.budFromAccountId
-                                    )
-                                }
-                                mFromAccount = acc.await()
-                            }
-                            CoroutineScope(Dispatchers.Main).launch {
-                                delay(WAIT_250)
-                                tvFromAccount.text = mFromAccount!!.accountName
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    val acc = async {
-                                        accountViewModel.getAccountWithType(
-                                            mFromAccount!!.accountName
-                                        )
-                                    }
-                                    mFromAccountWithType = acc.await()
-                                }
-                                CoroutineScope(Dispatchers.Main).launch {
-                                    delay(WAIT_250)
-                                    if (mFromAccountWithType!!.accountType!!.allowPending) {
-                                        chkFromAccPending.visibility = View.VISIBLE
-                                    } else {
-                                        chkFromAccPending.visibility = View.GONE
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    fillFromBudgetRule()
                 }
                 if (mainViewModel.getTransactionDetailed()!!.toAccount != null) {
-                    mToAccount =
-                        mainViewModel.getTransactionDetailed()!!.toAccount
-                    tvToAccount.text =
-                        mainViewModel.getTransactionDetailed()!!.toAccount!!.accountName
-                    CoroutineScope(Dispatchers.IO).launch {
-                        val acc = async {
-                            accountViewModel.getAccountWithType(
-                                mainViewModel.getTransactionDetailed()!!.toAccount!!.accountName
-                            )
-                        }
-                        mToAccountWithType = acc.await()
-                    }
-                    CoroutineScope(Dispatchers.Main).launch {
-                        delay(WAIT_250)
-                        if (mToAccountWithType!!.accountType!!.allowPending) {
-                            chkToAccPending.visibility = View.VISIBLE
-                        } else {
-                            chkToAccPending.visibility = View.GONE
-                        }
-                    }
+                    fillFromToAccount()
+                } else {
+                    chkToAccPending.visibility = View.GONE
                 }
                 chkToAccPending.isChecked =
                     mainViewModel.getTransactionDetailed()!!.transaction!!.transToAccountPending
                 if (mainViewModel.getTransactionDetailed()!!.fromAccount != null) {
-                    mFromAccount =
-                        mainViewModel.getTransactionDetailed()!!.fromAccount
-                    tvFromAccount.text =
-                        mainViewModel.getTransactionDetailed()?.fromAccount!!.accountName
-                    CoroutineScope(Dispatchers.IO).launch {
-                        val acc = async {
-                            accountViewModel.getAccountWithType(
-                                mainViewModel.getTransactionDetailed()?.fromAccount!!.accountName
-                            )
-                        }
-                        mFromAccountWithType = acc.await()
-                    }
-                    CoroutineScope(Dispatchers.Main).launch {
-                        delay(WAIT_250)
-                        if (mFromAccountWithType!!.accountType!!.allowPending) {
-                            chkFromAccPending.visibility = View.VISIBLE
-                        } else {
-                            chkFromAccPending.visibility = View.GONE
-                        }
-                    }
+                    fillFromFromAccount()
                 } else {
                     chkFromAccPending.visibility = View.GONE
-                    chkToAccPending.visibility = View.GONE
                 }
                 chkFromAccPending.isChecked =
                     mainViewModel.getTransactionDetailed()!!.transaction!!.transFromAccountPending
@@ -472,6 +322,184 @@ class TransactionAddFragment :
                 delay(WAIT_250)
                 updateAmountDisplay()
             }
+        }
+    }
+
+    private fun fillFromFromAccount() {
+        binding.apply {
+            mFromAccount =
+                mainViewModel.getTransactionDetailed()!!.fromAccount
+            tvFromAccount.text =
+                mainViewModel.getTransactionDetailed()?.fromAccount!!.accountName
+            CoroutineScope(Dispatchers.IO).launch {
+                val acc = async {
+                    accountViewModel.getAccountWithType(
+                        mainViewModel.getTransactionDetailed()?.fromAccount!!.accountName
+                    )
+                }
+                mFromAccountWithType = acc.await()
+            }
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(WAIT_250)
+                if (mFromAccountWithType!!.accountType!!.allowPending) {
+                    chkFromAccPending.visibility = View.VISIBLE
+                } else {
+                    chkFromAccPending.visibility = View.GONE
+                }
+            }
+        }
+    }
+
+    private fun fillFromToAccount() {
+        binding.apply {
+            mToAccount =
+                mainViewModel.getTransactionDetailed()!!.toAccount
+            tvToAccount.text =
+                mainViewModel.getTransactionDetailed()!!.toAccount!!.accountName
+            CoroutineScope(Dispatchers.IO).launch {
+                val acc = async {
+                    accountViewModel.getAccountWithType(
+                        mainViewModel.getTransactionDetailed()!!.toAccount!!.accountName
+                    )
+                }
+                mToAccountWithType = acc.await()
+            }
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(WAIT_250)
+                if (mToAccountWithType!!.accountType!!.allowPending) {
+                    chkToAccPending.visibility = View.VISIBLE
+                } else {
+                    chkToAccPending.visibility = View.GONE
+                }
+            }
+        }
+    }
+
+    private fun fillFromBudgetRule() {
+        binding.apply {
+            mBudgetRule = mainViewModel.getTransactionDetailed()!!.budgetRule
+            tvBudgetRule.text = mBudgetRule!!.budgetRuleName
+            if (mainViewModel.getTransactionDetailed()!!.toAccount == null &&
+                mainViewModel.getTransactionDetailed()!!.budgetRule!!.budToAccountId != 0L
+            ) {
+                fillToAccountFromBudgetRule()
+            }
+            if (mainViewModel.getTransactionDetailed()!!.fromAccount == null &&
+                mainViewModel.getTransactionDetailed()!!.budgetRule!!.budFromAccountId != 0L
+            ) {
+                fillFromAccountFromBudgetRule()
+            }
+        }
+    }
+
+    private fun fillFromAccountFromBudgetRule() {
+        binding.apply {
+            CoroutineScope(Dispatchers.IO).launch {
+                val acc = async {
+                    accountViewModel.getAccount(
+                        mainViewModel.getTransactionDetailed()!!.budgetRule!!.budFromAccountId
+                    )
+                }
+                mFromAccount = acc.await()
+            }
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(WAIT_250)
+                tvFromAccount.text = mFromAccount!!.accountName
+                CoroutineScope(Dispatchers.IO).launch {
+                    val acc = async {
+                        accountViewModel.getAccountWithType(
+                            mFromAccount!!.accountName
+                        )
+                    }
+                    mFromAccountWithType = acc.await()
+                }
+                CoroutineScope(Dispatchers.Main).launch {
+                    delay(WAIT_250)
+                    if (mFromAccountWithType!!.accountType!!.allowPending) {
+                        chkFromAccPending.visibility = View.VISIBLE
+                    } else {
+                        chkFromAccPending.visibility = View.GONE
+                    }
+                }
+            }
+        }
+    }
+
+    private fun fillToAccountFromBudgetRule() {
+        binding.apply {
+            CoroutineScope(Dispatchers.IO).launch {
+                val acc = async {
+                    accountViewModel.getAccount(
+                        mainViewModel.getTransactionDetailed()!!.budgetRule!!.budToAccountId
+                    )
+                }
+                mToAccount = acc.await()
+            }
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(WAIT_250)
+                tvToAccount.text = mToAccount!!.accountName
+            }
+
+            CoroutineScope(Dispatchers.IO).launch {
+                val acc = async {
+                    accountViewModel.getAccountWithType(
+                        mainViewModel.getTransactionDetailed()!!.budgetRule!!.budToAccountId
+                    )
+                }
+                mToAccountWithType = acc.await()
+            }
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(WAIT_250)
+                if (mToAccountWithType!!.accountType!!.allowPending) {
+                    chkToAccPending.visibility = View.VISIBLE
+                } else {
+                    chkToAccPending.visibility = View.GONE
+                }
+            }
+        }
+    }
+
+    private fun fillFromTransactionDetailed() {
+        binding.apply {
+            if (mainViewModel.getTransactionDetailed()!!.budgetRule != null &&
+                mainViewModel.getTransactionDetailed()!!.transaction!!.transName.isBlank()
+            ) {
+                etDescription.setText(
+                    mainViewModel.getTransactionDetailed()!!.budgetRule!!.budgetRuleName
+                )
+            } else {
+                etDescription.setText(
+                    mainViewModel.getTransactionDetailed()!!.transaction?.transName ?: ""
+                )
+            }
+            etNote.setText(
+                mainViewModel.getTransactionDetailed()!!.transaction!!.transNote
+            )
+            etTransDate.setText(
+                mainViewModel.getTransactionDetailed()!!.transaction!!.transDate
+            )
+            etAmount.hint = "Budgeted " +
+                    if (mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount == 0.0 &&
+                        mainViewModel.getTransactionDetailed()!!.budgetRule != null
+                    ) {
+                        cf.displayDollars(
+                            mainViewModel.getTransactionDetailed()!!.budgetRule!!.budgetAmount
+                        )
+                    } else {
+                        cf.displayDollars(
+                            mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount
+                        )
+                    }
+            etAmount.setText(
+                cf.displayDollars(
+                    if (mainViewModel.getTransferNum()!! != 0.0) {
+                        mainViewModel.getTransferNum()!!
+                    } else {
+                        mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount
+                    }
+                )
+            )
+            mainViewModel.setTransferNum(0.0)
         }
     }
 
@@ -495,44 +523,51 @@ class TransactionAddFragment :
 
     private fun updateAccounts(mTransaction: Transactions): Boolean {
         if (!mTransaction.transToAccountPending) {
-            if (mToAccountWithType!!.accountType!!.keepTotals) {
-                transactionViewModel.updateAccountBalance(
-                    mToAccountWithType!!.account.accountBalance +
-                            mTransaction.transAmount,
-                    mToAccount!!.accountId,
-                    df.getCurrentTimeAsString()
-                )
-                Log.d(TAG, "updating toAccountBalance")
-            }
-            if (mToAccountWithType!!.accountType!!.tallyOwing) {
-                transactionViewModel.updateAccountOwing(
-                    mToAccountWithType!!.account.accountOwing -
-                            mTransaction.transAmount,
-                    mToAccount!!.accountId,
-                    df.getCurrentTimeAsString()
-                )
-            }
+            updateToAccountBalance(mTransaction)
         }
         if (!mTransaction.transFromAccountPending) {
-            if (mFromAccountWithType!!.accountType!!.keepTotals) {
-                transactionViewModel.updateAccountBalance(
-                    mFromAccountWithType!!.account.accountBalance -
-                            mTransaction.transAmount,
-                    mFromAccount!!.accountId,
-                    df.getCurrentTimeAsString()
-                )
-            }
-            if (mFromAccountWithType!!.accountType!!.tallyOwing) {
-                transactionViewModel.updateAccountOwing(
-                    mFromAccountWithType!!.account.accountOwing +
-                            mTransaction.transAmount,
-                    mFromAccount!!.accountId,
-                    df.getCurrentTimeAsString()
-                )
-            }
+            updateFromAccountBalance(mTransaction)
         }
         gotoCallingFragment()
         return true
+    }
+
+    private fun updateFromAccountBalance(mTransaction: Transactions) {
+        if (mFromAccountWithType!!.accountType!!.keepTotals) {
+            transactionViewModel.updateAccountBalance(
+                mFromAccountWithType!!.account.accountBalance -
+                        mTransaction.transAmount,
+                mFromAccount!!.accountId,
+                df.getCurrentTimeAsString()
+            )
+        }
+        if (mFromAccountWithType!!.accountType!!.tallyOwing) {
+            transactionViewModel.updateAccountOwing(
+                mFromAccountWithType!!.account.accountOwing +
+                        mTransaction.transAmount,
+                mFromAccount!!.accountId,
+                df.getCurrentTimeAsString()
+            )
+        }
+    }
+
+    private fun updateToAccountBalance(mTransaction: Transactions) {
+        if (mToAccountWithType!!.accountType!!.keepTotals) {
+            transactionViewModel.updateAccountBalance(
+                mToAccountWithType!!.account.accountBalance +
+                        mTransaction.transAmount,
+                mToAccount!!.accountId,
+                df.getCurrentTimeAsString()
+            )
+        }
+        if (mToAccountWithType!!.accountType!!.tallyOwing) {
+            transactionViewModel.updateAccountOwing(
+                mToAccountWithType!!.account.accountOwing -
+                        mTransaction.transAmount,
+                mToAccount!!.accountId,
+                df.getCurrentTimeAsString()
+            )
+        }
     }
 
     private fun gotoCallingFragment() {
