@@ -523,16 +523,16 @@ class TransactionAddFragment :
 
     private fun updateAccounts(mTransaction: Transactions): Boolean {
         if (!mTransaction.transToAccountPending) {
-            updateToAccountBalance(mTransaction)
+            updateToAccountBalanceOrOwing(mTransaction)
         }
         if (!mTransaction.transFromAccountPending) {
-            updateFromAccountBalance(mTransaction)
+            updateFromAccountBalanceOrOwing(mTransaction)
         }
         gotoCallingFragment()
         return true
     }
 
-    private fun updateFromAccountBalance(mTransaction: Transactions) {
+    private fun updateFromAccountBalanceOrOwing(mTransaction: Transactions) {
         if (mFromAccountWithType!!.accountType!!.keepTotals) {
             transactionViewModel.updateAccountBalance(
                 mFromAccountWithType!!.account.accountBalance -
@@ -551,7 +551,7 @@ class TransactionAddFragment :
         }
     }
 
-    private fun updateToAccountBalance(mTransaction: Transactions) {
+    private fun updateToAccountBalanceOrOwing(mTransaction: Transactions) {
         if (mToAccountWithType!!.accountType!!.keepTotals) {
             transactionViewModel.updateAccountBalance(
                 mToAccountWithType!!.account.accountBalance +

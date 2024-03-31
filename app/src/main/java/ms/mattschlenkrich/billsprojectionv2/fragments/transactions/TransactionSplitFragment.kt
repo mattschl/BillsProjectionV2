@@ -182,106 +182,136 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
     private fun fillValues() {
         binding.apply {
             if (mainViewModel.getTransactionDetailed() != null) {
-                tvOriginalAmount.text = cf.displayDollars(
-                    mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount
-                )
-                etTransDate.setText(
-                    mainViewModel.getTransactionDetailed()!!.transaction!!.transDate
-                )
-                etTransDate.isEnabled = false
-                mFromAccount = mainViewModel.getTransactionDetailed()!!.fromAccount!!
-                tvFromAccount.text = mFromAccount.accountName
-                accountViewModel.getAccountDetailed(mFromAccount.accountId).observe(
-                    viewLifecycleOwner
-                ) {
-                    mFromAccountWithType = it
-                    if (mFromAccountWithType.accountType!!.allowPending) {
-                        chkFromAccPending.visibility = View.VISIBLE
-                    } else {
-                        chkFromAccPending.visibility = View.GONE
-                    }
-                }
-                chkFromAccPending.isChecked =
-                    mainViewModel.getTransactionDetailed()!!.transaction!!.transFromAccountPending
+                fillFromOriginalTransaction()
             }
             if (mainViewModel.getSplitTransactionDetailed() != null) {
-                etDescription.setText(
-                    mainViewModel.getSplitTransactionDetailed()?.transaction?.transName
-                )
-                etNote.setText(
-                    mainViewModel.getSplitTransactionDetailed()?.transaction?.transNote
-                )
-                chkFromAccPending.isChecked =
-                    mainViewModel.getSplitTransactionDetailed()!!.transaction!!.transFromAccountPending
-                if (mainViewModel.getTransferNum() != null &&
-                    mainViewModel.getTransferNum() != 0.0
-                ) {
-                    etAmount.setText(
-                        cf.displayDollars(
-                            mainViewModel.getTransferNum()!!
-                        )
-                    )
-                } else if (mainViewModel.getSplitTransactionDetailed()!!.transaction!!.transAmount != 0.0) {
-                    etAmount.setText(
-                        cf.displayDollars(
-                            mainViewModel.getSplitTransactionDetailed()!!.transaction!!.transAmount
-                        )
-                    )
-                } else {
-                    etAmount.setText(
-                        cf.displayDollars(0.0)
-                    )
-                }
-                updateAmountsDisplay()
-                if (mainViewModel.getSplitTransactionDetailed()!!.toAccount != null) {
-                    mToAccount = mainViewModel.getSplitTransactionDetailed()!!.toAccount
-                    tvToAccount.text = mToAccount!!.accountName
+                fillFromSplitTransaction()
+            }
+        }
+    }
 
-                    accountViewModel.getAccountDetailed(mToAccount!!.accountId).observe(
-                        viewLifecycleOwner
-                    ) {
-                        mToAccountWithType = it
-                        if (it.accountType!!.allowPending) {
-                            chkToAccPending.visibility = View.VISIBLE
-                            chkToAccPending.isChecked =
-                                mainViewModel.getSplitTransactionDetailed()!!
-                                    .transaction!!.transToAccountPending
-                        } else {
-                            chkToAccPending.visibility = View.GONE
-                        }
-                    }
+    private fun fillFromSplitTransaction() {
+        binding.apply {
+            etDescription.setText(
+                mainViewModel.getSplitTransactionDetailed()?.transaction?.transName
+            )
+            etNote.setText(
+                mainViewModel.getSplitTransactionDetailed()?.transaction?.transNote
+            )
+            chkFromAccPending.isChecked =
+                mainViewModel.getSplitTransactionDetailed()!!.transaction!!.transFromAccountPending
+            if (mainViewModel.getTransferNum() != null &&
+                mainViewModel.getTransferNum() != 0.0
+            ) {
+                etAmount.setText(
+                    cf.displayDollars(
+                        mainViewModel.getTransferNum()!!
+                    )
+                )
+            } else if (mainViewModel.getSplitTransactionDetailed()!!.transaction!!.transAmount != 0.0) {
+                etAmount.setText(
+                    cf.displayDollars(
+                        mainViewModel.getSplitTransactionDetailed()!!.transaction!!.transAmount
+                    )
+                )
+            } else {
+                etAmount.setText(
+                    cf.displayDollars(0.0)
+                )
+            }
+            updateAmountsDisplay()
+            if (mainViewModel.getSplitTransactionDetailed()!!.toAccount != null) {
+                filToAccountFromTransaction()
+            }
+            if (mainViewModel.getSplitTransactionDetailed()!!.budgetRule != null) {
+                fillFromBudgetRule()
+            }
+        }
+    }
+
+    private fun fillFromBudgetRule() {
+        binding.apply {
+            mBudgetRule = mainViewModel.getSplitTransactionDetailed()!!.budgetRule!!
+            tvBudgetRule.text = mBudgetRule!!.budgetRuleName
+            if (mainViewModel.getSplitTransactionDetailed()!!.transaction!!
+                    .transName.isBlank()
+            ) {
+                etDescription.setText(mBudgetRule!!.budgetRuleName)
+            }
+            if (mainViewModel.getSplitTransactionDetailed()!!.toAccount == null) {
+                fillToAccountFromBudgetRule()
+            }
+        }
+    }
+
+    private fun filToAccountFromTransaction() {
+        binding.apply {
+            mToAccount = mainViewModel.getSplitTransactionDetailed()!!.toAccount
+            tvToAccount.text = mToAccount!!.accountName
+
+            accountViewModel.getAccountDetailed(mToAccount!!.accountId).observe(
+                viewLifecycleOwner
+            ) {
+                mToAccountWithType = it
+                if (it.accountType!!.allowPending) {
+                    chkToAccPending.visibility = View.VISIBLE
+                    chkToAccPending.isChecked =
+                        mainViewModel.getSplitTransactionDetailed()!!
+                            .transaction!!.transToAccountPending
+                } else {
+                    chkToAccPending.visibility = View.GONE
                 }
-                if (mainViewModel.getSplitTransactionDetailed()!!.budgetRule != null) {
-                    mBudgetRule = mainViewModel.getSplitTransactionDetailed()!!.budgetRule!!
-                    tvBudgetRule.text = mBudgetRule!!.budgetRuleName
-                    if (mainViewModel.getSplitTransactionDetailed()!!.transaction!!
-                            .transName.isBlank()
-                    ) {
-                        etDescription.setText(mBudgetRule!!.budgetRuleName)
-                    }
-                    if (mainViewModel.getSplitTransactionDetailed()!!.toAccount == null) {
-                        budgetRuleViewModel.getBudgetRuleFullLive(mBudgetRule!!.ruleId).observe(
-                            viewLifecycleOwner
-                        ) { it ->
-                            mToAccount = it.toAccount
-                            tvToAccount.text = it.toAccount!!.accountName
-                            accountViewModel.getAccountDetailed(mToAccount!!.accountId).observe(
-                                viewLifecycleOwner
-                            ) {
-                                mToAccountWithType = it
-                                if (mToAccountWithType!!.accountType!!.allowPending) {
-                                    chkToAccPending.visibility = View.VISIBLE
-                                    chkToAccPending.isChecked =
-                                        mainViewModel.getSplitTransactionDetailed()!!
-                                            .transaction!!.transToAccountPending
-                                } else {
-                                    chkToAccPending.visibility = View.GONE
-                                }
-                            }
-                        }
+            }
+        }
+    }
+
+    private fun fillToAccountFromBudgetRule() {
+        binding.apply {
+            budgetRuleViewModel.getBudgetRuleFullLive(mBudgetRule!!.ruleId).observe(
+                viewLifecycleOwner
+            ) { it ->
+                mToAccount = it.toAccount
+                tvToAccount.text = it.toAccount!!.accountName
+                accountViewModel.getAccountDetailed(mToAccount!!.accountId).observe(
+                    viewLifecycleOwner
+                ) {
+                    mToAccountWithType = it
+                    if (mToAccountWithType!!.accountType!!.allowPending) {
+                        chkToAccPending.visibility = View.VISIBLE
+                        chkToAccPending.isChecked =
+                            mainViewModel.getSplitTransactionDetailed()!!
+                                .transaction!!.transToAccountPending
+                    } else {
+                        chkToAccPending.visibility = View.GONE
                     }
                 }
             }
+        }
+    }
+
+    private fun fillFromOriginalTransaction() {
+        binding.apply {
+            tvOriginalAmount.text = cf.displayDollars(
+                mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount
+            )
+            etTransDate.setText(
+                mainViewModel.getTransactionDetailed()!!.transaction!!.transDate
+            )
+            etTransDate.isEnabled = false
+            mFromAccount = mainViewModel.getTransactionDetailed()!!.fromAccount!!
+            tvFromAccount.text = mFromAccount.accountName
+            accountViewModel.getAccountDetailed(mFromAccount.accountId).observe(
+                viewLifecycleOwner
+            ) {
+                mFromAccountWithType = it
+                if (mFromAccountWithType.accountType!!.allowPending) {
+                    chkFromAccPending.visibility = View.VISIBLE
+                } else {
+                    chkFromAccPending.visibility = View.GONE
+                }
+            }
+            chkFromAccPending.isChecked =
+                mainViewModel.getTransactionDetailed()!!.transaction!!.transFromAccountPending
         }
     }
 
@@ -361,46 +391,54 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
 
     private fun updateAccounts(mTransaction: Transactions): Boolean {
         if (!mTransaction.transToAccountPending) {
-            if (mToAccountWithType!!.accountType!!.keepTotals) {
-                transactionViewModel.updateAccountBalance(
-                    mToAccountWithType!!.account.accountBalance +
-                            mTransaction.transAmount,
-                    mToAccount!!.accountId,
-                    df.getCurrentTimeAsString()
-                )
-                Log.d(TAG, "updating toAccountBalance")
-            }
-            if (mToAccountWithType!!.accountType!!.tallyOwing) {
-                transactionViewModel.updateAccountOwing(
-                    mToAccountWithType!!.account.accountOwing -
-                            mTransaction.transAmount,
-                    mToAccount!!.accountId,
-                    df.getCurrentTimeAsString()
-                )
-            }
+            updateToAccountBalanceOrOwing(mTransaction)
         }
         if (!mTransaction.transFromAccountPending &&
             !mainViewModel.getUpdatingTransaction()
         ) {
-            if (mFromAccountWithType.accountType!!.keepTotals) {
-                transactionViewModel.updateAccountBalance(
-                    mFromAccountWithType.account.accountBalance -
-                            mTransaction.transAmount,
-                    mFromAccount.accountId,
-                    df.getCurrentTimeAsString()
-                )
-            }
-            if (mFromAccountWithType.accountType!!.tallyOwing) {
-                transactionViewModel.updateAccountOwing(
-                    mFromAccountWithType.account.accountOwing +
-                            mTransaction.transAmount,
-                    mFromAccount.accountId,
-                    df.getCurrentTimeAsString()
-                )
-            }
+            updateFromAccountBalanceOrOWing(mTransaction)
         }
         gotoCallingFragment()
         return true
+    }
+
+    private fun updateFromAccountBalanceOrOWing(mTransaction: Transactions) {
+        if (mFromAccountWithType.accountType!!.keepTotals) {
+            transactionViewModel.updateAccountBalance(
+                mFromAccountWithType.account.accountBalance -
+                        mTransaction.transAmount,
+                mFromAccount.accountId,
+                df.getCurrentTimeAsString()
+            )
+        }
+        if (mFromAccountWithType.accountType!!.tallyOwing) {
+            transactionViewModel.updateAccountOwing(
+                mFromAccountWithType.account.accountOwing +
+                        mTransaction.transAmount,
+                mFromAccount.accountId,
+                df.getCurrentTimeAsString()
+            )
+        }
+    }
+
+    private fun updateToAccountBalanceOrOwing(mTransaction: Transactions) {
+        if (mToAccountWithType!!.accountType!!.keepTotals) {
+            transactionViewModel.updateAccountBalance(
+                mToAccountWithType!!.account.accountBalance +
+                        mTransaction.transAmount,
+                mToAccount!!.accountId,
+                df.getCurrentTimeAsString()
+            )
+            Log.d(TAG, "updating toAccountBalance")
+        }
+        if (mToAccountWithType!!.accountType!!.tallyOwing) {
+            transactionViewModel.updateAccountOwing(
+                mToAccountWithType!!.account.accountOwing -
+                        mTransaction.transAmount,
+                mToAccount!!.accountId,
+                df.getCurrentTimeAsString()
+            )
+        }
     }
 
     private fun gotoCallingFragment() {
