@@ -26,8 +26,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.OWING
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountUpdateBinding
-import ms.mattschlenkrich.billsprojectionv2.model.Account
-import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
+import ms.mattschlenkrich.billsprojectionv2.model.account.Account
+import ms.mattschlenkrich.billsprojectionv2.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 

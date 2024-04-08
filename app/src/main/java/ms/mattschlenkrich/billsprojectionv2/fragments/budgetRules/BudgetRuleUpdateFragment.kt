@@ -32,8 +32,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetRuleUpdateBinding
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.budgetRule.BudgetRule
+import ms.mattschlenkrich.billsprojectionv2.model.budgetRule.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel

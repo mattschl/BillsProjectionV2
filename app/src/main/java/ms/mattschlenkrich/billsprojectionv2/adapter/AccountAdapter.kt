@@ -30,10 +30,10 @@ import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.AccountLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.accounts.AccountsFragmentDirections
-import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
-import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.account.AccountWithType
+import ms.mattschlenkrich.billsprojectionv2.model.budgetItem.BudgetDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.budgetRule.BudgetRuleDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.transactions.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 import java.util.Random
 

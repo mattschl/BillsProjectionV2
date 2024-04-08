@@ -20,7 +20,7 @@ import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.adapter.AccountAdapter
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountsBinding
-import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
+import ms.mattschlenkrich.billsprojectionv2.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 

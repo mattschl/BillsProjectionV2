@@ -24,9 +24,9 @@ import ms.mattschlenkrich.billsprojectionv2.adapter.TransactionPendingAdapter
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetViewBinding
-import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed
-import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.account.AccountWithType
+import ms.mattschlenkrich.billsprojectionv2.model.budgetItem.BudgetDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.transactions.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel

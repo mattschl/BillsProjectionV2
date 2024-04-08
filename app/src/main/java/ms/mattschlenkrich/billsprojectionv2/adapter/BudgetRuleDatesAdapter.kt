@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetDateItemBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules.BudgetRuleUpdateFragmentDirections
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.budgetItem.BudgetDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 
 class BudgetRuleDatesAdapter(

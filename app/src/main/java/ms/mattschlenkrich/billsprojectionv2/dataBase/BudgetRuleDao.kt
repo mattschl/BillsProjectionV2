@@ -23,9 +23,9 @@ import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.common.TYPE_ID
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleComplete
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.budgetRule.BudgetRule
+import ms.mattschlenkrich.billsprojectionv2.model.budgetRule.BudgetRuleComplete
+import ms.mattschlenkrich.billsprojectionv2.model.budgetRule.BudgetRuleDetailed
 
 @Dao
 interface BudgetRuleDao {

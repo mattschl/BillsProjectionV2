@@ -22,8 +22,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
 import ms.mattschlenkrich.billsprojectionv2.databinding.TransactionLinearItemBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.transactions.TransactionViewFragmentDirections
-import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
-import ms.mattschlenkrich.billsprojectionv2.model.Transactions
+import ms.mattschlenkrich.billsprojectionv2.model.transactions.TransactionDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 import java.util.Random
 

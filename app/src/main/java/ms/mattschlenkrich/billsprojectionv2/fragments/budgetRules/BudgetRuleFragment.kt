@@ -20,7 +20,7 @@ import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.adapter.BudgetRuleAdapter
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetRuleBinding
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.budgetRule.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 

@@ -32,8 +32,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_ITEMS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_RULES
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetItem
+import ms.mattschlenkrich.billsprojectionv2.model.budgetItem.BudgetDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.budgetItem.BudgetItem
 
 @Dao
 interface BudgetItemDao {

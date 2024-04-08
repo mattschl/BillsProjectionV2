@@ -27,11 +27,11 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_PERFORM
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionPerformBinding
-import ms.mattschlenkrich.billsprojectionv2.model.Account
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetItem
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
-import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
-import ms.mattschlenkrich.billsprojectionv2.model.Transactions
+import ms.mattschlenkrich.billsprojectionv2.model.account.Account
+import ms.mattschlenkrich.billsprojectionv2.model.budgetItem.BudgetItem
+import ms.mattschlenkrich.billsprojectionv2.model.budgetRule.BudgetRule
+import ms.mattschlenkrich.billsprojectionv2.model.transactions.TransactionDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel

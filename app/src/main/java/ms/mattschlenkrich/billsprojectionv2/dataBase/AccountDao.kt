@@ -1,7 +1,12 @@
 package ms.mattschlenkrich.billsprojectionv2.dataBase
 
 import androidx.lifecycle.LiveData
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Transaction
+import androidx.room.Update
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_IS_DELETED
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_NAME
@@ -12,10 +17,9 @@ import ms.mattschlenkrich.billsprojectionv2.common.IS_ASSET
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.common.TYPE_ID
-import ms.mattschlenkrich.billsprojectionv2.model.Account
-import ms.mattschlenkrich.billsprojectionv2.model.AccountAndType
-import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
-import java.util.*
+import ms.mattschlenkrich.billsprojectionv2.model.account.Account
+import ms.mattschlenkrich.billsprojectionv2.model.account.AccountAndType
+import ms.mattschlenkrich.billsprojectionv2.model.account.AccountWithType
 
 @Dao
 interface AccountDao {

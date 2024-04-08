@@ -25,8 +25,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.databinding.PendingTransactionItemBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetViewFragment
 import ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetViewFragmentDirections
-import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
-import ms.mattschlenkrich.billsprojectionv2.model.Transactions
+import ms.mattschlenkrich.billsprojectionv2.model.transactions.TransactionDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 
 private const val TAG = ADAPTER_PENDING

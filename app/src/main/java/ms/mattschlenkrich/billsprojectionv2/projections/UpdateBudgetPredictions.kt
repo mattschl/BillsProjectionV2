@@ -6,8 +6,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetItem
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
+import ms.mattschlenkrich.billsprojectionv2.model.budgetItem.BudgetItem
+import ms.mattschlenkrich.billsprojectionv2.model.budgetRule.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModel
 import java.time.LocalDate

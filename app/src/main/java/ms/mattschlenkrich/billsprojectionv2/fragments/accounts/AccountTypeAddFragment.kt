@@ -25,8 +25,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_TYPE_ADD
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountTypeAddBinding
-import ms.mattschlenkrich.billsprojectionv2.model.AccountType
-import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
+import ms.mattschlenkrich.billsprojectionv2.model.account.AccountType
+import ms.mattschlenkrich.billsprojectionv2.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 

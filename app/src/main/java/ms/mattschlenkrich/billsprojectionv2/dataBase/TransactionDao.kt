@@ -28,9 +28,9 @@ import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_TO_ACCOUNT_PENDIN
 import ms.mattschlenkrich.billsprojectionv2.common.TRANS_BUDGET_RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.common.TRANS_IS_DELETED
 import ms.mattschlenkrich.billsprojectionv2.common.TRANS_UPDATE_TIME
-import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
-import ms.mattschlenkrich.billsprojectionv2.model.TransactionFull
-import ms.mattschlenkrich.billsprojectionv2.model.Transactions
+import ms.mattschlenkrich.billsprojectionv2.model.transactions.TransactionDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.transactions.TransactionFull
+import ms.mattschlenkrich.billsprojectionv2.model.transactions.Transactions
 
 @Dao
 interface TransactionDao {

@@ -25,7 +25,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetRuleLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules.BudgetRuleFragmentDirections
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.budgetRule.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 import java.util.Random

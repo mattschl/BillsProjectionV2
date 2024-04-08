@@ -2,12 +2,12 @@ package ms.mattschlenkrich.billsprojectionv2.viewModel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import ms.mattschlenkrich.billsprojectionv2.model.AccountType
-import ms.mattschlenkrich.billsprojectionv2.model.AccountWithType
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
-import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
-import ms.mattschlenkrich.billsprojectionv2.model.TransactionFull
+import ms.mattschlenkrich.billsprojectionv2.model.account.AccountType
+import ms.mattschlenkrich.billsprojectionv2.model.account.AccountWithType
+import ms.mattschlenkrich.billsprojectionv2.model.budgetItem.BudgetDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.budgetRule.BudgetRuleDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.transactions.TransactionDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.transactions.TransactionFull
 
 class MainViewModel(
     app: Application,

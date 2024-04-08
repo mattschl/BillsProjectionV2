@@ -22,7 +22,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_500
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionAnalysisBinding
-import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.transactions.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModel
 

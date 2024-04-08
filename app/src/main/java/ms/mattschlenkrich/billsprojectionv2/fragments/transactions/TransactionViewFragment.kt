@@ -20,7 +20,7 @@ import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.adapter.TransactionAdapter
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionViewBinding
-import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.transactions.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.TransactionViewModel
 

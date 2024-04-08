@@ -19,8 +19,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetViewItemBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetViewFragment
 import ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetViewFragmentDirections
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetDetailed
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.budgetItem.BudgetDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.budgetRule.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 import java.util.Random

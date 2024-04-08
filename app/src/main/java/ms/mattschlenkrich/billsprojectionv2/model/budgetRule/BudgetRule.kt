@@ -1,13 +1,11 @@
-package ms.mattschlenkrich.billsprojectionv2.model
+package ms.mattschlenkrich.billsprojectionv2.model.budgetRule
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo
-import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import androidx.room.Relation
 import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_RULE_NAME
@@ -18,6 +16,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.BUD_IS_DELETED
 import ms.mattschlenkrich.billsprojectionv2.common.BUD_IS_PAY_DAY
 import ms.mattschlenkrich.billsprojectionv2.common.BUD_TO_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_RULES
+import ms.mattschlenkrich.billsprojectionv2.model.account.Account
 
 
 @Parcelize
@@ -66,36 +65,4 @@ data class BudgetRule(
     @ColumnInfo(defaultValue = "0")
     val budIsDeleted: Boolean,
     val budUpdateTime: String
-) : Parcelable
-
-@Parcelize
-data class BudgetRuleDetailed(
-    @Embedded
-    var budgetRule: BudgetRule?,
-    @Relation(
-        parentColumn = BUD_TO_ACCOUNT_ID,
-        entityColumn = ACCOUNT_ID
-    )
-    var toAccount: Account?,
-    @Relation(
-        parentColumn = BUD_FROM_ACCOUNT_ID,
-        entityColumn = ACCOUNT_ID
-    )
-    var fromAccount: Account?
-) : Parcelable
-
-@Parcelize
-data class BudgetRuleComplete(
-    @Embedded
-    var budgetRule: BudgetRule?,
-    @Relation(
-        parentColumn = BUD_TO_ACCOUNT_ID,
-        entityColumn = ACCOUNT_ID
-    )
-    var toAccount: AccountAndType?,
-    @Relation(
-        parentColumn = BUD_FROM_ACCOUNT_ID,
-        entityColumn = ACCOUNT_ID
-    )
-    var fromAccount: AccountAndType?
 ) : Parcelable

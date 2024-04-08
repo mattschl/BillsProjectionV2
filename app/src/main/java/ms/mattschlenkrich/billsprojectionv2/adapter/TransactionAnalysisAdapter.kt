@@ -12,7 +12,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_TRANSACTION_ANALYSIS
 import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.databinding.TransactionLinearItemBinding
-import ms.mattschlenkrich.billsprojectionv2.model.TransactionDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.transactions.TransactionDetailed
 import java.util.Random
 
 private const val TAG = ADAPTER_TRANSACTION_ANALYSIS

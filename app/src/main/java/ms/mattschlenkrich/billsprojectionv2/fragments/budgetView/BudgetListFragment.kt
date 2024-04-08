@@ -17,7 +17,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_MONTHLY
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_WEEKLY
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetListBinding
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetRuleComplete
+import ms.mattschlenkrich.billsprojectionv2.model.budgetRule.BudgetRuleComplete
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetRuleViewModel
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel

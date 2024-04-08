@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
+import ms.mattschlenkrich.billsprojectionv2.model.budgetRule.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.repository.BudgetRuleRepository
 
 class BudgetRuleViewModel(

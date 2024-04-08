@@ -6,12 +6,12 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import ms.mattschlenkrich.billsprojectionv2.common.DB_NAME
 import ms.mattschlenkrich.billsprojectionv2.common.DB_VERSION
-import ms.mattschlenkrich.billsprojectionv2.model.Account
-import ms.mattschlenkrich.billsprojectionv2.model.AccountAndType
-import ms.mattschlenkrich.billsprojectionv2.model.AccountType
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetItem
-import ms.mattschlenkrich.billsprojectionv2.model.BudgetRule
-import ms.mattschlenkrich.billsprojectionv2.model.Transactions
+import ms.mattschlenkrich.billsprojectionv2.model.account.Account
+import ms.mattschlenkrich.billsprojectionv2.model.account.AccountAndType
+import ms.mattschlenkrich.billsprojectionv2.model.account.AccountType
+import ms.mattschlenkrich.billsprojectionv2.model.budgetItem.BudgetItem
+import ms.mattschlenkrich.billsprojectionv2.model.budgetRule.BudgetRule
+import ms.mattschlenkrich.billsprojectionv2.model.transactions.Transactions
 
 @Database(
     entities = [
