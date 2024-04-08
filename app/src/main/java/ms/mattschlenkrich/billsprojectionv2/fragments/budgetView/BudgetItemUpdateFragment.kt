@@ -303,7 +303,7 @@ class BudgetItemUpdateFragment : Fragment(
             return BudgetItem(
                 if (mainViewModel.getBudgetItem()!!.budgetRule != null)
                     mainViewModel.getBudgetItem()!!.budgetRule!!.ruleId else 0L,
-                etProjectedDate.text.toString(),
+                mainViewModel.getBudgetItem()!!.budgetItem!!.biProjectedDate,
                 etProjectedDate.text.toString(),
                 spPayDays.selectedItem.toString(),
                 etBudgetItemName.text.toString(),
