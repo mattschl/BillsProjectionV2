@@ -20,10 +20,10 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_PERFORM
+import ms.mattschlenkrich.billsprojectionv2.common.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionPerformBinding
@@ -55,7 +55,7 @@ class TransactionPerformFragment : Fragment(
     private var mToAccount: Account? = null
     private var mFromAccount: Account? = null
     private var mBudgetRule: BudgetRule? = null
-    private val cf = CommonFunctions()
+    private val nf = NumberFunctions()
     private val df = DateFunctions()
 
     override fun onCreateView(
@@ -105,12 +105,12 @@ class TransactionPerformFragment : Fragment(
             etAmount.setOnFocusChangeListener { _, b ->
                 if (!b && etAmount.text.toString().isEmpty()) {
                     etAmount.setText(
-                        cf.displayDollars(0.0)
+                        nf.displayDollars(0.0)
                     )
                 } else if (!b) {
                     etAmount.setText(
-                        cf.displayDollars(
-                            cf.getDoubleFromDollars(
+                        nf.displayDollars(
+                            nf.getDoubleFromDollars(
                                 etAmount.text.toString()
                             )
                         )
@@ -121,25 +121,25 @@ class TransactionPerformFragment : Fragment(
             etBudgetedAmount.setOnFocusChangeListener { _, b ->
                 if (!b && etBudgetedAmount.text.toString().isEmpty()) {
                     etBudgetedAmount.setText(
-                        cf.displayDollars(0.0)
+                        nf.displayDollars(0.0)
                     )
                 } else if (!b) {
                     etBudgetedAmount.setText(
-                        cf.displayDollars(
-                            cf.getDoubleFromDollars(
+                        nf.displayDollars(
+                            nf.getDoubleFromDollars(
                                 etBudgetedAmount.text.toString()
                             )
                         )
                     )
                     calculateRemainder()
                 }
-                if (cf.getDoubleFromDollars(etBudgetedAmount.text.toString()) !=
+                if (nf.getDoubleFromDollars(etBudgetedAmount.text.toString()) !=
                     mainViewModel.getBudgetItem()!!.budgetItem!!.biProjectedAmount
                 ) {
                     val mBudgetItem =
                         mainViewModel.getBudgetItem()
                     mBudgetItem!!.budgetItem!!.biProjectedAmount =
-                        cf.getDoubleFromDollars(
+                        nf.getDoubleFromDollars(
                             etBudgetedAmount.text.toString()
                         )
                     mainViewModel.setBudgetItem(mBudgetItem)
@@ -155,7 +155,7 @@ class TransactionPerformFragment : Fragment(
         mainViewModel.setSplitTransactionDetailed(null)
         mainViewModel.setTransferNum(0.0)
         if (mFromAccount != null &&
-            cf.getDoubleFromDollars(binding.etAmount.text.toString()) > 2.0
+            nf.getDoubleFromDollars(binding.etAmount.text.toString()) > 2.0
         ) {
             mainViewModel.setCallingFragments(
                 mainViewModel.getCallingFragments() + ", " + TAG
@@ -170,7 +170,7 @@ class TransactionPerformFragment : Fragment(
 
     private fun gotoCalc() {
         mainViewModel.setTransferNum(
-            cf.getDoubleFromDollars(
+            nf.getDoubleFromDollars(
                 binding.etAmount.text.toString().ifBlank {
                     "0.0"
                 }
@@ -188,17 +188,17 @@ class TransactionPerformFragment : Fragment(
         binding.apply {
             val amt =
                 if (etAmount.text.toString().isNotBlank()) {
-                    cf.getDoubleFromDollars(
+                    nf.getDoubleFromDollars(
                         etAmount.text.toString()
                     )
                 } else {
                     0.0
                 }
-            val budgeted = cf.getDoubleFromDollars(
+            val budgeted = nf.getDoubleFromDollars(
                 etBudgetedAmount.text.toString()
             )
             tvRemainder.text =
-                cf.displayDollars(budgeted - amt)
+                nf.displayDollars(budgeted - amt)
             btnSplit.isEnabled = amt > 0 && mFromAccount != null
         }
     }
@@ -287,7 +287,7 @@ class TransactionPerformFragment : Fragment(
                 df.getCurrentDateAsString()
             )
             etAmount.hint =
-                "Budgeted: ${cf.displayDollars(mBudgetItem.biProjectedAmount)}"
+                "Budgeted: ${nf.displayDollars(mBudgetItem.biProjectedAmount)}"
             tvToAccount.text =
                 mToAccount!!.accountName
             accountViewModel.getAccountDetailed(
@@ -321,7 +321,7 @@ class TransactionPerformFragment : Fragment(
                 }
             }
             etBudgetedAmount.setText(
-                cf.displayDollars(
+                nf.displayDollars(
                     mBudgetItem.biProjectedAmount
                 )
             )
@@ -347,7 +347,7 @@ class TransactionPerformFragment : Fragment(
                     mTransaction.transDate
                 )
                 etAmount.setText(
-                    cf.displayDollars(
+                    nf.displayDollars(
                         if (mainViewModel.getTransferNum()!! != 0.0) {
                             mainViewModel.getTransferNum()!!
                         } else {
@@ -357,7 +357,7 @@ class TransactionPerformFragment : Fragment(
                 )
                 mainViewModel.setTransferNum(0.0)
                 etBudgetedAmount.setText(
-                    cf.displayDollars(
+                    nf.displayDollars(
                         mainViewModel.getBudgetItem()!!.budgetItem!!.biProjectedAmount
                     )
                 )
@@ -455,7 +455,7 @@ class TransactionPerformFragment : Fragment(
 
     private fun updateBudgetItem() {
         val remainder =
-            cf.getDoubleFromDollars(
+            nf.getDoubleFromDollars(
                 binding.tvRemainder.text.toString()
             )
         var completed = false
@@ -559,7 +559,7 @@ class TransactionPerformFragment : Fragment(
     private fun getCurTransaction(): Transactions {
         binding.apply {
             return Transactions(
-                cf.generateId(),
+                nf.generateId(),
                 etTransDate.text.toString(),
                 etDescription.text.toString(),
                 etNote.text.toString(),
@@ -569,7 +569,7 @@ class TransactionPerformFragment : Fragment(
                 mFromAccount?.accountId ?: 0L,
                 chkFromAccPending.isChecked,
                 if (etAmount.text.isNotEmpty()) {
-                    cf.getDoubleFromDollars(etAmount.text.toString())
+                    nf.getDoubleFromDollars(etAmount.text.toString())
                 } else {
                     0.0
                 },
@@ -583,7 +583,7 @@ class TransactionPerformFragment : Fragment(
         binding.apply {
             val amount =
                 if (etAmount.text.isNotEmpty()) {
-                    cf.getDoubleFromDollars(etAmount.text.toString())
+                    nf.getDoubleFromDollars(etAmount.text.toString())
                 } else {
                     0.0
                 }

@@ -17,9 +17,9 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.adapter.TransactionAnalysisAdapter
-import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
+import ms.mattschlenkrich.billsprojectionv2.common.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_500
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionAnalysisBinding
 import ms.mattschlenkrich.billsprojectionv2.model.transactions.TransactionDetailed
@@ -39,8 +39,8 @@ class TransactionAnalysisFragment : Fragment(
     private lateinit var mainViewModel: MainViewModel
     private lateinit var transactionViewModel: TransactionViewModel
     private var transactionAdapter: TransactionAnalysisAdapter? = null
-    private val cf = CommonFunctions()
-    private val df = DateFunctions()
+    private val cf = NumberFunctions()
+    private val nf = DateFunctions()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -267,7 +267,7 @@ class TransactionAnalysisFragment : Fragment(
             binding.apply {
                 val endDate = transList.first().transaction!!.transDate
                 val startDate = transList.last().transaction!!.transDate
-                val months = df.getMonthsBetween(startDate, endDate)
+                val months = nf.getMonthsBetween(startDate, endDate)
                 tvRecent.text = cf.displayDollars(
                     transList.first().transaction!!.transAmount
                 )
@@ -303,12 +303,12 @@ class TransactionAnalysisFragment : Fragment(
                 rdDateRange.isChecked = true
                 setDateRangeVisibility(true)
                 tvStartDate.setText(
-                    df.getFirstOfMonth(
-                        df.getCurrentDateAsString()
+                    nf.getFirstOfMonth(
+                        nf.getCurrentDateAsString()
                     )
                 )
                 tvEndDate.setText(
-                    df.getCurrentDateAsString()
+                    nf.getCurrentDateAsString()
                 )
                 tvStartDate.setOnLongClickListener {
                     chooseStartDate()
@@ -450,10 +450,10 @@ class TransactionAnalysisFragment : Fragment(
     }
 
     private fun setValuesLastMonth() {
-        val startDate = df.getFirstOfPreviousMonth(
-            df.getCurrentDateAsString()
+        val startDate = nf.getFirstOfPreviousMonth(
+            nf.getCurrentDateAsString()
         )
-        val endDate = df.getLastOfPreviousMonth(df.getCurrentDateAsString())
+        val endDate = nf.getLastOfPreviousMonth(nf.getCurrentDateAsString())
         binding.apply {
             if (mainViewModel.getBudgetRuleDetailed() != null) {
                 fillFromBudgetRuleAndDates(startDate, endDate)
@@ -604,7 +604,7 @@ class TransactionAnalysisFragment : Fragment(
                 val endDate = transList.first().transaction!!.transDate
                 val startDate = transList.last().transaction!!.transDate
                 val months =
-                    df.getMonthsBetween(startDate, endDate)
+                    nf.getMonthsBetween(startDate, endDate)
                 lblAverage.text = getString(R.string.average)
                 tvAverage.text =
                     cf.displayDollars(totals / months)

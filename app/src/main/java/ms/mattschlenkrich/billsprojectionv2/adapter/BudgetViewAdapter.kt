@@ -13,9 +13,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_BUDGET_VIEW
-import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
+import ms.mattschlenkrich.billsprojectionv2.common.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetViewItemBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetViewFragment
 import ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetViewFragmentDirections
@@ -37,7 +37,7 @@ class BudgetViewAdapter(
     private val context: Context
 ) : RecyclerView.Adapter<BudgetViewAdapter.BudgetViewHolder>() {
 
-    val cf = CommonFunctions()
+    val cf = NumberFunctions()
     val df = DateFunctions()
 
     class BudgetViewHolder(val itemBinding: BudgetViewItemBinding) :

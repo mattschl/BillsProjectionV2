@@ -12,10 +12,10 @@ import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.adapter.BudgetListAnnualAdapter
 import ms.mattschlenkrich.billsprojectionv2.adapter.BudgetListMonthlyAdapter
 import ms.mattschlenkrich.billsprojectionv2.adapter.BudgetListOccasionalAdapter
-import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_MONTHLY
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_WEEKLY
+import ms.mattschlenkrich.billsprojectionv2.common.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetListBinding
 import ms.mattschlenkrich.billsprojectionv2.model.budgetRule.BudgetRuleComplete
 import ms.mattschlenkrich.billsprojectionv2.viewModel.AccountViewModel
@@ -38,7 +38,7 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     private val budgetsMonthly = ArrayList<BudgetRuleComplete>()
     private val budgetsOccasional = ArrayList<BudgetRuleComplete>()
     private val budgetsAnnual = ArrayList<BudgetRuleComplete>()
-    val cf = CommonFunctions()
+    val nf = NumberFunctions()
     val df = DateFunctions()
 
     override fun onCreateView(
@@ -128,15 +128,15 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
                 if (budget.fromAccount!!.accountType!!.displayAsAsset) {
                     totalDebits += amt
                 }
-                var info = "Credits: " + cf.displayDollars(totalCredits)
+                var info = "Credits: " + nf.displayDollars(totalCredits)
                 tvDebitsAnnual.text = info
-                info = "Debits: " + cf.displayDollars(totalDebits)
+                info = "Debits: " + nf.displayDollars(totalDebits)
                 tvCreditsAnnual.text = info
                 if (totalCredits >= totalDebits) {
-                    info = "Surplus of " + cf.displayDollars(totalCredits - totalDebits)
+                    info = "Surplus of " + nf.displayDollars(totalCredits - totalDebits)
                     tvTotalOccasional.setTextColor(Color.BLACK)
                 } else {
-                    info = "DEFICIT of " + cf.displayDollars(totalDebits - totalCredits)
+                    info = "DEFICIT of " + nf.displayDollars(totalDebits - totalCredits)
                     tvTotalOccasional.setTextColor(Color.RED)
                 }
                 tvTotalAnnual.text = info
@@ -208,15 +208,15 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
                 if (budget.fromAccount!!.accountType!!.displayAsAsset) {
                     totalDebits += amt
                 }
-                var info = "Credits: " + cf.displayDollars(totalCredits)
+                var info = "Credits: " + nf.displayDollars(totalCredits)
                 tvCreditsOccasional.text = info
-                info = "Debits: " + cf.displayDollars(totalDebits)
+                info = "Debits: " + nf.displayDollars(totalDebits)
                 tvDebitsOccasional.text = info
                 if (totalCredits >= totalDebits) {
-                    info = "Surplus of " + cf.displayDollars(totalCredits - totalDebits)
+                    info = "Surplus of " + nf.displayDollars(totalCredits - totalDebits)
                     tvTotalOccasional.setTextColor(Color.BLACK)
                 } else {
-                    info = "DEFICIT of " + cf.displayDollars(totalDebits - totalCredits)
+                    info = "DEFICIT of " + nf.displayDollars(totalDebits - totalCredits)
                     tvTotalOccasional.setTextColor(Color.RED)
                 }
                 tvTotalOccasional.text = info
@@ -296,17 +296,17 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
                     }
                 }
 
-                var info = "Credits: " + cf.displayDollars(totalCredits)
+                var info = "Credits: " + nf.displayDollars(totalCredits)
                 tvCreditsMonthly.text = info
-                info = "Debits: " + cf.displayDollars(totalDebits)
+                info = "Debits: " + nf.displayDollars(totalDebits)
                 tvDebitsMonthly.text = info
-                info = "Fixed: " + cf.displayDollars(totalFixed)
+                info = "Fixed: " + nf.displayDollars(totalFixed)
                 tvFixedMonthly.text = info
                 if (totalCredits >= totalDebits) {
-                    info = "Surplus of " + cf.displayDollars(totalCredits - totalDebits)
+                    info = "Surplus of " + nf.displayDollars(totalCredits - totalDebits)
                     tvTotalMonthly.setTextColor(Color.BLACK)
                 } else {
-                    info = "DEFICIT of " + cf.displayDollars(totalDebits - totalCredits)
+                    info = "DEFICIT of " + nf.displayDollars(totalDebits - totalCredits)
                     tvTotalMonthly.setTextColor(Color.RED)
                 }
                 tvTotalMonthly.text = info

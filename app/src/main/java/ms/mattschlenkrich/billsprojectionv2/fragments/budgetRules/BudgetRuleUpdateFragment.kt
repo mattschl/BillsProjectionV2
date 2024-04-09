@@ -23,12 +23,12 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.adapter.BudgetRuleDatesAdapter
-import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_LIST
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
+import ms.mattschlenkrich.billsprojectionv2.common.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetRuleUpdateBinding
@@ -53,7 +53,7 @@ class BudgetRuleUpdateFragment :
 
     private var budgetNameList: List<String>? = null
 
-    private val cf = CommonFunctions()
+    private val nf = NumberFunctions()
     private val df = DateFunctions()
 
     override fun onCreateView(
@@ -107,7 +107,7 @@ class BudgetRuleUpdateFragment :
 
     private fun gotoCalc() {
         mainViewModel.setTransferNum(
-            cf.getDoubleFromDollars(
+            nf.getDoubleFromDollars(
                 binding.etAmount.text.toString().ifBlank {
                     "0.0"
                 }
@@ -206,7 +206,7 @@ class BudgetRuleUpdateFragment :
                 etBudgetName.text.toString().trim(),
                 toAccId,
                 fromAccId,
-                cf.getDoubleFromDollars(
+                nf.getDoubleFromDollars(
                     etAmount.text.toString()
                 ),
                 chkFixedAmount.isChecked,
@@ -287,7 +287,7 @@ class BudgetRuleUpdateFragment :
                         mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budgetRuleName
                     )
                     etAmount.setText(
-                        cf.displayDollars(
+                        nf.displayDollars(
                             if (mainViewModel.getTransferNum()!! != 0.0) {
                                 mainViewModel.getTransferNum()!!
                             } else {

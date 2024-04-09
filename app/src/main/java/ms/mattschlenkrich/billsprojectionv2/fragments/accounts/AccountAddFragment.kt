@@ -17,9 +17,9 @@ import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.BALANCE
 import ms.mattschlenkrich.billsprojectionv2.common.BUDGETED
-import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_ADD
+import ms.mattschlenkrich.billsprojectionv2.common.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.OWING
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountAddBinding
 import ms.mattschlenkrich.billsprojectionv2.model.account.Account
@@ -40,7 +40,7 @@ class AccountAddFragment :
     private lateinit var accountsViewModel: AccountViewModel
     private lateinit var mView: View
     private var accountNameList = ArrayList<String>()
-    private val cf = CommonFunctions()
+    private val nf = NumberFunctions()
     private val df = DateFunctions()
 
     override fun onCreateView(
@@ -101,7 +101,7 @@ class AccountAddFragment :
         when (type) {
             BALANCE -> {
                 mainViewModel.setTransferNum(
-                    cf.getDoubleFromDollars(
+                    nf.getDoubleFromDollars(
                         binding.etAccAddBalance.text.toString().ifBlank {
                             "0.0"
                         }
@@ -111,7 +111,7 @@ class AccountAddFragment :
 
             OWING -> {
                 mainViewModel.setTransferNum(
-                    cf.getDoubleFromDollars(
+                    nf.getDoubleFromDollars(
                         binding.etAccAddOwing.text.toString().ifBlank {
                             "0.0"
                         }
@@ -121,7 +121,7 @@ class AccountAddFragment :
 
             BUDGETED -> {
                 mainViewModel.setTransferNum(
-                    cf.getDoubleFromDollars(
+                    nf.getDoubleFromDollars(
                         binding.etAccAddBudgeted.text.toString().ifBlank {
                             "0.0"
                         }
@@ -174,7 +174,7 @@ class AccountAddFragment :
                     mainViewModel.getAccountWithType()!!.account.accountNumber
                 )
                 etAccAddBalance.setText(
-                    cf.displayDollars(
+                    nf.displayDollars(
                         if (mainViewModel.getTransferNum()!! != 0.0 &&
                             mainViewModel.getReturnTo()!!.contains(BALANCE)
                         ) {
@@ -185,7 +185,7 @@ class AccountAddFragment :
                     )
                 )
                 etAccAddOwing.setText(
-                    cf.displayDollars(
+                    nf.displayDollars(
                         if (mainViewModel.getTransferNum()!! != 0.0 &&
                             mainViewModel.getReturnTo()!!.contains(OWING)
 
@@ -197,7 +197,7 @@ class AccountAddFragment :
                     )
                 )
                 etAccAddBudgeted.setText(
-                    cf.displayDollars(
+                    nf.displayDollars(
                         if (mainViewModel.getTransferNum()!! != 0.0 &&
                             mainViewModel.getReturnTo()!!.contains(BUDGETED)
                         ) {
@@ -209,7 +209,7 @@ class AccountAddFragment :
                 )
                 mainViewModel.setTransferNum(0.0)
                 etAccAddLimit.setText(
-                    cf.displayDollars(
+                    nf.displayDollars(
                         mainViewModel.getAccountWithType()!!.account.accountCreditLimit
                     )
                 )
@@ -245,14 +245,14 @@ class AccountAddFragment :
     private fun getCurrentAccount(): Account {
         binding.apply {
             return Account(
-                cf.generateId(),
+                nf.generateId(),
                 etAccAddName.text.toString().trim(),
                 etAccAddHandle.text.toString().trim(),
                 mainViewModel.getAccountWithType()?.accountType?.typeId ?: 0L,
-                cf.getDoubleFromDollars(etAccAddBudgeted.text.toString()),
-                cf.getDoubleFromDollars(etAccAddBalance.text.toString()),
-                cf.getDoubleFromDollars(etAccAddOwing.text.toString()),
-                cf.getDoubleFromDollars(etAccAddLimit.text.toString()),
+                nf.getDoubleFromDollars(etAccAddBudgeted.text.toString()),
+                nf.getDoubleFromDollars(etAccAddBalance.text.toString()),
+                nf.getDoubleFromDollars(etAccAddOwing.text.toString()),
+                nf.getDoubleFromDollars(etAccAddLimit.text.toString()),
                 false,
                 df.getCurrentTimeAsString()
             )

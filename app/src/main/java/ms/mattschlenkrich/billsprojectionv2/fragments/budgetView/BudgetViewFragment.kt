@@ -21,8 +21,8 @@ import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.adapter.BudgetViewAdapter
 import ms.mattschlenkrich.billsprojectionv2.adapter.TransactionPendingAdapter
-import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
+import ms.mattschlenkrich.billsprojectionv2.common.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetViewBinding
 import ms.mattschlenkrich.billsprojectionv2.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.model.budgetItem.BudgetDetailed
@@ -46,7 +46,7 @@ class BudgetViewFragment : Fragment(
     private lateinit var budgetItemViewModel: BudgetItemViewModel
     private lateinit var accountViewModel: AccountViewModel
     private lateinit var transactionViewModel: TransactionViewModel
-    private val cf = CommonFunctions()
+    private val nf = NumberFunctions()
 
     //    private lateinit var assetList: List<String>
     private lateinit var curAsset: AccountWithType
@@ -219,7 +219,7 @@ class BudgetViewFragment : Fragment(
                     }
                 }
                 if (credits > 0.0) {
-                    val display = "Credits: ${cf.displayDollars(credits)}"
+                    val display = "Credits: ${nf.displayDollars(credits)}"
                     tvCredits.text = display
                     tvCredits.setTextColor(Color.BLACK)
                 } else {
@@ -227,7 +227,7 @@ class BudgetViewFragment : Fragment(
                     tvCredits.setTextColor(Color.DKGRAY)
                 }
                 if (debits > 0.0) {
-                    val display = "Debits: ${cf.displayDollars(debits)}"
+                    val display = "Debits: ${nf.displayDollars(debits)}"
                     tvDebits.text = display
                     tvDebits.setTextColor(Color.RED)
                 } else {
@@ -235,7 +235,7 @@ class BudgetViewFragment : Fragment(
                     tvDebits.setTextColor(Color.DKGRAY)
                 }
                 if (fixedExpenses > 0.0) {
-                    val display = "Fixed Expenses: ${cf.displayDollars(fixedExpenses)}"
+                    val display = "Fixed Expenses: ${nf.displayDollars(fixedExpenses)}"
                     tvFixedExpenses.text = display
                     tvFixedExpenses.setTextColor(Color.RED)
                 } else {
@@ -243,7 +243,7 @@ class BudgetViewFragment : Fragment(
                     tvFixedExpenses.setTextColor(Color.DKGRAY)
                 }
                 if (otherExpenses > 0.0) {
-                    val display = "Discretionary: ${cf.displayDollars(otherExpenses)}"
+                    val display = "Discretionary: ${nf.displayDollars(otherExpenses)}"
                     tvDiscretionaryExpenses.text = display
                     tvDiscretionaryExpenses.setTextColor(Color.BLUE)
                 } else {
@@ -251,11 +251,11 @@ class BudgetViewFragment : Fragment(
                     tvDiscretionaryExpenses.setTextColor(Color.DKGRAY)
                 }
                 if (surplus >= 0.0) {
-                    val display = "Surplus of ${cf.displayDollars(surplus)}"
+                    val display = "Surplus of ${nf.displayDollars(surplus)}"
                     tvSurplusOrDeficit.text = display
                     tvSurplusOrDeficit.setTextColor(Color.BLACK)
                 } else {
-                    val display = "DEFICIT of ${cf.displayDollars(-surplus)}"
+                    val display = "DEFICIT of ${nf.displayDollars(-surplus)}"
                     tvSurplusOrDeficit.text = display
                     tvSurplusOrDeficit.setTextColor(Color.RED)
                 }
@@ -345,7 +345,7 @@ class BudgetViewFragment : Fragment(
             }
         }
         binding.apply {
-            val display = "------------- Pending: ${cf.displayDollars(pendingAmount)} -------------"
+            val display = "------------- Pending: ${nf.displayDollars(pendingAmount)} -------------"
             if (pendingAmount < 0.0) {
                 lblPending.setTextColor(Color.RED)
             } else {
@@ -401,7 +401,7 @@ class BudgetViewFragment : Fragment(
                     tvBalanceOwing.setTextColor(Color.RED)
                 }
                 tvBalanceOwing.text =
-                    cf.displayDollars(curAsset.account.accountBalance)
+                    nf.displayDollars(curAsset.account.accountBalance)
             } else if (curAsset.accountType!!.tallyOwing) {
                 val creditLimit = curAsset.account.accountCreditLimit
                 lblAvailable.visibility = View.VISIBLE
@@ -412,19 +412,19 @@ class BudgetViewFragment : Fragment(
                 } else {
                     available
                 }
-                tvAvailable.text = cf.displayDollars(availableReal)
+                tvAvailable.text = nf.displayDollars(availableReal)
                 if (curAsset.account.accountOwing >= 0.0) {
                     lblBalanceOwing.text =
                         getString(R.string.balance_owing)
                     tvBalanceOwing.setTextColor(Color.RED)
                     tvBalanceOwing.text =
-                        cf.displayDollars(curAsset.account.accountOwing)
+                        nf.displayDollars(curAsset.account.accountOwing)
                 } else {
                     lblBalanceOwing.text =
                         getString(R.string.credit_of)
                     tvBalanceOwing.setTextColor(Color.BLACK)
                     tvBalanceOwing.text =
-                        cf.displayDollars(-curAsset.account.accountOwing)
+                        nf.displayDollars(-curAsset.account.accountOwing)
                 }
             }
         }

@@ -21,10 +21,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
+import ms.mattschlenkrich.billsprojectionv2.common.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
@@ -51,7 +51,7 @@ class BudgetItemAddFragment : Fragment(
     private lateinit var budgetRuleViewModel: BudgetRuleViewModel
     private lateinit var budgetRuleDetailed: BudgetRuleDetailed
 
-    private val cf = CommonFunctions()
+    private val nf = NumberFunctions()
     private val df = DateFunctions()
 
 
@@ -112,7 +112,7 @@ class BudgetItemAddFragment : Fragment(
 
     private fun gotoCalc() {
         mainViewModel.setTransferNum(
-            cf.getDoubleFromDollars(
+            nf.getDoubleFromDollars(
                 binding.etProjectedAmount.text.toString().ifBlank {
                     "0.0"
                 }
@@ -281,7 +281,7 @@ class BudgetItemAddFragment : Fragment(
         binding.apply {
             return BudgetItem(
                 budgetRuleDetailed.budgetRule?.ruleId
-                    ?: cf.generateId(),
+                    ?: nf.generateId(),
                 etProjectedDate.text.toString(),
                 etProjectedDate.text.toString(),
                 spPayDays.selectedItem.toString(),
@@ -290,7 +290,7 @@ class BudgetItemAddFragment : Fragment(
                 budgetRuleDetailed.toAccount?.accountId ?: 0L,
                 budgetRuleDetailed.fromAccount?.accountId ?: 0L,
                 if (etProjectedAmount.text.isNotEmpty()) {
-                    cf.getDoubleFromDollars(
+                    nf.getDoubleFromDollars(
                         etProjectedAmount.text.toString()
                     )
                 } else {
@@ -352,7 +352,7 @@ class BudgetItemAddFragment : Fragment(
 
                     if (mainViewModel.getBudgetItem()!!.budgetItem!!.biProjectedAmount == 0.0) {
                         etProjectedAmount.setText(
-                            cf.displayDollars(
+                            nf.displayDollars(
                                 if (mainViewModel.getTransferNum()!! != 0.0) {
                                     mainViewModel.getTransferNum()!!
                                 } else {
@@ -362,7 +362,7 @@ class BudgetItemAddFragment : Fragment(
                         )
                     } else {
                         etProjectedAmount.setText(
-                            cf.displayDollars(
+                            nf.displayDollars(
                                 if (mainViewModel.getTransferNum()!! != 0.0) {
                                     mainViewModel.getTransferNum()!!
                                 } else {

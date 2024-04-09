@@ -20,10 +20,10 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_TYPE_ADD
+import ms.mattschlenkrich.billsprojectionv2.common.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountTypeAddBinding
 import ms.mattschlenkrich.billsprojectionv2.model.account.AccountType
 import ms.mattschlenkrich.billsprojectionv2.model.account.AccountWithType
@@ -44,7 +44,7 @@ class AccountTypeAddFragment :
     private lateinit var mView: View
     private lateinit var accountTypeList: List<String>
     private val df = DateFunctions()
-    private val cf = CommonFunctions()
+    private val nf = NumberFunctions()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -105,7 +105,7 @@ class AccountTypeAddFragment :
     private fun saveAccountType() {
         if (checkAccountType()) {
             val accountType = AccountType(
-                cf.generateId(),
+                nf.generateId(),
                 binding.etAccTypeAdd.text.toString().trim(),
                 binding.chkAccTypeAddKeepTotals.isChecked,
                 binding.chkAccTypeAddIsAsset.isChecked,

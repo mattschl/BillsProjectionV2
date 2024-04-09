@@ -17,9 +17,9 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_TRANSACTION
-import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
+import ms.mattschlenkrich.billsprojectionv2.common.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.databinding.TransactionLinearItemBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.transactions.TransactionViewFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.transactions.TransactionDetailed
@@ -36,7 +36,7 @@ class TransactionAdapter(
     private val context: Context,
 ) : RecyclerView.Adapter<TransactionAdapter.TransactionsViewHolder>() {
 
-    private val cf = CommonFunctions()
+    private val cf = NumberFunctions()
     private val df = DateFunctions()
     private val transactionViewModel =
         mainActivity.transactionViewModel

@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_ACCOUNT
-import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_ADD
@@ -26,6 +25,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_SPLIT
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_PERFORM
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
+import ms.mattschlenkrich.billsprojectionv2.common.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.AccountLayoutBinding
@@ -77,7 +77,7 @@ class AccountAdapter(
         )
     private val accountViewModel = mainActivity.accountViewModel
 
-    private val cf = CommonFunctions()
+    private val cf = NumberFunctions()
     private val df = DateFunctions()
 
     class AccountViewHolder(val itemBinding: AccountLayoutBinding) :

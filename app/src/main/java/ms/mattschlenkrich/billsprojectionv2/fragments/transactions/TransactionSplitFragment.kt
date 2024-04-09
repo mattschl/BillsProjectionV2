@@ -17,12 +17,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_SPLIT
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_PERFORM
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
+import ms.mattschlenkrich.billsprojectionv2.common.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionSplitBinding
 import ms.mattschlenkrich.billsprojectionv2.model.account.Account
@@ -47,7 +47,7 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
     private lateinit var accountViewModel: AccountViewModel
     private lateinit var budgetRuleViewModel: BudgetRuleViewModel
     private lateinit var mView: View
-    private val cf = CommonFunctions()
+    private val nf = NumberFunctions()
     private val df = DateFunctions()
 
     private var mBudgetRule: BudgetRule? = null
@@ -133,7 +133,7 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
 
     private fun gotoCalc() {
         mainViewModel.setTransferNum(
-            cf.getDoubleFromDollars(
+            nf.getDoubleFromDollars(
                 binding.etAmount.text.toString().ifBlank {
                     "0.0"
                 }
@@ -150,7 +150,7 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
     private fun getCurTransaction(): Transactions {
         binding.apply {
             return Transactions(
-                cf.generateId(),
+                nf.generateId(),
                 etTransDate.text.toString(),
                 etDescription.text.toString(),
                 etNote.text.toString(),
@@ -160,7 +160,7 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
                 mFromAccount.accountId,
                 chkFromAccPending.isChecked,
                 if (etAmount.text.isNotEmpty()) {
-                    cf.getDoubleFromDollars(etAmount.text.toString())
+                    nf.getDoubleFromDollars(etAmount.text.toString())
                 } else {
                     0.0
                 },
@@ -204,19 +204,19 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
                 mainViewModel.getTransferNum() != 0.0
             ) {
                 etAmount.setText(
-                    cf.displayDollars(
+                    nf.displayDollars(
                         mainViewModel.getTransferNum()!!
                     )
                 )
             } else if (mainViewModel.getSplitTransactionDetailed()!!.transaction!!.transAmount != 0.0) {
                 etAmount.setText(
-                    cf.displayDollars(
+                    nf.displayDollars(
                         mainViewModel.getSplitTransactionDetailed()!!.transaction!!.transAmount
                     )
                 )
             } else {
                 etAmount.setText(
-                    cf.displayDollars(0.0)
+                    nf.displayDollars(0.0)
                 )
             }
             updateAmountsDisplay()
@@ -291,7 +291,7 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
 
     private fun fillFromOriginalTransaction() {
         binding.apply {
-            tvOriginalAmount.text = cf.displayDollars(
+            tvOriginalAmount.text = nf.displayDollars(
                 mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount
             )
             etTransDate.setText(
@@ -318,16 +318,16 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
     private fun updateAmountsDisplay() {
         binding.apply {
             etAmount.setText(
-                cf.displayDollars(
-                    cf.getDoubleFromDollars(
+                nf.displayDollars(
+                    nf.getDoubleFromDollars(
                         etAmount.text.toString()
                     )
                 )
             )
-            val amount = cf.getDoubleFromDollars(
+            val amount = nf.getDoubleFromDollars(
                 etAmount.text.toString()
             )
-            val original = cf.getDoubleFromDollars(
+            val original = nf.getDoubleFromDollars(
                 tvOriginalAmount.text.toString()
             )
             if (original <= amount) {
@@ -338,10 +338,10 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
                     Toast.LENGTH_LONG
                 ).show()
                 etAmount.setText(
-                    cf.displayDollars(0.0)
+                    nf.displayDollars(0.0)
                 )
             } else {
-                tvRemainder.text = cf.displayDollars(original - amount)
+                tvRemainder.text = nf.displayDollars(original - amount)
             }
 
         }
@@ -444,7 +444,7 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
     private fun gotoCallingFragment() {
         val oldTransaction = mainViewModel.getTransactionDetailed()!!.transaction!!
         oldTransaction.transAmount =
-            cf.getDoubleFromDollars(binding.tvRemainder.text.toString())
+            nf.getDoubleFromDollars(binding.tvRemainder.text.toString())
         if (mainViewModel.getUpdatingTransaction()) {
             transactionViewModel.updateTransaction(oldTransaction)
         }
@@ -483,13 +483,13 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
         binding.apply {
             val amount =
                 if (etAmount.text.isNotEmpty()) {
-                    cf.getDoubleFromDollars(etAmount.text.toString())
+                    nf.getDoubleFromDollars(etAmount.text.toString())
                 } else {
                     0.0
                 }
             val errorMes =
-                if (cf.getDoubleFromDollars(etAmount.text.toString()) >=
-                    cf.getDoubleFromDollars(tvOriginalAmount.text.toString())
+                if (nf.getDoubleFromDollars(etAmount.text.toString()) >=
+                    nf.getDoubleFromDollars(tvOriginalAmount.text.toString())
                 ) {
                     "     Error!!\n" +
                             "The amount of a split transaction must be less than the original!"

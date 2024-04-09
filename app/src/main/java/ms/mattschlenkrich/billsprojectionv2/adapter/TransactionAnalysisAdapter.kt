@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_TRANSACTION_ANALYSIS
-import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.databinding.TransactionLinearItemBinding
 import ms.mattschlenkrich.billsprojectionv2.model.transactions.TransactionDetailed
 import java.util.Random
@@ -24,7 +24,7 @@ class TransactionAnalysisAdapter(
 //    private val context: Context,
 ) : RecyclerView.Adapter<TransactionAnalysisAdapter.TransViewHolder>() {
 
-    private val cf = CommonFunctions()
+    private val cf = NumberFunctions()
     private val df = DateFunctions()
 //    private val transactionViewModel =
 //        mainActivity.transactionViewModel

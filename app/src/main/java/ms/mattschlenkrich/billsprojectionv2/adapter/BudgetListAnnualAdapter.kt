@@ -9,9 +9,9 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_LIST
+import ms.mattschlenkrich.billsprojectionv2.common.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetListItemBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetListFragmentDirections
 import ms.mattschlenkrich.billsprojectionv2.model.budgetRule.BudgetRuleComplete
@@ -27,7 +27,7 @@ class BudgetListAnnualAdapter(
     private val budgetRuleViewModel: BudgetRuleViewModel,
     private val parentView: View
 ) : RecyclerView.Adapter<BudgetListAnnualAdapter.BudgetListHolder>() {
-    val cf = CommonFunctions()
+    val cf = NumberFunctions()
     val df = DateFunctions()
 
     class BudgetListHolder(val itemBinding: BudgetListItemBinding) :

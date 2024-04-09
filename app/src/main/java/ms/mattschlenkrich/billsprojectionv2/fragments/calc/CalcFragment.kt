@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAGMENT_CALC
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
@@ -21,6 +20,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_SPLIT
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_PERFORM
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
+import ms.mattschlenkrich.billsprojectionv2.common.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentCalcBinding
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 
@@ -34,7 +34,7 @@ class CalcFragment : Fragment(R.layout.fragment_calc) {
     private lateinit var prevNumber: ArrayList<Double>
     private lateinit var result: ArrayList<Double>
     private var counter = 0
-    private val cf = CommonFunctions()
+    private val nf = NumberFunctions()
 
     private var _binding: FragmentCalcBinding? = null
     private val binding get() = _binding!!
@@ -73,7 +73,7 @@ class CalcFragment : Fragment(R.layout.fragment_calc) {
         setOperatorActions()
         if (!mainViewModel.getTransferNum()!!.isNaN()) {
             binding.tvDisplay.text =
-                cf.getNumberFromDouble(mainViewModel.getTransferNum()!!.toDouble())
+                nf.getNumberFromDouble(mainViewModel.getTransferNum()!!.toDouble())
         }
         doMath()
         setTransferActions()
@@ -173,7 +173,7 @@ class CalcFragment : Fragment(R.layout.fragment_calc) {
 
     private fun doEqual() {
         counter += 1
-        binding.tvDisplay.text = cf.getNumberFromDouble(result[counter - 1])
+        binding.tvDisplay.text = nf.getNumberFromDouble(result[counter - 1])
         prevNumber.add(counter, 0.0)
         curNumber.add(counter, 0.0)
         operator.add(counter, "")
@@ -280,35 +280,35 @@ class CalcFragment : Fragment(R.layout.fragment_calc) {
                 ) {
                     0.0
                 } else {
-                   cf.getDoubleFromDollars(tvDisplay.text.toString())
+                    nf.getDoubleFromDollars(tvDisplay.text.toString())
                 }
             if (operator[counter] == "") {
                 formula[counter] = tvDisplay.text.toString()
                 result[counter] = curNumber[counter]
             } else if (operator[counter] == "+") {
                 result[counter] = prevNumber[counter] + curNumber[counter]
-                formula[counter] = "${cf.getNumberFromDouble(prevNumber[counter])} " +
+                formula[counter] = "${nf.getNumberFromDouble(prevNumber[counter])} " +
                         "${operator[counter]} " +
-                        "${cf.getNumberFromDouble(curNumber[counter])} " +
-                        "= ${cf.getDollarsFromDouble(result[counter])}"
+                        "${nf.getNumberFromDouble(curNumber[counter])} " +
+                        "= ${nf.getDollarsFromDouble(result[counter])}"
             } else if (operator[counter] == "-") {
                 result[counter] = prevNumber[counter] - curNumber[counter]
-                formula[counter] = "${cf.getNumberFromDouble(prevNumber[counter])} " +
+                formula[counter] = "${nf.getNumberFromDouble(prevNumber[counter])} " +
                         "${operator[counter]} " +
-                        "${cf.getNumberFromDouble(curNumber[counter])} " +
-                        "= ${cf.getDollarsFromDouble(result[counter])}"
+                        "${nf.getNumberFromDouble(curNumber[counter])} " +
+                        "= ${nf.getDollarsFromDouble(result[counter])}"
             } else if (operator[counter] == "X") {
                 result[counter] = prevNumber[counter] * curNumber[counter]
-                formula[counter] = "${cf.getNumberFromDouble(prevNumber[counter])} " +
+                formula[counter] = "${nf.getNumberFromDouble(prevNumber[counter])} " +
                         "${operator[counter]} " +
-                        "${cf.getNumberFromDouble(curNumber[counter])} " +
-                        "= ${cf.getDollarsFromDouble(result[counter])}"
+                        "${nf.getNumberFromDouble(curNumber[counter])} " +
+                        "= ${nf.getDollarsFromDouble(result[counter])}"
             } else if (operator[counter] == "/") {
                 result[counter] = prevNumber[counter] / curNumber[counter]
-                formula[counter] = "${cf.getNumberFromDouble(prevNumber[counter])} " +
+                formula[counter] = "${nf.getNumberFromDouble(prevNumber[counter])} " +
                         "${operator[counter]} " +
-                        "${cf.getNumberFromDouble(curNumber[counter])} " +
-                        "= ${cf.getDollarsFromDouble(result[counter])}"
+                        "${nf.getNumberFromDouble(curNumber[counter])} " +
+                        "= ${nf.getDollarsFromDouble(result[counter])}"
             }
             var display = ""
             for (n in 0..counter) {
@@ -316,7 +316,7 @@ class CalcFragment : Fragment(R.layout.fragment_calc) {
                 if (n < counter) display += "\n"
             }
             tvResults.text = display
-            display = "TRANSFER ${cf.getDollarsFromDouble(result[counter])}"
+            display = "TRANSFER ${nf.getDollarsFromDouble(result[counter])}"
             btnTransfer.text = display
         }
     }

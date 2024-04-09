@@ -24,10 +24,10 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
-import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
+import ms.mattschlenkrich.billsprojectionv2.common.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetItemUpdateBinding
@@ -51,7 +51,7 @@ class BudgetItemUpdateFragment : Fragment(
     private lateinit var budgetItemViewModel: BudgetItemViewModel
     private lateinit var mBudgetRuleDetailed: BudgetRuleDetailed
 
-    private val cf = CommonFunctions()
+    private val nf = NumberFunctions()
     private val df = DateFunctions()
 
     override fun onCreateView(
@@ -113,7 +113,7 @@ class BudgetItemUpdateFragment : Fragment(
 
     private fun gotoCalc() {
         mainViewModel.setTransferNum(
-            cf.getDoubleFromDollars(
+            nf.getDoubleFromDollars(
                 binding.etProjectedAmount.text.toString().ifBlank {
                     "0.0"
                 }
@@ -161,7 +161,7 @@ class BudgetItemUpdateFragment : Fragment(
                 mBudgetRuleDetailed.budgetRule =
                     curBudgetItem.budgetRule
                 etProjectedAmount.setText(
-                    cf.displayDollars(
+                    nf.displayDollars(
                         if (mainViewModel.getTransferNum()!! != 0.0) {
                             mainViewModel.getTransferNum()!!
                         } else {
@@ -310,7 +310,7 @@ class BudgetItemUpdateFragment : Fragment(
                 chkIsPayDay.isChecked,
                 mainViewModel.getBudgetItem()!!.toAccount?.accountId ?: 0L,
                 mainViewModel.getBudgetItem()!!.fromAccount?.accountId ?: 0L,
-                cf.getDoubleFromDollars(etProjectedAmount.text.toString()),
+                nf.getDoubleFromDollars(etProjectedAmount.text.toString()),
                 biIsPending = false,
                 chkFixedAmount.isChecked,
                 chkIsAutoPayment.isChecked,

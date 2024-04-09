@@ -19,11 +19,11 @@ import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.BALANCE
 import ms.mattschlenkrich.billsprojectionv2.common.BUDGETED
-import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
+import ms.mattschlenkrich.billsprojectionv2.common.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.OWING
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.model.account.Account
@@ -44,7 +44,7 @@ class AccountUpdateFragment :
     private lateinit var mView: View
     private lateinit var accountsViewModel: AccountViewModel
 
-    private val cf = CommonFunctions()
+    private val nf = NumberFunctions()
     private val df = DateFunctions()
     private var accountNameList = ArrayList<String>()
 
@@ -130,7 +130,7 @@ class AccountUpdateFragment :
         when (type) {
             BALANCE -> {
                 mainViewModel.setTransferNum(
-                    cf.getDoubleFromDollars(
+                    nf.getDoubleFromDollars(
                         binding.edAccountUpdateBalance.text.toString().ifBlank {
                             "0.0"
                         }
@@ -140,7 +140,7 @@ class AccountUpdateFragment :
 
             OWING -> {
                 mainViewModel.setTransferNum(
-                    cf.getDoubleFromDollars(
+                    nf.getDoubleFromDollars(
                         binding.edAccountUpdateOwing.text.toString().ifBlank {
                             "0.0"
                         }
@@ -150,7 +150,7 @@ class AccountUpdateFragment :
 
             BUDGETED -> {
                 mainViewModel.setTransferNum(
-                    cf.getDoubleFromDollars(
+                    nf.getDoubleFromDollars(
                         binding.edAccountUpdateBudgeted.text.toString().ifBlank {
                             "0.0"
                         }
@@ -178,10 +178,10 @@ class AccountUpdateFragment :
                 edAccountUpdateName.text.toString().trim(),
                 edAccountUpdateHandle.text.toString().trim(),
                 mainViewModel.getAccountWithType()!!.accountType?.typeId ?: 0L,
-                cf.getDoubleFromDollars(edAccountUpdateBudgeted.text.toString()),
-                cf.getDoubleFromDollars(edAccountUpdateBalance.text.toString()),
-                cf.getDoubleFromDollars(edAccountUpdateOwing.text.toString()),
-                cf.getDoubleFromDollars(etAccUpdateLimit.text.toString()),
+                nf.getDoubleFromDollars(edAccountUpdateBudgeted.text.toString()),
+                nf.getDoubleFromDollars(edAccountUpdateBalance.text.toString()),
+                nf.getDoubleFromDollars(edAccountUpdateOwing.text.toString()),
+                nf.getDoubleFromDollars(etAccUpdateLimit.text.toString()),
                 false,
                 df.getCurrentTimeAsString()
             )
@@ -300,7 +300,7 @@ class AccountUpdateFragment :
                     mainViewModel.getAccountWithType()!!.accountType!!.accountType
             }
             edAccountUpdateBalance.setText(
-                cf.displayDollars(
+                nf.displayDollars(
                     if (mainViewModel.getTransferNum()!! != 0.0 &&
                         mainViewModel.getReturnTo()!!.contains(BALANCE)
                     ) {
@@ -311,7 +311,7 @@ class AccountUpdateFragment :
                 )
             )
             edAccountUpdateOwing.setText(
-                cf.displayDollars(
+                nf.displayDollars(
                     if (mainViewModel.getTransferNum()!! != 0.0 &&
                         mainViewModel.getReturnTo()!!.contains(OWING)
 
@@ -323,7 +323,7 @@ class AccountUpdateFragment :
                 )
             )
             edAccountUpdateBudgeted.setText(
-                cf.displayDollars(
+                nf.displayDollars(
                     if (mainViewModel.getTransferNum()!! != 0.0 &&
                         mainViewModel.getReturnTo()!!.contains(BUDGETED)
                     ) {
@@ -335,7 +335,7 @@ class AccountUpdateFragment :
             )
             mainViewModel.setTransferNum(0.0)
             etAccUpdateLimit.setText(
-                cf.displayDollars(
+                nf.displayDollars(
                     mainViewModel.getAccountWithType()!!.account.accountCreditLimit
                 )
             )

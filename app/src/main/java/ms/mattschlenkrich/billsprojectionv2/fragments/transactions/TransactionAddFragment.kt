@@ -21,11 +21,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
+import ms.mattschlenkrich.billsprojectionv2.common.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
@@ -59,7 +59,7 @@ class TransactionAddFragment :
     private var mFromAccountWithType: AccountWithType? = null
 
     //    private var mBudgetRule: BudgetRule? = null
-    private val cf = CommonFunctions()
+    private val nf = NumberFunctions()
     private val df = DateFunctions()
 
     override fun onCreateView(
@@ -129,7 +129,7 @@ class TransactionAddFragment :
     private fun splitTransactions() {
         mainViewModel.setSplitTransactionDetailed(null)
         if (mFromAccount != null &&
-            cf.getDoubleFromDollars(binding.etAmount.text.toString()) > 2.0
+            nf.getDoubleFromDollars(binding.etAmount.text.toString()) > 2.0
         ) {
             mainViewModel.setCallingFragments(
                 mainViewModel.getCallingFragments() + ", " + TAG
@@ -144,7 +144,7 @@ class TransactionAddFragment :
 
     private fun gotoCalc() {
         mainViewModel.setTransferNum(
-            cf.getDoubleFromDollars(
+            nf.getDoubleFromDollars(
                 binding.etAmount.text.toString().ifBlank {
                     "0.0"
                 }
@@ -198,7 +198,7 @@ class TransactionAddFragment :
     private fun getCurTransaction(): Transactions {
         binding.apply {
             return Transactions(
-                cf.generateId(),
+                nf.generateId(),
                 etTransDate.text.toString(),
                 etDescription.text.toString(),
                 etNote.text.toString(),
@@ -208,7 +208,7 @@ class TransactionAddFragment :
                 mFromAccount?.accountId ?: 0L,
                 chkFromAccPending.isChecked,
                 if (etAmount.text.isNotEmpty()) {
-                    cf.getDoubleFromDollars(etAmount.text.toString())
+                    nf.getDoubleFromDollars(etAmount.text.toString())
                 } else {
                     0.0
                 },
@@ -222,11 +222,11 @@ class TransactionAddFragment :
         binding.apply {
             btnSplit.isEnabled =
                 etAmount.text.toString().isNotEmpty() &&
-                        cf.getDoubleFromDollars(etAmount.text.toString()) > 0.0 &&
+                        nf.getDoubleFromDollars(etAmount.text.toString()) > 0.0 &&
                         mFromAccount != null
             etAmount.setText(
-                cf.displayDollars(
-                    cf.getDoubleFromDollars(
+                nf.displayDollars(
+                    nf.getDoubleFromDollars(
                         etAmount.text.toString()
                     )
                 )
@@ -482,16 +482,16 @@ class TransactionAddFragment :
                     if (mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount == 0.0 &&
                         mainViewModel.getTransactionDetailed()!!.budgetRule != null
                     ) {
-                        cf.displayDollars(
+                        nf.displayDollars(
                             mainViewModel.getTransactionDetailed()!!.budgetRule!!.budgetAmount
                         )
                     } else {
-                        cf.displayDollars(
+                        nf.displayDollars(
                             mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount
                         )
                     }
             etAmount.setText(
-                cf.displayDollars(
+                nf.displayDollars(
                     if (mainViewModel.getTransferNum()!! != 0.0) {
                         mainViewModel.getTransferNum()!!
                     } else {
@@ -597,7 +597,7 @@ class TransactionAddFragment :
         binding.apply {
             val amount =
                 if (etAmount.text.isNotEmpty()) {
-                    cf.getDoubleFromDollars(etAmount.text.toString())
+                    nf.getDoubleFromDollars(etAmount.text.toString())
                 } else {
                     0.0
                 }

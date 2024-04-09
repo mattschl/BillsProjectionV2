@@ -44,7 +44,7 @@ class AccountTypeUpdateFragment :
     private lateinit var currentAccountType: AccountType
     private lateinit var accountTypeList: List<String>
     private val df = DateFunctions()
-//    private val cf = CommonFunctions()
+//    private val cf = NumberFunctions()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

@@ -18,9 +18,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_PENDING
-import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
+import ms.mattschlenkrich.billsprojectionv2.common.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.databinding.PendingTransactionItemBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetViewFragment
@@ -40,7 +40,7 @@ class TransactionPendingAdapter(
     private val context: Context
 ) : RecyclerView.Adapter<TransactionPendingAdapter.TransactionPendingHolder>() {
 
-    val cf = CommonFunctions()
+    val cf = NumberFunctions()
     val df = DateFunctions()
     val accountViewModel =
         mainActivity.accountViewModel

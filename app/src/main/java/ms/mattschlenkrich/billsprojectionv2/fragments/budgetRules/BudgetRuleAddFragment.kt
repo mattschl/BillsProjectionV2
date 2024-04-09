@@ -21,9 +21,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_ADD
+import ms.mattschlenkrich.billsprojectionv2.common.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetRuleAddBinding
@@ -47,7 +47,7 @@ class BudgetRuleAddFragment :
 
     private var budgetNameList: List<String>? = null
 
-    private val cf = CommonFunctions()
+    private val nf = NumberFunctions()
     private val df = DateFunctions()
 
     override fun onCreateView(
@@ -102,7 +102,7 @@ class BudgetRuleAddFragment :
 
     private fun gotoCalc() {
         mainViewModel.setTransferNum(
-            cf.getDoubleFromDollars(
+            nf.getDoubleFromDollars(
                 binding.etAmount.text.toString().ifBlank {
                     "0.0"
                 }
@@ -141,12 +141,12 @@ class BudgetRuleAddFragment :
     private fun getCurBudgetRule(): BudgetRule {
         binding.apply {
             return BudgetRule(
-                cf.generateId(),
+                nf.generateId(),
                 etBudgetName.text.toString().trim(),
                 mainViewModel.getBudgetRuleDetailed()?.toAccount?.accountId ?: 0L,
                 mainViewModel.getBudgetRuleDetailed()?.fromAccount?.accountId ?: 0L,
                 if (etAmount.text.isNotEmpty()) {
-                    cf.getDoubleFromDollars(
+                    nf.getDoubleFromDollars(
                         etAmount.text.toString().trim()
                     )
                 } else {
@@ -256,7 +256,7 @@ class BudgetRuleAddFragment :
                         mainViewModel.getBudgetRuleDetailed()?.budgetRule?.budgetRuleName
                     )
                     etAmount.setText(
-                        cf.displayDollars(
+                        nf.displayDollars(
                             if (mainViewModel.getTransferNum()!! != 0.0) {
                                 mainViewModel.getTransferNum()!!
                             } else {

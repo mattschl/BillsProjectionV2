@@ -22,11 +22,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.CommonFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
+import ms.mattschlenkrich.billsprojectionv2.common.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
@@ -55,7 +55,7 @@ class TransactionUpdateFragment :
     private lateinit var accountViewModel: AccountViewModel
     private lateinit var budgetRuleViewModel: BudgetRuleViewModel
     private lateinit var mView: View
-    private val cf = CommonFunctions()
+    private val nf = NumberFunctions()
     private val df = DateFunctions()
 
     //    private var mOldTransactionFull: TransactionFull? = null
@@ -136,7 +136,7 @@ class TransactionUpdateFragment :
         mainViewModel.setTransferNum(0.0)
         mainViewModel.setUpdatingTransaction(true)
         if (mFromAccount != null &&
-            cf.getDoubleFromDollars(binding.etAmount.text.toString()) > 2.0
+            nf.getDoubleFromDollars(binding.etAmount.text.toString()) > 2.0
         ) {
             mainViewModel.setCallingFragments(
                 mainViewModel.getCallingFragments() + ", " + TAG
@@ -152,7 +152,7 @@ class TransactionUpdateFragment :
     private fun updateAmountDisplay() {
         binding.apply {
             btnSplit.isEnabled = etAmount.text.toString().isNotEmpty() &&
-                    cf.getDoubleFromDollars(etAmount.text.toString()) > 0.0 &&
+                    nf.getDoubleFromDollars(etAmount.text.toString()) > 0.0 &&
                     mFromAccount != null
         }
     }
@@ -181,7 +181,7 @@ class TransactionUpdateFragment :
 
     private fun gotoCalc() {
         mainViewModel.setTransferNum(
-            cf.getDoubleFromDollars(
+            nf.getDoubleFromDollars(
                 binding.etAmount.text.toString().ifBlank {
                     "0.0"
                 }
@@ -262,7 +262,7 @@ class TransactionUpdateFragment :
     private fun checkTransaction(): String {
         binding.apply {
             val amount =
-                cf.getDoubleFromDollars(etAmount.text.toString())
+                nf.getDoubleFromDollars(etAmount.text.toString())
             val errorMes =
                 if (etDescription.text.isNullOrBlank()) {
                     "     ERROR!!\n" +
@@ -371,7 +371,7 @@ class TransactionUpdateFragment :
                 chkToAccountPending.isChecked,
                 mFromAccount!!.accountId,
                 chkFromAccountPending.isChecked,
-                cf.getDoubleFromDollars(etAmount.text.toString()),
+                nf.getDoubleFromDollars(etAmount.text.toString()),
                 false,
                 df.getCurrentTimeAsString()
             )
@@ -386,7 +386,7 @@ class TransactionUpdateFragment :
                 val transFull = mainViewModel.getOldTransaction()!!
                 mTransaction = transFull.transaction
                 etTransDate.setText(mTransaction!!.transDate)
-                etAmount.setText(cf.displayDollars(mTransaction!!.transAmount))
+                etAmount.setText(nf.displayDollars(mTransaction!!.transAmount))
                 etDescription.setText(mTransaction!!.transName)
                 etNote.setText(mTransaction!!.transNote)
                 mBudgetRule = transFull.budgetRule
@@ -405,7 +405,7 @@ class TransactionUpdateFragment :
                         mainViewModel.getTransactionDetailed()!!.transaction!!.transDate
                     )
                     etAmount.setText(
-                        cf.displayDollars(
+                        nf.displayDollars(
                             if (mainViewModel.getTransferNum()!! != 0.0) {
                                 mainViewModel.getTransferNum()!!
                             } else {
