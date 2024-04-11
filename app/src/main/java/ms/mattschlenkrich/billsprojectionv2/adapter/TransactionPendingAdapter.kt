@@ -112,36 +112,44 @@ class TransactionPendingAdapter(
         }
         holder.itemBinding.tvPendingDescription.text = display
         holder.itemView.setOnClickListener {
-            AlertDialog.Builder(context)
-                .setTitle(
-                    "Choose an Actions for" +
-                            pendingTransaction.transaction.transName
-                )
-                .setItems(
-                    arrayOf(
-                        "Complete this pending transaction",
-                        "Open the transaction to edit it"
-                    )
-                ) { _, pos ->
-                    when (pos) {
-                        0 -> {
-                            completeTransaction(
-                                pendingTransaction,
-                                curAccount,
-                            )
-                        }
+            chooseOptionsForTransaction(pendingTransaction.transaction, pendingTransaction, it)
+        }
+    }
 
-                        1 -> {
-                            editTransaction(
-                                pendingTransaction,
-                                it
-                            )
-                        }
+    private fun chooseOptionsForTransaction(
+        transaction: Transactions,
+        pendingTransaction: TransactionDetailed,
+        it: View
+    ) {
+        AlertDialog.Builder(context)
+            .setTitle(
+                "Choose an Actions for" +
+                        transaction.transName
+            )
+            .setItems(
+                arrayOf(
+                    "Complete this pending transaction",
+                    "Open the transaction to edit it"
+                )
+            ) { _, pos ->
+                when (pos) {
+                    0 -> {
+                        completeTransaction(
+                            pendingTransaction,
+                            curAccount,
+                        )
+                    }
+
+                    1 -> {
+                        editTransaction(
+                            pendingTransaction,
+                            it
+                        )
                     }
                 }
-                .setNegativeButton("Cancel", null)
-                .show()
-        }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun editTransaction(

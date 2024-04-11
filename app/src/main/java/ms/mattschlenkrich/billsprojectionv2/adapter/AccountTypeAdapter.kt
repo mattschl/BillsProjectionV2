@@ -3,6 +3,7 @@ package ms.mattschlenkrich.billsprojectionv2.adapter
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -99,39 +100,53 @@ class AccountTypeAdapter(
         holder.itemBinding.ibAccountTypeColor.setBackgroundColor(color)
 
         holder.itemView.setOnLongClickListener {
-            mainViewModel.setCallingFragments(
-                mainViewModel.getCallingFragments() + ", " + PARENT_TAG
-            )
-            mainViewModel.setAccountType(
-                curAccountType
-            )
-            it.findNavController().navigate(
-                AccountTypesFragmentDirections
-                    .actionAccountTypesFragmentToAccountTypeUpdateFragment()
-            )
+            gotoAccountTypeUpdate(curAccountType, it)
             false
         }
         holder.itemView.setOnClickListener {
-            mainViewModel.setAccountType(
+            chooseAccountType(curAccountType, it)
+        }
+    }
+
+    private fun gotoAccountTypeUpdate(
+        curAccountType: AccountType?,
+        it: View
+    ) {
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments() + ", " + PARENT_TAG
+        )
+        mainViewModel.setAccountType(
+            curAccountType
+        )
+        it.findNavController().navigate(
+            AccountTypesFragmentDirections
+                .actionAccountTypesFragmentToAccountTypeUpdateFragment()
+        )
+    }
+
+    private fun chooseAccountType(
+        curAccountType: AccountType?,
+        it: View
+    ) {
+        mainViewModel.setAccountType(
+            curAccountType
+        )
+        mainViewModel.setAccountWithType(
+            AccountWithType(
+                mainViewModel.getAccountWithType()!!.account,
                 curAccountType
             )
-            mainViewModel.setAccountWithType(
-                AccountWithType(
-                    mainViewModel.getAccountWithType()!!.account,
-                    curAccountType
-                )
+        )
+        if (mainViewModel.getCallingFragments()!!.contains(FRAG_ACCOUNT_UPDATE)) {
+            it.findNavController().navigate(
+                AccountTypesFragmentDirections
+                    .actionAccountTypesFragmentToAccountUpdateFragment()
             )
-            if (mainViewModel.getCallingFragments()!!.contains(FRAG_ACCOUNT_UPDATE)) {
-                it.findNavController().navigate(
-                    AccountTypesFragmentDirections
-                        .actionAccountTypesFragmentToAccountUpdateFragment()
-                )
-            } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_ACCOUNT_ADD)) {
-                it.findNavController().navigate(
-                    AccountTypesFragmentDirections
-                        .actionAccountTypesFragmentToAccountAddFragment()
-                )
-            }
+        } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_ACCOUNT_ADD)) {
+            it.findNavController().navigate(
+                AccountTypesFragmentDirections
+                    .actionAccountTypesFragmentToAccountAddFragment()
+            )
         }
     }
 }

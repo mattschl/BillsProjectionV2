@@ -174,79 +174,93 @@ class AccountAdapter(
         holder.itemBinding.ibAccountColor.setBackgroundColor(color)
 
         holder.itemView.setOnClickListener {
-            if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_ANALYSIS)) {
-                gotoTransactionAverage(curAccount, it)
-            } else {
-                when (mainViewModel.getRequestedAccount()) {
-                    REQUEST_TO_ACCOUNT -> {
-                        mBudgetRuleDetailed.toAccount = curAccount.account
-                        mainViewModel.setBudgetRuleDetailed(mBudgetRuleDetailed)
-                        if (mainViewModel.getCallingFragments()!!
-                                .contains(FRAG_TRANSACTION_SPLIT)
-                        ) {
-                            mSplitTransactionDetailed.toAccount = curAccount.account
-                            mainViewModel.setSplitTransactionDetailed(mSplitTransactionDetailed)
-                        } else {
-                            mTransactionDetailed.toAccount = curAccount.account
-                            mainViewModel.setTransactionDetailed(mTransactionDetailed)
-                        }
-                        mBudgetItem.toAccount = curAccount.account
-                        mainViewModel.setBudgetItem(mBudgetItem)
-                        gotoCallingFragment(it)
-
-                    }
-
-                    REQUEST_FROM_ACCOUNT -> {
-                        mBudgetRuleDetailed.fromAccount = curAccount.account
-                        mainViewModel.setBudgetRuleDetailed(mBudgetRuleDetailed)
-                        if (mainViewModel.getCallingFragments()!!
-                                .contains(FRAG_TRANSACTION_SPLIT)
-                        ) {
-                            mSplitTransactionDetailed.fromAccount = curAccount.account
-                            mainViewModel.setSplitTransactionDetailed(mSplitTransactionDetailed)
-                        } else {
-                            mTransactionDetailed.fromAccount = curAccount.account
-                            mainViewModel.setTransactionDetailed(mTransactionDetailed)
-                        }
-                        mBudgetItem.fromAccount = curAccount.account
-                        mainViewModel.setBudgetItem(mBudgetItem)
-                        gotoCallingFragment(it)
-
-                    }
-                }
-            }
+            chooseAccount(curAccount, it)
         }
         holder.itemView.setOnLongClickListener {
-            if (!mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_ANALYSIS)) {
-                AlertDialog.Builder(context)
-                    .setTitle(
-                        "Choose an action for" +
-                                curAccount.account.accountName
-                    )
-                    .setItems(
-                        arrayOf(
-                            "Edit this Account",
-                            "Delete this Account",
-                            "View a summary of Transactions using this Account"
-                        )
-                    ) { _, pos ->
-                        when (pos) {
-                            0 -> gotoUpdateAccount(curAccount, it)
-                            1 -> deleteAccount(curAccount)
-                            2 -> gotoAverage(curAccount, it)
-                        }
-
-                    }
-                    .setNegativeButton("Cancel", null)
-                    .show()
-            } else {
-                Toast.makeText(
-                    context,
-                    "Editing is not allowed right now",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
+            chooseOptionsForAccount(curAccount, it)
             false
+        }
+    }
+
+    private fun chooseOptionsForAccount(
+        curAccount: AccountWithType,
+        it: View
+    ) {
+        if (!mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_ANALYSIS)) {
+            AlertDialog.Builder(context)
+                .setTitle(
+                    "Choose an action for" +
+                            curAccount.account.accountName
+                )
+                .setItems(
+                    arrayOf(
+                        "Edit this Account",
+                        "Delete this Account",
+                        "View a summary of Transactions using this Account"
+                    )
+                ) { _, pos ->
+                    when (pos) {
+                        0 -> gotoUpdateAccount(curAccount, it)
+                        1 -> deleteAccount(curAccount)
+                        2 -> gotoAverage(curAccount, it)
+                    }
+
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        } else {
+            Toast.makeText(
+                context,
+                "Editing is not allowed right now",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun chooseAccount(
+        curAccount: AccountWithType,
+        it: View
+    ) {
+        if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_ANALYSIS)) {
+            gotoTransactionAverage(curAccount, it)
+        } else {
+            when (mainViewModel.getRequestedAccount()) {
+                REQUEST_TO_ACCOUNT -> {
+                    mBudgetRuleDetailed.toAccount = curAccount.account
+                    mainViewModel.setBudgetRuleDetailed(mBudgetRuleDetailed)
+                    if (mainViewModel.getCallingFragments()!!
+                            .contains(FRAG_TRANSACTION_SPLIT)
+                    ) {
+                        mSplitTransactionDetailed.toAccount = curAccount.account
+                        mainViewModel.setSplitTransactionDetailed(mSplitTransactionDetailed)
+                    } else {
+                        mTransactionDetailed.toAccount = curAccount.account
+                        mainViewModel.setTransactionDetailed(mTransactionDetailed)
+                    }
+                    mBudgetItem.toAccount = curAccount.account
+                    mainViewModel.setBudgetItem(mBudgetItem)
+                    gotoCallingFragment(it)
+
+                }
+
+                REQUEST_FROM_ACCOUNT -> {
+                    mBudgetRuleDetailed.fromAccount = curAccount.account
+                    mainViewModel.setBudgetRuleDetailed(mBudgetRuleDetailed)
+                    if (mainViewModel.getCallingFragments()!!
+                            .contains(FRAG_TRANSACTION_SPLIT)
+                    ) {
+                        mSplitTransactionDetailed.fromAccount = curAccount.account
+                        mainViewModel.setSplitTransactionDetailed(mSplitTransactionDetailed)
+                    } else {
+                        mTransactionDetailed.fromAccount = curAccount.account
+                        mainViewModel.setTransactionDetailed(mTransactionDetailed)
+                    }
+                    mBudgetItem.fromAccount = curAccount.account
+                    mainViewModel.setBudgetItem(mBudgetItem)
+                    gotoCallingFragment(it)
+
+                }
+            }
         }
     }
 

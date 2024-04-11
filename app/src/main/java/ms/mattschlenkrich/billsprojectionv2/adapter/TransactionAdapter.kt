@@ -171,24 +171,7 @@ class TransactionAdapter(
                 ) { _, pos ->
                     when (pos) {
                         0 -> {
-                            mainViewModel.setCallingFragments(
-                                mainViewModel.getCallingFragments() + ", " + PARENT_TAG
-                            )
-                            mainViewModel.setTransactionDetailed(transaction)
-                            CoroutineScope(Dispatchers.IO).launch {
-                                val oldTransactionFull = async {
-                                    transactionViewModel.getTransactionFull(
-                                        transaction.transaction.transId,
-                                        transaction.transaction.transToAccountId,
-                                        transaction.transaction.transFromAccountId
-                                    )
-                                }
-                                mainViewModel.setOldTransaction(oldTransactionFull.await())
-                            }
-                            it.findNavController().navigate(
-                                TransactionViewFragmentDirections
-                                    .actionTransactionViewFragmentToTransactionUpdateFragment()
-                            )
+                            gotoTransactionUpdate(transaction, transaction.transaction, it)
                         }
 
                         1 -> {
@@ -208,6 +191,31 @@ class TransactionAdapter(
                 .setNegativeButton("Cancel", null)
                 .show()
         }
+    }
+
+    private fun gotoTransactionUpdate(
+        transaction: TransactionDetailed?,
+        transaction0: Transactions,
+        it: View
+    ) {
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments() + ", " + PARENT_TAG
+        )
+        mainViewModel.setTransactionDetailed(transaction)
+        CoroutineScope(Dispatchers.IO).launch {
+            val oldTransactionFull = async {
+                transactionViewModel.getTransactionFull(
+                    transaction0.transId,
+                    transaction0.transToAccountId,
+                    transaction0.transFromAccountId
+                )
+            }
+            mainViewModel.setOldTransaction(oldTransactionFull.await())
+        }
+        it.findNavController().navigate(
+            TransactionViewFragmentDirections
+                .actionTransactionViewFragmentToTransactionUpdateFragment()
+        )
     }
 
     private fun deleteTransaction(transaction: Transactions) {

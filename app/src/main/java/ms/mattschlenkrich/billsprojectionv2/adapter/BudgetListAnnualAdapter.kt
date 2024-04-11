@@ -106,29 +106,33 @@ class BudgetListAnnualAdapter(
             )
             holder.itemBinding.tvAverage.text = info
             holder.itemView.setOnLongClickListener {
-                AlertDialog.Builder(parentView.context)
-                    .setTitle(
-                        "Choose an action for " +
-                                curRule.budgetRule!!.budgetRuleName
-                    )
-                    .setItems(
-                        arrayOf(
-                            "View or Edit this Budget Rule",
-                            "Delete this Budget Rule",
-                            "View a summary of transactions for this rule"
-                        )
-                    ) { _, pos ->
-                        when (pos) {
-                            0 -> editBudgetRule(curRule)
-                            1 -> deleteBudgetRule(curRule)
-                            2 -> gotoAverages(curRule)
-                        }
-                    }
-                    .setNegativeButton("Cancel", null)
-                    .show()
+                chooseOptionsForBudgetItem(curRule)
                 false
             }
         }
+    }
+
+    private fun chooseOptionsForBudgetItem(curRule: BudgetRuleComplete) {
+        AlertDialog.Builder(parentView.context)
+            .setTitle(
+                "Choose an action for " +
+                        curRule.budgetRule!!.budgetRuleName
+            )
+            .setItems(
+                arrayOf(
+                    "View or Edit this Budget Rule",
+                    "Delete this Budget Rule",
+                    "View a summary of transactions for this rule"
+                )
+            ) { _, pos ->
+                when (pos) {
+                    0 -> editBudgetRule(curRule)
+                    1 -> deleteBudgetRule(curRule)
+                    2 -> gotoAverages(curRule)
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun gotoAverages(curRule: BudgetRuleComplete) {

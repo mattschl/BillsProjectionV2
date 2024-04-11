@@ -116,72 +116,86 @@ class BudgetRuleAdapter(
         )
         holder.itemBinding.ibColor.setBackgroundColor(color)
         holder.itemView.setOnClickListener {
-            mainViewModel.setCallingFragments(
-                mainViewModel.getCallingFragments()!!
-                    .replace(", $PARENT_TAG", "")
-            )
-            mainViewModel.setBudgetRuleDetailed(
-                budgetRuleDetailed
-            )
-            if (mainViewModel.getCallingFragments()!!
-                    .contains(FRAG_TRANSACTION_SPLIT)
-            ) {
-                val mTransactionSplit = mainViewModel.getSplitTransactionDetailed()
-                mTransactionSplit?.budgetRule =
-                    budgetRuleDetailed.budgetRule
-                mainViewModel.setSplitTransactionDetailed(mTransactionSplit)
-            } else {
-                val mTransaction =
-                    mainViewModel.getTransactionDetailed()
-                mTransaction?.budgetRule =
-                    budgetRuleDetailed.budgetRule
-                mainViewModel.setTransactionDetailed(mTransaction)
-            }
-            if (mainViewModel.getCallingFragments()!!
-                    .contains(FRAG_BUDGET_ITEM_ADD) ||
-                mainViewModel.getCallingFragments()!!
-                    .contains(FRAG_BUDGET_ITEM_UPDATE)
-            ) {
-                val mBudgetDetailed =
-                    mainViewModel.getBudgetItem()
-                mBudgetDetailed?.budgetRule =
-                    budgetRuleDetailed!!.budgetRule
-                mainViewModel.setBudgetItem(mBudgetDetailed)
-            }
-            gotoCallingFragment(it)
+            chooseBudgetRule(budgetRuleDetailed, it)
         }
 
         holder.itemView.setOnLongClickListener {
-            if (!mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_ANALYSIS)) {
-                AlertDialog.Builder(context)
-                    .setTitle(
-                        "Choose an action for " +
-                                budgetRuleDetailed.budgetRule!!.budgetRuleName
-                    )
-                    .setItems(
-                        arrayOf(
-                            "View or Edit this Budget Rule",
-                            "Delete this Budget Rule",
-                            "View a summary of transactions for this rule"
-                        )
-                    ) { _, pos ->
-                        when (pos) {
-                            0 -> editBudgetRule(budgetRuleDetailed, it)
-                            1 -> deleteBudgetRule(budgetRuleDetailed)
-                            2 -> gotoAverages(budgetRuleDetailed, it)
-                        }
-                    }
-                    .setNegativeButton("Cancel", null)
-                    .show()
-            } else {
-                Toast.makeText(
-                    context,
-                    "Editing is not allowed right now",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
+            chooseOptionsForBudgetRule(budgetRuleDetailed, it)
             false
         }
+    }
+
+    private fun chooseOptionsForBudgetRule(
+        budgetRuleDetailed: BudgetRuleDetailed,
+        it: View
+    ) {
+        if (!mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_ANALYSIS)) {
+            AlertDialog.Builder(context)
+                .setTitle(
+                    "Choose an action for " +
+                            budgetRuleDetailed.budgetRule!!.budgetRuleName
+                )
+                .setItems(
+                    arrayOf(
+                        "View or Edit this Budget Rule",
+                        "Delete this Budget Rule",
+                        "View a summary of transactions for this rule"
+                    )
+                ) { _, pos ->
+                    when (pos) {
+                        0 -> editBudgetRule(budgetRuleDetailed, it)
+                        1 -> deleteBudgetRule(budgetRuleDetailed)
+                        2 -> gotoAverages(budgetRuleDetailed, it)
+                    }
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        } else {
+            Toast.makeText(
+                context,
+                "Editing is not allowed right now",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun chooseBudgetRule(
+        budgetRuleDetailed: BudgetRuleDetailed,
+        it: View
+    ) {
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments()!!
+                .replace(", $PARENT_TAG", "")
+        )
+        mainViewModel.setBudgetRuleDetailed(
+            budgetRuleDetailed
+        )
+        if (mainViewModel.getCallingFragments()!!
+                .contains(FRAG_TRANSACTION_SPLIT)
+        ) {
+            val mTransactionSplit = mainViewModel.getSplitTransactionDetailed()
+            mTransactionSplit?.budgetRule =
+                budgetRuleDetailed.budgetRule
+            mainViewModel.setSplitTransactionDetailed(mTransactionSplit)
+        } else {
+            val mTransaction =
+                mainViewModel.getTransactionDetailed()
+            mTransaction?.budgetRule =
+                budgetRuleDetailed.budgetRule
+            mainViewModel.setTransactionDetailed(mTransaction)
+        }
+        if (mainViewModel.getCallingFragments()!!
+                .contains(FRAG_BUDGET_ITEM_ADD) ||
+            mainViewModel.getCallingFragments()!!
+                .contains(FRAG_BUDGET_ITEM_UPDATE)
+        ) {
+            val mBudgetDetailed =
+                mainViewModel.getBudgetItem()
+            mBudgetDetailed?.budgetRule =
+                budgetRuleDetailed!!.budgetRule
+            mainViewModel.setBudgetItem(mBudgetDetailed)
+        }
+        gotoCallingFragment(it)
     }
 
     private fun gotoAverages(
