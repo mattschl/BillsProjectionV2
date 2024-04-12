@@ -89,30 +89,32 @@ class TransactionPendingAdapter(
         holder: TransactionPendingHolder, position: Int
     ) {
         val pendingTransaction = differ.currentList[position]
-        holder.itemBinding.tvPendingDate.text =
-            df.getDisplayDate(pendingTransaction.transaction!!.transDate)
-        holder.itemBinding.tvPendingDate.setTextColor(Color.BLACK)
-        holder.itemBinding.tvPendingAmount.text =
-            cf.displayDollars(pendingTransaction.transaction.transAmount)
-        if (pendingTransaction.toAccount!!.accountName ==
-            curAccount
-        ) {
-            holder.itemBinding.tvPendingAmount.setTextColor(Color.BLACK)
-            holder.itemBinding.tvPendingDescription.setTextColor(Color.BLACK)
-        } else {
-            holder.itemBinding.tvPendingAmount.setTextColor(Color.RED)
-            holder.itemBinding.tvPendingDescription.setTextColor(Color.RED)
-        }
-        var display =
-            pendingTransaction.transaction.transName
-        display += if (pendingTransaction.transaction.transNote.isNotBlank()) {
-            " - " + pendingTransaction.transaction.transNote
-        } else {
-            ""
-        }
-        holder.itemBinding.tvPendingDescription.text = display
-        holder.itemView.setOnClickListener {
-            chooseOptionsForTransaction(pendingTransaction.transaction, pendingTransaction, it)
+        holder.itemBinding.apply {
+            tvPendingDate.text =
+                df.getDisplayDate(pendingTransaction.transaction!!.transDate)
+            tvPendingDate.setTextColor(Color.BLACK)
+            tvPendingAmount.text =
+                cf.displayDollars(pendingTransaction.transaction.transAmount)
+            if (pendingTransaction.toAccount!!.accountName ==
+                curAccount
+            ) {
+                tvPendingAmount.setTextColor(Color.BLACK)
+                tvPendingDescription.setTextColor(Color.BLACK)
+            } else {
+                tvPendingAmount.setTextColor(Color.RED)
+                tvPendingDescription.setTextColor(Color.RED)
+            }
+            var display =
+                pendingTransaction.transaction.transName
+            display += if (pendingTransaction.transaction.transNote.isNotBlank()) {
+                " - " + pendingTransaction.transaction.transNote
+            } else {
+                ""
+            }
+            tvPendingDescription.text = display
+            holder.itemView.setOnClickListener {
+                chooseOptionsForTransaction(pendingTransaction.transaction, pendingTransaction, it)
+            }
         }
     }
 

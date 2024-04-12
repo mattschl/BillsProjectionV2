@@ -3,7 +3,6 @@ package ms.mattschlenkrich.billsprojectionv2.adapter
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,6 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.MainActivity
-import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_ADD
@@ -37,7 +35,7 @@ import ms.mattschlenkrich.billsprojectionv2.model.transactions.TransactionDetail
 import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 import java.util.Random
 
-private const val TAG = ADAPTER_ACCOUNT
+//private const val TAG = ADAPTER_ACCOUNT
 private const val PARENT_TAG = FRAG_ACCOUNTS
 
 class AccountAdapter(
@@ -123,62 +121,62 @@ class AccountAdapter(
     override fun onBindViewHolder(
         holder: AccountViewHolder, position: Int
     ) {
-
-        Log.d(TAG, "$TAG is entered")
         val curAccount = differ.currentList[position]
 
-        holder.itemBinding.tvAccountName.text =
-            curAccount.account.accountName
-        var info = if (curAccount.account.accountNumber.isNotEmpty()) {
-            "# ${curAccount.account.accountNumber}"
-        } else {
-            ""
-        }
-        if (curAccount.account.accountBalance != 0.0) {
-            info += "${if (info.isNotEmpty()) "\n" else ""}Balance " +
-                    cf.displayDollars(curAccount.account.accountBalance)
-        }
-        if (curAccount.account.accountOwing != 0.0) {
-            info += "${if (info.isNotEmpty()) "\n" else ""}Owing " +
-                    cf.displayDollars(curAccount.account.accountOwing)
-        }
-        if (curAccount.account.accBudgetedAmount != 0.0) {
-            info += "${if (info.isNotEmpty()) "\n" else ""}Budgeted " +
-                    cf.displayDollars(curAccount.account.accBudgetedAmount)
-        }
-        if (curAccount.account.accountCreditLimit != 0.0) {
-            info += "${if (info.isNotEmpty()) "\n" else ""}Credit Limit " +
-                    cf.displayDollars(curAccount.account.accountCreditLimit)
-        }
-        if (curAccount.account.accIsDeleted) {
-            info += "${if (info.isNotEmpty()) "\n" else ""}       **Deleted** "
-        }
-        if (info.isBlank()) {
-            info = "No info"
-        }
-        if (info == "No info") {
-            holder.itemBinding.tvAccountInfo.visibility = ViewGroup.GONE
-        } else {
-            holder.itemBinding.tvAccountInfo.visibility = ViewGroup.VISIBLE
-            holder.itemBinding.tvAccountInfo.text = info
-        }
-        holder.itemBinding.tvAccType.text = curAccount.accountType?.accountType
+        holder.itemBinding.apply {
+            tvAccountName.text =
+                curAccount.account.accountName
+            var info = if (curAccount.account.accountNumber.isNotEmpty()) {
+                "# ${curAccount.account.accountNumber}"
+            } else {
+                ""
+            }
+            if (curAccount.account.accountBalance != 0.0) {
+                info += "${if (info.isNotEmpty()) "\n" else ""}Balance " +
+                        cf.displayDollars(curAccount.account.accountBalance)
+            }
+            if (curAccount.account.accountOwing != 0.0) {
+                info += "${if (info.isNotEmpty()) "\n" else ""}Owing " +
+                        cf.displayDollars(curAccount.account.accountOwing)
+            }
+            if (curAccount.account.accBudgetedAmount != 0.0) {
+                info += "${if (info.isNotEmpty()) "\n" else ""}Budgeted " +
+                        cf.displayDollars(curAccount.account.accBudgetedAmount)
+            }
+            if (curAccount.account.accountCreditLimit != 0.0) {
+                info += "${if (info.isNotEmpty()) "\n" else ""}Credit Limit " +
+                        cf.displayDollars(curAccount.account.accountCreditLimit)
+            }
+            if (curAccount.account.accIsDeleted) {
+                info += "${if (info.isNotEmpty()) "\n" else ""}       **Deleted** "
+            }
+            if (info.isBlank()) {
+                info = "No info"
+            }
+            if (info == "No info") {
+                tvAccountInfo.visibility = ViewGroup.GONE
+            } else {
+                tvAccountInfo.visibility = ViewGroup.VISIBLE
+                tvAccountInfo.text = info
+            }
+            tvAccType.text = curAccount.accountType?.accountType
 
-        val random = Random()
-        val color = Color.argb(
-            255,
-            random.nextInt(256),
-            random.nextInt(256),
-            random.nextInt(256)
-        )
-        holder.itemBinding.ibAccountColor.setBackgroundColor(color)
+            val random = Random()
+            val color = Color.argb(
+                255,
+                random.nextInt(256),
+                random.nextInt(256),
+                random.nextInt(256)
+            )
+            ibAccountColor.setBackgroundColor(color)
 
-        holder.itemView.setOnClickListener {
-            chooseAccount(curAccount, it)
-        }
-        holder.itemView.setOnLongClickListener {
-            chooseOptionsForAccount(curAccount, it)
-            false
+            holder.itemView.setOnClickListener {
+                chooseAccount(curAccount, it)
+            }
+            holder.itemView.setOnLongClickListener {
+                chooseOptionsForAccount(curAccount, it)
+                false
+            }
         }
     }
 

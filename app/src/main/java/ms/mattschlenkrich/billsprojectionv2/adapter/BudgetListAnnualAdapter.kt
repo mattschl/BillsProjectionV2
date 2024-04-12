@@ -77,37 +77,39 @@ class BudgetListAnnualAdapter(
     override fun onBindViewHolder(holder: BudgetListHolder, position: Int) {
         val curRule = differ.currentList[position]
         curRule.apply {
-            holder.itemBinding.llOthers.visibility = View.VISIBLE
-            var info = if (curRule.budgetRule!!.budFrequencyCount > 1) {
-                budgetRule!!.budgetRuleName + " - " +
-                        df.getDisplayDateInComingYear(
-                            budgetRule!!.budStartDate, budgetRule!!.budFrequencyCount.toLong()
-                        )
-            } else {
-                budgetRule!!.budgetRuleName + " - " +
-                        df.getDisplayDateInComingYear(budgetRule!!.budStartDate)
-            }
-            holder.itemBinding.tvBudgetName.text = info
-            info = cf.displayDollars(budgetRule!!.budgetAmount)
-            holder.itemBinding.tvAmount.text = info
-            val random = Random()
-            val color = Color.argb(
-                255,
-                random.nextInt(256),
-                random.nextInt(256),
-                random.nextInt(256)
-            )
-            holder.itemBinding.ibColor.setBackgroundColor(color)
-            info = "Annually every ${budgetRule!!.budFrequencyCount} years"
-            holder.itemBinding.tvFrequency.text = info
-            info = "Average/month: " + cf.displayDollars(
-                budgetRule!!.budgetAmount / 12 /
-                        budgetRule!!.budFrequencyCount
-            )
-            holder.itemBinding.tvAverage.text = info
-            holder.itemView.setOnLongClickListener {
-                chooseOptionsForBudgetItem(curRule)
-                false
+            holder.itemBinding.apply {
+                llOthers.visibility = View.VISIBLE
+                var info = if (curRule.budgetRule!!.budFrequencyCount > 1) {
+                    budgetRule!!.budgetRuleName + " - " +
+                            df.getDisplayDateInComingYear(
+                                budgetRule!!.budStartDate, budgetRule!!.budFrequencyCount.toLong()
+                            )
+                } else {
+                    budgetRule!!.budgetRuleName + " - " +
+                            df.getDisplayDateInComingYear(budgetRule!!.budStartDate)
+                }
+                tvBudgetName.text = info
+                info = cf.displayDollars(budgetRule!!.budgetAmount)
+                tvAmount.text = info
+                val random = Random()
+                val color = Color.argb(
+                    255,
+                    random.nextInt(256),
+                    random.nextInt(256),
+                    random.nextInt(256)
+                )
+                ibColor.setBackgroundColor(color)
+                info = "Annually every ${budgetRule!!.budFrequencyCount} years"
+                tvFrequency.text = info
+                info = "Average/month: " + cf.displayDollars(
+                    budgetRule!!.budgetAmount / 12 /
+                            budgetRule!!.budFrequencyCount
+                )
+                tvAverage.text = info
+                holder.itemView.setOnLongClickListener {
+                    chooseOptionsForBudgetItem(curRule)
+                    false
+                }
             }
         }
     }

@@ -192,7 +192,7 @@ class BudgetRuleAdapter(
             val mBudgetDetailed =
                 mainViewModel.getBudgetItem()
             mBudgetDetailed?.budgetRule =
-                budgetRuleDetailed!!.budgetRule
+                budgetRuleDetailed.budgetRule
             mainViewModel.setBudgetItem(mBudgetDetailed)
         }
         gotoCallingFragment(it)
@@ -234,40 +234,48 @@ class BudgetRuleAdapter(
     }
 
     private fun gotoCallingFragment(it: View) {
-        if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_SPLIT)) {
-            it.findNavController().navigate(
-                BudgetRuleFragmentDirections
-                    .actionBudgetRuleFragmentToTransactionSplitFragment()
-            )
-        } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANS_ADD)) {
-            val direction =
-                BudgetRuleFragmentDirections
-                    .actionBudgetRuleFragmentToTransactionAddFragment()
-            it.findNavController().navigate(direction)
-        } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANS_UPDATE)
-        ) {
-            val direction =
-                BudgetRuleFragmentDirections
-                    .actionBudgetRuleFragmentToTransactionUpdateFragment()
-            it.findNavController().navigate(direction)
-        } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_BUDGET_ITEM_ADD)
-        ) {
-            val direction =
-                BudgetRuleFragmentDirections
-                    .actionBudgetRuleFragmentToBudgetItemAddFragment()
-            it.findNavController().navigate(direction)
-        } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_BUDGET_ITEM_UPDATE)
-        ) {
-            val direction =
-                BudgetRuleFragmentDirections
-                    .actionBudgetRuleFragmentToBudgetItemUpdateFragment()
-            it.findNavController().navigate(direction)
-        } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_ANALYSIS)
-        ) {
-            it.findNavController().navigate(
-                BudgetRuleFragmentDirections
-                    .actionBudgetRuleFragmentToTransactionAverageFragment()
-            )
+        when {
+            mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_SPLIT) -> {
+                it.findNavController().navigate(
+                    BudgetRuleFragmentDirections
+                        .actionBudgetRuleFragmentToTransactionSplitFragment()
+                )
+            }
+
+            mainViewModel.getCallingFragments()!!.contains(FRAG_TRANS_ADD) -> {
+                val direction =
+                    BudgetRuleFragmentDirections
+                        .actionBudgetRuleFragmentToTransactionAddFragment()
+                it.findNavController().navigate(direction)
+            }
+
+            mainViewModel.getCallingFragments()!!.contains(FRAG_TRANS_UPDATE) -> {
+                val direction =
+                    BudgetRuleFragmentDirections
+                        .actionBudgetRuleFragmentToTransactionUpdateFragment()
+                it.findNavController().navigate(direction)
+            }
+
+            mainViewModel.getCallingFragments()!!.contains(FRAG_BUDGET_ITEM_ADD) -> {
+                val direction =
+                    BudgetRuleFragmentDirections
+                        .actionBudgetRuleFragmentToBudgetItemAddFragment()
+                it.findNavController().navigate(direction)
+            }
+
+            mainViewModel.getCallingFragments()!!.contains(FRAG_BUDGET_ITEM_UPDATE) -> {
+                val direction =
+                    BudgetRuleFragmentDirections
+                        .actionBudgetRuleFragmentToBudgetItemUpdateFragment()
+                it.findNavController().navigate(direction)
+            }
+
+            mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_ANALYSIS) -> {
+                it.findNavController().navigate(
+                    BudgetRuleFragmentDirections
+                        .actionBudgetRuleFragmentToTransactionAverageFragment()
+                )
+            }
         }
     }
 }

@@ -80,66 +80,70 @@ class BudgetListOccasionalAdapter(
         val curRule = differ.currentList[position]
         var info = ""
         curRule.apply {
-            holder.itemBinding.llOthers.visibility = View.VISIBLE
-            if (budgetRule!!.budFrequencyTypeId == FREQ_MONTHLY) {
-                info = budgetRule!!.budgetRuleName + " - " + df.getNextMonthlyDate(
-                    budgetRule!!.budStartDate,
-                    budgetRule!!.budFrequencyCount
-                )
-            } else if (budgetRule!!.budFrequencyTypeId == FREQ_WEEKLY) {
-                info = budgetRule!!.budgetRuleName + " - " + df.getNextWeeklyDate(
-                    budgetRule!!.budStartDate,
-                    budgetRule!!.budFrequencyCount
-                )
-            }
-            holder.itemBinding.tvBudgetName.text = info
-            info = cf.displayDollars(budgetRule!!.budgetAmount)
-            holder.itemBinding.tvAmount.text = info
-            val random = Random()
-            val color = Color.argb(
-                255,
-                random.nextInt(256),
-                random.nextInt(256),
-                random.nextInt(256)
-            )
-            holder.itemBinding.ibColor.setBackgroundColor(color)
-            info = when (budgetRule!!.budFrequencyTypeId) {
-                FREQ_WEEKLY -> {
-                    "Weekly x " + budgetRule!!.budFrequencyCount
-                }
-
-                FREQ_MONTHLY -> {
-                    "Monthly x " + budgetRule!!.budFrequencyCount
-                }
-
-                else -> {
-                    ""
-                }
-            }
-            holder.itemBinding.tvFrequency.text = info
-            info = when (budgetRule!!.budFrequencyTypeId) {
-                FREQ_WEEKLY -> {
-                    "Average/month: " + cf.displayDollars(
-                        budgetRule!!.budgetAmount * 4 /
-                                budgetRule!!.budFrequencyCount
+            holder.itemBinding.apply {
+                llOthers.visibility = View.VISIBLE
+                if (budgetRule!!.budFrequencyTypeId != FREQ_MONTHLY) {
+                    if (budgetRule!!.budFrequencyTypeId == FREQ_WEEKLY) {
+                        info = budgetRule!!.budgetRuleName + " - " + df.getNextWeeklyDate(
+                            budgetRule!!.budStartDate,
+                            budgetRule!!.budFrequencyCount
+                        )
+                    }
+                } else {
+                    info = budgetRule!!.budgetRuleName + " - " + df.getNextMonthlyDate(
+                        budgetRule!!.budStartDate,
+                        budgetRule!!.budFrequencyCount
                     )
                 }
+                tvBudgetName.text = info
+                info = cf.displayDollars(budgetRule!!.budgetAmount)
+                tvAmount.text = info
+                val random = Random()
+                val color = Color.argb(
+                    255,
+                    random.nextInt(256),
+                    random.nextInt(256),
+                    random.nextInt(256)
+                )
+                ibColor.setBackgroundColor(color)
+                info = when (budgetRule!!.budFrequencyTypeId) {
+                    FREQ_WEEKLY -> {
+                        "Weekly x " + budgetRule!!.budFrequencyCount
+                    }
 
-                FREQ_MONTHLY -> {
-                    "Average/month: " + cf.displayDollars(
-                        budgetRule!!.budgetAmount /
-                                budgetRule!!.budFrequencyCount
-                    )
-                }
+                    FREQ_MONTHLY -> {
+                        "Monthly x " + budgetRule!!.budFrequencyCount
+                    }
 
-                else -> {
-                    ""
+                    else -> {
+                        ""
+                    }
                 }
-            }
-            holder.itemBinding.tvAverage.text = info
-            holder.itemView.setOnLongClickListener {
-                chooseOptionsForBudgetItem(curRule)
-                false
+                tvFrequency.text = info
+                info = when (budgetRule!!.budFrequencyTypeId) {
+                    FREQ_WEEKLY -> {
+                        "Average/month: " + cf.displayDollars(
+                            budgetRule!!.budgetAmount * 4 /
+                                    budgetRule!!.budFrequencyCount
+                        )
+                    }
+
+                    FREQ_MONTHLY -> {
+                        "Average/month: " + cf.displayDollars(
+                            budgetRule!!.budgetAmount /
+                                    budgetRule!!.budFrequencyCount
+                        )
+                    }
+
+                    else -> {
+                        ""
+                    }
+                }
+                tvAverage.text = info
+                holder.itemView.setOnLongClickListener {
+                    chooseOptionsForBudgetItem(curRule)
+                    false
+                }
             }
         }
     }

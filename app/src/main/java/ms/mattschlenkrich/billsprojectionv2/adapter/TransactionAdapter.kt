@@ -99,63 +99,64 @@ class TransactionAdapter(
             differ.currentList[
                 position
             ]
-        holder.itemBinding.tvDate.text =
-            df.getDisplayDate(transaction.transaction!!.transDate)
-        holder.itemBinding.tvTransDescription.text =
-            transaction.transaction.transName
-        holder.itemBinding.tvTransAmount.text =
-            cf.displayDollars(transaction.transaction.transAmount)
-        var info = "To: " +
-                transaction.toAccount!!
-                    .accountName
-        if (transaction.transaction.transToAccountPending) {
-            info += " *PENDING*"
-            holder.itemBinding.tvToAccount.setTextColor(
-                Color.RED
-            )
-        } else {
-            holder.itemBinding.tvToAccount.setTextColor(
-                Color.BLACK
-            )
-        }
-        holder.itemBinding.tvToAccount.text = info
-        info = "From: " +
-                transaction.fromAccount!!
-                    .accountName
-        if (transaction.transaction.transFromAccountPending) {
-            info += " *PENDING*"
-            holder.itemBinding.tvFromAccount.setTextColor(
-                Color.RED
-            )
-        } else {
-            holder.itemBinding.tvFromAccount.setTextColor(
-                Color.BLACK
-            )
-        }
-        if (transaction.transaction.transToAccountPending &&
-            transaction.transaction.transFromAccountPending
-        ) {
-            holder.itemBinding.tvToAccount.setLines(2)
-            holder.itemBinding.tvFromAccount.setLines(2)
+        holder.itemBinding.apply {
+            tvDate.text =
+                df.getDisplayDate(transaction.transaction!!.transDate)
+            tvTransDescription.text =
+                transaction.transaction.transName
+            tvTransAmount.text =
+                cf.displayDollars(transaction.transaction.transAmount)
+            var info = "To: " +
+                    transaction.toAccount!!
+                        .accountName
+            if (transaction.transaction.transToAccountPending) {
+                info += " *PENDING*"
+                tvToAccount.setTextColor(
+                    Color.RED
+                )
+            } else {
+                tvToAccount.setTextColor(
+                    Color.BLACK
+                )
+            }
+            tvToAccount.text = info
+            info = "From: " +
+                    transaction.fromAccount!!
+                        .accountName
+            if (transaction.transaction.transFromAccountPending) {
+                info += " *PENDING*"
+                tvFromAccount.setTextColor(
+                    Color.RED
+                )
+            } else {
+                tvFromAccount.setTextColor(
+                    Color.BLACK
+                )
+            }
+            if (transaction.transaction.transToAccountPending &&
+                transaction.transaction.transFromAccountPending
+            ) {
+                tvToAccount.setLines(2)
+                tvFromAccount.setLines(2)
 
-        }
-        holder.itemBinding.tvFromAccount.text = info
-        if (transaction.transaction.transNote.isEmpty()) {
-            holder.itemBinding.tvTransInfo.visibility = View.GONE
-        } else {
-            info = "Note: " +
-                    transaction.transaction.transNote
-            holder.itemBinding.tvTransInfo.text = info
-            holder.itemBinding.tvTransInfo.visibility = View.VISIBLE
-        }
-        val random = Random()
-        val color = Color.argb(
-            255,
-            random.nextInt(256),
-            random.nextInt(256),
-            random.nextInt(256)
-        )
-        holder.itemBinding.ibColor.setBackgroundColor(color)
+            }
+            tvFromAccount.text = info
+            if (transaction.transaction.transNote.isEmpty()) {
+                tvTransInfo.visibility = View.GONE
+            } else {
+                info = "Note: " +
+                        transaction.transaction.transNote
+                tvTransInfo.text = info
+                tvTransInfo.visibility = View.VISIBLE
+            }
+            val random = Random()
+            val color = Color.argb(
+                255,
+                random.nextInt(256),
+                random.nextInt(256),
+                random.nextInt(256)
+            )
+            ibColor.setBackgroundColor(color)
 
         holder.itemView.setOnClickListener {
             AlertDialog.Builder(context)
@@ -190,6 +191,7 @@ class TransactionAdapter(
                 }
                 .setNegativeButton("Cancel", null)
                 .show()
+        }
         }
     }
 

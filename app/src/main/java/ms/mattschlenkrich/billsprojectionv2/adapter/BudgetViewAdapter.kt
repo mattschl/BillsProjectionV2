@@ -81,47 +81,50 @@ class BudgetViewAdapter(
         holder: BudgetViewHolder, position: Int
     ) {
         val curBudget = differ.currentList[position]
-        holder.itemBinding.tvDate.text =
-            df.getDisplayDate(curBudget.budgetItem!!.biActualDate)
-        holder.itemBinding.tvName.text = curBudget.budgetItem.biBudgetName
-        if (curBudget.budgetItem.biIsFixed) {
-            val newText = curBudget.budgetItem.biBudgetName + "\n*Fixed*"
-            holder.itemBinding.tvName.text = newText
-            holder.itemBinding.tvName.setTextColor(Color.RED)
-        } else {
-            holder.itemBinding.tvName.text = curBudget.budgetItem.biBudgetName
-            holder.itemBinding.tvName.setTextColor(Color.BLACK)
-        }
-        holder.itemBinding.tvAmount.text =
-            cf.displayDollars(curBudget.budgetItem.biProjectedAmount)
-        if (curBudget.toAccount!!.accountName == curAccount) {
-            holder.itemBinding.tvAmount.setTextColor(Color.BLACK)
-        } else {
-            holder.itemBinding.tvAmount.setTextColor(Color.RED)
-        }
-        var info = "To: " + curBudget.toAccount!!.accountName
-        holder.itemBinding.tvToAccount.text = info
-        info = "From: " + curBudget.fromAccount!!.accountName
-        holder.itemBinding.tvFromAccount.text = info
-        if (curBudget.budgetItem.biLocked) {
-            holder.itemBinding.imgLocked.setImageResource(
-                R.drawable.ic_liocked_foreground
+
+        holder.itemBinding.apply {
+            tvDate.text =
+                df.getDisplayDate(curBudget.budgetItem!!.biActualDate)
+            tvName.text = curBudget.budgetItem.biBudgetName
+            if (curBudget.budgetItem.biIsFixed) {
+                val newText = curBudget.budgetItem.biBudgetName + "\n*Fixed*"
+                tvName.text = newText
+                tvName.setTextColor(Color.RED)
+            } else {
+                tvName.text = curBudget.budgetItem.biBudgetName
+                tvName.setTextColor(Color.BLACK)
+            }
+            tvAmount.text =
+                cf.displayDollars(curBudget.budgetItem.biProjectedAmount)
+            if (curBudget.toAccount!!.accountName == curAccount) {
+                tvAmount.setTextColor(Color.BLACK)
+            } else {
+                tvAmount.setTextColor(Color.RED)
+            }
+            var info = "To: " + curBudget.toAccount!!.accountName
+            tvToAccount.text = info
+            info = "From: " + curBudget.fromAccount!!.accountName
+            tvFromAccount.text = info
+            if (curBudget.budgetItem.biLocked) {
+                imgLocked.setImageResource(
+                    R.drawable.ic_liocked_foreground
+                )
+            } else {
+                imgLocked.setImageResource(
+                    R.drawable.ic_unlocked_foreground
+                )
+            }
+            val random = Random()
+            val color = Color.argb(
+                255,
+                random.nextInt(256),
+                random.nextInt(256),
+                random.nextInt(256)
             )
-        } else {
-            holder.itemBinding.imgLocked.setImageResource(
-                R.drawable.ic_unlocked_foreground
-            )
-        }
-        val random = Random()
-        val color = Color.argb(
-            255,
-            random.nextInt(256),
-            random.nextInt(256),
-            random.nextInt(256)
-        )
-        holder.itemBinding.ibColor.setBackgroundColor(color)
-        holder.itemBinding.imgLocked.setOnClickListener {
-            chooseLockUnlock(curBudget)
+            ibColor.setBackgroundColor(color)
+            imgLocked.setOnClickListener {
+                chooseLockUnlock(curBudget)
+            }
         }
         holder.itemView.setOnClickListener {
             chooseOptionsForBudget(

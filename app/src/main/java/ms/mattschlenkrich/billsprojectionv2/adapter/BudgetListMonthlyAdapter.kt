@@ -81,53 +81,55 @@ class BudgetListMonthlyAdapter(
         val curRule = differ.currentList[position]
         var info = ""
         curRule.apply {
-            holder.itemBinding.llOthers.visibility = View.GONE
-            if (budgetRule!!.budFrequencyTypeId == FREQ_MONTHLY) {
-                info = budgetRule!!.budgetRuleName +
-                        " - monthly"
-            } else if (budgetRule!!.budFrequencyTypeId == FREQ_WEEKLY) {
-                info = budgetRule!!.budgetRuleName + " - weekly x " +
-                        budgetRule!!.budFrequencyCount
+            holder.itemBinding.apply {
+                llOthers.visibility = View.GONE
+                if (budgetRule!!.budFrequencyTypeId == FREQ_MONTHLY) {
+                    info = budgetRule!!.budgetRuleName +
+                            " - monthly"
+                } else if (budgetRule!!.budFrequencyTypeId == FREQ_WEEKLY) {
+                    info = budgetRule!!.budgetRuleName + " - weekly x " +
+                            budgetRule!!.budFrequencyCount
 
-            }
-            holder.itemBinding.tvBudgetName.text = info
-            val amt = when (budgetRule!!.budFrequencyTypeId) {
-                FREQ_WEEKLY -> {
-                    budgetRule!!.budgetAmount * 4 / budgetRule!!.budFrequencyCount
                 }
+                tvBudgetName.text = info
+                val amt = when (budgetRule!!.budFrequencyTypeId) {
+                    FREQ_WEEKLY -> {
+                        budgetRule!!.budgetAmount * 4 / budgetRule!!.budFrequencyCount
+                    }
 
-                FREQ_MONTHLY -> {
-                    budgetRule!!.budgetAmount
-                }
+                    FREQ_MONTHLY -> {
+                        budgetRule!!.budgetAmount
+                    }
 
-                else -> {
-                    0.0
+                    else -> {
+                        0.0
+                    }
                 }
-            }
-            if (toAccount!!.accountType!!.displayAsAsset && fromAccount!!.accountType!!.displayAsAsset) {
-                info = "NA"
-            } else if (toAccount!!.accountType!!.isAsset) {
-                holder.itemBinding.tvAmount.setTextColor(Color.BLACK)
-                info = cf.displayDollars(amt)
-            } else if (fromAccount!!.accountType!!.isAsset || fromAccount!!.accountType!!.displayAsAsset) {
-                holder.itemBinding.tvAmount.setTextColor(Color.RED)
-                info = cf.displayDollars(amt)
-            }
-            if (curRule.budgetRule!!.budFixedAmount) {
-                info = "(f)   $info"
-            }
-            holder.itemBinding.tvAmount.text = info
-            val random = Random()
-            val color = Color.argb(
-                255,
-                random.nextInt(256),
-                random.nextInt(256),
-                random.nextInt(256)
-            )
-            holder.itemBinding.ibColor.setBackgroundColor(color)
-            holder.itemView.setOnLongClickListener {
-                chooseOptionsForBudgetItem(curRule)
-                false
+                if (toAccount!!.accountType!!.displayAsAsset && fromAccount!!.accountType!!.displayAsAsset) {
+                    info = "NA"
+                } else if (toAccount!!.accountType!!.isAsset) {
+                    tvAmount.setTextColor(Color.BLACK)
+                    info = cf.displayDollars(amt)
+                } else if (fromAccount!!.accountType!!.isAsset || fromAccount!!.accountType!!.displayAsAsset) {
+                    tvAmount.setTextColor(Color.RED)
+                    info = cf.displayDollars(amt)
+                }
+                if (curRule.budgetRule!!.budFixedAmount) {
+                    info = "(f)   $info"
+                }
+                tvAmount.text = info
+                val random = Random()
+                val color = Color.argb(
+                    255,
+                    random.nextInt(256),
+                    random.nextInt(256),
+                    random.nextInt(256)
+                )
+                ibColor.setBackgroundColor(color)
+                holder.itemView.setOnLongClickListener {
+                    chooseOptionsForBudgetItem(curRule)
+                    false
+                }
             }
         }
     }
