@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_ID
@@ -50,6 +51,8 @@ interface AccountDao {
     )
     fun getActiveAccounts(): LiveData<List<Account>>
 
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_ACCOUNTS.*, " +
@@ -82,6 +85,8 @@ interface AccountDao {
     )
     fun searchAccounts(query: String?): LiveData<List<Account>>
 
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_ACCOUNTS.*, $TABLE_ACCOUNT_TYPES.* FROM $TABLE_ACCOUNTS " +
@@ -93,7 +98,8 @@ interface AccountDao {
     )
     fun searchAccountsWithType(query: String?): LiveData<List<AccountWithType>>
 
-
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_ACCOUNTS.*, $TABLE_ACCOUNT_TYPES.* " +
@@ -109,6 +115,8 @@ interface AccountDao {
     )
     fun getAccountsWithType(): LiveData<List<AccountWithType>>
 
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_ACCOUNTS.*, $TABLE_ACCOUNT_TYPES.* " +
@@ -120,6 +128,8 @@ interface AccountDao {
     )
     fun getAccountWithType(accountId: Long): AccountWithType
 
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_ACCOUNTS.*, $TABLE_ACCOUNT_TYPES.* " +
@@ -131,6 +141,8 @@ interface AccountDao {
     )
     fun getAccountAndType(accountId: Long): AccountAndType
 
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_ACCOUNTS.*, $TABLE_ACCOUNT_TYPES.* " +
@@ -144,6 +156,8 @@ interface AccountDao {
     )
     fun getAccountWithType(accountName: String): AccountWithType
 
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_ACCOUNTS.*, $TABLE_ACCOUNT_TYPES.* " +
@@ -155,6 +169,8 @@ interface AccountDao {
     )
     fun getAccountDetailed(accountId: Long): LiveData<AccountWithType>
 
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_ACCOUNTS.*, $TABLE_ACCOUNT_TYPES.* " +

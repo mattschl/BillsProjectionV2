@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_ID
@@ -64,6 +65,8 @@ interface BudgetRuleDao {
     suspend fun getBudgetRulesActive():
             List<BudgetRule>
 
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_BUDGET_RULES.*, " +
@@ -83,6 +86,8 @@ interface BudgetRuleDao {
     fun getActiveBudgetRulesDetailed():
             LiveData<List<BudgetRuleDetailed>>
 
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_BUDGET_RULES.*, " +
@@ -101,6 +106,8 @@ interface BudgetRuleDao {
     )
     fun searchBudgetRules(query: String?): LiveData<List<BudgetRuleDetailed>>
 
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_BUDGET_RULES.*," +
@@ -118,6 +125,8 @@ interface BudgetRuleDao {
     )
     fun getBudgetRuleDetailed(ruleId: Long): BudgetRuleDetailed
 
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_BUDGET_RULES.*," +
@@ -135,6 +144,8 @@ interface BudgetRuleDao {
     )
     fun getBudgetRuleFullLive(ruleId: Long): LiveData<BudgetRuleDetailed>
 
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_BUDGET_RULES.*, " +
@@ -162,6 +173,8 @@ interface BudgetRuleDao {
     fun getBudgetRulesMonthly(today: String):
             LiveData<List<BudgetRuleDetailed>>
 
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_BUDGET_RULES.*, " +
@@ -200,6 +213,8 @@ interface BudgetRuleDao {
     fun getBudgetRulesCompletedMonthly(today: String):
             LiveData<List<BudgetRuleComplete>>
 
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_BUDGET_RULES.*, " +
@@ -238,6 +253,8 @@ interface BudgetRuleDao {
     fun getBudgetRulesCompletedOccasional(today: String):
             LiveData<List<BudgetRuleComplete>>
 
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_BUDGET_RULES.*, " +

@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_ID
@@ -128,6 +129,8 @@ interface BudgetItemDao {
     )
     fun getAssetsForBudget(): LiveData<List<String>>
 
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_BUDGET_ITEMS.*, budgetRule.*, " +
@@ -160,6 +163,8 @@ interface BudgetItemDao {
     fun getBudgetItems(asset: String, payDay: String)
             : LiveData<List<BudgetDetailed>>
 
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_BUDGET_ITEMS.*, budgetRule.*, " +
