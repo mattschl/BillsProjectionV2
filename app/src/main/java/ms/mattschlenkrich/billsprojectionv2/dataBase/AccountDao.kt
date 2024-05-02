@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
+import androidx.room.RoomWarnings
 import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_ID
@@ -23,6 +24,7 @@ import ms.mattschlenkrich.billsprojectionv2.model.account.AccountAndType
 import ms.mattschlenkrich.billsprojectionv2.model.account.AccountWithType
 
 @Dao
+@SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
 interface AccountDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAccount(account: Account)

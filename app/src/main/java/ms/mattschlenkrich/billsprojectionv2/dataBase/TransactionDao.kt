@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
+import androidx.room.RoomWarnings
 import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_BALANCE
@@ -34,6 +35,7 @@ import ms.mattschlenkrich.billsprojectionv2.model.transactions.TransactionFull
 import ms.mattschlenkrich.billsprojectionv2.model.transactions.Transactions
 
 @Dao
+@SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
 interface TransactionDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTransaction(transaction: Transactions)
