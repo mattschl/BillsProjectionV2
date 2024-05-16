@@ -94,9 +94,8 @@ class TransactionPerformFragment : Fragment(
             tvFromAccount.setOnClickListener {
                 chooseFromAccount()
             }
-            etTransDate.setOnLongClickListener {
+            etTransDate.setOnClickListener {
                 chooseDate()
-                false
             }
             etAmount.setOnLongClickListener {
                 gotoCalc()

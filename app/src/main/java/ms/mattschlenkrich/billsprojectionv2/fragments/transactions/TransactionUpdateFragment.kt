@@ -101,9 +101,8 @@ class TransactionUpdateFragment :
             tvFromAccount.setOnClickListener {
                 chooseFromAccount()
             }
-            etTransDate.setOnLongClickListener {
+            etTransDate.setOnClickListener {
                 chooseDate()
-                false
             }
             fabUpdateDone.setOnClickListener {
                 updateTransaction()
