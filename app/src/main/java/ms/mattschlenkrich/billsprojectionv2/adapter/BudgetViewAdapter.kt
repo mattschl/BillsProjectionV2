@@ -238,7 +238,7 @@ class BudgetViewAdapter(
             curBudget.budgetItem.biProjectedDate,
             df.getCurrentTimeAsString()
         )
-        budgetViewFragment.fillBudgetTotals()
+        budgetViewFragment.populateBudgetTotals()
     }
 
     private fun openBudgetItem(curBudget: BudgetDetailed, it: View) {

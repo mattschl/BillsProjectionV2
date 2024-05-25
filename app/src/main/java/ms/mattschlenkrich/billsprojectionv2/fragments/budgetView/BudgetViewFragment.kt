@@ -77,17 +77,17 @@ class BudgetViewFragment : Fragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mainActivity.title = "View The Budget"
-        createActions()
-        fillAssetsLive()
-        selectAsset()
-        selectPayDay()
+        createClickActions()
+        populateAssetsLive()
+        onSelectAsset()
+        onSelectPayDay()
         resumeHistory()
     }
 
-    private fun createActions() {
+    private fun createClickActions() {
         binding.apply {
             fabAddAction.setOnClickListener {
-                addAction()
+                onAddButtonPress()
             }
             tvBalanceOwing.setOnClickListener {
                 gotoAccount()
@@ -133,14 +133,14 @@ class BudgetViewFragment : Fragment(
         }
     }
 
-    private fun selectPayDay() {
+    private fun onSelectPayDay() {
         binding.apply {
             spPayDay.onItemSelectedListener =
                 object : AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(
                         p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long
                     ) {
-                        fillBudgetList(
+                        populateBudgetList(
                             spAssetNames.selectedItem.toString(),
                             spPayDay.selectedItem.toString()
                         )
@@ -153,7 +153,7 @@ class BudgetViewFragment : Fragment(
         }
     }
 
-    fun fillBudgetList(asset: String, payDay: String) {
+    fun populateBudgetList(asset: String, payDay: String) {
         val budgetViewAdapter = BudgetViewAdapter(
             this,
             budgetItemViewModel,
@@ -178,13 +178,13 @@ class BudgetViewFragment : Fragment(
                 budgetItems.listIterator().forEach {
                     budgetList.add(it)
                 }
-                fillAssetDetails()
-                fillBudgetTotals()
+                populateAssetDetails()
+                populateBudgetTotals()
             }
         }
     }
 
-    fun fillBudgetTotals() {
+    fun populateBudgetTotals() {
         binding.apply {
             if (spPayDay.adapter.count > 0) {
                 var debits = 0.0
@@ -277,7 +277,7 @@ class BudgetViewFragment : Fragment(
         }
     }
 
-    private fun selectAsset() {
+    private fun onSelectAsset() {
         binding.apply {
             spAssetNames.onItemSelectedListener =
                 object : AdapterView.OnItemSelectedListener {
@@ -295,8 +295,8 @@ class BudgetViewFragment : Fragment(
                             curAsset = account
                         }
                         clearCurrentDisplay()
-                        fillPayDaysLive(spAssetNames.selectedItem.toString())
-                        setupPendingList()
+                        populatePayDaysLive(spAssetNames.selectedItem.toString())
+                        populatePendingList()
                     }
 
                     override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -306,7 +306,7 @@ class BudgetViewFragment : Fragment(
         }
     }
 
-    fun setupPendingList() {
+    fun populatePendingList() {
         val transactionPendingAdapter =
             TransactionPendingAdapter(
                 binding.spAssetNames.selectedItem.toString(),
@@ -329,8 +329,8 @@ class BudgetViewFragment : Fragment(
                 transactionPendingAdapter.differ.submitList(transactions)
                 updatePendingUI(transactions)
                 updatePendingTotal(transactions)
-                fillAssetDetails()
-                fillBudgetTotals()
+                populateAssetDetails()
+                populateBudgetTotals()
             }
         }
     }
@@ -388,7 +388,7 @@ class BudgetViewFragment : Fragment(
         }
     }
 
-    private fun fillAssetDetails() {
+    private fun populateAssetDetails() {
         binding.apply {
             if (curAsset.accountType!!.keepTotals) {
                 lblAvailable.visibility = View.GONE
@@ -430,7 +430,7 @@ class BudgetViewFragment : Fragment(
         }
     }
 
-    private fun fillPayDaysLive(asset: String) {
+    private fun populatePayDaysLive(asset: String) {
         val payDayAdapter =
             ArrayAdapter<Any>(
                 requireContext(),
@@ -460,7 +460,7 @@ class BudgetViewFragment : Fragment(
         }
     }
 
-    private fun fillAssetsLive() {
+    private fun populateAssetsLive() {
         val assetAdapter =
             ArrayAdapter<Any>(
                 requireContext(),
@@ -477,7 +477,7 @@ class BudgetViewFragment : Fragment(
         binding.spAssetNames.adapter = assetAdapter
     }
 
-    private fun addAction() {
+    private fun onAddButtonPress() {
         AlertDialog.Builder(mView.context)
             .setTitle(getString(R.string.choose_an_action))
             .setItems(
