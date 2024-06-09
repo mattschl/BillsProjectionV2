@@ -65,28 +65,32 @@ class BudgetItemUpdateFragment : Fragment(
         mainActivity = (activity as MainActivity)
         mainViewModel =
             mainActivity.mainViewModel
+        budgetItemViewModel =
+            mainActivity.budgetItemViewModel
+        mainActivity.title = "Update this Budget Item"
         mView = binding.root
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        budgetItemViewModel =
-            mainActivity.budgetItemViewModel
-        mainActivity.title = "Update this Budget Item"
-        createMenu()
+        createMenuActions()
+        setBudgetItemToBlank()
+        populatePayDaySpinner()
+        populateValues()
+        createClickActions()
+    }
+
+    private fun setBudgetItemToBlank() {
         mBudgetRuleDetailed =
             BudgetRuleDetailed(
                 null,
                 null,
                 null
             )
-        fillPayDaysLive()
-        fillValues()
-        createActions()
     }
 
-    private fun createActions() {
+    private fun createClickActions() {
         binding.apply {
             tvBudgetRule.setOnClickListener {
                 chooseBudgetRule()
@@ -105,13 +109,13 @@ class BudgetItemUpdateFragment : Fragment(
                 updateBudgetItem()
             }
             etProjectedAmount.setOnLongClickListener {
-                gotoCalc()
+                gotoCalculator()
                 false
             }
         }
     }
 
-    private fun gotoCalc() {
+    private fun gotoCalculator() {
         mainViewModel.setTransferNum(
             nf.getDoubleFromDollars(
                 binding.etProjectedAmount.text.toString().ifBlank {
@@ -120,14 +124,14 @@ class BudgetItemUpdateFragment : Fragment(
             )
         )
         mainViewModel.setReturnTo(TAG)
-        mainViewModel.setBudgetItem(getCurBudgetItemDetailed())
+        mainViewModel.setBudgetItem(getCurrentBudgetItemDetailed())
         mView.findNavController().navigate(
             BudgetItemUpdateFragmentDirections
                 .actionBudgetItemUpdateFragmentToCalcFragment()
         )
     }
 
-    private fun fillPayDaysLive() {
+    private fun populatePayDaySpinner() {
         val payDayAdapter =
             ArrayAdapter<Any>(
                 requireContext(),
@@ -146,7 +150,7 @@ class BudgetItemUpdateFragment : Fragment(
         binding.spPayDays.adapter = payDayAdapter
     }
 
-    private fun fillValues() {
+    private fun populateValues() {
         if (mainViewModel.getBudgetItem() != null) {
             binding.apply {
                 val curBudgetItem = mainViewModel.getBudgetItem()!!
@@ -201,7 +205,7 @@ class BudgetItemUpdateFragment : Fragment(
         }
     }
 
-    private fun createMenu() {
+    private fun createMenuActions() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -224,10 +228,10 @@ class BudgetItemUpdateFragment : Fragment(
     }
 
     private fun updateBudgetItem() {
-        val mess = checkBudgetItem()
+        val mess = validateBudgetItem()
         if (mess == ANSWER_OK) {
             budgetItemViewModel.updateBudgetItem(
-                getCurBudgetItem()
+                getCurrentBudgetItemForSave()
             )
             gotoCallingFragment()
         } else {
@@ -269,7 +273,7 @@ class BudgetItemUpdateFragment : Fragment(
             mainViewModel.getCallingFragments() + ", " + TAG
         )
         mainViewModel.setRequestedAccount(requestedAccount)
-        mainViewModel.setBudgetItem(getCurBudgetItemDetailed())
+        mainViewModel.setBudgetItem(getCurrentBudgetItemDetailed())
         val direction = BudgetItemUpdateFragmentDirections
             .actionBudgetItemUpdateFragmentToAccountsFragment()
         mView.findNavController().navigate(direction)
@@ -279,16 +283,16 @@ class BudgetItemUpdateFragment : Fragment(
         mainViewModel.setCallingFragments(
             mainViewModel.getCallingFragments() + ", " + TAG
         )
-        mainViewModel.setBudgetItem(getCurBudgetItemDetailed())
+        mainViewModel.setBudgetItem(getCurrentBudgetItemDetailed())
         val direction = BudgetItemUpdateFragmentDirections
             .actionBudgetItemUpdateFragmentToBudgetRuleFragment()
         mView.findNavController().navigate(direction)
     }
 
-    private fun getCurBudgetItemDetailed(): BudgetDetailed {
+    private fun getCurrentBudgetItemDetailed(): BudgetDetailed {
         binding.apply {
             val budgetItem =
-                getCurBudgetItem()
+                getCurrentBudgetItemForSave()
             return BudgetDetailed(
                 budgetItem,
                 mainViewModel.getBudgetItem()!!.budgetRule,
@@ -298,7 +302,7 @@ class BudgetItemUpdateFragment : Fragment(
         }
     }
 
-    private fun getCurBudgetItem(): BudgetItem {
+    private fun getCurrentBudgetItemForSave(): BudgetItem {
         binding.apply {
             return BudgetItem(
                 if (mainViewModel.getBudgetItem()!!.budgetRule != null)
@@ -352,13 +356,17 @@ class BudgetItemUpdateFragment : Fragment(
                 mainViewModel.getCallingFragments()!!
                     .replace(", $TAG", "")
             )
-            val direction = BudgetItemUpdateFragmentDirections
-                .actionBudgetItemUpdateFragmentToBudgetViewFragment()
-            mView.findNavController().navigate(direction)
+            gotoBudgetViewFragment()
         }
     }
 
-    private fun checkBudgetItem(): String {
+    private fun gotoBudgetViewFragment() {
+        val direction = BudgetItemUpdateFragmentDirections
+            .actionBudgetItemUpdateFragmentToBudgetViewFragment()
+        mView.findNavController().navigate(direction)
+    }
+
+    private fun validateBudgetItem(): String {
         binding.apply {
             val errorMes =
                 if (etBudgetItemName.text.isNullOrBlank()) {

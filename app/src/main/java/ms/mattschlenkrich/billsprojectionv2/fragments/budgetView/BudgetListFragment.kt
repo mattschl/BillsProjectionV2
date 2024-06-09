@@ -59,24 +59,24 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mainActivity.title = "View the complete budget"
-        createActions()
+        createArrowActions()
     }
 
-    private fun createActions() {
+    private fun createArrowActions() {
         binding.apply {
             imgMonthlyArrow.setOnClickListener {
-                toggleMonthly()
+                toggleShowMonthlyItems()
             }
             imgOccasionalArrow.setOnClickListener {
-                toggleOccasional()
+                toggleShowOccasionalItems()
             }
             imgAnnualArrow.setOnClickListener {
-                toggleAnnual()
+                toggleShowAnnualItems()
             }
         }
     }
 
-    private fun toggleAnnual() {
+    private fun toggleShowAnnualItems() {
         binding.apply {
             if (annualVisible) {
                 annualVisible = false
@@ -88,12 +88,12 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
                 rvAnnual.visibility = View.VISIBLE
                 crdSummaryAnnual.visibility = View.VISIBLE
                 imgAnnualArrow.setImageResource(R.drawable.ic_arrow_up_24)
-                fillAnnual()
+                populateAnnualBudget()
             }
         }
     }
 
-    private fun fillAnnual() {
+    private fun populateAnnualBudget() {
         activity.let {
             val budgetListAnnualAdapter = BudgetListAnnualAdapter(
                 mainViewModel, budgetRuleViewModel, mView
@@ -110,12 +110,12 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
                     budgetsAnnual.add(it)
                 }
                 budgetListAnnualAdapter.differ.submitList(budgetsAnnual)
-                fillAnnualTotals()
+                populateAnnualTotals()
             }
         }
     }
 
-    private fun fillAnnualTotals() {
+    private fun populateAnnualTotals() {
         binding.apply {
             var totalCredits = 0.0
             var totalDebits = 0.0
@@ -144,7 +144,7 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
         }
     }
 
-    private fun toggleOccasional() {
+    private fun toggleShowOccasionalItems() {
         binding.apply {
             if (occasionalVisible) {
                 occasionalVisible = false
@@ -156,12 +156,12 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
                 rvOccasional.visibility = View.VISIBLE
                 crdSummaryOccasional.visibility = View.VISIBLE
                 imgOccasionalArrow.setImageResource(R.drawable.ic_arrow_up_24)
-                fillOccasional()
+                populateOccasionalItems()
             }
         }
     }
 
-    private fun fillOccasional() {
+    private fun populateOccasionalItems() {
         activity.let {
             val budgetListOccasionalAdapter = BudgetListOccasionalAdapter(
                 mainViewModel, budgetRuleViewModel, mView
@@ -179,12 +179,12 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
                     budgetsOccasional.add(it)
                 }
                 budgetListOccasionalAdapter.differ.submitList(budgetsOccasional)
-                fillOccasionalTotals()
+                populateOccasionalTotals()
             }
         }
     }
 
-    private fun fillOccasionalTotals() {
+    private fun populateOccasionalTotals() {
         binding.apply {
             var totalCredits = 0.0
             var totalDebits = 0.0
@@ -224,7 +224,7 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
         }
     }
 
-    private fun toggleMonthly() {
+    private fun toggleShowMonthlyItems() {
         binding.apply {
             if (monthlyVisible) {
                 monthlyVisible = false
@@ -236,12 +236,12 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
                 rvMonthly.visibility = View.VISIBLE
                 crdSummaryMonthly.visibility = View.VISIBLE
                 imgMonthlyArrow.setImageResource(R.drawable.ic_arrow_up_24)
-                fillMonthly()
+                populateMonthlyItems()
             }
         }
     }
 
-    private fun fillMonthly() {
+    private fun populateMonthlyItems() {
         activity?.let {
             val budgetListMonthlyAdapter = BudgetListMonthlyAdapter(
                 mainViewModel, budgetRuleViewModel, mView,
@@ -258,12 +258,12 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
                         budgetsMonthly.add(it)
                     }
                     budgetListMonthlyAdapter.differ.submitList(budgetsMonthly)
-                    fillMonthlyTotals()
+                    populateMonthlyTotals()
                 }
         }
     }
 
-    private fun fillMonthlyTotals() {
+    private fun populateMonthlyTotals() {
         binding.apply {
             var totalCredits = 0.0
             var totalDebits = 0.0

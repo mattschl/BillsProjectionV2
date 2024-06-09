@@ -66,10 +66,14 @@ class AccountTypeUpdateFragment :
         currentAccountType = mainViewModel.getAccountType()!!
         mainActivity.title = "Update Account Type"
         getAccountTypeList()
-        fillValues()
-        createMenu()
+        populateValues()
+        createMenuActions()
+        setClickActions()
+    }
+
+    private fun setClickActions() {
         binding.fabAccountTypeUpdate.setOnClickListener {
-            updateAccountType()
+            isAccountTypeReadyToUpdate()
         }
     }
 
@@ -83,7 +87,7 @@ class AccountTypeUpdateFragment :
         }
     }
 
-    private fun createMenu() {
+    private fun createMenuActions() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -95,7 +99,7 @@ class AccountTypeUpdateFragment :
                 // Handle the menu selection
                 return when (menuItem.itemId) {
                     R.id.menu_delete -> {
-                        deleteAccountType()
+                        chooseToDeleteAccountType()
                         true
                     }
 
@@ -105,29 +109,13 @@ class AccountTypeUpdateFragment :
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    private fun updateAccountType() {
+    private fun isAccountTypeReadyToUpdate() {
         if (binding.etAccTypeUpdate.text.toString().trim() ==
             currentAccountType.accountType
         ) {
-            accountsViewModel.updateAccountType(
-                AccountType(
-                    currentAccountType.typeId,
-                    binding.etAccTypeUpdate.text.toString().trim(),
-                    binding.chkAccountTypeUKeepTotals.isChecked,
-                    binding.chkAccTypeAddIsAsset.isChecked,
-                    binding.chkAccountTypeUKeepOwing.isChecked,
-                    false,
-                    binding.chkAccountTypeUDisplayAsset.isChecked,
-                    binding.chkAccTypeUAllowPending.isChecked,
-                    false,
-                    df.getCurrentTimeAsString()
-                )
-            )
-            val direction = AccountTypeUpdateFragmentDirections
-                .actionAccountTypeUpdateFragmentToAccountTypesFragment()
-            mView?.findNavController()?.navigate(direction)
+            updateAccountType()
         } else if (binding.etAccTypeUpdate.text.toString().isNotBlank() &&
-            checkAccountType()
+            validateAccountType()
         ) {
             AlertDialog.Builder(activity).apply {
                 setTitle("Rename Account Type?")
@@ -137,23 +125,7 @@ class AccountTypeUpdateFragment :
                             "This will NOT replace an existing Account Type"
                 )
                 setPositiveButton("Update Account Type") { _, _ ->
-                    accountsViewModel.updateAccountType(
-                        AccountType(
-                            currentAccountType.typeId,
-                            binding.etAccTypeUpdate.text.toString().trim(),
-                            binding.chkAccountTypeUKeepTotals.isChecked,
-                            binding.chkAccTypeAddIsAsset.isChecked,
-                            binding.chkAccountTypeUKeepOwing.isChecked,
-                            false,
-                            binding.chkAccountTypeUDisplayAsset.isChecked,
-                            binding.chkAccTypeUAllowPending.isChecked,
-                            false,
-                            df.getCurrentTimeAsString()
-                        )
-                    )
-                    val direction = AccountTypeUpdateFragmentDirections
-                        .actionAccountTypeUpdateFragmentToAccountTypesFragment()
-                    mView?.findNavController()?.navigate(direction)
+                    updateAccountType()
                 }
                 setNegativeButton("Cancel", null)
             }.create().show()
@@ -166,7 +138,27 @@ class AccountTypeUpdateFragment :
         }
     }
 
-    private fun fillValues() {
+    private fun updateAccountType() {
+        accountsViewModel.updateAccountType(
+            AccountType(
+                currentAccountType.typeId,
+                binding.etAccTypeUpdate.text.toString().trim(),
+                binding.chkAccountTypeUKeepTotals.isChecked,
+                binding.chkAccTypeAddIsAsset.isChecked,
+                binding.chkAccountTypeUKeepOwing.isChecked,
+                false,
+                binding.chkAccountTypeUDisplayAsset.isChecked,
+                binding.chkAccTypeUAllowPending.isChecked,
+                false,
+                df.getCurrentTimeAsString()
+            )
+        )
+        val direction = AccountTypeUpdateFragmentDirections
+            .actionAccountTypeUpdateFragmentToAccountTypesFragment()
+        mView?.findNavController()?.navigate(direction)
+    }
+
+    private fun populateValues() {
         binding.etAccTypeUpdate.setText(currentAccountType.accountType)
         binding.chkAccountTypeUKeepTotals.isChecked =
             currentAccountType.keepTotals
@@ -180,24 +172,28 @@ class AccountTypeUpdateFragment :
             currentAccountType.allowPending
     }
 
-    private fun deleteAccountType() {
+    private fun chooseToDeleteAccountType() {
         AlertDialog.Builder(activity).apply {
             setTitle("Delete Account Type?")
             setMessage("Are you sure you want to delete this Account Type?")
             setPositiveButton("Delete") { _, _ ->
-                accountsViewModel.deleteAccountType(
-                    currentAccountType.typeId,
-                    df.getCurrentTimeAsString()
-                )
-                val direction = AccountTypeUpdateFragmentDirections
-                    .actionAccountTypeUpdateFragmentToAccountTypesFragment()
-                mView?.findNavController()?.navigate(direction)
+                deleteAccountType()
             }
             setNegativeButton("Cancel", null)
         }.create().show()
     }
 
-    private fun checkAccountType(): Boolean {
+    private fun deleteAccountType() {
+        accountsViewModel.deleteAccountType(
+            currentAccountType.typeId,
+            df.getCurrentTimeAsString()
+        )
+        val direction = AccountTypeUpdateFragmentDirections
+            .actionAccountTypeUpdateFragmentToAccountTypesFragment()
+        mView?.findNavController()?.navigate(direction)
+    }
+
+    private fun validateAccountType(): Boolean {
         if (binding.etAccTypeUpdate.text.isNullOrBlank()) return false
         for (accType in accountTypeList) {
             if (accType == binding.etAccTypeUpdate.text.toString()) {

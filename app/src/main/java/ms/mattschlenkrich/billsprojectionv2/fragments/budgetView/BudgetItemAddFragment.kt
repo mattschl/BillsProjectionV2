@@ -65,30 +65,34 @@ class BudgetItemAddFragment : Fragment(
         mainActivity = (activity as MainActivity)
         mainViewModel =
             mainActivity.mainViewModel
+        budgetItemViewModel =
+            mainActivity.budgetItemViewModel
+        budgetRuleViewModel =
+            mainActivity.budgetRuleViewModel
+        mainActivity.title = "Add a new Budget Item"
         mView = binding.root
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        budgetItemViewModel =
-            mainActivity.budgetItemViewModel
-        budgetRuleViewModel =
-            mainActivity.budgetRuleViewModel
-        mainActivity.title = "Add a new Budget Item"
-        fillPayDaysLive()
-        createMenu()
-        createActions()
+        populatePayDays()
+        createMenuActions()
+        createClickActions()
+        setBudgetRuleToBlank()
+        populateValues()
+    }
+
+    private fun setBudgetRuleToBlank() {
         budgetRuleDetailed =
             BudgetRuleDetailed(
                 null,
                 null,
                 null
             )
-        fillValues()
     }
 
-    private fun createActions() {
+    private fun createClickActions() {
         binding.apply {
             tvBudgetRule.setOnClickListener {
                 chooseBudgetRule()
@@ -104,13 +108,13 @@ class BudgetItemAddFragment : Fragment(
                 false
             }
             etProjectedAmount.setOnLongClickListener {
-                gotoCalc()
+                gotoCalculator()
                 false
             }
         }
     }
 
-    private fun gotoCalc() {
+    private fun gotoCalculator() {
         mainViewModel.setTransferNum(
             nf.getDoubleFromDollars(
                 binding.etProjectedAmount.text.toString().ifBlank {
@@ -126,7 +130,7 @@ class BudgetItemAddFragment : Fragment(
         )
     }
 
-    private fun fillPayDaysLive() {
+    private fun populatePayDays() {
         val payDayAdapter =
             ArrayAdapter<Any>(
                 requireContext(),
@@ -145,7 +149,7 @@ class BudgetItemAddFragment : Fragment(
         binding.spPayDays.adapter = payDayAdapter
     }
 
-    private fun createMenu() {
+    private fun createMenuActions() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -168,7 +172,7 @@ class BudgetItemAddFragment : Fragment(
     }
 
     private fun saveBudgetItem() {
-        val mes = checkBudgetItem()
+        val mes = validateBudgetItem()
         if (mes == "Ok") {
             budgetItemViewModel.insertBudgetItem(
                 getCurBudgetItem()
@@ -192,13 +196,17 @@ class BudgetItemAddFragment : Fragment(
                 FRAG_BUDGET_VIEW
             )
         ) {
-            val direction = BudgetItemAddFragmentDirections
-                .actionBudgetItemAddFragmentToBudgetViewFragment()
-            mView.findNavController().navigate(direction)
+            gotoBudgetViewFragment()
         }
     }
 
-    private fun checkBudgetItem(): String {
+    private fun gotoBudgetViewFragment() {
+        val direction = BudgetItemAddFragmentDirections
+            .actionBudgetItemAddFragmentToBudgetViewFragment()
+        mView.findNavController().navigate(direction)
+    }
+
+    private fun validateBudgetItem(): String {
         binding.apply {
             val errorMes =
                 if (etBudgetItemName.text.isNullOrBlank()) {
@@ -309,21 +317,21 @@ class BudgetItemAddFragment : Fragment(
         }
     }
 
-    private fun fillValues() {
+    private fun populateValues() {
         if (mainViewModel.getBudgetItem() != null) {
-            fillFromTemp()
+            populateFromPreviousValues()
         } else {
-            fillFromBlank()
+            fillDateToCurrent()
         }
     }
 
-    private fun fillFromBlank() {
+    private fun fillDateToCurrent() {
         binding.apply {
             etProjectedDate.setText(df.getCurrentDateAsString())
         }
     }
 
-    private fun fillFromTemp() {
+    private fun populateFromPreviousValues() {
         binding.apply {
             etProjectedDate.setText(
                 mainViewModel.getBudgetItem()?.budgetItem?.biProjectedDate
@@ -336,7 +344,6 @@ class BudgetItemAddFragment : Fragment(
                         budgetRuleViewModel.getBudgetRuleDetailed(
                             mainViewModel.getBudgetItem()!!.budgetRule!!.ruleId
                         )
-
                 }
                 CoroutineScope(Dispatchers.Main).launch {
                     delay(WAIT_250)

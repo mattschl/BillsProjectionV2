@@ -26,7 +26,7 @@ import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
 
 private const val TAG = FRAGMENT_CALC
 
-class CalcFragment : Fragment(R.layout.fragment_calc) {
+class CalculatorFragment : Fragment(R.layout.fragment_calc) {
 
     private lateinit var formula: ArrayList<String>
     private lateinit var operator: ArrayList<String>
@@ -69,13 +69,13 @@ class CalcFragment : Fragment(R.layout.fragment_calc) {
         prevNumber.add(0.0)
         result = ArrayList()
         result.add(0.0)
-        setNumberActions()
+        setdigitActions()
         setOperatorActions()
         if (!mainViewModel.getTransferNum()!!.isNaN()) {
             binding.tvDisplay.text =
                 nf.getNumberFromDouble(mainViewModel.getTransferNum()!!.toDouble())
         }
-        doMath()
+        performMath()
         setTransferActions()
     }
 
@@ -86,56 +86,56 @@ class CalcFragment : Fragment(R.layout.fragment_calc) {
 
                 FRAG_TRANSACTION_SPLIT -> {
                     mView.findNavController().navigate(
-                        CalcFragmentDirections
+                        CalculatorFragmentDirections
                             .actionCalcFragmentToTransactionSplitFragment()
                     )
                 }
 
                 FRAG_TRANS_ADD -> {
                     mView.findNavController().navigate(
-                        CalcFragmentDirections
+                        CalculatorFragmentDirections
                             .actionCalcFragmentToTransactionAddFragment()
                     )
                 }
 
                 FRAG_TRANS_PERFORM -> {
                     mView.findNavController().navigate(
-                        CalcFragmentDirections
+                        CalculatorFragmentDirections
                             .actionCalcFragmentToTransactionPerformFragment()
                     )
                 }
 
                 FRAG_BUDGET_RULE_ADD -> {
                     mView.findNavController().navigate(
-                        CalcFragmentDirections
+                        CalculatorFragmentDirections
                             .actionCalcFragmentToBudgetRuleAddFragment()
                     )
                 }
 
                 FRAG_BUDGET_ITEM_ADD -> {
                     mView.findNavController().navigate(
-                        CalcFragmentDirections
+                        CalculatorFragmentDirections
                             .actionCalcFragmentToBudgetItemAddFragment()
                     )
                 }
 
                 FRAG_TRANS_UPDATE -> {
                     mView.findNavController().navigate(
-                        CalcFragmentDirections
+                        CalculatorFragmentDirections
                             .actionCalcFragmentToTransactionUpdateFragment()
                     )
                 }
 
                 FRAG_BUDGET_ITEM_UPDATE -> {
                     mView.findNavController().navigate(
-                        CalcFragmentDirections
+                        CalculatorFragmentDirections
                             .actionCalcFragmentToBudgetItemUpdateFragment()
                     )
                 }
 
                 FRAG_BUDGET_RULE_UPDATE -> {
                     mView.findNavController().navigate(
-                        CalcFragmentDirections
+                        CalculatorFragmentDirections
                             .actionCalcFragmentToBudgetRuleUpdateFragment()
                     )
                 }
@@ -143,13 +143,13 @@ class CalcFragment : Fragment(R.layout.fragment_calc) {
                 else -> {
                     if (mainViewModel.getReturnTo()!!.contains(FRAG_ACCOUNT_UPDATE)) {
                         mView.findNavController().navigate(
-                            CalcFragmentDirections
+                            CalculatorFragmentDirections
                                 .actionCalcFragmentToAccountUpdateFragment()
                         )
                     } else if (mainViewModel.getReturnTo()!!.contains(FRAG_ACCOUNT_ADD)) {
 
                         mView.findNavController().navigate(
-                            CalcFragmentDirections
+                            CalculatorFragmentDirections
                                 .actionCalcFragmentToAccountAddFragment()
                         )
                     }
@@ -160,18 +160,18 @@ class CalcFragment : Fragment(R.layout.fragment_calc) {
 
     private fun setOperatorActions() {
         binding.apply {
-            btnPlus.setOnClickListener { doOperator("+") }
-            btnMinus.setOnClickListener { doOperator("-") }
-            btnTimes.setOnClickListener { doOperator("X") }
-            btnDivide.setOnClickListener { doOperator("/") }
-            btnBackspace.setOnClickListener { doBackspace() }
-            btnClear.setOnClickListener { doClear() }
-            btnClearAll.setOnClickListener { doClearAll() }
-            btnEqual.setOnClickListener { doEqual() }
+            btnPlus.setOnClickListener { operatorAction("+") }
+            btnMinus.setOnClickListener { operatorAction("-") }
+            btnTimes.setOnClickListener { operatorAction("X") }
+            btnDivide.setOnClickListener { operatorAction("/") }
+            btnBackspace.setOnClickListener { backspace() }
+            btnClear.setOnClickListener { clear() }
+            btnClearAll.setOnClickListener { clearAll() }
+            btnEqual.setOnClickListener { equalAction() }
         }
     }
 
-    private fun doEqual() {
+    private fun equalAction() {
         counter += 1
         binding.tvDisplay.text = nf.getNumberFromDouble(result[counter - 1])
         prevNumber.add(counter, 0.0)
@@ -179,22 +179,22 @@ class CalcFragment : Fragment(R.layout.fragment_calc) {
         operator.add(counter, "")
         formula.add(counter, "")
         result.add(counter, 0.0)
-        doMath()
+        performMath()
     }
 
-    private fun doClearAll() {
+    private fun clearAll() {
         prevNumber[counter] = 0.0
         operator[counter] = ""
         binding.tvDisplay.text = "0"
-        doMath()
+        performMath()
     }
 
-    private fun doClear() {
+    private fun clear() {
         binding.tvDisplay.text = "0"
-        doMath()
+        performMath()
     }
 
-    private fun doBackspace() {
+    private fun backspace() {
         binding.apply {
             var prefix = ""
             if (tvDisplay.text.contains("-")) {
@@ -209,70 +209,70 @@ class CalcFragment : Fragment(R.layout.fragment_calc) {
             val display = prefix + num
             tvDisplay.text = display
         }
-        doMath()
+        performMath()
     }
 
-    private fun setNumberActions() {
+    private fun setdigitActions() {
         binding.apply {
-            btn0.setOnClickListener { doNumber("0") }
-            btn1.setOnClickListener { doNumber("1") }
-            btn2.setOnClickListener { doNumber("2") }
-            btn3.setOnClickListener { doNumber("3") }
-            btn4.setOnClickListener { doNumber("4") }
-            btn5.setOnClickListener { doNumber("5") }
-            btn6.setOnClickListener { doNumber("6") }
-            btn7.setOnClickListener { doNumber("7") }
-            btn8.setOnClickListener { doNumber("8") }
-            btn9.setOnClickListener { doNumber("9") }
-            btnPeriod.setOnClickListener { doNumber(".") }
-            btnNegative.setOnClickListener { doNumber("-") }
+            btn0.setOnClickListener { addDigit("0") }
+            btn1.setOnClickListener { addDigit("1") }
+            btn2.setOnClickListener { addDigit("2") }
+            btn3.setOnClickListener { addDigit("3") }
+            btn4.setOnClickListener { addDigit("4") }
+            btn5.setOnClickListener { addDigit("5") }
+            btn6.setOnClickListener { addDigit("6") }
+            btn7.setOnClickListener { addDigit("7") }
+            btn8.setOnClickListener { addDigit("8") }
+            btn9.setOnClickListener { addDigit("9") }
+            btnPeriod.setOnClickListener { addDigit(".") }
+            btnNegative.setOnClickListener { addDigit("-") }
         }
     }
 
-    private fun doOperator(i: String) {
+    private fun operatorAction(operation: String) {
         binding.apply {
             if (operator[counter] == "") {
-                operator[counter] = i
+                operator[counter] = operation
                 prevNumber[counter] = curNumber[counter]
                 tvDisplay.text = "0"
             } else {
-                operator[counter] = i
+                operator[counter] = operation
             }
-            doMath()
+            performMath()
         }
     }
 
-    private fun doNumber(i: String) {
+    private fun addDigit(digit: String) {
         binding.apply {
             var prefix = ""
             if (tvDisplay.text.contains("-")) {
                 prefix = "-"
             }
-            var num = tvDisplay.text.toString().replace("-", "")
+            var number = tvDisplay.text.toString().replace("-", "")
             @Suppress("KotlinConstantConditions")
-            if (i == "0" && num != "0") {
-                num += "0"
-            } else if (num == "0") {
-                num = i
-            } else if (i != "0" && i != "." && i != "-") {
-                num += i
+            if (digit == "0" && number != "0") {
+                number += "0"
+            } else if (number == "0") {
+                number = digit
+            } else if (digit != "0" && digit != "." && digit != "-") {
+                number += digit
             }
-            if ((i == ".") && !num.contains(".")) {
-                num += "."
+            if ((digit == ".") && !number.contains(".")) {
+                number += "."
             }
             @Suppress("KotlinConstantConditions")
-            if ((i == "-") && prefix != "-") {
+            if ((digit == "-") && prefix != "-") {
                 prefix = "-"
-            } else if (i == "-" && prefix == "-") {
+            } else if (digit == "-" && prefix == "-") {
                 prefix = ""
             }
-            val display = prefix + num
+            val display = prefix + number
             tvDisplay.text = display
         }
-        doMath()
+        performMath()
     }
 
-    private fun doMath() {
+    private fun performMath() {
         binding.apply {
             curNumber[counter] =
                 if (tvDisplay.text.toString() == "0" ||
@@ -311,9 +311,9 @@ class CalcFragment : Fragment(R.layout.fragment_calc) {
                         "= ${nf.getDollarsFromDouble(result[counter])}"
             }
             var display = ""
-            for (n in 0..counter) {
-                display += formula[n]
-                if (n < counter) display += "\n"
+            for (i in 0..counter) {
+                display += formula[i]
+                if (i < counter) display += "\n"
             }
             tvResults.text = display
             display = "TRANSFER ${nf.getDollarsFromDouble(result[counter])}"

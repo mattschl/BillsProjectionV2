@@ -72,7 +72,7 @@ class AccountAddFragment :
         }
 
         mainActivity.title = "Add a new Account"
-        fillValues()
+        populateValues()
         createMenu()
         createActions()
     }
@@ -154,7 +154,7 @@ class AccountAddFragment :
                 // Handle the menu selection
                 return when (menuItem.itemId) {
                     R.id.menu_save -> {
-                        saveAccount(mView)
+                        isAccountReadyToSave(mView)
                         true
                     }
 
@@ -164,7 +164,7 @@ class AccountAddFragment :
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    private fun fillValues() {
+    private fun populateValues() {
         binding.apply {
             if (mainViewModel.getAccountWithType() != null) {
                 etAccAddName.setText(
@@ -275,25 +275,10 @@ class AccountAddFragment :
 
     }
 
-    private fun saveAccount(view: View) {
-        val mes = checkAccount()
+    private fun isAccountReadyToSave(view: View) {
+        val mes = validateAccount()
         if (mes == "Ok") {
-            mainViewModel.setCallingFragments(
-                mainViewModel.getCallingFragments()!!
-                    .replace(", $FRAG_ACCOUNT_ADD", "")
-            )
-            val curAccount = getCurrentAccount()
-            accountsViewModel.addAccount(curAccount)
-            mainViewModel.setAccountWithType(
-                AccountWithType(
-                    curAccount,
-                    mainViewModel.getAccountWithType()?.accountType!!
-                )
-            )
-            val direction = AccountAddFragmentDirections
-                .actionAccountAddFragmentToAccountsFragment()
-            view.findNavController().navigate(direction)
-
+            saveAccount(view)
         } else {
             Toast.makeText(
                 mView.context,
@@ -303,7 +288,25 @@ class AccountAddFragment :
         }
     }
 
-    private fun checkAccount(): String {
+    private fun saveAccount(view: View) {
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments()!!
+                .replace(", $FRAG_ACCOUNT_ADD", "")
+        )
+        val curAccount = getCurrentAccount()
+        accountsViewModel.addAccount(curAccount)
+        mainViewModel.setAccountWithType(
+            AccountWithType(
+                curAccount,
+                mainViewModel.getAccountWithType()?.accountType!!
+            )
+        )
+        val direction = AccountAddFragmentDirections
+            .actionAccountAddFragmentToAccountsFragment()
+        view.findNavController().navigate(direction)
+    }
+
+    private fun validateAccount(): String {
         binding.apply {
             val nameIsBlank =
                 etAccAddName.text.isNullOrEmpty()

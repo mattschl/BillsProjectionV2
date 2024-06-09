@@ -59,7 +59,7 @@ class AccountUpdateFragment :
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         mView = binding.root
-        createMenu()
+        createMenuActiond()
         return mView
     }
 
@@ -77,11 +77,11 @@ class AccountUpdateFragment :
         }
 
         mainActivity.title = "Update Account"
-        fillValues()
-        setActions()
+        populateValues()
+        setUserActions()
     }
 
-    private fun createMenu() {
+    private fun createMenuActiond() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -93,7 +93,7 @@ class AccountUpdateFragment :
                 // Handle the menu selection
                 return when (menuItem.itemId) {
                     R.id.menu_delete -> {
-                        deleteAccount()
+                        chooseDeleteAccount()
                         true
                     }
 
@@ -103,13 +103,13 @@ class AccountUpdateFragment :
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    private fun setActions() {
+    private fun setUserActions() {
         binding.apply {
             drpAccountUpdateType.setOnClickListener {
                 gotoAccountTypes()
             }
             fabAccountUpdateDone.setOnClickListener {
-                updateAccount()
+                isAccountReadyToUpdate()
             }
             edAccountUpdateBalance.setOnLongClickListener {
                 gotoCalc(BALANCE)
@@ -237,30 +237,11 @@ class AccountUpdateFragment :
         }
     }
 
-    private fun updateAccount() {
+    private fun isAccountReadyToUpdate() {
         val mess = checkAccount()
 
         if (mess == "Ok") {
-            val name = binding.edAccountUpdateName.text.trim().toString()
-            if (name == mainViewModel.getAccountWithType()!!.account.accountName.trim()) {
-                accountsViewModel.updateAccount(getUpdatedAccount())
-                gotoCallingFragment()
-            } else if (name != mainViewModel.getAccountWithType()!!.account.accountName.trim()) {
-                AlertDialog.Builder(activity).apply {
-                    setTitle("Rename Account?")
-                    setMessage(
-                        "Are you sure you want to rename this Account?\n " +
-                                "      NOTE:\n" +
-                                "This will NOT replace an existing Account"
-                    )
-                    setPositiveButton("Update Account") { _, _ ->
-                        accountsViewModel.updateAccount(getUpdatedAccount())
-                        gotoCallingFragment()
-
-                    }
-                    setNegativeButton("Cancel", null)
-                }.create().show()
-            }
+            chooseToUpdate()
         } else {
             Toast.makeText(
                 mView.context,
@@ -269,6 +250,29 @@ class AccountUpdateFragment :
             ).show()
         }
 
+    }
+
+    private fun chooseToUpdate() {
+        val name = binding.edAccountUpdateName.text.trim().toString()
+        if (name == mainViewModel.getAccountWithType()!!.account.accountName.trim()) {
+            accountsViewModel.updateAccount(getUpdatedAccount())
+            gotoCallingFragment()
+        } else if (name != mainViewModel.getAccountWithType()!!.account.accountName.trim()) {
+            AlertDialog.Builder(activity).apply {
+                setTitle("Rename Account?")
+                setMessage(
+                    "Are you sure you want to rename this Account?\n " +
+                            "      NOTE:\n" +
+                            "This will NOT replace an existing Account"
+                )
+                setPositiveButton("Update Account") { _, _ ->
+                    accountsViewModel.updateAccount(getUpdatedAccount())
+                    gotoCallingFragment()
+
+                }
+                setNegativeButton("Cancel", null)
+            }.create().show()
+        }
     }
 
     private fun gotoCallingFragment() {
@@ -287,7 +291,7 @@ class AccountUpdateFragment :
         }
     }
 
-    private fun fillValues() {
+    private fun populateValues() {
         binding.apply {
             edAccountUpdateName.setText(
                 mainViewModel.getAccountWithType()!!.account.accountName
@@ -344,18 +348,18 @@ class AccountUpdateFragment :
         }
     }
 
-    private fun deleteAccount() {
+    private fun chooseDeleteAccount() {
         AlertDialog.Builder(activity).apply {
             setTitle("Delete Account?")
             setMessage("Are you sure you want to delete this account? ")
             setPositiveButton("Delete") { _, _ ->
-                doDelete()
+                deleteAccount()
             }
             setNegativeButton("Cancel", null)
         }.create().show()
     }
 
-    private fun doDelete() {
+    private fun deleteAccount() {
         accountsViewModel.deleteAccount(
             mainViewModel.getAccountWithType()!!.account.accountId,
             df.getCurrentTimeAsString()

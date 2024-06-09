@@ -59,8 +59,11 @@ class BudgetRuleAddFragment :
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
+        mainActivity.title = "Add a new Budget Rule"
         mainViewModel =
             mainActivity.mainViewModel
+        budgetRuleViewModel =
+            mainActivity.budgetRuleViewModel
         Log.d(TAG, "$TAG is entered")
         mView = binding.root
         return mView
@@ -68,16 +71,20 @@ class BudgetRuleAddFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        budgetRuleViewModel =
-            mainActivity.budgetRuleViewModel
+        getBudgetRuleNameListForValidation()
+        setMenuActions()
+        populateValues()
+        setClickActions()
+    }
+
+    private fun getBudgetRuleNameListForValidation() {
         CoroutineScope(Dispatchers.IO).launch {
             budgetNameList =
                 budgetRuleViewModel.getBudgetRuleNameList()
         }
-        mainActivity.title = "Add a new Budget Rule"
-        fillMenu()
-        fillValues()
+    }
 
+    private fun setClickActions() {
         binding.apply {
             tvToAccount.setOnClickListener {
                 chooseToAccount()
@@ -94,13 +101,13 @@ class BudgetRuleAddFragment :
                 false
             }
             etAmount.setOnLongClickListener {
-                gotoCalc()
+                gotoCalculatorFragment()
                 false
             }
         }
     }
 
-    private fun gotoCalc() {
+    private fun gotoCalculatorFragment() {
         mainViewModel.setTransferNum(
             nf.getDoubleFromDollars(
                 binding.etAmount.text.toString().ifBlank {
@@ -116,7 +123,7 @@ class BudgetRuleAddFragment :
         )
     }
 
-    private fun fillMenu() {
+    private fun setMenuActions() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -138,7 +145,7 @@ class BudgetRuleAddFragment :
         }, viewLifecycleOwner, Lifecycle.State.CREATED)
     }
 
-    private fun getCurBudgetRule(): BudgetRule {
+    private fun getCurrentBudgetRule(): BudgetRule {
         binding.apply {
             return BudgetRule(
                 nf.generateId(),
@@ -169,7 +176,7 @@ class BudgetRuleAddFragment :
 
     private fun getBudgetRuleDetailed(): BudgetRuleDetailed {
         return BudgetRuleDetailed(
-            getCurBudgetRule(),
+            getCurrentBudgetRule(),
             mainViewModel.getBudgetRuleDetailed()?.toAccount,
             mainViewModel.getBudgetRuleDetailed()?.fromAccount
         )
@@ -247,8 +254,8 @@ class BudgetRuleAddFragment :
         }
     }
 
-    private fun fillValues() {
-        fillSpinners()
+    private fun populateValues() {
+        populateSpinners()
         binding.apply {
             if (mainViewModel.getBudgetRuleDetailed() != null) {
                 if (mainViewModel.getBudgetRuleDetailed()!!.budgetRule != null) {
@@ -299,7 +306,7 @@ class BudgetRuleAddFragment :
         }
     }
 
-    private fun fillSpinners() {
+    private fun populateSpinners() {
         val adapterFrequencyType =
             ArrayAdapter(
                 mView.context,
@@ -324,16 +331,16 @@ class BudgetRuleAddFragment :
     }
 
     private fun saveBudgetRule() {
-        val mes = checkBudgetRule()
+        val mes = validateBudgetRule()
         if (mes == "Ok") {
             binding.apply {
                 mainViewModel.setCallingFragments(
                     "${mainViewModel.getCallingFragments()}, $TAG"
                 )
                 budgetRuleViewModel.insertBudgetRule(
-                    getCurBudgetRule()
+                    getCurrentBudgetRule()
                 )
-                gotoCallingFragment()
+                gotoBudgetRuleFragment()
             }
         } else {
             Toast.makeText(
@@ -344,13 +351,13 @@ class BudgetRuleAddFragment :
         }
     }
 
-    private fun gotoCallingFragment() {
+    private fun gotoBudgetRuleFragment() {
         val direction = BudgetRuleAddFragmentDirections
             .actionBudgetRuleAddFragmentToBudgetRuleFragment()
         mView.findNavController().navigate(direction)
     }
 
-    private fun checkBudgetRule(): String {
+    private fun validateBudgetRule(): String {
         binding.apply {
             val nameIsBlank = etBudgetName.text.isNullOrBlank()
             var nameFound = false

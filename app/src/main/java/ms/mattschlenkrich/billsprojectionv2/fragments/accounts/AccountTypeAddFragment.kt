@@ -67,7 +67,7 @@ class AccountTypeAddFragment :
         mainActivity.title = "Add a new Account Type"
         mView = view
         getAccountTypeList()
-        createMenu()
+        createMenuAcions()
     }
 
     private fun getAccountTypeList() {
@@ -80,7 +80,7 @@ class AccountTypeAddFragment :
         }
     }
 
-    private fun createMenu() {
+    private fun createMenuAcions() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -92,7 +92,7 @@ class AccountTypeAddFragment :
                 // Handle the menu selection
                 return when (menuItem.itemId) {
                     R.id.menu_save -> {
-                        saveAccountType()
+                        isAccountTypeReady()
                         true
                     }
 
@@ -102,34 +102,9 @@ class AccountTypeAddFragment :
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    private fun saveAccountType() {
+    private fun isAccountTypeReady() {
         if (checkAccountType()) {
-            val accountType = AccountType(
-                nf.generateId(),
-                binding.etAccTypeAdd.text.toString().trim(),
-                binding.chkAccTypeAddKeepTotals.isChecked,
-                binding.chkAccTypeAddIsAsset.isChecked,
-                binding.chkAccTypeAddKeepOwing.isChecked,
-                false,
-                binding.chkAccTypeAddDisplayAsset.isChecked,
-                binding.chkAccTypeAddAllowPending.isChecked,
-                false,
-                df.getCurrentTimeAsString()
-            )
-            accountsViewModel.addAccountType(accountType)
-            mainViewModel.setAccountWithType(
-                AccountWithType(
-                    mainViewModel.getAccountWithType()!!.account,
-                    accountType
-                )
-            )
-            mainViewModel.setCallingFragments(
-                mainViewModel.getCallingFragments()!!
-                    .replace(", $FRAG_ACCOUNT_TYPES", "")
-            )
-            val direction = AccountTypeAddFragmentDirections
-                .actionAccountTypeAddFragmentToAccountTypesFragment()
-            mView.findNavController().navigate(direction)
+            saveAccountType()
 
         } else {
             Toast.makeText(
@@ -140,6 +115,37 @@ class AccountTypeAddFragment :
 
         }
     }
+
+    private fun saveAccountType() {
+        val accountType = getCurrentaccountType()
+        accountsViewModel.addAccountType(accountType)
+        mainViewModel.setAccountWithType(
+            AccountWithType(
+                mainViewModel.getAccountWithType()!!.account,
+                accountType
+            )
+        )
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments()!!
+                .replace(", $FRAG_ACCOUNT_TYPES", "")
+        )
+        val direction = AccountTypeAddFragmentDirections
+            .actionAccountTypeAddFragmentToAccountTypesFragment()
+        mView.findNavController().navigate(direction)
+    }
+
+    private fun getCurrentaccountType() = AccountType(
+        nf.generateId(),
+        binding.etAccTypeAdd.text.toString().trim(),
+        binding.chkAccTypeAddKeepTotals.isChecked,
+        binding.chkAccTypeAddIsAsset.isChecked,
+        binding.chkAccTypeAddKeepOwing.isChecked,
+        false,
+        binding.chkAccTypeAddDisplayAsset.isChecked,
+        binding.chkAccTypeAddAllowPending.isChecked,
+        false,
+        df.getCurrentTimeAsString()
+    )
 
     private fun checkAccountType(): Boolean {
         if (binding.etAccTypeAdd.text.isNullOrBlank()) return false
