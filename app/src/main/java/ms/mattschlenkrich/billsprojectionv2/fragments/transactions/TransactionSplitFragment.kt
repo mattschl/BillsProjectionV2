@@ -67,22 +67,22 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
         mainActivity = (activity as MainActivity)
         mainViewModel =
             mainActivity.mainViewModel
+        transactionViewModel = mainActivity.transactionViewModel
+        accountViewModel = mainActivity.accountViewModel
+        budgetRuleViewModel = mainActivity.budgetRuleViewModel
+        mainActivity.title = "Splitting Transaction"
         mView = binding.root
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        transactionViewModel = mainActivity.transactionViewModel
-        accountViewModel = mainActivity.accountViewModel
-        budgetRuleViewModel = mainActivity.budgetRuleViewModel
-        mainActivity.title = "Splitting Transaction"
-        createMenu()
-        fillValues()
-        createActions()
+        createMenuActions()
+        populateValues()
+        createClickActions()
     }
 
-    private fun createActions() {
+    private fun createClickActions() {
         binding.apply {
             tvBudgetRule.setOnClickListener {
                 chooseBudgetRule()
@@ -91,7 +91,7 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
                 chooseToAccount()
             }
             etAmount.setOnLongClickListener {
-                gotoCalc()
+                gotoCalculator()
                 false
             }
             etAmount.setOnFocusChangeListener { _, b ->
@@ -131,7 +131,7 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
         )
     }
 
-    private fun gotoCalc() {
+    private fun gotoCalculator() {
         mainViewModel.setTransferNum(
             nf.getDoubleFromDollars(
                 binding.etAmount.text.toString().ifBlank {
@@ -147,7 +147,7 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
         )
     }
 
-    private fun getCurTransaction(): Transactions {
+    private fun getCurrentTransactionForSave(): Transactions {
         binding.apply {
             return Transactions(
                 nf.generateId(),
@@ -172,25 +172,25 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
 
     private fun getSplitTransDetailed(): TransactionDetailed {
         return TransactionDetailed(
-            getCurTransaction(),
+            getCurrentTransactionForSave(),
             mBudgetRule,
             mToAccount,
             mFromAccount,
         )
     }
 
-    private fun fillValues() {
+    private fun populateValues() {
         binding.apply {
             if (mainViewModel.getTransactionDetailed() != null) {
-                fillFromOriginalTransaction()
+                populateValuesFromOriginalTransaction()
             }
             if (mainViewModel.getSplitTransactionDetailed() != null) {
-                fillFromSplitTransaction()
+                populateValuesFromSplitTransaction()
             }
         }
     }
 
-    private fun fillFromSplitTransaction() {
+    private fun populateValuesFromSplitTransaction() {
         binding.apply {
             etDescription.setText(
                 mainViewModel.getSplitTransactionDetailed()?.transaction?.transName
@@ -221,15 +221,15 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
             }
             updateAmountsDisplay()
             if (mainViewModel.getSplitTransactionDetailed()!!.toAccount != null) {
-                filToAccountFromTransaction()
+                populateToAccountFromTransaction()
             }
             if (mainViewModel.getSplitTransactionDetailed()!!.budgetRule != null) {
-                fillFromBudgetRule()
+                populateValuesFromBudgetRule()
             }
         }
     }
 
-    private fun fillFromBudgetRule() {
+    private fun populateValuesFromBudgetRule() {
         binding.apply {
             mBudgetRule = mainViewModel.getSplitTransactionDetailed()!!.budgetRule!!
             tvBudgetRule.text = mBudgetRule!!.budgetRuleName
@@ -239,12 +239,12 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
                 etDescription.setText(mBudgetRule!!.budgetRuleName)
             }
             if (mainViewModel.getSplitTransactionDetailed()!!.toAccount == null) {
-                fillToAccountFromBudgetRule()
+                populateToAccountFromBudgetRule()
             }
         }
     }
 
-    private fun filToAccountFromTransaction() {
+    private fun populateToAccountFromTransaction() {
         binding.apply {
             mToAccount = mainViewModel.getSplitTransactionDetailed()!!.toAccount
             tvToAccount.text = mToAccount!!.accountName
@@ -265,7 +265,7 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
         }
     }
 
-    private fun fillToAccountFromBudgetRule() {
+    private fun populateToAccountFromBudgetRule() {
         binding.apply {
             budgetRuleViewModel.getBudgetRuleFullLive(mBudgetRule!!.ruleId).observe(
                 viewLifecycleOwner
@@ -289,7 +289,7 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
         }
     }
 
-    private fun fillFromOriginalTransaction() {
+    private fun populateValuesFromOriginalTransaction() {
         binding.apply {
             tvOriginalAmount.text = nf.displayDollars(
                 mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount
@@ -347,7 +347,7 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
         }
     }
 
-    private fun createMenu() {
+    private fun createMenuActions() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -373,13 +373,13 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
 
     private fun saveTransaction() {
         updateAmountsDisplay()
-        val mes = checkTransactions()
+        val mes = validateTransaction()
         if (mes == "Ok") {
-            val mTransaction = getCurTransaction()
+            val mTransaction = getCurrentTransactionForSave()
             transactionViewModel.insertTransaction(
                 mTransaction
             )
-            updateAccounts(mTransaction)
+            updateAccountBalances(mTransaction)
         } else {
             Toast.makeText(
                 mView.context,
@@ -389,7 +389,7 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
         }
     }
 
-    private fun updateAccounts(mTransaction: Transactions): Boolean {
+    private fun updateAccountBalances(mTransaction: Transactions): Boolean {
         if (!mTransaction.transToAccountPending) {
             updateToAccountBalanceOrOwing(mTransaction)
         }
@@ -460,26 +460,38 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
         mainViewModel.setSplitTransactionDetailed(null)
         if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANS_ADD)) {
             mainViewModel.setUpdatingTransaction(false)
-            mView.findNavController().navigate(
-                TransactionSplitFragmentDirections
-                    .actionTransactionSplitFragmentToTransactionAddFragment()
-            )
+            goBackToTransactionsAddFragment()
         } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANS_PERFORM)) {
             mainViewModel.setUpdatingTransaction(false)
-            mView.findNavController().navigate(
-                TransactionSplitFragmentDirections
-                    .actionTransactionSplitFragmentToTransactionPerformFragment()
-            )
+            goBackToTransactionPerformFragment()
         } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANS_UPDATE)) {
             mainViewModel.setUpdatingTransaction(true)
-            mView.findNavController().navigate(
-                TransactionSplitFragmentDirections
-                    .actionTransactionSplitFragmentToTransactionViewFragment()
-            )
+            gotoTransactionViewFragment()
         }
     }
 
-    private fun checkTransactions(): String {
+    private fun gotoTransactionViewFragment() {
+        mView.findNavController().navigate(
+            TransactionSplitFragmentDirections
+                .actionTransactionSplitFragmentToTransactionViewFragment()
+        )
+    }
+
+    private fun goBackToTransactionPerformFragment() {
+        mView.findNavController().navigate(
+            TransactionSplitFragmentDirections
+                .actionTransactionSplitFragmentToTransactionPerformFragment()
+        )
+    }
+
+    private fun goBackToTransactionsAddFragment() {
+        mView.findNavController().navigate(
+            TransactionSplitFragmentDirections
+                .actionTransactionSplitFragmentToTransactionAddFragment()
+        )
+    }
+
+    private fun validateTransaction(): String {
         binding.apply {
             val amount =
                 if (etAmount.text.isNotEmpty()) {

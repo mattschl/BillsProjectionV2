@@ -68,12 +68,6 @@ class TransactionPerformFragment : Fragment(
         mainActivity = (activity as MainActivity)
         mainViewModel =
             mainActivity.mainViewModel
-        mView = binding.root
-        return mView
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         transactionViewModel =
             mainActivity.transactionViewModel
         accountViewModel =
@@ -81,12 +75,18 @@ class TransactionPerformFragment : Fragment(
         budgetItemViewModel =
             mainActivity.budgetItemViewModel
         mainActivity.title = "Perform a Transaction"
-        fillValues()
-        createMenu()
-        createActions()
+        mView = binding.root
+        return mView
     }
 
-    private fun createActions() {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        populateValues()
+        createMenuActions()
+        createClickActions()
+    }
+
+    private fun createClickActions() {
         binding.apply {
             tvToAccount.setOnClickListener {
                 chooseToAccount()
@@ -98,7 +98,7 @@ class TransactionPerformFragment : Fragment(
                 chooseDate()
             }
             etAmount.setOnLongClickListener {
-                gotoCalc()
+                gotoCalculator()
                 false
             }
             etAmount.setOnFocusChangeListener { _, b ->
@@ -167,7 +167,7 @@ class TransactionPerformFragment : Fragment(
         }
     }
 
-    private fun gotoCalc() {
+    private fun gotoCalculator() {
         mainViewModel.setTransferNum(
             nf.getDoubleFromDollars(
                 binding.etAmount.text.toString().ifBlank {
@@ -253,24 +253,24 @@ class TransactionPerformFragment : Fragment(
 
     private fun getTransactionDetailed(): TransactionDetailed {
         return TransactionDetailed(
-            getCurTransaction(),
+            getCurrentTransactionForSave(),
             mBudgetRule,
             mToAccount,
             mFromAccount
         )
     }
 
-    private fun fillValues() {
+    private fun populateValues() {
         if (mainViewModel.getTransactionDetailed() != null
         ) {
-            fillFromTransaction()
+            populateValuesFromTransaction()
         } else if (mainViewModel.getBudgetItem() != null) {
-            fillFromBudgetItem()
+            populateValuesFromBudgetItem()
         }
 
     }
 
-    private fun fillFromBudgetItem() {
+    private fun populateValuesFromBudgetItem() {
         mToAccount = mainViewModel.getBudgetItem()!!.toAccount
         mFromAccount = mainViewModel.getBudgetItem()!!.fromAccount
         mBudgetRule = mainViewModel.getBudgetItem()!!.budgetRule
@@ -328,7 +328,7 @@ class TransactionPerformFragment : Fragment(
         }
     }
 
-    private fun fillFromTransaction() {
+    private fun populateValuesFromTransaction() {
         if (mainViewModel.getTransactionDetailed()!!.transaction != null) {
             val mTransaction =
                 mainViewModel.getTransactionDetailed()!!.transaction!!
@@ -408,7 +408,7 @@ class TransactionPerformFragment : Fragment(
         }
     }
 
-    private fun createMenu() {
+    private fun createMenuActions() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -434,15 +434,15 @@ class TransactionPerformFragment : Fragment(
 
     private fun performTransaction() {
         calculateRemainder()
-        val mes = checkTransaction()
+        val mes = validateTransaction()
         if (mes == "Ok") {
-            val mTransaction = getCurTransaction()
+            val mTransaction = getCurrentTransactionForSave()
             transactionViewModel.insertTransaction(
                 mTransaction
             )
             CoroutineScope(Dispatchers.IO).launch {
                 val go = async {
-                    updateAccounts(mTransaction)
+                    updateAccountBalances(mTransaction)
                 }
                 if (go.await()) {
                     updateBudgetItem()
@@ -486,7 +486,7 @@ class TransactionPerformFragment : Fragment(
         )
     }
 
-    private fun updateAccounts(mTransaction: Transactions): Boolean {
+    private fun updateAccountBalances(mTransaction: Transactions): Boolean {
         CoroutineScope(Dispatchers.IO).launch {
             val toAccountWithType =
                 accountViewModel.getAccountWithType(
@@ -547,15 +547,19 @@ class TransactionPerformFragment : Fragment(
         if (mainViewModel.getCallingFragments()!!
                 .contains(FRAG_BUDGET_VIEW)
         ) {
-            mView.findNavController().navigate(
-                TransactionPerformFragmentDirections
-                    .actionTransactionPerformFragmentToBudgetViewFragment()
-            )
+            gotoBudgetViewFragment()
         }
     }
 
+    private fun gotoBudgetViewFragment() {
+        mView.findNavController().navigate(
+            TransactionPerformFragmentDirections
+                .actionTransactionPerformFragmentToBudgetViewFragment()
+        )
+    }
 
-    private fun getCurTransaction(): Transactions {
+
+    private fun getCurrentTransactionForSave(): Transactions {
         binding.apply {
             return Transactions(
                 nf.generateId(),
@@ -578,7 +582,7 @@ class TransactionPerformFragment : Fragment(
         }
     }
 
-    private fun checkTransaction(): String {
+    private fun validateTransaction(): String {
         binding.apply {
             val amount =
                 if (etAmount.text.isNotEmpty()) {

@@ -72,23 +72,23 @@ class TransactionAddFragment :
         mainActivity = (activity as MainActivity)
         mainViewModel =
             mainActivity.mainViewModel
+        transactionViewModel =
+            mainActivity.transactionViewModel
+        accountViewModel =
+            mainActivity.accountViewModel
+        mainActivity.title = "Add a new Transaction"
         mView = binding.root
         return mView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        transactionViewModel =
-            mainActivity.transactionViewModel
-        accountViewModel =
-            mainActivity.accountViewModel
-        mainActivity.title = "Add a new Transaction"
-        createMenu()
-        fillValues()
-        createActions()
+        createMenuActions()
+        populateValues()
+        createClickActions()
     }
 
-    private fun createActions() {
+    private fun createClickActions() {
         binding.apply {
             tvBudgetRule.setOnClickListener {
                 chooseBudgetRule()
@@ -103,7 +103,7 @@ class TransactionAddFragment :
                 chooseDate()
             }
             etAmount.setOnLongClickListener {
-                gotoCalc()
+                gotoCalculator()
                 false
             }
             etAmount.setOnFocusChangeListener { _, b ->
@@ -141,7 +141,7 @@ class TransactionAddFragment :
         }
     }
 
-    private fun gotoCalc() {
+    private fun gotoCalculator() {
         mainViewModel.setTransferNum(
             nf.getDoubleFromDollars(
                 binding.etAmount.text.toString().ifBlank {
@@ -157,7 +157,7 @@ class TransactionAddFragment :
         )
     }
 
-    private fun createMenu() {
+    private fun createMenuActions() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -194,7 +194,7 @@ class TransactionAddFragment :
         )
     }
 
-    private fun getCurTransaction(): Transactions {
+    private fun getCurrentTransactionForSave(): Transactions {
         binding.apply {
             return Transactions(
                 nf.generateId(),
@@ -235,7 +235,7 @@ class TransactionAddFragment :
 
     private fun getTransactionDetailed(): TransactionDetailed {
         return TransactionDetailed(
-            getCurTransaction(),
+            getCurrentTransactionForSave(),
             mBudgetRule,
             mToAccount,
             mFromAccount
@@ -290,24 +290,24 @@ class TransactionAddFragment :
     }
 
 
-    private fun fillValues() {
+    private fun populateValues() {
         binding.apply {
             if (mainViewModel.getTransactionDetailed() != null) {
                 if (mainViewModel.getTransactionDetailed()!!.transaction != null) {
-                    fillFromTransactionDetailed()
+                    populateValuesFromTransactionDetailed()
                 }
                 if (mainViewModel.getTransactionDetailed()!!.budgetRule != null) {
-                    fillFromBudgetRule()
+                    populatetValuesFromBudgetRule()
                 }
                 if (mainViewModel.getTransactionDetailed()!!.toAccount != null) {
-                    fillFromToAccount()
+                    populateValuesFromToAccount()
                 } else {
                     chkToAccPending.visibility = View.GONE
                 }
                 chkToAccPending.isChecked =
                     mainViewModel.getTransactionDetailed()!!.transaction!!.transToAccountPending
                 if (mainViewModel.getTransactionDetailed()!!.fromAccount != null) {
-                    fillFromFromAccount()
+                    populateValuesFromAccount()
                 } else {
                     chkFromAccPending.visibility = View.GONE
                 }
@@ -324,7 +324,7 @@ class TransactionAddFragment :
         }
     }
 
-    private fun fillFromFromAccount() {
+    private fun populateValuesFromAccount() {
         binding.apply {
             mFromAccount =
                 mainViewModel.getTransactionDetailed()!!.fromAccount
@@ -349,7 +349,7 @@ class TransactionAddFragment :
         }
     }
 
-    private fun fillFromToAccount() {
+    private fun populateValuesFromToAccount() {
         binding.apply {
             mToAccount =
                 mainViewModel.getTransactionDetailed()!!.toAccount
@@ -374,24 +374,24 @@ class TransactionAddFragment :
         }
     }
 
-    private fun fillFromBudgetRule() {
+    private fun populatetValuesFromBudgetRule() {
         binding.apply {
             mBudgetRule = mainViewModel.getTransactionDetailed()!!.budgetRule
             tvBudgetRule.text = mBudgetRule!!.budgetRuleName
             if (mainViewModel.getTransactionDetailed()!!.toAccount == null &&
                 mainViewModel.getTransactionDetailed()!!.budgetRule!!.budToAccountId != 0L
             ) {
-                fillToAccountFromBudgetRule()
+                populateToAccountFromBudgetRule()
             }
             if (mainViewModel.getTransactionDetailed()!!.fromAccount == null &&
                 mainViewModel.getTransactionDetailed()!!.budgetRule!!.budFromAccountId != 0L
             ) {
-                fillFromAccountFromBudgetRule()
+                populateFromAccountFromBudgetRule()
             }
         }
     }
 
-    private fun fillFromAccountFromBudgetRule() {
+    private fun populateFromAccountFromBudgetRule() {
         binding.apply {
             CoroutineScope(Dispatchers.IO).launch {
                 val acc = async {
@@ -424,7 +424,7 @@ class TransactionAddFragment :
         }
     }
 
-    private fun fillToAccountFromBudgetRule() {
+    private fun populateToAccountFromBudgetRule() {
         binding.apply {
             CoroutineScope(Dispatchers.IO).launch {
                 val acc = async {
@@ -458,7 +458,7 @@ class TransactionAddFragment :
         }
     }
 
-    private fun fillFromTransactionDetailed() {
+    private fun populateValuesFromTransactionDetailed() {
         binding.apply {
             if (mainViewModel.getTransactionDetailed()!!.budgetRule != null &&
                 mainViewModel.getTransactionDetailed()!!.transaction!!.transName.isBlank()
@@ -503,13 +503,13 @@ class TransactionAddFragment :
     }
 
     private fun saveTransaction() {
-        val mes = checkTransaction()
+        val mes = validateTransaction()
         if (mes == "Ok") {
-            val mTransaction = getCurTransaction()
+            val mTransaction = getCurrentTransactionForSave()
             transactionViewModel.insertTransaction(
                 mTransaction
             )
-            updateAccounts(mTransaction)
+            updateAccountBalances(mTransaction)
         } else {
             Toast.makeText(
                 mView.context,
@@ -520,7 +520,7 @@ class TransactionAddFragment :
     }
 
 
-    private fun updateAccounts(mTransaction: Transactions): Boolean {
+    private fun updateAccountBalances(mTransaction: Transactions): Boolean {
         if (!mTransaction.transToAccountPending) {
             updateToAccountBalanceOrOwing(mTransaction)
         }
@@ -580,19 +580,27 @@ class TransactionAddFragment :
         if (mainViewModel.getCallingFragments()!!
                 .contains(FRAG_TRANSACTION_VIEW)
         ) {
-            val direction =
-                TransactionAddFragmentDirections
-                    .actionTransactionAddFragmentToTransactionViewFragment()
-            mView.findNavController().navigate(direction)
+            gotoTransactionViewFragment()
         } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_BUDGET_VIEW)) {
-            val direction =
-                TransactionAddFragmentDirections
-                    .actionTransactionAddFragmentToBudgetViewFragment()
-            mView.findNavController().navigate(direction)
+            gotoBudgetViewFragment()
         }
     }
 
-    private fun checkTransaction(): String {
+    private fun gotoBudgetViewFragment() {
+        val direction =
+            TransactionAddFragmentDirections
+                .actionTransactionAddFragmentToBudgetViewFragment()
+        mView.findNavController().navigate(direction)
+    }
+
+    private fun gotoTransactionViewFragment() {
+        val direction =
+            TransactionAddFragmentDirections
+                .actionTransactionAddFragmentToTransactionViewFragment()
+        mView.findNavController().navigate(direction)
+    }
+
+    private fun validateTransaction(): String {
         binding.apply {
             val amount =
                 if (etAmount.text.isNotEmpty()) {

@@ -75,22 +75,22 @@ class TransactionUpdateFragment :
         )
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
+        transactionViewModel = mainActivity.transactionViewModel
+        accountViewModel = mainActivity.accountViewModel
+        budgetRuleViewModel = mainActivity.budgetRuleViewModel
+        mainActivity.title = "Update this Transaction"
         mView = binding.root
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        transactionViewModel = mainActivity.transactionViewModel
-        accountViewModel = mainActivity.accountViewModel
-        budgetRuleViewModel = mainActivity.budgetRuleViewModel
-        mainActivity.title = "Update this Transaction"
-        createMenu()
-        fillValues()
-        createActions()
+        createMenuActions()
+        populateValues()
+        createClickActions()
     }
 
-    private fun createActions() {
+    private fun createClickActions() {
         binding.apply {
             tvBudgetRule.setOnClickListener {
                 chooseBudgetRule()
@@ -108,7 +108,7 @@ class TransactionUpdateFragment :
                 updateTransaction()
             }
             etAmount.setOnLongClickListener {
-                gotoCalc()
+                gotoCalculator()
                 false
             }
             etAmount.setOnFocusChangeListener { _, b ->
@@ -125,12 +125,12 @@ class TransactionUpdateFragment :
                 updateAmountDisplay()
             }
             btnSplit.setOnClickListener {
-                splitTransactions()
+                gotoSplitTransactionFragment()
             }
         }
     }
 
-    private fun splitTransactions() {
+    private fun gotoSplitTransactionFragment() {
         mainViewModel.setSplitTransactionDetailed(null)
         mainViewModel.setTransferNum(0.0)
         mainViewModel.setUpdatingTransaction(true)
@@ -140,7 +140,7 @@ class TransactionUpdateFragment :
             mainViewModel.setCallingFragments(
                 mainViewModel.getCallingFragments() + ", " + TAG
             )
-            mainViewModel.setTransactionDetailed(getCurTransDetailed())
+            mainViewModel.setTransactionDetailed(getCurrentTransDetailed())
             mView.findNavController().navigate(
                 TransactionUpdateFragmentDirections
                     .actionTransactionUpdateFragmentToTransactionSplitFragment()
@@ -156,7 +156,7 @@ class TransactionUpdateFragment :
         }
     }
 
-    private fun createMenu() {
+    private fun createMenuActions() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -178,7 +178,7 @@ class TransactionUpdateFragment :
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    private fun gotoCalc() {
+    private fun gotoCalculator() {
         mainViewModel.setTransferNum(
             nf.getDoubleFromDollars(
                 binding.etAmount.text.toString().ifBlank {
@@ -187,7 +187,7 @@ class TransactionUpdateFragment :
             )
         )
         mainViewModel.setReturnTo(TAG)
-        mainViewModel.setTransactionDetailed(getCurTransDetailed())
+        mainViewModel.setTransactionDetailed(getCurrentTransDetailed())
         mView.findNavController().navigate(
             TransactionUpdateFragmentDirections
                 .actionTransactionUpdateFragmentToCalcFragment()
@@ -195,11 +195,11 @@ class TransactionUpdateFragment :
     }
 
     private fun updateTransaction() {
-        val mes = checkTransaction()
+        val mes = validateTransactionForDave()
         binding.apply {
             if (mes == "Ok") {
-                updateAccountsDelete(mainViewModel.getOldTransaction()!!)
-                val curTransaction = getCurTransaction()
+                reverseOldTransactionAccountBalances(mainViewModel.getOldTransaction()!!)
+                val curTransaction = getCurrentTransactionForSave()
                 transactionViewModel.updateTransaction(
                     curTransaction
                 )
@@ -225,7 +225,7 @@ class TransactionUpdateFragment :
                         newToAccount.await(),
                         newFromAccount.await()
                     )
-                    updateAccountsNew(newTrans)
+                    updateAccountsWithNewValues(newTrans)
                 }
 
                 mainViewModel.setCallingFragments(
@@ -258,7 +258,7 @@ class TransactionUpdateFragment :
         return bool
     }
 
-    private fun checkTransaction(): String {
+    private fun validateTransactionForDave(): String {
         binding.apply {
             val amount =
                 nf.getDoubleFromDollars(etAmount.text.toString())
@@ -303,7 +303,7 @@ class TransactionUpdateFragment :
                     val display = "$year-${month.toString().padStart(2, '0')}-${
                         dayOfMonth.toString().padStart(2, '0')
                     }"
-                    etTransDate.setText(display)
+                    etTransDate.text = display
                 },
                 curDateAll[0].toInt(),
                 curDateAll[1].toInt() - 1,
@@ -318,7 +318,7 @@ class TransactionUpdateFragment :
         mainViewModel.setCallingFragments(
             "${mainViewModel.getCallingFragments()}, $TAG"
         )
-        mainViewModel.setTransactionDetailed(getCurTransDetailed())
+        mainViewModel.setTransactionDetailed(getCurrentTransDetailed())
         mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
         val direction =
             TransactionUpdateFragmentDirections
@@ -330,7 +330,7 @@ class TransactionUpdateFragment :
         mainViewModel.setCallingFragments(
             "${mainViewModel.getCallingFragments()}, $TAG"
         )
-        mainViewModel.setTransactionDetailed(getCurTransDetailed())
+        mainViewModel.setTransactionDetailed(getCurrentTransDetailed())
         mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
         val direction =
             TransactionUpdateFragmentDirections
@@ -348,9 +348,9 @@ class TransactionUpdateFragment :
         mView.findNavController().navigate(direction)
     }
 
-    private fun getCurTransDetailed(): TransactionDetailed {
+    private fun getCurrentTransDetailed(): TransactionDetailed {
         return TransactionDetailed(
-            getCurTransaction(),
+            getCurrentTransactionForSave(),
             mBudgetRule,
             mToAccount,
             mFromAccount
@@ -358,7 +358,7 @@ class TransactionUpdateFragment :
 
     }
 
-    private fun getCurTransaction(): Transactions {
+    private fun getCurrentTransactionForSave(): Transactions {
         binding.apply {
             return Transactions(
                 mTransaction!!.transId,
@@ -377,104 +377,138 @@ class TransactionUpdateFragment :
         }
     }
 
-    private fun fillValues() {
+    private fun populateValues() {
         binding.apply {
             if (mainViewModel.getOldTransaction() != null &&
                 mainViewModel.getTransactionDetailed() == null
             ) {
-                val transFull = mainViewModel.getOldTransaction()!!
-                mTransaction = transFull.transaction
-                etTransDate.setText(mTransaction!!.transDate)
-                etAmount.setText(nf.displayDollars(mTransaction!!.transAmount))
-                etDescription.setText(mTransaction!!.transName)
-                etNote.setText(mTransaction!!.transNote)
-                mBudgetRule = transFull.budgetRule
-                tvBudgetRule.text = mBudgetRule!!.budgetRuleName
-                mToAccount = transFull.toAccountAndType.account
-                tvToAccount.text = mToAccount!!.accountName
-                chkToAccountPending.isChecked = mTransaction!!.transToAccountPending
-                mFromAccount = transFull.fromAccountAndType.account
-                tvFromAccount.text = mFromAccount!!.accountName
-                chkFromAccountPending.isChecked = mTransaction!!.transFromAccountPending
-                updateAmountDisplay()
+                populateValuesFromOldTransaction()
             } else if (mainViewModel.getTransactionDetailed() != null) {
-                if (mainViewModel.getTransactionDetailed()!!.transaction != null) {
-                    mTransaction = mainViewModel.getTransactionDetailed()!!.transaction
-                    etTransDate.setText(
-                        mainViewModel.getTransactionDetailed()!!.transaction!!.transDate
-                    )
-                    etAmount.setText(
-                        nf.displayDollars(
-                            if (mainViewModel.getTransferNum()!! != 0.0) {
-                                mainViewModel.getTransferNum()!!
-                            } else {
-                                mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount
-                            }
-                        )
-                    )
-                    mainViewModel.setTransferNum(0.0)
-                    etDescription.setText(
-                        mainViewModel.getTransactionDetailed()!!.transaction!!.transName
-                    )
-                    etNote.setText(
-                        mainViewModel.getTransactionDetailed()!!.transaction!!.transNote
-                    )
-                }
-                if (mainViewModel.getTransactionDetailed()!!.budgetRule != null) {
-                    mBudgetRule = mainViewModel.getTransactionDetailed()!!.budgetRule!!
-                    tvBudgetRule.text = mBudgetRule!!.budgetRuleName
-                }
-                if (mainViewModel.getTransactionDetailed()!!.toAccount != null) {
-                    mToAccount = mainViewModel.getTransactionDetailed()!!.toAccount!!
-                    tvToAccount.text =
-                        mToAccount!!.accountName
-                    CoroutineScope(Dispatchers.IO).launch {
-                        val acc = async {
-                            accountViewModel.getAccountWithType(
-                                mToAccount!!.accountId
-                            )
-                        }
-                        mToAccountWithType = acc.await()
-                    }
-                    CoroutineScope(Dispatchers.Main).launch {
-                        delay(WAIT_250)
-                        if (mToAccountWithType!!.accountType!!.allowPending) {
-                            chkToAccountPending.visibility = View.VISIBLE
-                        } else {
-                            chkToAccountPending.visibility = View.GONE
-                        }
-                    }
-                }
-                chkToAccountPending.isChecked =
-                    mainViewModel.getTransactionDetailed()!!.transaction!!.transToAccountPending
-                if (mainViewModel.getTransactionDetailed()!!.fromAccount != null) {
-                    mFromAccount = mainViewModel.getTransactionDetailed()!!.fromAccount!!
-                    tvFromAccount.text = mFromAccount!!.accountName
-                    CoroutineScope(Dispatchers.IO).launch {
-                        val acc = async {
-                            accountViewModel.getAccountWithType(
-                                mFromAccount!!.accountId
-                            )
-                        }
-                        mFromAccountWithType = acc.await()
-                    }
-                    CoroutineScope(Dispatchers.Main).launch {
-                        delay(WAIT_250)
-                        if (mFromAccountWithType!!.accountType!!.allowPending) {
-                            chkFromAccountPending.visibility = View.VISIBLE
-                        } else {
-                            chkFromAccountPending.visibility = View.GONE
-                        }
-                    }
-
-                }
-                chkFromAccountPending.isChecked =
-                    mainViewModel.getTransactionDetailed()!!.transaction!!.transFromAccountPending
+                populateValuesFromCache()
             }
         }
         updateAmountDisplay()
         if (mainViewModel.getUpdatingTransaction()) {
             updateTransaction()
+        }
+    }
+
+    private fun populateValuesFromCache() {
+        binding.apply {
+            if (mainViewModel.getTransactionDetailed()!!.transaction != null) {
+                populateValuesFromTransactionInCache()
+            }
+            if (mainViewModel.getTransactionDetailed()!!.budgetRule != null) {
+                populateBudgetRuleFromCache()
+            }
+            if (mainViewModel.getTransactionDetailed()!!.toAccount != null) {
+                populateToAccountFromCache()
+            }
+            chkToAccountPending.isChecked =
+                mainViewModel.getTransactionDetailed()!!.transaction!!.transToAccountPending
+            if (mainViewModel.getTransactionDetailed()!!.fromAccount != null) {
+                populateFromAccountFromCache()
+
+            }
+            chkFromAccountPending.isChecked =
+                mainViewModel.getTransactionDetailed()!!.transaction!!.transFromAccountPending
+        }
+    }
+
+    private fun populateFromAccountFromCache() {
+        binding.apply {
+            mFromAccount = mainViewModel.getTransactionDetailed()!!.fromAccount!!
+            tvFromAccount.text = mFromAccount!!.accountName
+            CoroutineScope(Dispatchers.IO).launch {
+                val acc = async {
+                    accountViewModel.getAccountWithType(
+                        mFromAccount!!.accountId
+                    )
+                }
+                mFromAccountWithType = acc.await()
+            }
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(WAIT_250)
+                if (mFromAccountWithType!!.accountType!!.allowPending) {
+                    chkFromAccountPending.visibility = View.VISIBLE
+                } else {
+                    chkFromAccountPending.visibility = View.GONE
+                }
+            }
+        }
+    }
+
+    private fun populateToAccountFromCache() {
+        binding.apply {
+            mToAccount = mainViewModel.getTransactionDetailed()!!.toAccount!!
+            tvToAccount.text =
+                mToAccount!!.accountName
+            CoroutineScope(Dispatchers.IO).launch {
+                val acc = async {
+                    accountViewModel.getAccountWithType(
+                        mToAccount!!.accountId
+                    )
+                }
+                mToAccountWithType = acc.await()
+            }
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(WAIT_250)
+                if (mToAccountWithType!!.accountType!!.allowPending) {
+                    chkToAccountPending.visibility = View.VISIBLE
+                } else {
+                    chkToAccountPending.visibility = View.GONE
+                }
+            }
+        }
+    }
+
+    private fun populateBudgetRuleFromCache() {
+        binding.apply {
+            mBudgetRule = mainViewModel.getTransactionDetailed()!!.budgetRule!!
+            tvBudgetRule.text = mBudgetRule!!.budgetRuleName
+        }
+    }
+
+    private fun populateValuesFromTransactionInCache() {
+        binding.apply {
+            mTransaction = mainViewModel.getTransactionDetailed()!!.transaction
+            etTransDate.text = mainViewModel.getTransactionDetailed()!!.transaction!!.transDate
+            etAmount.setText(
+                nf.displayDollars(
+                    if (mainViewModel.getTransferNum()!! != 0.0) {
+                        mainViewModel.getTransferNum()!!
+                    } else {
+                        mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount
+                    }
+                )
+            )
+            mainViewModel.setTransferNum(0.0)
+            etDescription.setText(
+                mainViewModel.getTransactionDetailed()!!.transaction!!.transName
+            )
+            etNote.setText(
+                mainViewModel.getTransactionDetailed()!!.transaction!!.transNote
+            )
+        }
+    }
+
+    private fun populateValuesFromOldTransaction() {
+        binding.apply {
+            val transFull = mainViewModel.getOldTransaction()!!
+            mTransaction = transFull.transaction
+            etTransDate.text = mTransaction!!.transDate
+            etAmount.setText(nf.displayDollars(mTransaction!!.transAmount))
+            etDescription.setText(mTransaction!!.transName)
+            etNote.setText(mTransaction!!.transNote)
+            mBudgetRule = transFull.budgetRule
+            tvBudgetRule.text = mBudgetRule!!.budgetRuleName
+            mToAccount = transFull.toAccountAndType.account
+            tvToAccount.text = mToAccount!!.accountName
+            chkToAccountPending.isChecked = mTransaction!!.transToAccountPending
+            mFromAccount = transFull.fromAccountAndType.account
+            tvFromAccount.text = mFromAccount!!.accountName
+            chkFromAccountPending.isChecked = mTransaction!!.transFromAccountPending
+            updateAmountDisplay()
         }
     }
 
@@ -487,7 +521,7 @@ class TransactionUpdateFragment :
                     mainViewModel.getTransactionDetailed()!!.transaction!!.transId,
                     df.getCurrentTimeAsString()
                 )
-                updateAccountsDelete(mainViewModel.getOldTransaction()!!)
+                reverseOldTransactionAccountBalances(mainViewModel.getOldTransaction()!!)
                 mainViewModel.setCallingFragments(
                     mainViewModel.getCallingFragments()!!.replace(
                         FRAG_TRANS_UPDATE, ""
@@ -504,22 +538,30 @@ class TransactionUpdateFragment :
                 FRAG_BUDGET_VIEW
             )
         ) {
-            mView.findNavController().navigate(
-                TransactionUpdateFragmentDirections
-                    .actionTransactionUpdateFragmentToBudgetViewFragment()
-            )
+            gotoBudgetViewFragment()
         } else if (mainViewModel.getCallingFragments()!!.contains(
                 FRAG_TRANSACTION_VIEW
             )
         ) {
-            val direction =
-                TransactionUpdateFragmentDirections
-                    .actionTransactionUpdateFragmentToTransactionViewFragment()
-            mView.findNavController().navigate(direction)
+            gotoTransactionViewFragment()
         }
     }
 
-    private fun updateAccountsNew(
+    private fun gotoTransactionViewFragment() {
+        val direction =
+            TransactionUpdateFragmentDirections
+                .actionTransactionUpdateFragmentToTransactionViewFragment()
+        mView.findNavController().navigate(direction)
+    }
+
+    private fun gotoBudgetViewFragment() {
+        mView.findNavController().navigate(
+            TransactionUpdateFragmentDirections
+                .actionTransactionUpdateFragmentToBudgetViewFragment()
+        )
+    }
+
+    private fun updateAccountsWithNewValues(
         newTransaction: TransactionFull
     ): Boolean {
         if (!newTransaction.transaction.transToAccountPending) {
@@ -566,7 +608,7 @@ class TransactionUpdateFragment :
         return true
     }
 
-    private fun updateAccountsDelete(oldTransaction: TransactionFull): Boolean {
+    private fun reverseOldTransactionAccountBalances(oldTransaction: TransactionFull): Boolean {
         if (!oldTransaction.transaction.transToAccountPending) {
             if (oldTransaction.toAccountAndType.accountType!!.keepTotals) {
                 transactionViewModel.updateAccountBalance(

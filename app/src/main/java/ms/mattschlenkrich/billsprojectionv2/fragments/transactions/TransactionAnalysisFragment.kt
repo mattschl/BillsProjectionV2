@@ -51,6 +51,8 @@ class TransactionAnalysisFragment : Fragment(
         )
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
+        mainActivity.title = "Transaction analysis"
+        transactionViewModel = mainActivity.transactionViewModel
         mView = binding.root
         Log.d(TAG, "creating $TAG")
         return binding.root
@@ -59,9 +61,7 @@ class TransactionAnalysisFragment : Fragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mainActivity.title = "Transaction analysis"
-        transactionViewModel = mainActivity.transactionViewModel
-        setStartValues()
+        populateValues()
         setRadioOptions()
         setGotoOptions()
         setSearchAction()
@@ -123,7 +123,7 @@ class TransactionAnalysisFragment : Fragment(
                         searchQuery
                     ).observe(viewLifecycleOwner) { transList ->
                         transactionAdapter!!.differ.submitList(transList)
-                        fillAnalysisFromBudgetRuleOrSearch(transList)
+                        populateAnalysisFromBudgetRuleOrSearch(transList)
                         updateUiHelpText(transList)
                     }
                 }
@@ -179,15 +179,15 @@ class TransactionAnalysisFragment : Fragment(
         )
     }
 
-    private fun setStartValues() {
+    private fun populateValues() {
         if (mainViewModel.getBudgetRuleDetailed() != null) {
-            fillFromBudgetRule()
+            populateAnalysisFromBudgetRule()
         } else if (mainViewModel.getAccountWithType() != null) {
-            fillFromAccount()
+            populateValuesFromAccount()
         }
     }
 
-    private fun fillFromAccount() {
+    private fun populateValuesFromAccount() {
         var totalCredits = 0.0
         var totalDebits = 0.0
         val account =
@@ -239,7 +239,7 @@ class TransactionAnalysisFragment : Fragment(
                 transactionViewModel.getActiveTransactionByAccount(account.accountId)
                     .observe(viewLifecycleOwner) { transactionList ->
                         transactionAdapter!!.differ.submitList(transactionList)
-                        fillAnalysisFromAccount(transactionList, totalCredits, totalDebits)
+                        populateAnalysisFromAccount(transactionList, totalCredits, totalDebits)
                         updateUiHelpText(transactionList)
                     }
             }
@@ -258,7 +258,7 @@ class TransactionAnalysisFragment : Fragment(
         }
     }
 
-    private fun fillAnalysisFromAccount(
+    private fun populateAnalysisFromAccount(
         transList: List<TransactionDetailed>,
         totalCredits: Double,
         totalDebits: Double
@@ -288,14 +288,14 @@ class TransactionAnalysisFragment : Fragment(
                 rdLastMonth.isChecked = false
                 rdDateRange.isChecked = false
                 setDateRangeVisibility(false)
-                setStartValues()
+                populateValues()
             }
             rdLastMonth.setOnClickListener {
                 rdShowAll.isChecked = false
                 rdLastMonth.isChecked = true
                 rdDateRange.isChecked = false
                 setDateRangeVisibility(false)
-                setValuesLastMonth()
+                populateAnalysisLastMonth()
             }
             rdDateRange.setOnClickListener {
                 rdShowAll.isChecked = false
@@ -320,17 +320,17 @@ class TransactionAnalysisFragment : Fragment(
                 }
                 btnFill.setOnClickListener {
                     if (mainViewModel.getBudgetRuleDetailed() != null) {
-                        fillFromBudgetRuleAndDates(
+                        populateAnalysisFromBudgetRuleAndDates(
                             tvStartDate.text.toString(),
                             tvEndDate.text.toString()
                         )
                     } else if (mainViewModel.getAccountWithType() != null) {
-                        fillFromAccountAndDates(
+                        populateAnalysisFromAccountAndDates(
                             tvStartDate.text.toString(),
                             tvEndDate.text.toString()
                         )
                     } else if (chkSearch.isChecked) {
-                        fillFromSearchAndDates(
+                        populateAnalysisFromSearchAndDates(
                             "%${etSearch.text.toString()}%",
                             tvStartDate.text.toString(),
                             tvEndDate.text.toString()
@@ -342,7 +342,11 @@ class TransactionAnalysisFragment : Fragment(
         }
     }
 
-    private fun fillFromSearchAndDates(searchQuery: String, startDate: String, endDate: String) {
+    private fun populateAnalysisFromSearchAndDates(
+        searchQuery: String,
+        startDate: String,
+        endDate: String
+    ) {
         binding.apply {
             tvBudgetRule.text =
                 getString(R.string.no_budget_rule_selected)
@@ -391,7 +395,7 @@ class TransactionAnalysisFragment : Fragment(
                         searchQuery, startDate, endDate
                     ).observe(viewLifecycleOwner) { transList ->
                         transactionAdapter!!.differ.submitList(transList)
-                        fillAnalysisFromBudgetRuleOrSearch(transList)
+                        populateAnalysisFromBudgetRuleOrSearch(transList)
                         updateUiHelpText(transList)
                     }
                 }
@@ -449,18 +453,18 @@ class TransactionAnalysisFragment : Fragment(
         }
     }
 
-    private fun setValuesLastMonth() {
+    private fun populateAnalysisLastMonth() {
         val startDate = nf.getFirstOfPreviousMonth(
             nf.getCurrentDateAsString()
         )
         val endDate = nf.getLastOfPreviousMonth(nf.getCurrentDateAsString())
         binding.apply {
             if (mainViewModel.getBudgetRuleDetailed() != null) {
-                fillFromBudgetRuleAndDates(startDate, endDate)
+                populateAnalysisFromBudgetRuleAndDates(startDate, endDate)
             } else if (mainViewModel.getAccountWithType() != null) {
-                fillFromAccountAndDates(startDate, endDate)
+                populateAnalysisFromAccountAndDates(startDate, endDate)
             } else if (chkSearch.isChecked) {
-                fillFromSearchAndDates(
+                populateAnalysisFromSearchAndDates(
                     "%${etSearch.text.toString()}%",
                     startDate,
                     endDate
@@ -469,7 +473,7 @@ class TransactionAnalysisFragment : Fragment(
         }
     }
 
-    private fun fillFromAccountAndDates(startDate: String, endDate: String) {
+    private fun populateAnalysisFromAccountAndDates(startDate: String, endDate: String) {
         var totalCredits = 0.0
         var totalDebits = 0.0
         val account =
@@ -523,7 +527,7 @@ class TransactionAnalysisFragment : Fragment(
                     account.accountId, startDate, endDate
                 ).observe(viewLifecycleOwner) { transactionList ->
                     transactionAdapter!!.differ.submitList(transactionList)
-                    fillAnalysisFromAccount(transactionList, totalCredits, totalDebits)
+                    populateAnalysisFromAccount(transactionList, totalCredits, totalDebits)
                     updateUiHelpText(transactionList)
                 }
             }
@@ -531,7 +535,7 @@ class TransactionAnalysisFragment : Fragment(
     }
 
 
-    private fun fillFromBudgetRuleAndDates(startDate: String, endDate: String) {
+    private fun populateAnalysisFromBudgetRuleAndDates(startDate: String, endDate: String) {
         val budgetRule =
             mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!
         binding.apply {
@@ -581,7 +585,7 @@ class TransactionAnalysisFragment : Fragment(
                     transactionAdapter!!.differ.submitList(
                         transactionList
                     )
-                    fillAnalysisFromBudgetRuleOrSearch(transactionList)
+                    populateAnalysisFromBudgetRuleOrSearch(transactionList)
                     updateUiHelpText(transactionList)
                 }
                 CoroutineScope(Dispatchers.Main).launch {
@@ -592,7 +596,7 @@ class TransactionAnalysisFragment : Fragment(
 
     }
 
-    private fun fillAnalysisFromBudgetRuleOrSearch(
+    private fun populateAnalysisFromBudgetRuleOrSearch(
         transList: List<TransactionDetailed>,
     ) {
         if (transList.isNotEmpty()) {
@@ -635,7 +639,7 @@ class TransactionAnalysisFragment : Fragment(
         }
     }
 
-    private fun fillFromBudgetRule() {
+    private fun populateAnalysisFromBudgetRule() {
         val budgetRule =
             mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!
         binding.apply {
@@ -681,7 +685,7 @@ class TransactionAnalysisFragment : Fragment(
                 viewLifecycleOwner
             ) { transactionList ->
                 transactionAdapter!!.differ.submitList(transactionList)
-                fillAnalysisFromBudgetRuleOrSearch(transactionList)
+                populateAnalysisFromBudgetRuleOrSearch(transactionList)
                 updateUiHelpText(transactionList)
             }
         }
