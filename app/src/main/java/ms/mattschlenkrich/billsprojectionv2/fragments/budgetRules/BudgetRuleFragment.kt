@@ -81,14 +81,14 @@ class BudgetRuleFragment :
         )
         val direction = BudgetRuleFragmentDirections
             .actionBudgetRuleFragmentToBudgetRuleAddFragment()
-        mView!!.findNavController().navigate(direction)
+        mView.findNavController().navigate(direction)
     }
 
     private fun setupRecyclerView() {
         budgetRuleAdapter = BudgetRuleAdapter(
             budgetRuleViewModel,
             mainViewModel,
-            mView!!.context,
+            mView.context,
         )
 
         binding.rvBudgetRules.apply {
