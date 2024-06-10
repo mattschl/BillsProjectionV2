@@ -50,25 +50,29 @@ class TransactionViewFragment :
         mainViewModel =
             mainActivity.mainViewModel
         Log.d(TAG, "Creating $TAG")
+        transactionViewModel =
+            mainActivity.transactionViewModel
+        mainActivity.title = "View Transaction History"
         mView = binding.root
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        transactionViewModel =
-            mainActivity.transactionViewModel
-        mainActivity.title = "View Transaction History"
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         setupRecyclerView()
+        createClickActions()
+    }
+
+    private fun createClickActions() {
         binding.fabAddTransaction.setOnClickListener {
-            addTransaction()
+            gotoAddTransactionFragment()
         }
     }
 
-    private fun addTransaction() {
+    private fun gotoAddTransactionFragment() {
         mainViewModel.setCallingFragments(
             mainViewModel.getCallingFragments() + ", " + TAG
         )

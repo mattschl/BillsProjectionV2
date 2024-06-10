@@ -53,15 +53,22 @@ class AccountAddFragment :
         )
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
-
-        return binding.root
+        accountsViewModel =
+            mainActivity.accountViewModel
+        mainActivity.title = "Add a new Account"
+        mView = binding.root
+        return mView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mView = view
-        accountsViewModel =
-            mainActivity.accountViewModel
+        getAccountNameListForValidation()
+        populateValues()
+        createMenuActions()
+        createClickActions()
+    }
+
+    private fun getAccountNameListForValidation() {
         accountsViewModel.getAccountNameList().observe(
             viewLifecycleOwner
         ) { accounts ->
@@ -70,34 +77,29 @@ class AccountAddFragment :
                 accountNameList.add(it)
             }
         }
-
-        mainActivity.title = "Add a new Account"
-        populateValues()
-        createMenu()
-        createActions()
     }
 
-    private fun createActions() {
+    private fun createClickActions() {
         binding.apply {
             tvAccAddType.setOnClickListener {
-                gotoAccountTypes()
+                gotoAccountTypesFragment()
             }
             etAccAddBalance.setOnLongClickListener {
-                gotoCalc(BALANCE)
+                gotoCalculator(BALANCE)
                 false
             }
             etAccAddOwing.setOnLongClickListener {
-                gotoCalc(OWING)
+                gotoCalculator(OWING)
                 false
             }
             etAccAddBudgeted.setOnLongClickListener {
-                gotoCalc(BUDGETED)
+                gotoCalculator(BUDGETED)
                 false
             }
         }
     }
 
-    private fun gotoCalc(type: String) {
+    private fun gotoCalculator(type: String) {
         when (type) {
             BALANCE -> {
                 mainViewModel.setTransferNum(
@@ -142,7 +144,7 @@ class AccountAddFragment :
         )
     }
 
-    private fun createMenu() {
+    private fun createMenuActions() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -167,78 +169,90 @@ class AccountAddFragment :
     private fun populateValues() {
         binding.apply {
             if (mainViewModel.getAccountWithType() != null) {
-                etAccAddName.setText(
-                    mainViewModel.getAccountWithType()!!.account.accountName
-                )
-                etAccAddHandle.setText(
-                    mainViewModel.getAccountWithType()!!.account.accountNumber
-                )
-                etAccAddBalance.setText(
-                    nf.displayDollars(
-                        if (mainViewModel.getTransferNum()!! != 0.0 &&
-                            mainViewModel.getReturnTo()!!.contains(BALANCE)
-                        ) {
-                            mainViewModel.getTransferNum()!!
-                        } else {
-                            mainViewModel.getAccountWithType()!!.account.accountBalance
-                        }
-                    )
-                )
-                etAccAddOwing.setText(
-                    nf.displayDollars(
-                        if (mainViewModel.getTransferNum()!! != 0.0 &&
-                            mainViewModel.getReturnTo()!!.contains(OWING)
-
-                        ) {
-                            mainViewModel.getTransferNum()!!
-                        } else {
-                            mainViewModel.getAccountWithType()!!.account.accountOwing
-                        }
-                    )
-                )
-                etAccAddBudgeted.setText(
-                    nf.displayDollars(
-                        if (mainViewModel.getTransferNum()!! != 0.0 &&
-                            mainViewModel.getReturnTo()!!.contains(BUDGETED)
-                        ) {
-                            mainViewModel.getTransferNum()!!
-                        } else {
-                            mainViewModel.getAccountWithType()!!.account.accBudgetedAmount
-                        }
-                    )
-                )
-                mainViewModel.setTransferNum(0.0)
-                etAccAddLimit.setText(
-                    nf.displayDollars(
-                        mainViewModel.getAccountWithType()!!.account.accountCreditLimit
-                    )
-                )
+                populateAccountFromCache()
             }
             if (mainViewModel.getAccountWithType()?.accountType != null) {
-                tvAccAddType.text =
-                    mainViewModel.getAccountWithType()!!.accountType!!.accountType
-                var display =
-                    if (
-                        mainViewModel.getAccountWithType()!!.accountType!!.keepTotals
-                    ) "Transactions will be calculated\n" else ""
-                display += if (
-                    mainViewModel.getAccountWithType()!!.accountType!!.isAsset
-                ) "This is an asset \n" else ""
-                display += if (
-                    mainViewModel.getAccountWithType()!!.accountType!!.displayAsAsset
-                ) "This will be used for the budget \n" else ""
-                display += if (
-                    mainViewModel.getAccountWithType()!!.accountType!!.tallyOwing)
-                    "Balance owing will be calculated " else ""
-                display += if (
-                    mainViewModel.getAccountWithType()!!.accountType!!.allowPending)
-                    "Transactions may be delayed " else ""
-                if (display.isEmpty()) {
-                    display =
-                        "This account does not keep a balance/owing amount"
-                }
-                tvTypeDetails.text = display
+                populateAccountYpeFromCache()
             }
+        }
+    }
+
+    private fun populateAccountYpeFromCache() {
+        binding.apply {
+            tvAccAddType.text =
+                mainViewModel.getAccountWithType()!!.accountType!!.accountType
+            var display =
+                if (
+                    mainViewModel.getAccountWithType()!!.accountType!!.keepTotals
+                ) "Transactions will be calculated\n" else ""
+            display += if (
+                mainViewModel.getAccountWithType()!!.accountType!!.isAsset
+            ) "This is an asset \n" else ""
+            display += if (
+                mainViewModel.getAccountWithType()!!.accountType!!.displayAsAsset
+            ) "This will be used for the budget \n" else ""
+            display += if (
+                mainViewModel.getAccountWithType()!!.accountType!!.tallyOwing)
+                "Balance owing will be calculated " else ""
+            display += if (
+                mainViewModel.getAccountWithType()!!.accountType!!.allowPending)
+                "Transactions may be delayed " else ""
+            if (display.isEmpty()) {
+                display =
+                    "This account does not keep a balance/owing amount"
+            }
+            tvTypeDetails.text = display
+        }
+    }
+
+    private fun populateAccountFromCache() {
+        binding.apply {
+            etAccAddName.setText(
+                mainViewModel.getAccountWithType()!!.account.accountName
+            )
+            etAccAddHandle.setText(
+                mainViewModel.getAccountWithType()!!.account.accountNumber
+            )
+            etAccAddBalance.setText(
+                nf.displayDollars(
+                    if (mainViewModel.getTransferNum()!! != 0.0 &&
+                        mainViewModel.getReturnTo()!!.contains(BALANCE)
+                    ) {
+                        mainViewModel.getTransferNum()!!
+                    } else {
+                        mainViewModel.getAccountWithType()!!.account.accountBalance
+                    }
+                )
+            )
+            etAccAddOwing.setText(
+                nf.displayDollars(
+                    if (mainViewModel.getTransferNum()!! != 0.0 &&
+                        mainViewModel.getReturnTo()!!.contains(OWING)
+
+                    ) {
+                        mainViewModel.getTransferNum()!!
+                    } else {
+                        mainViewModel.getAccountWithType()!!.account.accountOwing
+                    }
+                )
+            )
+            etAccAddBudgeted.setText(
+                nf.displayDollars(
+                    if (mainViewModel.getTransferNum()!! != 0.0 &&
+                        mainViewModel.getReturnTo()!!.contains(BUDGETED)
+                    ) {
+                        mainViewModel.getTransferNum()!!
+                    } else {
+                        mainViewModel.getAccountWithType()!!.account.accBudgetedAmount
+                    }
+                )
+            )
+            mainViewModel.setTransferNum(0.0)
+            etAccAddLimit.setText(
+                nf.displayDollars(
+                    mainViewModel.getAccountWithType()!!.account.accountCreditLimit
+                )
+            )
         }
     }
 
@@ -259,7 +273,7 @@ class AccountAddFragment :
         }
     }
 
-    private fun gotoAccountTypes() {
+    private fun gotoAccountTypesFragment() {
         mainViewModel.setCallingFragments(
             mainViewModel.getCallingFragments() + ", " + TAG
         )

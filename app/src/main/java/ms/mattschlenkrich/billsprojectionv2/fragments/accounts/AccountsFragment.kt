@@ -1,7 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.fragments.accounts
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -50,6 +49,9 @@ class AccountsFragment :
         )
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
+        accountsViewModel =
+            mainActivity.accountViewModel
+        mainActivity.title = "Choose an Account"
         mView = binding.root
         return mView
     }
@@ -58,19 +60,19 @@ class AccountsFragment :
         view: View, savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d(TAG, "onViewCreated entered")
-        accountsViewModel =
-            mainActivity.accountViewModel
-        mainActivity.title = "Choose an Account"
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         setUpRecyclerView()
+        createClickActions()
+    }
+
+    private fun createClickActions() {
         binding.fabAddNewAccount.setOnClickListener {
-            addNewAccount()
+            gotoAccountAddFragment()
         }
     }
 
-    private fun addNewAccount() {
+    private fun gotoAccountAddFragment() {
         mainViewModel.setCallingFragments(
             mainViewModel.getCallingFragments() + ", " + TAG
         )

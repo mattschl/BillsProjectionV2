@@ -56,21 +56,20 @@ class AccountTypeAddFragment :
         )
         Log.d(TAG, "$TAG is entered")
         mainActivity = (activity as MainActivity)
-        mainViewModel =
-            mainActivity.mainViewModel
-        return binding.root
+        mainViewModel = mainActivity.mainViewModel
+        accountsViewModel = mainActivity.accountViewModel
+        mainActivity.title = "Add a new Account Type"
+        mView = binding.root
+        return mView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        accountsViewModel = mainActivity.accountViewModel
-        mainActivity.title = "Add a new Account Type"
-        mView = view
-        getAccountTypeList()
-        createMenuAcions()
+        getAccountTypeListForValidation()
+        createMenuActions()
     }
 
-    private fun getAccountTypeList() {
+    private fun getAccountTypeListForValidation() {
         CoroutineScope(Dispatchers.IO).launch {
             val typeList =
                 async {
@@ -80,7 +79,7 @@ class AccountTypeAddFragment :
         }
     }
 
-    private fun createMenuAcions() {
+    private fun createMenuActions() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -92,7 +91,7 @@ class AccountTypeAddFragment :
                 // Handle the menu selection
                 return when (menuItem.itemId) {
                     R.id.menu_save -> {
-                        isAccountTypeReady()
+                        isAccountTypeReadyToSave()
                         true
                     }
 
@@ -102,8 +101,8 @@ class AccountTypeAddFragment :
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    private fun isAccountTypeReady() {
-        if (checkAccountType()) {
+    private fun isAccountTypeReadyToSave() {
+        if (validateAccountType()) {
             saveAccountType()
 
         } else {
@@ -117,7 +116,7 @@ class AccountTypeAddFragment :
     }
 
     private fun saveAccountType() {
-        val accountType = getCurrentaccountType()
+        val accountType = getCurrentAccountType()
         accountsViewModel.addAccountType(accountType)
         mainViewModel.setAccountWithType(
             AccountWithType(
@@ -125,6 +124,10 @@ class AccountTypeAddFragment :
                 accountType
             )
         )
+        gotoAccountTypesFragment()
+    }
+
+    private fun gotoAccountTypesFragment() {
         mainViewModel.setCallingFragments(
             mainViewModel.getCallingFragments()!!
                 .replace(", $FRAG_ACCOUNT_TYPES", "")
@@ -134,7 +137,7 @@ class AccountTypeAddFragment :
         mView.findNavController().navigate(direction)
     }
 
-    private fun getCurrentaccountType() = AccountType(
+    private fun getCurrentAccountType() = AccountType(
         nf.generateId(),
         binding.etAccTypeAdd.text.toString().trim(),
         binding.chkAccTypeAddKeepTotals.isChecked,
@@ -147,7 +150,7 @@ class AccountTypeAddFragment :
         df.getCurrentTimeAsString()
     )
 
-    private fun checkAccountType(): Boolean {
+    private fun validateAccountType(): Boolean {
         if (binding.etAccTypeAdd.text.isNullOrBlank()) return false
         for (accType in accountTypeList) {
             if (accType == binding.etAccTypeAdd.text.toString()) {
@@ -161,5 +164,4 @@ class AccountTypeAddFragment :
         super.onDestroy()
         _binding = null
     }
-
 }

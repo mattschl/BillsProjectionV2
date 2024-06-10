@@ -57,27 +57,27 @@ class AccountTypeUpdateFragment :
         mView = binding.root
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
+        accountsViewModel = (activity as MainActivity).accountViewModel
+        currentAccountType = mainViewModel.getAccountType()!!
+        mainActivity.title = "Update Account Type"
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        accountsViewModel = (activity as MainActivity).accountViewModel
-        currentAccountType = mainViewModel.getAccountType()!!
-        mainActivity.title = "Update Account Type"
-        getAccountTypeList()
+        getAccountTypeListForValidation()
         populateValues()
         createMenuActions()
-        setClickActions()
+        createClickActions()
     }
 
-    private fun setClickActions() {
+    private fun createClickActions() {
         binding.fabAccountTypeUpdate.setOnClickListener {
             isAccountTypeReadyToUpdate()
         }
     }
 
-    private fun getAccountTypeList() {
+    private fun getAccountTypeListForValidation() {
         CoroutineScope(Dispatchers.IO).launch {
             val typeList =
                 async {

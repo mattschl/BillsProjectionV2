@@ -1,7 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.fragments.accounts
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -47,8 +46,11 @@ class AccountTypesFragment
         _binding = FragmentAccountTypesBinding.inflate(
             inflater, container, false
         )
-        Log.d(TAG, "$TAG is entered")
+//        Log.d(TAG, "$TAG is entered")
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        accountViewModel = mainActivity.accountViewModel
+        mainActivity.title = "Choose an Account Type"
         return binding.root
     }
 
@@ -56,20 +58,16 @@ class AccountTypesFragment
         view: View, savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d(TAG, "onViewCreated Entered")
-        mainViewModel = mainActivity.mainViewModel
-        accountViewModel = mainActivity.accountViewModel
-        mainActivity.title = "Choose an Account Type"
+//        Log.d(TAG, "onViewCreated Entered")
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
-
         setupRecyclerView()
         binding.fabAddAccountType.setOnClickListener {
-            gotoNewAccountTypes(it)
+            gotoAccountTypeAddFragment(it)
         }
     }
 
-    private fun gotoNewAccountTypes(it: View) {
+    private fun gotoAccountTypeAddFragment(it: View) {
         mainViewModel.setCallingFragments(
             mainViewModel.getCallingFragments() + ", " + TAG
         )

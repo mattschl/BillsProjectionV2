@@ -2,7 +2,6 @@ package ms.mattschlenkrich.billsprojectionv2.fragments.accounts
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -55,18 +54,24 @@ class AccountUpdateFragment :
         _binding = FragmentAccountUpdateBinding.inflate(
             inflater, container, false
         )
-        Log.d(TAG, "$TAG is entered")
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
+        accountsViewModel =
+            mainActivity.accountViewModel
+        mainActivity.title = "Update Account"
         mView = binding.root
-        createMenuActiond()
         return mView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        accountsViewModel =
-            (activity as MainActivity).accountViewModel
+        getAccountListNamesForValidation()
+        createMenuActions()
+        populateValues()
+        createClickActions()
+    }
+
+    private fun getAccountListNamesForValidation() {
         accountsViewModel.getAccountNameList().observe(
             viewLifecycleOwner
         ) { accounts ->
@@ -75,13 +80,9 @@ class AccountUpdateFragment :
                 accountNameList.add(it)
             }
         }
-
-        mainActivity.title = "Update Account"
-        populateValues()
-        setUserActions()
     }
 
-    private fun createMenuActiond() {
+    private fun createMenuActions() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -103,30 +104,30 @@ class AccountUpdateFragment :
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    private fun setUserActions() {
+    private fun createClickActions() {
         binding.apply {
             drpAccountUpdateType.setOnClickListener {
-                gotoAccountTypes()
+                gotoAccountTypesFragment()
             }
             fabAccountUpdateDone.setOnClickListener {
                 isAccountReadyToUpdate()
             }
             edAccountUpdateBalance.setOnLongClickListener {
-                gotoCalc(BALANCE)
+                gotoCalculator(BALANCE)
                 false
             }
             edAccountUpdateOwing.setOnLongClickListener {
-                gotoCalc(OWING)
+                gotoCalculator(OWING)
                 false
             }
             edAccountUpdateBudgeted.setOnLongClickListener {
-                gotoCalc(BUDGETED)
+                gotoCalculator(BUDGETED)
                 false
             }
         }
     }
 
-    private fun gotoCalc(type: String) {
+    private fun gotoCalculator(type: String) {
         when (type) {
             BALANCE -> {
                 mainViewModel.setTransferNum(
@@ -188,7 +189,7 @@ class AccountUpdateFragment :
         }
     }
 
-    private fun gotoAccountTypes() {
+    private fun gotoAccountTypesFragment() {
         mainViewModel.setCallingFragments(
             mainViewModel.getCallingFragments() + ", " + TAG
         )
@@ -204,7 +205,7 @@ class AccountUpdateFragment :
 
     }
 
-    private fun checkAccount(): String {
+    private fun validateAccount(): String {
         binding.apply {
             val nameIsBlank =
                 edAccountUpdateName.text.isNullOrBlank()
@@ -238,7 +239,7 @@ class AccountUpdateFragment :
     }
 
     private fun isAccountReadyToUpdate() {
-        val mess = checkAccount()
+        val mess = validateAccount()
 
         if (mess == "Ok") {
             chooseToUpdate()
@@ -281,14 +282,17 @@ class AccountUpdateFragment :
                 .replace(", $TAG", "")
         )
         if (mainViewModel.getCallingFragments()!!.contains(FRAG_ACCOUNTS)) {
-            val direction = AccountUpdateFragmentDirections
-                .actionAccountUpdateFragmentToAccountsFragment()
-            mView.findNavController().navigate(direction)
+            gotoAccountsFragment()
         } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_BUDGET_VIEW)) {
-            mView.findNavController().navigate(
-                AccountUpdateFragmentDirections.actionAccountUpdateFragmentToBudgetViewFragment()
-            )
+            gotoBudgetViewFragment()
         }
+    }
+
+    private fun gotoBudgetViewFragment() {
+        mView.findNavController().navigate(
+            AccountUpdateFragmentDirections
+                .actionAccountUpdateFragmentToBudgetViewFragment()
+        )
     }
 
     private fun populateValues() {
@@ -368,6 +372,10 @@ class AccountUpdateFragment :
             mainViewModel.getCallingFragments()!!
                 .replace(", $FRAG_ACCOUNT_UPDATE", "")
         )
+        gotoAccountsFragment()
+    }
+
+    private fun gotoAccountsFragment() {
         val direction = AccountUpdateFragmentDirections
             .actionAccountUpdateFragmentToAccountsFragment()
         mView.findNavController().navigate(direction)
