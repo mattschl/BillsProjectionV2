@@ -52,13 +52,13 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
         mainViewModel = mainActivity.mainViewModel
         budgetRuleViewModel = mainActivity.budgetRuleViewModel
         accountViewModel = mainActivity.accountViewModel
+        mainActivity.title = "View the complete budget"
         mView = binding.root
         return mView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mainActivity.title = "View the complete budget"
         createArrowActions()
     }
 

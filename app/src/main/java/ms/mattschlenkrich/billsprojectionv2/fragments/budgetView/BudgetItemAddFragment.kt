@@ -123,7 +123,7 @@ class BudgetItemAddFragment : Fragment(
             )
         )
         mainViewModel.setReturnTo(TAG)
-        mainViewModel.setBudgetItem(getCurBudgetDetailed())
+        mainViewModel.setBudgetItem(getCurrentBudgetItemDetailed())
         mView.findNavController().navigate(
             BudgetItemAddFragmentDirections
                 .actionBudgetItemAddFragmentToCalcFragment()
@@ -161,7 +161,7 @@ class BudgetItemAddFragment : Fragment(
                 // Handle the menu selection
                 return when (menuItem.itemId) {
                     R.id.menu_save -> {
-                        saveBudgetItem()
+                        isBudgetItemReadyToSave()
                         true
                     }
 
@@ -171,12 +171,10 @@ class BudgetItemAddFragment : Fragment(
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    private fun saveBudgetItem() {
+    private fun isBudgetItemReadyToSave() {
         val mes = validateBudgetItem()
         if (mes == "Ok") {
-            budgetItemViewModel.insertBudgetItem(
-                getCurBudgetItem()
-            )
+            saveBudgetItem()
             gotoCallingFragment()
         } else {
             Toast.makeText(
@@ -185,6 +183,12 @@ class BudgetItemAddFragment : Fragment(
                 Toast.LENGTH_LONG
             ).show()
         }
+    }
+
+    private fun saveBudgetItem() {
+        budgetItemViewModel.insertBudgetItem(
+            getCurrentBudgetItemForSaving()
+        )
     }
 
     private fun gotoCallingFragment() {
@@ -260,7 +264,7 @@ class BudgetItemAddFragment : Fragment(
             mainViewModel.getCallingFragments() + ", " + TAG
         )
         mainViewModel.setRequestedAccount(requestedAccount)
-        mainViewModel.setBudgetItem(getCurBudgetDetailed())
+        mainViewModel.setBudgetItem(getCurrentBudgetItemDetailed())
         val direction = BudgetItemAddFragmentDirections
             .actionBudgetItemAddFragmentToAccountsFragment()
         mView.findNavController().navigate(direction)
@@ -270,22 +274,22 @@ class BudgetItemAddFragment : Fragment(
         mainViewModel.setCallingFragments(
             mainViewModel.getCallingFragments() + ", " + TAG
         )
-        mainViewModel.setBudgetItem(getCurBudgetDetailed())
+        mainViewModel.setBudgetItem(getCurrentBudgetItemDetailed())
         val direction = BudgetItemAddFragmentDirections
             .actionBudgetItemAddFragmentToBudgetRuleFragment()
         mView.findNavController().navigate(direction)
     }
 
-    private fun getCurBudgetDetailed(): BudgetDetailed {
+    private fun getCurrentBudgetItemDetailed(): BudgetDetailed {
         return BudgetDetailed(
-            getCurBudgetItem(),
+            getCurrentBudgetItemForSaving(),
             mainViewModel.getBudgetItem()?.budgetRule,
             mainViewModel.getBudgetItem()?.toAccount,
             mainViewModel.getBudgetItem()?.fromAccount
         )
     }
 
-    private fun getCurBudgetItem(): BudgetItem {
+    private fun getCurrentBudgetItemForSaving(): BudgetItem {
         binding.apply {
             return BudgetItem(
                 budgetRuleDetailed.budgetRule?.ruleId
@@ -319,7 +323,7 @@ class BudgetItemAddFragment : Fragment(
 
     private fun populateValues() {
         if (mainViewModel.getBudgetItem() != null) {
-            populateFromPreviousValues()
+            populateFromCache()
         } else {
             fillDateToCurrent()
         }
@@ -331,7 +335,7 @@ class BudgetItemAddFragment : Fragment(
         }
     }
 
-    private fun populateFromPreviousValues() {
+    private fun populateFromCache() {
         binding.apply {
             etProjectedDate.setText(
                 mainViewModel.getBudgetItem()?.budgetItem?.biProjectedDate

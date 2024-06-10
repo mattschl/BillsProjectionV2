@@ -75,13 +75,13 @@ class BudgetItemUpdateFragment : Fragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         createMenuActions()
-        setBudgetItemToBlank()
+        setBudgetRuleDetailedToBlank()
         populatePayDaySpinner()
         populateValues()
         createClickActions()
     }
 
-    private fun setBudgetItemToBlank() {
+    private fun setBudgetRuleDetailedToBlank() {
         mBudgetRuleDetailed =
             BudgetRuleDetailed(
                 null,
@@ -106,7 +106,7 @@ class BudgetItemUpdateFragment : Fragment(
                 false
             }
             fabUpdateDone.setOnClickListener {
-                updateBudgetItem()
+                isBudgetItemReadyToUpdate()
             }
             etProjectedAmount.setOnLongClickListener {
                 gotoCalculator()
@@ -217,7 +217,7 @@ class BudgetItemUpdateFragment : Fragment(
                 // Handle the menu selection
                 return when (menuItem.itemId) {
                     R.id.menu_delete -> {
-                        deleteBudgetItem()
+                        chooseToDeleteBudgetItem()
                         true
                     }
 
@@ -227,12 +227,10 @@ class BudgetItemUpdateFragment : Fragment(
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    private fun updateBudgetItem() {
+    private fun isBudgetItemReadyToUpdate() {
         val mess = validateBudgetItem()
         if (mess == ANSWER_OK) {
-            budgetItemViewModel.updateBudgetItem(
-                getCurrentBudgetItemForSave()
-            )
+            updateBudgetItem()
             gotoCallingFragment()
         } else {
             Toast.makeText(
@@ -241,6 +239,12 @@ class BudgetItemUpdateFragment : Fragment(
                 Toast.LENGTH_LONG
             ).show()
         }
+    }
+
+    private fun updateBudgetItem() {
+        budgetItemViewModel.updateBudgetItem(
+            getCurrentBudgetItemForUpdating()
+        )
     }
 
     private fun chooseDate() {
@@ -292,7 +296,7 @@ class BudgetItemUpdateFragment : Fragment(
     private fun getCurrentBudgetItemDetailed(): BudgetDetailed {
         binding.apply {
             val budgetItem =
-                getCurrentBudgetItemForSave()
+                getCurrentBudgetItemForUpdating()
             return BudgetDetailed(
                 budgetItem,
                 mainViewModel.getBudgetItem()!!.budgetRule,
@@ -302,7 +306,7 @@ class BudgetItemUpdateFragment : Fragment(
         }
     }
 
-    private fun getCurrentBudgetItemForSave(): BudgetItem {
+    private fun getCurrentBudgetItemForUpdating(): BudgetItem {
         binding.apply {
             return BudgetItem(
                 if (mainViewModel.getBudgetItem()!!.budgetRule != null)
@@ -328,23 +332,27 @@ class BudgetItemUpdateFragment : Fragment(
         }
     }
 
-    private fun deleteBudgetItem() {
+    private fun chooseToDeleteBudgetItem() {
         AlertDialog.Builder(activity).apply {
             setTitle("Delete Budget Item")
             setMessage("Are you sure you want to delete this budget item?")
             setPositiveButton("Delete") { _, _ ->
-                binding.apply {
-                    budgetItemViewModel.deleteBudgetItem(
-                        mainViewModel.getBudgetItem()!!.budgetItem!!.biRuleId,
-                        mainViewModel.getBudgetItem()!!.budgetItem!!.biProjectedDate,
-                        df.getCurrentTimeAsString()
-                    )
-
-                }
+                deleteBudgetItem()
                 gotoCallingFragment()
             }
             setNegativeButton("Cancel", null)
         }.create().show()
+    }
+
+    private fun deleteBudgetItem() {
+        binding.apply {
+            budgetItemViewModel.deleteBudgetItem(
+                mainViewModel.getBudgetItem()!!.budgetItem!!.biRuleId,
+                mainViewModel.getBudgetItem()!!.budgetItem!!.biProjectedDate,
+                df.getCurrentTimeAsString()
+            )
+
+        }
     }
 
     private fun gotoCallingFragment() {

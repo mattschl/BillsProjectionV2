@@ -70,15 +70,15 @@ class BudgetViewFragment : Fragment(
             mainActivity.accountViewModel
         transactionViewModel =
             mainActivity.transactionViewModel
+        mainActivity.title = "View The Budget"
         mView = binding.root
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mainActivity.title = "View The Budget"
         createClickActions()
-        populateAssetsLive()
+        populateAssets()
         onSelectAsset()
         onSelectPayDay()
         resumeHistory()
@@ -295,7 +295,7 @@ class BudgetViewFragment : Fragment(
                             curAsset = account
                         }
                         clearCurrentDisplay()
-                        populatePayDaysLive(spAssetNames.selectedItem.toString())
+                        populatePayDays(spAssetNames.selectedItem.toString())
                         populatePendingList()
                     }
 
@@ -430,7 +430,7 @@ class BudgetViewFragment : Fragment(
         }
     }
 
-    private fun populatePayDaysLive(asset: String) {
+    private fun populatePayDays(asset: String) {
         val payDayAdapter =
             ArrayAdapter<Any>(
                 requireContext(),
@@ -460,7 +460,7 @@ class BudgetViewFragment : Fragment(
         }
     }
 
-    private fun populateAssetsLive() {
+    private fun populateAssets() {
         val assetAdapter =
             ArrayAdapter<Any>(
                 requireContext(),
