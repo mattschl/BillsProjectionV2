@@ -1,7 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.fragments.budgetRules
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -37,7 +36,7 @@ class BudgetRuleFragment :
     private lateinit var mainViewModel: MainViewModel
     private lateinit var budgetRuleViewModel: BudgetRuleViewModel
     private lateinit var budgetRuleAdapter: BudgetRuleAdapter
-    private var mView: View? = null
+    private lateinit var mView: View
 
 
     override fun onCreateView(
@@ -51,27 +50,31 @@ class BudgetRuleFragment :
         mainActivity = (activity as MainActivity)
         mainViewModel =
             mainActivity.mainViewModel
-        Log.d(TAG, "$TAG is entered")
+        budgetRuleViewModel =
+            mainActivity.budgetRuleViewModel
+        mainActivity.title = "Choose a Budget Rule"
+//        Log.d(TAG, "$TAG is entered")
         mView = binding.root
-        return binding.root
+        return mView
     }
 
     override fun onViewCreated(
         view: View, savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
-        budgetRuleViewModel =
-            mainActivity.budgetRuleViewModel
-        mainActivity.title = "Choose a Budget Rule"
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         setupRecyclerView()
+        createClickActions()
+    }
+
+    private fun createClickActions() {
         binding.fabAddNew.setOnClickListener {
-            addNewRule()
+            gotoBudgetRuleAddFragment()
         }
     }
 
-    private fun addNewRule() {
+    private fun gotoBudgetRuleAddFragment() {
         mainViewModel.setBudgetRuleDetailed(null)
         mainViewModel.setCallingFragments(
             mainViewModel.getCallingFragments() + ", " + TAG

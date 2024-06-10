@@ -75,19 +75,19 @@ class BudgetRuleUpdateFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        geBudgetRuleNameForValidation()
+        getBudgetRuleNameForValidation()
         createMenuActions()
         populateValues()
-        setClickActions()
+        createClickActions()
     }
 
-    private fun geBudgetRuleNameForValidation() {
+    private fun getBudgetRuleNameForValidation() {
         CoroutineScope(Dispatchers.IO).launch {
             budgetNameList = budgetRuleViewModel.getBudgetRuleNameList()
         }
     }
 
-    private fun setClickActions() {
+    private fun createClickActions() {
         binding.apply {
             tvToAccount.setOnClickListener {
                 chooseToAccount()
@@ -104,7 +104,7 @@ class BudgetRuleUpdateFragment :
                 false
             }
             fabUpdateDone.setOnClickListener {
-                updateBudgetRule()
+                isBudgetRuleReadyToUpdate()
             }
             etAmount.setOnLongClickListener {
                 gotoCalculatorFragment()
@@ -141,7 +141,7 @@ class BudgetRuleUpdateFragment :
                 // Handle the menu selection
                 return when (menuItem.itemId) {
                     R.id.menu_delete -> {
-                        deleteBudgetRule()
+                        chooseToDeleteBudgetRule()
                         true
                     }
 
@@ -195,7 +195,7 @@ class BudgetRuleUpdateFragment :
         }
     }
 
-    private fun getCurrentBudgetRule(): BudgetRule {
+    private fun getCurrentBudgetRuleForSaving(): BudgetRule {
         val toAccId =
             if (mainViewModel.getBudgetRuleDetailed()!!.toAccount == null) {
                 0L
@@ -255,7 +255,7 @@ class BudgetRuleUpdateFragment :
                 } else {
                     null
                 }
-            return BudgetRuleDetailed(getCurrentBudgetRule(), toAccount, fromAccount)
+            return BudgetRuleDetailed(getCurrentBudgetRuleForSaving(), toAccount, fromAccount)
         }
     }
 
@@ -287,65 +287,75 @@ class BudgetRuleUpdateFragment :
     }
 
     private fun populateValues() {
-        fillSpinners()
+        populateSpinners()
         binding.apply {
             if (mainViewModel.getBudgetRuleDetailed() != null) {
-                if (mainViewModel.getBudgetRuleDetailed()!!.budgetRule != null) {
-                    etBudgetName.setText(
-                        mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budgetRuleName
-                    )
-                    etAmount.setText(
-                        nf.displayDollars(
-                            if (mainViewModel.getTransferNum()!! != 0.0) {
-                                mainViewModel.getTransferNum()!!
-                            } else {
-                                mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budgetAmount
-                            }
-                        )
-                    )
-                    mainViewModel.setTransferNum(0.0)
-                    if (mainViewModel.getBudgetRuleDetailed()!!.toAccount != null) {
-                        tvToAccount.text =
-                            mainViewModel.getBudgetRuleDetailed()!!.toAccount!!.accountName
-                    }
-                    if (mainViewModel.getBudgetRuleDetailed()!!.fromAccount != null) {
-                        tvFromAccount.text =
-                            mainViewModel.getBudgetRuleDetailed()!!.fromAccount!!.accountName
-                    }
-                    chkFixedAmount.isChecked =
-                        mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budFixedAmount
-                    chkMakePayDay.isChecked =
-                        mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budIsPayDay
-                    chkAutoPayment.isChecked =
-                        mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budIsAutoPay
-                    etStartDate.setText(
-                        mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budStartDate
-                    )
-                    etEndDate.setText(
-                        mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budEndDate
-                    )
-                    spFrequencyType.setSelection(
-                        mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budFrequencyTypeId
-                    )
-                    etFrequencyCount.setText(
-                        mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budFrequencyCount.toString()
-                    )
-                    spDayOfWeek.setSelection(
-                        mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budDayOfWeekId
-                    )
-                    etLeadDays.setText(
-                        mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budLeadDays.toString()
-                    )
-                }
+                populateFromCache()
             } else {
-                etStartDate.setText(df.getCurrentDateAsString())
-                etEndDate.setText(df.getCurrentDateAsString())
+                populateDatesOnly()
             }
         }
-        populatetDateRecycler(mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.ruleId)
+        populateDateRecycler(mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.ruleId)
     }
 
-    private fun populatetDateRecycler(budgetRuleId: Long) {
+    private fun FragmentBudgetRuleUpdateBinding.populateDatesOnly() {
+        etStartDate.setText(df.getCurrentDateAsString())
+        etEndDate.setText(df.getCurrentDateAsString())
+    }
+
+    private fun populateFromCache() {
+        binding.apply {
+            if (mainViewModel.getBudgetRuleDetailed()!!.budgetRule != null) {
+                etBudgetName.setText(
+                    mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budgetRuleName
+                )
+                etAmount.setText(
+                    nf.displayDollars(
+                        if (mainViewModel.getTransferNum()!! != 0.0) {
+                            mainViewModel.getTransferNum()!!
+                        } else {
+                            mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budgetAmount
+                        }
+                    )
+                )
+                mainViewModel.setTransferNum(0.0)
+                if (mainViewModel.getBudgetRuleDetailed()!!.toAccount != null) {
+                    tvToAccount.text =
+                        mainViewModel.getBudgetRuleDetailed()!!.toAccount!!.accountName
+                }
+                if (mainViewModel.getBudgetRuleDetailed()!!.fromAccount != null) {
+                    tvFromAccount.text =
+                        mainViewModel.getBudgetRuleDetailed()!!.fromAccount!!.accountName
+                }
+                chkFixedAmount.isChecked =
+                    mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budFixedAmount
+                chkMakePayDay.isChecked =
+                    mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budIsPayDay
+                chkAutoPayment.isChecked =
+                    mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budIsAutoPay
+                etStartDate.setText(
+                    mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budStartDate
+                )
+                etEndDate.setText(
+                    mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budEndDate
+                )
+                spFrequencyType.setSelection(
+                    mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budFrequencyTypeId
+                )
+                etFrequencyCount.setText(
+                    mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budFrequencyCount.toString()
+                )
+                spDayOfWeek.setSelection(
+                    mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budDayOfWeekId
+                )
+                etLeadDays.setText(
+                    mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budLeadDays.toString()
+                )
+            }
+        }
+    }
+
+    private fun populateDateRecycler(budgetRuleId: Long) {
         val budgetRuleDatesAdapter = BudgetRuleDatesAdapter(mainViewModel, mView)
 //        val budgetList = ArrayList<BudgetDetailed>()
         binding.rvProjectedDates.apply {
@@ -362,7 +372,7 @@ class BudgetRuleUpdateFragment :
         }
     }
 
-    private fun fillSpinners() {
+    private fun populateSpinners() {
         val adapterFrequencyType =
             ArrayAdapter(
                 mView.context,
@@ -386,19 +396,23 @@ class BudgetRuleUpdateFragment :
         binding.spDayOfWeek.adapter = adapterDayOfWeek
     }
 
-    private fun deleteBudgetRule() {
+    private fun chooseToDeleteBudgetRule() {
         AlertDialog.Builder(activity).apply {
             setTitle("Delete Budget Rule")
             setMessage("Are you sure you want to delete this budget rule?")
             setPositiveButton("Delete") { _, _ ->
-                budgetRuleViewModel.deleteBudgetRule(
-                    mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.ruleId,
-                    df.getCurrentTimeAsString()
-                )
+                deleteBudgeRule()
                 gotoCallingFragment()
             }
             setNegativeButton("Cancel", null)
         }.create().show()
+    }
+
+    private fun deleteBudgeRule() {
+        budgetRuleViewModel.deleteBudgetRule(
+            mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.ruleId,
+            df.getCurrentTimeAsString()
+        )
     }
 
     private fun gotoCallingFragment() {
@@ -445,10 +459,10 @@ class BudgetRuleUpdateFragment :
         )
     }
 
-    private fun updateBudgetRule() {
+    private fun isBudgetRuleReadyToUpdate() {
         val mes = validateBudgetRule()
         if (mes == "Ok") {
-            budgetRuleViewModel.updateBudgetRule(getCurrentBudgetRule())
+            updateBudgetRule()
             gotoCallingFragment()
         } else {
             Toast.makeText(
@@ -457,6 +471,12 @@ class BudgetRuleUpdateFragment :
                 Toast.LENGTH_LONG
             ).show()
         }
+    }
+
+    private fun updateBudgetRule() {
+        budgetRuleViewModel.updateBudgetRule(
+            getCurrentBudgetRuleForSaving()
+        )
     }
 
     private fun validateBudgetRule(): String {
