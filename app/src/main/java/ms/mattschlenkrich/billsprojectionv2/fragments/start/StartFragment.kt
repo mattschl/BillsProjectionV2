@@ -37,12 +37,16 @@ class StartFragment : Fragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         CoroutineScope(Dispatchers.Main).launch {
-            delay(2000)
-            val direction =
-                NavGraphDirections
-                    .actionGlobalBudgetViewFragment()
-            mView!!.findNavController().navigate(direction)
+            delay(1000)
+            gotoBudgetViewFragment()
         }
+    }
+
+    private fun gotoBudgetViewFragment() {
+        val direction =
+            NavGraphDirections
+                .actionGlobalBudgetViewFragment()
+        mView!!.findNavController().navigate(direction)
     }
 
     override fun onDestroy() {

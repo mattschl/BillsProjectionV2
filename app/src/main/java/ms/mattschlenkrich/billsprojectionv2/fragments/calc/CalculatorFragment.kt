@@ -69,7 +69,7 @@ class CalculatorFragment : Fragment(R.layout.fragment_calc) {
         prevNumber.add(0.0)
         result = ArrayList()
         result.add(0.0)
-        setdigitActions()
+        setDigitActions()
         setOperatorActions()
         if (!mainViewModel.getTransferNum()!!.isNaN()) {
             binding.tvDisplay.text =
@@ -212,7 +212,7 @@ class CalculatorFragment : Fragment(R.layout.fragment_calc) {
         performMath()
     }
 
-    private fun setdigitActions() {
+    private fun setDigitActions() {
         binding.apply {
             btn0.setOnClickListener { addDigit("0") }
             btn1.setOnClickListener { addDigit("1") }
