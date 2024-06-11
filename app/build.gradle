@@ -7,6 +7,14 @@
  }
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('/mnt/02D83355D83345E7/project/AndroidProject/keystore/matt__new_signing.jks')
+            storePassword '!935Gr8t'
+            keyAlias 'key0'
+            keyPassword '!935Gr8t'
+        }
+    }
     namespace 'ms.mattschlenkrich.billsprojectionv2'
     compileSdk 34
 
@@ -15,11 +23,12 @@ android {
         minSdk 26
         targetSdk 34
         versionCode 1
-        versionName 'v2 build 1'
+        versionName 'v2.0'
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        versionNameSuffix 'Initial'
     }
 
     buildTypes {
@@ -50,9 +59,9 @@ android {
 
 dependencies {
 
-    implementation 'androidx.core:core-ktx:1.12.0'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.11.0'
+    implementation 'androidx.core:core-ktx:1.13.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
@@ -64,7 +73,7 @@ dependencies {
     ksp("androidx.room:room-compiler:$room_version")
 
     //coRoutines
-    implementation('org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0')
+    implementation('org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1')
     implementation "androidx.room:room-ktx:$room_version"
 
     def nav_version = '2.7.7'
@@ -75,7 +84,7 @@ dependencies {
 //    implementation("androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version")
 
     //Lifecycle architecture
-    def lifecycle_version = '2.7.0'
+    def lifecycle_version = '2.8.1'
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
     // LiveData

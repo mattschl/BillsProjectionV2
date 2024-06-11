@@ -256,7 +256,7 @@ class TransactionAddFragment :
                     }-${
                         dayOfMonth.toString().padStart(2, '0')
                     }"
-                    etTransDate.setText(display)
+                    etTransDate.text = display
                 },
                 curDateAll[0].toInt(),
                 curDateAll[1].toInt() - 1,
@@ -297,7 +297,7 @@ class TransactionAddFragment :
                     populateValuesFromTransactionDetailed()
                 }
                 if (mainViewModel.getTransactionDetailed()!!.budgetRule != null) {
-                    populatetValuesFromBudgetRule()
+                    populateValuesFromBudgetRule()
                 }
                 if (mainViewModel.getTransactionDetailed()!!.toAccount != null) {
                     populateValuesFromToAccount()
@@ -315,7 +315,7 @@ class TransactionAddFragment :
                     mainViewModel.getTransactionDetailed()!!.transaction!!.transFromAccountPending
 
             } else {
-                etTransDate.setText(df.getCurrentDateAsString())
+                etTransDate.text = df.getCurrentDateAsString()
             }
             CoroutineScope(Dispatchers.Main).launch {
                 delay(WAIT_250)
@@ -374,7 +374,7 @@ class TransactionAddFragment :
         }
     }
 
-    private fun populatetValuesFromBudgetRule() {
+    private fun populateValuesFromBudgetRule() {
         binding.apply {
             mBudgetRule = mainViewModel.getTransactionDetailed()!!.budgetRule
             tvBudgetRule.text = mBudgetRule!!.budgetRuleName
@@ -474,9 +474,7 @@ class TransactionAddFragment :
             etNote.setText(
                 mainViewModel.getTransactionDetailed()!!.transaction!!.transNote
             )
-            etTransDate.setText(
-                mainViewModel.getTransactionDetailed()!!.transaction!!.transDate
-            )
+            etTransDate.text = mainViewModel.getTransactionDetailed()!!.transaction!!.transDate
             etAmount.hint = "Budgeted " +
                     if (mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount == 0.0 &&
                         mainViewModel.getTransactionDetailed()!!.budgetRule != null
@@ -626,32 +624,12 @@ class TransactionAddFragment :
                 ) {
                     "     Error!!\n" +
                             "Please enter an amount for this transaction"
-                    //TODO: Find a way to display a message and suspend until after a choice is made
-//                } else if (mainViewModel.getTransactionDetailed()!!.budgetRule == null) {
-//                    if (saveWithoutBudget()) {
-//                        "Ok"
-//                    } else {
-//                        "Choose a Budget Rule"
-//                    }
                 } else {
                     "Ok"
                 }
             return errorMes
         }
     }
-
-//    private fun saveWithoutBudget(): Boolean {
-//        AlertDialog.Builder(activity).apply {
-//            setMessage(
-//                "There is no Budget Rule!" +
-//                        "Budget Rules are used to update the budget. " +
-//                        "If you want to attach this to a budget rule " +
-//                        "you will hav to edit it later."
-//            )
-//            setNegativeButton("Ok", null)
-//        }.create().show()
-//        return true
-//    }
 
     override fun onDestroy() {
         super.onDestroy()
