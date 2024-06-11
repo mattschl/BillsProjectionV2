@@ -53,12 +53,28 @@ class CalculatorFragment : Fragment(R.layout.fragment_calc) {
         mainViewModel = mainActivity.mainViewModel
         mView = binding.root
         Log.d(TAG, "creating $TAG")
+        mainActivity.setTitle(R.string.calculator)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mainActivity.supportActionBar?.setTitle(R.string.calculator)
+        initializeVariables()
+        createDigitActions()
+        createOperatorActions()
+        initializeStartValue()
+        performMath()
+        createTransferAction()
+    }
+
+    private fun initializeStartValue() {
+        if (!mainViewModel.getTransferNum()!!.isNaN()) {
+            binding.tvDisplay.text =
+                nf.getNumberFromDouble(mainViewModel.getTransferNum()!!.toDouble())
+        }
+    }
+
+    private fun initializeVariables() {
         formula = ArrayList()
         formula.add("")
         operator = ArrayList()
@@ -69,109 +85,144 @@ class CalculatorFragment : Fragment(R.layout.fragment_calc) {
         prevNumber.add(0.0)
         result = ArrayList()
         result.add(0.0)
-        setDigitActions()
-        setOperatorActions()
-        if (!mainViewModel.getTransferNum()!!.isNaN()) {
-            binding.tvDisplay.text =
-                nf.getNumberFromDouble(mainViewModel.getTransferNum()!!.toDouble())
-        }
-        performMath()
-        setTransferActions()
     }
 
-    private fun setTransferActions() {
+    private fun createTransferAction() {
         binding.btnTransfer.setOnClickListener {
-            mainViewModel.setTransferNum(result[counter])
-            when (mainViewModel.getReturnTo()) {
+            returnValueToCallingFragment()
+        }
+    }
 
-                FRAG_TRANSACTION_SPLIT -> {
-                    mView.findNavController().navigate(
-                        CalculatorFragmentDirections
-                            .actionCalcFragmentToTransactionSplitFragment()
-                    )
-                }
+    private fun returnValueToCallingFragment() {
+        mainViewModel.setTransferNum(result[counter])
+        when (mainViewModel.getReturnTo()) {
 
-                FRAG_TRANS_ADD -> {
-                    mView.findNavController().navigate(
-                        CalculatorFragmentDirections
-                            .actionCalcFragmentToTransactionAddFragment()
-                    )
-                }
+            FRAG_TRANSACTION_SPLIT -> {
+                gotoTransactionSplitFragment()
+            }
 
-                FRAG_TRANS_PERFORM -> {
-                    mView.findNavController().navigate(
-                        CalculatorFragmentDirections
-                            .actionCalcFragmentToTransactionPerformFragment()
-                    )
-                }
+            FRAG_TRANS_ADD -> {
+                gotoTransactionAddFragment()
+            }
 
-                FRAG_BUDGET_RULE_ADD -> {
-                    mView.findNavController().navigate(
-                        CalculatorFragmentDirections
-                            .actionCalcFragmentToBudgetRuleAddFragment()
-                    )
-                }
+            FRAG_TRANS_PERFORM -> {
+                gotoTransactionPerformFragment()
+            }
 
-                FRAG_BUDGET_ITEM_ADD -> {
-                    mView.findNavController().navigate(
-                        CalculatorFragmentDirections
-                            .actionCalcFragmentToBudgetItemAddFragment()
-                    )
-                }
+            FRAG_BUDGET_RULE_ADD -> {
+                gotoBudgetRuleAddFragment()
+            }
 
-                FRAG_TRANS_UPDATE -> {
-                    mView.findNavController().navigate(
-                        CalculatorFragmentDirections
-                            .actionCalcFragmentToTransactionUpdateFragment()
-                    )
-                }
+            FRAG_BUDGET_ITEM_ADD -> {
+                gotoBudgetItemAddFragment()
+            }
 
-                FRAG_BUDGET_ITEM_UPDATE -> {
-                    mView.findNavController().navigate(
-                        CalculatorFragmentDirections
-                            .actionCalcFragmentToBudgetItemUpdateFragment()
-                    )
-                }
+            FRAG_TRANS_UPDATE -> {
+                gotoTransactionUpdateFragment()
+            }
 
-                FRAG_BUDGET_RULE_UPDATE -> {
-                    mView.findNavController().navigate(
-                        CalculatorFragmentDirections
-                            .actionCalcFragmentToBudgetRuleUpdateFragment()
-                    )
-                }
+            FRAG_BUDGET_ITEM_UPDATE -> {
+                gotoBudgetItemUpdateFragment()
+            }
 
-                else -> {
-                    if (mainViewModel.getReturnTo()!!.contains(FRAG_ACCOUNT_UPDATE)) {
-                        mView.findNavController().navigate(
-                            CalculatorFragmentDirections
-                                .actionCalcFragmentToAccountUpdateFragment()
-                        )
-                    } else if (mainViewModel.getReturnTo()!!.contains(FRAG_ACCOUNT_ADD)) {
+            FRAG_BUDGET_RULE_UPDATE -> {
+                gotoBudgetRuleUpdateFragment()
+            }
 
-                        mView.findNavController().navigate(
-                            CalculatorFragmentDirections
-                                .actionCalcFragmentToAccountAddFragment()
-                        )
-                    }
+            else -> {
+                if (mainViewModel.getReturnTo()!!.contains(FRAG_ACCOUNT_UPDATE)) {
+                    gotoAccountUpdateFragment()
+                } else if (mainViewModel.getReturnTo()!!.contains(FRAG_ACCOUNT_ADD)) {
+                    gotoAccountAddFragment()
                 }
             }
         }
     }
 
-    private fun setOperatorActions() {
+    private fun gotoTransactionSplitFragment() {
+        mView.findNavController().navigate(
+            CalculatorFragmentDirections
+                .actionCalcFragmentToTransactionSplitFragment()
+        )
+    }
+
+    private fun gotoTransactionAddFragment() {
+        mView.findNavController().navigate(
+            CalculatorFragmentDirections
+                .actionCalcFragmentToTransactionAddFragment()
+        )
+    }
+
+    private fun gotoTransactionPerformFragment() {
+        mView.findNavController().navigate(
+            CalculatorFragmentDirections
+                .actionCalcFragmentToTransactionPerformFragment()
+        )
+    }
+
+    private fun gotoBudgetRuleAddFragment() {
+        mView.findNavController().navigate(
+            CalculatorFragmentDirections
+                .actionCalcFragmentToBudgetRuleAddFragment()
+        )
+    }
+
+    private fun gotoBudgetItemAddFragment() {
+        mView.findNavController().navigate(
+            CalculatorFragmentDirections
+                .actionCalcFragmentToBudgetItemAddFragment()
+        )
+    }
+
+    private fun gotoTransactionUpdateFragment() {
+        mView.findNavController().navigate(
+            CalculatorFragmentDirections
+                .actionCalcFragmentToTransactionUpdateFragment()
+        )
+    }
+
+    private fun gotoBudgetItemUpdateFragment() {
+        mView.findNavController().navigate(
+            CalculatorFragmentDirections
+                .actionCalcFragmentToBudgetItemUpdateFragment()
+        )
+    }
+
+    private fun gotoBudgetRuleUpdateFragment() {
+        mView.findNavController().navigate(
+            CalculatorFragmentDirections
+                .actionCalcFragmentToBudgetRuleUpdateFragment()
+        )
+    }
+
+    private fun gotoAccountUpdateFragment() {
+        mView.findNavController().navigate(
+            CalculatorFragmentDirections
+                .actionCalcFragmentToAccountUpdateFragment()
+        )
+    }
+
+    private fun gotoAccountAddFragment() {
+        mView.findNavController().navigate(
+            CalculatorFragmentDirections
+                .actionCalcFragmentToAccountAddFragment()
+        )
+    }
+
+    private fun createOperatorActions() {
         binding.apply {
-            btnPlus.setOnClickListener { operatorAction("+") }
-            btnMinus.setOnClickListener { operatorAction("-") }
-            btnTimes.setOnClickListener { operatorAction("X") }
-            btnDivide.setOnClickListener { operatorAction("/") }
-            btnBackspace.setOnClickListener { backspace() }
+            btnPlus.setOnClickListener { performOperatorAction("+") }
+            btnMinus.setOnClickListener { performOperatorAction("-") }
+            btnTimes.setOnClickListener { performOperatorAction("X") }
+            btnDivide.setOnClickListener { performOperatorAction("/") }
+            btnBackspace.setOnClickListener { performBackspace() }
             btnClear.setOnClickListener { clear() }
             btnClearAll.setOnClickListener { clearAll() }
-            btnEqual.setOnClickListener { equalAction() }
+            btnEqual.setOnClickListener { performEqualAction() }
         }
     }
 
-    private fun equalAction() {
+    private fun performEqualAction() {
         counter += 1
         binding.tvDisplay.text = nf.getNumberFromDouble(result[counter - 1])
         prevNumber.add(counter, 0.0)
@@ -194,7 +245,7 @@ class CalculatorFragment : Fragment(R.layout.fragment_calc) {
         performMath()
     }
 
-    private fun backspace() {
+    private fun performBackspace() {
         binding.apply {
             var prefix = ""
             if (tvDisplay.text.contains("-")) {
@@ -212,7 +263,7 @@ class CalculatorFragment : Fragment(R.layout.fragment_calc) {
         performMath()
     }
 
-    private fun setDigitActions() {
+    private fun createDigitActions() {
         binding.apply {
             btn0.setOnClickListener { addDigit("0") }
             btn1.setOnClickListener { addDigit("1") }
@@ -229,7 +280,7 @@ class CalculatorFragment : Fragment(R.layout.fragment_calc) {
         }
     }
 
-    private fun operatorAction(operation: String) {
+    private fun performOperatorAction(operation: String) {
         binding.apply {
             if (operator[counter] == "") {
                 operator[counter] = operation
@@ -282,34 +333,7 @@ class CalculatorFragment : Fragment(R.layout.fragment_calc) {
                 } else {
                     nf.getDoubleFromDollars(tvDisplay.text.toString())
                 }
-            if (operator[counter] == "") {
-                formula[counter] = tvDisplay.text.toString()
-                result[counter] = curNumber[counter]
-            } else if (operator[counter] == "+") {
-                result[counter] = prevNumber[counter] + curNumber[counter]
-                formula[counter] = "${nf.getNumberFromDouble(prevNumber[counter])} " +
-                        "${operator[counter]} " +
-                        "${nf.getNumberFromDouble(curNumber[counter])} " +
-                        "= ${nf.getDollarsFromDouble(result[counter])}"
-            } else if (operator[counter] == "-") {
-                result[counter] = prevNumber[counter] - curNumber[counter]
-                formula[counter] = "${nf.getNumberFromDouble(prevNumber[counter])} " +
-                        "${operator[counter]} " +
-                        "${nf.getNumberFromDouble(curNumber[counter])} " +
-                        "= ${nf.getDollarsFromDouble(result[counter])}"
-            } else if (operator[counter] == "X") {
-                result[counter] = prevNumber[counter] * curNumber[counter]
-                formula[counter] = "${nf.getNumberFromDouble(prevNumber[counter])} " +
-                        "${operator[counter]} " +
-                        "${nf.getNumberFromDouble(curNumber[counter])} " +
-                        "= ${nf.getDollarsFromDouble(result[counter])}"
-            } else if (operator[counter] == "/") {
-                result[counter] = prevNumber[counter] / curNumber[counter]
-                formula[counter] = "${nf.getNumberFromDouble(prevNumber[counter])} " +
-                        "${operator[counter]} " +
-                        "${nf.getNumberFromDouble(curNumber[counter])} " +
-                        "= ${nf.getDollarsFromDouble(result[counter])}"
-            }
+            determineOperatorAction()
             var display = ""
             for (i in 0..counter) {
                 display += formula[i]
@@ -319,6 +343,59 @@ class CalculatorFragment : Fragment(R.layout.fragment_calc) {
             display = "TRANSFER ${nf.getDollarsFromDouble(result[counter])}"
             btnTransfer.text = display
         }
+    }
+
+    private fun determineOperatorAction() {
+        binding.apply {
+            if (operator[counter] == "") {
+                performEmptyOperation()
+            } else if (operator[counter] == "+") {
+                performAddition()
+            } else if (operator[counter] == "-") {
+                performSubtraction()
+            } else if (operator[counter] == "X") {
+                performMultiplication()
+            } else if (operator[counter] == "/") {
+                performDivision()
+            }
+        }
+    }
+
+    private fun FragmentCalcBinding.performEmptyOperation() {
+        formula[counter] = tvDisplay.text.toString()
+        result[counter] = curNumber[counter]
+    }
+
+    private fun performAddition() {
+        result[counter] = prevNumber[counter] + curNumber[counter]
+        formula[counter] = "${nf.getNumberFromDouble(prevNumber[counter])} " +
+                "${operator[counter]} " +
+                "${nf.getNumberFromDouble(curNumber[counter])} " +
+                "= ${nf.getDollarsFromDouble(result[counter])}"
+    }
+
+    private fun performSubtraction() {
+        result[counter] = prevNumber[counter] - curNumber[counter]
+        formula[counter] = "${nf.getNumberFromDouble(prevNumber[counter])} " +
+                "${operator[counter]} " +
+                "${nf.getNumberFromDouble(curNumber[counter])} " +
+                "= ${nf.getDollarsFromDouble(result[counter])}"
+    }
+
+    private fun performMultiplication() {
+        result[counter] = prevNumber[counter] * curNumber[counter]
+        formula[counter] = "${nf.getNumberFromDouble(prevNumber[counter])} " +
+                "${operator[counter]} " +
+                "${nf.getNumberFromDouble(curNumber[counter])} " +
+                "= ${nf.getDollarsFromDouble(result[counter])}"
+    }
+
+    private fun performDivision() {
+        result[counter] = prevNumber[counter] / curNumber[counter]
+        formula[counter] = "${nf.getNumberFromDouble(prevNumber[counter])} " +
+                "${operator[counter]} " +
+                "${nf.getNumberFromDouble(curNumber[counter])} " +
+                "= ${nf.getDollarsFromDouble(result[counter])}"
     }
 
     override fun onDestroyView() {
