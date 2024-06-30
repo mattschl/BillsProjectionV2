@@ -71,7 +71,7 @@ class TransactionAnalysisFragment : Fragment(
     private fun setSearchListener() {
         binding.apply {
             btnSearch.setOnClickListener {
-                val searchQuery = "%${etSearch.text.toString()}%"
+                val searchQuery = "%${etSearch.text}%"
                 fillFromSearch(searchQuery)
             }
         }
@@ -331,7 +331,7 @@ class TransactionAnalysisFragment : Fragment(
                         )
                     } else if (chkSearch.isChecked) {
                         populateAnalysisFromSearchAndDates(
-                            "%${etSearch.text.toString()}%",
+                            "%${etSearch.text}%",
                             tvStartDate.text.toString(),
                             tvEndDate.text.toString()
                         )
@@ -465,7 +465,7 @@ class TransactionAnalysisFragment : Fragment(
                 populateAnalysisFromAccountAndDates(startDate, endDate)
             } else if (chkSearch.isChecked) {
                 populateAnalysisFromSearchAndDates(
-                    "%${etSearch.text.toString()}%",
+                    "%${etSearch.text}%",
                     startDate,
                     endDate
                 )

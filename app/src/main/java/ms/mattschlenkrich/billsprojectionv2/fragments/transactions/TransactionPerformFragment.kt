@@ -216,7 +216,7 @@ class TransactionPerformFragment : Fragment(
                     }-${
                         dayOfMonth.toString().padStart(2, '0')
                     }"
-                    etTransDate.setText(display)
+                    etTransDate.text = display
                 },
                 curDateAll[0].toInt(),
                 curDateAll[1].toInt() - 1,
@@ -282,9 +282,7 @@ class TransactionPerformFragment : Fragment(
             etDescription.setText(
                 mBudgetItem.biBudgetName
             )
-            etTransDate.setText(
-                df.getCurrentDateAsString()
-            )
+            etTransDate.text = df.getCurrentDateAsString()
             etAmount.hint =
                 "Budgeted: ${nf.displayDollars(mBudgetItem.biProjectedAmount)}"
             tvToAccount.text =
@@ -312,9 +310,7 @@ class TransactionPerformFragment : Fragment(
             ) { accWType ->
                 if (accWType.accountType!!.allowPending) {
                     chkFromAccPending.visibility = View.VISIBLE
-                    if (accWType.accountType.tallyOwing) {
-                        chkFromAccPending.isChecked = true
-                    }
+                    chkFromAccPending.isChecked = accWType.accountType.tallyOwing
                 } else {
                     chkFromAccPending.visibility = View.GONE
                 }
@@ -342,9 +338,7 @@ class TransactionPerformFragment : Fragment(
                 etNote.setText(
                     mTransaction.transNote
                 )
-                etTransDate.setText(
-                    mTransaction.transDate
-                )
+                etTransDate.text = mTransaction.transDate
                 etAmount.setText(
                     nf.displayDollars(
                         if (mainViewModel.getTransferNum()!! != 0.0) {
@@ -399,10 +393,8 @@ class TransactionPerformFragment : Fragment(
                 chkFromAccPending.isChecked =
                     mainViewModel.getTransactionDetailed()!!
                         .transaction!!.transFromAccountPending
-                etTransDate.setText(
-                    mainViewModel.getTransactionDetailed()!!
-                        .transaction!!.transDate
-                )
+                etTransDate.text = mainViewModel.getTransactionDetailed()!!
+                    .transaction!!.transDate
             }
             calculateRemainder()
         }
