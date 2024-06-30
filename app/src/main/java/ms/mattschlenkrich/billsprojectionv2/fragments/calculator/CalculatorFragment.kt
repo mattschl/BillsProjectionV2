@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.fragments.calc
+package ms.mattschlenkrich.billsprojectionv2.fragments.calculator
 
 import android.os.Bundle
 import android.util.Log

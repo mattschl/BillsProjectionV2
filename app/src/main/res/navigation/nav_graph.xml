@@ -429,7 +429,7 @@
     </fragment>
     <fragment
         android:id="@+id/calcFragment"
-        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.calc.CalculatorFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.fragments.calculator.CalculatorFragment"
         android:label="fragment_calc"
         tools:layout="@layout/fragment_calc">
         <action

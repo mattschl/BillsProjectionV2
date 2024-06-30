@@ -416,6 +416,8 @@ class TransactionAddFragment :
                     delay(WAIT_250)
                     if (mFromAccountWithType!!.accountType!!.allowPending) {
                         chkFromAccPending.visibility = View.VISIBLE
+                        chkFromAccPending.isChecked =
+                            mFromAccountWithType!!.accountType!!.tallyOwing
                     } else {
                         chkFromAccPending.visibility = View.GONE
                     }
@@ -451,6 +453,9 @@ class TransactionAddFragment :
                 delay(WAIT_250)
                 if (mToAccountWithType!!.accountType!!.allowPending) {
                     chkToAccPending.visibility = View.VISIBLE
+                    if (mToAccountWithType!!.accountType!!.tallyOwing) {
+                        chkToAccPending.isChecked = true
+                    }
                 } else {
                     chkToAccPending.visibility = View.GONE
                 }
