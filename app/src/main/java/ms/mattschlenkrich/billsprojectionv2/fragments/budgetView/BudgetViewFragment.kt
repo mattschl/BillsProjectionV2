@@ -48,7 +48,6 @@ class BudgetViewFragment : Fragment(
     private lateinit var transactionViewModel: TransactionViewModel
     private val nf = NumberFunctions()
 
-    //    private lateinit var assetList: List<String>
     private lateinit var curAsset: AccountWithType
     private val budgetList = ArrayList<BudgetDetailed>()
     private var pendingAmount = 0.0
