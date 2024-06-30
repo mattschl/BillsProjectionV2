@@ -275,7 +275,6 @@ class TransactionPendingAdapter(
                 }
             }
         }
-        budgetViewFragment.populateBudgetTotals()
         budgetViewFragment.populatePendingList()
     }
 
