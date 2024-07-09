@@ -80,9 +80,12 @@ class DateFunctions {
     }
 
     fun getMonthsBetween(startDate: String, endDate: String): Int {
-        val start = LocalDate.parse(startDate)
-        val end = LocalDate.parse(endDate)
-        return end.monthValue + end.year - start.monthValue - start.year + 1
+        val start = startDate.split("-")
+        val end = endDate.split("-")
+        val years = end[0].toInt() - start[0].toInt()
+        var months = end[1].toInt() - start[1].toInt()
+        months += if (end[2].toInt() - end[2].toInt() < 0) 2 else 1
+        return months + (years * 12)
     }
 
     fun getFirstOfMonth(date: String): String {
