@@ -5,7 +5,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.RoomWarnings
 import androidx.room.Transaction
 import androidx.room.Update
@@ -51,8 +50,8 @@ interface TransactionDao {
     )
     suspend fun deleteTransaction(transId: Long, updateTime: String)
 
-    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
-    @RewriteQueriesToDropUnusedColumns
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+//    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_TRANSACTION.*," +
@@ -76,8 +75,8 @@ interface TransactionDao {
     fun getActiveTransactionsDetailed():
             LiveData<List<TransactionDetailed>>
 
-    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
-    @RewriteQueriesToDropUnusedColumns
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+//    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_TRANSACTION.*," +
@@ -102,8 +101,7 @@ interface TransactionDao {
     fun getActiveTransactionsDetailed(budgetRuleId: Long):
             LiveData<List<TransactionDetailed>>
 
-    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
-    @RewriteQueriesToDropUnusedColumns
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Transaction
     @Query(
         "SELECT $TABLE_TRANSACTION.*," +
@@ -131,8 +129,8 @@ interface TransactionDao {
         budgetRuleId: Long, startDate: String, endDate: String
     ): LiveData<List<TransactionDetailed>>
 
-    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
-    @RewriteQueriesToDropUnusedColumns
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+//    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_TRANSACTION.*," +
@@ -160,8 +158,8 @@ interface TransactionDao {
     fun searchActiveTransactionsDetailed(query: String?):
             LiveData<List<TransactionDetailed>>
 
-    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
-    @RewriteQueriesToDropUnusedColumns
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+//    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_TRANSACTION.*," +
@@ -183,8 +181,8 @@ interface TransactionDao {
     fun getTransactionDetailed(transId: Long):
             TransactionDetailed
 
-    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
-    @RewriteQueriesToDropUnusedColumns
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+//    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_TRANSACTION.*, " +
@@ -233,8 +231,8 @@ interface TransactionDao {
         updateTime: String
     )
 
-    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
-    @RewriteQueriesToDropUnusedColumns
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+//    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_TRANSACTION.*," +
@@ -376,8 +374,8 @@ interface TransactionDao {
         endDate: String
     ): LiveData<Double>
 
-    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
-    @RewriteQueriesToDropUnusedColumns
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+//    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_TRANSACTION.*," +
@@ -403,8 +401,8 @@ interface TransactionDao {
     fun getActiveTransactionByAccount(accountId: Long):
             LiveData<List<TransactionDetailed>>
 
-    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
-    @RewriteQueriesToDropUnusedColumns
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+//    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_TRANSACTION.*," +
@@ -473,8 +471,8 @@ interface TransactionDao {
         accountId: Long, startDate: String, endDate: String
     ): LiveData<Double>
 
-    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
-    @RewriteQueriesToDropUnusedColumns
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+//    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT $TABLE_TRANSACTION.*, " +
@@ -503,8 +501,8 @@ interface TransactionDao {
         query: String?, startDate: String, endDate: String
     ): LiveData<List<TransactionDetailed>>
 
-    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
-    @RewriteQueriesToDropUnusedColumns
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+//    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         "SELECT trans.*, " +
