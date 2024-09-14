@@ -40,7 +40,7 @@ class TransactionPendingAdapter(
     private val context: Context
 ) : RecyclerView.Adapter<TransactionPendingAdapter.TransactionPendingHolder>() {
 
-    val cf = NumberFunctions()
+    val nf = NumberFunctions()
     val df = DateFunctions()
     val accountViewModel =
         mainActivity.accountViewModel
@@ -94,7 +94,7 @@ class TransactionPendingAdapter(
                 df.getDisplayDate(pendingTransaction.transaction!!.transDate)
             tvPendingDate.setTextColor(Color.BLACK)
             tvPendingAmount.text =
-                cf.displayDollars(pendingTransaction.transaction.transAmount)
+                nf.displayDollars(pendingTransaction.transaction.transAmount)
             if (pendingTransaction.toAccount!!.accountName ==
                 curAccount
             ) {
@@ -113,25 +113,28 @@ class TransactionPendingAdapter(
             }
             tvPendingDescription.text = display
             holder.itemView.setOnClickListener {
-                chooseOptionsForTransaction(pendingTransaction.transaction, pendingTransaction, it)
+                chooseOptionsForTransaction(pendingTransaction, it)
             }
         }
     }
 
     private fun chooseOptionsForTransaction(
-        transaction: Transactions,
         pendingTransaction: TransactionDetailed,
         it: View
     ) {
         AlertDialog.Builder(context)
             .setTitle(
-                "Choose an Actions for" +
-                        transaction.transName
+                "Choose an Action on: " +
+                        nf.displayDollars(
+                            pendingTransaction.transaction!!.transAmount
+                        ) + " for " +
+                        pendingTransaction.transaction.transName
             )
             .setItems(
                 arrayOf(
                     "Complete this pending transaction",
-                    "Open the transaction to edit it"
+                    "Open the transaction to edit it",
+                    "Delete this pending transaction"
                 )
             ) { _, pos ->
                 when (pos) {
@@ -148,10 +151,22 @@ class TransactionPendingAdapter(
                             it
                         )
                     }
+
+                    2 -> {
+                        deleteTransaction(pendingTransaction)
+                    }
                 }
             }
             .setNegativeButton("Cancel", null)
             .show()
+    }
+
+    private fun deleteTransaction(transaction: TransactionDetailed) {
+        mainActivity.transactionViewModel.deleteTransaction(
+            transaction.transaction!!.transId,
+            df.getCurrentTimeAsString()
+        )
+        budgetViewFragment.populatePendingList()
     }
 
     private fun editTransaction(
@@ -161,7 +176,7 @@ class TransactionPendingAdapter(
         mainViewModel.setCallingFragments(
             PARENT_TAG
         )
-        mainViewModel.setTransactionDetailed(null)
+        mainViewModel.setTransactionDetailed(transaction)
         CoroutineScope(Dispatchers.IO).launch {
             val transactionFull = async {
                 transactionViewModel.getTransactionFull(

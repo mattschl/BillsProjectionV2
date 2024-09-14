@@ -521,6 +521,7 @@ class TransactionUpdateFragment :
                     mainViewModel.getTransactionDetailed()!!.transaction!!.transId,
                     df.getCurrentTimeAsString()
                 )
+                mainViewModel.setTransactionDetailed(null)
                 reverseOldTransactionAccountBalances(mainViewModel.getOldTransaction()!!)
                 mainViewModel.setCallingFragments(
                     mainViewModel.getCallingFragments()!!.replace(
