@@ -11,18 +11,26 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import ms.mattschlenkrich.billsprojectionv2.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.WAIT_100
+import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetViewItemBinding
 import ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetViewFragment
 import ms.mattschlenkrich.billsprojectionv2.fragments.budgetView.BudgetViewFragmentDirections
+import ms.mattschlenkrich.billsprojectionv2.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.model.budgetItem.BudgetDetailed
+import ms.mattschlenkrich.billsprojectionv2.model.budgetItem.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.model.budgetRule.BudgetRuleDetailed
-import ms.mattschlenkrich.billsprojectionv2.viewModel.BudgetItemViewModel
-import ms.mattschlenkrich.billsprojectionv2.viewModel.MainViewModel
+import ms.mattschlenkrich.billsprojectionv2.model.transactions.Transactions
 import java.util.Random
 
 private const val TAG = ADAPTER_BUDGET_VIEW
@@ -30,14 +38,13 @@ private const val PARENT_TAG = FRAG_BUDGET_VIEW
 
 class BudgetViewAdapter(
     private val budgetViewFragment: BudgetViewFragment,
-    private val budgetItemViewModel: BudgetItemViewModel,
-    private val mainViewModel: MainViewModel,
+    private val mainActivity: MainActivity,
     private val curAccount: String,
     private val curPayDay: String,
     private val context: Context
 ) : RecyclerView.Adapter<BudgetViewAdapter.BudgetViewHolder>() {
 
-    val cf = NumberFunctions()
+    val nf = NumberFunctions()
     val df = DateFunctions()
 
     class BudgetViewHolder(val itemBinding: BudgetViewItemBinding) :
@@ -95,7 +102,7 @@ class BudgetViewAdapter(
                 tvName.setTextColor(Color.BLACK)
             }
             tvAmount.text =
-                cf.displayDollars(curBudget.budgetItem.biProjectedAmount)
+                nf.displayDollars(curBudget.budgetItem.biProjectedAmount)
             if (curBudget.toAccount!!.accountName == curAccount) {
                 tvAmount.setTextColor(Color.BLACK)
             } else {
@@ -146,7 +153,7 @@ class BudgetViewAdapter(
             ) { _, pos ->
                 when (pos) {
                     0 -> {
-                        budgetItemViewModel.lockUnlockBudgetItem(
+                        mainActivity.budgetItemViewModel.lockUnlockBudgetItem(
                             true, budgetItem.budgetItem.biRuleId,
                             budgetItem.budgetItem.biPayDay,
                             df.getCurrentTimeAsString()
@@ -154,7 +161,7 @@ class BudgetViewAdapter(
                     }
 
                     1 -> {
-                        budgetItemViewModel.lockUnlockBudgetItem(
+                        mainActivity.budgetItemViewModel.lockUnlockBudgetItem(
                             false, budgetItem.budgetItem.biRuleId,
                             budgetItem.budgetItem.biPayDay,
                             df.getCurrentTimeAsString()
@@ -162,14 +169,14 @@ class BudgetViewAdapter(
                     }
 
                     2 -> {
-                        budgetItemViewModel.lockUnlockBudgetItem(
+                        mainActivity.budgetItemViewModel.lockUnlockBudgetItem(
                             true, budgetItem.budgetItem.biPayDay,
                             df.getCurrentTimeAsString()
                         )
                     }
 
                     3 -> {
-                        budgetItemViewModel.lockUnlockBudgetItem(
+                        mainActivity.budgetItemViewModel.lockUnlockBudgetItem(
                             false, budgetItem.budgetItem.biPayDay,
                             df.getCurrentTimeAsString()
                         )
@@ -189,7 +196,9 @@ class BudgetViewAdapter(
             .setTitle("Choose action for ${curBudget.budgetItem!!.biBudgetName}")
             .setItems(
                 arrayOf(
-                    "Perform a TRANSACTION on this item.",
+                    "Perform a TRANSACTION on this budget item.",
+                    "COMPLETE ${curBudget.budgetItem.biBudgetName} for amount of " +
+                            nf.displayDollars(curBudget.budgetItem.biProjectedAmount),
                     "ADJUST this item.",
                     "CANCEL this item.",
                     "Go to the RULES for this item."
@@ -201,14 +210,18 @@ class BudgetViewAdapter(
                     }
 
                     1 -> {
-                        openBudgetItem(curBudget, it)
+                        completeTransaction(curBudget)
                     }
 
                     2 -> {
-                        cancelBudgetItem(curBudget)
+                        openBudgetItem(curBudget, it)
                     }
 
                     3 -> {
+                        cancelBudgetItem(curBudget)
+                    }
+
+                    4 -> {
                         gotoBudgetRule(curBudget, it)
                     }
                 }
@@ -217,8 +230,111 @@ class BudgetViewAdapter(
             .show()
     }
 
+    private fun completeTransaction(curBudget: BudgetDetailed) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val mToAccountWithType =
+                mainActivity.accountViewModel.getAccountWithType(
+                    curBudget.budgetItem!!.biToAccountId
+                )
+            val mFromAccountWithType =
+                mainActivity.accountViewModel.getAccountWithType(
+                    curBudget.budgetItem.biFromAccountId
+                )
+            delay(WAIT_100)
+            val curTransaction = getCurTransactionObject(
+                curBudget.budgetItem,
+                updateAccountBalance(
+                    mToAccountWithType,
+                    curBudget.budgetItem.biProjectedAmount,
+                ),
+                updateAccountBalance(
+                    mFromAccountWithType,
+                    curBudget.budgetItem.biProjectedAmount,
+                )
+            )
+            delay(WAIT_250)
+            mainActivity.transactionViewModel.insertTransaction(curTransaction)
+            delay(WAIT_100)
+            curBudget.budgetItem.apply {
+                mainActivity.budgetItemViewModel.updateBudgetItem(
+                    BudgetItem(
+                        biRuleId,
+                        biProjectedDate,
+                        df.getCurrentDateAsString(),
+                        biPayDay,
+                        biBudgetName,
+                        biIsPayDayItem,
+                        biToAccountId,
+                        biFromAccountId,
+                        0.0,
+                        biIsPending,
+                        biIsFixed,
+                        biIsAutomatic,
+                        biManuallyEntered,
+                        true,
+                        biIsCancelled,
+                        biIsDeleted,
+                        df.getCurrentTimeAsString(),
+                        biLocked
+
+                    )
+                )
+            }
+        }
+        budgetViewFragment.populateBudgetTotals()
+    }
+
+    private fun updateAccountBalance(accountWithType: AccountWithType, transAmount: Double):
+            Boolean {
+        accountWithType.apply {
+            if (accountType!!.keepTotals) {
+                mainActivity.transactionViewModel.updateAccountBalance(
+                    account.accountBalance - transAmount,
+                    account.accountId,
+                    df.getCurrentTimeAsString()
+                )
+                return false
+            } else if (!accountType.allowPending && accountType.tallyOwing) {
+                mainActivity.transactionViewModel.updateAccountOwing(
+                    account.accountOwing + transAmount,
+                    account.accountId,
+                    df.getCurrentTimeAsString()
+                )
+                return false
+            } else if (!accountType.keepTotals && !accountType.tallyOwing) {
+                return false
+            }
+        }
+        return true
+    }
+
+    private fun getCurTransactionObject(
+        budgetItem: BudgetItem,
+        toAccountPending: Boolean,
+        fromAccountPending: Boolean
+    ): Transactions {
+        budgetItem.apply {
+            return Transactions(
+                nf.generateId(),
+                df.getCurrentDateAsString(),
+                biBudgetName,
+                "",
+                biRuleId,
+                biToAccountId,
+                toAccountPending,
+                biFromAccountId,
+                fromAccountPending,
+                biProjectedAmount,
+                false,
+                df.getCurrentTimeAsString()
+            )
+
+
+        }
+    }
+
     private fun gotoBudgetRule(curBudget: BudgetDetailed, it: View) {
-        mainViewModel.setBudgetRuleDetailed(
+        mainActivity.mainViewModel.setBudgetRuleDetailed(
             BudgetRuleDetailed(
                 curBudget.budgetRule,
                 curBudget.toAccount,
@@ -233,7 +349,7 @@ class BudgetViewAdapter(
     }
 
     private fun cancelBudgetItem(curBudget: BudgetDetailed) {
-        budgetItemViewModel.cancelBudgetItem(
+        mainActivity.budgetItemViewModel.cancelBudgetItem(
             curBudget.budgetItem!!.biRuleId,
             curBudget.budgetItem.biProjectedDate,
             df.getCurrentTimeAsString()
@@ -242,7 +358,7 @@ class BudgetViewAdapter(
     }
 
     private fun openBudgetItem(curBudget: BudgetDetailed, it: View) {
-        mainViewModel.setBudgetItem(curBudget)
+        mainActivity.mainViewModel.setBudgetItem(curBudget)
         setToReturn()
         it.findNavController().navigate(
             BudgetViewFragmentDirections
@@ -251,8 +367,8 @@ class BudgetViewAdapter(
     }
 
     private fun performTransaction(curBudget: BudgetDetailed, it: View) {
-        mainViewModel.setBudgetItem(curBudget)
-        mainViewModel.setTransactionDetailed(null)
+        mainActivity.mainViewModel.setBudgetItem(curBudget)
+        mainActivity.mainViewModel.setTransactionDetailed(null)
         setToReturn()
         it.findNavController().navigate(
             BudgetViewFragmentDirections
@@ -262,10 +378,10 @@ class BudgetViewAdapter(
     }
 
     private fun setToReturn() {
-        mainViewModel.setCallingFragments(
+        mainActivity.mainViewModel.setCallingFragments(
             PARENT_TAG
         )
-        mainViewModel.setReturnToAsset(curAccount)
-        mainViewModel.setReturnToPayDay(curPayDay)
+        mainActivity.mainViewModel.setReturnToAsset(curAccount)
+        mainActivity.mainViewModel.setReturnToPayDay(curPayDay)
     }
 }

@@ -178,4 +178,5 @@
     <string name="enter_criteria">Enter Criteria</string>
     <string name="delete_future_predictions">Clear future predictions</string>
     <string name="pick_a_date_to_project_forward_to">Pick a date to project forward to.</string>
+    <string name="blank" />
 </resources>

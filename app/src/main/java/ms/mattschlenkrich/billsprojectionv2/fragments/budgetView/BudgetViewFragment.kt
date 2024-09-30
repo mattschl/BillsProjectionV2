@@ -155,8 +155,7 @@ class BudgetViewFragment : Fragment(
     fun populateBudgetList(asset: String, payDay: String) {
         val budgetViewAdapter = BudgetViewAdapter(
             this,
-            budgetItemViewModel,
-            mainViewModel,
+            mainActivity,
             asset,
             payDay,
             mView.context
@@ -375,15 +374,15 @@ class BudgetViewFragment : Fragment(
 
     private fun clearCurrentDisplay() {
         binding.apply {
-            lblBalanceOwing.text = ""
-            tvBalanceOwing.text = ""
+            lblBalanceOwing.text = getString(R.string.blank)
+            tvBalanceOwing.text = getString(R.string.blank)
             llNoBudget.visibility = View.VISIBLE
             rvBudgetSummary.visibility = View.GONE
-            tvDebits.text = ""
-            tvCredits.text = ""
-            tvFixedExpenses.text = ""
-            tvDiscretionaryExpenses.text = ""
-            tvSurplusOrDeficit.text = ""
+            tvDebits.text = getString(R.string.blank)
+            tvCredits.text = getString(R.string.blank)
+            tvFixedExpenses.text = getString(R.string.blank)
+            tvDiscretionaryExpenses.text = getString(R.string.blank)
+            tvSurplusOrDeficit.text = getString(R.string.blank)
         }
     }
 
