@@ -20,6 +20,8 @@ import ms.mattschlenkrich.billsprojectionv2.BuildConfig
 import ms.mattschlenkrich.billsprojectionv2.NavGraphDirections
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.projections.UpdateBudgetPredictions
+import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.AccountUpdateViewModel
+import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.AccountUpdateViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.dataBase.BillsDatabase
@@ -48,6 +50,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var budgetRuleViewModel: BudgetRuleViewModel
     lateinit var transactionViewModel: TransactionViewModel
     lateinit var budgetItemViewModel: BudgetItemViewModel
+    lateinit var accountUpdateViewModel: AccountUpdateViewModel
     lateinit var mView: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -138,11 +141,12 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        setMainViewModel()
+        setupMainViewModel()
         setupAccountViewModel()
         setupBudgetRuleViewModel()
         setupTransactionViewModel()
         setupBudgetItemViewModel()
+        setupAccountUpdateViewModel()
     }
 
     private fun chooseDeleteFuturePredictions() {
@@ -187,15 +191,6 @@ class MainActivity : AppCompatActivity() {
                 .actionGlobalTransactionAverageFragment()
         findNavController(R.id.fragment_container_view)
             .navigate(direction)
-    }
-
-    private fun setMainViewModel() {
-        val mainViewModelFactory =
-            MainViewModelFactory(application)
-        mainViewModel = ViewModelProvider(
-            this,
-            mainViewModelFactory
-        )[MainViewModel::class.java]
     }
 
     private fun gotoBudgetView() {
@@ -324,5 +319,27 @@ class MainActivity : AppCompatActivity() {
             this,
             transactionViewModelFactory
         )[TransactionViewModel::class.java]
+    }
+
+    private fun setupMainViewModel() {
+        val mainViewModelFactory =
+            MainViewModelFactory(application)
+        mainViewModel = ViewModelProvider(
+            this,
+            mainViewModelFactory
+        )[MainViewModel::class.java]
+    }
+
+    private fun setupAccountUpdateViewModel() {
+        val accountUpdateViewModelFactory =
+            AccountUpdateViewModelFactory(
+                this,
+                transactionViewModel,
+                application
+            )
+        accountUpdateViewModel = ViewModelProvider(
+            this,
+            accountUpdateViewModelFactory
+        )[AccountUpdateViewModel::class.java]
     }
 }
