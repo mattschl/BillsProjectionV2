@@ -7,7 +7,7 @@
         android:id="@+id/constraintBudgetRules"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".fragments.budgetRules.BudgetRuleFragment">
+        tools:context=".ui.budgetRules.BudgetRuleFragment">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabAddNew"
