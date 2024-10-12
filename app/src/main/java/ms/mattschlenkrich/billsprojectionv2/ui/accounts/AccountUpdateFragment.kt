@@ -1,0 +1,388 @@
+package ms.mattschlenkrich.billsprojectionv2.ui.accounts
+
+import android.app.AlertDialog
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.navigation.findNavController
+import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.BALANCE
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGETED
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNTS
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
+import ms.mattschlenkrich.billsprojectionv2.common.OWING
+import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
+import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
+import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
+import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModel
+import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountUpdateBinding
+import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
+
+private const val TAG = FRAG_ACCOUNT_UPDATE
+
+class AccountUpdateFragment :
+    Fragment(R.layout.fragment_account_update) {
+
+    private var _binding: FragmentAccountUpdateBinding? = null
+    private val binding get() = _binding!!
+    private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+
+    private lateinit var mView: View
+    private lateinit var accountsViewModel: AccountViewModel
+
+    private val nf = NumberFunctions()
+    private val df = DateFunctions()
+    private var accountNameList = ArrayList<String>()
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentAccountUpdateBinding.inflate(
+            inflater, container, false
+        )
+        mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        accountsViewModel =
+            mainActivity.accountViewModel
+        mainActivity.title = "Update Account"
+        mView = binding.root
+        return mView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        getAccountListNamesForValidation()
+        createMenuActions()
+        populateValues()
+        createClickActions()
+    }
+
+    private fun getAccountListNamesForValidation() {
+        accountsViewModel.getAccountNameList().observe(
+            viewLifecycleOwner
+        ) { accounts ->
+            accountNameList.clear()
+            accounts.listIterator().forEach {
+                accountNameList.add(it)
+            }
+        }
+    }
+
+    private fun createMenuActions() {
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                // Add menu items here
+                menuInflater.inflate(R.menu.delete_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                // Handle the menu selection
+                return when (menuItem.itemId) {
+                    R.id.menu_delete -> {
+                        chooseDeleteAccount()
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
+    private fun createClickActions() {
+        binding.apply {
+            drpAccountUpdateType.setOnClickListener {
+                gotoAccountTypesFragment()
+            }
+            fabAccountUpdateDone.setOnClickListener {
+                isAccountReadyToUpdate()
+            }
+            edAccountUpdateBalance.setOnLongClickListener {
+                gotoCalculator(BALANCE)
+                false
+            }
+            edAccountUpdateOwing.setOnLongClickListener {
+                gotoCalculator(OWING)
+                false
+            }
+            edAccountUpdateBudgeted.setOnLongClickListener {
+                gotoCalculator(BUDGETED)
+                false
+            }
+        }
+    }
+
+    private fun gotoCalculator(type: String) {
+        when (type) {
+            BALANCE -> {
+                mainViewModel.setTransferNum(
+                    nf.getDoubleFromDollars(
+                        binding.edAccountUpdateBalance.text.toString().ifBlank {
+                            "0.0"
+                        }
+                    )
+                )
+            }
+
+            OWING -> {
+                mainViewModel.setTransferNum(
+                    nf.getDoubleFromDollars(
+                        binding.edAccountUpdateOwing.text.toString().ifBlank {
+                            "0.0"
+                        }
+                    )
+                )
+            }
+
+            BUDGETED -> {
+                mainViewModel.setTransferNum(
+                    nf.getDoubleFromDollars(
+                        binding.edAccountUpdateBudgeted.text.toString().ifBlank {
+                            "0.0"
+                        }
+                    )
+                )
+            }
+        }
+        mainViewModel.setReturnTo("$TAG, $type")
+        mainViewModel.setAccountWithType(
+            AccountWithType(
+                getUpdatedAccount(),
+                mainViewModel.getAccountWithType()!!.accountType
+            )
+        )
+        mView.findNavController().navigate(
+            AccountUpdateFragmentDirections
+                .actionAccountUpdateFragmentToCalcFragment()
+        )
+    }
+
+    private fun getUpdatedAccount(): Account {
+        binding.apply {
+            return Account(
+                mainViewModel.getAccountWithType()!!.account.accountId,
+                edAccountUpdateName.text.toString().trim(),
+                edAccountUpdateHandle.text.toString().trim(),
+                mainViewModel.getAccountWithType()!!.accountType?.typeId ?: 0L,
+                nf.getDoubleFromDollars(edAccountUpdateBudgeted.text.toString()),
+                nf.getDoubleFromDollars(edAccountUpdateBalance.text.toString()),
+                nf.getDoubleFromDollars(edAccountUpdateOwing.text.toString()),
+                nf.getDoubleFromDollars(etAccUpdateLimit.text.toString()),
+                false,
+                df.getCurrentTimeAsString()
+            )
+        }
+    }
+
+    private fun gotoAccountTypesFragment() {
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments() + ", " + TAG
+        )
+        mainViewModel.setAccountWithType(
+            AccountWithType(
+                getUpdatedAccount(),
+                mainViewModel.getAccountWithType()!!.accountType
+            )
+        )
+        val direction = AccountUpdateFragmentDirections
+            .actionAccountUpdateFragmentToAccountTypesFragment()
+        mView.findNavController().navigate(direction)
+
+    }
+
+    private fun validateAccount(): String {
+        binding.apply {
+            val nameIsBlank =
+                edAccountUpdateName.text.isNullOrBlank()
+            var nameFound = false
+            if (accountNameList.isNotEmpty() && !nameIsBlank) {
+                for (i in 0 until accountNameList.size) {
+                    if (accountNameList[i] ==
+                        edAccountUpdateName.text.toString() &&
+                        accountNameList[i] !=
+                        mainViewModel.getAccountWithType()!!.account.accountName
+                    ) {
+                        nameFound = true
+                        break
+                    }
+                }
+            }
+            val errorMes = if (nameIsBlank) {
+                "     Error!!\n" +
+                        "Please enter a name"
+            } else if (nameFound) {
+                "     Error!!\n" +
+                        "This budget rule already exists."
+            } else if (drpAccountUpdateType.text.isNullOrBlank()) {
+                "     Error!!\n" +
+                        "Please choose an account Type"
+            } else {
+                "Ok"
+            }
+            return errorMes
+        }
+    }
+
+    private fun isAccountReadyToUpdate() {
+        val mess = validateAccount()
+
+        if (mess == "Ok") {
+            chooseToUpdate()
+        } else {
+            Toast.makeText(
+                mView.context,
+                mess,
+                Toast.LENGTH_LONG
+            ).show()
+        }
+
+    }
+
+    private fun chooseToUpdate() {
+        val name = binding.edAccountUpdateName.text.trim().toString()
+        if (name == mainViewModel.getAccountWithType()!!.account.accountName.trim()) {
+            accountsViewModel.updateAccount(getUpdatedAccount())
+            gotoCallingFragment()
+        } else if (name != mainViewModel.getAccountWithType()!!.account.accountName.trim()) {
+            AlertDialog.Builder(activity).apply {
+                setTitle("Rename Account?")
+                setMessage(
+                    "Are you sure you want to rename this Account?\n " +
+                            "      NOTE:\n" +
+                            "This will NOT replace an existing Account"
+                )
+                setPositiveButton("Update Account") { _, _ ->
+                    accountsViewModel.updateAccount(getUpdatedAccount())
+                    gotoCallingFragment()
+
+                }
+                setNegativeButton("Cancel", null)
+            }.create().show()
+        }
+    }
+
+    private fun gotoCallingFragment() {
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments()!!
+                .replace(", $TAG", "")
+        )
+        if (mainViewModel.getCallingFragments()!!.contains(FRAG_ACCOUNTS)) {
+            gotoAccountsFragment()
+        } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_BUDGET_VIEW)) {
+            gotoBudgetViewFragment()
+        }
+    }
+
+    private fun gotoBudgetViewFragment() {
+        mView.findNavController().navigate(
+            AccountUpdateFragmentDirections
+                .actionAccountUpdateFragmentToBudgetViewFragment()
+        )
+    }
+
+    private fun populateValues() {
+        binding.apply {
+            edAccountUpdateName.setText(
+                mainViewModel.getAccountWithType()!!.account.accountName
+            )
+            edAccountUpdateHandle.setText(
+                mainViewModel.getAccountWithType()!!.account.accountNumber
+            )
+            if (mainViewModel.getAccountWithType()!!.accountType != null) {
+                drpAccountUpdateType.text =
+                    mainViewModel.getAccountWithType()!!.accountType!!.accountType
+            }
+            edAccountUpdateBalance.setText(
+                nf.displayDollars(
+                    if (mainViewModel.getTransferNum()!! != 0.0 &&
+                        mainViewModel.getReturnTo()!!.contains(BALANCE)
+                    ) {
+                        mainViewModel.getTransferNum()!!
+                    } else {
+                        mainViewModel.getAccountWithType()!!.account.accountBalance
+                    }
+                )
+            )
+            edAccountUpdateOwing.setText(
+                nf.displayDollars(
+                    if (mainViewModel.getTransferNum()!! != 0.0 &&
+                        mainViewModel.getReturnTo()!!.contains(OWING)
+
+                    ) {
+                        mainViewModel.getTransferNum()!!
+                    } else {
+                        mainViewModel.getAccountWithType()!!.account.accountOwing
+                    }
+                )
+            )
+            edAccountUpdateBudgeted.setText(
+                nf.displayDollars(
+                    if (mainViewModel.getTransferNum()!! != 0.0 &&
+                        mainViewModel.getReturnTo()!!.contains(BUDGETED)
+                    ) {
+                        mainViewModel.getTransferNum()!!
+                    } else {
+                        mainViewModel.getAccountWithType()!!.account.accBudgetedAmount
+                    }
+                )
+            )
+            mainViewModel.setTransferNum(0.0)
+            etAccUpdateLimit.setText(
+                nf.displayDollars(
+                    mainViewModel.getAccountWithType()!!.account.accountCreditLimit
+                )
+            )
+            txtAccountUpdateAccountId.text =
+                mainViewModel.getAccountWithType()!!.account.accountId.toString()
+        }
+    }
+
+    private fun chooseDeleteAccount() {
+        AlertDialog.Builder(activity).apply {
+            setTitle("Delete Account?")
+            setMessage("Are you sure you want to delete this account? ")
+            setPositiveButton("Delete") { _, _ ->
+                deleteAccount()
+            }
+            setNegativeButton("Cancel", null)
+        }.create().show()
+    }
+
+    private fun deleteAccount() {
+        accountsViewModel.deleteAccount(
+            mainViewModel.getAccountWithType()!!.account.accountId,
+            df.getCurrentTimeAsString()
+        )
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments()!!
+                .replace(", $FRAG_ACCOUNT_UPDATE", "")
+        )
+        gotoAccountsFragment()
+    }
+
+    private fun gotoAccountsFragment() {
+        val direction = AccountUpdateFragmentDirections
+            .actionAccountUpdateFragmentToAccountsFragment()
+        mView.findNavController().navigate(direction)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
+}
