@@ -86,9 +86,8 @@ class TransactionViewFragment :
         transactionAdapter = TransactionAdapter(
             mainActivity,
             mainViewModel,
-            mView.context
+            mView,
         )
-
         binding.rvTransactions.apply {
             layoutManager = LinearLayoutManager(
                 requireContext()

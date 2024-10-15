@@ -1,9 +1,7 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.transactions.adapter
 
 import android.app.AlertDialog
-import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,7 +32,7 @@ private const val PARENT_TAG = FRAG_TRANSACTION_VIEW
 class TransactionAdapter(
     val mainActivity: MainActivity,
     private val mainViewModel: MainViewModel,
-    private val context: Context,
+    private val mView: View,
 ) : RecyclerView.Adapter<TransactionAdapter.TransactionsViewHolder>() {
 
     private val cf = NumberFunctions()
@@ -69,7 +67,6 @@ class TransactionAdapter(
                 oldItem: TransactionDetailed,
                 newItem: TransactionDetailed
             ): Boolean {
-                Log.d(TAG, "'in areContentsTheSame ")
                 return oldItem == newItem
             }
         }
@@ -160,46 +157,48 @@ class TransactionAdapter(
             ibColor.setBackgroundColor(color)
 
             holder.itemView.setOnClickListener {
-                AlertDialog.Builder(context)
-                    .setTitle(
-                        "Choose action for " +
-                                transaction.transaction.transName
-                    )
-                    .setItems(
-                        arrayOf(
-                            "Edit this transaction",
-                            "Delete this transaction"
-                        )
-                    ) { _, pos ->
-                        when (pos) {
-                            0 -> {
-                                gotoTransactionUpdate(transaction, transaction.transaction, it)
-                            }
-
-                            1 -> {
-                                AlertDialog.Builder(context)
-                                    .setTitle(
-                                        "Are you sure you want to delete " +
-                                                transaction.transaction.transName
-                                    )
-                                    .setPositiveButton("Delete") { _, _ ->
-                                        deleteTransaction(transaction.transaction)
-                                    }
-                                    .setNegativeButton("Cancel", null)
-                                    .show()
-                            }
-                        }
-                    }
-                    .setNegativeButton("Cancel", null)
-                    .show()
+                chooseOptions(transaction)
             }
         }
     }
 
+    private fun chooseOptions(transaction: TransactionDetailed) {
+        AlertDialog.Builder(mView.context)
+            .setTitle(
+                "Choose action for " +
+                        transaction.transaction!!.transName
+            )
+            .setItems(
+                arrayOf(
+                    "Edit this transaction",
+                    "Delete this transaction"
+                )
+            ) { _, pos ->
+                when (pos) {
+                    0 -> {
+                        gotoTransactionUpdate(transaction)
+                    }
+
+                    1 -> {
+                        AlertDialog.Builder(mView.context)
+                            .setTitle(
+                                "Are you sure you want to delete " +
+                                        transaction.transaction!!.transName
+                            )
+                            .setPositiveButton("Delete") { _, _ ->
+                                deleteTransaction(transaction.transaction)
+                            }
+                            .setNegativeButton("Cancel", null)
+                            .show()
+                    }
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
     private fun gotoTransactionUpdate(
-        transaction: TransactionDetailed?,
-        transaction0: Transactions,
-        it: View
+        transaction: TransactionDetailed
     ) {
         mainViewModel.setCallingFragments(
             mainViewModel.getCallingFragments() + ", " + PARENT_TAG
@@ -208,67 +207,22 @@ class TransactionAdapter(
         CoroutineScope(Dispatchers.IO).launch {
             val oldTransactionFull = async {
                 transactionViewModel.getTransactionFull(
-                    transaction0.transId,
-                    transaction0.transToAccountId,
-                    transaction0.transFromAccountId
+                    transaction.transaction!!.transId,
+                    transaction.transaction.transToAccountId,
+                    transaction.transaction.transFromAccountId
                 )
             }
             mainViewModel.setOldTransaction(oldTransactionFull.await())
         }
-        it.findNavController().navigate(
+        mView.findNavController().navigate(
             TransactionViewFragmentDirections
                 .actionTransactionViewFragmentToTransactionUpdateFragment()
         )
     }
 
     private fun deleteTransaction(transaction: Transactions) {
-        CoroutineScope(Dispatchers.IO).launch {
-            transactionViewModel.deleteTransaction(
-                transaction.transId,
-                df.getCurrentTimeAsString()
-            )
-            val oldTransaction =
-                transactionViewModel.getTransactionFull(
-                    transaction.transId,
-                    transaction.transToAccountId,
-                    transaction.transFromAccountId
-                )
-            if (!oldTransaction.transaction.transToAccountPending) {
-                if (oldTransaction.toAccountAndType.accountType!!.keepTotals) {
-                    transactionViewModel.updateAccountBalance(
-                        oldTransaction.toAccountAndType.account.accountBalance -
-                                oldTransaction.transaction.transAmount,
-                        oldTransaction.transaction.transToAccountId,
-                        df.getCurrentTimeAsString()
-                    )
-                }
-                if (oldTransaction.toAccountAndType.accountType!!.tallyOwing) {
-                    transactionViewModel.updateAccountOwing(
-                        oldTransaction.toAccountAndType.account.accountOwing +
-                                oldTransaction.transaction.transAmount,
-                        oldTransaction.transaction.transToAccountId,
-                        df.getCurrentTimeAsString()
-                    )
-                }
-                if (!oldTransaction.transaction.transFromAccountPending) {
-                    if (oldTransaction.fromAccountAndType.accountType!!.keepTotals) {
-                        transactionViewModel.updateAccountBalance(
-                            oldTransaction.fromAccountAndType.account.accountBalance +
-                                    oldTransaction.transaction.transAmount,
-                            oldTransaction.transaction.transFromAccountId,
-                            df.getCurrentTimeAsString()
-                        )
-                    }
-                    if (oldTransaction.fromAccountAndType.accountType!!.tallyOwing) {
-                        transactionViewModel.updateAccountOwing(
-                            oldTransaction.fromAccountAndType.account.accountOwing -
-                                    oldTransaction.transaction.transAmount,
-                            oldTransaction.transaction.transFromAccountId,
-                            df.getCurrentTimeAsString()
-                        )
-                    }
-                }
-            }
-        }
+        mainActivity.accountUpdateViewModel.deleteTransaction(
+            transaction
+        )
     }
 }

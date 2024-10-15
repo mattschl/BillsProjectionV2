@@ -376,68 +376,16 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
         val mes = validateTransaction()
         if (mes == "Ok") {
             val mTransaction = getCurrentTransactionForSave()
-            transactionViewModel.insertTransaction(
+            mainActivity.accountUpdateViewModel.performTransaction(
                 mTransaction
             )
-            updateAccountBalances(mTransaction)
+            gotoCallingFragment()
         } else {
             Toast.makeText(
                 mView.context,
                 mes,
                 Toast.LENGTH_LONG
             ).show()
-        }
-    }
-
-    private fun updateAccountBalances(mTransaction: Transactions): Boolean {
-        if (!mTransaction.transToAccountPending) {
-            updateToAccountBalanceOrOwing(mTransaction)
-        }
-        if (!mTransaction.transFromAccountPending &&
-            !mainViewModel.getUpdatingTransaction()
-        ) {
-            updateFromAccountBalanceOrOWing(mTransaction)
-        }
-        gotoCallingFragment()
-        return true
-    }
-
-    private fun updateFromAccountBalanceOrOWing(mTransaction: Transactions) {
-        if (mFromAccountWithType.accountType!!.keepTotals) {
-            transactionViewModel.updateAccountBalance(
-                mFromAccountWithType.account.accountBalance -
-                        mTransaction.transAmount,
-                mFromAccount.accountId,
-                df.getCurrentTimeAsString()
-            )
-        }
-        if (mFromAccountWithType.accountType!!.tallyOwing) {
-            transactionViewModel.updateAccountOwing(
-                mFromAccountWithType.account.accountOwing +
-                        mTransaction.transAmount,
-                mFromAccount.accountId,
-                df.getCurrentTimeAsString()
-            )
-        }
-    }
-
-    private fun updateToAccountBalanceOrOwing(mTransaction: Transactions) {
-        if (mToAccountWithType!!.accountType!!.keepTotals) {
-            transactionViewModel.updateAccountBalance(
-                mToAccountWithType!!.account.accountBalance +
-                        mTransaction.transAmount,
-                mToAccount!!.accountId,
-                df.getCurrentTimeAsString()
-            )
-            Log.d(TAG, "updating toAccountBalance")
-        }
-        if (mToAccountWithType!!.accountType!!.tallyOwing) {
-            transactionViewModel.updateAccountOwing(
-                mToAccountWithType!!.account.accountOwing -
-                        mTransaction.transAmount,
-                mToAccount!!.accountId,
-                df.getCurrentTimeAsString()
-            )
         }
     }
 

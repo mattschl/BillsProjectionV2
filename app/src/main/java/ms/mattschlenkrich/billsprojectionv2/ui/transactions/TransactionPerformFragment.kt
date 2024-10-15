@@ -2,7 +2,6 @@ package ms.mattschlenkrich.billsprojectionv2.ui.transactions
 
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -15,10 +14,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_PERFORM
@@ -430,24 +425,16 @@ class TransactionPerformFragment : Fragment(
         val mes = validateTransaction()
         if (mes == "Ok") {
             val mTransaction = getCurrentTransactionForSave()
-            transactionViewModel.insertTransaction(
+            mainActivity.accountUpdateViewModel.performTransaction(
                 mTransaction
             )
-            CoroutineScope(Dispatchers.IO).launch {
-                val go = async {
-                    updateAccountBalances(mTransaction)
-                }
-                if (go.await()) {
-                    updateBudgetItem()
-                }
-            }
+            updateBudgetItem()
             gotoCallingFragment()
         } else {
             Toast.makeText(
                 mView.context,
                 mes, Toast.LENGTH_LONG
-            )
-                .show()
+            ).show()
         }
     }
 
@@ -483,57 +470,6 @@ class TransactionPerformFragment : Fragment(
                 mBudget.biLocked
             )
         )
-    }
-
-    private fun updateAccountBalances(mTransaction: Transactions): Boolean {
-        CoroutineScope(Dispatchers.IO).launch {
-            val toAccountWithType =
-                accountViewModel.getAccountWithType(
-                    mToAccount!!.accountId
-                )
-            if (!mTransaction.transToAccountPending) {
-                if (toAccountWithType.accountType!!.keepTotals) {
-                    transactionViewModel.updateAccountBalance(
-                        toAccountWithType.account.accountBalance +
-                                mTransaction.transAmount,
-                        mToAccount!!.accountId,
-                        df.getCurrentTimeAsString()
-                    )
-                    Log.d(TAG, "updating toAccountBalance")
-                }
-                if (toAccountWithType.accountType.tallyOwing) {
-                    transactionViewModel.updateAccountOwing(
-                        toAccountWithType.account.accountOwing -
-                                mTransaction.transAmount,
-                        mToAccount!!.accountId,
-                        df.getCurrentTimeAsString()
-                    )
-                }
-            }
-            val fromAccountWithType =
-                accountViewModel.getAccountWithType(
-                    mFromAccount!!.accountId
-                )
-            if (!mTransaction.transFromAccountPending) {
-                if (fromAccountWithType.accountType!!.keepTotals) {
-                    transactionViewModel.updateAccountBalance(
-                        fromAccountWithType.account.accountBalance -
-                                mTransaction.transAmount,
-                        mFromAccount!!.accountId,
-                        df.getCurrentTimeAsString()
-                    )
-                }
-                if (fromAccountWithType.accountType.tallyOwing) {
-                    transactionViewModel.updateAccountOwing(
-                        fromAccountWithType.account.accountOwing +
-                                mTransaction.transAmount,
-                        mFromAccount!!.accountId,
-                        df.getCurrentTimeAsString()
-                    )
-                }
-            }
-        }
-        return true
     }
 
     private fun gotoCallingFragment() {

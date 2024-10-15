@@ -76,14 +76,14 @@ class BudgetViewFragment : Fragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        createClickActions()
+        onClickActions()
         populateAssets()
         onSelectAsset()
         onSelectPayDay()
         resumeHistory()
     }
 
-    private fun createClickActions() {
+    private fun onClickActions() {
         binding.apply {
             fabAddAction.setOnClickListener {
                 onAddButtonPress()
@@ -158,7 +158,7 @@ class BudgetViewFragment : Fragment(
             mainActivity,
             asset,
             payDay,
-            mView.context
+            mView
         )
         binding.rvBudgetSummary.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -311,7 +311,7 @@ class BudgetViewFragment : Fragment(
                 mainViewModel,
                 mainActivity,
                 this,
-                mView.context,
+                mView,
             )
         binding.rvPending.apply {
             layoutManager =

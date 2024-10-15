@@ -335,6 +335,7 @@ class MainActivity : AppCompatActivity() {
             AccountUpdateViewModelFactory(
                 this,
                 transactionViewModel,
+                accountViewModel,
                 application
             )
         accountUpdateViewModel = ViewModelProvider(
