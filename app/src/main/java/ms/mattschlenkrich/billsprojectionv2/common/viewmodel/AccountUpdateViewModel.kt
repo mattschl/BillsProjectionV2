@@ -4,9 +4,10 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
-import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountAndType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.TransactionViewModel
@@ -73,10 +74,12 @@ class AccountUpdateViewModel(
     }
 
     fun isTransactionPending(accountId: Long): Boolean {
-        return accountViewModel.getAccountAndType(
+        val accType = accountViewModel.getAccountAndType(
             accountId
-        ).accountType!!.allowPending
+        ).accountType!!
+        return accType.allowPending && accType.tallyOwing
     }
+
 
     fun deleteTransaction(mTransaction: Transactions) {
         doTransaction(mTransaction, true)
@@ -99,7 +102,12 @@ class AccountUpdateViewModel(
         oldTransaction: Transactions,
         newTransaction: Transactions
     ) {
-        //TODO:
+        CoroutineScope(Dispatchers.IO).launch {
+            doTransaction(oldTransaction, true)
+            delay(WAIT_250)
+            doTransaction(newTransaction, false)
+            transactionViewModel.updateTransaction(newTransaction)
+        }
     }
 
     private fun updateAccountBalance(
@@ -132,7 +140,4 @@ class AccountUpdateViewModel(
         )
     }
 
-    private suspend fun getAccountAndType(accountId: Long): AccountAndType {
-        return accountViewModel.getAccountAndType(accountId)
-    }
 }

@@ -34,7 +34,6 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
-import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionFull
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewModel
@@ -195,39 +194,13 @@ class TransactionUpdateFragment :
     }
 
     private fun updateTransaction() {
-        val mes = validateTransactionForDave()
+        val mes = validateTransactionForSave()
         binding.apply {
             if (mes == "Ok") {
-                reverseOldTransactionAccountBalances(mainViewModel.getOldTransaction()!!)
-                val curTransaction = getCurrentTransactionForSave()
-                transactionViewModel.updateTransaction(
-                    curTransaction
+                mainActivity.accountUpdateViewModel.updateTransaction(
+                    mainViewModel.getOldTransaction()!!.transaction,
+                    getCurrentTransactionForSave()
                 )
-                CoroutineScope(Dispatchers.IO).launch {
-                    val newToAccount = async {
-                        accountViewModel.getAccountAndType(
-                            curTransaction.transToAccountId
-                        )
-                    }
-                    val newFromAccount = async {
-                        accountViewModel.getAccountAndType(
-                            curTransaction.transFromAccountId
-                        )
-                    }
-                    val newBudgetRule = async {
-                        budgetRuleViewModel.getBudgetRuleDetailed(
-                            curTransaction.transRuleId
-                        )
-                    }
-                    val newTrans = TransactionFull(
-                        curTransaction,
-                        newBudgetRule.await().budgetRule!!,
-                        newToAccount.await(),
-                        newFromAccount.await()
-                    )
-                    updateAccountsWithNewValues(newTrans)
-                }
-
                 mainViewModel.setCallingFragments(
                     mainViewModel.getCallingFragments()!!
                         .replace(", $TAG", "")
@@ -258,7 +231,7 @@ class TransactionUpdateFragment :
         return bool
     }
 
-    private fun validateTransactionForDave(): String {
+    private fun validateTransactionForSave(): String {
         binding.apply {
             val amount =
                 nf.getDoubleFromDollars(etAmount.text.toString())
@@ -558,93 +531,6 @@ class TransactionUpdateFragment :
             TransactionUpdateFragmentDirections
                 .actionTransactionUpdateFragmentToBudgetViewFragment()
         )
-    }
-
-    private fun updateAccountsWithNewValues(
-        newTransaction: TransactionFull
-    ): Boolean {
-        if (!newTransaction.transaction.transToAccountPending) {
-            CoroutineScope(Dispatchers.IO).launch {
-                if (newTransaction.toAccountAndType.accountType!!.keepTotals) {
-                    transactionViewModel.updateAccountBalance(
-                        newTransaction.toAccountAndType.account.accountBalance +
-                                newTransaction.transaction.transAmount,
-                        newTransaction.transaction.transToAccountId,
-                        df.getCurrentTimeAsString()
-                    )
-                }
-                if (newTransaction.toAccountAndType.accountType!!.tallyOwing) {
-                    transactionViewModel.updateAccountOwing(
-                        newTransaction.toAccountAndType.account.accountOwing -
-                                newTransaction.transaction.transAmount,
-                        newTransaction.transaction.transToAccountId,
-                        df.getCurrentTimeAsString()
-                    )
-                }
-            }
-
-        }
-        if (!newTransaction.transaction.transFromAccountPending) {
-            CoroutineScope(Dispatchers.IO).launch {
-                if (newTransaction.fromAccountAndType.accountType!!.keepTotals) {
-                    transactionViewModel.updateAccountBalance(
-                        newTransaction.fromAccountAndType.account.accountBalance -
-                                newTransaction.transaction.transAmount,
-                        newTransaction.transaction.transFromAccountId,
-                        df.getCurrentTimeAsString()
-                    )
-                }
-                if (newTransaction.fromAccountAndType.accountType!!.tallyOwing) {
-                    transactionViewModel.updateAccountOwing(
-                        newTransaction.fromAccountAndType.account.accountOwing +
-                                newTransaction.transaction.transAmount,
-                        newTransaction.transaction.transFromAccountId,
-                        df.getCurrentTimeAsString()
-                    )
-                }
-            }
-        }
-        return true
-    }
-
-    private fun reverseOldTransactionAccountBalances(oldTransaction: TransactionFull): Boolean {
-        if (!oldTransaction.transaction.transToAccountPending) {
-            if (oldTransaction.toAccountAndType.accountType!!.keepTotals) {
-                transactionViewModel.updateAccountBalance(
-                    oldTransaction.toAccountAndType.account.accountBalance -
-                            oldTransaction.transaction.transAmount,
-                    oldTransaction.transaction.transToAccountId,
-                    df.getCurrentTimeAsString()
-                )
-            }
-            if (oldTransaction.toAccountAndType.accountType!!.tallyOwing) {
-                transactionViewModel.updateAccountOwing(
-                    oldTransaction.toAccountAndType.account.accountOwing +
-                            oldTransaction.transaction.transAmount,
-                    oldTransaction.transaction.transToAccountId,
-                    df.getCurrentTimeAsString()
-                )
-            }
-        }
-        if (!oldTransaction.transaction.transFromAccountPending) {
-            if (oldTransaction.fromAccountAndType.accountType!!.keepTotals) {
-                transactionViewModel.updateAccountBalance(
-                    oldTransaction.fromAccountAndType.account.accountBalance +
-                            oldTransaction.transaction.transAmount,
-                    oldTransaction.transaction.transFromAccountId,
-                    df.getCurrentTimeAsString()
-                )
-            }
-            if (oldTransaction.fromAccountAndType.accountType!!.tallyOwing) {
-                transactionViewModel.updateAccountOwing(
-                    oldTransaction.fromAccountAndType.account.accountOwing -
-                            oldTransaction.transaction.transAmount,
-                    oldTransaction.transaction.transFromAccountId,
-                    df.getCurrentTimeAsString()
-                )
-            }
-        }
-        return true
     }
 
     override fun onDestroy() {
