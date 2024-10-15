@@ -13,7 +13,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_TRANSACTION
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
@@ -25,7 +24,6 @@ import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionViewFragmentDirections
 import java.util.Random
 
-private const val TAG = ADAPTER_TRANSACTION
 private const val PARENT_TAG = FRAG_TRANSACTION_VIEW
 
 
@@ -39,8 +37,6 @@ class TransactionAdapter(
     private val df = DateFunctions()
     private val transactionViewModel =
         mainActivity.transactionViewModel
-//    private val accountViewModel =
-//        mainActivity.accountViewModel
 
 
     class TransactionsViewHolder(
@@ -183,7 +179,7 @@ class TransactionAdapter(
                         AlertDialog.Builder(mView.context)
                             .setTitle(
                                 "Are you sure you want to delete " +
-                                        transaction.transaction!!.transName
+                                        transaction.transaction.transName
                             )
                             .setPositiveButton("Delete") { _, _ ->
                                 deleteTransaction(transaction.transaction)
