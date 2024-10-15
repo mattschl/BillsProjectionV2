@@ -1,10 +1,8 @@
-package ms.mattschlenkrich.billsprojectionv2.common.viewmodel
+package ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModel
-import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.TransactionViewModel
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 
 class AccountUpdateViewModelFactory(
