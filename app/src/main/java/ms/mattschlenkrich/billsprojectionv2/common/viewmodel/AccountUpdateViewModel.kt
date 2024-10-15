@@ -2,6 +2,9 @@ package ms.mattschlenkrich.billsprojectionv2.common.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountAndType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
@@ -16,60 +19,80 @@ class AccountUpdateViewModel(
 
     val df = DateFunctions()
 
-    fun deleteTransaction(
-        mTransaction: Transactions
+    private fun doTransaction(
+        mTransaction: Transactions,
+        reverse: Boolean,
     ): Boolean {
-        if (!mTransaction.transToAccountPending) {
-            if (getAccountAndType(
-                    mTransaction.transToAccountId
-                ).accountType!!.keepTotals
-            ) {
-                updateAccountBalance(
-                    mTransaction.transAmount,
-                    mTransaction.transToAccountId,
-                    false
-                )
+        CoroutineScope(Dispatchers.IO).launch {
+            if (!mTransaction.transToAccountPending) {
+                if (accountViewModel.getAccountAndType(
+                        mTransaction.transToAccountId
+                    ).accountType!!.keepTotals
+                ) {
+                    updateAccountBalance(
+                        mTransaction.transAmount,
+                        mTransaction.transToAccountId,
+                        !reverse
+                    )
+                }
+                if (accountViewModel.getAccountAndType(
+                        mTransaction.transToAccountId
+                    ).accountType!!.tallyOwing
+                ) {
+                    updateAccountOwing(
+                        mTransaction.transAmount,
+                        mTransaction.transToAccountId,
+                        reverse
+                    )
+                }
             }
-            if (getAccountAndType(
-                    mTransaction.transToAccountId
-                ).accountType!!.tallyOwing
-            ) {
-                updateAccountOwing(
-                    mTransaction.transAmount,
-                    mTransaction.transToAccountId,
-                    true
-                )
-            }
-        }
-        if (!mTransaction.transFromAccountPending) {
-            if (getAccountAndType(
-                    mTransaction.transFromAccountId
-                ).accountType!!.keepTotals
-            ) {
-                updateAccountBalance(
-                    mTransaction.transAmount,
-                    mTransaction.transFromAccountId,
-                    true
-                )
-            }
-            if (getAccountAndType(
-                    mTransaction.transFromAccountId
-                ).accountType!!.tallyOwing
-            ) {
-                updateAccountOwing(
-                    mTransaction.transAmount,
-                    mTransaction.transFromAccountId,
-                    false
-                )
+            if (!mTransaction.transFromAccountPending) {
+                if (accountViewModel.getAccountAndType(
+                        mTransaction.transFromAccountId
+                    ).accountType!!.keepTotals
+                ) {
+                    updateAccountBalance(
+                        mTransaction.transAmount,
+                        mTransaction.transFromAccountId,
+                        reverse
+                    )
+                }
+                if (accountViewModel.getAccountAndType(
+                        mTransaction.transFromAccountId
+                    ).accountType!!.tallyOwing
+                ) {
+                    updateAccountOwing(
+                        mTransaction.transAmount,
+                        mTransaction.transFromAccountId,
+                        !reverse
+                    )
+                }
             }
         }
         return true
     }
 
+    fun isTransactionPending(accountId: Long): Boolean {
+        return accountViewModel.getAccountAndType(
+            accountId
+        ).accountType!!.allowPending
+    }
+
+    fun deleteTransaction(mTransaction: Transactions) {
+        doTransaction(mTransaction, true)
+        transactionViewModel.deleteTransaction(
+            mTransaction.transId,
+            df.getCurrentTimeAsString()
+        )
+    }
+
     fun performTransaction(
         mTransaction: Transactions
     ) {
-        //TODO:
+        doTransaction(mTransaction, false)
+        transactionViewModel.insertTransaction(
+            mTransaction
+        )
     }
 
     fun updateTransaction(
@@ -109,7 +132,7 @@ class AccountUpdateViewModel(
         )
     }
 
-    private fun getAccountAndType(accountId: Long): AccountAndType {
+    private suspend fun getAccountAndType(accountId: Long): AccountAndType {
         return accountViewModel.getAccountAndType(accountId)
     }
 }

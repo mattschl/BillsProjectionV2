@@ -1,7 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.transactions.adapter
 
 import android.app.AlertDialog
-import android.content.Context
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
@@ -38,7 +37,7 @@ class TransactionPendingAdapter(
     private val mainViewModel: MainViewModel,
     val mainActivity: MainActivity,
     private val budgetViewFragment: BudgetViewFragment,
-    private val context: Context
+    private val mView: View
 ) : RecyclerView.Adapter<TransactionPendingAdapter.TransactionPendingHolder>() {
 
     val nf = NumberFunctions()
@@ -114,16 +113,15 @@ class TransactionPendingAdapter(
             }
             tvPendingDescription.text = display
             holder.itemView.setOnClickListener {
-                chooseOptionsForTransaction(pendingTransaction, it)
+                chooseOptionsForTransaction(pendingTransaction)
             }
         }
     }
 
     private fun chooseOptionsForTransaction(
-        pendingTransaction: TransactionDetailed,
-        it: View
+        pendingTransaction: TransactionDetailed
     ) {
-        AlertDialog.Builder(context)
+        AlertDialog.Builder(mView.context)
             .setTitle(
                 "Choose an Action on: " +
                         nf.displayDollars(
@@ -148,8 +146,7 @@ class TransactionPendingAdapter(
 
                     1 -> {
                         editTransaction(
-                            pendingTransaction,
-                            it
+                            pendingTransaction
                         )
                     }
 
@@ -172,7 +169,6 @@ class TransactionPendingAdapter(
 
     private fun editTransaction(
         transaction: TransactionDetailed,
-        it: View,
     ) {
         mainViewModel.setCallingFragments(
             PARENT_TAG
@@ -191,7 +187,7 @@ class TransactionPendingAdapter(
         }
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_250)
-            it.findNavController().navigate(
+            mView.findNavController().navigate(
                 BudgetViewFragmentDirections
                     .actionBudgetViewFragmentToTransactionUpdateFragment()
             )

@@ -104,9 +104,6 @@ class TransactionUpdateFragment :
             etTransDate.setOnClickListener {
                 chooseDate()
             }
-            fabUpdateDone.setOnClickListener {
-                updateTransaction()
-            }
             etAmount.setOnLongClickListener {
                 gotoCalculator()
                 false
@@ -126,6 +123,9 @@ class TransactionUpdateFragment :
             }
             btnSplit.setOnClickListener {
                 gotoSplitTransactionFragment()
+            }
+            fabUpdateDone.setOnClickListener {
+                updateTransaction()
             }
         }
     }
@@ -517,12 +517,10 @@ class TransactionUpdateFragment :
             setTitle("Delete this Transaction")
             setMessage("Are you sure you want to delete this Transaction?")
             setPositiveButton("Delete") { _, _ ->
-                transactionViewModel.deleteTransaction(
-                    mainViewModel.getTransactionDetailed()!!.transaction!!.transId,
-                    df.getCurrentTimeAsString()
+                mainActivity.accountUpdateViewModel.deleteTransaction(
+                    mainViewModel.getTransactionDetailed()!!.transaction!!
                 )
                 mainViewModel.setTransactionDetailed(null)
-                reverseOldTransactionAccountBalances(mainViewModel.getOldTransaction()!!)
                 mainViewModel.setCallingFragments(
                     mainViewModel.getCallingFragments()!!.replace(
                         FRAG_TRANS_UPDATE, ""
