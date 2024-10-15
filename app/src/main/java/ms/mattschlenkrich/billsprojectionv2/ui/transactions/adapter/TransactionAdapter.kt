@@ -37,6 +37,8 @@ class TransactionAdapter(
     private val df = DateFunctions()
     private val transactionViewModel =
         mainActivity.transactionViewModel
+    private val accountUpdateViewModel =
+        mainActivity.accountUpdateViewModel
 
 
     class TransactionsViewHolder(
@@ -167,6 +169,13 @@ class TransactionAdapter(
             .setItems(
                 arrayOf(
                     "Edit this transaction",
+                    if (transaction.transaction.transToAccountPending ||
+                        transaction.transaction.transFromAccountPending
+                    ) {
+                        "Complete the pending transactions"
+                    } else {
+                        ""
+                    },
                     "Delete this transaction"
                 )
             ) { _, pos ->
@@ -176,6 +185,14 @@ class TransactionAdapter(
                     }
 
                     1 -> {
+                        if (transaction.transaction.transToAccountPending ||
+                            transaction.transaction.transFromAccountPending
+                        ) {
+                            completePendingTransactions(transaction)
+                        }
+                    }
+
+                    2 -> {
                         AlertDialog.Builder(mView.context)
                             .setTitle(
                                 "Are you sure you want to delete " +
@@ -191,6 +208,30 @@ class TransactionAdapter(
             }
             .setNegativeButton("Cancel", null)
             .show()
+    }
+
+    private fun completePendingTransactions(transaction: TransactionDetailed) {
+        transaction.transaction!!.apply {
+            val newTransaction =
+                Transactions(
+                    transId,
+                    transDate,
+                    transName,
+                    transNote,
+                    transRuleId,
+                    transToAccountId,
+                    false,
+                    transFromAccountId,
+                    false,
+                    transAmount,
+                    transIsDeleted,
+                    transUpdateTime
+                )
+            accountUpdateViewModel.updateTransaction(
+                transaction.transaction,
+                newTransaction
+            )
+        }
     }
 
     private fun gotoTransactionUpdate(

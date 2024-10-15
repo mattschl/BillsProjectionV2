@@ -20,8 +20,6 @@ import ms.mattschlenkrich.billsprojectionv2.BuildConfig
 import ms.mattschlenkrich.billsprojectionv2.NavGraphDirections
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.projections.UpdateBudgetPredictions
-import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.AccountUpdateViewModel
-import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.AccountUpdateViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.dataBase.BillsDatabase
@@ -29,6 +27,8 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.repository.AccountRepositor
 import ms.mattschlenkrich.billsprojectionv2.dataBase.repository.BudgetItemRepository
 import ms.mattschlenkrich.billsprojectionv2.dataBase.repository.BudgetRuleRepository
 import ms.mattschlenkrich.billsprojectionv2.dataBase.repository.TransactionRepository
+import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountUpdateViewModel
+import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountUpdateViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetItemViewModel

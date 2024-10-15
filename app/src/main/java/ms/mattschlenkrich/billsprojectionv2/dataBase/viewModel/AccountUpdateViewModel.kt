@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.common.viewmodel
+package ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -9,8 +9,6 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
-import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModel
-import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.TransactionViewModel
 
 class AccountUpdateViewModel(
     val transactionViewModel: TransactionViewModel,
