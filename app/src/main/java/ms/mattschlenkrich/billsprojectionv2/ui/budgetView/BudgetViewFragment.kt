@@ -19,6 +19,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
+import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
@@ -78,8 +79,6 @@ class BudgetViewFragment : Fragment(
         super.onViewCreated(view, savedInstanceState)
         onClickActions()
         populateAssets()
-        onSelectAsset()
-        onSelectPayDay()
         resumeHistory()
     }
 
@@ -91,6 +90,8 @@ class BudgetViewFragment : Fragment(
             tvBalanceOwing.setOnClickListener {
                 gotoAccount()
             }
+            onSelectAsset()
+            onSelectPayDay()
         }
     }
 
@@ -139,10 +140,7 @@ class BudgetViewFragment : Fragment(
                     override fun onItemSelected(
                         p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long
                     ) {
-                        populateBudgetList(
-                            spAssetNames.selectedItem.toString(),
-                            spPayDay.selectedItem.toString()
-                        )
+                        populateBudgetList()
                     }
 
                     override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -152,37 +150,44 @@ class BudgetViewFragment : Fragment(
         }
     }
 
-    fun populateBudgetList(asset: String, payDay: String) {
-        val budgetViewAdapter = BudgetViewAdapter(
-            this,
-            mainActivity,
-            asset,
-            payDay,
-            mView
-        )
-        binding.rvBudgetSummary.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = budgetViewAdapter
-        }
-        activity?.let {
-            budgetItemViewModel.getBudgetItems(
-                asset, payDay
-            ).observe(
-                viewLifecycleOwner
-            ) { budgetItems ->
-                budgetList.clear()
-                budgetViewAdapter.differ.submitList(budgetItems)
-                updateUi(budgetItems)
-                budgetItems.listIterator().forEach {
-                    budgetList.add(it)
+    fun populateBudgetList() {
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_250)
+            binding.apply {
+                val asset = spAssetNames.selectedItem.toString()
+                val payDay = spPayDay.selectedItem.toString()
+                val budgetViewAdapter = BudgetViewAdapter(
+                    this@BudgetViewFragment,
+                    mainActivity,
+                    asset,
+                    payDay,
+                    mView
+                )
+                binding.rvBudgetSummary.apply {
+                    layoutManager = LinearLayoutManager(requireContext())
+                    adapter = budgetViewAdapter
                 }
-                populateAssetDetails()
-                populateBudgetTotals()
+                activity?.let {
+                    budgetItemViewModel.getBudgetItems(
+                        asset, payDay
+                    ).observe(
+                        viewLifecycleOwner
+                    ) { budgetItems ->
+                        budgetList.clear()
+                        budgetViewAdapter.differ.submitList(budgetItems)
+                        updateUi(budgetItems)
+                        budgetItems.listIterator().forEach {
+                            budgetList.add(it)
+                        }
+                        populateAssetDetails()
+                        populateBudgetTotals()
+                    }
+                }
             }
         }
     }
 
-    fun populateBudgetTotals() {
+    private fun populateBudgetTotals() {
         binding.apply {
             if (spPayDay.adapter.count > 0) {
                 var debits = 0.0
