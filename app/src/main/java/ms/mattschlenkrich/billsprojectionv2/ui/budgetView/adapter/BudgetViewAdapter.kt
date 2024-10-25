@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
-import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
+import ms.mattschlenkrich.billsprojectionv2.common.WAIT_500
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetDetailed
@@ -219,7 +219,7 @@ class BudgetViewAdapter(
                     }
 
                     3 -> {
-                        cancelBudgetItem(curBudget)
+                        confirmCancelBudgetItem(curBudget)
                     }
 
                     4 -> {
@@ -234,12 +234,9 @@ class BudgetViewAdapter(
     private fun confirmCompleteTransaction(curBudget: BudgetDetailed) {
         AlertDialog.Builder(mView.context)
             .setTitle("'Confirm Completing transaction")
-            .setItems(
-                arrayOf(
-                    "This will complete ${curBudget.budgetItem!!.biBudgetName} for amount of\n" +
-                            nf.displayDollars(curBudget.budgetItem.biProjectedAmount)
-                ),
-                null
+            .setMessage(
+                "This will complete ${curBudget.budgetItem!!.biBudgetName} applying the amount of\n" +
+                        nf.displayDollars(curBudget.budgetItem.biProjectedAmount)
             )
             .setPositiveButton("Complete Now") { _, _ ->
                 completeTransaction(curBudget)
@@ -251,8 +248,8 @@ class BudgetViewAdapter(
     private fun completeTransaction(curBudget: BudgetDetailed) {
         updateAccountsAndTransaction(curBudget)
         CoroutineScope(Dispatchers.Main).launch {
-            delay(WAIT_250)
-            budgetViewFragment.populateBudgetTotals()
+            delay(WAIT_500)
+            budgetViewFragment.populateBudgetList()
         }
     }
 
@@ -270,6 +267,8 @@ class BudgetViewAdapter(
                 )
             )
             updateBudgetItem(curBudget.budgetItem)
+            delay(WAIT_500)
+            budgetViewFragment.populateBudgetList()
         }
         return true
     }
@@ -299,6 +298,7 @@ class BudgetViewAdapter(
                 )
             )
         }
+        budgetViewFragment.populateBudgetList()
     }
 
     private fun getCurTransactionObject(
@@ -339,13 +339,28 @@ class BudgetViewAdapter(
         )
     }
 
+    private fun confirmCancelBudgetItem(curBudget: BudgetDetailed) {
+        AlertDialog.Builder(mView.context)
+            .setTitle("Confirm Cancelling Budget Item ")
+            .setMessage(
+                "This will Cancel ${curBudget.budgetItem!!.biBudgetName} with the amount of\n" +
+                        nf.displayDollars(curBudget.budgetItem.biProjectedAmount) +
+                        " remaining"
+            )
+            .setPositiveButton("Cancel Now") { _, _ ->
+                cancelBudgetItem(curBudget)
+            }
+            .setNegativeButton("Ignore this", null)
+            .show()
+    }
+
     private fun cancelBudgetItem(curBudget: BudgetDetailed) {
         mainActivity.budgetItemViewModel.cancelBudgetItem(
             curBudget.budgetItem!!.biRuleId,
             curBudget.budgetItem.biProjectedDate,
             df.getCurrentTimeAsString()
         )
-        budgetViewFragment.populateBudgetTotals()
+        budgetViewFragment.populateBudgetList()
     }
 
     private fun openBudgetItem(curBudget: BudgetDetailed) {
