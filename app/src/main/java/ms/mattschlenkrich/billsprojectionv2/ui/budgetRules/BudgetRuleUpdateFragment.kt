@@ -75,8 +75,6 @@ class BudgetRuleUpdateFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getBudgetRuleNameForValidation()
-        createMenuActions()
         populateValues()
         createClickActions()
     }
@@ -88,6 +86,7 @@ class BudgetRuleUpdateFragment :
     }
 
     private fun createClickActions() {
+        setMenuActions()
         binding.apply {
             tvToAccount.setOnClickListener {
                 chooseToAccount()
@@ -129,7 +128,7 @@ class BudgetRuleUpdateFragment :
         )
     }
 
-    private fun createMenuActions() {
+    private fun setMenuActions() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -234,7 +233,6 @@ class BudgetRuleUpdateFragment :
 
     private fun getBudgetRuleDetailed(): BudgetRuleDetailed {
         binding.apply {
-
             val toAccount =
                 if (mainViewModel.getBudgetRuleDetailed() != null) {
                     if (mainViewModel.getBudgetRuleDetailed()!!.toAccount != null) {
@@ -287,20 +285,21 @@ class BudgetRuleUpdateFragment :
     }
 
     private fun populateValues() {
+        getBudgetRuleNameForValidation()
         populateSpinners()
-        binding.apply {
-            if (mainViewModel.getBudgetRuleDetailed() != null) {
-                populateFromCache()
-            } else {
-                populateDatesOnly()
-            }
+        if (mainViewModel.getBudgetRuleDetailed() != null) {
+            populateFromCache()
+        } else {
+            populateDatesOnly()
         }
         populateDateRecycler(mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.ruleId)
     }
 
-    private fun FragmentBudgetRuleUpdateBinding.populateDatesOnly() {
-        etStartDate.setText(df.getCurrentDateAsString())
-        etEndDate.setText(df.getCurrentDateAsString())
+    private fun populateDatesOnly() {
+        binding.apply {
+            etStartDate.setText(df.getCurrentDateAsString())
+            etEndDate.setText(df.getCurrentDateAsString())
+        }
     }
 
     private fun populateFromCache() {
@@ -357,7 +356,6 @@ class BudgetRuleUpdateFragment :
 
     private fun populateDateRecycler(budgetRuleId: Long) {
         val budgetRuleDatesAdapter = BudgetRuleDatesAdapter(mainViewModel, mView)
-//        val budgetList = ArrayList<BudgetDetailed>()
         binding.rvProjectedDates.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = budgetRuleDatesAdapter
@@ -366,7 +364,6 @@ class BudgetRuleUpdateFragment :
             budgetItemViewModel.getBudgetItems(budgetRuleId).observe(
                 viewLifecycleOwner
             ) { budgetItems ->
-//                budgetList.clear()
                 budgetRuleDatesAdapter.differ.submitList(budgetItems)
             }
         }

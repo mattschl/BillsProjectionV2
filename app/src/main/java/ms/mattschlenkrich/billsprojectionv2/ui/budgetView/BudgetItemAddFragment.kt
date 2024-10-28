@@ -20,7 +20,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_ADD
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
@@ -76,14 +78,13 @@ class BudgetItemAddFragment : Fragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        populatePayDays()
-        createMenuActions()
-        createClickActions()
-        setBudgetRuleToBlank()
+//        setBudgetRule()
         populateValues()
+        setClickActions()
     }
 
-    private fun setBudgetRuleToBlank() {
+    private fun setBudgetRule() {
+//        if (mainViewModel.)
         budgetRuleDetailed =
             BudgetRuleDetailed(
                 null,
@@ -92,7 +93,8 @@ class BudgetItemAddFragment : Fragment(
             )
     }
 
-    private fun createClickActions() {
+    private fun setClickActions() {
+        setMenuActions()
         binding.apply {
             tvBudgetRule.setOnClickListener {
                 chooseBudgetRule()
@@ -149,7 +151,7 @@ class BudgetItemAddFragment : Fragment(
         binding.spPayDays.adapter = payDayAdapter
     }
 
-    private fun createMenuActions() {
+    private fun setMenuActions() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -161,7 +163,7 @@ class BudgetItemAddFragment : Fragment(
                 // Handle the menu selection
                 return when (menuItem.itemId) {
                     R.id.menu_save -> {
-                        isBudgetItemReadyToSave()
+                        saveBudgetItemIfValid()
                         true
                     }
 
@@ -171,9 +173,9 @@ class BudgetItemAddFragment : Fragment(
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    private fun isBudgetItemReadyToSave() {
+    private fun saveBudgetItemIfValid() {
         val mes = validateBudgetItem()
-        if (mes == "Ok") {
+        if (mes == ANSWER_OK) {
             saveBudgetItem()
             gotoCallingFragment()
         } else {
@@ -202,35 +204,49 @@ class BudgetItemAddFragment : Fragment(
         ) {
             gotoBudgetViewFragment()
         }
+        if (mainViewModel.getCallingFragments()!!.contains(
+                FRAG_BUDGET_RULES
+            )
+        ) {
+            gotoBudgetRulesFragment()
+        }
+    }
+
+    private fun gotoBudgetRulesFragment() {
+        mView.findNavController().navigate(
+            BudgetItemAddFragmentDirections
+                .actionBudgetItemAddFragmentToBudgetRuleFragment()
+        )
     }
 
     private fun gotoBudgetViewFragment() {
-        val direction = BudgetItemAddFragmentDirections
-            .actionBudgetItemAddFragmentToBudgetViewFragment()
-        mView.findNavController().navigate(direction)
+        mView.findNavController().navigate(
+            BudgetItemAddFragmentDirections
+                .actionBudgetItemAddFragmentToBudgetViewFragment()
+        )
     }
 
     private fun validateBudgetItem(): String {
         binding.apply {
-            val errorMes =
-                if (etBudgetItemName.text.isNullOrBlank()) {
-                    "     Error!!\n" +
-                            "Please enter a name or description"
-                } else if (budgetRuleDetailed.toAccount == null) {
-                    "     Error!!\n" +
-                            "There needs to be an account money will go to."
-                } else if (budgetRuleDetailed.fromAccount == null
-                ) {
-                    "     Error!!\n" +
-                            "There needs to be an account money will come from."
-                } else if (etProjectedAmount.text.isNullOrEmpty()
-                ) {
-                    "     Error!!\n" +
-                            "Please enter a budget amount (including zero)"
-                } else {
-                    "Ok"
-                }
-            return errorMes
+            if (etBudgetItemName.text.isNullOrBlank()) {
+                return "     Error!!\n" +
+                        "Please enter a name or description"
+            }
+            if (budgetRuleDetailed.toAccount == null) {
+                return "     Error!!\n" +
+                        "There needs to be an account money will go to."
+            }
+            if (budgetRuleDetailed.fromAccount == null
+            ) {
+                return "     Error!!\n" +
+                        "There needs to be an account money will come from."
+            }
+            if (etProjectedAmount.text.isNullOrEmpty()
+            ) {
+                return "     Error!!\n" +
+                        "Please enter a budget amount (including zero)"
+            }
+            return ANSWER_OK
         }
     }
 
@@ -322,6 +338,7 @@ class BudgetItemAddFragment : Fragment(
     }
 
     private fun populateValues() {
+        populatePayDays()
         if (mainViewModel.getBudgetItem() != null) {
             populateFromCache()
         } else {

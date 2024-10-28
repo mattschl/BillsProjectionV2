@@ -71,8 +71,6 @@ class BudgetRuleAddFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getBudgetRuleNameListForValidation()
-        createMenuActions()
         populateValues()
         createClickActions()
     }
@@ -105,6 +103,7 @@ class BudgetRuleAddFragment :
                 false
             }
         }
+        createMenuActions()
     }
 
     private fun gotoCalculatorFragment() {
@@ -255,6 +254,7 @@ class BudgetRuleAddFragment :
     }
 
     private fun populateValues() {
+        getBudgetRuleNameListForValidation()
         populateSpinners()
         binding.apply {
             if (mainViewModel.getBudgetRuleDetailed() != null) {

@@ -60,12 +60,12 @@ class BudgetRuleDatesAdapter(
         val curItem = differ.currentList[position]
         holder.itemBinding.apply {
             tvActualDate.text =
-            df.getDisplayDate(curItem.budgetItem!!.biActualDate)
+                df.getDisplayDate(curItem.budgetItem!!.biActualDate)
             tvPayDay.text =
-            df.getDisplayDate(curItem.budgetItem.biPayDay)
+                df.getDisplayDate(curItem.budgetItem.biPayDay)
+        }
         holder.itemView.setOnClickListener {
             gotoBudgetItem(curItem)
-        }
         }
     }
 
