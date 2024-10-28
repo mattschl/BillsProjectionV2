@@ -83,15 +83,15 @@ class BudgetItemAddFragment : Fragment(
         setClickActions()
     }
 
-    private fun setBudgetRule() {
-//        if (mainViewModel.)
-        budgetRuleDetailed =
-            BudgetRuleDetailed(
-                null,
-                null,
-                null
-            )
-    }
+//    private fun setBudgetRule() {
+////        if (mainViewModel.)
+//        budgetRuleDetailed =
+//            BudgetRuleDetailed(
+//                null,
+//                null,
+//                null
+//            )
+//    }
 
     private fun setClickActions() {
         setMenuActions()
