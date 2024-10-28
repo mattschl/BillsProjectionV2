@@ -41,7 +41,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
 @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
 interface BudgetItemDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBudgetItem(budgetItem: BudgetItem)
 
     @Update

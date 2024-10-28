@@ -62,16 +62,28 @@ class BudgetRuleFragment :
         view: View, savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
-        val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        removeFragmentReference()
         setupRecyclerView()
         createClickActions()
+    }
+
+    private fun removeFragmentReference() {
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments()!!
+                .replace(", $TAG", "")
+        )
+    }
+
+    private fun setMenu() {
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
     private fun createClickActions() {
         binding.fabAddNew.setOnClickListener {
             gotoBudgetRuleAddFragment()
         }
+        setMenu()
     }
 
     private fun gotoBudgetRuleAddFragment() {
@@ -88,9 +100,8 @@ class BudgetRuleFragment :
         budgetRuleAdapter = BudgetRuleAdapter(
             budgetRuleViewModel,
             mainViewModel,
-            mView.context,
+            mView,
         )
-
         binding.rvBudgetRules.apply {
             layoutManager = StaggeredGridLayoutManager(
                 2,
