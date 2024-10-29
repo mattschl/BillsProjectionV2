@@ -73,7 +73,7 @@
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_accountsFragment_to_transactionAverageFragment"
-            app:destination="@id/transactionAverageFragment" />
+            app:destination="@id/transactionAnalysisFragment" />
         <action
             android:id="@+id/action_accountsFragment_to_transactionSplitFragment"
             app:destination="@id/transactionSplitFragment" />
@@ -167,7 +167,7 @@
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_budgetRuleFragment_to_transactionAverageFragment"
-            app:destination="@id/transactionAverageFragment" />
+            app:destination="@id/transactionAnalysisFragment" />
         <action
             android:id="@+id/action_budgetRuleFragment_to_transactionSplitFragment"
             app:destination="@id/transactionSplitFragment" />
@@ -246,7 +246,7 @@
             app:destination="@id/transactionAddFragment" />
         <action
             android:id="@+id/action_transactionViewFragment_to_transactionAverageFragment"
-            app:destination="@id/transactionAverageFragment" />
+            app:destination="@id/transactionAnalysisFragment" />
         <action
             android:id="@+id/action_transactionViewFragment_to_transactionSplitFragment"
             app:destination="@id/transactionSplitFragment" />
@@ -410,22 +410,25 @@
             app:destination="@id/transactionSplitFragment" />
     </fragment>
     <fragment
-        android:id="@+id/transactionAverageFragment"
+        android:id="@+id/transactionAnalysisFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionAnalysisFragment"
-        android:label="fragment_transaction_average"
+        android:label="fragment_transaction_analysis"
         tools:layout="@layout/fragment_transaction_analysis">
         <action
-            android:id="@+id/action_transactionAverageFragment_to_budgetRuleFragment"
+            android:id="@+id/action_transactionAnalysisFragment_to_budgetRuleFragment"
             app:destination="@id/budgetRuleFragment" />
         <action
-            android:id="@+id/action_transactionAverageFragment_to_transactionViewFragment"
+            android:id="@+id/action_transactionAnalysisFragment_to_transactionViewFragment"
             app:destination="@id/transactionViewFragment" />
         <action
-            android:id="@+id/action_transactionAverageFragment_to_accountsFragment"
+            android:id="@+id/action_transactionAnalysisFragment_to_accountsFragment"
             app:destination="@id/accountsFragment" />
         <action
-            android:id="@+id/action_transactionAverageFragment_to_budgetListFragment"
+            android:id="@+id/action_transactionAnalysisFragment_to_budgetListFragment"
             app:destination="@id/budgetListFragment" />
+        <action
+            android:id="@+id/action_transactionAnalysisFragment_to_transactionUpdateFragment"
+            app:destination="@id/transactionUpdateFragment" />
     </fragment>
     <fragment
         android:id="@+id/calcFragment"
@@ -520,7 +523,7 @@
             app:destination="@id/budgetRuleUpdateFragment" />
         <action
             android:id="@+id/action_budgetListFragment_to_transactionAverageFragment"
-            app:destination="@id/transactionAverageFragment" />
+            app:destination="@id/transactionAnalysisFragment" />
     </fragment>
     <fragment
         android:id="@+id/helpFragment"
@@ -549,8 +552,8 @@
         app:popUpToInclusive="true" />
     <action
         android:id="@+id/action_global_transactionAverageFragment"
-        app:destination="@id/transactionAverageFragment"
-        app:popUpTo="@id/transactionAverageFragment"
+        app:destination="@id/transactionAnalysisFragment"
+        app:popUpTo="@id/transactionAnalysisFragment"
         app:popUpToInclusive="true" />
     <action
         android:id="@+id/action_global_budgetListFragment"
