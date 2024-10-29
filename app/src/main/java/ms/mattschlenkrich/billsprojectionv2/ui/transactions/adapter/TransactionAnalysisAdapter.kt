@@ -1,26 +1,36 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.transactions.adapter
 
+import android.app.AlertDialog
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_TRANSACTION_ANALYSIS
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
+import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.databinding.TransactionLinearItemBinding
+import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionAnalysisFragmentDirections
 import java.util.Random
 
 private const val TAG = ADAPTER_TRANSACTION_ANALYSIS
+private const val PARENT_TAG = FRAG_TRANSACTION_ANALYSIS
 
 class TransactionAnalysisAdapter(
-//    val mainActivity: MainActivity,
-//    private val mainViewModel: MainViewModel,
-//    private val context: Context,
+    val mainActivity: MainActivity,
+    private val mView: View
 ) : RecyclerView.Adapter<TransactionAnalysisAdapter.TransViewHolder>() {
 
     private val cf = NumberFunctions()
@@ -142,5 +152,70 @@ class TransactionAnalysisAdapter(
             )
             ibColor.setBackgroundColor(color)
         }
+        holder.itemView.setOnClickListener {
+            chooseOptions(transaction)
+        }
+    }
+
+    private fun chooseOptions(transaction: TransactionDetailed) {
+        AlertDialog.Builder(mView.context)
+            .setTitle(
+                "Choose action for " +
+                        transaction.transaction!!.transName
+            )
+            .setItems(
+                arrayOf(
+                    "Edit this transaction",
+                    "Delete this transaction"
+                )
+            ) { _, pos ->
+                when (pos) {
+                    0 -> {
+                        gotoTransactionUpdate(transaction)
+                    }
+
+                    1 -> {
+                        AlertDialog.Builder(mView.context)
+                            .setTitle(
+                                "Are you sure you want to delete " +
+                                        transaction.transaction.transName
+                            )
+                            .setPositiveButton("Delete") { _, _ ->
+                                deleteTransaction(transaction.transaction)
+                            }
+                            .setNegativeButton("Cancel", null)
+                            .show()
+                    }
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun deleteTransaction(transaction: Transactions) {
+        mainActivity.accountUpdateViewModel.deleteTransaction(
+            transaction
+        )
+    }
+
+    private fun gotoTransactionUpdate(transaction: TransactionDetailed) {
+        mainActivity.mainViewModel.setCallingFragments(
+            mainActivity.mainViewModel.getCallingFragments() + ", " + PARENT_TAG
+        )
+        mainActivity.mainViewModel.setTransactionDetailed(transaction)
+        CoroutineScope(Dispatchers.IO).launch {
+            val oldTransactionFull = async {
+                mainActivity.transactionViewModel.getTransactionFull(
+                    transaction.transaction!!.transId,
+                    transaction.transaction.transToAccountId,
+                    transaction.transaction.transFromAccountId
+                )
+            }
+            mainActivity.mainViewModel.setOldTransaction(oldTransactionFull.await())
+        }
+        mView.findNavController().navigate(
+            TransactionAnalysisFragmentDirections
+                .actionTransactionAnalysisFragmentToTransactionUpdateFragment()
+        )
     }
 }

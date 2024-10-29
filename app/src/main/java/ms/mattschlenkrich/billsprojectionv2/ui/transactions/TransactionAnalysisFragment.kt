@@ -110,7 +110,11 @@ class TransactionAnalysisFragment : Fragment(
                 if (min != null) tvLowest.text = cf.displayDollars(min)
             }
             transactionAdapter = null
-            transactionAdapter = TransactionAnalysisAdapter()
+            transactionAdapter =
+                TransactionAnalysisAdapter(
+                    mainActivity,
+                    mView
+                )
             if (etSearch.text.isNotEmpty()) {
                 rvTransactions.apply {
                     layoutManager = LinearLayoutManager(
@@ -128,8 +132,8 @@ class TransactionAnalysisFragment : Fragment(
                     }
                 }
             }
-            }
         }
+    }
 
 
     private fun setSearchAction() {
@@ -165,7 +169,7 @@ class TransactionAnalysisFragment : Fragment(
         mainViewModel.setBudgetRuleDetailed(null)
         mView.findNavController().navigate(
             TransactionAnalysisFragmentDirections
-                .actionTransactionAverageFragmentToAccountsFragment()
+                .actionTransactionAnalysisFragmentToAccountsFragment()
         )
     }
 
@@ -175,7 +179,7 @@ class TransactionAnalysisFragment : Fragment(
         mainViewModel.setBudgetRuleDetailed(null)
         mView.findNavController().navigate(
             TransactionAnalysisFragmentDirections
-                .actionTransactionAverageFragmentToBudgetRuleFragment()
+                .actionTransactionAnalysisFragmentToBudgetRuleFragment()
         )
     }
 
@@ -228,7 +232,11 @@ class TransactionAnalysisFragment : Fragment(
                     if (min != null) tvLowest.text = cf.displayDollars(min)
                 }
             transactionAdapter = null
-            transactionAdapter = TransactionAnalysisAdapter()
+            transactionAdapter =
+                TransactionAnalysisAdapter(
+                    mainActivity,
+                    mView
+                )
             rvTransactions.apply {
                 layoutManager = LinearLayoutManager(
                     requireContext()
@@ -385,7 +393,11 @@ class TransactionAnalysisFragment : Fragment(
                 if (min != null) tvLowest.text = cf.displayDollars(min)
             }
             transactionAdapter = null
-            transactionAdapter = TransactionAnalysisAdapter()
+            transactionAdapter =
+                TransactionAnalysisAdapter(
+                    mainActivity,
+                    mView
+                )
             if (etSearch.text.isNotEmpty()) {
                 rvTransactions.apply {
                     layoutManager = LinearLayoutManager(
@@ -520,7 +532,11 @@ class TransactionAnalysisFragment : Fragment(
                     if (min != null) tvLowest.text = cf.displayDollars(min)
                 }
             transactionAdapter = null
-            transactionAdapter = TransactionAnalysisAdapter()
+            transactionAdapter =
+                TransactionAnalysisAdapter(
+                    mainActivity,
+                    mView
+                )
             rvTransactions.apply {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = transactionAdapter
@@ -573,7 +589,11 @@ class TransactionAnalysisFragment : Fragment(
                     if (min != null) tvLowest.text = cf.displayDollars(min)
                 }
                 transactionAdapter = null
-                transactionAdapter = TransactionAnalysisAdapter()
+                transactionAdapter =
+                    TransactionAnalysisAdapter(
+                        mainActivity,
+                        mView
+                    )
                 rvTransactions.apply {
                     layoutManager = LinearLayoutManager(
                         requireContext()
@@ -679,7 +699,11 @@ class TransactionAnalysisFragment : Fragment(
                     if (min != null) tvLowest.text = cf.displayDollars(min)
                 }
             transactionAdapter = null
-            transactionAdapter = TransactionAnalysisAdapter()
+            transactionAdapter =
+                TransactionAnalysisAdapter(
+                    mainActivity,
+                    mView
+                )
             rvTransactions.apply {
                 layoutManager = LinearLayoutManager(
                     requireContext()
