@@ -176,7 +176,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/enter_description"
                 android:importantForAutofill="no"
-                android:inputType="text"
+                android:inputType="textCapSentences"
                 android:minHeight="48dp"
                 android:selectAllOnFocus="true"
                 android:textColor="@color/black"

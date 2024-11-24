@@ -18,49 +18,51 @@
                 android:layout_height="48dp"
                 android:layout_marginTop="@dimen/top_big_margin"
                 android:hint="@string/add_account_type"
+                android:importantForAutofill="no"
+                android:inputType="textCapWords"
                 android:paddingStart="@dimen/padding_start_end"
                 android:paddingEnd="@dimen/padding_start_end"
                 app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <CheckBox
-            android:id="@+id/chkAccTypeAddKeepTotals"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/top_big_margin"
-            android:text="@string/keep_totals"
-            app:layout_constraintEnd_toStartOf="@id/chkAccTypeAddKeepOwing"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etAccTypeAdd" />
+            <CheckBox
+                android:id="@+id/chkAccTypeAddKeepTotals"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/top_big_margin"
+                android:text="@string/keep_totals"
+                app:layout_constraintEnd_toStartOf="@id/chkAccTypeAddKeepOwing"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etAccTypeAdd" />
 
-        <CheckBox
-            android:id="@+id/chkAccTypeAddKeepOwing"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/calculate_owing"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/chkAccTypeAddKeepTotals"
-            app:layout_constraintTop_toTopOf="@+id/chkAccTypeAddKeepTotals" />
+            <CheckBox
+                android:id="@+id/chkAccTypeAddKeepOwing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/calculate_owing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/chkAccTypeAddKeepTotals"
+                app:layout_constraintTop_toTopOf="@+id/chkAccTypeAddKeepTotals" />
 
-        <CheckBox
-            android:id="@+id/chkAccTypeAddIsAsset"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/top_big_margin"
-            android:text="@string/asset_account"
-            app:layout_constraintEnd_toStartOf="@id/chkAccTypeAddDisplayAsset"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/chkAccTypeAddKeepTotals" />
+            <CheckBox
+                android:id="@+id/chkAccTypeAddIsAsset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/top_big_margin"
+                android:text="@string/asset_account"
+                app:layout_constraintEnd_toStartOf="@id/chkAccTypeAddDisplayAsset"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/chkAccTypeAddKeepTotals" />
 
-        <CheckBox
-            android:id="@+id/chkAccTypeAddDisplayAsset"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/display_in_budget"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/chkAccTypeAddIsAsset"
-            app:layout_constraintTop_toTopOf="@+id/chkAccTypeAddIsAsset" />
+            <CheckBox
+                android:id="@+id/chkAccTypeAddDisplayAsset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/display_in_budget"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/chkAccTypeAddIsAsset"
+                app:layout_constraintTop_toTopOf="@+id/chkAccTypeAddIsAsset" />
 
             <CheckBox
                 android:id="@+id/chkAccTypeAddAllowPending"
