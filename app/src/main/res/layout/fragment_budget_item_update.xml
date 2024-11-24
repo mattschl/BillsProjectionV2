@@ -53,7 +53,7 @@
                 android:layout_height="48dp"
                 android:hint="@string/description"
                 android:importantForAutofill="no"
-                android:inputType="text"
+                android:inputType="textCapWords"
                 android:minWidth="150dp"
                 android:selectAllOnFocus="true"
                 android:textAlignment="center"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.budgetRules.BudgetRuleUpdateFragment">
 
     <ScrollView
@@ -29,7 +29,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/budget_rule_name"
                 android:importantForAutofill="no"
-                android:inputType="text"
+                android:inputType="textCapWords"
                 android:minHeight="48dp"
                 android:selectAllOnFocus="true"
                 android:textColor="@color/black"
@@ -104,8 +104,8 @@
                 android:importantForAutofill="no"
                 android:inputType="numberDecimal|numberSigned"
                 android:minHeight="48dp"
-                android:textAlignment="center"
                 android:selectAllOnFocus="true"
+                android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textColorHint="#757575"
                 android:textSize="@dimen/title_text_size"

@@ -49,7 +49,7 @@
                 android:ems="10"
                 android:hint="@string/account_name"
                 android:importantForAutofill="no"
-                android:inputType="text"
+                android:inputType="textCapWords"
                 android:selectAllOnFocus="true"
                 android:textColor="@color/black"
                 android:textColorHint="#757575"
@@ -74,14 +74,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/top_margin_medium"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/lblAccountUpdateType"
-                app:layout_constraintTop_toBottomOf="@id/edAccountUpdateHandle"
-                android:padding="8dp"
                 android:importantForAutofill="no"
+                android:padding="8dp"
                 android:text="@string/account_type"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_heading_size" />
+                android:textSize="@dimen/text_heading_size"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/lblAccountUpdateType"
+                app:layout_constraintTop_toBottomOf="@id/edAccountUpdateHandle" />
 
             <TextView
                 android:id="@+id/lblAccountUpdateBalance"
@@ -197,8 +197,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/id_not_created_yet"
                 android:textColor="@color/deep_red"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/etAccUpdateLimit" />
 
             <View
