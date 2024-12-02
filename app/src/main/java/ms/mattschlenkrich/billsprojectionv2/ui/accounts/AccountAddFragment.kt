@@ -62,111 +62,12 @@ class AccountAddFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getAccountNameListForValidation()
         populateValues()
-        createMenuActions()
-        createClickActions()
-    }
-
-    private fun getAccountNameListForValidation() {
-        accountsViewModel.getAccountNameList().observe(
-            viewLifecycleOwner
-        ) { accounts ->
-            accountNameList.clear()
-            accounts.listIterator().forEach {
-                accountNameList.add(it)
-            }
-        }
-    }
-
-    private fun createClickActions() {
-        binding.apply {
-            tvAccAddType.setOnClickListener {
-                gotoAccountTypesFragment()
-            }
-            etAccAddBalance.setOnLongClickListener {
-                gotoCalculator(BALANCE)
-                false
-            }
-            etAccAddOwing.setOnLongClickListener {
-                gotoCalculator(OWING)
-                false
-            }
-            etAccAddBudgeted.setOnLongClickListener {
-                gotoCalculator(BUDGETED)
-                false
-            }
-        }
-    }
-
-    private fun gotoCalculator(type: String) {
-        when (type) {
-            BALANCE -> {
-                mainViewModel.setTransferNum(
-                    nf.getDoubleFromDollars(
-                        binding.etAccAddBalance.text.toString().ifBlank {
-                            "0.0"
-                        }
-                    )
-                )
-            }
-
-            OWING -> {
-                mainViewModel.setTransferNum(
-                    nf.getDoubleFromDollars(
-                        binding.etAccAddOwing.text.toString().ifBlank {
-                            "0.0"
-                        }
-                    )
-                )
-            }
-
-            BUDGETED -> {
-                mainViewModel.setTransferNum(
-                    nf.getDoubleFromDollars(
-                        binding.etAccAddBudgeted.text.toString().ifBlank {
-                            "0.0"
-                        }
-                    )
-                )
-            }
-        }
-        mainViewModel.setReturnTo("$TAG, $type")
-        mainViewModel.setAccountWithType(
-            AccountWithType(
-                getCurrentAccount(),
-                mainViewModel.getAccountWithType()?.accountType
-            )
-        )
-        mView.findNavController().navigate(
-            AccountAddFragmentDirections
-                .actionAccountAddFragmentToCalcFragment()
-        )
-    }
-
-    private fun createMenuActions() {
-        val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                // Add menu items here
-                menuInflater.inflate(R.menu.save_menu, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                // Handle the menu selection
-                return when (menuItem.itemId) {
-                    R.id.menu_save -> {
-                        isAccountReadyToSave(mView)
-                        true
-                    }
-
-                    else -> false
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        setClickActions()
     }
 
     private fun populateValues() {
+        getAccountNameListForValidation()
         binding.apply {
             if (mainViewModel.getAccountWithType() != null) {
                 populateAccountFromCache()
@@ -177,31 +78,14 @@ class AccountAddFragment :
         }
     }
 
-    private fun populateAccountYpeFromCache() {
-        binding.apply {
-            tvAccAddType.text =
-                mainViewModel.getAccountWithType()!!.accountType!!.accountType
-            var display =
-                if (
-                    mainViewModel.getAccountWithType()!!.accountType!!.keepTotals
-                ) "Transactions will be calculated\n" else ""
-            display += if (
-                mainViewModel.getAccountWithType()!!.accountType!!.isAsset
-            ) "This is an asset \n" else ""
-            display += if (
-                mainViewModel.getAccountWithType()!!.accountType!!.displayAsAsset
-            ) "This will be used for the budget \n" else ""
-            display += if (
-                mainViewModel.getAccountWithType()!!.accountType!!.tallyOwing)
-                "Balance owing will be calculated " else ""
-            display += if (
-                mainViewModel.getAccountWithType()!!.accountType!!.allowPending)
-                "Transactions may be delayed " else ""
-            if (display.isEmpty()) {
-                display =
-                    "This account does not keep a balance/owing amount"
+    private fun getAccountNameListForValidation() {
+        accountsViewModel.getAccountNameList().observe(
+            viewLifecycleOwner
+        ) { accounts ->
+            accountNameList.clear()
+            accounts.listIterator().forEach {
+                accountNameList.add(it)
             }
-            tvTypeDetails.text = display
         }
     }
 
@@ -256,6 +140,77 @@ class AccountAddFragment :
         }
     }
 
+    private fun populateAccountYpeFromCache() {
+        binding.apply {
+            tvAccAddType.text =
+                mainViewModel.getAccountWithType()!!.accountType!!.accountType
+            var display =
+                if (
+                    mainViewModel.getAccountWithType()!!.accountType!!.keepTotals
+                ) "Transactions will be calculated\n" else ""
+            display += if (
+                mainViewModel.getAccountWithType()!!.accountType!!.isAsset
+            ) "This is an asset \n" else ""
+            display += if (
+                mainViewModel.getAccountWithType()!!.accountType!!.displayAsAsset
+            ) "This will be used for the budget \n" else ""
+            display += if (
+                mainViewModel.getAccountWithType()!!.accountType!!.tallyOwing)
+                "Balance owing will be calculated " else ""
+            display += if (
+                mainViewModel.getAccountWithType()!!.accountType!!.allowPending)
+                "Transactions may be postponed " else ""
+            if (display.isEmpty()) {
+                display =
+                    "This account does not keep a balance/owing amount"
+            }
+            tvTypeDetails.text = display
+        }
+    }
+
+    private fun setClickActions() {
+        setMenuActions()
+        binding.apply {
+            tvAccAddType.setOnClickListener {
+                gotoAccountTypesFragment()
+            }
+            etAccAddBalance.setOnLongClickListener {
+                gotoCalculator(BALANCE)
+                false
+            }
+            etAccAddOwing.setOnLongClickListener {
+                gotoCalculator(OWING)
+                false
+            }
+            etAccAddBudgeted.setOnLongClickListener {
+                gotoCalculator(BUDGETED)
+                false
+            }
+        }
+    }
+
+    private fun setMenuActions() {
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                // Add menu items here
+                menuInflater.inflate(R.menu.save_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                // Handle the menu selection
+                return when (menuItem.itemId) {
+                    R.id.menu_save -> {
+                        isAccountReadyToSave(mView)
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
     private fun getCurrentAccount(): Account {
         binding.apply {
             return Account(
@@ -271,22 +226,6 @@ class AccountAddFragment :
                 df.getCurrentTimeAsString()
             )
         }
-    }
-
-    private fun gotoAccountTypesFragment() {
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments() + ", " + TAG
-        )
-        mainViewModel.setAccountWithType(
-            AccountWithType(
-                getCurrentAccount(),
-                null
-            )
-        )
-        val direction = AccountAddFragmentDirections
-            .actionAccountAddFragmentToAccountTypesFragment()
-        mView.findNavController().navigate(direction)
-
     }
 
     private fun isAccountReadyToSave(view: View) {
@@ -350,6 +289,67 @@ class AccountAddFragment :
             }
             return errorMess
         }
+    }
+
+    private fun gotoAccountTypesFragment() {
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments() + ", " + TAG
+        )
+        mainViewModel.setAccountWithType(
+            AccountWithType(
+                getCurrentAccount(),
+                null
+            )
+        )
+        val direction = AccountAddFragmentDirections
+            .actionAccountAddFragmentToAccountTypesFragment()
+        mView.findNavController().navigate(direction)
+
+    }
+
+    private fun gotoCalculator(type: String) {
+        when (type) {
+            BALANCE -> {
+                mainViewModel.setTransferNum(
+                    nf.getDoubleFromDollars(
+                        binding.etAccAddBalance.text.toString().ifBlank {
+                            "0.0"
+                        }
+                    )
+                )
+            }
+
+            OWING -> {
+                mainViewModel.setTransferNum(
+                    nf.getDoubleFromDollars(
+                        binding.etAccAddOwing.text.toString().ifBlank {
+                            "0.0"
+                        }
+                    )
+                )
+            }
+
+            BUDGETED -> {
+                mainViewModel.setTransferNum(
+                    nf.getDoubleFromDollars(
+                        binding.etAccAddBudgeted.text.toString().ifBlank {
+                            "0.0"
+                        }
+                    )
+                )
+            }
+        }
+        mainViewModel.setReturnTo("$TAG, $type")
+        mainViewModel.setAccountWithType(
+            AccountWithType(
+                getCurrentAccount(),
+                mainViewModel.getAccountWithType()?.accountType
+            )
+        )
+        mView.findNavController().navigate(
+            AccountAddFragmentDirections
+                .actionAccountAddFragmentToCalcFragment()
+        )
     }
 
     override fun onDestroy() {

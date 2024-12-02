@@ -66,7 +66,7 @@ class AccountTypeAddFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getAccountTypeListForValidation()
-        createMenuActions()
+        setMenuActions()
     }
 
     private fun getAccountTypeListForValidation() {
@@ -79,7 +79,7 @@ class AccountTypeAddFragment :
         }
     }
 
-    private fun createMenuActions() {
+    private fun setMenuActions() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -127,6 +127,16 @@ class AccountTypeAddFragment :
         gotoAccountTypesFragment()
     }
 
+    private fun validateAccountType(): Boolean {
+        if (binding.etAccTypeAdd.text.isNullOrBlank()) return false
+        for (accType in accountTypeList) {
+            if (accType == binding.etAccTypeAdd.text.toString()) {
+                return false
+            }
+        }
+        return true
+    }
+
     private fun gotoAccountTypesFragment() {
         mainViewModel.setCallingFragments(
             mainViewModel.getCallingFragments()!!
@@ -149,16 +159,6 @@ class AccountTypeAddFragment :
         false,
         df.getCurrentTimeAsString()
     )
-
-    private fun validateAccountType(): Boolean {
-        if (binding.etAccTypeAdd.text.isNullOrBlank()) return false
-        for (accType in accountTypeList) {
-            if (accType == binding.etAccTypeAdd.text.toString()) {
-                return false
-            }
-        }
-        return true
-    }
 
     override fun onDestroy() {
         super.onDestroy()

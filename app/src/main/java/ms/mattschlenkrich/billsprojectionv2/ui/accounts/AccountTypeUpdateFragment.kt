@@ -65,13 +65,12 @@ class AccountTypeUpdateFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getAccountTypeListForValidation()
         populateValues()
-        createMenuActions()
-        createClickActions()
+        setClickActions()
     }
 
-    private fun createClickActions() {
+    private fun setClickActions() {
+        setMenuActions()
         binding.fabAccountTypeUpdate.setOnClickListener {
             isAccountTypeReadyToUpdate()
         }
@@ -87,7 +86,7 @@ class AccountTypeUpdateFragment :
         }
     }
 
-    private fun createMenuActions() {
+    private fun setMenuActions() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -139,37 +138,43 @@ class AccountTypeUpdateFragment :
     }
 
     private fun updateAccountType() {
-        accountsViewModel.updateAccountType(
-            AccountType(
-                currentAccountType.typeId,
-                binding.etAccTypeUpdate.text.toString().trim(),
-                binding.chkAccountTypeUKeepTotals.isChecked,
-                binding.chkAccTypeAddIsAsset.isChecked,
-                binding.chkAccountTypeUKeepOwing.isChecked,
-                false,
-                binding.chkAccountTypeUDisplayAsset.isChecked,
-                binding.chkAccTypeUAllowPending.isChecked,
-                false,
-                df.getCurrentTimeAsString()
+        binding.apply {
+            accountsViewModel.updateAccountType(
+                AccountType(
+                    currentAccountType.typeId,
+                    etAccTypeUpdate.text.toString().trim(),
+                    chkAccountTypeUKeepTotals.isChecked,
+                    chkAccTypeAddIsAsset.isChecked,
+                    chkAccountTypeUKeepOwing.isChecked,
+                    false,
+                    chkAccountTypeUDisplayAsset.isChecked,
+                    chkAccTypeUAllowPending.isChecked,
+                    false,
+                    df.getCurrentTimeAsString()
+                )
+
             )
-        )
-        val direction = AccountTypeUpdateFragmentDirections
-            .actionAccountTypeUpdateFragmentToAccountTypesFragment()
-        mView?.findNavController()?.navigate(direction)
+            val direction = AccountTypeUpdateFragmentDirections
+                .actionAccountTypeUpdateFragmentToAccountTypesFragment()
+            mView?.findNavController()?.navigate(direction)
+        }
     }
 
     private fun populateValues() {
-        binding.etAccTypeUpdate.setText(currentAccountType.accountType)
-        binding.chkAccountTypeUKeepTotals.isChecked =
-            currentAccountType.keepTotals
-        binding.chkAccountTypeUKeepOwing.isChecked =
-            currentAccountType.tallyOwing
-        binding.chkAccTypeAddIsAsset.isChecked =
-            currentAccountType.isAsset
-        binding.chkAccountTypeUDisplayAsset.isChecked =
-            currentAccountType.displayAsAsset
-        binding.chkAccTypeUAllowPending.isChecked =
-            currentAccountType.allowPending
+        getAccountTypeListForValidation()
+        binding.apply {
+            etAccTypeUpdate.setText(currentAccountType.accountType)
+            chkAccountTypeUKeepTotals.isChecked =
+                currentAccountType.keepTotals
+            chkAccountTypeUKeepOwing.isChecked =
+                currentAccountType.tallyOwing
+            chkAccTypeAddIsAsset.isChecked =
+                currentAccountType.isAsset
+            chkAccountTypeUDisplayAsset.isChecked =
+                currentAccountType.displayAsAsset
+            chkAccTypeUAllowPending.isChecked =
+                currentAccountType.allowPending
+        }
     }
 
     private fun chooseToDeleteAccountType() {
@@ -194,13 +199,15 @@ class AccountTypeUpdateFragment :
     }
 
     private fun validateAccountType(): Boolean {
-        if (binding.etAccTypeUpdate.text.isNullOrBlank()) return false
-        for (accType in accountTypeList) {
-            if (accType == binding.etAccTypeUpdate.text.toString()) {
-                return false
+        binding.apply {
+            if (etAccTypeUpdate.text.isNullOrBlank()) return false
+            for (accType in accountTypeList) {
+                if (accType == etAccTypeUpdate.text.toString()) {
+                    return false
+                }
             }
+            return true
         }
-        return true
     }
 
     override fun onDestroy() {

@@ -62,6 +62,10 @@ class AccountTypesFragment
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         setupRecyclerView()
+        setClickActions()
+    }
+
+    private fun setClickActions() {
         binding.fabAddAccountType.setOnClickListener {
             gotoAccountTypeAddFragment(it)
         }
@@ -111,7 +115,6 @@ class AccountTypesFragment
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-
         menuInflater.inflate(R.menu.search_menu, menu)
         val mMenuSearch = menu.findItem(R.id.menu_search)
             .actionView as SearchView

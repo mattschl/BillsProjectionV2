@@ -65,10 +65,8 @@ class AccountUpdateFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getAccountListNamesForValidation()
-        createMenuActions()
         populateValues()
-        createClickActions()
+        setClickActions()
     }
 
     private fun getAccountListNamesForValidation() {
@@ -82,7 +80,7 @@ class AccountUpdateFragment :
         }
     }
 
-    private fun createMenuActions() {
+    private fun setMenuActions() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -104,7 +102,8 @@ class AccountUpdateFragment :
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    private fun createClickActions() {
+    private fun setClickActions() {
+        setMenuActions()
         binding.apply {
             drpAccountUpdateType.setOnClickListener {
                 gotoAccountTypesFragment()
@@ -189,22 +188,6 @@ class AccountUpdateFragment :
         }
     }
 
-    private fun gotoAccountTypesFragment() {
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments() + ", " + TAG
-        )
-        mainViewModel.setAccountWithType(
-            AccountWithType(
-                getUpdatedAccount(),
-                mainViewModel.getAccountWithType()!!.accountType
-            )
-        )
-        val direction = AccountUpdateFragmentDirections
-            .actionAccountUpdateFragmentToAccountTypesFragment()
-        mView.findNavController().navigate(direction)
-
-    }
-
     private fun validateAccount(): String {
         binding.apply {
             val nameIsBlank =
@@ -276,26 +259,8 @@ class AccountUpdateFragment :
         }
     }
 
-    private fun gotoCallingFragment() {
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments()!!
-                .replace(", $TAG", "")
-        )
-        if (mainViewModel.getCallingFragments()!!.contains(FRAG_ACCOUNTS)) {
-            gotoAccountsFragment()
-        } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_BUDGET_VIEW)) {
-            gotoBudgetViewFragment()
-        }
-    }
-
-    private fun gotoBudgetViewFragment() {
-        mView.findNavController().navigate(
-            AccountUpdateFragmentDirections
-                .actionAccountUpdateFragmentToBudgetViewFragment()
-        )
-    }
-
     private fun populateValues() {
+        getAccountListNamesForValidation()
         binding.apply {
             edAccountUpdateName.setText(
                 mainViewModel.getAccountWithType()!!.account.accountName
@@ -375,10 +340,45 @@ class AccountUpdateFragment :
         gotoAccountsFragment()
     }
 
+    private fun gotoCallingFragment() {
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments()!!
+                .replace(", $TAG", "")
+        )
+        if (mainViewModel.getCallingFragments()!!.contains(FRAG_ACCOUNTS)) {
+            gotoAccountsFragment()
+        } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_BUDGET_VIEW)) {
+            gotoBudgetViewFragment()
+        }
+    }
+
     private fun gotoAccountsFragment() {
         val direction = AccountUpdateFragmentDirections
             .actionAccountUpdateFragmentToAccountsFragment()
         mView.findNavController().navigate(direction)
+    }
+
+    private fun gotoBudgetViewFragment() {
+        mView.findNavController().navigate(
+            AccountUpdateFragmentDirections
+                .actionAccountUpdateFragmentToBudgetViewFragment()
+        )
+    }
+
+    private fun gotoAccountTypesFragment() {
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments() + ", " + TAG
+        )
+        mainViewModel.setAccountWithType(
+            AccountWithType(
+                getUpdatedAccount(),
+                mainViewModel.getAccountWithType()!!.accountType
+            )
+        )
+        val direction = AccountUpdateFragmentDirections
+            .actionAccountUpdateFragmentToAccountTypesFragment()
+        mView.findNavController().navigate(direction)
+
     }
 
     override fun onDestroy() {

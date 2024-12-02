@@ -198,7 +198,7 @@ class BudgetViewAdapter(
             .setItems(
                 arrayOf(
                     "Perform a TRANSACTION on this budget item.",
-                    "COMPLETE ${curBudget.budgetItem.biBudgetName} for amount of " +
+                    "PERFORM action \"${curBudget.budgetItem.biBudgetName}\" for amount of " +
                             nf.displayDollars(curBudget.budgetItem.biProjectedAmount),
                     "ADJUST this item.",
                     "CANCEL this item.",
@@ -235,7 +235,7 @@ class BudgetViewAdapter(
         AlertDialog.Builder(mView.context)
             .setTitle("'Confirm Completing transaction")
             .setMessage(
-                "This will complete ${curBudget.budgetItem!!.biBudgetName} applying the amount of\n" +
+                "This will perform ${curBudget.budgetItem!!.biBudgetName} applying the amount of\n" +
                         nf.displayDollars(curBudget.budgetItem.biProjectedAmount)
             )
             .setPositiveButton("Complete Now") { _, _ ->

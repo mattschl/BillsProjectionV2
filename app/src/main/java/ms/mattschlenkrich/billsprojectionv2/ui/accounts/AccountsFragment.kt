@@ -63,23 +63,13 @@ class AccountsFragment :
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         setUpRecyclerView()
-        createClickActions()
+        setClickActions()
     }
 
-    private fun createClickActions() {
+    private fun setClickActions() {
         binding.fabAddNewAccount.setOnClickListener {
             gotoAccountAddFragment()
         }
-    }
-
-    private fun gotoAccountAddFragment() {
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments() + ", " + TAG
-        )
-        mainViewModel.setAccountWithType(null)
-        val direction = AccountsFragmentDirections
-            .actionAccountsFragmentToAccountAddFragment()
-        mView.findNavController().navigate(direction)
     }
 
     private fun setUpRecyclerView() {
@@ -144,6 +134,16 @@ class AccountsFragment :
         accountsViewModel.searchAccountsWithType(searchQuery).observe(
             this
         ) { list -> accountAdapter.differ.submitList(list) }
+    }
+
+    private fun gotoAccountAddFragment() {
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments() + ", " + TAG
+        )
+        mainViewModel.setAccountWithType(null)
+        val direction = AccountsFragmentDirections
+            .actionAccountsFragmentToAccountAddFragment()
+        mView.findNavController().navigate(direction)
     }
 
     override fun onDestroy() {
