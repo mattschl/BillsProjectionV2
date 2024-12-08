@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.transactions
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -409,7 +410,7 @@ class TransactionPerformFragment : Fragment(
                 return when (menuItem.itemId) {
                     R.id.menu_save -> {
                         menuItem.isEnabled = false
-                        performTransaction()
+                        performTransactionIfValid()
                         menuItem.isEnabled = true
                         true
                     }
@@ -420,22 +421,40 @@ class TransactionPerformFragment : Fragment(
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    private fun performTransaction() {
+    private fun performTransactionIfValid() {
         calculateRemainder()
         val mes = validateTransaction()
         if (mes == "Ok") {
-            val mTransaction = getCurrentTransactionForSave()
-            mainActivity.accountUpdateViewModel.performTransaction(
-                mTransaction
-            )
-            updateBudgetItem()
-            gotoCallingFragment()
+            binding.apply {
+                AlertDialog.Builder(mView.context)
+                    .setTitle("Confirm performing transaction")
+                    .setMessage(
+                        "This will perform transaction ${etDescription.text} " +
+                                "for ${nf.getDollarsFromDouble(nf.getDoubleFromDollars(etAmount.text.toString()))} " +
+                                "\nFROM:   ${mFromAccount!!.accountName} " +
+                                "\nTO:   ${mToAccount!!.accountName}."
+                    )
+                    .setPositiveButton("Confirm") { _, _ ->
+                        performTransaction()
+                    }
+                    .setNegativeButton("Go back", null)
+                    .show()
+            }
         } else {
             Toast.makeText(
                 mView.context,
                 mes, Toast.LENGTH_LONG
             ).show()
         }
+    }
+
+    private fun performTransaction() {
+        val mTransaction = getCurrentTransactionForSave()
+        mainActivity.accountUpdateViewModel.performTransaction(
+            mTransaction
+        )
+        updateBudgetItem()
+        gotoCallingFragment()
     }
 
     private fun updateBudgetItem() {

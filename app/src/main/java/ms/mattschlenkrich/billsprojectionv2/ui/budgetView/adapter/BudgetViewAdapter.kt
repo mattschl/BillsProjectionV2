@@ -198,8 +198,12 @@ class BudgetViewAdapter(
             .setItems(
                 arrayOf(
                     "Perform a TRANSACTION on this budget item.",
-                    "PERFORM action \"${curBudget.budgetItem.biBudgetName}\" for amount of " +
-                            nf.displayDollars(curBudget.budgetItem.biProjectedAmount),
+                    if (curBudget.budgetItem.biProjectedAmount == 0.0) {
+                        ""
+                    } else {
+                        "PERFORM action \"${curBudget.budgetItem.biBudgetName}\" for amount of " +
+                                nf.displayDollars(curBudget.budgetItem.biProjectedAmount)
+                    },
                     "ADJUST this item.",
                     "CANCEL this item.",
                     "Go to the RULES for this item."
@@ -232,17 +236,19 @@ class BudgetViewAdapter(
     }
 
     private fun confirmCompleteTransaction(curBudget: BudgetDetailed) {
-        AlertDialog.Builder(mView.context)
-            .setTitle("'Confirm Completing transaction")
-            .setMessage(
-                "This will perform ${curBudget.budgetItem!!.biBudgetName} applying the amount of\n" +
-                        nf.displayDollars(curBudget.budgetItem.biProjectedAmount)
-            )
-            .setPositiveButton("Complete Now") { _, _ ->
-                completeTransaction(curBudget)
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
+        if (curBudget.budgetItem!!.biProjectedAmount > 0.0) {
+            AlertDialog.Builder(mView.context)
+                .setTitle("'Confirm Completing transaction")
+                .setMessage(
+                    "This will perform ${curBudget.budgetItem.biBudgetName} applying the amount of\n" +
+                            nf.displayDollars(curBudget.budgetItem.biProjectedAmount)
+                )
+                .setPositiveButton("Complete Now") { _, _ ->
+                    completeTransaction(curBudget)
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        }
     }
 
     private fun completeTransaction(curBudget: BudgetDetailed) {
