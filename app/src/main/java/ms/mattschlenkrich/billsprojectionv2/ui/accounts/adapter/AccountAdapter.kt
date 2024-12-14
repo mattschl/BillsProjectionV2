@@ -230,9 +230,13 @@ class AccountAdapter(
                             .contains(FRAG_TRANSACTION_SPLIT)
                     ) {
                         mSplitTransactionDetailed.toAccount = curAccount.account
+                        mSplitTransactionDetailed.transaction!!.transToAccountPending =
+                            curAccount.accountType!!.tallyOwing
                         mainViewModel.setSplitTransactionDetailed(mSplitTransactionDetailed)
                     } else {
                         mTransactionDetailed.toAccount = curAccount.account
+                        mTransactionDetailed.transaction!!.transToAccountPending =
+                            curAccount.accountType!!.tallyOwing
                         mainViewModel.setTransactionDetailed(mTransactionDetailed)
                     }
                     mBudgetItem.toAccount = curAccount.account
@@ -248,9 +252,13 @@ class AccountAdapter(
                             .contains(FRAG_TRANSACTION_SPLIT)
                     ) {
                         mSplitTransactionDetailed.fromAccount = curAccount.account
+                        mSplitTransactionDetailed.transaction!!.transFromAccountPending =
+                            curAccount.accountType!!.tallyOwing
                         mainViewModel.setSplitTransactionDetailed(mSplitTransactionDetailed)
                     } else {
                         mTransactionDetailed.fromAccount = curAccount.account
+                        mTransactionDetailed.transaction!!.transFromAccountPending =
+                            curAccount.accountType!!.tallyOwing
                         mainViewModel.setTransactionDetailed(mTransactionDetailed)
                     }
                     mBudgetItem.fromAccount = curAccount.account
