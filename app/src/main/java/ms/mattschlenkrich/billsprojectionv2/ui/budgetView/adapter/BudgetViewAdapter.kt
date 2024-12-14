@@ -201,7 +201,8 @@ class BudgetViewAdapter(
                     if (curBudget.budgetItem.biProjectedAmount == 0.0) {
                         ""
                     } else {
-                        "PERFORM action \"${curBudget.budgetItem.biBudgetName}\" for amount of " +
+                        "PERFORM action \"${curBudget.budgetItem.biBudgetName}\" " +
+                                "\nfor amount of " +
                                 nf.displayDollars(curBudget.budgetItem.biProjectedAmount)
                     },
                     "ADJUST this item.",
@@ -240,8 +241,12 @@ class BudgetViewAdapter(
             AlertDialog.Builder(mView.context)
                 .setTitle("'Confirm Completing transaction")
                 .setMessage(
-                    "This will perform ${curBudget.budgetItem.biBudgetName} applying the amount of\n" +
-                            nf.displayDollars(curBudget.budgetItem.biProjectedAmount)
+                    "This will perform ${curBudget.budgetItem.biBudgetName} \n" +
+                            "applying the amount of " +
+                            nf.displayDollars(curBudget.budgetItem.biProjectedAmount) +
+                            "\n\nFROM:   ${curBudget.fromAccount!!.accountName} " +
+                            "\nTO:   ${curBudget.toAccount!!.accountName}"
+
                 )
                 .setPositiveButton("Complete Now") { _, _ ->
                     completeTransaction(curBudget)

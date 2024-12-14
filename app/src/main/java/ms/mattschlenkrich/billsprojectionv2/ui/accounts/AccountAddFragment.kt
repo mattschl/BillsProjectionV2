@@ -73,7 +73,7 @@ class AccountAddFragment :
                 populateAccountFromCache()
             }
             if (mainViewModel.getAccountWithType()?.accountType != null) {
-                populateAccountYpeFromCache()
+                populateAccountTypeFromCache()
             }
         }
     }
@@ -140,7 +140,7 @@ class AccountAddFragment :
         }
     }
 
-    private fun populateAccountYpeFromCache() {
+    private fun populateAccountTypeFromCache() {
         binding.apply {
             tvAccAddType.text =
                 mainViewModel.getAccountWithType()!!.accountType!!.accountType

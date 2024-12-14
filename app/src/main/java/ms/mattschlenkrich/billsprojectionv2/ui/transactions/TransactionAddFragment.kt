@@ -83,12 +83,12 @@ class TransactionAddFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        createMenuActions()
         populateValues()
-        createClickActions()
+        setClickActions()
     }
 
-    private fun createClickActions() {
+    private fun setClickActions() {
+        seteMenuActions()
         binding.apply {
             tvBudgetRule.setOnClickListener {
                 chooseBudgetRule()
@@ -157,7 +157,7 @@ class TransactionAddFragment :
         )
     }
 
-    private fun createMenuActions() {
+    private fun seteMenuActions() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -170,7 +170,7 @@ class TransactionAddFragment :
                 return when (menuItem.itemId) {
                     R.id.menu_save -> {
                         menuItem.isEnabled = false
-                        saveTransaction()
+                        saveTransactionIfValid()
                         menuItem.isEnabled = true
                         true
                     }
@@ -505,7 +505,7 @@ class TransactionAddFragment :
         }
     }
 
-    private fun saveTransaction() {
+    private fun saveTransactionIfValid() {
         val mes = validateTransaction()
         if (mes == "Ok") {
             val mTransaction = getCurrentTransactionForSave()
@@ -521,7 +521,7 @@ class TransactionAddFragment :
             ).show()
         }
     }
-    
+
     private fun gotoCallingFragment() {
         updateAmountDisplay()
         mainViewModel.setCallingFragments(
