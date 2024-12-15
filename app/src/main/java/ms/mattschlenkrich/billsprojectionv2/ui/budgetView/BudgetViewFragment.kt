@@ -2,6 +2,7 @@ package ms.mattschlenkrich.billsprojectionv2.ui.budgetView
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,13 +22,9 @@ import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
-import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModel
-import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetItemViewModel
-import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.TransactionViewModel
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetViewBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.adapter.BudgetViewAdapter
@@ -43,11 +40,8 @@ class BudgetViewFragment : Fragment(
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-    private lateinit var mainViewModel: MainViewModel
-    private lateinit var budgetItemViewModel: BudgetItemViewModel
-    private lateinit var accountViewModel: AccountViewModel
-    private lateinit var transactionViewModel: TransactionViewModel
     private val nf = NumberFunctions()
+//    private val df = DateFunctions()
 
     private lateinit var curAsset: AccountWithType
     private val budgetList = ArrayList<BudgetDetailed>()
@@ -62,14 +56,6 @@ class BudgetViewFragment : Fragment(
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
-        mainViewModel =
-            mainActivity.mainViewModel
-        budgetItemViewModel =
-            mainActivity.budgetItemViewModel
-        accountViewModel =
-            mainActivity.accountViewModel
-        transactionViewModel =
-            mainActivity.transactionViewModel
         mainActivity.title = "View The Budget"
         mView = binding.root
         return binding.root
@@ -97,7 +83,7 @@ class BudgetViewFragment : Fragment(
 
     private fun gotoAccount() {
         setToReturn()
-        mainViewModel.setAccountWithType(curAsset)
+        mainActivity.mainViewModel.setAccountWithType(curAsset)
         mView.findNavController().navigate(
             BudgetViewFragmentDirections.actionBudgetViewFragmentToAccountUpdateFragment()
         )
@@ -111,7 +97,7 @@ class BudgetViewFragment : Fragment(
                 if (spAssetNames.adapter != null) {
                     for (i in 0 until spAssetNames.adapter.count) {
                         if (spAssetNames.getItemAtPosition(i).toString() ==
-                            mainViewModel.getReturnToAsset()
+                            mainActivity.mainViewModel.getReturnToAsset()
                         ) {
                             spAssetNames.setSelection(i)
                             break
@@ -122,7 +108,7 @@ class BudgetViewFragment : Fragment(
                 if (spPayDay.adapter != null) {
                     for (i in 0 until spPayDay.adapter.count) {
                         if (spPayDay.getItemAtPosition(i).toString() ==
-                            mainViewModel.getReturnToPayDay()
+                            mainActivity.mainViewModel.getReturnToPayDay()
                         ) {
                             spPayDay.setSelection(i)
                             break
@@ -155,7 +141,12 @@ class BudgetViewFragment : Fragment(
             delay(WAIT_250)
             binding.apply {
                 val asset = spAssetNames.selectedItem.toString()
-                val payDay = spPayDay.selectedItem.toString()
+                val payDay =
+                    if (spPayDay.selectedItem != null) {
+                        spPayDay.selectedItem.toString()
+                    } else {
+                        ""
+                    }
                 val budgetViewAdapter = BudgetViewAdapter(
                     this@BudgetViewFragment,
                     mainActivity,
@@ -168,19 +159,20 @@ class BudgetViewFragment : Fragment(
                     adapter = budgetViewAdapter
                 }
                 activity?.let {
-                    budgetItemViewModel.getBudgetItems(
+                    mainActivity.budgetItemViewModel.getBudgetItems(
                         asset, payDay
                     ).observe(
                         viewLifecycleOwner
                     ) { budgetItems ->
                         budgetList.clear()
                         budgetViewAdapter.differ.submitList(budgetItems)
-                        updateUi(budgetItems)
                         budgetItems.listIterator().forEach {
                             budgetList.add(it)
                         }
                         populateAssetDetails()
                         populateBudgetTotals()
+                        Log.d(TAG, "Budget Items count = ${budgetItems.size}")
+                        updateUi(budgetItems)
                     }
                 }
             }
@@ -266,15 +258,15 @@ class BudgetViewFragment : Fragment(
         }
     }
 
-    private fun updateUi(budgetItems: List<BudgetDetailed>?) {
+    private fun updateUi(budgetItems: List<Any>?) {
         binding.apply {
             if (budgetItems.isNullOrEmpty()) {
                 crdNoTransactions.visibility = View.VISIBLE
                 rvBudgetSummary.visibility = View.GONE
                 lblBudgeted.visibility = View.GONE
             } else {
-                binding.crdNoTransactions.visibility = View.GONE
-                binding.rvBudgetSummary.visibility = View.VISIBLE
+                crdNoTransactions.visibility = View.GONE
+                rvBudgetSummary.visibility = View.VISIBLE
                 lblBudgeted.visibility = View.VISIBLE
             }
         }
@@ -290,7 +282,7 @@ class BudgetViewFragment : Fragment(
                         p2: Int,
                         p3: Long
                     ) {
-                        accountViewModel.getAccountDetailed(
+                        mainActivity.accountViewModel.getAccountDetailed(
                             spAssetNames.selectedItem.toString()
                         ).observe(
                             viewLifecycleOwner
@@ -313,7 +305,7 @@ class BudgetViewFragment : Fragment(
         val transactionPendingAdapter =
             TransactionPendingAdapter(
                 binding.spAssetNames.selectedItem.toString(),
-                mainViewModel,
+                mainActivity.mainViewModel,
                 mainActivity,
                 this,
                 mView,
@@ -324,7 +316,7 @@ class BudgetViewFragment : Fragment(
             adapter = transactionPendingAdapter
         }
         activity?.let {
-            transactionViewModel.getPendingTransactionsDetailed(
+            mainActivity.transactionViewModel.getPendingTransactionsDetailed(
                 binding.spAssetNames.selectedItem.toString()
             ).observe(
                 viewLifecycleOwner
@@ -388,6 +380,7 @@ class BudgetViewFragment : Fragment(
             tvFixedExpenses.text = getString(R.string.blank)
             tvDiscretionaryExpenses.text = getString(R.string.blank)
             tvSurplusOrDeficit.text = getString(R.string.blank)
+            updateUi(ArrayList<Any>().toList())
         }
     }
 
@@ -439,7 +432,7 @@ class BudgetViewFragment : Fragment(
                 requireContext(),
                 R.layout.spinner_item_bold
             )
-        budgetItemViewModel.getPayDays(asset).observe(
+        mainActivity.budgetItemViewModel.getPayDays(asset).observe(
             viewLifecycleOwner
         ) { payDayList ->
             payDayAdapter.clear()
@@ -469,7 +462,7 @@ class BudgetViewFragment : Fragment(
                 requireContext(),
                 R.layout.spinner_item_bold
             )
-        budgetItemViewModel.getAssetsForBudget().observe(
+        mainActivity.budgetItemViewModel.getAssetsForBudget().observe(
             viewLifecycleOwner
         ) { assetList ->
             assetAdapter.clear()
@@ -504,7 +497,7 @@ class BudgetViewFragment : Fragment(
 
     private fun addNewTransaction() {
         setToReturn()
-        mainViewModel.setTransactionDetailed(null)
+        mainActivity.mainViewModel.setTransactionDetailed(null)
         val direction =
             BudgetViewFragmentDirections
                 .actionBudgetViewFragmentToTransactionAddFragment()
@@ -521,7 +514,7 @@ class BudgetViewFragment : Fragment(
 
     private fun setToReturn() {
         binding.apply {
-            mainViewModel.setCallingFragments(TAG)
+            mainActivity.mainViewModel.setCallingFragments(TAG)
 //            mainViewModel.setReturnToAsset(spAssetNames.selectedItem.toString())
 //            mainViewModel.setReturnToPayDay(spPayDay.selectedItem.toString())
         }
@@ -529,9 +522,9 @@ class BudgetViewFragment : Fragment(
 
     override fun onStop() {
         binding.apply {
-            mainViewModel.setReturnToAsset(spAssetNames.selectedItem.toString())
+            mainActivity.mainViewModel.setReturnToAsset(spAssetNames.selectedItem.toString())
             if (spPayDay.adapter.count > 0) {
-                mainViewModel.setReturnToPayDay(spPayDay.selectedItem.toString())
+                mainActivity.mainViewModel.setReturnToPayDay(spPayDay.selectedItem.toString())
             }
         }
         super.onStop()
