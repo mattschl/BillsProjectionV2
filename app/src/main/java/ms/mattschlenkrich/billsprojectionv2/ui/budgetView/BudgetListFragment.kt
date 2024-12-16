@@ -12,10 +12,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FREQ_MONTHLY
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_WEEKLY
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleComplete
-import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModel
-import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewModel
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetListBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.adapter.BudgetListAnnualAdapter
@@ -29,9 +26,6 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-    private lateinit var mainViewModel: MainViewModel
-    private lateinit var budgetRuleViewModel: BudgetRuleViewModel
-    private lateinit var accountViewModel: AccountViewModel
     private var monthlyVisible = false
     private var occasionalVisible = false
     private var annualVisible = false
@@ -49,9 +43,6 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
-        mainViewModel = mainActivity.mainViewModel
-        budgetRuleViewModel = mainActivity.budgetRuleViewModel
-        accountViewModel = mainActivity.accountViewModel
         mainActivity.title = "View the complete budget"
         mView = binding.root
         return mView
@@ -96,13 +87,13 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     private fun populateAnnualBudget() {
         activity.let {
             val budgetListAnnualAdapter = BudgetListAnnualAdapter(
-                mainViewModel, budgetRuleViewModel, mView
+                mainActivity, mView
             )
             binding.rvAnnual.apply {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = budgetListAnnualAdapter
             }
-            budgetRuleViewModel.getBudgetRulesCompletedAnnually(
+            mainActivity.budgetRuleViewModel.getBudgetRulesCompletedAnnually(
                 df.getCurrentDateAsString()
             ).observe(viewLifecycleOwner) { rules ->
                 budgetsAnnual.clear()
@@ -164,14 +155,14 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     private fun populateOccasionalItems() {
         activity.let {
             val budgetListOccasionalAdapter = BudgetListOccasionalAdapter(
-                mainViewModel, budgetRuleViewModel, mView
+                mainActivity, mView
             )
             binding.rvOccasional.apply {
                 layoutManager =
                     LinearLayoutManager(requireContext())
                 adapter = budgetListOccasionalAdapter
             }
-            budgetRuleViewModel.getBudgetRulesCompletedOccasional(
+            mainActivity.budgetRuleViewModel.getBudgetRulesCompletedOccasional(
                 df.getCurrentDateAsString()
             ).observe(viewLifecycleOwner) { rules ->
                 budgetsOccasional.clear()
@@ -244,14 +235,14 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     private fun populateMonthlyItems() {
         activity?.let {
             val budgetListMonthlyAdapter = BudgetListMonthlyAdapter(
-                mainViewModel, budgetRuleViewModel, mView,
+                mainActivity, mView,
             )
             binding.rvMonthly.apply {
                 layoutManager =
                     LinearLayoutManager(requireContext())
                 adapter = budgetListMonthlyAdapter
             }
-            budgetRuleViewModel.getBudgetRulesCompleteMonthly(df.getCurrentDateAsString())
+            mainActivity.budgetRuleViewModel.getBudgetRulesCompleteMonthly(df.getCurrentDateAsString())
                 .observe(viewLifecycleOwner) { rules ->
                     budgetsMonthly.clear()
                     rules.listIterator().forEach {

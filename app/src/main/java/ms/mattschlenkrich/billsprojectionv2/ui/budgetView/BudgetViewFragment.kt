@@ -63,211 +63,37 @@ class BudgetViewFragment : Fragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        onClickActions()
         populateAssets()
+        setOnClickActions()
         resumeHistory()
     }
 
-    private fun onClickActions() {
+    private fun populateAssets() {
+        val assetAdapter =
+            ArrayAdapter<Any>(
+                requireContext(),
+                R.layout.spinner_item_bold
+            )
+        mainActivity.budgetItemViewModel.getAssetsForBudget().observe(
+            viewLifecycleOwner
+        ) { assetList ->
+            assetAdapter.clear()
+            assetList?.forEach {
+                assetAdapter.add(it)
+            }
+        }
+        binding.spAssetNames.adapter = assetAdapter
+    }
+
+    private fun setOnClickActions() {
         binding.apply {
+            onSelectAsset()
+            onSelectPayDay()
             fabAddAction.setOnClickListener {
                 onAddButtonPress()
             }
             tvBalanceOwing.setOnClickListener {
                 gotoAccount()
-            }
-            onSelectAsset()
-            onSelectPayDay()
-        }
-    }
-
-    private fun gotoAccount() {
-        setToReturn()
-        mainActivity.mainViewModel.setAccountWithType(curAsset)
-        mView.findNavController().navigate(
-            BudgetViewFragmentDirections.actionBudgetViewFragmentToAccountUpdateFragment()
-        )
-    }
-
-    private fun resumeHistory() {
-        val waitTime = 250L
-        binding.apply {
-            CoroutineScope(Dispatchers.Main).launch {
-                delay(waitTime)
-                if (spAssetNames.adapter != null) {
-                    for (i in 0 until spAssetNames.adapter.count) {
-                        if (spAssetNames.getItemAtPosition(i).toString() ==
-                            mainActivity.mainViewModel.getReturnToAsset()
-                        ) {
-                            spAssetNames.setSelection(i)
-                            break
-                        }
-                    }
-                }
-                delay(waitTime)
-                if (spPayDay.adapter != null) {
-                    for (i in 0 until spPayDay.adapter.count) {
-                        if (spPayDay.getItemAtPosition(i).toString() ==
-                            mainActivity.mainViewModel.getReturnToPayDay()
-                        ) {
-                            spPayDay.setSelection(i)
-                            break
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun onSelectPayDay() {
-        binding.apply {
-            spPayDay.onItemSelectedListener =
-                object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(
-                        p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long
-                    ) {
-                        populateBudgetList()
-                    }
-
-                    override fun onNothingSelected(p0: AdapterView<*>?) {
-                        //Not necessary
-                    }
-                }
-        }
-    }
-
-    fun populateBudgetList() {
-        CoroutineScope(Dispatchers.Main).launch {
-            delay(WAIT_250)
-            binding.apply {
-                val asset = spAssetNames.selectedItem.toString()
-                val payDay =
-                    if (spPayDay.selectedItem != null) {
-                        spPayDay.selectedItem.toString()
-                    } else {
-                        ""
-                    }
-                val budgetViewAdapter = BudgetViewAdapter(
-                    this@BudgetViewFragment,
-                    mainActivity,
-                    asset,
-                    payDay,
-                    mView
-                )
-                binding.rvBudgetSummary.apply {
-                    layoutManager = LinearLayoutManager(requireContext())
-                    adapter = budgetViewAdapter
-                }
-                activity?.let {
-                    mainActivity.budgetItemViewModel.getBudgetItems(
-                        asset, payDay
-                    ).observe(
-                        viewLifecycleOwner
-                    ) { budgetItems ->
-                        budgetList.clear()
-                        budgetViewAdapter.differ.submitList(budgetItems)
-                        budgetItems.listIterator().forEach {
-                            budgetList.add(it)
-                        }
-                        populateAssetDetails()
-                        populateBudgetTotals()
-                        Log.d(TAG, "Budget Items count = ${budgetItems.size}")
-                        updateUi(budgetItems)
-                    }
-                }
-            }
-        }
-    }
-
-    private fun populateBudgetTotals() {
-        binding.apply {
-            if (spPayDay.adapter.count > 0) {
-                var debits = 0.0
-                var credits = 0.0
-                var fixedExpenses = 0.0
-                var otherExpenses = 0.0
-                @Suppress("UNUSED_VARIABLE") var available = 0.0
-                for (details in budgetList) {
-                    if (details.toAccount!!.accountName ==
-                        curAsset.account.accountName
-                    ) {
-                        credits += details.budgetItem!!.biProjectedAmount
-                    } else {
-                        debits += details.budgetItem!!.biProjectedAmount
-                    }
-                    if (details.fromAccount!!.accountName == curAsset.account.accountName) {
-                        if (details.budgetItem.biIsFixed
-                        ) {
-                            fixedExpenses += details.budgetItem.biProjectedAmount
-                        } else {
-                            otherExpenses += details.budgetItem.biProjectedAmount
-                        }
-                    }
-                }
-                var surplus = credits - debits
-                ibDivider.setBackgroundColor(Color.BLACK)
-                if (spPayDay.selectedItemId == 0L) {
-                    if (curAsset.accountType!!.keepTotals) {
-                        surplus += curAsset.account.accountBalance
-                    } else {
-                        surplus -= curAsset.account.accountOwing
-                    }
-                }
-                if (credits > 0.0) {
-                    val display = "Credits: ${nf.displayDollars(credits)}"
-                    tvCredits.text = display
-                    tvCredits.setTextColor(Color.BLACK)
-                } else {
-                    tvCredits.text = getString(R.string.no_credits)
-                    tvCredits.setTextColor(Color.DKGRAY)
-                }
-                if (debits > 0.0) {
-                    val display = "Debits: ${nf.displayDollars(debits)}"
-                    tvDebits.text = display
-                    tvDebits.setTextColor(Color.RED)
-                } else {
-                    tvDebits.text = getString(R.string.no_debits)
-                    tvDebits.setTextColor(Color.DKGRAY)
-                }
-                if (fixedExpenses > 0.0) {
-                    val display = "Fixed Expenses: ${nf.displayDollars(fixedExpenses)}"
-                    tvFixedExpenses.text = display
-                    tvFixedExpenses.setTextColor(Color.RED)
-                } else {
-                    tvFixedExpenses.text = getString(R.string.no_fixed_expenses)
-                    tvFixedExpenses.setTextColor(Color.DKGRAY)
-                }
-                if (otherExpenses > 0.0) {
-                    val display = "Discretionary: ${nf.displayDollars(otherExpenses)}"
-                    tvDiscretionaryExpenses.text = display
-                    tvDiscretionaryExpenses.setTextColor(Color.BLUE)
-                } else {
-                    tvDiscretionaryExpenses.text = getString(R.string.no_discretionary_expenses)
-                    tvDiscretionaryExpenses.setTextColor(Color.DKGRAY)
-                }
-                if (surplus >= 0.0) {
-                    val display = "Surplus of ${nf.displayDollars(surplus)}"
-                    tvSurplusOrDeficit.text = display
-                    tvSurplusOrDeficit.setTextColor(Color.BLACK)
-                } else {
-                    val display = "DEFICIT of ${nf.displayDollars(-surplus)}"
-                    tvSurplusOrDeficit.text = display
-                    tvSurplusOrDeficit.setTextColor(Color.RED)
-                }
-            }
-        }
-    }
-
-    private fun updateUi(budgetItems: List<Any>?) {
-        binding.apply {
-            if (budgetItems.isNullOrEmpty()) {
-                crdNoTransactions.visibility = View.VISIBLE
-                rvBudgetSummary.visibility = View.GONE
-                lblBudgeted.visibility = View.GONE
-            } else {
-                crdNoTransactions.visibility = View.GONE
-                rvBudgetSummary.visibility = View.VISIBLE
-                lblBudgeted.visibility = View.VISIBLE
             }
         }
     }
@@ -298,6 +124,81 @@ class BudgetViewFragment : Fragment(
                         //not needed
                     }
                 }
+        }
+    }
+
+    private fun clearCurrentDisplay() {
+        binding.apply {
+            lblBalanceOwing.text = getString(R.string.blank)
+            tvBalanceOwing.text = getString(R.string.blank)
+            llNoBudget.visibility = View.VISIBLE
+            rvBudgetSummary.visibility = View.GONE
+            tvDebits.text = getString(R.string.blank)
+            tvCredits.text = getString(R.string.blank)
+            tvFixedExpenses.text = getString(R.string.blank)
+            tvDiscretionaryExpenses.text = getString(R.string.blank)
+            tvSurplusOrDeficit.text = getString(R.string.blank)
+            updateBudgetListUi(ArrayList<Any>().toList())
+        }
+    }
+
+    private fun populatePayDays(asset: String) {
+        val payDayAdapter =
+            ArrayAdapter<Any>(
+                requireContext(),
+                R.layout.spinner_item_bold
+            )
+        mainActivity.budgetItemViewModel.getPayDays(asset).observe(
+            viewLifecycleOwner
+        ) { payDayList ->
+            payDayAdapter.clear()
+            payDayList?.forEach {
+                payDayAdapter.add(it)
+            }
+            hideUnHidePayDays(payDayList)
+        }
+        binding.spPayDay.adapter = payDayAdapter
+    }
+
+    private fun populateAssetDetails() {
+        binding.apply {
+            if (curAsset.accountType!!.keepTotals) {
+                lblAvailable.visibility = View.GONE
+                tvAvailable.visibility = View.GONE
+                lblBalanceOwing.text =
+                    getString(R.string.balance_in_account)
+                if (curAsset.account.accountBalance >= 0.0) {
+                    tvBalanceOwing.setTextColor(Color.BLACK)
+                } else {
+                    tvBalanceOwing.setTextColor(Color.RED)
+                }
+                tvBalanceOwing.text =
+                    nf.displayDollars(curAsset.account.accountBalance)
+            } else if (curAsset.accountType!!.tallyOwing) {
+                val creditLimit = curAsset.account.accountCreditLimit
+                lblAvailable.visibility = View.VISIBLE
+                tvAvailable.visibility = View.VISIBLE
+                val available = creditLimit + pendingAmount - curAsset.account.accountOwing
+                val availableReal = if (available > creditLimit) {
+                    creditLimit
+                } else {
+                    available
+                }
+                tvAvailable.text = nf.displayDollars(availableReal)
+                if (curAsset.account.accountOwing >= 0.0) {
+                    lblBalanceOwing.text =
+                        getString(R.string.balance_owing)
+                    tvBalanceOwing.setTextColor(Color.RED)
+                    tvBalanceOwing.text =
+                        nf.displayDollars(curAsset.account.accountOwing)
+                } else {
+                    lblBalanceOwing.text =
+                        getString(R.string.credit_of)
+                    tvBalanceOwing.setTextColor(Color.BLACK)
+                    tvBalanceOwing.text =
+                        nf.displayDollars(-curAsset.account.accountOwing)
+                }
+            }
         }
     }
 
@@ -369,108 +270,21 @@ class BudgetViewFragment : Fragment(
         }
     }
 
-    private fun clearCurrentDisplay() {
+    private fun onSelectPayDay() {
         binding.apply {
-            lblBalanceOwing.text = getString(R.string.blank)
-            tvBalanceOwing.text = getString(R.string.blank)
-            llNoBudget.visibility = View.VISIBLE
-            rvBudgetSummary.visibility = View.GONE
-            tvDebits.text = getString(R.string.blank)
-            tvCredits.text = getString(R.string.blank)
-            tvFixedExpenses.text = getString(R.string.blank)
-            tvDiscretionaryExpenses.text = getString(R.string.blank)
-            tvSurplusOrDeficit.text = getString(R.string.blank)
-            updateUi(ArrayList<Any>().toList())
-        }
-    }
+            spPayDay.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long
+                    ) {
+                        populateBudgetList()
+                    }
 
-    private fun populateAssetDetails() {
-        binding.apply {
-            if (curAsset.accountType!!.keepTotals) {
-                lblAvailable.visibility = View.GONE
-                tvAvailable.visibility = View.GONE
-                lblBalanceOwing.text =
-                    getString(R.string.balance_in_account)
-                if (curAsset.account.accountBalance >= 0.0) {
-                    tvBalanceOwing.setTextColor(Color.BLACK)
-                } else {
-                    tvBalanceOwing.setTextColor(Color.RED)
+                    override fun onNothingSelected(p0: AdapterView<*>?) {
+                        //Not necessary
+                    }
                 }
-                tvBalanceOwing.text =
-                    nf.displayDollars(curAsset.account.accountBalance)
-            } else if (curAsset.accountType!!.tallyOwing) {
-                val creditLimit = curAsset.account.accountCreditLimit
-                lblAvailable.visibility = View.VISIBLE
-                tvAvailable.visibility = View.VISIBLE
-                val available = creditLimit + pendingAmount - curAsset.account.accountOwing
-                val availableReal = if (available > creditLimit) {
-                    creditLimit
-                } else {
-                    available
-                }
-                tvAvailable.text = nf.displayDollars(availableReal)
-                if (curAsset.account.accountOwing >= 0.0) {
-                    lblBalanceOwing.text =
-                        getString(R.string.balance_owing)
-                    tvBalanceOwing.setTextColor(Color.RED)
-                    tvBalanceOwing.text =
-                        nf.displayDollars(curAsset.account.accountOwing)
-                } else {
-                    lblBalanceOwing.text =
-                        getString(R.string.credit_of)
-                    tvBalanceOwing.setTextColor(Color.BLACK)
-                    tvBalanceOwing.text =
-                        nf.displayDollars(-curAsset.account.accountOwing)
-                }
-            }
         }
-    }
-
-    private fun populatePayDays(asset: String) {
-        val payDayAdapter =
-            ArrayAdapter<Any>(
-                requireContext(),
-                R.layout.spinner_item_bold
-            )
-        mainActivity.budgetItemViewModel.getPayDays(asset).observe(
-            viewLifecycleOwner
-        ) { payDayList ->
-            payDayAdapter.clear()
-            payDayList?.forEach {
-                payDayAdapter.add(it)
-            }
-            hidePayDays(payDayList)
-        }
-        binding.spPayDay.adapter = payDayAdapter
-    }
-
-    private fun hidePayDays(list: List<Any>) {
-        binding.apply {
-            if (list.isEmpty()) {
-                lblPayDay.visibility = View.GONE
-                spPayDay.visibility = View.GONE
-            } else {
-                lblPayDay.visibility = View.VISIBLE
-                spPayDay.visibility = View.VISIBLE
-            }
-        }
-    }
-
-    private fun populateAssets() {
-        val assetAdapter =
-            ArrayAdapter<Any>(
-                requireContext(),
-                R.layout.spinner_item_bold
-            )
-        mainActivity.budgetItemViewModel.getAssetsForBudget().observe(
-            viewLifecycleOwner
-        ) { assetList ->
-            assetAdapter.clear()
-            assetList?.forEach {
-                assetAdapter.add(it)
-            }
-        }
-        binding.spAssetNames.adapter = assetAdapter
     }
 
     private fun onAddButtonPress() {
@@ -495,6 +309,194 @@ class BudgetViewFragment : Fragment(
             .show()
     }
 
+    private fun gotoAccount() {
+        setToReturn()
+        mainActivity.mainViewModel.setAccountWithType(curAsset)
+        mView.findNavController().navigate(
+            BudgetViewFragmentDirections.actionBudgetViewFragmentToAccountUpdateFragment()
+        )
+    }
+
+    private fun resumeHistory() {
+        val waitTime = 250L
+        binding.apply {
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(waitTime)
+                if (spAssetNames.adapter != null) {
+                    for (i in 0 until spAssetNames.adapter.count) {
+                        if (spAssetNames.getItemAtPosition(i).toString() ==
+                            mainActivity.mainViewModel.getReturnToAsset()
+                        ) {
+                            spAssetNames.setSelection(i)
+                            break
+                        }
+                    }
+                }
+                delay(waitTime)
+                if (spPayDay.adapter != null) {
+                    for (i in 0 until spPayDay.adapter.count) {
+                        if (spPayDay.getItemAtPosition(i).toString() ==
+                            mainActivity.mainViewModel.getReturnToPayDay()
+                        ) {
+                            spPayDay.setSelection(i)
+                            break
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun populateBudgetList() {
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_250)
+            binding.apply {
+                val asset = spAssetNames.selectedItem.toString()
+                val payDay =
+                    if (spPayDay.selectedItem != null) {
+                        spPayDay.selectedItem.toString()
+                    } else {
+                        ""
+                    }
+                val budgetViewAdapter = BudgetViewAdapter(
+                    this@BudgetViewFragment,
+                    mainActivity,
+                    asset,
+                    payDay,
+                    mView
+                )
+                binding.rvBudgetSummary.apply {
+                    layoutManager = LinearLayoutManager(requireContext())
+                    adapter = budgetViewAdapter
+                }
+                activity?.let {
+                    mainActivity.budgetItemViewModel.getBudgetItems(
+                        asset, payDay
+                    ).observe(
+                        viewLifecycleOwner
+                    ) { budgetItems ->
+                        budgetList.clear()
+                        budgetViewAdapter.differ.submitList(budgetItems)
+                        budgetItems.listIterator().forEach {
+                            budgetList.add(it)
+                        }
+                        populateAssetDetails()
+                        populateBudgetTotals()
+                        Log.d(TAG, "Budget Items count = ${budgetItems.size}")
+                        updateBudgetListUi(budgetItems)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun updateBudgetListUi(budgetItems: List<Any>?) {
+        binding.apply {
+            if (budgetItems.isNullOrEmpty()) {
+                crdNoTransactions.visibility = View.VISIBLE
+                rvBudgetSummary.visibility = View.GONE
+                lblBudgeted.visibility = View.GONE
+            } else {
+                crdNoTransactions.visibility = View.GONE
+                rvBudgetSummary.visibility = View.VISIBLE
+                lblBudgeted.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    private fun populateBudgetTotals() {
+        binding.apply {
+            if (spPayDay.adapter.count > 0) {
+                var debits = 0.0
+                var credits = 0.0
+                var fixedExpenses = 0.0
+                var otherExpenses = 0.0
+
+                @Suppress("UNUSED_VARIABLE")
+                var available = 0.0
+                for (details in budgetList) {
+                    if (details.toAccount!!.accountName ==
+                        curAsset.account.accountName
+                    ) {
+                        credits += details.budgetItem!!.biProjectedAmount
+                    } else {
+                        debits += details.budgetItem!!.biProjectedAmount
+                    }
+                    if (details.fromAccount!!.accountName == curAsset.account.accountName) {
+                        if (details.budgetItem.biIsFixed
+                        ) {
+                            fixedExpenses += details.budgetItem.biProjectedAmount
+                        } else {
+                            otherExpenses += details.budgetItem.biProjectedAmount
+                        }
+                    }
+                }
+                var surplus = credits - debits
+                ibDivider.setBackgroundColor(Color.BLACK)
+                if (spPayDay.selectedItemId == 0L) {
+                    if (curAsset.accountType!!.keepTotals) {
+                        surplus += curAsset.account.accountBalance
+                    } else {
+                        surplus -= curAsset.account.accountOwing
+                    }
+                }
+                if (credits > 0.0) {
+                    val display = "Credits: ${nf.displayDollars(credits)}"
+                    tvCredits.text = display
+                    tvCredits.setTextColor(Color.BLACK)
+                } else {
+                    tvCredits.text = getString(R.string.no_credits)
+                    tvCredits.setTextColor(Color.DKGRAY)
+                }
+                if (debits > 0.0) {
+                    val display = "Debits: ${nf.displayDollars(debits)}"
+                    tvDebits.text = display
+                    tvDebits.setTextColor(Color.RED)
+                } else {
+                    tvDebits.text = getString(R.string.no_debits)
+                    tvDebits.setTextColor(Color.DKGRAY)
+                }
+                if (fixedExpenses > 0.0) {
+                    val display = "Fixed Expenses: ${nf.displayDollars(fixedExpenses)}"
+                    tvFixedExpenses.text = display
+                    tvFixedExpenses.setTextColor(Color.RED)
+                } else {
+                    tvFixedExpenses.text = getString(R.string.no_fixed_expenses)
+                    tvFixedExpenses.setTextColor(Color.DKGRAY)
+                }
+                if (otherExpenses > 0.0) {
+                    val display = "Discretionary: ${nf.displayDollars(otherExpenses)}"
+                    tvDiscretionaryExpenses.text = display
+                    tvDiscretionaryExpenses.setTextColor(Color.BLUE)
+                } else {
+                    tvDiscretionaryExpenses.text = getString(R.string.no_discretionary_expenses)
+                    tvDiscretionaryExpenses.setTextColor(Color.DKGRAY)
+                }
+                if (surplus >= 0.0) {
+                    val display = "Surplus of ${nf.displayDollars(surplus)}"
+                    tvSurplusOrDeficit.text = display
+                    tvSurplusOrDeficit.setTextColor(Color.BLACK)
+                } else {
+                    val display = "DEFICIT of ${nf.displayDollars(-surplus)}"
+                    tvSurplusOrDeficit.text = display
+                    tvSurplusOrDeficit.setTextColor(Color.RED)
+                }
+            }
+        }
+    }
+
+    private fun hideUnHidePayDays(list: List<Any>) {
+        binding.apply {
+            if (list.isEmpty()) {
+                lblPayDay.visibility = View.GONE
+                spPayDay.visibility = View.GONE
+            } else {
+                lblPayDay.visibility = View.VISIBLE
+                spPayDay.visibility = View.VISIBLE
+            }
+        }
+    }
+
     private fun addNewTransaction() {
         setToReturn()
         mainActivity.mainViewModel.setTransactionDetailed(null)
@@ -513,11 +515,7 @@ class BudgetViewFragment : Fragment(
     }
 
     private fun setToReturn() {
-        binding.apply {
-            mainActivity.mainViewModel.setCallingFragments(TAG)
-//            mainViewModel.setReturnToAsset(spAssetNames.selectedItem.toString())
-//            mainViewModel.setReturnToPayDay(spPayDay.selectedItem.toString())
-        }
+        mainActivity.mainViewModel.setCallingFragments(TAG)
     }
 
     override fun onStop() {

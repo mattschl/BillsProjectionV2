@@ -14,11 +14,10 @@ import ms.mattschlenkrich.billsprojectionv2.common.FREQ_MONTHLY
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_WEEKLY
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleComplete
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
-import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewModel
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetListItemBinding
+import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetListFragmentDirections
 import java.util.Random
 
@@ -26,12 +25,11 @@ private const val PARENT_TAG = FRAG_BUDGET_LIST
 
 
 class BudgetListOccasionalAdapter(
-    private val mainViewModel: MainViewModel,
-    private val budgetRuleViewModel: BudgetRuleViewModel,
+    private val mainActivity: MainActivity,
     private val parentView: View,
 ) : RecyclerView.Adapter<BudgetListOccasionalAdapter.BudgetListHolder>() {
 
-    val cf = NumberFunctions()
+    private val cf = NumberFunctions()
     val df = DateFunctions()
 
     class BudgetListHolder(val itemBinding: BudgetListItemBinding) :
@@ -173,17 +171,17 @@ class BudgetListOccasionalAdapter(
     }
 
     private fun gotoAverages(curRule: BudgetRuleComplete) {
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments() + ", " + PARENT_TAG
+        mainActivity.mainViewModel.setCallingFragments(
+            mainActivity.mainViewModel.getCallingFragments() + ", " + PARENT_TAG
         )
-        mainViewModel.setBudgetRuleDetailed(
+        mainActivity.mainViewModel.setBudgetRuleDetailed(
             BudgetRuleDetailed(
                 curRule.budgetRule!!,
                 curRule.toAccount!!.account,
                 curRule.fromAccount!!.account
             )
         )
-        mainViewModel.setAccountWithType(null)
+        mainActivity.mainViewModel.setAccountWithType(null)
         parentView.findNavController().navigate(
             BudgetListFragmentDirections
                 .actionBudgetListFragmentToTransactionAverageFragment()
@@ -191,7 +189,7 @@ class BudgetListOccasionalAdapter(
     }
 
     private fun deleteBudgetRule(curRule: BudgetRuleComplete) {
-        budgetRuleViewModel.deleteBudgetRule(
+        mainActivity.budgetRuleViewModel.deleteBudgetRule(
             curRule.budgetRule!!.ruleId,
             df.getCurrentTimeAsString()
         )
@@ -204,8 +202,8 @@ class BudgetListOccasionalAdapter(
             curRule.toAccount!!.account,
             curRule.fromAccount!!.account
         )
-        mainViewModel.setBudgetRuleDetailed(budgetRule)
-        mainViewModel.setCallingFragments(PARENT_TAG)
+        mainActivity.mainViewModel.setBudgetRuleDetailed(budgetRule)
+        mainActivity.mainViewModel.setCallingFragments(PARENT_TAG)
         parentView.findNavController().navigate(
             BudgetListFragmentDirections
                 .actionBudgetListFragmentToBudgetRuleUpdateFragment()
