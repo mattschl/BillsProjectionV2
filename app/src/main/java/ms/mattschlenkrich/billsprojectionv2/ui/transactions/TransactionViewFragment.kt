@@ -61,7 +61,6 @@ class TransactionViewFragment :
         super.onViewCreated(view, savedInstanceState)
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
-
         setupRecyclerView()
         createClickActions()
     }
@@ -120,7 +119,6 @@ class TransactionViewFragment :
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-
         menuInflater.inflate(R.menu.search_menu, menu)
         val mMenuSearch = menu.findItem(R.id.menu_search)
             .actionView as SearchView
@@ -145,14 +143,12 @@ class TransactionViewFragment :
 
     private fun searchTransactions(query: String) {
         val searchQuery = "%$query%"
-//        update with a new query
         transactionViewModel
             .searchActiveTransactionsDetailed(searchQuery)
             .observe(
                 this
             ) { list ->
                 transactionAdapter.differ.submitList(list)
-                //
             }
     }
 

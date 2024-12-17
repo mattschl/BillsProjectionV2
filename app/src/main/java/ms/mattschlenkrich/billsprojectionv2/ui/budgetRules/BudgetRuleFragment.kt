@@ -16,9 +16,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
-import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
-import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewModel
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetRuleBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.adapter.BudgetRuleAdapter
@@ -33,8 +31,6 @@ class BudgetRuleFragment :
     private var _binding: FragmentBudgetRuleBinding? = null
     private val binding get() = _binding!!
     private lateinit var mainActivity: MainActivity
-    private lateinit var mainViewModel: MainViewModel
-    private lateinit var budgetRuleViewModel: BudgetRuleViewModel
     private lateinit var budgetRuleAdapter: BudgetRuleAdapter
     private lateinit var mView: View
 
@@ -48,10 +44,6 @@ class BudgetRuleFragment :
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
-        mainViewModel =
-            mainActivity.mainViewModel
-        budgetRuleViewModel =
-            mainActivity.budgetRuleViewModel
         mainActivity.title = "Choose a Budget Rule"
 //        Log.d(TAG, "$TAG is entered")
         mView = binding.root
@@ -68,8 +60,8 @@ class BudgetRuleFragment :
     }
 
     private fun removeFragmentReference() {
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments()!!
+        mainActivity.mainViewModel.setCallingFragments(
+            mainActivity.mainViewModel.getCallingFragments()!!
                 .replace(", $TAG", "")
         )
     }
@@ -87,9 +79,9 @@ class BudgetRuleFragment :
     }
 
     private fun gotoBudgetRuleAddFragment() {
-        mainViewModel.setBudgetRuleDetailed(null)
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments() + ", " + TAG
+        mainActivity.mainViewModel.setBudgetRuleDetailed(null)
+        mainActivity.mainViewModel.setCallingFragments(
+            mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
         )
         val direction = BudgetRuleFragmentDirections
             .actionBudgetRuleFragmentToBudgetRuleAddFragment()
@@ -98,8 +90,8 @@ class BudgetRuleFragment :
 
     private fun setupRecyclerView() {
         budgetRuleAdapter = BudgetRuleAdapter(
-            budgetRuleViewModel,
-            mainViewModel,
+            mainActivity.budgetRuleViewModel,
+            mainActivity.mainViewModel,
             mView,
         )
         binding.rvBudgetRules.apply {
@@ -110,7 +102,7 @@ class BudgetRuleFragment :
             adapter = budgetRuleAdapter
         }
         activity.let {
-            budgetRuleViewModel.getActiveBudgetRulesDetailed().observe(
+            mainActivity.budgetRuleViewModel.getActiveBudgetRulesDetailed().observe(
                 viewLifecycleOwner
             ) { budgetRuleList ->
                 budgetRuleAdapter.differ.submitList(
@@ -156,7 +148,7 @@ class BudgetRuleFragment :
 
     private fun searchBudgetRules(query: String?) {
         val searchQuery = "%$query%"
-        budgetRuleViewModel.searchBudgetRules(searchQuery).observe(
+        mainActivity.budgetRuleViewModel.searchBudgetRules(searchQuery).observe(
             this
         ) { list -> budgetRuleAdapter.differ.submitList(list) }
     }

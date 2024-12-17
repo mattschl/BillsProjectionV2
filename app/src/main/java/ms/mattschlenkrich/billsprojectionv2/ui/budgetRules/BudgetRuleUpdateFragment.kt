@@ -29,11 +29,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
-import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetItemViewModel
-import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewModel
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetRuleUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.adapter.BudgetRuleDatesAdapter
@@ -46,9 +43,6 @@ class BudgetRuleUpdateFragment :
     private var _binding: FragmentBudgetRuleUpdateBinding? = null
     private val binding get() = _binding!!
     private lateinit var mainActivity: MainActivity
-    private lateinit var mainViewModel: MainViewModel
-    private lateinit var budgetRuleViewModel: BudgetRuleViewModel
-    private lateinit var budgetItemViewModel: BudgetItemViewModel
     private lateinit var mView: View
 
     private var budgetNameList: List<String>? = null
@@ -66,9 +60,6 @@ class BudgetRuleUpdateFragment :
         )
         mainActivity = (activity as MainActivity)
         mainActivity.title = "Update Budget Rule"
-        mainViewModel = mainActivity.mainViewModel
-        budgetRuleViewModel = mainActivity.budgetRuleViewModel
-        budgetItemViewModel = mainActivity.budgetItemViewModel
         mView = binding.root
         return binding.root
     }
@@ -81,7 +72,7 @@ class BudgetRuleUpdateFragment :
 
     private fun getBudgetRuleNameForValidation() {
         CoroutineScope(Dispatchers.IO).launch {
-            budgetNameList = budgetRuleViewModel.getBudgetRuleNameList()
+            budgetNameList = mainActivity.budgetRuleViewModel.getBudgetRuleNameList()
         }
     }
 
@@ -113,15 +104,15 @@ class BudgetRuleUpdateFragment :
     }
 
     private fun gotoCalculatorFragment() {
-        mainViewModel.setTransferNum(
+        mainActivity.mainViewModel.setTransferNum(
             nf.getDoubleFromDollars(
                 binding.etAmount.text.toString().ifBlank {
                     "0.0"
                 }
             )
         )
-        mainViewModel.setReturnTo(TAG)
-        mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
+        mainActivity.mainViewModel.setReturnTo(TAG)
+        mainActivity.mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
         mView.findNavController().navigate(
             BudgetRuleUpdateFragmentDirections
                 .actionBudgetRuleUpdateFragmentToCalcFragment()
@@ -196,20 +187,20 @@ class BudgetRuleUpdateFragment :
 
     private fun getCurrentBudgetRuleForSaving(): BudgetRule {
         val toAccId =
-            if (mainViewModel.getBudgetRuleDetailed()!!.toAccount == null) {
+            if (mainActivity.mainViewModel.getBudgetRuleDetailed()!!.toAccount == null) {
                 0L
             } else {
-                mainViewModel.getBudgetRuleDetailed()!!.toAccount!!.accountId
+                mainActivity.mainViewModel.getBudgetRuleDetailed()!!.toAccount!!.accountId
             }
         val fromAccId =
-            if (mainViewModel.getBudgetRuleDetailed()!!.fromAccount == null) {
+            if (mainActivity.mainViewModel.getBudgetRuleDetailed()!!.fromAccount == null) {
                 0L
             } else {
-                mainViewModel.getBudgetRuleDetailed()!!.fromAccount!!.accountId
+                mainActivity.mainViewModel.getBudgetRuleDetailed()!!.fromAccount!!.accountId
             }
         binding.apply {
             return BudgetRule(
-                mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.ruleId,
+                mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.ruleId,
                 etBudgetName.text.toString().trim(),
                 toAccId,
                 fromAccId,
@@ -234,9 +225,9 @@ class BudgetRuleUpdateFragment :
     private fun getBudgetRuleDetailed(): BudgetRuleDetailed {
         binding.apply {
             val toAccount =
-                if (mainViewModel.getBudgetRuleDetailed() != null) {
-                    if (mainViewModel.getBudgetRuleDetailed()!!.toAccount != null) {
-                        mainViewModel.getBudgetRuleDetailed()!!.toAccount
+                if (mainActivity.mainViewModel.getBudgetRuleDetailed() != null) {
+                    if (mainActivity.mainViewModel.getBudgetRuleDetailed()!!.toAccount != null) {
+                        mainActivity.mainViewModel.getBudgetRuleDetailed()!!.toAccount
                     } else {
                         null
                     }
@@ -244,9 +235,9 @@ class BudgetRuleUpdateFragment :
                     null
                 }
             val fromAccount =
-                if (mainViewModel.getBudgetRuleDetailed() != null) {
-                    if (mainViewModel.getBudgetRuleDetailed()!!.fromAccount != null) {
-                        mainViewModel.getBudgetRuleDetailed()!!.fromAccount
+                if (mainActivity.mainViewModel.getBudgetRuleDetailed() != null) {
+                    if (mainActivity.mainViewModel.getBudgetRuleDetailed()!!.fromAccount != null) {
+                        mainActivity.mainViewModel.getBudgetRuleDetailed()!!.fromAccount
                     } else {
                         null
                     }
@@ -258,13 +249,13 @@ class BudgetRuleUpdateFragment :
     }
 
     private fun chooseFromAccount() {
-        mainViewModel.setCallingFragments(
-            "${mainViewModel.getCallingFragments()}, $TAG"
+        mainActivity.mainViewModel.setCallingFragments(
+            "${mainActivity.mainViewModel.getCallingFragments()}, $TAG"
         )
-        mainViewModel.setBudgetRuleDetailed(
+        mainActivity.mainViewModel.setBudgetRuleDetailed(
             getBudgetRuleDetailed()
         )
-        mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
+        mainActivity.mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
         val direction =
             BudgetRuleUpdateFragmentDirections
                 .actionBudgetRuleUpdateFragmentToAccountsFragment()
@@ -272,13 +263,13 @@ class BudgetRuleUpdateFragment :
     }
 
     private fun chooseToAccount() {
-        mainViewModel.setCallingFragments(
-            "${mainViewModel.getCallingFragments()}, $TAG"
+        mainActivity.mainViewModel.setCallingFragments(
+            "${mainActivity.mainViewModel.getCallingFragments()}, $TAG"
         )
-        mainViewModel.setBudgetRuleDetailed(
+        mainActivity.mainViewModel.setBudgetRuleDetailed(
             getBudgetRuleDetailed()
         )
-        mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
+        mainActivity.mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
         val direction = BudgetRuleUpdateFragmentDirections
             .actionBudgetRuleUpdateFragmentToAccountsFragment()
         mView.findNavController().navigate(direction)
@@ -287,12 +278,12 @@ class BudgetRuleUpdateFragment :
     private fun populateValues() {
         getBudgetRuleNameForValidation()
         populateSpinners()
-        if (mainViewModel.getBudgetRuleDetailed() != null) {
+        if (mainActivity.mainViewModel.getBudgetRuleDetailed() != null) {
             populateFromCache()
         } else {
             populateDatesOnly()
         }
-        populateDateRecycler(mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.ruleId)
+        populateDateRecycler(mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.ruleId)
     }
 
     private fun populateDatesOnly() {
@@ -304,64 +295,64 @@ class BudgetRuleUpdateFragment :
 
     private fun populateFromCache() {
         binding.apply {
-            if (mainViewModel.getBudgetRuleDetailed()!!.budgetRule != null) {
+            if (mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule != null) {
                 etBudgetName.setText(
-                    mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budgetRuleName
+                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budgetRuleName
                 )
                 etAmount.setText(
                     nf.displayDollars(
-                        if (mainViewModel.getTransferNum()!! != 0.0) {
-                            mainViewModel.getTransferNum()!!
+                        if (mainActivity.mainViewModel.getTransferNum()!! != 0.0) {
+                            mainActivity.mainViewModel.getTransferNum()!!
                         } else {
-                            mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budgetAmount
+                            mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budgetAmount
                         }
                     )
                 )
-                mainViewModel.setTransferNum(0.0)
-                if (mainViewModel.getBudgetRuleDetailed()!!.toAccount != null) {
+                mainActivity.mainViewModel.setTransferNum(0.0)
+                if (mainActivity.mainViewModel.getBudgetRuleDetailed()!!.toAccount != null) {
                     tvToAccount.text =
-                        mainViewModel.getBudgetRuleDetailed()!!.toAccount!!.accountName
+                        mainActivity.mainViewModel.getBudgetRuleDetailed()!!.toAccount!!.accountName
                 }
-                if (mainViewModel.getBudgetRuleDetailed()!!.fromAccount != null) {
+                if (mainActivity.mainViewModel.getBudgetRuleDetailed()!!.fromAccount != null) {
                     tvFromAccount.text =
-                        mainViewModel.getBudgetRuleDetailed()!!.fromAccount!!.accountName
+                        mainActivity.mainViewModel.getBudgetRuleDetailed()!!.fromAccount!!.accountName
                 }
                 chkFixedAmount.isChecked =
-                    mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budFixedAmount
+                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budFixedAmount
                 chkMakePayDay.isChecked =
-                    mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budIsPayDay
+                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budIsPayDay
                 chkAutoPayment.isChecked =
-                    mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budIsAutoPay
+                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budIsAutoPay
                 etStartDate.setText(
-                    mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budStartDate
+                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budStartDate
                 )
                 etEndDate.setText(
-                    mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budEndDate
+                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budEndDate
                 )
                 spFrequencyType.setSelection(
-                    mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budFrequencyTypeId
+                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budFrequencyTypeId
                 )
                 etFrequencyCount.setText(
-                    mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budFrequencyCount.toString()
+                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budFrequencyCount.toString()
                 )
                 spDayOfWeek.setSelection(
-                    mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budDayOfWeekId
+                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budDayOfWeekId
                 )
                 etLeadDays.setText(
-                    mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budLeadDays.toString()
+                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budLeadDays.toString()
                 )
             }
         }
     }
 
     private fun populateDateRecycler(budgetRuleId: Long) {
-        val budgetRuleDatesAdapter = BudgetRuleDatesAdapter(mainViewModel, mView)
+        val budgetRuleDatesAdapter = BudgetRuleDatesAdapter(mainActivity.mainViewModel, mView)
         binding.rvProjectedDates.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = budgetRuleDatesAdapter
         }
         activity?.let {
-            budgetItemViewModel.getBudgetItems(budgetRuleId).observe(
+            mainActivity.budgetItemViewModel.getBudgetItems(budgetRuleId).observe(
                 viewLifecycleOwner
             ) { budgetItems ->
                 budgetRuleDatesAdapter.differ.submitList(budgetItems)
@@ -406,28 +397,28 @@ class BudgetRuleUpdateFragment :
     }
 
     private fun deleteBudgeRule() {
-        budgetRuleViewModel.deleteBudgetRule(
-            mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.ruleId,
+        mainActivity.budgetRuleViewModel.deleteBudgetRule(
+            mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.ruleId,
             df.getCurrentTimeAsString()
         )
     }
 
     private fun gotoCallingFragment() {
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments()!!
+        mainActivity.mainViewModel.setCallingFragments(
+            mainActivity.mainViewModel.getCallingFragments()!!
                 .replace(", TAG", "")
         )
-        mainViewModel.setBudgetRuleDetailed(null)
-        if (mainViewModel.getCallingFragments()!!
+        mainActivity.mainViewModel.setBudgetRuleDetailed(null)
+        if (mainActivity.mainViewModel.getCallingFragments()!!
                 .contains(FRAG_BUDGET_RULES)
         ) {
             gotoBudgetRuleFragment()
-        } else if (mainViewModel.getCallingFragments()!!.contains(
+        } else if (mainActivity.mainViewModel.getCallingFragments()!!.contains(
                 FRAG_BUDGET_VIEW
             )
         ) {
             gotoBudgetViewFragment()
-        } else if (mainViewModel.getCallingFragments()!!.contains(
+        } else if (mainActivity.mainViewModel.getCallingFragments()!!.contains(
                 FRAG_BUDGET_LIST
             )
         ) {
@@ -471,7 +462,7 @@ class BudgetRuleUpdateFragment :
     }
 
     private fun updateBudgetRule() {
-        budgetRuleViewModel.updateBudgetRule(
+        mainActivity.budgetRuleViewModel.updateBudgetRule(
             getCurrentBudgetRuleForSaving()
         )
     }
@@ -484,9 +475,9 @@ class BudgetRuleUpdateFragment :
                 for (i in 0 until budgetNameList!!.size) {
                     if (budgetNameList!![i] ==
                         etBudgetName.text.toString() &&
-                        mainViewModel.getBudgetRuleDetailed() != null &&
+                        mainActivity.mainViewModel.getBudgetRuleDetailed() != null &&
                         budgetNameList!![i] !=
-                        mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budgetRuleName
+                        mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budgetRuleName
                     ) {
                         nameFound = true
                         break
@@ -499,11 +490,11 @@ class BudgetRuleUpdateFragment :
             } else if (nameFound) {
                 "     Error!!\n" +
                         "This budget rule already exists."
-            } else if (mainViewModel.getBudgetRuleDetailed()!!.toAccount == null
+            } else if (mainActivity.mainViewModel.getBudgetRuleDetailed()!!.toAccount == null
             ) {
                 "     Error!!\n" +
                         "There needs to be an account money will go to."
-            } else if (mainViewModel.getBudgetRuleDetailed()!!.fromAccount == null
+            } else if (mainActivity.mainViewModel.getBudgetRuleDetailed()!!.fromAccount == null
             ) {
                 "     Error!!\n" +
                         "There needs to be an account money will come from."
