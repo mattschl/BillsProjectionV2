@@ -194,11 +194,6 @@ class BudgetRuleAdapter(
                 budgetRuleDetailed.fromAccount!!,
             )
         )
-//        Toast.makeText(
-//            mView.context,
-//            "Sorry, this function is not available yet",
-//            Toast.LENGTH_LONG
-//        ).show()
         gotoBudgetItemAddFragment()
     }
 

@@ -20,10 +20,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.OWING
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
-import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountAddBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 
@@ -35,9 +33,6 @@ class AccountAddFragment :
     private var _binding: FragmentAccountAddBinding? = null
     private val binding get() = _binding!!
     private lateinit var mainActivity: MainActivity
-    private lateinit var mainViewModel: MainViewModel
-
-    private lateinit var accountsViewModel: AccountViewModel
     private lateinit var mView: View
     private var accountNameList = ArrayList<String>()
     private val nf = NumberFunctions()
@@ -47,14 +42,10 @@ class AccountAddFragment :
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
         _binding = FragmentAccountAddBinding.inflate(
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
-        mainViewModel = mainActivity.mainViewModel
-        accountsViewModel =
-            mainActivity.accountViewModel
         mainActivity.title = "Add a new Account"
         mView = binding.root
         return mView
@@ -69,17 +60,17 @@ class AccountAddFragment :
     private fun populateValues() {
         getAccountNameListForValidation()
         binding.apply {
-            if (mainViewModel.getAccountWithType() != null) {
+            if (mainActivity.mainViewModel.getAccountWithType() != null) {
                 populateAccountFromCache()
             }
-            if (mainViewModel.getAccountWithType()?.accountType != null) {
+            if (mainActivity.mainViewModel.getAccountWithType()?.accountType != null) {
                 populateAccountTypeFromCache()
             }
         }
     }
 
     private fun getAccountNameListForValidation() {
-        accountsViewModel.getAccountNameList().observe(
+        mainActivity.accountViewModel.getAccountNameList().observe(
             viewLifecycleOwner
         ) { accounts ->
             accountNameList.clear()
@@ -90,75 +81,77 @@ class AccountAddFragment :
     }
 
     private fun populateAccountFromCache() {
+        val accountWithType = mainActivity.mainViewModel.getAccountWithType()!!
         binding.apply {
             etAccAddName.setText(
-                mainViewModel.getAccountWithType()!!.account.accountName
+                accountWithType.account.accountName
             )
             etAccAddHandle.setText(
-                mainViewModel.getAccountWithType()!!.account.accountNumber
+                accountWithType.account.accountNumber
             )
             etAccAddBalance.setText(
                 nf.displayDollars(
-                    if (mainViewModel.getTransferNum()!! != 0.0 &&
-                        mainViewModel.getReturnTo()!!.contains(BALANCE)
+                    if (mainActivity.mainViewModel.getTransferNum()!! != 0.0 &&
+                        mainActivity.mainViewModel.getReturnTo()!!.contains(BALANCE)
                     ) {
-                        mainViewModel.getTransferNum()!!
+                        mainActivity.mainViewModel.getTransferNum()!!
                     } else {
-                        mainViewModel.getAccountWithType()!!.account.accountBalance
+                        mainActivity.mainViewModel.getAccountWithType()!!.account.accountBalance
                     }
                 )
             )
             etAccAddOwing.setText(
                 nf.displayDollars(
-                    if (mainViewModel.getTransferNum()!! != 0.0 &&
-                        mainViewModel.getReturnTo()!!.contains(OWING)
+                    if (mainActivity.mainViewModel.getTransferNum()!! != 0.0 &&
+                        mainActivity.mainViewModel.getReturnTo()!!.contains(OWING)
 
                     ) {
-                        mainViewModel.getTransferNum()!!
+                        mainActivity.mainViewModel.getTransferNum()!!
                     } else {
-                        mainViewModel.getAccountWithType()!!.account.accountOwing
+                        accountWithType.account.accountOwing
                     }
                 )
             )
             etAccAddBudgeted.setText(
                 nf.displayDollars(
-                    if (mainViewModel.getTransferNum()!! != 0.0 &&
-                        mainViewModel.getReturnTo()!!.contains(BUDGETED)
+                    if (mainActivity.mainViewModel.getTransferNum()!! != 0.0 &&
+                        mainActivity.mainViewModel.getReturnTo()!!.contains(BUDGETED)
                     ) {
-                        mainViewModel.getTransferNum()!!
+                        mainActivity.mainViewModel.getTransferNum()!!
                     } else {
-                        mainViewModel.getAccountWithType()!!.account.accBudgetedAmount
+                        accountWithType.account.accBudgetedAmount
                     }
                 )
             )
-            mainViewModel.setTransferNum(0.0)
+            mainActivity.mainViewModel.setTransferNum(0.0)
             etAccAddLimit.setText(
                 nf.displayDollars(
-                    mainViewModel.getAccountWithType()!!.account.accountCreditLimit
+                    accountWithType.account.accountCreditLimit
                 )
             )
         }
     }
 
     private fun populateAccountTypeFromCache() {
+        val accountWithType = mainActivity.mainViewModel.getAccountWithType()!!
         binding.apply {
             tvAccAddType.text =
-                mainViewModel.getAccountWithType()!!.accountType!!.accountType
+                accountWithType.accountType!!.accountType
             var display =
                 if (
-                    mainViewModel.getAccountWithType()!!.accountType!!.keepTotals
+                    accountWithType.accountType.keepTotals
                 ) "Transactions will be calculated\n" else ""
             display += if (
-                mainViewModel.getAccountWithType()!!.accountType!!.isAsset
+                accountWithType.accountType.isAsset
             ) "This is an asset \n" else ""
             display += if (
-                mainViewModel.getAccountWithType()!!.accountType!!.displayAsAsset
+                accountWithType.accountType.displayAsAsset
             ) "This will be used for the budget \n" else ""
             display += if (
-                mainViewModel.getAccountWithType()!!.accountType!!.tallyOwing)
+                accountWithType.accountType.tallyOwing)
                 "Balance owing will be calculated " else ""
             display += if (
-                mainViewModel.getAccountWithType()!!.accountType!!.allowPending)
+                accountWithType.accountType.allowPending)
                 "Transactions may be postponed " else ""
             if (display.isEmpty()) {
                 display =
@@ -217,7 +210,7 @@ class AccountAddFragment :
                 nf.generateId(),
                 etAccAddName.text.toString().trim(),
                 etAccAddHandle.text.toString().trim(),
-                mainViewModel.getAccountWithType()?.accountType?.typeId ?: 0L,
+                mainActivity.mainViewModel.getAccountWithType()?.accountType?.typeId ?: 0L,
                 nf.getDoubleFromDollars(etAccAddBudgeted.text.toString()),
                 nf.getDoubleFromDollars(etAccAddBalance.text.toString()),
                 nf.getDoubleFromDollars(etAccAddOwing.text.toString()),
@@ -242,16 +235,16 @@ class AccountAddFragment :
     }
 
     private fun saveAccount(view: View) {
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments()!!
+        mainActivity.mainViewModel.setCallingFragments(
+            mainActivity.mainViewModel.getCallingFragments()!!
                 .replace(", $FRAG_ACCOUNT_ADD", "")
         )
         val curAccount = getCurrentAccount()
-        accountsViewModel.addAccount(curAccount)
-        mainViewModel.setAccountWithType(
+        mainActivity.accountViewModel.addAccount(curAccount)
+        mainActivity.mainViewModel.setAccountWithType(
             AccountWithType(
                 curAccount,
-                mainViewModel.getAccountWithType()?.accountType!!
+                mainActivity.mainViewModel.getAccountWithType()?.accountType!!
             )
         )
         val direction = AccountAddFragmentDirections
@@ -280,7 +273,7 @@ class AccountAddFragment :
             } else if (nameFound) {
                 "     Error!!\n" +
                         "This account rule already exists."
-            } else if (mainViewModel.getAccountWithType()?.accountType == null
+            } else if (mainActivity.mainViewModel.getAccountWithType()?.accountType == null
             ) {
                 "     Error!!\n" +
                         "This account must have an account Type."
@@ -292,10 +285,10 @@ class AccountAddFragment :
     }
 
     private fun gotoAccountTypesFragment() {
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments() + ", " + TAG
+        mainActivity.mainViewModel.setCallingFragments(
+            mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
         )
-        mainViewModel.setAccountWithType(
+        mainActivity.mainViewModel.setAccountWithType(
             AccountWithType(
                 getCurrentAccount(),
                 null
@@ -310,7 +303,7 @@ class AccountAddFragment :
     private fun gotoCalculator(type: String) {
         when (type) {
             BALANCE -> {
-                mainViewModel.setTransferNum(
+                mainActivity.mainViewModel.setTransferNum(
                     nf.getDoubleFromDollars(
                         binding.etAccAddBalance.text.toString().ifBlank {
                             "0.0"
@@ -320,7 +313,7 @@ class AccountAddFragment :
             }
 
             OWING -> {
-                mainViewModel.setTransferNum(
+                mainActivity.mainViewModel.setTransferNum(
                     nf.getDoubleFromDollars(
                         binding.etAccAddOwing.text.toString().ifBlank {
                             "0.0"
@@ -330,7 +323,7 @@ class AccountAddFragment :
             }
 
             BUDGETED -> {
-                mainViewModel.setTransferNum(
+                mainActivity.mainViewModel.setTransferNum(
                     nf.getDoubleFromDollars(
                         binding.etAccAddBudgeted.text.toString().ifBlank {
                             "0.0"
@@ -339,11 +332,11 @@ class AccountAddFragment :
                 )
             }
         }
-        mainViewModel.setReturnTo("$TAG, $type")
-        mainViewModel.setAccountWithType(
+        mainActivity.mainViewModel.setReturnTo("$TAG, $type")
+        mainActivity.mainViewModel.setAccountWithType(
             AccountWithType(
                 getCurrentAccount(),
-                mainViewModel.getAccountWithType()?.accountType
+                mainActivity.mainViewModel.getAccountWithType()?.accountType
             )
         )
         mView.findNavController().navigate(

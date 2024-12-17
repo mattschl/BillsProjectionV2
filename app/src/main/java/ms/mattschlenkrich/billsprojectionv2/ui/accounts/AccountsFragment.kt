@@ -16,9 +16,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNTS
-import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
-import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountsBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.accounts.adapter.AccountAdapter
@@ -33,9 +31,6 @@ class AccountsFragment :
     private var _binding: FragmentAccountsBinding? = null
     private val binding get() = _binding!!
     private lateinit var mainActivity: MainActivity
-    private lateinit var mainViewModel: MainViewModel
-
-    private lateinit var accountsViewModel: AccountViewModel
     private lateinit var accountAdapter: AccountAdapter
     private lateinit var mView: View
 
@@ -48,9 +43,6 @@ class AccountsFragment :
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
-        mainViewModel = mainActivity.mainViewModel
-        accountsViewModel =
-            mainActivity.accountViewModel
         mainActivity.title = "Choose an Account"
         mView = binding.root
         return mView
@@ -75,7 +67,7 @@ class AccountsFragment :
     private fun setUpRecyclerView() {
         accountAdapter = AccountAdapter(
             mainActivity,
-            mainViewModel,
+            mainActivity.mainViewModel,
             mView.context
         )
         binding.rvAccounts.apply {
@@ -87,7 +79,7 @@ class AccountsFragment :
             adapter = accountAdapter
         }
         activity?.let {
-            accountsViewModel.getAccountsWithType().observe(
+            mainActivity.accountViewModel.getAccountsWithType().observe(
                 viewLifecycleOwner
             ) { accountWithType ->
                 accountAdapter.differ.submitList(accountWithType)
@@ -131,16 +123,16 @@ class AccountsFragment :
 
     private fun searchAccount(query: String?) {
         val searchQuery = "%$query%"
-        accountsViewModel.searchAccountsWithType(searchQuery).observe(
+        mainActivity.accountViewModel.searchAccountsWithType(searchQuery).observe(
             this
         ) { list -> accountAdapter.differ.submitList(list) }
     }
 
     private fun gotoAccountAddFragment() {
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments() + ", " + TAG
+        mainActivity.mainViewModel.setCallingFragments(
+            mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
         )
-        mainViewModel.setAccountWithType(null)
+        mainActivity.mainViewModel.setAccountWithType(null)
         val direction = AccountsFragmentDirections
             .actionAccountsFragmentToAccountAddFragment()
         mView.findNavController().navigate(direction)

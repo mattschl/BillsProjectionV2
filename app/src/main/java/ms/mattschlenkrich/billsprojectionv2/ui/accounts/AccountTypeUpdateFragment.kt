@@ -22,9 +22,7 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_TYPE_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType
-import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountTypeUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 
@@ -37,9 +35,7 @@ class AccountTypeUpdateFragment :
     private var _binding: FragmentAccountTypeUpdateBinding? = null
     private val binding get() = _binding!!
     private lateinit var mainActivity: MainActivity
-    private lateinit var mainViewModel: MainViewModel
     private var mView: View? = null
-    private lateinit var accountsViewModel: AccountViewModel
 
     private lateinit var currentAccountType: AccountType
     private lateinit var accountTypeList: List<String>
@@ -56,9 +52,7 @@ class AccountTypeUpdateFragment :
         Log.d(TAG, "$TAG is entered")
         mView = binding.root
         mainActivity = (activity as MainActivity)
-        mainViewModel = mainActivity.mainViewModel
-        accountsViewModel = (activity as MainActivity).accountViewModel
-        currentAccountType = mainViewModel.getAccountType()!!
+        currentAccountType = mainActivity.mainViewModel.getAccountType()!!
         mainActivity.title = "Update Account Type"
         return binding.root
     }
@@ -80,7 +74,7 @@ class AccountTypeUpdateFragment :
         CoroutineScope(Dispatchers.IO).launch {
             val typeList =
                 async {
-                    accountsViewModel.getAccountTypeNames()
+                    mainActivity.accountViewModel.getAccountTypeNames()
                 }
             accountTypeList = typeList.await()
         }
@@ -139,7 +133,7 @@ class AccountTypeUpdateFragment :
 
     private fun updateAccountType() {
         binding.apply {
-            accountsViewModel.updateAccountType(
+            mainActivity.accountViewModel.updateAccountType(
                 AccountType(
                     currentAccountType.typeId,
                     etAccTypeUpdate.text.toString().trim(),
@@ -189,7 +183,7 @@ class AccountTypeUpdateFragment :
     }
 
     private fun deleteAccountType() {
-        accountsViewModel.deleteAccountType(
+        mainActivity.accountViewModel.deleteAccountType(
             currentAccountType.typeId,
             df.getCurrentTimeAsString()
         )

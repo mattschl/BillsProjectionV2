@@ -23,10 +23,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.OWING
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
-import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 
@@ -38,10 +36,7 @@ class AccountUpdateFragment :
     private var _binding: FragmentAccountUpdateBinding? = null
     private val binding get() = _binding!!
     private lateinit var mainActivity: MainActivity
-    private lateinit var mainViewModel: MainViewModel
-
     private lateinit var mView: View
-    private lateinit var accountsViewModel: AccountViewModel
 
     private val nf = NumberFunctions()
     private val df = DateFunctions()
@@ -55,8 +50,8 @@ class AccountUpdateFragment :
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
-        mainViewModel = mainActivity.mainViewModel
-        accountsViewModel =
+        mainActivity.mainViewModel = mainActivity.mainViewModel
+        mainActivity.accountViewModel =
             mainActivity.accountViewModel
         mainActivity.title = "Update Account"
         mView = binding.root
@@ -70,7 +65,7 @@ class AccountUpdateFragment :
     }
 
     private fun getAccountListNamesForValidation() {
-        accountsViewModel.getAccountNameList().observe(
+        mainActivity.accountViewModel.getAccountNameList().observe(
             viewLifecycleOwner
         ) { accounts ->
             accountNameList.clear()
@@ -129,7 +124,7 @@ class AccountUpdateFragment :
     private fun gotoCalculator(type: String) {
         when (type) {
             BALANCE -> {
-                mainViewModel.setTransferNum(
+                mainActivity.mainViewModel.setTransferNum(
                     nf.getDoubleFromDollars(
                         binding.edAccountUpdateBalance.text.toString().ifBlank {
                             "0.0"
@@ -139,7 +134,7 @@ class AccountUpdateFragment :
             }
 
             OWING -> {
-                mainViewModel.setTransferNum(
+                mainActivity.mainViewModel.setTransferNum(
                     nf.getDoubleFromDollars(
                         binding.edAccountUpdateOwing.text.toString().ifBlank {
                             "0.0"
@@ -149,7 +144,7 @@ class AccountUpdateFragment :
             }
 
             BUDGETED -> {
-                mainViewModel.setTransferNum(
+                mainActivity.mainViewModel.setTransferNum(
                     nf.getDoubleFromDollars(
                         binding.edAccountUpdateBudgeted.text.toString().ifBlank {
                             "0.0"
@@ -158,11 +153,11 @@ class AccountUpdateFragment :
                 )
             }
         }
-        mainViewModel.setReturnTo("$TAG, $type")
-        mainViewModel.setAccountWithType(
+        mainActivity.mainViewModel.setReturnTo("$TAG, $type")
+        mainActivity.mainViewModel.setAccountWithType(
             AccountWithType(
                 getUpdatedAccount(),
-                mainViewModel.getAccountWithType()!!.accountType
+                mainActivity.mainViewModel.getAccountWithType()!!.accountType
             )
         )
         mView.findNavController().navigate(
@@ -174,10 +169,10 @@ class AccountUpdateFragment :
     private fun getUpdatedAccount(): Account {
         binding.apply {
             return Account(
-                mainViewModel.getAccountWithType()!!.account.accountId,
+                mainActivity.mainViewModel.getAccountWithType()!!.account.accountId,
                 edAccountUpdateName.text.toString().trim(),
                 edAccountUpdateHandle.text.toString().trim(),
-                mainViewModel.getAccountWithType()!!.accountType?.typeId ?: 0L,
+                mainActivity.mainViewModel.getAccountWithType()!!.accountType?.typeId ?: 0L,
                 nf.getDoubleFromDollars(edAccountUpdateBudgeted.text.toString()),
                 nf.getDoubleFromDollars(edAccountUpdateBalance.text.toString()),
                 nf.getDoubleFromDollars(edAccountUpdateOwing.text.toString()),
@@ -198,7 +193,7 @@ class AccountUpdateFragment :
                     if (accountNameList[i] ==
                         edAccountUpdateName.text.toString() &&
                         accountNameList[i] !=
-                        mainViewModel.getAccountWithType()!!.account.accountName
+                        mainActivity.mainViewModel.getAccountWithType()!!.account.accountName
                     ) {
                         nameFound = true
                         break
@@ -237,11 +232,12 @@ class AccountUpdateFragment :
     }
 
     private fun chooseToUpdate() {
+        val accountWithType = mainActivity.mainViewModel.getAccountWithType()!!
         val name = binding.edAccountUpdateName.text.trim().toString()
-        if (name == mainViewModel.getAccountWithType()!!.account.accountName.trim()) {
-            accountsViewModel.updateAccount(getUpdatedAccount())
+        if (name == accountWithType.account.accountName.trim()) {
+            mainActivity.accountViewModel.updateAccount(getUpdatedAccount())
             gotoCallingFragment()
-        } else if (name != mainViewModel.getAccountWithType()!!.account.accountName.trim()) {
+        } else if (name != accountWithType.account.accountName.trim()) {
             AlertDialog.Builder(activity).apply {
                 setTitle("Rename Account?")
                 setMessage(
@@ -250,7 +246,7 @@ class AccountUpdateFragment :
                             "This will NOT replace an existing Account"
                 )
                 setPositiveButton("Update Account") { _, _ ->
-                    accountsViewModel.updateAccount(getUpdatedAccount())
+                    mainActivity.accountViewModel.updateAccount(getUpdatedAccount())
                     gotoCallingFragment()
 
                 }
@@ -260,60 +256,61 @@ class AccountUpdateFragment :
     }
 
     private fun populateValues() {
+        val accountWithType = mainActivity.mainViewModel.getAccountWithType()!!
         getAccountListNamesForValidation()
         binding.apply {
             edAccountUpdateName.setText(
-                mainViewModel.getAccountWithType()!!.account.accountName
+                accountWithType.account.accountName
             )
             edAccountUpdateHandle.setText(
-                mainViewModel.getAccountWithType()!!.account.accountNumber
+                accountWithType.account.accountNumber
             )
-            if (mainViewModel.getAccountWithType()!!.accountType != null) {
+            if (accountWithType.accountType != null) {
                 drpAccountUpdateType.text =
-                    mainViewModel.getAccountWithType()!!.accountType!!.accountType
+                    accountWithType.accountType!!.accountType
             }
             edAccountUpdateBalance.setText(
                 nf.displayDollars(
-                    if (mainViewModel.getTransferNum()!! != 0.0 &&
-                        mainViewModel.getReturnTo()!!.contains(BALANCE)
+                    if (mainActivity.mainViewModel.getTransferNum()!! != 0.0 &&
+                        mainActivity.mainViewModel.getReturnTo()!!.contains(BALANCE)
                     ) {
-                        mainViewModel.getTransferNum()!!
+                        mainActivity.mainViewModel.getTransferNum()!!
                     } else {
-                        mainViewModel.getAccountWithType()!!.account.accountBalance
+                        accountWithType.account.accountBalance
                     }
                 )
             )
             edAccountUpdateOwing.setText(
                 nf.displayDollars(
-                    if (mainViewModel.getTransferNum()!! != 0.0 &&
-                        mainViewModel.getReturnTo()!!.contains(OWING)
+                    if (mainActivity.mainViewModel.getTransferNum()!! != 0.0 &&
+                        mainActivity.mainViewModel.getReturnTo()!!.contains(OWING)
 
                     ) {
-                        mainViewModel.getTransferNum()!!
+                        mainActivity.mainViewModel.getTransferNum()!!
                     } else {
-                        mainViewModel.getAccountWithType()!!.account.accountOwing
+                        accountWithType.account.accountOwing
                     }
                 )
             )
             edAccountUpdateBudgeted.setText(
                 nf.displayDollars(
-                    if (mainViewModel.getTransferNum()!! != 0.0 &&
-                        mainViewModel.getReturnTo()!!.contains(BUDGETED)
+                    if (mainActivity.mainViewModel.getTransferNum()!! != 0.0 &&
+                        mainActivity.mainViewModel.getReturnTo()!!.contains(BUDGETED)
                     ) {
-                        mainViewModel.getTransferNum()!!
+                        mainActivity.mainViewModel.getTransferNum()!!
                     } else {
-                        mainViewModel.getAccountWithType()!!.account.accBudgetedAmount
+                        accountWithType.account.accBudgetedAmount
                     }
                 )
             )
-            mainViewModel.setTransferNum(0.0)
+            mainActivity.mainViewModel.setTransferNum(0.0)
             etAccUpdateLimit.setText(
                 nf.displayDollars(
-                    mainViewModel.getAccountWithType()!!.account.accountCreditLimit
+                    accountWithType.account.accountCreditLimit
                 )
             )
             txtAccountUpdateAccountId.text =
-                mainViewModel.getAccountWithType()!!.account.accountId.toString()
+                accountWithType.account.accountId.toString()
         }
     }
 
@@ -329,25 +326,25 @@ class AccountUpdateFragment :
     }
 
     private fun deleteAccount() {
-        accountsViewModel.deleteAccount(
-            mainViewModel.getAccountWithType()!!.account.accountId,
+        mainActivity.accountViewModel.deleteAccount(
+            mainActivity.mainViewModel.getAccountWithType()!!.account.accountId,
             df.getCurrentTimeAsString()
         )
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments()!!
+        mainActivity.mainViewModel.setCallingFragments(
+            mainActivity.mainViewModel.getCallingFragments()!!
                 .replace(", $FRAG_ACCOUNT_UPDATE", "")
         )
         gotoAccountsFragment()
     }
 
     private fun gotoCallingFragment() {
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments()!!
+        mainActivity.mainViewModel.setCallingFragments(
+            mainActivity.mainViewModel.getCallingFragments()!!
                 .replace(", $TAG", "")
         )
-        if (mainViewModel.getCallingFragments()!!.contains(FRAG_ACCOUNTS)) {
+        if (mainActivity.mainViewModel.getCallingFragments()!!.contains(FRAG_ACCOUNTS)) {
             gotoAccountsFragment()
-        } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_BUDGET_VIEW)) {
+        } else if (mainActivity.mainViewModel.getCallingFragments()!!.contains(FRAG_BUDGET_VIEW)) {
             gotoBudgetViewFragment()
         }
     }
@@ -366,13 +363,13 @@ class AccountUpdateFragment :
     }
 
     private fun gotoAccountTypesFragment() {
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments() + ", " + TAG
+        mainActivity.mainViewModel.setCallingFragments(
+            mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
         )
-        mainViewModel.setAccountWithType(
+        mainActivity.mainViewModel.setAccountWithType(
             AccountWithType(
                 getUpdatedAccount(),
-                mainViewModel.getAccountWithType()!!.accountType
+                mainActivity.mainViewModel.getAccountWithType()!!.accountType
             )
         )
         val direction = AccountUpdateFragmentDirections
