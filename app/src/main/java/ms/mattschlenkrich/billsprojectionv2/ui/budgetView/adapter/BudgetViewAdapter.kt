@@ -17,6 +17,8 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
+import ms.mattschlenkrich.billsprojectionv2.common.WAIT_100
+import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_500
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
@@ -44,6 +46,7 @@ class BudgetViewAdapter(
 
     val nf = NumberFunctions()
     val df = DateFunctions()
+    var message = ""
 
     class BudgetViewHolder(val itemBinding: BudgetViewItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -238,22 +241,54 @@ class BudgetViewAdapter(
 
     private fun confirmCompleteTransaction(curBudget: BudgetDetailed) {
         if (curBudget.budgetItem!!.biProjectedAmount > 0.0) {
-            AlertDialog.Builder(mView.context)
-                .setTitle("'Confirm Completing transaction")
-                .setMessage(
-                    "This will perform ${curBudget.budgetItem.biBudgetName} \n" +
-                            "applying the amount of " +
-                            nf.displayDollars(curBudget.budgetItem.biProjectedAmount) +
-                            "\n\nFROM:   ${curBudget.fromAccount!!.accountName} " +
-                            "\nTO:   ${curBudget.toAccount!!.accountName}"
-
-                )
-                .setPositiveButton("Complete Now") { _, _ ->
-                    completeTransaction(curBudget)
-                }
-                .setNegativeButton("Cancel", null)
-                .show()
+            var display = ""
+            CoroutineScope(Dispatchers.IO).launch {
+                display = getConfirmationsDisplay(curBudget.budgetItem, curBudget)
+            }
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(WAIT_250)
+                AlertDialog.Builder(mView.context)
+                    .setTitle("'Confirm Completing transaction")
+                    .setMessage(
+                        display
+                    )
+                    .setPositiveButton("Complete Now") { _, _ ->
+                        completeTransaction(curBudget)
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            }
         }
+    }
+
+    private suspend fun getConfirmationsDisplay(
+        budgetItem: BudgetItem,
+        curBudget: BudgetDetailed
+    ): String {
+        var display = "This will perform ${budgetItem.biBudgetName} \n" +
+                "applying the amount of " +
+                nf.displayDollars(curBudget.budgetItem!!.biProjectedAmount) +
+                "\n\nFROM:   ${curBudget.fromAccount!!.accountName} "
+        display += if (mainActivity.accountUpdateViewModel.isTransactionPending(
+                budgetItem.biFromAccountId
+            )
+        ) {
+            "  *pending"
+        } else {
+            ""
+        }
+        delay(WAIT_100)
+        display += "\nTO:   ${curBudget.toAccount!!.accountName}"
+        display += if (mainActivity.accountUpdateViewModel.isTransactionPending(
+                budgetItem.biToAccountId
+            )
+        ) {
+            "  *pending"
+        } else {
+            ""
+        }
+        delay(WAIT_100)
+        return display
     }
 
     private fun completeTransaction(curBudget: BudgetDetailed) {

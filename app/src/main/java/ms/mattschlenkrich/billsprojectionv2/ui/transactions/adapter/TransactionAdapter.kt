@@ -33,7 +33,7 @@ class TransactionAdapter(
     private val mView: View,
 ) : RecyclerView.Adapter<TransactionAdapter.TransactionsViewHolder>() {
 
-    private val cf = NumberFunctions()
+    private val nf = NumberFunctions()
     private val df = DateFunctions()
     private val transactionViewModel =
         mainActivity.transactionViewModel
@@ -101,7 +101,7 @@ class TransactionAdapter(
             tvTransDescription.text =
                 transaction.transaction.transName
             tvTransAmount.text =
-                cf.displayDollars(transaction.transaction.transAmount)
+                nf.displayDollars(transaction.transaction.transAmount)
             var info = "To: " +
                     transaction.toAccount!!
                         .accountName
@@ -161,21 +161,35 @@ class TransactionAdapter(
     }
 
     private fun chooseOptions(transaction: TransactionDetailed) {
+        var display = ""
+        if (transaction.transaction!!.transToAccountPending) {
+            display += "Complete the pending amount of " +
+                    "${
+                        nf.displayDollars(
+                            transaction.transaction.transAmount
+                        )
+                    } to ${transaction.toAccount!!.accountName}"
+        }
+        if (display != "" && transaction.transaction.transFromAccountPending) {
+            display += "\n and "
+        }
+        if (transaction.transaction.transFromAccountPending) {
+            display += "Complete the pending amount of " +
+                    "${
+                        nf.displayDollars(
+                            transaction.transaction.transAmount
+                        )
+                    } from ${transaction.fromAccount!!.accountName}"
+        }
         AlertDialog.Builder(mView.context)
             .setTitle(
                 "Choose action for " +
-                        transaction.transaction!!.transName
+                        transaction.transaction.transName
             )
             .setItems(
                 arrayOf(
                     "Edit this transaction",
-                    if (transaction.transaction.transToAccountPending ||
-                        transaction.transaction.transFromAccountPending
-                    ) {
-                        "Complete the pending transactions"
-                    } else {
-                        ""
-                    },
+                    display,
                     "Delete this transaction"
                 )
             ) { _, pos ->
