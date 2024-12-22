@@ -1,7 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.transactions
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -17,9 +16,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
-import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
-import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.TransactionViewModel
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionViewBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.transactions.adapter.TransactionAdapter
@@ -35,8 +32,6 @@ class TransactionViewFragment :
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
-    private lateinit var mainViewModel: MainViewModel
-    private lateinit var transactionViewModel: TransactionViewModel
     private lateinit var transactionAdapter: TransactionAdapter
 
     override fun onCreateView(
@@ -47,11 +42,6 @@ class TransactionViewFragment :
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
-        mainViewModel =
-            mainActivity.mainViewModel
-        Log.d(TAG, "Creating $TAG")
-        transactionViewModel =
-            mainActivity.transactionViewModel
         mainActivity.title = "View Transaction History"
         mView = binding.root
         return binding.root
@@ -62,29 +52,13 @@ class TransactionViewFragment :
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         setupRecyclerView()
-        createClickActions()
-    }
-
-    private fun createClickActions() {
-        binding.fabAddTransaction.setOnClickListener {
-            gotoAddTransactionFragment()
-        }
-    }
-
-    private fun gotoAddTransactionFragment() {
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments() + ", " + TAG
-        )
-        mainViewModel.setTransactionDetailed(null)
-        val direction = TransactionViewFragmentDirections
-            .actionTransactionViewFragmentToTransactionAddFragment()
-        mView.findNavController().navigate(direction)
+        setClickActions()
     }
 
     private fun setupRecyclerView() {
         transactionAdapter = TransactionAdapter(
             mainActivity,
-            mainViewModel,
+            mainActivity.mainViewModel,
             mView,
         )
         binding.rvTransactions.apply {
@@ -94,7 +68,7 @@ class TransactionViewFragment :
             adapter = transactionAdapter
         }
         activity.let {
-            transactionViewModel.getActiveTransactionsDetailed()
+            mainActivity.transactionViewModel.getActiveTransactionsDetailed()
                 .observe(
                     viewLifecycleOwner
                 ) { transactionList ->
@@ -115,6 +89,12 @@ class TransactionViewFragment :
                 crdTransactionView.visibility = View.VISIBLE
                 rvTransactions.visibility = View.GONE
             }
+        }
+    }
+
+    private fun setClickActions() {
+        binding.fabAddTransaction.setOnClickListener {
+            gotoAddTransactionFragment()
         }
     }
 
@@ -143,13 +123,23 @@ class TransactionViewFragment :
 
     private fun searchTransactions(query: String) {
         val searchQuery = "%$query%"
-        transactionViewModel
+        mainActivity.transactionViewModel
             .searchActiveTransactionsDetailed(searchQuery)
             .observe(
                 this
             ) { list ->
                 transactionAdapter.differ.submitList(list)
             }
+    }
+
+    private fun gotoAddTransactionFragment() {
+        mainActivity.mainViewModel.setCallingFragments(
+            mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
+        )
+        mainActivity.mainViewModel.setTransactionDetailed(null)
+        val direction = TransactionViewFragmentDirections
+            .actionTransactionViewFragmentToTransactionAddFragment()
+        mView.findNavController().navigate(direction)
     }
 
     override fun onDestroy() {

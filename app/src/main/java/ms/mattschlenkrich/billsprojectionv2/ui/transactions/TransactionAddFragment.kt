@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.transactions
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -505,14 +506,40 @@ class TransactionAddFragment :
         }
     }
 
+    private fun confirmPerformTransaction() {
+        binding.apply {
+            var display =
+                "This will perform transaction ${etDescription.text} " +
+                        "for ${nf.getDollarsFromDouble(nf.getDoubleFromDollars(etAmount.text.toString()))} " +
+                        "\n\nFROM:   ${mFromAccount!!.accountName} "
+            display += if (chkFromAccPending.isChecked) " *pending" else ""
+            display += "\nTO:   ${mToAccount!!.accountName}"
+            display += if (chkToAccPending.isChecked) " *pending" else ""
+            AlertDialog.Builder(mView.context)
+                .setTitle("Confirm performing transaction")
+                .setMessage(
+                    display
+                )
+                .setPositiveButton("Confirm") { _, _ ->
+                    saveTransaction()
+                }
+                .setNegativeButton("Go back", null)
+                .show()
+        }
+    }
+
+    private fun saveTransaction() {
+        val mTransaction = getCurrentTransactionForSave()
+        mainActivity.accountUpdateViewModel.performTransaction(
+            mTransaction
+        )
+        gotoCallingFragment()
+    }
+
     private fun saveTransactionIfValid() {
         val mes = validateTransaction()
         if (mes == "Ok") {
-            val mTransaction = getCurrentTransactionForSave()
-            mainActivity.accountUpdateViewModel.performTransaction(
-                mTransaction
-            )
-            gotoCallingFragment()
+            confirmPerformTransaction()
         } else {
             Toast.makeText(
                 mView.context,

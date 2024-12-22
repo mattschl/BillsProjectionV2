@@ -443,13 +443,17 @@ class TransactionPerformFragment : Fragment(
 
     private fun confirmPerformTransaction() {
         binding.apply {
+            var display =
+                "This will perform transaction ${etDescription.text} " +
+                        "for ${nf.getDollarsFromDouble(nf.getDoubleFromDollars(etAmount.text.toString()))} " +
+                        "\n\nFROM:   ${mFromAccount!!.accountName} "
+            display += if (chkFromAccPending.isChecked) " *pending" else ""
+            display += "\nTO:   ${mToAccount!!.accountName}"
+            display += if (chkToAccPending.isChecked) " *pending" else ""
             AlertDialog.Builder(mView.context)
                 .setTitle("Confirm performing transaction")
                 .setMessage(
-                    "This will perform transaction ${etDescription.text} " +
-                            "for ${nf.getDollarsFromDouble(nf.getDoubleFromDollars(etAmount.text.toString()))} " +
-                            "\n\nFROM:   ${mFromAccount!!.accountName} " +
-                            "\nTO:   ${mToAccount!!.accountName}."
+                    display
                 )
                 .setPositiveButton("Confirm") { _, _ ->
                     performTransaction()
