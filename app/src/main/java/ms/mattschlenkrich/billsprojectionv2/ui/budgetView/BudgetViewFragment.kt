@@ -85,63 +85,6 @@ class BudgetViewFragment : Fragment(
         binding.spAssetNames.adapter = assetAdapter
     }
 
-    private fun setOnClickActions() {
-        binding.apply {
-            onSelectAsset()
-            onSelectPayDay()
-            fabAddAction.setOnClickListener {
-                onAddButtonPress()
-            }
-            tvBalanceOwing.setOnClickListener {
-                gotoAccount()
-            }
-        }
-    }
-
-    private fun onSelectAsset() {
-        binding.apply {
-            spAssetNames.onItemSelectedListener =
-                object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(
-                        p0: AdapterView<*>?,
-                        p1: View?,
-                        p2: Int,
-                        p3: Long
-                    ) {
-                        mainActivity.accountViewModel.getAccountDetailed(
-                            spAssetNames.selectedItem.toString()
-                        ).observe(
-                            viewLifecycleOwner
-                        ) { account ->
-                            curAsset = account
-                        }
-                        clearCurrentDisplay()
-                        populatePayDays(spAssetNames.selectedItem.toString())
-                        populatePendingList()
-                    }
-
-                    override fun onNothingSelected(p0: AdapterView<*>?) {
-                        //not needed
-                    }
-                }
-        }
-    }
-
-    private fun clearCurrentDisplay() {
-        binding.apply {
-            lblBalanceOwing.text = getString(R.string.blank)
-            tvBalanceOwing.text = getString(R.string.blank)
-            llNoBudget.visibility = View.VISIBLE
-            rvBudgetSummary.visibility = View.GONE
-            tvDebits.text = getString(R.string.blank)
-            tvCredits.text = getString(R.string.blank)
-            tvFixedExpenses.text = getString(R.string.blank)
-            tvDiscretionaryExpenses.text = getString(R.string.blank)
-            tvSurplusOrDeficit.text = getString(R.string.blank)
-            updateBudgetListUi(ArrayList<Any>().toList())
-        }
-    }
-
     private fun populatePayDays(asset: String) {
         val payDayAdapter =
             ArrayAdapter<Any>(
@@ -228,6 +171,106 @@ class BudgetViewFragment : Fragment(
                 populateAssetDetails()
                 populateBudgetTotals()
             }
+        }
+    }
+
+    fun populateBudgetList() {
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_250)
+            binding.apply {
+                val asset = spAssetNames.selectedItem.toString()
+                val payDay =
+                    if (spPayDay.selectedItem != null) {
+                        spPayDay.selectedItem.toString()
+                    } else {
+                        ""
+                    }
+                val budgetViewAdapter = BudgetViewAdapter(
+                    this@BudgetViewFragment,
+                    mainActivity,
+                    asset,
+                    payDay,
+                    mView
+                )
+                binding.rvBudgetSummary.apply {
+                    layoutManager = LinearLayoutManager(requireContext())
+                    adapter = budgetViewAdapter
+                }
+                activity?.let {
+                    mainActivity.budgetItemViewModel.getBudgetItems(
+                        asset, payDay
+                    ).observe(
+                        viewLifecycleOwner
+                    ) { budgetItems ->
+                        budgetList.clear()
+                        budgetViewAdapter.differ.submitList(budgetItems)
+                        budgetItems.listIterator().forEach {
+                            budgetList.add(it)
+                        }
+                        populateAssetDetails()
+                        populateBudgetTotals()
+                        Log.d(TAG, "Budget Items count = ${budgetItems.size}")
+                        updateBudgetListUi(budgetItems)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setOnClickActions() {
+        binding.apply {
+            onSelectAsset()
+            onSelectPayDay()
+            fabAddAction.setOnClickListener {
+                onAddButtonPress()
+            }
+            tvBalanceOwing.setOnClickListener {
+                gotoAccount()
+            }
+        }
+    }
+
+    private fun onSelectAsset() {
+        binding.apply {
+            spAssetNames.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        p0: AdapterView<*>?,
+                        p1: View?,
+                        p2: Int,
+                        p3: Long
+                    ) {
+                        mainActivity.accountViewModel.getAccountDetailed(
+                            spAssetNames.selectedItem.toString()
+                        ).observe(
+                            viewLifecycleOwner
+                        ) { account ->
+                            curAsset = account
+                        }
+                        clearCurrentDisplay()
+                        populatePayDays(spAssetNames.selectedItem.toString())
+                        populatePendingList()
+                    }
+
+                    override fun onNothingSelected(p0: AdapterView<*>?) {
+                        //not needed
+                    }
+                }
+        }
+    }
+
+    private fun clearCurrentDisplay() {
+        binding.apply {
+            lblBalanceOwing.text = getString(R.string.blank)
+            tvBalanceOwing.text = getString(R.string.blank)
+            llNoBudget.visibility = View.VISIBLE
+            rvBudgetSummary.visibility = View.GONE
+            tvDebits.text = getString(R.string.blank)
+            tvCredits.text = getString(R.string.blank)
+            tvFixedExpenses.text = getString(R.string.blank)
+            tvDiscretionaryExpenses.text = getString(R.string.blank)
+            tvSurplusOrDeficit.text = getString(R.string.blank)
+            updateBudgetListUi(ArrayList<Any>().toList())
         }
     }
 
@@ -341,49 +384,6 @@ class BudgetViewFragment : Fragment(
                             spPayDay.setSelection(i)
                             break
                         }
-                    }
-                }
-            }
-        }
-    }
-
-    fun populateBudgetList() {
-        CoroutineScope(Dispatchers.Main).launch {
-            delay(WAIT_250)
-            binding.apply {
-                val asset = spAssetNames.selectedItem.toString()
-                val payDay =
-                    if (spPayDay.selectedItem != null) {
-                        spPayDay.selectedItem.toString()
-                    } else {
-                        ""
-                    }
-                val budgetViewAdapter = BudgetViewAdapter(
-                    this@BudgetViewFragment,
-                    mainActivity,
-                    asset,
-                    payDay,
-                    mView
-                )
-                binding.rvBudgetSummary.apply {
-                    layoutManager = LinearLayoutManager(requireContext())
-                    adapter = budgetViewAdapter
-                }
-                activity?.let {
-                    mainActivity.budgetItemViewModel.getBudgetItems(
-                        asset, payDay
-                    ).observe(
-                        viewLifecycleOwner
-                    ) { budgetItems ->
-                        budgetList.clear()
-                        budgetViewAdapter.differ.submitList(budgetItems)
-                        budgetItems.listIterator().forEach {
-                            budgetList.add(it)
-                        }
-                        populateAssetDetails()
-                        populateBudgetTotals()
-                        Log.d(TAG, "Budget Items count = ${budgetItems.size}")
-                        updateBudgetListUi(budgetItems)
                     }
                 }
             }

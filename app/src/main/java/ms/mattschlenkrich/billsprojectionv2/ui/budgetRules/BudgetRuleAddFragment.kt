@@ -62,185 +62,7 @@ class BudgetRuleAddFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         populateValues()
-        createClickActions()
-    }
-
-    private fun getBudgetRuleNameListForValidation() {
-        CoroutineScope(Dispatchers.IO).launch {
-            budgetNameList =
-                mainActivity.budgetRuleViewModel.getBudgetRuleNameList()
-        }
-    }
-
-    private fun createClickActions() {
-        binding.apply {
-            tvToAccount.setOnClickListener {
-                chooseToAccount()
-            }
-            tvFromAccount.setOnClickListener {
-                chooseFromAccount()
-            }
-            etStartDate.setOnLongClickListener {
-                chooseStartDate()
-                false
-            }
-            etEndDate.setOnLongClickListener {
-                chooseEndDate()
-                false
-            }
-            etAmount.setOnLongClickListener {
-                gotoCalculatorFragment()
-                false
-            }
-        }
-        createMenuActions()
-    }
-
-    private fun gotoCalculatorFragment() {
-        mainActivity.mainViewModel.setTransferNum(
-            nf.getDoubleFromDollars(
-                binding.etAmount.text.toString().ifBlank {
-                    "0.0"
-                }
-            )
-        )
-        mainActivity.mainViewModel.setReturnTo(TAG)
-        mainActivity.mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
-        mView.findNavController().navigate(
-            BudgetRuleAddFragmentDirections
-                .actionBudgetRuleAddFragmentToCalcFragment()
-        )
-    }
-
-    private fun createMenuActions() {
-        val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                // Add menu items here
-                menuInflater.inflate(R.menu.save_menu, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                // Handle the menu selection
-                return when (menuItem.itemId) {
-                    R.id.menu_save -> {
-                        isBudgetRuleReadyToSave()
-                        true
-                    }
-
-                    else -> false
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.CREATED)
-    }
-
-    private fun getCurrentBudgetRuleForSave(): BudgetRule {
-        binding.apply {
-            return BudgetRule(
-                nf.generateId(),
-                etBudgetName.text.toString().trim(),
-                mainActivity.mainViewModel.getBudgetRuleDetailed()?.toAccount?.accountId ?: 0L,
-                mainActivity.mainViewModel.getBudgetRuleDetailed()?.fromAccount?.accountId ?: 0L,
-                if (etAmount.text.isNotEmpty()) {
-                    nf.getDoubleFromDollars(
-                        etAmount.text.toString().trim()
-                    )
-                } else {
-                    0.0
-                },
-                chkFixedAmount.isChecked,
-                chkMakePayDay.isChecked,
-                chkAutoPayment.isChecked,
-                etStartDate.text.toString(),
-                etEndDate.text.toString(),
-                spDayOfWeek.selectedItemId.toInt(),
-                spFrequencyType.selectedItemId.toInt(),
-                etFrequencyCount.text.toString().toInt(),
-                etLeadDays.text.toString().toInt(),
-                false,
-                df.getCurrentTimeAsString()
-            )
-        }
-    }
-
-    private fun getBudgetRuleDetailed(): BudgetRuleDetailed {
-        return BudgetRuleDetailed(
-            getCurrentBudgetRuleForSave(),
-            mainActivity.mainViewModel.getBudgetRuleDetailed()?.toAccount,
-            mainActivity.mainViewModel.getBudgetRuleDetailed()?.fromAccount
-        )
-    }
-
-    private fun chooseFromAccount() {
-        mainActivity.mainViewModel.setCallingFragments(
-            "${mainActivity.mainViewModel.getCallingFragments()}, $TAG"
-        )
-        mainActivity.mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
-        mainActivity.mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
-        val direction = BudgetRuleAddFragmentDirections
-            .actionBudgetRuleAddFragmentToAccountsFragment()
-        mView.findNavController().navigate(direction)
-    }
-
-    private fun chooseToAccount() {
-        mainActivity.mainViewModel.setCallingFragments(
-            "${mainActivity.mainViewModel.getCallingFragments()}, $TAG"
-        )
-        mainActivity.mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
-        mainActivity.mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
-        val direction = BudgetRuleAddFragmentDirections
-            .actionBudgetRuleAddFragmentToAccountsFragment()
-        mView.findNavController().navigate(direction)
-    }
-
-    private fun chooseEndDate() {
-        binding.apply {
-            val curDateAll = etEndDate.text.toString()
-                .split("-")
-            val datePickerDialog = DatePickerDialog(
-                mView.context,
-                { _, year, monthOfYear, dayOfMonth ->
-                    val month = monthOfYear + 1
-                    val display = "$year-${
-                        month.toString()
-                            .padStart(2, '0')
-                    }-${
-                        dayOfMonth.toString().padStart(2, '0')
-                    }"
-                    etEndDate.setText(display)
-                },
-                curDateAll[0].toInt(),
-                curDateAll[1].toInt() - 1,
-                curDateAll[2].toInt()
-            )
-            datePickerDialog.setTitle(getString(R.string.choose_the_final_date))
-            datePickerDialog.show()
-        }
-    }
-
-    private fun chooseStartDate() {
-        binding.apply {
-            val curDateAll = etStartDate.text.toString()
-                .split("-")
-            val datePickerDialog = DatePickerDialog(
-                requireContext(),
-                { _, year, monthOfYear, dayOfMonth ->
-                    val month = monthOfYear + 1
-                    val display = "$year-${
-                        month.toString()
-                            .padStart(2, '0')
-                    }-${
-                        dayOfMonth.toString().padStart(2, '0')
-                    }"
-                    etStartDate.setText(display)
-                },
-                curDateAll[0].toInt(),
-                curDateAll[1].toInt() - 1,
-                curDateAll[2].toInt()
-            )
-            datePickerDialog.setTitle("Choose the first date")
-            datePickerDialog.show()
-        }
+        setClickActions()
     }
 
     private fun populateValues() {
@@ -332,7 +154,132 @@ class BudgetRuleAddFragment :
         binding.spDayOfWeek.adapter = adapterDayOfWeek
     }
 
-    private fun isBudgetRuleReadyToSave() {
+    private fun getBudgetRuleNameListForValidation() {
+        CoroutineScope(Dispatchers.IO).launch {
+            budgetNameList =
+                mainActivity.budgetRuleViewModel.getBudgetRuleNameList()
+        }
+    }
+
+    private fun setClickActions() {
+        binding.apply {
+            tvToAccount.setOnClickListener {
+                chooseToAccount()
+            }
+            tvFromAccount.setOnClickListener {
+                chooseFromAccount()
+            }
+            etStartDate.setOnLongClickListener {
+                chooseStartDate()
+                false
+            }
+            etEndDate.setOnLongClickListener {
+                chooseEndDate()
+                false
+            }
+            etAmount.setOnLongClickListener {
+                gotoCalculatorFragment()
+                false
+            }
+        }
+        setMenuActions()
+    }
+
+    private fun setMenuActions() {
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                // Add menu items here
+                menuInflater.inflate(R.menu.save_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                // Handle the menu selection
+                return when (menuItem.itemId) {
+                    R.id.menu_save -> {
+                        saveBudgetRuleIfValid()
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.CREATED)
+    }
+
+    private fun chooseFromAccount() {
+        mainActivity.mainViewModel.setCallingFragments(
+            "${mainActivity.mainViewModel.getCallingFragments()}, $TAG"
+        )
+        mainActivity.mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
+        mainActivity.mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
+        val direction = BudgetRuleAddFragmentDirections
+            .actionBudgetRuleAddFragmentToAccountsFragment()
+        mView.findNavController().navigate(direction)
+    }
+
+    private fun chooseToAccount() {
+        mainActivity.mainViewModel.setCallingFragments(
+            "${mainActivity.mainViewModel.getCallingFragments()}, $TAG"
+        )
+        mainActivity.mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
+        mainActivity.mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
+        val direction = BudgetRuleAddFragmentDirections
+            .actionBudgetRuleAddFragmentToAccountsFragment()
+        mView.findNavController().navigate(direction)
+    }
+
+    private fun chooseEndDate() {
+        binding.apply {
+            val curDateAll = etEndDate.text.toString()
+                .split("-")
+            val datePickerDialog = DatePickerDialog(
+                mView.context,
+                { _, year, monthOfYear, dayOfMonth ->
+                    val month = monthOfYear + 1
+                    val display = "$year-${
+                        month.toString()
+                            .padStart(2, '0')
+                    }-${
+                        dayOfMonth.toString().padStart(2, '0')
+                    }"
+                    etEndDate.setText(display)
+                },
+                curDateAll[0].toInt(),
+                curDateAll[1].toInt() - 1,
+                curDateAll[2].toInt()
+            )
+            datePickerDialog.setTitle(getString(R.string.choose_the_final_date))
+            datePickerDialog.show()
+        }
+    }
+
+    private fun chooseStartDate() {
+        binding.apply {
+            val curDateAll = etStartDate.text.toString()
+                .split("-")
+            val datePickerDialog = DatePickerDialog(
+                requireContext(),
+                { _, year, monthOfYear, dayOfMonth ->
+                    val month = monthOfYear + 1
+                    val display = "$year-${
+                        month.toString()
+                            .padStart(2, '0')
+                    }-${
+                        dayOfMonth.toString().padStart(2, '0')
+                    }"
+                    etStartDate.setText(display)
+                },
+                curDateAll[0].toInt(),
+                curDateAll[1].toInt() - 1,
+                curDateAll[2].toInt()
+            )
+            datePickerDialog.setTitle("Choose the first date")
+            datePickerDialog.show()
+        }
+    }
+
+    private fun saveBudgetRuleIfValid() {
         val mes = validateBudgetRule()
         if (mes == "Ok") {
             binding.apply {
@@ -351,16 +298,41 @@ class BudgetRuleAddFragment :
         }
     }
 
-    private fun saveBudgetRule() {
-        mainActivity.budgetRuleViewModel.insertBudgetRule(
-            getCurrentBudgetRuleForSave()
-        )
+    private fun getCurrentBudgetRuleForSave(): BudgetRule {
+        binding.apply {
+            return BudgetRule(
+                nf.generateId(),
+                etBudgetName.text.toString().trim(),
+                mainActivity.mainViewModel.getBudgetRuleDetailed()?.toAccount?.accountId ?: 0L,
+                mainActivity.mainViewModel.getBudgetRuleDetailed()?.fromAccount?.accountId ?: 0L,
+                if (etAmount.text.isNotEmpty()) {
+                    nf.getDoubleFromDollars(
+                        etAmount.text.toString().trim()
+                    )
+                } else {
+                    0.0
+                },
+                chkFixedAmount.isChecked,
+                chkMakePayDay.isChecked,
+                chkAutoPayment.isChecked,
+                etStartDate.text.toString(),
+                etEndDate.text.toString(),
+                spDayOfWeek.selectedItemId.toInt(),
+                spFrequencyType.selectedItemId.toInt(),
+                etFrequencyCount.text.toString().toInt(),
+                etLeadDays.text.toString().toInt(),
+                false,
+                df.getCurrentTimeAsString()
+            )
+        }
     }
 
-    private fun gotoBudgetRuleFragment() {
-        val direction = BudgetRuleAddFragmentDirections
-            .actionBudgetRuleAddFragmentToBudgetRuleFragment()
-        mView.findNavController().navigate(direction)
+    private fun getBudgetRuleDetailed(): BudgetRuleDetailed {
+        return BudgetRuleDetailed(
+            getCurrentBudgetRuleForSave(),
+            mainActivity.mainViewModel.getBudgetRuleDetailed()?.toAccount,
+            mainActivity.mainViewModel.getBudgetRuleDetailed()?.fromAccount
+        )
     }
 
     private fun validateBudgetRule(): String {
@@ -399,6 +371,34 @@ class BudgetRuleAddFragment :
             }
             return errorMes
         }
+    }
+
+    private fun saveBudgetRule() {
+        mainActivity.budgetRuleViewModel.insertBudgetRule(
+            getCurrentBudgetRuleForSave()
+        )
+    }
+
+    private fun gotoBudgetRuleFragment() {
+        val direction = BudgetRuleAddFragmentDirections
+            .actionBudgetRuleAddFragmentToBudgetRuleFragment()
+        mView.findNavController().navigate(direction)
+    }
+
+    private fun gotoCalculatorFragment() {
+        mainActivity.mainViewModel.setTransferNum(
+            nf.getDoubleFromDollars(
+                binding.etAmount.text.toString().ifBlank {
+                    "0.0"
+                }
+            )
+        )
+        mainActivity.mainViewModel.setReturnTo(TAG)
+        mainActivity.mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
+        mView.findNavController().navigate(
+            BudgetRuleAddFragmentDirections
+                .actionBudgetRuleAddFragmentToCalcFragment()
+        )
     }
 
     override fun onDestroy() {

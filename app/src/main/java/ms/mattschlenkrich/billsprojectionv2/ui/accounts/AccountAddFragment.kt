@@ -69,17 +69,6 @@ class AccountAddFragment :
         }
     }
 
-    private fun getAccountNameListForValidation() {
-        mainActivity.accountViewModel.getAccountNameList().observe(
-            viewLifecycleOwner
-        ) { accounts ->
-            accountNameList.clear()
-            accounts.listIterator().forEach {
-                accountNameList.add(it)
-            }
-        }
-    }
-
     private fun populateAccountFromCache() {
         val accountWithType = mainActivity.mainViewModel.getAccountWithType()!!
         binding.apply {
@@ -158,6 +147,17 @@ class AccountAddFragment :
                     "This account does not keep a balance/owing amount"
             }
             tvTypeDetails.text = display
+        }
+    }
+
+    private fun getAccountNameListForValidation() {
+        mainActivity.accountViewModel.getAccountNameList().observe(
+            viewLifecycleOwner
+        ) { accounts ->
+            accountNameList.clear()
+            accounts.listIterator().forEach {
+                accountNameList.add(it)
+            }
         }
     }
 

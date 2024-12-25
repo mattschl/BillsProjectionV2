@@ -223,6 +223,28 @@ class BudgetItemAddFragment : Fragment(
         }
     }
 
+    private fun setMenuActions() {
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                // Add menu items here
+                menuInflater.inflate(R.menu.save_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                // Handle the menu selection
+                return when (menuItem.itemId) {
+                    R.id.menu_save -> {
+                        saveBudgetItemIfValid()
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
     private fun chooseBudgetRule() {
         mainActivity.mainViewModel.setCallingFragments(
             mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
@@ -269,28 +291,6 @@ class BudgetItemAddFragment : Fragment(
         }
     }
 
-    private fun setMenuActions() {
-        val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                // Add menu items here
-                menuInflater.inflate(R.menu.save_menu, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                // Handle the menu selection
-                return when (menuItem.itemId) {
-                    R.id.menu_save -> {
-                        saveBudgetItemIfValid()
-                        true
-                    }
-
-                    else -> false
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
-    }
-
     private fun saveBudgetItemIfValid() {
         val mes = validateBudgetItem()
         if (mes == ANSWER_OK) {
@@ -303,12 +303,6 @@ class BudgetItemAddFragment : Fragment(
                 Toast.LENGTH_LONG
             ).show()
         }
-    }
-
-    private fun saveBudgetItem() {
-        mainActivity.budgetItemViewModel.insertBudgetItem(
-            getCurrentBudgetItemForSaving()
-        )
     }
 
     private fun validateBudgetItem(): String {
@@ -333,6 +327,12 @@ class BudgetItemAddFragment : Fragment(
             }
             return ANSWER_OK
         }
+    }
+
+    private fun saveBudgetItem() {
+        mainActivity.budgetItemViewModel.insertBudgetItem(
+            getCurrentBudgetItemForSaving()
+        )
     }
 
     private fun getCurrentBudgetItemDetailed(): BudgetDetailed {

@@ -58,12 +58,6 @@ class AccountsFragment :
         setClickActions()
     }
 
-    private fun setClickActions() {
-        binding.fabAddNewAccount.setOnClickListener {
-            gotoAccountAddFragment()
-        }
-    }
-
     private fun setUpRecyclerView() {
         accountAdapter = AccountAdapter(
             mainActivity,
@@ -95,6 +89,12 @@ class AccountsFragment :
         } else {
             binding.crdAccountView.visibility = View.VISIBLE
             binding.rvAccounts.visibility = View.GONE
+        }
+    }
+
+    private fun setClickActions() {
+        binding.fabAddNewAccount.setOnClickListener {
+            gotoAccountAddFragment()
         }
     }
 
