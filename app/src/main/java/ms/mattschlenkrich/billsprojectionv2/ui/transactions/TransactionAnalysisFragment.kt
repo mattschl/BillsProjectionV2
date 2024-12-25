@@ -62,6 +62,81 @@ class TransactionAnalysisFragment : Fragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         populateValues()
+        setClickActions()
+    }
+
+    private fun populateValues() {
+        if (mainViewModel.getBudgetRuleDetailed() != null) {
+            populateAnalysisFromBudgetRule()
+        } else if (mainViewModel.getAccountWithType() != null) {
+            populateValuesFromAccount()
+        }
+    }
+
+    private fun populateValuesFromAccount() {
+        var totalCredits = 0.0
+        var totalDebits = 0.0
+        val account =
+            mainViewModel.getAccountWithType()!!.account
+        binding.apply {
+            tvBudgetRule.text =
+                getString(R.string.no_budget_rule_selected)
+            tvAccount.text =
+                account.accountName
+            transactionViewModel.getSumTransactionToAccount(account.accountId)
+                .observe(viewLifecycleOwner) { sum ->
+                    if (sum != null && !sum.isNaN()) {
+                        tvTotalCredits.text = cf.displayDollars(sum)
+                        tvTotalCredits.visibility = View.VISIBLE
+                        lblTotalCredits.text = getString(R.string.total_credits)
+                        lblTotalCredits.visibility = View.VISIBLE
+                        totalCredits = sum
+                    }
+                }
+            transactionViewModel.getSumTransactionFromAccount(account.accountId)
+                .observe(viewLifecycleOwner) { sum ->
+                    if (sum != null && !sum.isNaN()) {
+                        tvTotalDebits.text = cf.displayDollars(sum)
+                        tvTotalDebits.visibility = View.VISIBLE
+                        tvTotalDebits.setTextColor(Color.RED)
+                        lblTotalDebits.text = getString(R.string.total_debits)
+                        lblTotalDebits.visibility = View.VISIBLE
+                        lblTotalDebits.setTextColor(Color.RED)
+                        totalDebits = sum
+                    }
+                }
+            transactionViewModel.getMaxTransactionByAccount(account.accountId)
+                .observe(viewLifecycleOwner) { max ->
+                    if (max != null) tvHighest.text = cf.displayDollars(max)
+                }
+            transactionViewModel.getMinTransactionByAccount(account.accountId)
+                .observe(viewLifecycleOwner) { min ->
+                    if (min != null) tvLowest.text = cf.displayDollars(min)
+                }
+            transactionAdapter = null
+            transactionAdapter =
+                TransactionAnalysisAdapter(
+                    mainActivity,
+                    mView
+                )
+            rvTransactions.apply {
+                layoutManager = LinearLayoutManager(
+                    requireContext()
+                )
+                adapter = transactionAdapter
+            }
+            activity?.let {
+                transactionViewModel.getActiveTransactionByAccount(account.accountId)
+                    .observe(viewLifecycleOwner) { transactionList ->
+                        transactionAdapter!!.differ.submitList(transactionList)
+                        populateAnalysisFromAccount(transactionList, totalCredits, totalDebits)
+                        updateUiHelpText(transactionList)
+                    }
+            }
+        }
+    }
+
+    private fun setClickActions() {
         setRadioOptions()
         setGotoOptions()
         setSearchAction()
@@ -181,77 +256,6 @@ class TransactionAnalysisFragment : Fragment(
             TransactionAnalysisFragmentDirections
                 .actionTransactionAnalysisFragmentToBudgetRuleFragment()
         )
-    }
-
-    private fun populateValues() {
-        if (mainViewModel.getBudgetRuleDetailed() != null) {
-            populateAnalysisFromBudgetRule()
-        } else if (mainViewModel.getAccountWithType() != null) {
-            populateValuesFromAccount()
-        }
-    }
-
-    private fun populateValuesFromAccount() {
-        var totalCredits = 0.0
-        var totalDebits = 0.0
-        val account =
-            mainViewModel.getAccountWithType()!!.account
-        binding.apply {
-            tvBudgetRule.text =
-                getString(R.string.no_budget_rule_selected)
-            tvAccount.text =
-                account.accountName
-            transactionViewModel.getSumTransactionToAccount(account.accountId)
-                .observe(viewLifecycleOwner) { sum ->
-                    if (sum != null && !sum.isNaN()) {
-                        tvTotalCredits.text = cf.displayDollars(sum)
-                        tvTotalCredits.visibility = View.VISIBLE
-                        lblTotalCredits.text = getString(R.string.total_credits)
-                        lblTotalCredits.visibility = View.VISIBLE
-                        totalCredits = sum
-                    }
-                }
-            transactionViewModel.getSumTransactionFromAccount(account.accountId)
-                .observe(viewLifecycleOwner) { sum ->
-                    if (sum != null && !sum.isNaN()) {
-                        tvTotalDebits.text = cf.displayDollars(sum)
-                        tvTotalDebits.visibility = View.VISIBLE
-                        tvTotalDebits.setTextColor(Color.RED)
-                        lblTotalDebits.text = getString(R.string.total_debits)
-                        lblTotalDebits.visibility = View.VISIBLE
-                        lblTotalDebits.setTextColor(Color.RED)
-                        totalDebits = sum
-                    }
-                }
-            transactionViewModel.getMaxTransactionByAccount(account.accountId)
-                .observe(viewLifecycleOwner) { max ->
-                    if (max != null) tvHighest.text = cf.displayDollars(max)
-                }
-            transactionViewModel.getMinTransactionByAccount(account.accountId)
-                .observe(viewLifecycleOwner) { min ->
-                    if (min != null) tvLowest.text = cf.displayDollars(min)
-                }
-            transactionAdapter = null
-            transactionAdapter =
-                TransactionAnalysisAdapter(
-                    mainActivity,
-                    mView
-                )
-            rvTransactions.apply {
-                layoutManager = LinearLayoutManager(
-                    requireContext()
-                )
-                adapter = transactionAdapter
-            }
-            activity?.let {
-                transactionViewModel.getActiveTransactionByAccount(account.accountId)
-                    .observe(viewLifecycleOwner) { transactionList ->
-                        transactionAdapter!!.differ.submitList(transactionList)
-                        populateAnalysisFromAccount(transactionList, totalCredits, totalDebits)
-                        updateUiHelpText(transactionList)
-                    }
-            }
-        }
     }
 
     private fun updateUiHelpText(transactionList: List<TransactionDetailed>) {
@@ -552,7 +556,6 @@ class TransactionAnalysisFragment : Fragment(
             }
         }
     }
-
 
     private fun populateAnalysisFromBudgetRuleAndDates(startDate: String, endDate: String) {
         val budgetRule =

@@ -58,21 +58,6 @@ class AccountTypesFragment
         setClickActions()
     }
 
-    private fun setClickActions() {
-        binding.fabAddAccountType.setOnClickListener {
-            gotoAccountTypeAddFragment(it)
-        }
-    }
-
-    private fun gotoAccountTypeAddFragment(it: View) {
-        mainActivity.mainViewModel.setCallingFragments(
-            mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
-        )
-        val direction = AccountTypesFragmentDirections
-            .actionAccountTypesFragmentToAccountTypeAddFragment()
-        it.findNavController().navigate(direction)
-    }
-
     private fun setupRecyclerView() {
         accountTypeAdapter = AccountTypeAdapter(
             mainActivity.mainViewModel
@@ -107,6 +92,12 @@ class AccountTypesFragment
         }
     }
 
+    private fun setClickActions() {
+        binding.fabAddAccountType.setOnClickListener {
+            gotoAccountTypeAddFragment(it)
+        }
+    }
+
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.search_menu, menu)
         val mMenuSearch = menu.findItem(R.id.menu_search)
@@ -135,6 +126,15 @@ class AccountTypesFragment
         mainActivity.accountViewModel.searchAccountTypes(searchQuery).observe(
             this
         ) { list -> accountTypeAdapter.differ.submitList(list) }
+    }
+
+    private fun gotoAccountTypeAddFragment(it: View) {
+        mainActivity.mainViewModel.setCallingFragments(
+            mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
+        )
+        val direction = AccountTypesFragmentDirections
+            .actionAccountTypesFragmentToAccountTypeAddFragment()
+        it.findNavController().navigate(direction)
     }
 
     override fun onDestroy() {

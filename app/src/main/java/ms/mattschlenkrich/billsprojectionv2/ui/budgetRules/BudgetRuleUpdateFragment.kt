@@ -67,7 +67,116 @@ class BudgetRuleUpdateFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         populateValues()
-        createClickActions()
+        setClickActions()
+    }
+
+    private fun populateValues() {
+        getBudgetRuleNameForValidation()
+        populateSpinners()
+        if (mainActivity.mainViewModel.getBudgetRuleDetailed() != null) {
+            populateFromCache()
+        } else {
+            populateDatesOnly()
+        }
+        populateDateRecycler(mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.ruleId)
+    }
+
+    private fun populateDatesOnly() {
+        binding.apply {
+            etStartDate.setText(df.getCurrentDateAsString())
+            etEndDate.setText(df.getCurrentDateAsString())
+        }
+    }
+
+    private fun populateFromCache() {
+        binding.apply {
+            if (mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule != null) {
+                etBudgetName.setText(
+                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budgetRuleName
+                )
+                etAmount.setText(
+                    nf.displayDollars(
+                        if (mainActivity.mainViewModel.getTransferNum()!! != 0.0) {
+                            mainActivity.mainViewModel.getTransferNum()!!
+                        } else {
+                            mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budgetAmount
+                        }
+                    )
+                )
+                mainActivity.mainViewModel.setTransferNum(0.0)
+                if (mainActivity.mainViewModel.getBudgetRuleDetailed()!!.toAccount != null) {
+                    tvToAccount.text =
+                        mainActivity.mainViewModel.getBudgetRuleDetailed()!!.toAccount!!.accountName
+                }
+                if (mainActivity.mainViewModel.getBudgetRuleDetailed()!!.fromAccount != null) {
+                    tvFromAccount.text =
+                        mainActivity.mainViewModel.getBudgetRuleDetailed()!!.fromAccount!!.accountName
+                }
+                chkFixedAmount.isChecked =
+                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budFixedAmount
+                chkMakePayDay.isChecked =
+                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budIsPayDay
+                chkAutoPayment.isChecked =
+                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budIsAutoPay
+                etStartDate.setText(
+                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budStartDate
+                )
+                etEndDate.setText(
+                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budEndDate
+                )
+                spFrequencyType.setSelection(
+                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budFrequencyTypeId
+                )
+                etFrequencyCount.setText(
+                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budFrequencyCount.toString()
+                )
+                spDayOfWeek.setSelection(
+                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budDayOfWeekId
+                )
+                etLeadDays.setText(
+                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budLeadDays.toString()
+                )
+            }
+        }
+    }
+
+    private fun populateDateRecycler(budgetRuleId: Long) {
+        val budgetRuleDatesAdapter = BudgetRuleDatesAdapter(mainActivity.mainViewModel, mView)
+        binding.rvProjectedDates.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = budgetRuleDatesAdapter
+        }
+        activity?.let {
+            mainActivity.budgetItemViewModel.getBudgetItems(budgetRuleId).observe(
+                viewLifecycleOwner
+            ) { budgetItems ->
+                budgetRuleDatesAdapter.differ.submitList(budgetItems)
+            }
+        }
+    }
+
+    private fun populateSpinners() {
+        val adapterFrequencyType =
+            ArrayAdapter(
+                mView.context,
+                R.layout.spinner_item_normal,
+                resources.getStringArray(R.array.frequency_types)
+            )
+        adapterFrequencyType.setDropDownViewResource(
+            R.layout.spinner_item_normal
+        )
+        binding.spFrequencyType.adapter = adapterFrequencyType
+
+        val adapterDayOfWeek =
+            ArrayAdapter(
+                mView.context,
+                R.layout.spinner_item_normal,
+                resources.getStringArray(R.array.days_of_week)
+            )
+        adapterDayOfWeek.setDropDownViewResource(
+            R.layout.spinner_item_normal
+        )
+        binding.spDayOfWeek.adapter = adapterDayOfWeek
     }
 
     private fun getBudgetRuleNameForValidation() {
@@ -76,7 +185,7 @@ class BudgetRuleUpdateFragment :
         }
     }
 
-    private fun createClickActions() {
+    private fun setClickActions() {
         setMenuActions()
         binding.apply {
             tvToAccount.setOnClickListener {
@@ -94,29 +203,13 @@ class BudgetRuleUpdateFragment :
                 false
             }
             fabUpdateDone.setOnClickListener {
-                isBudgetRuleReadyToUpdate()
+                updateBudgetRuleIfValid()
             }
             etAmount.setOnLongClickListener {
                 gotoCalculatorFragment()
                 false
             }
         }
-    }
-
-    private fun gotoCalculatorFragment() {
-        mainActivity.mainViewModel.setTransferNum(
-            nf.getDoubleFromDollars(
-                binding.etAmount.text.toString().ifBlank {
-                    "0.0"
-                }
-            )
-        )
-        mainActivity.mainViewModel.setReturnTo(TAG)
-        mainActivity.mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
-        mView.findNavController().navigate(
-            BudgetRuleUpdateFragmentDirections
-                .actionBudgetRuleUpdateFragmentToCalcFragment()
-        )
     }
 
     private fun setMenuActions() {
@@ -275,115 +368,6 @@ class BudgetRuleUpdateFragment :
         mView.findNavController().navigate(direction)
     }
 
-    private fun populateValues() {
-        getBudgetRuleNameForValidation()
-        populateSpinners()
-        if (mainActivity.mainViewModel.getBudgetRuleDetailed() != null) {
-            populateFromCache()
-        } else {
-            populateDatesOnly()
-        }
-        populateDateRecycler(mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.ruleId)
-    }
-
-    private fun populateDatesOnly() {
-        binding.apply {
-            etStartDate.setText(df.getCurrentDateAsString())
-            etEndDate.setText(df.getCurrentDateAsString())
-        }
-    }
-
-    private fun populateFromCache() {
-        binding.apply {
-            if (mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule != null) {
-                etBudgetName.setText(
-                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budgetRuleName
-                )
-                etAmount.setText(
-                    nf.displayDollars(
-                        if (mainActivity.mainViewModel.getTransferNum()!! != 0.0) {
-                            mainActivity.mainViewModel.getTransferNum()!!
-                        } else {
-                            mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budgetAmount
-                        }
-                    )
-                )
-                mainActivity.mainViewModel.setTransferNum(0.0)
-                if (mainActivity.mainViewModel.getBudgetRuleDetailed()!!.toAccount != null) {
-                    tvToAccount.text =
-                        mainActivity.mainViewModel.getBudgetRuleDetailed()!!.toAccount!!.accountName
-                }
-                if (mainActivity.mainViewModel.getBudgetRuleDetailed()!!.fromAccount != null) {
-                    tvFromAccount.text =
-                        mainActivity.mainViewModel.getBudgetRuleDetailed()!!.fromAccount!!.accountName
-                }
-                chkFixedAmount.isChecked =
-                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budFixedAmount
-                chkMakePayDay.isChecked =
-                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budIsPayDay
-                chkAutoPayment.isChecked =
-                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budIsAutoPay
-                etStartDate.setText(
-                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budStartDate
-                )
-                etEndDate.setText(
-                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budEndDate
-                )
-                spFrequencyType.setSelection(
-                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budFrequencyTypeId
-                )
-                etFrequencyCount.setText(
-                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budFrequencyCount.toString()
-                )
-                spDayOfWeek.setSelection(
-                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budDayOfWeekId
-                )
-                etLeadDays.setText(
-                    mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.budLeadDays.toString()
-                )
-            }
-        }
-    }
-
-    private fun populateDateRecycler(budgetRuleId: Long) {
-        val budgetRuleDatesAdapter = BudgetRuleDatesAdapter(mainActivity.mainViewModel, mView)
-        binding.rvProjectedDates.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = budgetRuleDatesAdapter
-        }
-        activity?.let {
-            mainActivity.budgetItemViewModel.getBudgetItems(budgetRuleId).observe(
-                viewLifecycleOwner
-            ) { budgetItems ->
-                budgetRuleDatesAdapter.differ.submitList(budgetItems)
-            }
-        }
-    }
-
-    private fun populateSpinners() {
-        val adapterFrequencyType =
-            ArrayAdapter(
-                mView.context,
-                R.layout.spinner_item_normal,
-                resources.getStringArray(R.array.frequency_types)
-            )
-        adapterFrequencyType.setDropDownViewResource(
-            R.layout.spinner_item_normal
-        )
-        binding.spFrequencyType.adapter = adapterFrequencyType
-
-        val adapterDayOfWeek =
-            ArrayAdapter(
-                mView.context,
-                R.layout.spinner_item_normal,
-                resources.getStringArray(R.array.days_of_week)
-            )
-        adapterDayOfWeek.setDropDownViewResource(
-            R.layout.spinner_item_normal
-        )
-        binding.spDayOfWeek.adapter = adapterDayOfWeek
-    }
-
     private fun chooseToDeleteBudgetRule() {
         AlertDialog.Builder(activity).apply {
             setTitle("Delete Budget Rule")
@@ -403,51 +387,7 @@ class BudgetRuleUpdateFragment :
         )
     }
 
-    private fun gotoCallingFragment() {
-        mainActivity.mainViewModel.setCallingFragments(
-            mainActivity.mainViewModel.getCallingFragments()!!
-                .replace(", TAG", "")
-        )
-        mainActivity.mainViewModel.setBudgetRuleDetailed(null)
-        if (mainActivity.mainViewModel.getCallingFragments()!!
-                .contains(FRAG_BUDGET_RULES)
-        ) {
-            gotoBudgetRuleFragment()
-        } else if (mainActivity.mainViewModel.getCallingFragments()!!.contains(
-                FRAG_BUDGET_VIEW
-            )
-        ) {
-            gotoBudgetViewFragment()
-        } else if (mainActivity.mainViewModel.getCallingFragments()!!.contains(
-                FRAG_BUDGET_LIST
-            )
-        ) {
-            gotoBudgetListFragment()
-        }
-    }
-
-    private fun gotoBudgetListFragment() {
-        mView.findNavController().navigate(
-            BudgetRuleUpdateFragmentDirections
-                .actionBudgetRuleUpdateFragmentToBudgetListFragment()
-        )
-    }
-
-    private fun gotoBudgetViewFragment() {
-        mView.findNavController().navigate(
-            BudgetRuleUpdateFragmentDirections
-                .actionBudgetRuleUpdateFragmentToBudgetViewFragment()
-        )
-    }
-
-    private fun gotoBudgetRuleFragment() {
-        mView.findNavController().navigate(
-            BudgetRuleUpdateFragmentDirections
-                .actionBudgetRuleUpdateFragmentToBudgetRuleFragment()
-        )
-    }
-
-    private fun isBudgetRuleReadyToUpdate() {
+    private fun updateBudgetRuleIfValid() {
         val mes = validateBudgetRule()
         if (mes == "Ok") {
             updateBudgetRule()
@@ -506,6 +446,66 @@ class BudgetRuleUpdateFragment :
             }
             return errorMes
         }
+    }
+
+    private fun gotoCallingFragment() {
+        mainActivity.mainViewModel.setCallingFragments(
+            mainActivity.mainViewModel.getCallingFragments()!!
+                .replace(", TAG", "")
+        )
+        mainActivity.mainViewModel.setBudgetRuleDetailed(null)
+        if (mainActivity.mainViewModel.getCallingFragments()!!
+                .contains(FRAG_BUDGET_RULES)
+        ) {
+            gotoBudgetRuleFragment()
+        } else if (mainActivity.mainViewModel.getCallingFragments()!!.contains(
+                FRAG_BUDGET_VIEW
+            )
+        ) {
+            gotoBudgetViewFragment()
+        } else if (mainActivity.mainViewModel.getCallingFragments()!!.contains(
+                FRAG_BUDGET_LIST
+            )
+        ) {
+            gotoBudgetListFragment()
+        }
+    }
+
+    private fun gotoCalculatorFragment() {
+        mainActivity.mainViewModel.setTransferNum(
+            nf.getDoubleFromDollars(
+                binding.etAmount.text.toString().ifBlank {
+                    "0.0"
+                }
+            )
+        )
+        mainActivity.mainViewModel.setReturnTo(TAG)
+        mainActivity.mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
+        mView.findNavController().navigate(
+            BudgetRuleUpdateFragmentDirections
+                .actionBudgetRuleUpdateFragmentToCalcFragment()
+        )
+    }
+
+    private fun gotoBudgetListFragment() {
+        mView.findNavController().navigate(
+            BudgetRuleUpdateFragmentDirections
+                .actionBudgetRuleUpdateFragmentToBudgetListFragment()
+        )
+    }
+
+    private fun gotoBudgetViewFragment() {
+        mView.findNavController().navigate(
+            BudgetRuleUpdateFragmentDirections
+                .actionBudgetRuleUpdateFragmentToBudgetViewFragment()
+        )
+    }
+
+    private fun gotoBudgetRuleFragment() {
+        mView.findNavController().navigate(
+            BudgetRuleUpdateFragmentDirections
+                .actionBudgetRuleUpdateFragmentToBudgetRuleFragment()
+        )
     }
 
     override fun onDestroy() {

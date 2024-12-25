@@ -84,7 +84,7 @@ class AccountTypeAddFragment :
                 // Handle the menu selection
                 return when (menuItem.itemId) {
                     R.id.menu_save -> {
-                        isAccountTypeReadyToSave()
+                        saveAccountIfValid()
                         true
                     }
 
@@ -94,7 +94,7 @@ class AccountTypeAddFragment :
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    private fun isAccountTypeReadyToSave() {
+    private fun saveAccountIfValid() {
         if (validateAccountType()) {
             saveAccountType()
 
@@ -108,6 +108,16 @@ class AccountTypeAddFragment :
         }
     }
 
+    private fun validateAccountType(): Boolean {
+        if (binding.etAccTypeAdd.text.isNullOrBlank()) return false
+        for (accType in accountTypeList) {
+            if (accType == binding.etAccTypeAdd.text.toString()) {
+                return false
+            }
+        }
+        return true
+    }
+
     private fun saveAccountType() {
         val accountType = getCurrentAccountType()
         mainActivity.accountViewModel.addAccountType(accountType)
@@ -118,16 +128,6 @@ class AccountTypeAddFragment :
             )
         )
         gotoAccountTypesFragment()
-    }
-
-    private fun validateAccountType(): Boolean {
-        if (binding.etAccTypeAdd.text.isNullOrBlank()) return false
-        for (accType in accountTypeList) {
-            if (accType == binding.etAccTypeAdd.text.toString()) {
-                return false
-            }
-        }
-        return true
     }
 
     private fun gotoAccountTypesFragment() {

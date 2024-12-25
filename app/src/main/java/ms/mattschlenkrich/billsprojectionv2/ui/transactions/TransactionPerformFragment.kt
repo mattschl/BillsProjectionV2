@@ -67,186 +67,6 @@ class TransactionPerformFragment : Fragment(
         setClickActions()
     }
 
-    private fun setClickActions() {
-        setMenuActions()
-        binding.apply {
-            tvToAccount.setOnClickListener {
-                chooseToAccount()
-            }
-            tvFromAccount.setOnClickListener {
-                chooseFromAccount()
-            }
-            etTransDate.setOnClickListener {
-                chooseDate()
-            }
-            etAmount.setOnLongClickListener {
-                gotoCalculator()
-                false
-            }
-            etAmount.setOnFocusChangeListener { _, b ->
-                if (!b && etAmount.text.toString().isEmpty()) {
-                    etAmount.setText(
-                        nf.displayDollars(0.0)
-                    )
-                } else if (!b) {
-                    etAmount.setText(
-                        nf.displayDollars(
-                            nf.getDoubleFromDollars(
-                                etAmount.text.toString()
-                            )
-                        )
-                    )
-                    calculateRemainder()
-                }
-            }
-            etBudgetedAmount.setOnFocusChangeListener { _, b ->
-                if (!b && etBudgetedAmount.text.toString().isEmpty()) {
-                    etBudgetedAmount.setText(
-                        nf.displayDollars(0.0)
-                    )
-                } else if (!b) {
-                    etBudgetedAmount.setText(
-                        nf.displayDollars(
-                            nf.getDoubleFromDollars(
-                                etBudgetedAmount.text.toString()
-                            )
-                        )
-                    )
-                    calculateRemainder()
-                }
-                if (nf.getDoubleFromDollars(etBudgetedAmount.text.toString()) !=
-                    mainActivity.mainViewModel.getBudgetItem()!!
-                        .budgetItem!!.biProjectedAmount
-                ) {
-                    val mBudgetItem =
-                        mainActivity.mainViewModel.getBudgetItem()
-                    mBudgetItem!!.budgetItem!!.biProjectedAmount =
-                        nf.getDoubleFromDollars(
-                            etBudgetedAmount.text.toString()
-                        )
-                    mainActivity.mainViewModel.setBudgetItem(mBudgetItem)
-                }
-            }
-            btnSplit.setOnClickListener {
-                splitTransaction()
-            }
-        }
-    }
-
-    private fun splitTransaction() {
-        mainActivity.mainViewModel.setSplitTransactionDetailed(null)
-        mainActivity.mainViewModel.setTransferNum(0.0)
-        if (mFromAccount != null &&
-            nf.getDoubleFromDollars(binding.etAmount.text.toString()) > 2.0
-        ) {
-            mainActivity.mainViewModel.setCallingFragments(
-                mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
-            )
-            mainActivity.mainViewModel
-                .setTransactionDetailed(getTransactionDetailed())
-            mView.findNavController().navigate(
-                TransactionPerformFragmentDirections
-                    .actionTransactionPerformFragmentToTransactionSplitFragment()
-            )
-        }
-    }
-
-    private fun gotoCalculator() {
-        mainActivity.mainViewModel.setTransferNum(
-            nf.getDoubleFromDollars(
-                binding.etAmount.text.toString().ifBlank {
-                    "0.0"
-                }
-            )
-        )
-        mainActivity.mainViewModel.setReturnTo(TAG)
-        mainActivity.mainViewModel
-            .setTransactionDetailed(getTransactionDetailed())
-        mView.findNavController().navigate(
-            TransactionPerformFragmentDirections
-                .actionTransactionPerformFragmentToCalcFragment()
-        )
-    }
-
-    private fun calculateRemainder() {
-        binding.apply {
-            val amt =
-                if (etAmount.text.toString().isNotBlank()) {
-                    nf.getDoubleFromDollars(
-                        etAmount.text.toString()
-                    )
-                } else {
-                    0.0
-                }
-            val budgeted = nf.getDoubleFromDollars(
-                etBudgetedAmount.text.toString()
-            )
-            tvRemainder.text =
-                nf.displayDollars(budgeted - amt)
-            btnSplit.isEnabled = amt > 0 && mFromAccount != null
-        }
-    }
-
-    private fun chooseDate() {
-        binding.apply {
-            val curDateAll = etTransDate.text.toString()
-                .split("-")
-            val datePickerDialog = DatePickerDialog(
-                requireContext(),
-                { _, year, monthOfYear, dayOfMonth ->
-                    val month = monthOfYear + 1
-                    val display = "$year-${
-                        month.toString()
-                            .padStart(2, '0')
-                    }-${
-                        dayOfMonth.toString().padStart(2, '0')
-                    }"
-                    etTransDate.text = display
-                },
-                curDateAll[0].toInt(),
-                curDateAll[1].toInt() - 1,
-                curDateAll[2].toInt()
-            )
-            datePickerDialog.setTitle("Choose the first date")
-            datePickerDialog.show()
-        }
-    }
-
-    private fun chooseFromAccount() {
-        mainActivity.mainViewModel.setCallingFragments(
-            "${mainActivity.mainViewModel.getCallingFragments()}, $TAG"
-        )
-        mainActivity.mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
-        mainActivity.mainViewModel
-            .setTransactionDetailed(getTransactionDetailed())
-        mView.findNavController().navigate(
-            TransactionPerformFragmentDirections
-                .actionTransactionPerformFragmentToAccountsFragment()
-        )
-    }
-
-    private fun chooseToAccount() {
-        mainActivity.mainViewModel.setCallingFragments(
-            "${mainActivity.mainViewModel.getCallingFragments()}, $TAG"
-        )
-        mainActivity.mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
-        mainActivity.mainViewModel
-            .setTransactionDetailed(getTransactionDetailed())
-        mView.findNavController().navigate(
-            TransactionPerformFragmentDirections
-                .actionTransactionPerformFragmentToAccountsFragment()
-        )
-    }
-
-    private fun getTransactionDetailed(): TransactionDetailed {
-        return TransactionDetailed(
-            getCurrentTransactionForSave(),
-            mBudgetRule,
-            mToAccount,
-            mFromAccount
-        )
-    }
-
     private fun populateValues() {
         if (mainActivity.mainViewModel.getTransactionDetailed() != null
         ) {
@@ -404,6 +224,72 @@ class TransactionPerformFragment : Fragment(
         }
     }
 
+    private fun setClickActions() {
+        setMenuActions()
+        binding.apply {
+            tvToAccount.setOnClickListener {
+                chooseToAccount()
+            }
+            tvFromAccount.setOnClickListener {
+                chooseFromAccount()
+            }
+            etTransDate.setOnClickListener {
+                chooseDate()
+            }
+            etAmount.setOnLongClickListener {
+                gotoCalculator()
+                false
+            }
+            etAmount.setOnFocusChangeListener { _, b ->
+                if (!b && etAmount.text.toString().isEmpty()) {
+                    etAmount.setText(
+                        nf.displayDollars(0.0)
+                    )
+                } else if (!b) {
+                    etAmount.setText(
+                        nf.displayDollars(
+                            nf.getDoubleFromDollars(
+                                etAmount.text.toString()
+                            )
+                        )
+                    )
+                    calculateRemainder()
+                }
+            }
+            etBudgetedAmount.setOnFocusChangeListener { _, b ->
+                if (!b && etBudgetedAmount.text.toString().isEmpty()) {
+                    etBudgetedAmount.setText(
+                        nf.displayDollars(0.0)
+                    )
+                } else if (!b) {
+                    etBudgetedAmount.setText(
+                        nf.displayDollars(
+                            nf.getDoubleFromDollars(
+                                etBudgetedAmount.text.toString()
+                            )
+                        )
+                    )
+                    calculateRemainder()
+                }
+                if (nf.getDoubleFromDollars(etBudgetedAmount.text.toString()) !=
+                    mainActivity.mainViewModel.getBudgetItem()!!
+                        .budgetItem!!.biProjectedAmount
+                ) {
+                    val mBudgetItem =
+                        mainActivity.mainViewModel.getBudgetItem()
+                    mBudgetItem!!.budgetItem!!.biProjectedAmount =
+                        nf.getDoubleFromDollars(
+                            etBudgetedAmount.text.toString()
+                        )
+                    mainActivity.mainViewModel.setBudgetItem(mBudgetItem)
+                }
+            }
+            btnSplit.setOnClickListener {
+                splitTransaction()
+            }
+        }
+    }
+
     private fun setMenuActions() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
@@ -426,6 +312,103 @@ class TransactionPerformFragment : Fragment(
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
+    private fun splitTransaction() {
+        mainActivity.mainViewModel.setSplitTransactionDetailed(null)
+        mainActivity.mainViewModel.setTransferNum(0.0)
+        if (mFromAccount != null &&
+            nf.getDoubleFromDollars(binding.etAmount.text.toString()) > 2.0
+        ) {
+            mainActivity.mainViewModel.setCallingFragments(
+                mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
+            )
+            mainActivity.mainViewModel
+                .setTransactionDetailed(getTransactionDetailed())
+            mView.findNavController().navigate(
+                TransactionPerformFragmentDirections
+                    .actionTransactionPerformFragmentToTransactionSplitFragment()
+            )
+        }
+    }
+
+    private fun calculateRemainder() {
+        binding.apply {
+            val amt =
+                if (etAmount.text.toString().isNotBlank()) {
+                    nf.getDoubleFromDollars(
+                        etAmount.text.toString()
+                    )
+                } else {
+                    0.0
+                }
+            val budgeted = nf.getDoubleFromDollars(
+                etBudgetedAmount.text.toString()
+            )
+            tvRemainder.text =
+                nf.displayDollars(budgeted - amt)
+            btnSplit.isEnabled = amt > 0 && mFromAccount != null
+        }
+    }
+
+    private fun chooseDate() {
+        binding.apply {
+            val curDateAll = etTransDate.text.toString()
+                .split("-")
+            val datePickerDialog = DatePickerDialog(
+                requireContext(),
+                { _, year, monthOfYear, dayOfMonth ->
+                    val month = monthOfYear + 1
+                    val display = "$year-${
+                        month.toString()
+                            .padStart(2, '0')
+                    }-${
+                        dayOfMonth.toString().padStart(2, '0')
+                    }"
+                    etTransDate.text = display
+                },
+                curDateAll[0].toInt(),
+                curDateAll[1].toInt() - 1,
+                curDateAll[2].toInt()
+            )
+            datePickerDialog.setTitle("Choose the first date")
+            datePickerDialog.show()
+        }
+    }
+
+    private fun chooseFromAccount() {
+        mainActivity.mainViewModel.setCallingFragments(
+            "${mainActivity.mainViewModel.getCallingFragments()}, $TAG"
+        )
+        mainActivity.mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
+        mainActivity.mainViewModel
+            .setTransactionDetailed(getTransactionDetailed())
+        mView.findNavController().navigate(
+            TransactionPerformFragmentDirections
+                .actionTransactionPerformFragmentToAccountsFragment()
+        )
+    }
+
+    private fun chooseToAccount() {
+        mainActivity.mainViewModel.setCallingFragments(
+            "${mainActivity.mainViewModel.getCallingFragments()}, $TAG"
+        )
+        mainActivity.mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
+        mainActivity.mainViewModel
+            .setTransactionDetailed(getTransactionDetailed())
+        mView.findNavController().navigate(
+            TransactionPerformFragmentDirections
+                .actionTransactionPerformFragmentToAccountsFragment()
+        )
+    }
+
+    private fun getTransactionDetailed(): TransactionDetailed {
+        return TransactionDetailed(
+            getCurrentTransactionForSave(),
+            mBudgetRule,
+            mToAccount,
+            mFromAccount
+        )
     }
 
     private fun performTransactionIfValid() {
@@ -569,13 +552,29 @@ class TransactionPerformFragment : Fragment(
         }
     }
 
+    private fun gotoCalculator() {
+        mainActivity.mainViewModel.setTransferNum(
+            nf.getDoubleFromDollars(
+                binding.etAmount.text.toString().ifBlank {
+                    "0.0"
+                }
+            )
+        )
+        mainActivity.mainViewModel.setReturnTo(TAG)
+        mainActivity.mainViewModel
+            .setTransactionDetailed(getTransactionDetailed())
+        mView.findNavController().navigate(
+            TransactionPerformFragmentDirections
+                .actionTransactionPerformFragmentToCalcFragment()
+        )
+    }
+
     private fun gotoBudgetViewFragment() {
         mView.findNavController().navigate(
             TransactionPerformFragmentDirections
                 .actionTransactionPerformFragmentToBudgetViewFragment()
         )
     }
-
 
     override fun onDestroy() {
         super.onDestroy()

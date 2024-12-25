@@ -59,35 +59,6 @@ class BudgetRuleFragment :
         createClickActions()
     }
 
-    private fun removeFragmentReference() {
-        mainActivity.mainViewModel.setCallingFragments(
-            mainActivity.mainViewModel.getCallingFragments()!!
-                .replace(", $TAG", "")
-        )
-    }
-
-    private fun setMenu() {
-        val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
-    }
-
-    private fun createClickActions() {
-        binding.fabAddNew.setOnClickListener {
-            gotoBudgetRuleAddFragment()
-        }
-        setMenu()
-    }
-
-    private fun gotoBudgetRuleAddFragment() {
-        mainActivity.mainViewModel.setBudgetRuleDetailed(null)
-        mainActivity.mainViewModel.setCallingFragments(
-            mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
-        )
-        val direction = BudgetRuleFragmentDirections
-            .actionBudgetRuleFragmentToBudgetRuleAddFragment()
-        mView.findNavController().navigate(direction)
-    }
-
     private fun setupRecyclerView() {
         budgetRuleAdapter = BudgetRuleAdapter(
             mainActivity.budgetRuleViewModel,
@@ -123,6 +94,18 @@ class BudgetRuleFragment :
         }
     }
 
+    private fun createClickActions() {
+        binding.fabAddNew.setOnClickListener {
+            gotoBudgetRuleAddFragment()
+        }
+        setMenu()
+    }
+
+    private fun setMenu() {
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.search_menu, menu)
         val mMenuSearch = menu.findItem(R.id.menu_search)
@@ -151,6 +134,23 @@ class BudgetRuleFragment :
         mainActivity.budgetRuleViewModel.searchBudgetRules(searchQuery).observe(
             this
         ) { list -> budgetRuleAdapter.differ.submitList(list) }
+    }
+
+    private fun gotoBudgetRuleAddFragment() {
+        mainActivity.mainViewModel.setBudgetRuleDetailed(null)
+        mainActivity.mainViewModel.setCallingFragments(
+            mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
+        )
+        val direction = BudgetRuleFragmentDirections
+            .actionBudgetRuleFragmentToBudgetRuleAddFragment()
+        mView.findNavController().navigate(direction)
+    }
+
+    private fun removeFragmentReference() {
+        mainActivity.mainViewModel.setCallingFragments(
+            mainActivity.mainViewModel.getCallingFragments()!!
+                .replace(", $TAG", "")
+        )
     }
 
     override fun onDestroy() {

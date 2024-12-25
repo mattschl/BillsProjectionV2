@@ -63,20 +63,27 @@ class AccountTypeUpdateFragment :
         setClickActions()
     }
 
+    private fun populateValues() {
+        getAccountTypeListForValidation()
+        binding.apply {
+            etAccTypeUpdate.setText(currentAccountType.accountType)
+            chkAccountTypeUKeepTotals.isChecked =
+                currentAccountType.keepTotals
+            chkAccountTypeUKeepOwing.isChecked =
+                currentAccountType.tallyOwing
+            chkAccTypeAddIsAsset.isChecked =
+                currentAccountType.isAsset
+            chkAccountTypeUDisplayAsset.isChecked =
+                currentAccountType.displayAsAsset
+            chkAccTypeUAllowPending.isChecked =
+                currentAccountType.allowPending
+        }
+    }
+
     private fun setClickActions() {
         setMenuActions()
         binding.fabAccountTypeUpdate.setOnClickListener {
             isAccountTypeReadyToUpdate()
-        }
-    }
-
-    private fun getAccountTypeListForValidation() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val typeList =
-                async {
-                    mainActivity.accountViewModel.getAccountTypeNames()
-                }
-            accountTypeList = typeList.await()
         }
     }
 
@@ -100,6 +107,16 @@ class AccountTypeUpdateFragment :
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
+    private fun getAccountTypeListForValidation() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val typeList =
+                async {
+                    mainActivity.accountViewModel.getAccountTypeNames()
+                }
+            accountTypeList = typeList.await()
+        }
     }
 
     private fun isAccountTypeReadyToUpdate() {
@@ -131,6 +148,18 @@ class AccountTypeUpdateFragment :
         }
     }
 
+    private fun validateAccountType(): Boolean {
+        binding.apply {
+            if (etAccTypeUpdate.text.isNullOrBlank()) return false
+            for (accType in accountTypeList) {
+                if (accType == etAccTypeUpdate.text.toString()) {
+                    return false
+                }
+            }
+            return true
+        }
+    }
+
     private fun updateAccountType() {
         binding.apply {
             mainActivity.accountViewModel.updateAccountType(
@@ -148,26 +177,7 @@ class AccountTypeUpdateFragment :
                 )
 
             )
-            val direction = AccountTypeUpdateFragmentDirections
-                .actionAccountTypeUpdateFragmentToAccountTypesFragment()
-            mView?.findNavController()?.navigate(direction)
-        }
-    }
-
-    private fun populateValues() {
-        getAccountTypeListForValidation()
-        binding.apply {
-            etAccTypeUpdate.setText(currentAccountType.accountType)
-            chkAccountTypeUKeepTotals.isChecked =
-                currentAccountType.keepTotals
-            chkAccountTypeUKeepOwing.isChecked =
-                currentAccountType.tallyOwing
-            chkAccTypeAddIsAsset.isChecked =
-                currentAccountType.isAsset
-            chkAccountTypeUDisplayAsset.isChecked =
-                currentAccountType.displayAsAsset
-            chkAccTypeUAllowPending.isChecked =
-                currentAccountType.allowPending
+            gotoAccoutTypesUpdate()
         }
     }
 
@@ -187,21 +197,13 @@ class AccountTypeUpdateFragment :
             currentAccountType.typeId,
             df.getCurrentTimeAsString()
         )
+        gotoAccoutTypesUpdate()
+    }
+
+    private fun gotoAccoutTypesUpdate() {
         val direction = AccountTypeUpdateFragmentDirections
             .actionAccountTypeUpdateFragmentToAccountTypesFragment()
         mView?.findNavController()?.navigate(direction)
-    }
-
-    private fun validateAccountType(): Boolean {
-        binding.apply {
-            if (etAccTypeUpdate.text.isNullOrBlank()) return false
-            for (accType in accountTypeList) {
-                if (accType == etAccTypeUpdate.text.toString()) {
-                    return false
-                }
-            }
-            return true
-        }
     }
 
     override fun onDestroy() {

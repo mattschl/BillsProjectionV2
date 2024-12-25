@@ -172,7 +172,7 @@ class BudgetItemUpdateFragment : Fragment(
                 false
             }
             fabUpdateDone.setOnClickListener {
-                isBudgetItemReadyToUpdate()
+                updateBudgetItemIfValid()
             }
             etProjectedAmount.setOnLongClickListener {
                 gotoCalculator()
@@ -193,7 +193,7 @@ class BudgetItemUpdateFragment : Fragment(
                 // Handle the menu selection
                 return when (menuItem.itemId) {
                     R.id.menu_delete -> {
-                        chooseToDeleteBudgetItem()
+                        confirmDeleteBudgetItem()
                         true
                     }
 
@@ -249,7 +249,7 @@ class BudgetItemUpdateFragment : Fragment(
         }
     }
 
-    private fun isBudgetItemReadyToUpdate() {
+    private fun updateBudgetItemIfValid() {
         val mess = validateBudgetItem()
         if (mess == ANSWER_OK) {
             updateBudgetItem()
@@ -260,6 +260,30 @@ class BudgetItemUpdateFragment : Fragment(
                 mess,
                 Toast.LENGTH_LONG
             ).show()
+        }
+    }
+
+    private fun validateBudgetItem(): String {
+        binding.apply {
+            val errorMes =
+                if (etBudgetItemName.text.isNullOrBlank()) {
+                    "     Error!!\n" +
+                            "Please enter a name or description"
+                } else if (mBudgetRuleDetailed.toAccount == null) {
+                    "     Error!!\n" +
+                            "There needs to be an account money will go to."
+                } else if (mBudgetRuleDetailed.fromAccount == null
+                ) {
+                    "     Error!!\n" +
+                            "There needs to be an account money will come from."
+                } else if (etProjectedAmount.text.isNullOrEmpty()
+                ) {
+                    "     Error!!\n" +
+                            "Please enter a budget amount (including zero)"
+                } else {
+                    ANSWER_OK
+                }
+            return errorMes
         }
     }
 
@@ -308,42 +332,6 @@ class BudgetItemUpdateFragment : Fragment(
         }
     }
 
-    private fun chooseToDeleteBudgetItem() {
-        AlertDialog.Builder(activity).apply {
-            setTitle("Delete Budget Item")
-            setMessage("Are you sure you want to delete this budget item?")
-            setPositiveButton("Delete") { _, _ ->
-                deleteBudgetItem()
-                gotoCallingFragment()
-            }
-            setNegativeButton("Cancel", null)
-        }.create().show()
-    }
-
-    private fun validateBudgetItem(): String {
-        binding.apply {
-            val errorMes =
-                if (etBudgetItemName.text.isNullOrBlank()) {
-                    "     Error!!\n" +
-                            "Please enter a name or description"
-                } else if (mBudgetRuleDetailed.toAccount == null) {
-                    "     Error!!\n" +
-                            "There needs to be an account money will go to."
-                } else if (mBudgetRuleDetailed.fromAccount == null
-                ) {
-                    "     Error!!\n" +
-                            "There needs to be an account money will come from."
-                } else if (etProjectedAmount.text.isNullOrEmpty()
-                ) {
-                    "     Error!!\n" +
-                            "Please enter a budget amount (including zero)"
-                } else {
-                    ANSWER_OK
-                }
-            return errorMes
-        }
-    }
-
     private fun deleteBudgetItem() {
         binding.apply {
             mainActivity.budgetItemViewModel.deleteBudgetItem(
@@ -353,6 +341,18 @@ class BudgetItemUpdateFragment : Fragment(
             )
 
         }
+    }
+
+    private fun confirmDeleteBudgetItem() {
+        AlertDialog.Builder(activity).apply {
+            setTitle("Delete Budget Item")
+            setMessage("Are you sure you want to delete this budget item?")
+            setPositiveButton("Delete") { _, _ ->
+                deleteBudgetItem()
+                gotoCallingFragment()
+            }
+            setNegativeButton("Cancel", null)
+        }.create().show()
     }
 
     private fun gotoCalculator() {
