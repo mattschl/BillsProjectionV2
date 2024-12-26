@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.BALANCE
 import ms.mattschlenkrich.billsprojectionv2.common.BUDGETED
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_ADD
@@ -46,7 +47,7 @@ class AccountAddFragment :
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
-        mainActivity.title = "Add a new Account"
+        mainActivity.title = getString(R.string.add_a_new_account)
         mView = binding.root
         return mView
     }
@@ -129,22 +130,22 @@ class AccountAddFragment :
             var display =
                 if (
                     accountWithType.accountType.keepTotals
-                ) "Transactions will be calculated\n" else ""
+                ) getString(R.string.this_account_does_not_keep_a_balance_owing_amount) else ""
             display += if (
                 accountWithType.accountType.isAsset
-            ) "This is an asset \n" else ""
+            ) getString(R.string.this_is_an_asset) else ""
             display += if (
                 accountWithType.accountType.displayAsAsset
-            ) "This will be used for the budget \n" else ""
+            ) getString(R.string.this_will_be_used_for_the_budget) else ""
             display += if (
                 accountWithType.accountType.tallyOwing)
-                "Balance owing will be calculated " else ""
+                getString(R.string.balance_owing_will_be_calculated) else ""
             display += if (
                 accountWithType.accountType.allowPending)
-                "Transactions may be postponed " else ""
+                getString(R.string.transactions_may_be_postponed) else ""
             if (display.isEmpty()) {
                 display =
-                    "This account does not keep a balance/owing amount"
+                    getString(R.string.this_account_does_not_keep_a_balance_owing_amount)
             }
             tvTypeDetails.text = display
         }
@@ -165,7 +166,7 @@ class AccountAddFragment :
         setMenuActions()
         binding.apply {
             tvAccAddType.setOnClickListener {
-                gotoAccountTypesFragment()
+                gotoAccountTypes()
             }
             etAccAddBalance.setOnLongClickListener {
                 gotoCalculator(BALANCE)
@@ -194,7 +195,7 @@ class AccountAddFragment :
                 // Handle the menu selection
                 return when (menuItem.itemId) {
                     R.id.menu_save -> {
-                        isAccountReadyToSave(mView)
+                        isAccountReadyToSave()
                         true
                     }
 
@@ -221,10 +222,10 @@ class AccountAddFragment :
         }
     }
 
-    private fun isAccountReadyToSave(view: View) {
+    private fun isAccountReadyToSave() {
         val mes = validateAccount()
-        if (mes == "Ok") {
-            saveAccount(view)
+        if (mes == ANSWER_OK) {
+            saveAccount()
         } else {
             Toast.makeText(
                 mView.context,
@@ -234,7 +235,7 @@ class AccountAddFragment :
         }
     }
 
-    private fun saveAccount(view: View) {
+    private fun saveAccount() {
         mainActivity.mainViewModel.setCallingFragments(
             mainActivity.mainViewModel.getCallingFragments()!!
                 .replace(", $FRAG_ACCOUNT_ADD", "")
@@ -247,9 +248,7 @@ class AccountAddFragment :
                 mainActivity.mainViewModel.getAccountWithType()?.accountType!!
             )
         )
-        val direction = AccountAddFragmentDirections
-            .actionAccountAddFragmentToAccountsFragment()
-        view.findNavController().navigate(direction)
+        gotoAccountsFragment()
     }
 
     private fun validateAccount(): String {
@@ -268,23 +267,23 @@ class AccountAddFragment :
                 }
             }
             val errorMess = if (nameIsBlank) {
-                "     Error!!\n" +
+                getString(R.string.error) +
                         "Please enter a name"
             } else if (nameFound) {
-                "     Error!!\n" +
+                getString(R.string.error) +
                         "This account rule already exists."
             } else if (mainActivity.mainViewModel.getAccountWithType()?.accountType == null
             ) {
-                "     Error!!\n" +
+                getString(R.string.error) +
                         "This account must have an account Type."
             } else {
-                "Ok"
+                ANSWER_OK
             }
             return errorMess
         }
     }
 
-    private fun gotoAccountTypesFragment() {
+    private fun gotoAccountTypes() {
         mainActivity.mainViewModel.setCallingFragments(
             mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
         )
@@ -294,9 +293,7 @@ class AccountAddFragment :
                 null
             )
         )
-        val direction = AccountAddFragmentDirections
-            .actionAccountAddFragmentToAccountTypesFragment()
-        mView.findNavController().navigate(direction)
+        gotoAccountTypesFragment()
 
     }
 
@@ -339,6 +336,24 @@ class AccountAddFragment :
                 mainActivity.mainViewModel.getAccountWithType()?.accountType
             )
         )
+        gotoCalculatorFragment()
+    }
+
+    private fun gotoAccountsFragment() {
+        mView.findNavController().navigate(
+            AccountAddFragmentDirections
+                .actionAccountAddFragmentToAccountsFragment()
+        )
+    }
+
+    private fun gotoAccountTypesFragment() {
+        mView.findNavController().navigate(
+            AccountAddFragmentDirections
+                .actionAccountAddFragmentToAccountTypesFragment()
+        )
+    }
+
+    private fun gotoCalculatorFragment() {
         mView.findNavController().navigate(
             AccountAddFragmentDirections
                 .actionAccountAddFragmentToCalcFragment()
