@@ -179,4 +179,27 @@
     <string name="delete_future_predictions">Clear future predictions</string>
     <string name="pick_a_date_to_project_forward_to">Pick a date to project forward to.</string>
     <string name="blank" />
+    <string name="view_or_edit">View or Edit</string>
+    <string name="this_budget_rule">" this Budget Rule"</string>
+    <string name="delete">Delete</string>
+    <string name="view_a_summary_of_transactions_for">View a summary of transactions for</string>
+    <string name="create_a_scheduled_item_for">Create a scheduled item for</string>
+    <string name="choose_an_action_for">"Choose an action for "</string>
+    <string name="this_account">" this Account"</string>
+    <string name="balance_will_be_updated">Balance will be updated</string>
+    <string name="error">"     Error!!\n"</string>
+    <string name="add_a_new_account">Add a new Account</string>
+    <string name="transactions_will_be_calculated">Transactions will be calculated\n</string>
+    <string name="this_is_an_asset">This is an asset\n</string>
+    <string name="this_will_be_used_for_the_budget">This will be used for the budget\n</string>
+    <string name="balance_owing_will_be_calculated">Balance owing will be calculated\n</string>
+    <string name="transactions_may_be_postponed">Transactions may be postponed\n</string>
+    <string name="this_account_does_not_keep_a_balance_owing_amount">This account does not keep a balance/owing amount\n</string>
+    <string name="please_enter_a_name">Please enter a name</string>
+    <string name="this_account_rule_already_exists">This account rule already exists.</string>
+    <string name="this_account_must_have_an_account_type">This account must have an account Type.</string>
+    <string name="will_calculate_amount_owing">Will calculate amount owing</string>
+    <string name="this_will_display_in_the_budget">This will display in the budget</string>
+    <string name="transactions_can_be_delayed">Transactions can be delayed</string>
+    <string name="deleted">"      **DELETED**"</string>
 </resources>
