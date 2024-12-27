@@ -208,4 +208,19 @@
     <string name="editing_is_not_allowed_right_now">Editing is not allowed right now</string>
     <string name="cancel">Cancel</string>
     <string name="no_info">No info</string>
+    <string name="enter_a_unique_name_for_this_account_type">Enter a unique Name for this Account Type</string>
+    <string name="rename_account_type">Rename Account Type?</string>
+    <string name="are_you_sure_you_want_to_rename_this_account_type">"Are you sure you want to rename this Account Type?\n "</string>
+    <string name="note">"      NOTE:\n"</string>
+    <string name="this_will_not_replace_an_existing_account_type">This will NOT replace an existing Account Type</string>
+    <string name="enter_a_name_for_this_account_type">Enter a name for this Account Type</string>
+    <string name="delete_account_type">Delete Account Type?</string>
+    <string name="are_you_sure_you_want_to_delete_this_account_type">Are you sure you want to delete this Account Type?</string>
+    <string name="update_account">Update Account</string>
+    <string name="this_budget_rule_already_exists">This budget rule already exists.</string>
+    <string name="please_choose_an_account_type">Please choose an account Type</string>
+    <string name="rename_account">Rename Account?</string>
+    <string name="are_you_sure_you_want_to_rename_this_account">"Are you sure you want to rename this Account?\n "</string>
+    <string name="delete_account">Delete Account?</string>
+    <string name="are_you_sure_you_want_to_delete_this_account">"Are you sure you want to delete this account? "</string>
 </resources>

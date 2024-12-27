@@ -101,7 +101,7 @@ class AccountTypeAddFragment :
         } else {
             Toast.makeText(
                 mView.context,
-                "Enter a unique Name for this Account Type",
+                getString(R.string.enter_a_unique_name_for_this_account_type),
                 Toast.LENGTH_LONG
             ).show()
 
@@ -118,28 +118,6 @@ class AccountTypeAddFragment :
         return true
     }
 
-    private fun saveAccountType() {
-        val accountType = getCurrentAccountType()
-        mainActivity.accountViewModel.addAccountType(accountType)
-        mainActivity.mainViewModel.setAccountWithType(
-            AccountWithType(
-                mainActivity.mainViewModel.getAccountWithType()!!.account,
-                accountType
-            )
-        )
-        gotoAccountTypesFragment()
-    }
-
-    private fun gotoAccountTypesFragment() {
-        mainActivity.mainViewModel.setCallingFragments(
-            mainActivity.mainViewModel.getCallingFragments()!!
-                .replace(", $FRAG_ACCOUNT_TYPES", "")
-        )
-        val direction = AccountTypeAddFragmentDirections
-            .actionAccountTypeAddFragmentToAccountTypesFragment()
-        mView.findNavController().navigate(direction)
-    }
-
     private fun getCurrentAccountType() = AccountType(
         nf.generateId(),
         binding.etAccTypeAdd.text.toString().trim(),
@@ -152,6 +130,33 @@ class AccountTypeAddFragment :
         false,
         df.getCurrentTimeAsString()
     )
+
+    private fun saveAccountType() {
+        val accountType = getCurrentAccountType()
+        mainActivity.accountViewModel.addAccountType(accountType)
+        mainActivity.mainViewModel.setAccountWithType(
+            AccountWithType(
+                mainActivity.mainViewModel.getAccountWithType()!!.account,
+                accountType
+            )
+        )
+        gotoAccountTypes()
+    }
+
+    private fun gotoAccountTypes() {
+        mainActivity.mainViewModel.setCallingFragments(
+            mainActivity.mainViewModel.getCallingFragments()!!
+                .replace(", $FRAG_ACCOUNT_TYPES", "")
+        )
+        gotoAccountTypesFragment()
+    }
+
+    private fun gotoAccountTypesFragment() {
+        mView.findNavController().navigate(
+            AccountTypeAddFragmentDirections
+                .actionAccountTypeAddFragmentToAccountTypesFragment()
+        )
+    }
 
     override fun onDestroy() {
         super.onDestroy()

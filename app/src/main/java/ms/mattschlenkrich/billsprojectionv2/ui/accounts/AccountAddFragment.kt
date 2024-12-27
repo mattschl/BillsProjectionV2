@@ -268,14 +268,14 @@ class AccountAddFragment :
             }
             val errorMess = if (nameIsBlank) {
                 getString(R.string.error) +
-                        "Please enter a name"
+                        getString(R.string.please_enter_a_name)
             } else if (nameFound) {
                 getString(R.string.error) +
-                        "This account rule already exists."
+                        getString(R.string.this_account_rule_already_exists)
             } else if (mainActivity.mainViewModel.getAccountWithType()?.accountType == null
             ) {
                 getString(R.string.error) +
-                        "This account must have an account Type."
+                        getString(R.string.this_account_must_have_an_account_type)
             } else {
                 ANSWER_OK
             }
@@ -303,7 +303,7 @@ class AccountAddFragment :
                 mainActivity.mainViewModel.setTransferNum(
                     nf.getDoubleFromDollars(
                         binding.etAccAddBalance.text.toString().ifBlank {
-                            "0.0"
+                            getString(R.string.zero_double)
                         }
                     )
                 )
@@ -313,7 +313,7 @@ class AccountAddFragment :
                 mainActivity.mainViewModel.setTransferNum(
                     nf.getDoubleFromDollars(
                         binding.etAccAddOwing.text.toString().ifBlank {
-                            "0.0"
+                            getString(R.string.zero_double)
                         }
                     )
                 )
@@ -323,7 +323,7 @@ class AccountAddFragment :
                 mainActivity.mainViewModel.setTransferNum(
                     nf.getDoubleFromDollars(
                         binding.etAccAddBudgeted.text.toString().ifBlank {
-                            "0.0"
+                            getString(R.string.zero_double)
                         }
                     )
                 )

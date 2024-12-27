@@ -30,6 +30,7 @@ class AccountTypesFragment
 
     private var _binding: FragmentAccountTypesBinding? = null
     private val binding get() = _binding!!
+    private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var accountTypeAdapter: AccountTypeAdapter
 
@@ -42,9 +43,11 @@ class AccountTypesFragment
             inflater, container, false
         )
 //        Log.d(TAG, "$TAG is entered")
+        mView = binding.root
         mainActivity = (activity as MainActivity)
+
         mainActivity.title = "Choose an Account Type"
-        return binding.root
+        return mView
     }
 
     override fun onViewCreated(
@@ -60,7 +63,7 @@ class AccountTypesFragment
 
     private fun setupRecyclerView() {
         accountTypeAdapter = AccountTypeAdapter(
-            mainActivity.mainViewModel
+            mainActivity.mainViewModel, mView
         )
 
         binding.rvAccountTypes.apply {
@@ -94,7 +97,7 @@ class AccountTypesFragment
 
     private fun setClickActions() {
         binding.fabAddAccountType.setOnClickListener {
-            gotoAccountTypeAddFragment(it)
+            gotoAccountTypeAdd()
         }
     }
 
@@ -128,13 +131,18 @@ class AccountTypesFragment
         ) { list -> accountTypeAdapter.differ.submitList(list) }
     }
 
-    private fun gotoAccountTypeAddFragment(it: View) {
+    private fun gotoAccountTypeAdd() {
         mainActivity.mainViewModel.setCallingFragments(
             mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
         )
-        val direction = AccountTypesFragmentDirections
-            .actionAccountTypesFragmentToAccountTypeAddFragment()
-        it.findNavController().navigate(direction)
+        gotoAccountYpeAddFragment()
+    }
+
+    private fun gotoAccountYpeAddFragment() {
+        mView.findNavController().navigate(
+            AccountTypesFragmentDirections
+                .actionAccountTypesFragmentToAccountTypeAddFragment()
+        )
     }
 
     override fun onDestroy() {
