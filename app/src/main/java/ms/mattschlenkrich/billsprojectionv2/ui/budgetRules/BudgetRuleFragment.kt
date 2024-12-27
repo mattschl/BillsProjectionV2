@@ -44,7 +44,7 @@ class BudgetRuleFragment :
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
-        mainActivity.title = "Choose a Budget Rule"
+        mainActivity.title = getString(R.string.choose_a_budget_rule)
 //        Log.d(TAG, "$TAG is entered")
         mView = binding.root
         return mView
@@ -57,6 +57,13 @@ class BudgetRuleFragment :
         removeFragmentReference()
         setupRecyclerView()
         createClickActions()
+    }
+
+    private fun removeFragmentReference() {
+        mainActivity.mainViewModel.setCallingFragments(
+            mainActivity.mainViewModel.getCallingFragments()!!
+                .replace(", $TAG", "")
+        )
     }
 
     private fun setupRecyclerView() {
@@ -95,10 +102,10 @@ class BudgetRuleFragment :
     }
 
     private fun createClickActions() {
-        binding.fabAddNew.setOnClickListener {
-            gotoBudgetRuleAddFragment()
-        }
         setMenu()
+        binding.fabAddNew.setOnClickListener {
+            gotoBudgetRuleAdd()
+        }
     }
 
     private fun setMenu() {
@@ -136,20 +143,18 @@ class BudgetRuleFragment :
         ) { list -> budgetRuleAdapter.differ.submitList(list) }
     }
 
-    private fun gotoBudgetRuleAddFragment() {
+    private fun gotoBudgetRuleAdd() {
         mainActivity.mainViewModel.setBudgetRuleDetailed(null)
         mainActivity.mainViewModel.setCallingFragments(
             mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
         )
-        val direction = BudgetRuleFragmentDirections
-            .actionBudgetRuleFragmentToBudgetRuleAddFragment()
-        mView.findNavController().navigate(direction)
+        gotoBudgetRuleAddFragment()
     }
 
-    private fun removeFragmentReference() {
-        mainActivity.mainViewModel.setCallingFragments(
-            mainActivity.mainViewModel.getCallingFragments()!!
-                .replace(", $TAG", "")
+    private fun gotoBudgetRuleAddFragment() {
+        mView.findNavController().navigate(
+            BudgetRuleFragmentDirections
+                .actionBudgetRuleFragmentToBudgetRuleAddFragment()
         )
     }
 
