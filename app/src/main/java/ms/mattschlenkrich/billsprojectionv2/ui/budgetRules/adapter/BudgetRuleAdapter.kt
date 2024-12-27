@@ -132,15 +132,15 @@ class BudgetRuleAdapter(
         if (!mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_ANALYSIS)) {
             AlertDialog.Builder(mView.context)
                 .setTitle(
-                    "Choose an action for " +
+                    mView.context.getString(R.string.choose_an_action_for) +
                             budgetRuleDetailed.budgetRule!!.budgetRuleName
                 )
                 .setItems(
                     arrayOf(
-                        "View or Edit this Budget Rule",
-                        "Delete this Budget Rule",
-                        "View a summary of transactions for this rule",
-                        "Create a scheduled item with this Rule"
+                        mView.context.getString(R.string.view_or_edit_this_budget_rule),
+                        mView.context.getString(R.string.delete_this_budget_rule),
+                        mView.context.getString(R.string.view_a_summary_of_transactions_for_this_budget_rule),
+                        mView.context.getString(R.string.create_a_scheduled_item_with_this_budget_rule)
                     )
                 ) { _, pos ->
                     when (pos) {
@@ -155,7 +155,7 @@ class BudgetRuleAdapter(
         } else {
             Toast.makeText(
                 mView.context,
-                "Editing is not allowed right now",
+                mView.context.getString(R.string.editing_is_not_allowed_right_now),
                 Toast.LENGTH_LONG
             ).show()
         }
@@ -264,9 +264,10 @@ class BudgetRuleAdapter(
     }
 
     private fun gotoBudgetRuleUpdateFragment() {
-        val direction = BudgetRuleFragmentDirections
-            .actionBudgetRuleFragmentToBudgetRuleUpdateFragment()
-        mView.findNavController().navigate(direction)
+        mView.findNavController().navigate(
+            BudgetRuleFragmentDirections
+                .actionBudgetRuleFragmentToBudgetRuleUpdateFragment()
+        )
     }
 
     private fun gotoCallingFragment() {
@@ -298,10 +299,10 @@ class BudgetRuleAdapter(
     }
 
     private fun gotoBudgetItemUpdateFragment() {
-        val direction =
+        mView.findNavController().navigate(
             BudgetRuleFragmentDirections
                 .actionBudgetRuleFragmentToBudgetItemUpdateFragment()
-        mView.findNavController().navigate(direction)
+        )
     }
 
     private fun gotoBudgetItemAddFragment() {
@@ -312,17 +313,17 @@ class BudgetRuleAdapter(
     }
 
     private fun gotoTransactionUpdateFragment() {
-        val direction =
+        mView.findNavController().navigate(
             BudgetRuleFragmentDirections
                 .actionBudgetRuleFragmentToTransactionUpdateFragment()
-        mView.findNavController().navigate(direction)
+        )
     }
 
     private fun gotoTransactionAddFragment() {
-        val direction =
+        mView.findNavController().navigate(
             BudgetRuleFragmentDirections
                 .actionBudgetRuleFragmentToTransactionAddFragment()
-        mView.findNavController().navigate(direction)
+        )
     }
 
     private fun gotoTransactionSplitFragment() {

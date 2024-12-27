@@ -15,7 +15,8 @@ import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.BudgetRuleUpdateFragm
 
 class BudgetRuleDatesAdapter(
     private val mainViewModel: MainViewModel,
-    private val mView: View
+    private val mView: View,
+    private val parentTag: String,
 ) :
     RecyclerView.Adapter<BudgetRuleDatesAdapter.DateViewHolder>() {
 
@@ -70,7 +71,14 @@ class BudgetRuleDatesAdapter(
     }
 
     private fun gotoBudgetItem(curItem: BudgetDetailed?) {
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments() + ", " + parentTag
+        )
         mainViewModel.setBudgetItem(curItem)
+        gotoBudgetItemUpdateFragment()
+    }
+
+    private fun gotoBudgetItemUpdateFragment() {
         mView.findNavController().navigate(
             BudgetRuleUpdateFragmentDirections
                 .actionBudgetRuleUpdateFragmentToBudgetItemUpdateFragment()

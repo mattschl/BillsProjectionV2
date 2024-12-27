@@ -223,4 +223,15 @@
     <string name="are_you_sure_you_want_to_rename_this_account">"Are you sure you want to rename this Account?\n "</string>
     <string name="delete_account">Delete Account?</string>
     <string name="are_you_sure_you_want_to_delete_this_account">"Are you sure you want to delete this account? "</string>
+    <string name="view_or_edit_this_budget_rule">View or Edit this Budget Rule</string>
+    <string name="delete_this_budget_rule">Delete this Budget Rule</string>
+    <string name="view_a_summary_of_transactions_for_this_budget_rule">View a summary of transactions for this Budget Rule</string>
+    <string name="create_a_scheduled_item_with_this_budget_rule">Create a scheduled item with this Budget Rule</string>
+    <string name="update_budget_rule">Update Budget Rule</string>
+    <string name="there_needs_to_be_an_account_money_will_go_to">There needs to be an account money will go to.</string>
+    <string name="there_needs_to_be_an_account_money_will_come_from">There needs to be an account money will come from.</string>
+    <string name="please_enter_a_budgeted_amount_including_zero">Please enter a budgeted amount (including zero)</string>
+    <string name="choose_the_first_date">Choose the first date</string>
+    <string name="delete_budget_rule">Delete Budget Rule</string>
+    <string name="are_you_sure_you_want_to_delete_this_budget_rule">Are you sure you want to delete this budget rule?</string>
 </resources>
