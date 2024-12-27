@@ -8,6 +8,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
@@ -22,7 +23,8 @@ import java.util.Random
 private const val PARENT_TAG = FRAG_ACCOUNT_TYPES
 
 class AccountTypeAdapter(
-    private val mainViewModel: MainViewModel
+    private val mainViewModel: MainViewModel,
+    private val mView: View,
 ) :
     RecyclerView.Adapter<AccountTypeAdapter.AccountTypeViewHolder>() {
 
@@ -66,24 +68,30 @@ class AccountTypeAdapter(
         holder.itemBinding.apply {
             tvAccountType.text = curAccountType.accountType
             var info = if (curAccountType.keepTotals)
-                "Balance will be updated" else ""
+                mView.context.getString(R.string.balance_will_be_updated) else ""
             if (curAccountType.tallyOwing) {
-                info += "${if (info.isNotEmpty()) "\n" else ""}Will calculate amount owing"
+                info += (if (info.isNotEmpty()) "\n" else "") +
+                        mView.context.getString(R.string.will_calculate_amount_owing)
             }
             if (curAccountType.isAsset) {
-                info += "${if (info.isNotEmpty()) "\n" else ""}This is an asset"
+                info += (if (info.isNotEmpty()) "\n" else "") +
+                        mView.context.getString(R.string.this_is_an_asset)
             }
             if (curAccountType.displayAsAsset) {
-                info += "${if (info.isNotEmpty()) "\n" else ""}This will display in the budget"
+                info += (if (info.isNotEmpty()) "\n" else "") +
+                        mView.context.getString(R.string.this_will_be_used_for_the_budget)
             }
             if (curAccountType.allowPending) {
-                info += "${if (info.isNotEmpty()) "\n" else ""}Transactions can be delayed"
+                info += (if (info.isNotEmpty()) "\n" else "") +
+                        mView.context.getString(R.string.allow_transactions_pending)
             }
             if (curAccountType.acctIsDeleted) {
-                info += "${if (info.isNotEmpty()) "\n" else ""}      **DELETED**"
+                info += "${if (info.isNotEmpty()) "\n" else ""} " +
+                        mView.context.getString(R.string.deleted)
             }
             if (info.isBlank()) {
-                info = "This account does not keep a balance/owing amount"
+                info =
+                    mView.context.getString(R.string.this_account_does_not_keep_a_balance_owing_amount)
             }
             tvAccountTypeInfo.text = info
 
@@ -97,18 +105,17 @@ class AccountTypeAdapter(
             ibAccountTypeColor.setBackgroundColor(color)
 
             holder.itemView.setOnLongClickListener {
-                gotoAccountTypeUpdate(curAccountType, it)
+                gotoAccountTypeUpdate(curAccountType)
                 false
             }
             holder.itemView.setOnClickListener {
-                chooseAccountType(curAccountType, it)
+                chooseAccountType(curAccountType)
             }
         }
     }
 
     private fun gotoAccountTypeUpdate(
         curAccountType: AccountType?,
-        it: View
     ) {
         mainViewModel.setCallingFragments(
             mainViewModel.getCallingFragments() + ", " + PARENT_TAG
@@ -116,15 +123,11 @@ class AccountTypeAdapter(
         mainViewModel.setAccountType(
             curAccountType
         )
-        it.findNavController().navigate(
-            AccountTypesFragmentDirections
-                .actionAccountTypesFragmentToAccountTypeUpdateFragment()
-        )
+        gotoAccountUpdateFragment()
     }
 
     private fun chooseAccountType(
         curAccountType: AccountType?,
-        it: View
     ) {
         mainViewModel.setAccountType(
             curAccountType
@@ -136,15 +139,23 @@ class AccountTypeAdapter(
             )
         )
         if (mainViewModel.getCallingFragments()!!.contains(FRAG_ACCOUNT_UPDATE)) {
-            it.findNavController().navigate(
-                AccountTypesFragmentDirections
-                    .actionAccountTypesFragmentToAccountUpdateFragment()
-            )
+            gotoAccountUpdateFragment()
         } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_ACCOUNT_ADD)) {
-            it.findNavController().navigate(
-                AccountTypesFragmentDirections
-                    .actionAccountTypesFragmentToAccountAddFragment()
-            )
+            gotoAccountAddFragment()
         }
+    }
+
+    private fun gotoAccountAddFragment() {
+        mView.findNavController().navigate(
+            AccountTypesFragmentDirections
+                .actionAccountTypesFragmentToAccountAddFragment()
+        )
+    }
+
+    private fun gotoAccountUpdateFragment() {
+        mView.findNavController().navigate(
+            AccountTypesFragmentDirections
+                .actionAccountTypesFragmentToAccountUpdateFragment()
+        )
     }
 }

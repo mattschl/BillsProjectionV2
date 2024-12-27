@@ -62,7 +62,7 @@ class AccountsFragment :
         accountAdapter = AccountAdapter(
             mainActivity,
             mainActivity.mainViewModel,
-            mView.context
+            mView
         )
         binding.rvAccounts.apply {
             layoutManager = StaggeredGridLayoutManager(
