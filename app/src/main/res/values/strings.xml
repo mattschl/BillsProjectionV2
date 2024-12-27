@@ -2,19 +2,19 @@
     <string name="app_name">Bills Projection</string>
     <string name="image">image</string>
     <string name="no_accounts_to_view">No Accounts to view</string>
-    <string name="account_name">Account Name</string>
-    <string name="account_number_or_reference">Account Number or Reference</string>
-    <string name="category">Category</string>
-    <string name="account_type">Account Type</string>
-    <string name="balance">Balance</string>
-    <string name="owing">Owing</string>
-    <string name="budgeted">Budgeted</string>
+    <string name="account_name">Account Name </string>
+    <string name="account_number_or_reference">Account Number or Reference </string>
+    <string name="category">Category </string>
+    <string name="account_type">Account Type </string>
+    <string name="balance">Balance </string>
+    <string name="owing">Owing </string>
+    <string name="budgeted">Budgeted </string>
     <string name="asset_account">Asset Account</string>
     <string name="keep_totals">Keep Totals</string>
     <string name="display_as_asset">Display as asset</string>
     <string name="calculate_owing">Calculate Owing</string>
     <string name="keep_mileage">Keep Mileage</string>
-    <string name="number">Number</string>
+    <string name="number">Number </string>
     <string name="id_not_created_yet">ID Not created yet</string>
     <string name="account_info">Account Info</string>
     <string name="search">search</string>
@@ -93,7 +93,7 @@
     <string name="add_an_unscheduled_transaction">Add an Unscheduled transaction</string>
     <string name="choose_the_final_date">Choose the final date</string>
     <string name="pending">Pending</string>
-    <string name="credit_limit">Credit Limit</string>
+    <string name="credit_limit">Credit Limit </string>
     <string name="allow_transactions_pending">Allow transactions pending</string>
     <string name="choose_the_projected_date">Choose the Projected Date</string>
 
@@ -202,4 +202,10 @@
     <string name="this_will_display_in_the_budget">This will display in the budget</string>
     <string name="transactions_can_be_delayed">Transactions can be delayed</string>
     <string name="deleted">"      **DELETED**"</string>
+    <string name="edit_this_account">Edit this Account</string>
+    <string name="delete_this_account">Delete this Account</string>
+    <string name="view_a_summary_of_transactions_using_this_account">View a summary of Transactions using this Account</string>
+    <string name="editing_is_not_allowed_right_now">Editing is not allowed right now</string>
+    <string name="cancel">Cancel</string>
+    <string name="no_info">No info</string>
 </resources>
