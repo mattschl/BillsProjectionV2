@@ -13,6 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
@@ -102,11 +103,11 @@ class TransactionAdapter(
                 transaction.transaction.transName
             tvTransAmount.text =
                 nf.displayDollars(transaction.transaction.transAmount)
-            var info = "To: " +
+            var info = mView.context.getString(R.string.to_) +
                     transaction.toAccount!!
                         .accountName
             if (transaction.transaction.transToAccountPending) {
-                info += " *PENDING*"
+                info += mView.context.getString(R.string._pending)
                 tvToAccount.setTextColor(
                     Color.RED
                 )
@@ -116,11 +117,11 @@ class TransactionAdapter(
                 )
             }
             tvToAccount.text = info
-            info = "From: " +
+            info = mView.context.getString(R.string.from_) +
                     transaction.fromAccount!!
                         .accountName
             if (transaction.transaction.transFromAccountPending) {
-                info += " *PENDING*"
+                info += mView.context.getString(R.string._pending)
                 tvFromAccount.setTextColor(
                     Color.RED
                 )
@@ -163,34 +164,33 @@ class TransactionAdapter(
     private fun chooseOptions(transaction: TransactionDetailed) {
         var display = ""
         if (transaction.transaction!!.transToAccountPending) {
-            display += "Complete the pending amount of " +
-                    "${
-                        nf.displayDollars(
-                            transaction.transaction.transAmount
-                        )
-                    } to ${transaction.toAccount!!.accountName}"
+            display += mView.context.getString(R.string.complete_the_pending_amount_of) +
+                    nf.displayDollars(transaction.transaction.transAmount) +
+                    mView.context.getString(R.string._to_) +
+                    transaction.toAccount!!.accountName
+        }
+        if (transaction.transaction.transToAccountPending) {
+            display += mView.context.getString(R.string._pending)
         }
         if (display != "" && transaction.transaction.transFromAccountPending) {
-            display += "\n and "
+            display += mView.context.getString(R.string._and)
         }
         if (transaction.transaction.transFromAccountPending) {
-            display += "Complete the pending amount of " +
-                    "${
-                        nf.displayDollars(
-                            transaction.transaction.transAmount
-                        )
-                    } from ${transaction.fromAccount!!.accountName}"
+            display += mView.context.getString(R.string.complete_the_pending_amount_of) +
+                    nf.displayDollars(transaction.transaction.transAmount) +
+                    mView.context.getString(R.string._From_) +
+                    transaction.fromAccount!!.accountName
         }
         AlertDialog.Builder(mView.context)
             .setTitle(
-                "Choose action for " +
+                mView.context.getString(R.string.choose_an_action_for) +
                         transaction.transaction.transName
             )
             .setItems(
                 arrayOf(
-                    "Edit this transaction",
+                    mView.context.getString(R.string.edit_this_transaction),
                     display,
-                    "Delete this transaction"
+                    mView.context.getString(R.string.delete_this_transaction)
                 )
             ) { _, pos ->
                 when (pos) {
@@ -209,18 +209,18 @@ class TransactionAdapter(
                     2 -> {
                         AlertDialog.Builder(mView.context)
                             .setTitle(
-                                "Are you sure you want to delete " +
+                                mView.context.getString(R.string.are_you_sure_you_want_to_delete) +
                                         transaction.transaction.transName
                             )
-                            .setPositiveButton("Delete") { _, _ ->
+                            .setPositiveButton(mView.context.getString(R.string.delete)) { _, _ ->
                                 deleteTransaction(transaction.transaction)
                             }
-                            .setNegativeButton("Cancel", null)
+                            .setNegativeButton(mView.context.getString(R.string.cancel), null)
                             .show()
                     }
                 }
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(mView.context.getString(R.string.cancel), null)
             .show()
     }
 
@@ -265,6 +265,10 @@ class TransactionAdapter(
             }
             mainViewModel.setOldTransaction(oldTransactionFull.await())
         }
+        gotoTransactionUpdateFragment()
+    }
+
+    private fun gotoTransactionUpdateFragment() {
         mView.findNavController().navigate(
             TransactionViewFragmentDirections
                 .actionTransactionViewFragmentToTransactionUpdateFragment()

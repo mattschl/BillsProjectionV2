@@ -2,7 +2,6 @@ package ms.mattschlenkrich.billsprojectionv2.ui.transactions.adapter
 
 import android.app.AlertDialog
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_PENDING
+import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
@@ -28,7 +27,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetViewFragment
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetViewFragmentDirections
 
-private const val TAG = ADAPTER_PENDING
+//private const val TAG = ADAPTER_PENDING
 private const val PARENT_TAG = FRAG_BUDGET_VIEW
 
 
@@ -71,7 +70,6 @@ class TransactionPendingAdapter(
     val differ = AsyncListDiffer(this, differCallBack)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionPendingHolder {
-        Log.d(TAG, "creating ViewHolder")
         return TransactionPendingHolder(
             PendingTransactionItemBinding.inflate(
                 LayoutInflater.from(parent.context),
@@ -123,17 +121,16 @@ class TransactionPendingAdapter(
     ) {
         AlertDialog.Builder(mView.context)
             .setTitle(
-                "Choose an Action on: " +
-                        nf.displayDollars(
-                            pendingTransaction.transaction!!.transAmount
-                        ) + " for " +
+                mView.context.getString(R.string.choose_an_action_for) +
+                        nf.displayDollars(pendingTransaction.transaction!!.transAmount) +
+                        mView.context.getString(R.string._to_) +
                         pendingTransaction.transaction.transName
             )
             .setItems(
                 arrayOf(
-                    "Complete this pending transaction",
-                    "Open the transaction to edit it",
-                    "Delete this pending transaction"
+                    mView.context.getString(R.string.complete_this_pending_transaction),
+                    mView.context.getString(R.string.open_the_transaction_to_edit_it),
+                    mView.context.getString(R.string.delete_this_pending_transaction)
                 )
             ) { _, pos ->
                 when (pos) {
@@ -155,7 +152,7 @@ class TransactionPendingAdapter(
                     }
                 }
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(mView.context.getString(R.string.cancel), null)
             .show()
     }
 
@@ -187,10 +184,7 @@ class TransactionPendingAdapter(
         }
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_250)
-            mView.findNavController().navigate(
-                BudgetViewFragmentDirections
-                    .actionBudgetViewFragmentToTransactionUpdateFragment()
-            )
+            gotoTransactionUpdateFragment()
         }
     }
 
@@ -288,6 +282,13 @@ class TransactionPendingAdapter(
             }
         }
         budgetViewFragment.populatePendingList()
+    }
+
+    private fun gotoTransactionUpdateFragment() {
+        mView.findNavController().navigate(
+            BudgetViewFragmentDirections
+                .actionBudgetViewFragmentToTransactionUpdateFragment()
+        )
     }
 
 }

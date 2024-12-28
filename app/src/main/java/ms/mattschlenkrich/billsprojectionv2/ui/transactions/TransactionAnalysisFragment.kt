@@ -51,10 +51,9 @@ class TransactionAnalysisFragment : Fragment(
         )
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
-        mainActivity.title = "Transaction analysis"
+        mainActivity.title = getString(R.string.transaction_analysis)
         transactionViewModel = mainActivity.transactionViewModel
         mView = binding.root
-        Log.d(TAG, "creating $TAG")
         return binding.root
 
     }
@@ -69,11 +68,67 @@ class TransactionAnalysisFragment : Fragment(
         if (mainViewModel.getBudgetRuleDetailed() != null) {
             populateAnalysisFromBudgetRule()
         } else if (mainViewModel.getAccountWithType() != null) {
-            populateValuesFromAccount()
+            populateAnalysisFromAccount()
         }
     }
 
-    private fun populateValuesFromAccount() {
+    private fun populateAnalysisFromBudgetRule() {
+        val budgetRule =
+            mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!
+        binding.apply {
+            tvBudgetRule.text =
+                budgetRule.budgetRuleName
+            tvAccount.text =
+                getString(R.string.no_account_selected)
+            transactionViewModel.getSumTransactionByBudgetRule(
+                budgetRule.ruleId
+            ).observe(viewLifecycleOwner) { sum ->
+                if (sum != null) {
+                    tvTotalCredits.text = cf.displayDollars(sum)
+                    lblTotalCredits.text =
+                        getString(R.string.total)
+                    lblTotalDebits.visibility = View.GONE
+                    tvTotalDebits.visibility = View.GONE
+                }
+            }
+            transactionViewModel.getMaxTransactionByBudgetRule(
+                budgetRule.ruleId
+            ).observe(
+                viewLifecycleOwner
+            ) { max ->
+                if (max != null && !max.isNaN()) {
+                    tvHighest.text = cf.displayDollars(max)
+                }
+            }
+            transactionViewModel.getMinTransactionByBudgetRule(budgetRule.ruleId)
+                .observe(viewLifecycleOwner) { min ->
+                    if (min != null) tvLowest.text = cf.displayDollars(min)
+                }
+            transactionAdapter = null
+            transactionAdapter =
+                TransactionAnalysisAdapter(
+                    mainActivity,
+                    mView
+                )
+            rvTransactions.apply {
+                layoutManager = LinearLayoutManager(
+                    requireContext()
+                )
+                adapter = transactionAdapter
+            }
+            transactionViewModel.getActiveTransactionsDetailed(
+                budgetRule.ruleId
+            ).observe(
+                viewLifecycleOwner
+            ) { transactionList ->
+                transactionAdapter!!.differ.submitList(transactionList)
+                populateAnalysisFromBudgetRuleOrSearch(transactionList)
+                updateUiHelpText(transactionList)
+            }
+        }
+    }
+
+    private fun populateAnalysisFromAccount() {
         var totalCredits = 0.0
         var totalDebits = 0.0
         val account =
@@ -133,342 +188,6 @@ class TransactionAnalysisFragment : Fragment(
                         updateUiHelpText(transactionList)
                     }
             }
-        }
-    }
-
-    private fun setClickActions() {
-        setRadioOptions()
-        setGotoOptions()
-        setSearchAction()
-        setSearchListener()
-    }
-
-    private fun setSearchListener() {
-        binding.apply {
-            btnSearch.setOnClickListener {
-                val searchQuery = "%${etSearch.text}%"
-                fillFromSearch(searchQuery)
-            }
-        }
-    }
-
-    private fun fillFromSearch(
-        searchQuery: String
-    ) {
-        binding.apply {
-            tvBudgetRule.text =
-                getString(R.string.no_budget_rule_selected)
-            tvAccount.text =
-                getString(R.string.no_account_selected)
-
-            transactionViewModel.getSumTransactionBySearch(searchQuery).observe(
-                viewLifecycleOwner
-            ) { sum ->
-                if (sum != null) {
-                    tvTotalCredits.text = cf.displayDollars(sum)
-                    lblTotalCredits.text =
-                        getString(R.string.total)
-                    lblTotalDebits.visibility = View.GONE
-                    tvTotalDebits.visibility = View.GONE
-                }
-            }
-            transactionViewModel.getMaxTransactionBySearch(searchQuery).observe(
-                viewLifecycleOwner
-            ) { max ->
-                if (max != null && !max.isNaN()) {
-                    tvHighest.text = cf.displayDollars(max)
-                }
-            }
-            transactionViewModel.getMinTransactionBySearch(searchQuery).observe(
-                viewLifecycleOwner
-            ) { min ->
-                if (min != null) tvLowest.text = cf.displayDollars(min)
-            }
-            transactionAdapter = null
-            transactionAdapter =
-                TransactionAnalysisAdapter(
-                    mainActivity,
-                    mView
-                )
-            if (etSearch.text.isNotEmpty()) {
-                rvTransactions.apply {
-                    layoutManager = LinearLayoutManager(
-                        requireContext()
-                    )
-                    adapter = transactionAdapter
-                }
-                activity?.let {
-                    transactionViewModel.getActiveTransactionBySearch(
-                        searchQuery
-                    ).observe(viewLifecycleOwner) { transList ->
-                        transactionAdapter!!.differ.submitList(transList)
-                        populateAnalysisFromBudgetRuleOrSearch(transList)
-                        updateUiHelpText(transList)
-                    }
-                }
-            }
-        }
-    }
-
-
-    private fun setSearchAction() {
-        binding.apply {
-            chkSearch.setOnClickListener {
-                if (chkSearch.isChecked) {
-                    etSearch.visibility = View.VISIBLE
-                    btnSearch.visibility = View.VISIBLE
-                } else {
-                    etSearch.visibility = View.GONE
-                    btnSearch.visibility = View.GONE
-                    etSearch.text = null
-                    transactionAdapter = null
-                }
-            }
-        }
-    }
-
-    private fun setGotoOptions() {
-        binding.apply {
-            tvBudgetRule.setOnClickListener {
-                gotoBudgetRule()
-            }
-            tvAccount.setOnClickListener {
-                gotoAccount()
-            }
-        }
-    }
-
-    private fun gotoAccount() {
-        mainViewModel.setCallingFragments(TAG)
-        mainViewModel.setAccountWithType(null)
-        mainViewModel.setBudgetRuleDetailed(null)
-        mView.findNavController().navigate(
-            TransactionAnalysisFragmentDirections
-                .actionTransactionAnalysisFragmentToAccountsFragment()
-        )
-    }
-
-    private fun gotoBudgetRule() {
-        mainViewModel.setCallingFragments(TAG)
-        mainViewModel.setAccountWithType(null)
-        mainViewModel.setBudgetRuleDetailed(null)
-        mView.findNavController().navigate(
-            TransactionAnalysisFragmentDirections
-                .actionTransactionAnalysisFragmentToBudgetRuleFragment()
-        )
-    }
-
-    private fun updateUiHelpText(transactionList: List<TransactionDetailed>) {
-        binding.apply {
-            if (transactionList.isEmpty()) {
-                rvTransactions.visibility = View.GONE
-                crdTransactionAnalysisHelp.visibility = View.VISIBLE
-            } else {
-                rvTransactions.visibility = View.VISIBLE
-                crdTransactionAnalysisHelp.visibility = View.GONE
-            }
-        }
-    }
-
-    private fun populateAnalysisFromAccount(
-        transList: List<TransactionDetailed>,
-        totalCredits: Double,
-        totalDebits: Double
-    ) {
-        if (transList.isNotEmpty()) {
-            binding.apply {
-                CoroutineScope(Dispatchers.Main).launch {
-                    Log.d(TAG, "count of transactions is ${transList.count()}")
-                    val endDate = transList.first().transaction!!.transDate
-                    val startDate = transList.last().transaction!!.transDate
-                    val months = nf.getMonthsBetween(startDate, endDate)
-                    tvRecent.text = cf.displayDollars(
-                        transList.first().transaction!!.transAmount
-                    )
-                    lblAverage.text = getString(R.string.credit_average)
-                    tvAverage.text = cf.displayDollars(totalCredits / months)
-                    lblHighest.text = getString(R.string.debit_average)
-                    lblHighest.setTextColor(Color.RED)
-                    tvHighest.text = cf.displayDollars(totalDebits / months)
-                    tvHighest.setTextColor(Color.RED)
-                }
-            }
-        }
-    }
-
-    private fun setRadioOptions() {
-        binding.apply {
-            rdShowAll.setOnClickListener {
-                rdShowAll.isChecked = true
-                rdLastMonth.isChecked = false
-                rdDateRange.isChecked = false
-                setDateRangeVisibility(false)
-                populateValues()
-            }
-            rdLastMonth.setOnClickListener {
-                rdShowAll.isChecked = false
-                rdLastMonth.isChecked = true
-                rdDateRange.isChecked = false
-                setDateRangeVisibility(false)
-                populateAnalysisLastMonth()
-            }
-            rdDateRange.setOnClickListener {
-                rdShowAll.isChecked = false
-                rdLastMonth.isChecked = false
-                rdDateRange.isChecked = true
-                setDateRangeVisibility(true)
-                tvStartDate.setText(
-                    nf.getFirstOfMonth(
-                        nf.getCurrentDateAsString()
-                    )
-                )
-                tvEndDate.setText(
-                    nf.getCurrentDateAsString()
-                )
-                tvStartDate.setOnLongClickListener {
-                    chooseStartDate()
-                    false
-                }
-                tvEndDate.setOnLongClickListener {
-                    chooseEndDate()
-                    false
-                }
-                btnFill.setOnClickListener {
-                    if (mainViewModel.getBudgetRuleDetailed() != null) {
-                        populateAnalysisFromBudgetRuleAndDates(
-                            tvStartDate.text.toString(),
-                            tvEndDate.text.toString()
-                        )
-                    } else if (mainViewModel.getAccountWithType() != null) {
-                        populateAnalysisFromAccountAndDates(
-                            tvStartDate.text.toString(),
-                            tvEndDate.text.toString()
-                        )
-                    } else if (chkSearch.isChecked) {
-                        populateAnalysisFromSearchAndDates(
-                            "%${etSearch.text}%",
-                            tvStartDate.text.toString(),
-                            tvEndDate.text.toString()
-                        )
-                    }
-                }
-            }
-            rdShowAll.isChecked = true
-        }
-    }
-
-    private fun populateAnalysisFromSearchAndDates(
-        searchQuery: String,
-        startDate: String,
-        endDate: String
-    ) {
-        binding.apply {
-            tvBudgetRule.text =
-                getString(R.string.no_budget_rule_selected)
-            tvAccount.text =
-                getString(R.string.no_account_selected)
-            transactionViewModel.getSumTransactionBySearch(
-                searchQuery, startDate, endDate
-            ).observe(
-                viewLifecycleOwner
-            ) { sum ->
-                if (sum != null) {
-                    tvTotalCredits.text = cf.displayDollars(sum)
-                    lblTotalCredits.text =
-                        getString(R.string.total)
-                    lblTotalDebits.visibility = View.GONE
-                    tvTotalDebits.visibility = View.GONE
-                }
-            }
-            transactionViewModel.getMaxTransactionBySearch(
-                searchQuery, startDate, endDate
-            ).observe(
-                viewLifecycleOwner
-            ) { max ->
-                if (max != null && !max.isNaN()) {
-                    tvHighest.text = cf.displayDollars(max)
-                }
-            }
-            transactionViewModel.getMinTransactionBySearch(
-                searchQuery, startDate, endDate
-            ).observe(
-                viewLifecycleOwner
-            ) { min ->
-                if (min != null) tvLowest.text = cf.displayDollars(min)
-            }
-            transactionAdapter = null
-            transactionAdapter =
-                TransactionAnalysisAdapter(
-                    mainActivity,
-                    mView
-                )
-            if (etSearch.text.isNotEmpty()) {
-                rvTransactions.apply {
-                    layoutManager = LinearLayoutManager(
-                        requireContext()
-                    )
-                    adapter = transactionAdapter
-                }
-                activity?.let {
-                    transactionViewModel.getActiveTransactionBySearch(
-                        searchQuery, startDate, endDate
-                    ).observe(viewLifecycleOwner) { transList ->
-                        transactionAdapter!!.differ.submitList(transList)
-                        populateAnalysisFromBudgetRuleOrSearch(transList)
-                        updateUiHelpText(transList)
-                    }
-                }
-            }
-        }
-    }
-
-    private fun chooseEndDate() {
-        binding.apply {
-            val curDateAll = tvEndDate.text.toString()
-                .split("-")
-            val datePickerDialog = DatePickerDialog(
-                requireContext(),
-                { _, year, monthOfYear, dayOfMonth ->
-                    val month = monthOfYear + 1
-                    val display = "$year-${
-                        month.toString()
-                            .padStart(2, '0')
-                    }-${
-                        dayOfMonth.toString().padStart(2, '0')
-                    }"
-                    tvEndDate.setText(display)
-                },
-                curDateAll[0].toInt(),
-                curDateAll[1].toInt() - 1,
-                curDateAll[2].toInt()
-            )
-            datePickerDialog.setTitle("Choose the end date")
-            datePickerDialog.show()
-        }
-    }
-
-    private fun chooseStartDate() {
-        binding.apply {
-            val curDateAll = tvStartDate.text.toString()
-                .split("-")
-            val datePickerDialog = DatePickerDialog(
-                requireContext(),
-                { _, year, monthOfYear, dayOfMonth ->
-                    val month = monthOfYear + 1
-                    val display = "$year-${
-                        month.toString()
-                            .padStart(2, '0')
-                    }-${
-                        dayOfMonth.toString().padStart(2, '0')
-                    }"
-                    tvStartDate.setText(display)
-                },
-                curDateAll[0].toInt(),
-                curDateAll[1].toInt() - 1,
-                curDateAll[2].toInt()
-            )
-            datePickerDialog.setTitle("Choose the start date")
-            datePickerDialog.show()
         }
     }
 
@@ -651,6 +370,320 @@ class TransactionAnalysisFragment : Fragment(
         }
     }
 
+    private fun setClickActions() {
+        setRadioOptions()
+        setClickOptions()
+        setSearchAction()
+        setSearchListener()
+    }
+
+    private fun setRadioOptions() {
+        binding.apply {
+            rdShowAll.setOnClickListener {
+                rdShowAll.isChecked = true
+                rdLastMonth.isChecked = false
+                rdDateRange.isChecked = false
+                setDateRangeVisibility(false)
+                populateValues()
+            }
+            rdLastMonth.setOnClickListener {
+                rdShowAll.isChecked = false
+                rdLastMonth.isChecked = true
+                rdDateRange.isChecked = false
+                setDateRangeVisibility(false)
+                populateAnalysisLastMonth()
+            }
+            rdDateRange.setOnClickListener {
+                rdShowAll.isChecked = false
+                rdLastMonth.isChecked = false
+                rdDateRange.isChecked = true
+                setDateRangeVisibility(true)
+                tvStartDate.setText(
+                    nf.getFirstOfMonth(
+                        nf.getCurrentDateAsString()
+                    )
+                )
+                tvEndDate.setText(
+                    nf.getCurrentDateAsString()
+                )
+                tvStartDate.setOnLongClickListener {
+                    chooseStartDate()
+                    false
+                }
+                tvEndDate.setOnLongClickListener {
+                    chooseEndDate()
+                    false
+                }
+                btnFill.setOnClickListener {
+                    if (mainViewModel.getBudgetRuleDetailed() != null) {
+                        populateAnalysisFromBudgetRuleAndDates(
+                            tvStartDate.text.toString(),
+                            tvEndDate.text.toString()
+                        )
+                    } else if (mainViewModel.getAccountWithType() != null) {
+                        populateAnalysisFromAccountAndDates(
+                            tvStartDate.text.toString(),
+                            tvEndDate.text.toString()
+                        )
+                    } else if (chkSearch.isChecked) {
+                        populateAnalysisFromSearchAndDates(
+                            "%${etSearch.text}%",
+                            tvStartDate.text.toString(),
+                            tvEndDate.text.toString()
+                        )
+                    }
+                }
+            }
+            rdShowAll.isChecked = true
+        }
+    }
+
+    private fun setClickOptions() {
+        binding.apply {
+            tvBudgetRule.setOnClickListener {
+                gotoBudgetRule()
+            }
+            tvAccount.setOnClickListener {
+                gotoAccount()
+            }
+        }
+    }
+
+    private fun setSearchListener() {
+        binding.apply {
+            btnSearch.setOnClickListener {
+                val searchQuery = "%${etSearch.text}%"
+                populateFromSearch(searchQuery)
+            }
+        }
+    }
+
+    private fun setSearchAction() {
+        binding.apply {
+            chkSearch.setOnClickListener {
+                if (chkSearch.isChecked) {
+                    etSearch.visibility = View.VISIBLE
+                    btnSearch.visibility = View.VISIBLE
+                } else {
+                    etSearch.visibility = View.GONE
+                    btnSearch.visibility = View.GONE
+                    etSearch.text = null
+                    transactionAdapter = null
+                }
+            }
+        }
+    }
+
+    private fun populateFromSearch(
+        searchQuery: String
+    ) {
+        binding.apply {
+            tvBudgetRule.text =
+                getString(R.string.no_budget_rule_selected)
+            tvAccount.text =
+                getString(R.string.no_account_selected)
+
+            transactionViewModel.getSumTransactionBySearch(searchQuery).observe(
+                viewLifecycleOwner
+            ) { sum ->
+                if (sum != null) {
+                    tvTotalCredits.text = cf.displayDollars(sum)
+                    lblTotalCredits.text =
+                        getString(R.string.total)
+                    lblTotalDebits.visibility = View.GONE
+                    tvTotalDebits.visibility = View.GONE
+                }
+            }
+            transactionViewModel.getMaxTransactionBySearch(searchQuery).observe(
+                viewLifecycleOwner
+            ) { max ->
+                if (max != null && !max.isNaN()) {
+                    tvHighest.text = cf.displayDollars(max)
+                }
+            }
+            transactionViewModel.getMinTransactionBySearch(searchQuery).observe(
+                viewLifecycleOwner
+            ) { min ->
+                if (min != null) tvLowest.text = cf.displayDollars(min)
+            }
+            transactionAdapter = null
+            transactionAdapter =
+                TransactionAnalysisAdapter(
+                    mainActivity,
+                    mView
+                )
+            if (etSearch.text.isNotEmpty()) {
+                rvTransactions.apply {
+                    layoutManager = LinearLayoutManager(
+                        requireContext()
+                    )
+                    adapter = transactionAdapter
+                }
+                activity?.let {
+                    transactionViewModel.getActiveTransactionBySearch(
+                        searchQuery
+                    ).observe(viewLifecycleOwner) { transList ->
+                        transactionAdapter!!.differ.submitList(transList)
+                        populateAnalysisFromBudgetRuleOrSearch(transList)
+                        updateUiHelpText(transList)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun updateUiHelpText(transactionList: List<TransactionDetailed>) {
+        binding.apply {
+            if (transactionList.isEmpty()) {
+                rvTransactions.visibility = View.GONE
+                crdTransactionAnalysisHelp.visibility = View.VISIBLE
+            } else {
+                rvTransactions.visibility = View.VISIBLE
+                crdTransactionAnalysisHelp.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun populateAnalysisFromAccount(
+        transList: List<TransactionDetailed>,
+        totalCredits: Double,
+        totalDebits: Double
+    ) {
+        if (transList.isNotEmpty()) {
+            binding.apply {
+                CoroutineScope(Dispatchers.Main).launch {
+                    val endDate = transList.first().transaction!!.transDate
+                    val startDate = transList.last().transaction!!.transDate
+                    val months = nf.getMonthsBetween(startDate, endDate)
+                    tvRecent.text = cf.displayDollars(
+                        transList.first().transaction!!.transAmount
+                    )
+                    lblAverage.text = getString(R.string.credit_average)
+                    tvAverage.text = cf.displayDollars(totalCredits / months)
+                    lblHighest.text = getString(R.string.debit_average)
+                    lblHighest.setTextColor(Color.RED)
+                    tvHighest.text = cf.displayDollars(totalDebits / months)
+                    tvHighest.setTextColor(Color.RED)
+                }
+            }
+        }
+    }
+
+    private fun populateAnalysisFromSearchAndDates(
+        searchQuery: String,
+        startDate: String,
+        endDate: String
+    ) {
+        binding.apply {
+            tvBudgetRule.text =
+                getString(R.string.no_budget_rule_selected)
+            tvAccount.text =
+                getString(R.string.no_account_selected)
+            transactionViewModel.getSumTransactionBySearch(
+                searchQuery, startDate, endDate
+            ).observe(
+                viewLifecycleOwner
+            ) { sum ->
+                if (sum != null) {
+                    tvTotalCredits.text = cf.displayDollars(sum)
+                    lblTotalCredits.text =
+                        getString(R.string.total)
+                    lblTotalDebits.visibility = View.GONE
+                    tvTotalDebits.visibility = View.GONE
+                }
+            }
+            transactionViewModel.getMaxTransactionBySearch(
+                searchQuery, startDate, endDate
+            ).observe(
+                viewLifecycleOwner
+            ) { max ->
+                if (max != null && !max.isNaN()) {
+                    tvHighest.text = cf.displayDollars(max)
+                }
+            }
+            transactionViewModel.getMinTransactionBySearch(
+                searchQuery, startDate, endDate
+            ).observe(
+                viewLifecycleOwner
+            ) { min ->
+                if (min != null) tvLowest.text = cf.displayDollars(min)
+            }
+            transactionAdapter = null
+            transactionAdapter =
+                TransactionAnalysisAdapter(
+                    mainActivity,
+                    mView
+                )
+            if (etSearch.text.isNotEmpty()) {
+                rvTransactions.apply {
+                    layoutManager = LinearLayoutManager(
+                        requireContext()
+                    )
+                    adapter = transactionAdapter
+                }
+                activity?.let {
+                    transactionViewModel.getActiveTransactionBySearch(
+                        searchQuery, startDate, endDate
+                    ).observe(viewLifecycleOwner) { transList ->
+                        transactionAdapter!!.differ.submitList(transList)
+                        populateAnalysisFromBudgetRuleOrSearch(transList)
+                        updateUiHelpText(transList)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun chooseEndDate() {
+        binding.apply {
+            val curDateAll = tvEndDate.text.toString()
+                .split("-")
+            val datePickerDialog = DatePickerDialog(
+                requireContext(),
+                { _, year, monthOfYear, dayOfMonth ->
+                    val month = monthOfYear + 1
+                    val display = "$year-${
+                        month.toString()
+                            .padStart(2, '0')
+                    }-${
+                        dayOfMonth.toString().padStart(2, '0')
+                    }"
+                    tvEndDate.setText(display)
+                },
+                curDateAll[0].toInt(),
+                curDateAll[1].toInt() - 1,
+                curDateAll[2].toInt()
+            )
+            datePickerDialog.setTitle(getString(R.string.choose_the_end_date))
+            datePickerDialog.show()
+        }
+    }
+
+    private fun chooseStartDate() {
+        binding.apply {
+            val curDateAll = tvStartDate.text.toString()
+                .split("-")
+            val datePickerDialog = DatePickerDialog(
+                requireContext(),
+                { _, year, monthOfYear, dayOfMonth ->
+                    val month = monthOfYear + 1
+                    val display = "$year-${
+                        month.toString()
+                            .padStart(2, '0')
+                    }-${
+                        dayOfMonth.toString().padStart(2, '0')
+                    }"
+                    tvStartDate.setText(display)
+                },
+                curDateAll[0].toInt(),
+                curDateAll[1].toInt() - 1,
+                curDateAll[2].toInt()
+            )
+            datePickerDialog.setTitle(getString(R.string.choose_the_start_date))
+            datePickerDialog.show()
+        }
+    }
+
     private fun setDateRangeVisibility(visible: Boolean) {
         binding.apply {
             if (visible) {
@@ -669,60 +702,32 @@ class TransactionAnalysisFragment : Fragment(
         }
     }
 
-    private fun populateAnalysisFromBudgetRule() {
-        val budgetRule =
-            mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!
-        binding.apply {
-            tvBudgetRule.text =
-                budgetRule.budgetRuleName
-            tvAccount.text =
-                getString(R.string.no_account_selected)
-            transactionViewModel.getSumTransactionByBudgetRule(
-                budgetRule.ruleId
-            ).observe(viewLifecycleOwner) { sum ->
-                if (sum != null) {
-                    tvTotalCredits.text = cf.displayDollars(sum)
-                    lblTotalCredits.text =
-                        getString(R.string.total)
-                    lblTotalDebits.visibility = View.GONE
-                    tvTotalDebits.visibility = View.GONE
-                }
-            }
-            transactionViewModel.getMaxTransactionByBudgetRule(
-                budgetRule.ruleId
-            ).observe(
-                viewLifecycleOwner
-            ) { max ->
-                if (max != null && !max.isNaN()) {
-                    tvHighest.text = cf.displayDollars(max)
-                }
-            }
-            transactionViewModel.getMinTransactionByBudgetRule(budgetRule.ruleId)
-                .observe(viewLifecycleOwner) { min ->
-                    if (min != null) tvLowest.text = cf.displayDollars(min)
-                }
-            transactionAdapter = null
-            transactionAdapter =
-                TransactionAnalysisAdapter(
-                    mainActivity,
-                    mView
-                )
-            rvTransactions.apply {
-                layoutManager = LinearLayoutManager(
-                    requireContext()
-                )
-                adapter = transactionAdapter
-            }
-            transactionViewModel.getActiveTransactionsDetailed(
-                budgetRule.ruleId
-            ).observe(
-                viewLifecycleOwner
-            ) { transactionList ->
-                transactionAdapter!!.differ.submitList(transactionList)
-                populateAnalysisFromBudgetRuleOrSearch(transactionList)
-                updateUiHelpText(transactionList)
-            }
-        }
+    private fun gotoAccount() {
+        mainViewModel.setCallingFragments(TAG)
+        mainViewModel.setAccountWithType(null)
+        mainViewModel.setBudgetRuleDetailed(null)
+        gotoAccountsFragment()
+    }
+
+    private fun gotoBudgetRule() {
+        mainViewModel.setCallingFragments(TAG)
+        mainViewModel.setAccountWithType(null)
+        mainViewModel.setBudgetRuleDetailed(null)
+        gotoBudgetRuleFragment()
+    }
+
+    private fun gotoBudgetRuleFragment() {
+        mView.findNavController().navigate(
+            TransactionAnalysisFragmentDirections
+                .actionTransactionAnalysisFragmentToBudgetRuleFragment()
+        )
+    }
+
+    private fun gotoAccountsFragment() {
+        mView.findNavController().navigate(
+            TransactionAnalysisFragmentDirections
+                .actionTransactionAnalysisFragmentToAccountsFragment()
+        )
     }
 
     override fun onDestroy() {

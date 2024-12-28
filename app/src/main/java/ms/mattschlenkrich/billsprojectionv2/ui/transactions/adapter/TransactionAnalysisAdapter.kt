@@ -2,7 +2,6 @@ package ms.mattschlenkrich.billsprojectionv2.ui.transactions.adapter
 
 import android.app.AlertDialog
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_TRANSACTION_ANALYSIS
+import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
@@ -25,7 +24,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionAnalysisFragmentDirections
 import java.util.Random
 
-private const val TAG = ADAPTER_TRANSACTION_ANALYSIS
+//private const val TAG = ADAPTER_TRANSACTION_ANALYSIS
 private const val PARENT_TAG = FRAG_TRANSACTION_ANALYSIS
 
 class TransactionAnalysisAdapter(
@@ -62,7 +61,6 @@ class TransactionAnalysisAdapter(
                 oldItem: TransactionDetailed,
                 newItem: TransactionDetailed
             ): Boolean {
-                Log.d(TAG, "'in areContentsTheSame ")
                 return oldItem == newItem
             }
         }
@@ -100,11 +98,11 @@ class TransactionAnalysisAdapter(
                 transaction.transaction.transName
             tvTransAmount.text =
                 cf.displayDollars(transaction.transaction.transAmount)
-            var info = "To: " +
+            var info = mView.context.getString(R.string._to_) +
                     transaction.toAccount!!
                         .accountName
             if (transaction.transaction.transToAccountPending) {
-                info += " *PENDING*"
+                info += mView.context.getString(R.string._pending)
                 tvToAccount.setTextColor(
                     Color.RED
                 )
@@ -114,11 +112,11 @@ class TransactionAnalysisAdapter(
                 )
             }
             tvToAccount.text = info
-            info = "From: " +
+            info = mView.context.getString(R.string.from_) +
                     transaction.fromAccount!!
                         .accountName
             if (transaction.transaction.transFromAccountPending) {
-                info += " *PENDING*"
+                info += mView.context.getString(R.string._pending)
                 tvFromAccount.setTextColor(
                     Color.RED
                 )
@@ -138,7 +136,7 @@ class TransactionAnalysisAdapter(
             if (transaction.transaction.transNote.isEmpty()) {
                 tvTransInfo.visibility = View.GONE
             } else {
-                info = "Note: " +
+                info = mView.context.getString(R.string.note_) +
                         transaction.transaction.transNote
                 tvTransInfo.text = info
                 tvTransInfo.visibility = View.VISIBLE
@@ -160,13 +158,13 @@ class TransactionAnalysisAdapter(
     private fun chooseOptions(transaction: TransactionDetailed) {
         AlertDialog.Builder(mView.context)
             .setTitle(
-                "Choose action for " +
+                mView.context.getString(R.string.choose_an_action_for) +
                         transaction.transaction!!.transName
             )
             .setItems(
                 arrayOf(
-                    "Edit this transaction",
-                    "Delete this transaction"
+                    mView.context.getString(R.string.edit_this_transaction),
+                    mView.context.getString(R.string.delete_this_transaction)
                 )
             ) { _, pos ->
                 when (pos) {
@@ -177,18 +175,18 @@ class TransactionAnalysisAdapter(
                     1 -> {
                         AlertDialog.Builder(mView.context)
                             .setTitle(
-                                "Are you sure you want to delete " +
+                                mView.context.getString(R.string.are_you_sure_you_want_to_delete) +
                                         transaction.transaction.transName
                             )
-                            .setPositiveButton("Delete") { _, _ ->
+                            .setPositiveButton(mView.context.getString(R.string.delete)) { _, _ ->
                                 deleteTransaction(transaction.transaction)
                             }
-                            .setNegativeButton("Cancel", null)
+                            .setNegativeButton(mView.context.getString(R.string.cancel), null)
                             .show()
                     }
                 }
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(mView.context.getString(R.string.cancel), null)
             .show()
     }
 
@@ -213,6 +211,10 @@ class TransactionAnalysisAdapter(
             }
             mainActivity.mainViewModel.setOldTransaction(oldTransactionFull.await())
         }
+        gotoTransactionUpdateFragment()
+    }
+
+    private fun gotoTransactionUpdateFragment() {
         mView.findNavController().navigate(
             TransactionAnalysisFragmentDirections
                 .actionTransactionAnalysisFragmentToTransactionUpdateFragment()
