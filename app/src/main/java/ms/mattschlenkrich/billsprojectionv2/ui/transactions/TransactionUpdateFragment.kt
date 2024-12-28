@@ -21,6 +21,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
@@ -65,7 +66,7 @@ class TransactionUpdateFragment :
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
-        mainActivity.title = "Update this Transaction"
+        mainActivity.title = getString(R.string.update_this_transaction)
         mView = binding.root
         return binding.root
     }
@@ -93,24 +94,25 @@ class TransactionUpdateFragment :
     }
 
     private fun populateValuesFromCache() {
+        val transactionDetailed = mainActivity.mainViewModel.getTransactionDetailed()!!
         binding.apply {
-            if (mainActivity.mainViewModel.getTransactionDetailed()!!.transaction != null) {
+            if (transactionDetailed.transaction != null) {
                 populateValuesFromTransactionInCache()
             }
-            if (mainActivity.mainViewModel.getTransactionDetailed()!!.budgetRule != null) {
+            if (transactionDetailed.budgetRule != null) {
                 populateBudgetRuleFromCache()
             }
-            if (mainActivity.mainViewModel.getTransactionDetailed()!!.toAccount != null) {
+            if (transactionDetailed.toAccount != null) {
                 populateToAccountFromCache()
             }
             chkToAccountPending.isChecked =
-                mainActivity.mainViewModel.getTransactionDetailed()!!.transaction!!.transToAccountPending
-            if (mainActivity.mainViewModel.getTransactionDetailed()!!.fromAccount != null) {
+                transactionDetailed.transaction!!.transToAccountPending
+            if (transactionDetailed.fromAccount != null) {
                 populateFromAccountFromCache()
 
             }
             chkFromAccountPending.isChecked =
-                mainActivity.mainViewModel.getTransactionDetailed()!!.transaction!!.transFromAccountPending
+                transactionDetailed.transaction.transFromAccountPending
         }
     }
 
@@ -174,24 +176,24 @@ class TransactionUpdateFragment :
     private fun populateValuesFromTransactionInCache() {
         binding.apply {
             mTransaction =
-                mainActivity.mainViewModel.getTransactionDetailed()!!.transaction
+                mainActivity.mainViewModel.getTransactionDetailed()!!.transaction!!
             etTransDate.text =
-                mainActivity.mainViewModel.getTransactionDetailed()!!.transaction!!.transDate
+                mTransaction!!.transDate
             etAmount.setText(
                 nf.displayDollars(
                     if (mainActivity.mainViewModel.getTransferNum()!! != 0.0) {
                         mainActivity.mainViewModel.getTransferNum()!!
                     } else {
-                        mainActivity.mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount
+                        mTransaction!!.transAmount
                     }
                 )
             )
             mainActivity.mainViewModel.setTransferNum(0.0)
             etDescription.setText(
-                mainActivity.mainViewModel.getTransactionDetailed()!!.transaction!!.transName
+                mTransaction!!.transName
             )
             etNote.setText(
-                mainActivity.mainViewModel.getTransactionDetailed()!!.transaction!!.transNote
+                mTransaction!!.transNote
             )
         }
     }
@@ -250,7 +252,7 @@ class TransactionUpdateFragment :
                 updateAmountDisplay()
             }
             btnSplit.setOnClickListener {
-                gotoSplitTransactionFragment()
+                gotoSplitTransaction()
             }
             fabUpdateDone.setOnClickListener {
                 updateTransactionIfValid()
@@ -270,7 +272,7 @@ class TransactionUpdateFragment :
                 // Handle the menu selection
                 return when (menuItem.itemId) {
                     R.id.menu_delete -> {
-                        deleteTransaction()
+                        confirmDeleteTransaction()
                         true
                     }
 
@@ -278,6 +280,31 @@ class TransactionUpdateFragment :
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
+    private fun chooseBudgetRule() {
+        mainActivity.mainViewModel.setCallingFragments(
+            "${mainActivity.mainViewModel.getCallingFragments()}, $TAG"
+        )
+        gotoBudgetRuleFragment()
+    }
+
+    private fun chooseToAccount() {
+        mainActivity.mainViewModel.setCallingFragments(
+            "${mainActivity.mainViewModel.getCallingFragments()}, $TAG"
+        )
+        mainActivity.mainViewModel.setTransactionDetailed(getCurrentTransDetailed())
+        mainActivity.mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
+        gotoAccountsFragment()
+    }
+
+    private fun chooseFromAccount() {
+        mainActivity.mainViewModel.setCallingFragments(
+            "${mainActivity.mainViewModel.getCallingFragments()}, $TAG"
+        )
+        mainActivity.mainViewModel.setTransactionDetailed(getCurrentTransDetailed())
+        mainActivity.mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
+        gotoAccountsFragment()
     }
 
     private fun chooseDate() {
@@ -297,43 +324,9 @@ class TransactionUpdateFragment :
                 curDateAll[1].toInt() - 1,
                 curDateAll[2].toInt()
             )
-            datePickerDialog.setTitle("Choose the final date")
+            datePickerDialog.setTitle(getString(R.string.choose_transaction_date))
             datePickerDialog.show()
         }
-    }
-
-    private fun chooseFromAccount() {
-        mainActivity.mainViewModel.setCallingFragments(
-            "${mainActivity.mainViewModel.getCallingFragments()}, $TAG"
-        )
-        mainActivity.mainViewModel.setTransactionDetailed(getCurrentTransDetailed())
-        mainActivity.mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
-        val direction =
-            TransactionUpdateFragmentDirections
-                .actionTransactionUpdateFragmentToAccountsFragment()
-        mView.findNavController().navigate(direction)
-    }
-
-    private fun chooseToAccount() {
-        mainActivity.mainViewModel.setCallingFragments(
-            "${mainActivity.mainViewModel.getCallingFragments()}, $TAG"
-        )
-        mainActivity.mainViewModel.setTransactionDetailed(getCurrentTransDetailed())
-        mainActivity.mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
-        val direction =
-            TransactionUpdateFragmentDirections
-                .actionTransactionUpdateFragmentToAccountsFragment()
-        mView.findNavController().navigate(direction)
-    }
-
-    private fun chooseBudgetRule() {
-        mainActivity.mainViewModel.setCallingFragments(
-            "${mainActivity.mainViewModel.getCallingFragments()}, $TAG"
-        )
-        val direction =
-            TransactionUpdateFragmentDirections
-                .actionTransactionUpdateFragmentToBudgetRuleFragment()
-        mView.findNavController().navigate(direction)
     }
 
     private fun updateAmountDisplay() {
@@ -344,26 +337,94 @@ class TransactionUpdateFragment :
         }
     }
 
+    private fun updateTransactionIfValid() {
+        val mes = validateTransactionForUpdate()
+        binding.apply {
+            if (mes == ANSWER_OK) {
+                confirmPerformTransaction()
+            } else {
+                Toast.makeText(
+                    mView.context,
+                    mes,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
+    private fun validateTransactionForUpdate(): String {
+        binding.apply {
+            if (etDescription.text.isNullOrBlank()) {
+                return getString(R.string.error) +
+                        getString(R.string.please_enter_a_name_or_description)
+            }
+            if (mToAccount == null
+            ) {
+                return getString(R.string.error) +
+                        getString(R.string.there_needs_to_be_an_account_money_will_go_to)
+            }
+            if (mFromAccount == null
+            ) {
+                return getString(R.string.error) +
+                        getString(R.string.there_needs_to_be_an_account_money_will_come_from)
+            }
+            if (etAmount.text.isNullOrEmpty()
+            ) {
+                getString(R.string.error) +
+                        getString(R.string.please_enter_an_amount_for_this_transaction)
+            }
+            if (mBudgetRule == null) {
+                return if (updateWithoutBudget()) {
+                    ANSWER_OK
+                } else {
+                    getString(R.string.choose_a_budget_rule)
+                }
+            }
+            return ANSWER_OK
+        }
+    }
+
     private fun confirmPerformTransaction() {
         binding.apply {
             var display =
-                "This will perform transaction ${etDescription.text} " +
-                        "for ${nf.getDollarsFromDouble(nf.getDoubleFromDollars(etAmount.text.toString()))} " +
-                        "\n\nFROM:   ${mFromAccount!!.accountName} "
-            display += if (chkFromAccountPending.isChecked) " *pending" else ""
-            display += "\nTO:   ${mToAccount!!.accountName}"
-            display += if (chkToAccountPending.isChecked) " *pending" else ""
+                getString(R.string.this_will_perform) +
+                        etDescription.text +
+                        getString(R.string._for_) +
+                        nf.getDollarsFromDouble(
+                            nf.getDoubleFromDollars(etAmount.text.toString())
+                        ) +
+                        getString(R.string.__from) +
+                        mFromAccount!!.accountName
+            display += if (chkFromAccountPending.isChecked) getString(R.string.pending) else ""
+            display += getString(R.string._to_) +
+                    mToAccount!!.accountName
+            display += if (chkToAccountPending.isChecked) getString(R.string.pending) else ""
             AlertDialog.Builder(mView.context)
-                .setTitle("Confirm performing transaction")
+                .setTitle(getString(R.string.confirm_performing_transaction))
                 .setMessage(
                     display
                 )
-                .setPositiveButton("Confirm") { _, _ ->
+                .setPositiveButton(getString(R.string.confirm)) { _, _ ->
                     updateTransaction()
                 }
-                .setNegativeButton("Go back", null)
+                .setNegativeButton(getString(R.string.go_back), null)
                 .show()
         }
+    }
+
+    private fun updateWithoutBudget(): Boolean {
+        var bool = false
+        AlertDialog.Builder(activity).apply {
+            setMessage(
+                getString(R.string.there_is_no_budget_rule) +
+                        getString(R.string.budget_rules_are_used_to_update_the_budget)
+            )
+            setPositiveButton(getString(R.string.save_anyway)) { _, _ ->
+                bool = true
+            }
+            setNegativeButton(getString(R.string.retry), null)
+        }.create().show()
+        return bool
     }
 
     private fun updateTransaction() {
@@ -376,70 +437,6 @@ class TransactionUpdateFragment :
                 .replace(", $TAG", "")
         )
         gotoCallingFragment()
-    }
-
-    private fun updateTransactionIfValid() {
-        val mes = validateTransactionForUpdate()
-        binding.apply {
-            if (mes == "Ok") {
-                confirmPerformTransaction()
-            } else {
-                Toast.makeText(
-                    mView.context,
-                    mes,
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        }
-    }
-
-    private fun saveWithoutBudget(): Boolean {
-        var bool = false
-        AlertDialog.Builder(activity).apply {
-            setMessage(
-                "There is no Budget Rule!" +
-                        "Budget Rules are used to update the budget."
-            )
-            setPositiveButton("Save anyway") { _, _ ->
-                bool = true
-            }
-            setNegativeButton("Retry", null)
-        }.create().show()
-        return bool
-    }
-
-    private fun validateTransactionForUpdate(): String {
-        binding.apply {
-            val amount =
-                nf.getDoubleFromDollars(etAmount.text.toString())
-            val errorMes =
-                if (etDescription.text.isNullOrBlank()) {
-                    "     ERROR!!\n" +
-                            "Please enter a description."
-                } else if (mToAccount == null
-                ) {
-                    "     Error!!\n" +
-                            "There needs to be an account money will go to."
-                } else if (mFromAccount == null
-                ) {
-                    "     Error!!\n" +
-                            "There needs to be an account money will come from."
-                } else if (etAmount.text.isNullOrEmpty() ||
-                    amount == 0.0
-                ) {
-                    "     Error!!\n" +
-                            "Please enter an amount fr this transaction"
-                } else if (mBudgetRule == null) {
-                    if (saveWithoutBudget()) {
-                        "Ok"
-                    } else {
-                        "Choose a Budget Rule"
-                    }
-                } else {
-                    "Ok"
-                }
-            return errorMes
-        }
     }
 
     private fun getCurrentTransDetailed(): TransactionDetailed {
@@ -471,24 +468,28 @@ class TransactionUpdateFragment :
         }
     }
 
-    private fun deleteTransaction() {
+    private fun confirmDeleteTransaction() {
         AlertDialog.Builder(activity).apply {
-            setTitle("Delete this Transaction")
-            setMessage("Are you sure you want to delete this Transaction?")
-            setPositiveButton("Delete") { _, _ ->
-                mainActivity.accountUpdateViewModel.deleteTransaction(
-                    mainActivity.mainViewModel.getTransactionDetailed()!!.transaction!!
-                )
-                mainActivity.mainViewModel.setTransactionDetailed(null)
-                mainActivity.mainViewModel.setCallingFragments(
-                    mainActivity.mainViewModel.getCallingFragments()!!.replace(
-                        FRAG_TRANS_UPDATE, ""
-                    )
-                )
-                gotoCallingFragment()
+            setTitle(getString(R.string.delete_this_transaction))
+            setMessage(getString(R.string.are_you_sure_you_want_to_delete_this_transaction))
+            setPositiveButton(getString(R.string.delete_this_transaction)) { _, _ ->
+                deleteTransaction()
             }
-            setNegativeButton("Cancel", null)
+            setNegativeButton(getString(R.string.cancel), null)
         }.create().show()
+    }
+
+    private fun deleteTransaction() {
+        mainActivity.accountUpdateViewModel.deleteTransaction(
+            mainActivity.mainViewModel.getTransactionDetailed()!!.transaction!!
+        )
+        mainActivity.mainViewModel.setTransactionDetailed(null)
+        mainActivity.mainViewModel.setCallingFragments(
+            mainActivity.mainViewModel.getCallingFragments()!!.replace(
+                FRAG_TRANS_UPDATE, ""
+            )
+        )
+        gotoCallingFragment()
     }
 
     private fun gotoCallingFragment() {
@@ -505,19 +506,52 @@ class TransactionUpdateFragment :
         }
     }
 
+    private fun gotoSplitTransaction() {
+        mainActivity.mainViewModel.setSplitTransactionDetailed(null)
+        mainActivity.mainViewModel.setTransferNum(0.0)
+        mainActivity.mainViewModel.setUpdatingTransaction(true)
+        if (mFromAccount != null &&
+            nf.getDoubleFromDollars(binding.etAmount.text.toString()) > 2.0
+        ) {
+            mainActivity.mainViewModel.setCallingFragments(
+                mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
+            )
+            mainActivity.mainViewModel.setTransactionDetailed(getCurrentTransDetailed())
+            gotoTransactionSplitFragment()
+        }
+    }
+
     private fun gotoCalculator() {
         mainActivity.mainViewModel.setTransferNum(
             nf.getDoubleFromDollars(
                 binding.etAmount.text.toString().ifBlank {
-                    "0.0"
+                    getString(R.string.zero_double)
                 }
             )
         )
         mainActivity.mainViewModel.setReturnTo(TAG)
         mainActivity.mainViewModel.setTransactionDetailed(getCurrentTransDetailed())
+        gotoCalculatorFragment()
+    }
+
+    private fun gotoCalculatorFragment() {
         mView.findNavController().navigate(
             TransactionUpdateFragmentDirections
                 .actionTransactionUpdateFragmentToCalcFragment()
+        )
+    }
+
+    private fun gotoAccountsFragment() {
+        mView.findNavController().navigate(
+            TransactionUpdateFragmentDirections
+                .actionTransactionUpdateFragmentToAccountsFragment()
+        )
+    }
+
+    private fun gotoBudgetRuleFragment() {
+        mView.findNavController().navigate(
+            TransactionUpdateFragmentDirections
+                .actionTransactionUpdateFragmentToBudgetRuleFragment()
         )
     }
 
@@ -535,22 +569,11 @@ class TransactionUpdateFragment :
         )
     }
 
-    private fun gotoSplitTransactionFragment() {
-        mainActivity.mainViewModel.setSplitTransactionDetailed(null)
-        mainActivity.mainViewModel.setTransferNum(0.0)
-        mainActivity.mainViewModel.setUpdatingTransaction(true)
-        if (mFromAccount != null &&
-            nf.getDoubleFromDollars(binding.etAmount.text.toString()) > 2.0
-        ) {
-            mainActivity.mainViewModel.setCallingFragments(
-                mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
-            )
-            mainActivity.mainViewModel.setTransactionDetailed(getCurrentTransDetailed())
-            mView.findNavController().navigate(
-                TransactionUpdateFragmentDirections
-                    .actionTransactionUpdateFragmentToTransactionSplitFragment()
-            )
-        }
+    private fun gotoTransactionSplitFragment() {
+        mView.findNavController().navigate(
+            TransactionUpdateFragmentDirections
+                .actionTransactionUpdateFragmentToTransactionSplitFragment()
+        )
     }
 
     override fun onDestroy() {
