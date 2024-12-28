@@ -9,6 +9,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_LIST
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
@@ -21,12 +22,11 @@ import java.util.Random
 
 private const val PARENT_TAG = FRAG_BUDGET_LIST
 
-
 class BudgetListAnnualAdapter(
     private val mainActivity: MainActivity,
-    private val parentView: View,
+    private val mView: View,
 ) : RecyclerView.Adapter<BudgetListAnnualAdapter.BudgetListHolder>() {
-    val cf = NumberFunctions()
+    private val nf = NumberFunctions()
     val df = DateFunctions()
 
     class BudgetListHolder(val itemBinding: BudgetListItemBinding) :
@@ -88,7 +88,7 @@ class BudgetListAnnualAdapter(
                             df.getDisplayDateInComingYear(budgetRule!!.budStartDate)
                 }
                 tvBudgetName.text = info
-                info = cf.displayDollars(budgetRule!!.budgetAmount)
+                info = nf.displayDollars(budgetRule!!.budgetAmount)
                 tvAmount.text = info
                 val random = Random()
                 val color = Color.argb(
@@ -98,12 +98,17 @@ class BudgetListAnnualAdapter(
                     random.nextInt(256)
                 )
                 ibColor.setBackgroundColor(color)
-                info = "Annually every ${budgetRule!!.budFrequencyCount} years"
+                info =
+                    mView.context.getString(R.string.annually_every) +
+                            budgetRule!!.budFrequencyCount +
+                            mView.context.getString(R.string._years)
                 tvFrequency.text = info
-                info = "Average/month: " + cf.displayDollars(
-                    budgetRule!!.budgetAmount / 12 /
-                            budgetRule!!.budFrequencyCount
-                )
+                info =
+                    mView.context.getString(R.string.average_per_month) +
+                            nf.displayDollars(
+                                budgetRule!!.budgetAmount / 12 /
+                                        budgetRule!!.budFrequencyCount
+                            )
                 tvAverage.text = info
                 holder.itemView.setOnLongClickListener {
                     chooseOptionsForBudgetItem(curRule)
@@ -114,16 +119,16 @@ class BudgetListAnnualAdapter(
     }
 
     private fun chooseOptionsForBudgetItem(curRule: BudgetRuleComplete) {
-        AlertDialog.Builder(parentView.context)
+        AlertDialog.Builder(mView.context)
             .setTitle(
-                "Choose an action for " +
+                mView.context.getString(R.string.choose_an_action_for) +
                         curRule.budgetRule!!.budgetRuleName
             )
             .setItems(
                 arrayOf(
-                    "View or Edit this Budget Rule",
-                    "Delete this Budget Rule",
-                    "View a summary of transactions for this rule"
+                    mView.context.getString(R.string.view_or_edit_this_budget_rule),
+                    mView.context.getString(R.string.delete_this_budget_rule),
+                    mView.context.getString(R.string.view_a_summary_of_transactions_for_this_budget_rule)
                 )
             ) { _, pos ->
                 when (pos) {
@@ -132,8 +137,26 @@ class BudgetListAnnualAdapter(
                     2 -> gotoAverages(curRule)
                 }
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(mView.context.getString(R.string.cancel), null)
             .show()
+    }
+
+    private fun editBudgetRule(curRule: BudgetRuleComplete) {
+        val budgetRule = BudgetRuleDetailed(
+            curRule.budgetRule!!,
+            curRule.toAccount!!.account,
+            curRule.fromAccount!!.account
+        )
+        mainActivity.mainViewModel.setBudgetRuleDetailed(budgetRule)
+        mainActivity.mainViewModel.setCallingFragments(PARENT_TAG)
+        gotoBudgetRuleUpdateFragment()
+    }
+
+    private fun deleteBudgetRule(curRule: BudgetRuleComplete) {
+        mainActivity.budgetRuleViewModel.deleteBudgetRule(
+            curRule.budgetRule!!.ruleId,
+            df.getCurrentTimeAsString()
+        )
     }
 
     private fun gotoAverages(curRule: BudgetRuleComplete) {
@@ -148,28 +171,18 @@ class BudgetListAnnualAdapter(
             )
         )
         mainActivity.mainViewModel.setAccountWithType(null)
-        parentView.findNavController().navigate(
+        gotoTransactionAverageFragment()
+    }
+
+    private fun gotoTransactionAverageFragment() {
+        mView.findNavController().navigate(
             BudgetListFragmentDirections
                 .actionBudgetListFragmentToTransactionAverageFragment()
         )
     }
 
-    private fun deleteBudgetRule(curRule: BudgetRuleComplete) {
-        mainActivity.budgetRuleViewModel.deleteBudgetRule(
-            curRule.budgetRule!!.ruleId,
-            df.getCurrentTimeAsString()
-        )
-    }
-
-    private fun editBudgetRule(curRule: BudgetRuleComplete) {
-        val budgetRule = BudgetRuleDetailed(
-            curRule.budgetRule!!,
-            curRule.toAccount!!.account,
-            curRule.fromAccount!!.account
-        )
-        mainActivity.mainViewModel.setBudgetRuleDetailed(budgetRule)
-        mainActivity.mainViewModel.setCallingFragments(PARENT_TAG)
-        parentView.findNavController().navigate(
+    private fun gotoBudgetRuleUpdateFragment() {
+        mView.findNavController().navigate(
             BudgetListFragmentDirections
                 .actionBudgetListFragmentToBudgetRuleUpdateFragment()
 

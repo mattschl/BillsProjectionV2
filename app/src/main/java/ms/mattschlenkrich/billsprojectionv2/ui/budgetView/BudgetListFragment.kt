@@ -43,7 +43,7 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
-        mainActivity.title = "View the complete budget"
+        mainActivity.title = getString(R.string.view_the_complete_budget)
         mView = binding.root
         return mView
     }
@@ -119,15 +119,21 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
                 if (budget.fromAccount!!.accountType!!.displayAsAsset) {
                     totalDebits += amt
                 }
-                var info = "Credits: " + nf.displayDollars(totalCredits)
+                var info =
+                    getString(R.string.credits_) +
+                            nf.displayDollars(totalCredits)
                 tvDebitsAnnual.text = info
-                info = "Debits: " + nf.displayDollars(totalDebits)
+                info = getString(R.string.debits_) + nf.displayDollars(totalDebits)
                 tvCreditsAnnual.text = info
                 if (totalCredits >= totalDebits) {
-                    info = "Surplus of " + nf.displayDollars(totalCredits - totalDebits)
+                    info =
+                        getString(R.string.surplus_of) +
+                                nf.displayDollars(totalCredits - totalDebits)
                     tvTotalOccasional.setTextColor(Color.BLACK)
                 } else {
-                    info = "DEFICIT of " + nf.displayDollars(totalDebits - totalCredits)
+                    info =
+                        getString(R.string.deficit_of) +
+                                nf.displayDollars(totalDebits - totalCredits)
                     tvTotalOccasional.setTextColor(Color.RED)
                 }
                 tvTotalAnnual.text = info
@@ -199,15 +205,23 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
                 if (budget.fromAccount!!.accountType!!.displayAsAsset) {
                     totalDebits += amt
                 }
-                var info = "Credits: " + nf.displayDollars(totalCredits)
+                var info =
+                    getString(R.string.credits_) +
+                            nf.displayDollars(totalCredits)
                 tvCreditsOccasional.text = info
-                info = "Debits: " + nf.displayDollars(totalDebits)
+                info =
+                    getString(R.string.debits_) +
+                            nf.displayDollars(totalDebits)
                 tvDebitsOccasional.text = info
                 if (totalCredits >= totalDebits) {
-                    info = "Surplus of " + nf.displayDollars(totalCredits - totalDebits)
+                    info =
+                        getString(R.string.surplus_of) +
+                                nf.displayDollars(totalCredits - totalDebits)
                     tvTotalOccasional.setTextColor(Color.BLACK)
                 } else {
-                    info = "DEFICIT of " + nf.displayDollars(totalDebits - totalCredits)
+                    info =
+                        getString(R.string.deficit_of) +
+                                nf.displayDollars(totalDebits - totalCredits)
                     tvTotalOccasional.setTextColor(Color.RED)
                 }
                 tvTotalOccasional.text = info
@@ -287,17 +301,25 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
                     }
                 }
 
-                var info = "Credits: " + nf.displayDollars(totalCredits)
+                var info =
+                    getString(R.string.credits_) +
+                            nf.displayDollars(totalCredits)
                 tvCreditsMonthly.text = info
-                info = "Debits: " + nf.displayDollars(totalDebits)
+                info =
+                    getString(R.string.debits_) +
+                            nf.displayDollars(totalDebits)
                 tvDebitsMonthly.text = info
-                info = "Fixed: " + nf.displayDollars(totalFixed)
+                info = getString(R.string.fixed_) + nf.displayDollars(totalFixed)
                 tvFixedMonthly.text = info
                 if (totalCredits >= totalDebits) {
-                    info = "Surplus of " + nf.displayDollars(totalCredits - totalDebits)
+                    info =
+                        getString(R.string.surplus_of) +
+                                nf.displayDollars(totalCredits - totalDebits)
                     tvTotalMonthly.setTextColor(Color.BLACK)
                 } else {
-                    info = "DEFICIT of " + nf.displayDollars(totalDebits - totalCredits)
+                    info =
+                        getString(R.string.deficit_of) +
+                                nf.displayDollars(totalDebits - totalCredits)
                     tvTotalMonthly.setTextColor(Color.RED)
                 }
                 tvTotalMonthly.text = info
