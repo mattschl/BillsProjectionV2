@@ -2,7 +2,6 @@ package ms.mattschlenkrich.billsprojectionv2.ui.budgetView.adapter
 
 import android.app.AlertDialog
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_100
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
@@ -32,7 +30,6 @@ import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetViewFragment
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetViewFragmentDirections
 import java.util.Random
 
-private const val TAG = ADAPTER_BUDGET_VIEW
 private const val PARENT_TAG = FRAG_BUDGET_VIEW
 
 
@@ -99,7 +96,8 @@ class BudgetViewAdapter(
                 df.getDisplayDate(curBudget.budgetItem!!.biActualDate)
             tvName.text = curBudget.budgetItem.biBudgetName
             if (curBudget.budgetItem.biIsFixed) {
-                val newText = curBudget.budgetItem.biBudgetName + "\n*Fixed*"
+                val newText = curBudget.budgetItem.biBudgetName +
+                        mView.context.getString(R.string._fixed_)
                 tvName.text = newText
                 tvName.setTextColor(Color.RED)
             } else {
@@ -113,9 +111,11 @@ class BudgetViewAdapter(
             } else {
                 tvAmount.setTextColor(Color.RED)
             }
-            var info = "To: " + curBudget.toAccount!!.accountName
+            var info =
+                mView.context.getString(R.string.to_) + curBudget.toAccount!!.accountName
             tvToAccount.text = info
-            info = "From: " + curBudget.fromAccount!!.accountName
+            info =
+                mView.context.getString(R.string.from_) + curBudget.fromAccount!!.accountName
             tvFromAccount.text = info
             if (curBudget.budgetItem.biLocked) {
                 imgLocked.setImageResource(
@@ -147,13 +147,15 @@ class BudgetViewAdapter(
 
     private fun chooseLockUnlock(budgetItem: BudgetDetailed) {
         AlertDialog.Builder(mView.context)
-            .setTitle("Lock or Unlock")
+            .setTitle(mView.context.getString(R.string.lock_or_unlock))
             .setItems(
                 arrayOf(
-                    "LOCK ${budgetItem.budgetItem!!.biBudgetName}",
-                    "UN Lock  ${budgetItem.budgetItem.biBudgetName}",
-                    "LOCK all items for this payday",
-                    "UN Lock all items for this payday"
+                    mView.context.getString(R.string.lock) +
+                            budgetItem.budgetItem!!.biBudgetName,
+                    mView.context.getString(R.string.un_lock) +
+                            budgetItem.budgetItem.biBudgetName,
+                    mView.context.getString(R.string.lock_all_items_for_this_payday),
+                    mView.context.getString(R.string.un_lock_all_items_for_this_payday)
                 )
             ) { _, pos ->
                 when (pos) {
@@ -188,29 +190,32 @@ class BudgetViewAdapter(
                     }
                 }
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(mView.context.getString(R.string.cancel), null)
             .show()
     }
 
     private fun chooseOptionsForBudget(
         curBudget: BudgetDetailed
     ) {
-        Log.d(TAG, "Entering options for $TAG")
         AlertDialog.Builder(mView.context)
-            .setTitle("Choose action for ${curBudget.budgetItem!!.biBudgetName}")
+            .setTitle(
+                mView.context.getString(R.string.choose_an_action_for) +
+                        curBudget.budgetItem!!.biBudgetName
+            )
             .setItems(
                 arrayOf(
-                    "Perform a TRANSACTION on this budget item.",
+                    mView.context.getString(R.string.perform_a_transaction_on_this_budget_item),
                     if (curBudget.budgetItem.biProjectedAmount == 0.0) {
                         ""
                     } else {
-                        "PERFORM action \"${curBudget.budgetItem.biBudgetName}\" " +
-                                "\nfor amount of " +
+                        mView.context.getString(R.string.perform_action) +
+                                "\"${curBudget.budgetItem.biBudgetName}\" " +
+                                mView.context.getString(R.string.for_amount_of) +
                                 nf.displayDollars(curBudget.budgetItem.biProjectedAmount)
                     },
-                    "ADJUST this item.",
-                    "CANCEL this item.",
-                    "Go to the RULES for this item."
+                    mView.context.getString(R.string.adjust_this_item),
+                    mView.context.getString(R.string.cancel_this_item),
+                    mView.context.getString(R.string.go_to_the_rules_for_this_item)
                 )
             ) { _, pos ->
                 when (pos) {
@@ -223,7 +228,7 @@ class BudgetViewAdapter(
                     }
 
                     2 -> {
-                        openBudgetItem(curBudget)
+                        gotoBudgetItem(curBudget)
                     }
 
                     3 -> {
@@ -235,8 +240,15 @@ class BudgetViewAdapter(
                     }
                 }
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(mView.context.getString(R.string.cancel), null)
             .show()
+    }
+
+    private fun performTransaction(curBudget: BudgetDetailed) {
+        mainActivity.mainViewModel.setBudgetItem(curBudget)
+        mainActivity.mainViewModel.setTransactionDetailed(null)
+        setToReturn()
+        gotoTransactionPerformFragment()
     }
 
     private fun confirmCompleteTransaction(curBudget: BudgetDetailed) {
@@ -248,14 +260,14 @@ class BudgetViewAdapter(
             CoroutineScope(Dispatchers.Main).launch {
                 delay(WAIT_250)
                 AlertDialog.Builder(mView.context)
-                    .setTitle("'Confirm Completing transaction")
+                    .setTitle(mView.context.getString(R.string.confirm_completing_transaction))
                     .setMessage(
                         display
                     )
-                    .setPositiveButton("Complete Now") { _, _ ->
+                    .setPositiveButton(mView.context.getString(R.string.complete_now)) { _, _ ->
                         completeTransaction(curBudget)
                     }
-                    .setNegativeButton("Cancel", null)
+                    .setNegativeButton(mView.context.getString(R.string.cancel), null)
                     .show()
             }
         }
@@ -265,25 +277,28 @@ class BudgetViewAdapter(
         budgetItem: BudgetItem,
         curBudget: BudgetDetailed
     ): String {
-        var display = "This will perform ${budgetItem.biBudgetName} \n" +
-                "applying the amount of " +
+        var display = mView.context.getString(R.string.this_will_perform) +
+                budgetItem.biBudgetName +
+                mView.context.getString(R.string.applying_the_amount_of) +
                 nf.displayDollars(curBudget.budgetItem!!.biProjectedAmount) +
-                "\n\nFROM:   ${curBudget.fromAccount!!.accountName} "
+                mView.context.getString(R.string.from) +
+                curBudget.fromAccount!!.accountName
         display += if (mainActivity.accountUpdateViewModel.isTransactionPending(
                 budgetItem.biFromAccountId
             )
         ) {
-            "  *pending"
+            mView.context.getString(R.string._pending)
         } else {
             ""
         }
         delay(WAIT_100)
-        display += "\nTO:   ${curBudget.toAccount!!.accountName}"
+        display += mView.context.getString(R.string._to) +
+                curBudget.toAccount!!.accountName
         display += if (mainActivity.accountUpdateViewModel.isTransactionPending(
                 budgetItem.biToAccountId
             )
         ) {
-            "  *pending"
+            mView.context.getString(R.string._pending)
         } else {
             ""
         }
@@ -370,33 +385,20 @@ class BudgetViewAdapter(
         }
     }
 
-    private fun gotoBudgetRule(curBudget: BudgetDetailed) {
-        mainActivity.mainViewModel.setBudgetRuleDetailed(
-            BudgetRuleDetailed(
-                curBudget.budgetRule,
-                curBudget.toAccount,
-                curBudget.fromAccount
-            )
-        )
-        setToReturn()
-        mView.findNavController().navigate(
-            BudgetViewFragmentDirections
-                .actionBudgetViewFragmentToBudgetRuleUpdateFragment()
-        )
-    }
-
     private fun confirmCancelBudgetItem(curBudget: BudgetDetailed) {
         AlertDialog.Builder(mView.context)
-            .setTitle("Confirm Cancelling Budget Item ")
+            .setTitle(mView.context.getString(R.string.confirm_cancelling_budget_item))
             .setMessage(
-                "This will Cancel ${curBudget.budgetItem!!.biBudgetName} with the amount of\n" +
+                mView.context.getString(R.string.this_will_cancel) +
+                        curBudget.budgetItem!!.biBudgetName +
+                        mView.context.getString(R.string.with_the_amount_of) +
                         nf.displayDollars(curBudget.budgetItem.biProjectedAmount) +
-                        " remaining"
+                        mView.context.getString(R.string._remaining)
             )
-            .setPositiveButton("Cancel Now") { _, _ ->
+            .setPositiveButton(mView.context.getString(R.string.cancel_now)) { _, _ ->
                 cancelBudgetItem(curBudget)
             }
-            .setNegativeButton("Ignore this", null)
+            .setNegativeButton(mView.context.getString(R.string.ignore_this), null)
             .show()
     }
 
@@ -409,24 +411,43 @@ class BudgetViewAdapter(
         budgetViewFragment.populateBudgetList()
     }
 
-    private fun openBudgetItem(curBudget: BudgetDetailed) {
+    private fun gotoBudgetRule(curBudget: BudgetDetailed) {
+        mainActivity.mainViewModel.setBudgetRuleDetailed(
+            BudgetRuleDetailed(
+                curBudget.budgetRule,
+                curBudget.toAccount,
+                curBudget.fromAccount
+            )
+        )
+        setToReturn()
+        gotoBudgetRuleUpdateFragment()
+    }
+
+    private fun gotoBudgetItem(curBudget: BudgetDetailed) {
         mainActivity.mainViewModel.setBudgetItem(curBudget)
         setToReturn()
+        gotoBudgetItemUpdateFragment()
+    }
+
+    private fun gotoBudgetItemUpdateFragment() {
         mView.findNavController().navigate(
             BudgetViewFragmentDirections
                 .actionBudgetViewFragmentToBudgetItemUpdateFragment()
         )
     }
 
-    private fun performTransaction(curBudget: BudgetDetailed) {
-        mainActivity.mainViewModel.setBudgetItem(curBudget)
-        mainActivity.mainViewModel.setTransactionDetailed(null)
-        setToReturn()
+    private fun gotoBudgetRuleUpdateFragment() {
+        mView.findNavController().navigate(
+            BudgetViewFragmentDirections
+                .actionBudgetViewFragmentToBudgetRuleUpdateFragment()
+        )
+    }
+
+    private fun gotoTransactionPerformFragment() {
         mView.findNavController().navigate(
             BudgetViewFragmentDirections
                 .actionBudgetViewFragmentToTransactionPerformFragment()
         )
-
     }
 
     private fun setToReturn() {

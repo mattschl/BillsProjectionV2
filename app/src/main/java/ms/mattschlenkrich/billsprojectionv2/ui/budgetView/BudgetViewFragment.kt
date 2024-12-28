@@ -56,7 +56,7 @@ class BudgetViewFragment : Fragment(
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
-        mainActivity.title = "View The Budget"
+        mainActivity.title = getString(R.string.view_the_budget)
         mView = binding.root
         return binding.root
     }
@@ -174,45 +174,45 @@ class BudgetViewFragment : Fragment(
         }
     }
 
-    fun populateBudgetList() {
-        CoroutineScope(Dispatchers.Main).launch {
-            delay(WAIT_250)
-            binding.apply {
-                val asset = spAssetNames.selectedItem.toString()
-                val payDay =
-                    if (spPayDay.selectedItem != null) {
-                        spPayDay.selectedItem.toString()
-                    } else {
-                        ""
-                    }
-                val budgetViewAdapter = BudgetViewAdapter(
-                    this@BudgetViewFragment,
-                    mainActivity,
-                    asset,
-                    payDay,
-                    mView
-                )
-                binding.rvBudgetSummary.apply {
-                    layoutManager = LinearLayoutManager(requireContext())
-                    adapter = budgetViewAdapter
+    private fun updatePendingTotal(transactions: List<TransactionDetailed>) {
+        pendingAmount = 0.0
+        for (item in transactions) {
+            if (item.transaction!!.transToAccountPending) {
+                pendingAmount += item.transaction.transAmount
+            } else {
+                pendingAmount -= item.transaction.transAmount
+            }
+        }
+        binding.apply {
+            val display =
+                getString(R.string.pending) +
+                        getString(R.string.lines) +
+                        nf.displayDollars(pendingAmount) +
+                        getString(R.string.lines)
+            if (pendingAmount < 0.0) {
+                lblPending.setTextColor(Color.RED)
+            } else {
+                lblPending.setTextColor(Color.BLACK)
+            }
+            lblPending.text = display
+        }
+    }
+
+    private fun updatePendingUI(transactions: List<TransactionDetailed>?) {
+        binding.apply {
+            if (transactions.isNullOrEmpty()) {
+                rvPending.visibility = View.GONE
+                lblPending.visibility = View.GONE
+                lblPending.setTextColor(Color.BLACK)
+            } else {
+                rvPending.visibility = View.VISIBLE
+                lblPending.visibility = View.VISIBLE
+                if (transactions.size > 3) {
+                    rvPending.layoutParams.height = 300
+                } else {
+                    rvPending.layoutParams.height = LayoutParams.WRAP_CONTENT
                 }
-                activity?.let {
-                    mainActivity.budgetItemViewModel.getBudgetItems(
-                        asset, payDay
-                    ).observe(
-                        viewLifecycleOwner
-                    ) { budgetItems ->
-                        budgetList.clear()
-                        budgetViewAdapter.differ.submitList(budgetItems)
-                        budgetItems.listIterator().forEach {
-                            budgetList.add(it)
-                        }
-                        populateAssetDetails()
-                        populateBudgetTotals()
-                        Log.d(TAG, "Budget Items count = ${budgetItems.size}")
-                        updateBudgetListUi(budgetItems)
-                    }
-                }
+                lblPending.setTextColor(Color.RED)
             }
         }
     }
@@ -274,45 +274,6 @@ class BudgetViewFragment : Fragment(
         }
     }
 
-    private fun updatePendingTotal(transactions: List<TransactionDetailed>) {
-        pendingAmount = 0.0
-        for (item in transactions) {
-            if (item.transaction!!.transToAccountPending) {
-                pendingAmount += item.transaction.transAmount
-            } else {
-                pendingAmount -= item.transaction.transAmount
-            }
-        }
-        binding.apply {
-            val display = "------------- Pending: ${nf.displayDollars(pendingAmount)} -------------"
-            if (pendingAmount < 0.0) {
-                lblPending.setTextColor(Color.RED)
-            } else {
-                lblPending.setTextColor(Color.BLACK)
-            }
-            lblPending.text = display
-        }
-    }
-
-    private fun updatePendingUI(transactions: List<TransactionDetailed>?) {
-        binding.apply {
-            if (transactions.isNullOrEmpty()) {
-                rvPending.visibility = View.GONE
-                lblPending.visibility = View.GONE
-                lblPending.setTextColor(Color.BLACK)
-            } else {
-                rvPending.visibility = View.VISIBLE
-                lblPending.visibility = View.VISIBLE
-                if (transactions.size > 3) {
-                    rvPending.layoutParams.height = 300
-                } else {
-                    rvPending.layoutParams.height = LayoutParams.WRAP_CONTENT
-                }
-                lblPending.setTextColor(Color.RED)
-            }
-        }
-    }
-
     private fun onSelectPayDay() {
         binding.apply {
             spPayDay.onItemSelectedListener =
@@ -327,6 +288,49 @@ class BudgetViewFragment : Fragment(
                         //Not necessary
                     }
                 }
+        }
+    }
+
+    fun populateBudgetList() {
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_250)
+            binding.apply {
+                val asset = spAssetNames.selectedItem.toString()
+                val payDay =
+                    if (spPayDay.selectedItem != null) {
+                        spPayDay.selectedItem.toString()
+                    } else {
+                        ""
+                    }
+                val budgetViewAdapter = BudgetViewAdapter(
+                    this@BudgetViewFragment,
+                    mainActivity,
+                    asset,
+                    payDay,
+                    mView
+                )
+                binding.rvBudgetSummary.apply {
+                    layoutManager = LinearLayoutManager(requireContext())
+                    adapter = budgetViewAdapter
+                }
+                activity?.let {
+                    mainActivity.budgetItemViewModel.getBudgetItems(
+                        asset, payDay
+                    ).observe(
+                        viewLifecycleOwner
+                    ) { budgetItems ->
+                        budgetList.clear()
+                        budgetViewAdapter.differ.submitList(budgetItems)
+                        budgetItems.listIterator().forEach {
+                            budgetList.add(it)
+                        }
+                        populateAssetDetails()
+                        populateBudgetTotals()
+                        Log.d(TAG, "Budget Items count = ${budgetItems.size}")
+                        updateBudgetListUi(budgetItems)
+                    }
+                }
+            }
         }
     }
 
@@ -352,16 +356,8 @@ class BudgetViewFragment : Fragment(
             .show()
     }
 
-    private fun gotoAccount() {
-        setToReturn()
-        mainActivity.mainViewModel.setAccountWithType(curAsset)
-        mView.findNavController().navigate(
-            BudgetViewFragmentDirections.actionBudgetViewFragmentToAccountUpdateFragment()
-        )
-    }
-
     private fun resumeHistory() {
-        val waitTime = 250L
+        val waitTime = WAIT_250
         binding.apply {
             CoroutineScope(Dispatchers.Main).launch {
                 delay(waitTime)
@@ -441,7 +437,8 @@ class BudgetViewFragment : Fragment(
                     }
                 }
                 if (credits > 0.0) {
-                    val display = "Credits: ${nf.displayDollars(credits)}"
+                    val display = getString(R.string.credits_) +
+                            nf.displayDollars(credits)
                     tvCredits.text = display
                     tvCredits.setTextColor(Color.BLACK)
                 } else {
@@ -449,7 +446,8 @@ class BudgetViewFragment : Fragment(
                     tvCredits.setTextColor(Color.DKGRAY)
                 }
                 if (debits > 0.0) {
-                    val display = "Debits: ${nf.displayDollars(debits)}"
+                    val display = getString(R.string.debits_) +
+                            nf.displayDollars(debits)
                     tvDebits.text = display
                     tvDebits.setTextColor(Color.RED)
                 } else {
@@ -457,7 +455,8 @@ class BudgetViewFragment : Fragment(
                     tvDebits.setTextColor(Color.DKGRAY)
                 }
                 if (fixedExpenses > 0.0) {
-                    val display = "Fixed Expenses: ${nf.displayDollars(fixedExpenses)}"
+                    val display = getString(R.string.fixed_expenses) +
+                            nf.displayDollars(fixedExpenses)
                     tvFixedExpenses.text = display
                     tvFixedExpenses.setTextColor(Color.RED)
                 } else {
@@ -465,7 +464,8 @@ class BudgetViewFragment : Fragment(
                     tvFixedExpenses.setTextColor(Color.DKGRAY)
                 }
                 if (otherExpenses > 0.0) {
-                    val display = "Discretionary: ${nf.displayDollars(otherExpenses)}"
+                    val display = getString(R.string.discretionary_) +
+                            nf.displayDollars(otherExpenses)
                     tvDiscretionaryExpenses.text = display
                     tvDiscretionaryExpenses.setTextColor(Color.BLUE)
                 } else {
@@ -473,11 +473,13 @@ class BudgetViewFragment : Fragment(
                     tvDiscretionaryExpenses.setTextColor(Color.DKGRAY)
                 }
                 if (surplus >= 0.0) {
-                    val display = "Surplus of ${nf.displayDollars(surplus)}"
+                    val display = getString(R.string.surplus_of) +
+                            nf.displayDollars(surplus)
                     tvSurplusOrDeficit.text = display
                     tvSurplusOrDeficit.setTextColor(Color.BLACK)
                 } else {
-                    val display = "DEFICIT of ${nf.displayDollars(-surplus)}"
+                    val display = getString(R.string.deficit_of) +
+                            nf.displayDollars(-surplus)
                     tvSurplusOrDeficit.text = display
                     tvSurplusOrDeficit.setTextColor(Color.RED)
                 }
@@ -500,22 +502,43 @@ class BudgetViewFragment : Fragment(
     private fun addNewTransaction() {
         setToReturn()
         mainActivity.mainViewModel.setTransactionDetailed(null)
-        val direction =
-            BudgetViewFragmentDirections
-                .actionBudgetViewFragmentToTransactionAddFragment()
-        findNavController().navigate(direction)
+        gotoTransactionAddFragment()
     }
 
     private fun addNewBudgetItem() {
         setToReturn()
-        val direction =
-            BudgetViewFragmentDirections
-                .actionBudgetViewFragmentToBudgetItemAddFragment()
-        findNavController().navigate(direction)
+        gotoBudgetItemAddFragment()
     }
 
     private fun setToReturn() {
         mainActivity.mainViewModel.setCallingFragments(TAG)
+    }
+
+    private fun gotoAccount() {
+        setToReturn()
+        mainActivity.mainViewModel.setAccountWithType(curAsset)
+        gotoAccountUpdateFragment()
+    }
+
+    private fun gotoAccountUpdateFragment() {
+        mView.findNavController().navigate(
+            BudgetViewFragmentDirections
+                .actionBudgetViewFragmentToAccountUpdateFragment()
+        )
+    }
+
+    private fun gotoTransactionAddFragment() {
+        findNavController().navigate(
+            BudgetViewFragmentDirections
+                .actionBudgetViewFragmentToTransactionAddFragment()
+        )
+    }
+
+    private fun gotoBudgetItemAddFragment() {
+        findNavController().navigate(
+            BudgetViewFragmentDirections
+                .actionBudgetViewFragmentToBudgetItemAddFragment()
+        )
     }
 
     override fun onStop() {

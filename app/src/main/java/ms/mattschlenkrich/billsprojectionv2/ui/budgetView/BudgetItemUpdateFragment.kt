@@ -27,6 +27,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
+import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetDetailed
@@ -59,7 +60,7 @@ class BudgetItemUpdateFragment : Fragment(
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
-        mainActivity.title = "Update this Budget Item"
+        mainActivity.title = getString(R.string.update_this_budget_item)
         mView = binding.root
         return binding.root
     }
@@ -122,7 +123,7 @@ class BudgetItemUpdateFragment : Fragment(
                 chkIsLocked.isChecked =
                     curBudgetItem.budgetItem.biLocked
                 CoroutineScope(Dispatchers.Main).launch {
-                    delay(250)
+                    delay(WAIT_250)
                     for (i in 0 until spPayDays.adapter.count) {
                         if (spPayDays.getItemAtPosition(i) ==
                             curBudgetItem.budgetItem.biPayDay
@@ -265,25 +266,25 @@ class BudgetItemUpdateFragment : Fragment(
 
     private fun validateBudgetItem(): String {
         binding.apply {
-            val errorMes =
-                if (etBudgetItemName.text.isNullOrBlank()) {
-                    "     Error!!\n" +
-                            "Please enter a name or description"
-                } else if (mBudgetRuleDetailed.toAccount == null) {
-                    "     Error!!\n" +
-                            "There needs to be an account money will go to."
-                } else if (mBudgetRuleDetailed.fromAccount == null
-                ) {
-                    "     Error!!\n" +
-                            "There needs to be an account money will come from."
-                } else if (etProjectedAmount.text.isNullOrEmpty()
-                ) {
-                    "     Error!!\n" +
-                            "Please enter a budget amount (including zero)"
-                } else {
-                    ANSWER_OK
-                }
-            return errorMes
+            if (etBudgetItemName.text.isNullOrBlank()) {
+                return getString(R.string.error) +
+                        getString(R.string.please_enter_a_name_or_description)
+            }
+            if (mBudgetRuleDetailed.toAccount == null) {
+                return getString(R.string.error) +
+                        getString(R.string.there_needs_to_be_an_account_money_will_go_to)
+            }
+            if (mBudgetRuleDetailed.fromAccount == null
+            ) {
+                return getString(R.string.error) +
+                        getString(R.string.there_needs_to_be_an_account_money_will_come_from)
+            }
+            if (etProjectedAmount.text.isNullOrEmpty()
+            ) {
+                return getString(R.string.error) +
+                        getString(R.string.please_enter_a_budgeted_amount_including_zero)
+            }
+            return ANSWER_OK
         }
     }
 
@@ -345,13 +346,13 @@ class BudgetItemUpdateFragment : Fragment(
 
     private fun confirmDeleteBudgetItem() {
         AlertDialog.Builder(activity).apply {
-            setTitle("Delete Budget Item")
-            setMessage("Are you sure you want to delete this budget item?")
-            setPositiveButton("Delete") { _, _ ->
+            setTitle(getString(R.string.delete_budget_item))
+            setMessage(getString(R.string.are_you_sure_you_want_to_delete_this_budget_item))
+            setPositiveButton(getString(R.string.delete)) { _, _ ->
                 deleteBudgetItem()
                 gotoCallingFragment()
             }
-            setNegativeButton("Cancel", null)
+            setNegativeButton(getString(R.string.cancel), null)
         }.create().show()
     }
 
@@ -365,10 +366,7 @@ class BudgetItemUpdateFragment : Fragment(
         )
         mainActivity.mainViewModel.setReturnTo(TAG)
         mainActivity.mainViewModel.setBudgetItem(getCurrentBudgetItemDetailed())
-        mView.findNavController().navigate(
-            BudgetItemUpdateFragmentDirections
-                .actionBudgetItemUpdateFragmentToCalcFragment()
-        )
+        gotoCalculatorFragment()
     }
 
     private fun gotoCallingFragment() {
@@ -382,6 +380,13 @@ class BudgetItemUpdateFragment : Fragment(
             )
             gotoBudgetViewFragment()
         }
+    }
+
+    private fun gotoCalculatorFragment() {
+        mView.findNavController().navigate(
+            BudgetItemUpdateFragmentDirections
+                .actionBudgetItemUpdateFragmentToCalcFragment()
+        )
     }
 
     private fun gotoBudgetViewFragment() {

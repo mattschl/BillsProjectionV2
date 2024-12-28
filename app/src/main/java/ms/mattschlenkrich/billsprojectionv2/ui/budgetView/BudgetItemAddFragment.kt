@@ -59,8 +59,7 @@ class BudgetItemAddFragment : Fragment(
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
-
-        mainActivity.title = "Add a new Budget Item"
+        mainActivity.title = getString(R.string.add_a_new_budget_item)
         mView = binding.root
         return binding.root
     }
@@ -76,8 +75,27 @@ class BudgetItemAddFragment : Fragment(
         if (mainActivity.mainViewModel.getBudgetItem() != null) {
             populateFromCache()
         } else {
-            fillDateToCurrent()
+            populateDateToCurrent()
         }
+    }
+
+    private fun populatePayDays() {
+        val payDayAdapter =
+            ArrayAdapter<Any>(
+                requireContext(),
+                R.layout.spinner_item_bold
+            )
+        payDayAdapter.setDropDownViewResource(
+            R.layout.spinner_item_bold
+        )
+        mainActivity.budgetItemViewModel.getPayDays().observe(
+            viewLifecycleOwner
+        ) { payDayList ->
+            payDayList?.forEach {
+                payDayAdapter.add(it)
+            }
+        }
+        binding.spPayDays.adapter = payDayAdapter
     }
 
     private fun populateFromCache() {
@@ -175,26 +193,7 @@ class BudgetItemAddFragment : Fragment(
         }
     }
 
-    private fun populatePayDays() {
-        val payDayAdapter =
-            ArrayAdapter<Any>(
-                requireContext(),
-                R.layout.spinner_item_bold
-            )
-        payDayAdapter.setDropDownViewResource(
-            R.layout.spinner_item_bold
-        )
-        mainActivity.budgetItemViewModel.getPayDays().observe(
-            viewLifecycleOwner
-        ) { payDayList ->
-            payDayList?.forEach {
-                payDayAdapter.add(it)
-            }
-        }
-        binding.spPayDays.adapter = payDayAdapter
-    }
-
-    private fun fillDateToCurrent() {
+    private fun populateDateToCurrent() {
         binding.apply {
             etProjectedDate.setText(df.getCurrentDateAsString())
         }
@@ -250,9 +249,7 @@ class BudgetItemAddFragment : Fragment(
             mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
         )
         mainActivity.mainViewModel.setBudgetItem(getCurrentBudgetItemDetailed())
-        val direction = BudgetItemAddFragmentDirections
-            .actionBudgetItemAddFragmentToBudgetRuleFragment()
-        mView.findNavController().navigate(direction)
+        gotoBudgetRulesFragment()
     }
 
     private fun chooseAccount(requestedAccount: String) {
@@ -261,9 +258,7 @@ class BudgetItemAddFragment : Fragment(
         )
         mainActivity.mainViewModel.setRequestedAccount(requestedAccount)
         mainActivity.mainViewModel.setBudgetItem(getCurrentBudgetItemDetailed())
-        val direction = BudgetItemAddFragmentDirections
-            .actionBudgetItemAddFragmentToAccountsFragment()
-        mView.findNavController().navigate(direction)
+        gotoAccountsFragment()
     }
 
     private fun chooseDate() {
@@ -308,22 +303,22 @@ class BudgetItemAddFragment : Fragment(
     private fun validateBudgetItem(): String {
         binding.apply {
             if (etBudgetItemName.text.isNullOrBlank()) {
-                return "     Error!!\n" +
-                        "Please enter a name or description"
+                return getString(R.string.error) +
+                        getString(R.string.please_enter_a_name_or_description)
             }
             if (budgetRuleDetailed.toAccount == null) {
-                return "     Error!!\n" +
-                        "There needs to be an account money will go to."
+                return getString(R.string.error) +
+                        getString(R.string.there_needs_to_be_an_account_money_will_go_to)
             }
             if (budgetRuleDetailed.fromAccount == null
             ) {
-                return "     Error!!\n" +
-                        "There needs to be an account money will come from."
+                return getString(R.string.error) +
+                        getString(R.string.there_needs_to_be_an_account_money_will_come_from)
             }
             if (etProjectedAmount.text.isNullOrEmpty()
             ) {
-                return "     Error!!\n" +
-                        "Please enter a budget amount (including zero)"
+                return getString(R.string.error) +
+                        getString(R.string.please_enter_a_budgeted_amount_including_zero)
             }
             return ANSWER_OK
         }
@@ -399,12 +394,23 @@ class BudgetItemAddFragment : Fragment(
         mainActivity.mainViewModel.setTransferNum(
             nf.getDoubleFromDollars(
                 binding.etProjectedAmount.text.toString().ifBlank {
-                    "0.0"
+                    getString(R.string.zero_double)
                 }
             )
         )
         mainActivity.mainViewModel.setReturnTo(TAG)
         mainActivity.mainViewModel.setBudgetItem(getCurrentBudgetItemDetailed())
+        gotoCalculatorFragment()
+    }
+
+    private fun gotoAccountsFragment() {
+        mView.findNavController().navigate(
+            BudgetItemAddFragmentDirections
+                .actionBudgetItemAddFragmentToAccountsFragment()
+        )
+    }
+
+    private fun gotoCalculatorFragment() {
         mView.findNavController().navigate(
             BudgetItemAddFragmentDirections
                 .actionBudgetItemAddFragmentToCalcFragment()
