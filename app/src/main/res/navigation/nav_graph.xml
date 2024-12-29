@@ -31,8 +31,7 @@
     <!--    action_global_accountsFragment-->
     <action
         android:id="@+id/action_global_accountsFragment"
-        app:destination="@id/accountsFragment"
-        app:popUpTo="@id/accountsFragment" />
+        app:destination="@id/accountsFragment" />
 
     <!--    accountsFragment-->
     <fragment
@@ -66,9 +65,7 @@
             app:destination="@id/budgetItemUpdateFragment" />
         <action
             android:id="@+id/action_accountsFragment_to_transactionPerformFragment"
-            app:destination="@id/transactionPerformFragment"
-            app:popUpTo="@id/transactionPerformFragment"
-            app:popUpToInclusive="true" />
+            app:destination="@id/transactionPerformFragment" />
         <action
             android:id="@+id/action_accountsFragment_to_transactionAnalysisFragment"
             app:destination="@id/transactionAnalysisFragment" />
