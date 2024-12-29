@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
@@ -503,6 +504,11 @@ class TransactionUpdateFragment :
             )
         ) {
             gotoTransactionViewFragment()
+        } else if (mainActivity.mainViewModel.getCallingFragments()!!.contains(
+                FRAG_TRANSACTION_ANALYSIS
+            )
+        ) {
+            gotoTransactionAnalysisFragment()
         }
     }
 
@@ -573,6 +579,13 @@ class TransactionUpdateFragment :
         mView.findNavController().navigate(
             TransactionUpdateFragmentDirections
                 .actionTransactionUpdateFragmentToTransactionSplitFragment()
+        )
+    }
+
+    private fun gotoTransactionAnalysisFragment() {
+        mView.findNavController().navigate(
+            TransactionUpdateFragmentDirections
+                .actionTransactionUpdateFragmentToTransactionAnalysisFragment()
         )
     }
 

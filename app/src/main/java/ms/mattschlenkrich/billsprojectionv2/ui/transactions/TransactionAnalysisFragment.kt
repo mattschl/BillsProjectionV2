@@ -108,7 +108,8 @@ class TransactionAnalysisFragment : Fragment(
             transactionAdapter =
                 TransactionAnalysisAdapter(
                     mainActivity,
-                    mView
+                    mView,
+                    TAG
                 )
             rvTransactions.apply {
                 layoutManager = LinearLayoutManager(
@@ -172,7 +173,8 @@ class TransactionAnalysisFragment : Fragment(
             transactionAdapter =
                 TransactionAnalysisAdapter(
                     mainActivity,
-                    mView
+                    mView,
+                    TAG
                 )
             rvTransactions.apply {
                 layoutManager = LinearLayoutManager(
@@ -258,7 +260,8 @@ class TransactionAnalysisFragment : Fragment(
             transactionAdapter =
                 TransactionAnalysisAdapter(
                     mainActivity,
-                    mView
+                    mView,
+                    TAG
                 )
             rvTransactions.apply {
                 layoutManager = LinearLayoutManager(requireContext())
@@ -314,7 +317,8 @@ class TransactionAnalysisFragment : Fragment(
                 transactionAdapter =
                     TransactionAnalysisAdapter(
                         mainActivity,
-                        mView
+                        mView,
+                        TAG
                     )
                 rvTransactions.apply {
                     layoutManager = LinearLayoutManager(
@@ -510,7 +514,8 @@ class TransactionAnalysisFragment : Fragment(
             transactionAdapter =
                 TransactionAnalysisAdapter(
                     mainActivity,
-                    mView
+                    mView,
+                    TAG
                 )
             if (etSearch.text.isNotEmpty()) {
                 rvTransactions.apply {
@@ -612,7 +617,8 @@ class TransactionAnalysisFragment : Fragment(
             transactionAdapter =
                 TransactionAnalysisAdapter(
                     mainActivity,
-                    mView
+                    mView,
+                    TAG
                 )
             if (etSearch.text.isNotEmpty()) {
                 rvTransactions.apply {
