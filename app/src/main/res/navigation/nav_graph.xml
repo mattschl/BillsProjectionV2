@@ -92,8 +92,7 @@
         tools:layout="@layout/fragment_account_add">
         <action
             android:id="@+id/action_accountAddFragment_to_accountsFragment"
-            app:destination="@id/accountsFragment"
-            app:popUpTo="@id/accountsFragment" />
+            app:destination="@id/accountsFragment" />
         <action
             android:id="@+id/action_accountAddFragment_to_accountTypesFragment"
             app:destination="@id/accountTypesFragment" />
