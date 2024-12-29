@@ -135,7 +135,7 @@ class TransactionPendingAdapter(
             ) { _, pos ->
                 when (pos) {
                     0 -> {
-                        completeTransaction(
+                        confirmCompleteTransaction(
                             pendingTransaction,
                             curAccount,
                         )
@@ -151,6 +151,29 @@ class TransactionPendingAdapter(
                         deleteTransaction(pendingTransaction)
                     }
                 }
+            }
+            .setNegativeButton(mView.context.getString(R.string.cancel), null)
+            .show()
+    }
+
+    private fun confirmCompleteTransaction(
+        pendingTransaction: TransactionDetailed,
+        curAccount: String
+    ) {
+        var display = mView.context.getString(R.string.this_will_apply_the_amount_of) +
+                nf.displayDollars(pendingTransaction.transaction!!.transAmount)
+        display += if (pendingTransaction.transaction.transToAccountPending) {
+            mView.context.getString(R.string._to_)
+        } else {
+            mView.context.getString(R.string._From_)
+        }
+        display += curAccount
+        AlertDialog.Builder(mView.context)
+            .setTitle(display)
+            .setPositiveButton(
+                mView.context.getString(R.string.confirm)
+            ) { _, _ ->
+                completeTransaction(pendingTransaction, curAccount)
             }
             .setNegativeButton(mView.context.getString(R.string.cancel), null)
             .show()

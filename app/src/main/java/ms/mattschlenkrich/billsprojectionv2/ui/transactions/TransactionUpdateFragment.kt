@@ -396,7 +396,7 @@ class TransactionUpdateFragment :
                         getString(R.string.__from) +
                         mFromAccount!!.accountName
             display += if (chkFromAccountPending.isChecked) getString(R.string.pending) else ""
-            display += getString(R.string._to_) +
+            display += getString(R.string._to) +
                     mToAccount!!.accountName
             display += if (chkToAccountPending.isChecked) getString(R.string.pending) else ""
             AlertDialog.Builder(mView.context)

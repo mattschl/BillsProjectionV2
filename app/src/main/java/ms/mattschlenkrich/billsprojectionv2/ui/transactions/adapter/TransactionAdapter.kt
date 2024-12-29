@@ -141,7 +141,7 @@ class TransactionAdapter(
             if (transaction.transaction.transNote.isEmpty()) {
                 tvTransInfo.visibility = View.GONE
             } else {
-                info = "Note: " +
+                info = mView.context.getString(R.string.note_) +
                         transaction.transaction.transNote
                 tvTransInfo.text = info
                 tvTransInfo.visibility = View.VISIBLE

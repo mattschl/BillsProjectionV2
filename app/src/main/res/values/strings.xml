@@ -315,4 +315,5 @@
     <string name="warning_confirm_delete">*Warning*! Confirm Delete?</string>
     <string name="this_action_should_only_be_done_when_you_do_a_drastic_change">This action should only be done when you do a drastic change. Such as a change in payday source or schedule.\nAny manually entered items will be overwritten!! \nThis action cannot be undone!!</string>
     <string name="_continue">Continue</string>
+    <string name="this_will_apply_the_amount_of">"This will apply the amount of "</string>
 </resources>
