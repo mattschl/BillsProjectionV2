@@ -432,6 +432,20 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
         return false
     }
 
+    private fun goBackToTransactionPerformFragment() {
+        mView.findNavController().navigate(
+            TransactionSplitFragmentDirections
+                .actionTransactionSplitFragmentToTransactionPerformFragment()
+        )
+    }
+
+    private fun goBackToTransactionsAddFragment() {
+        mView.findNavController().navigate(
+            TransactionSplitFragmentDirections
+                .actionTransactionSplitFragmentToTransactionAddFragment()
+        )
+    }
+
     private fun gotoCallingFragment() {
         val transactionDetailed = mainActivity.mainViewModel.getTransactionDetailed()!!
         val oldTransaction =
@@ -503,20 +517,6 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
         mView.findNavController().navigate(
             TransactionSplitFragmentDirections
                 .actionTransactionSplitFragmentToTransactionViewFragment()
-        )
-    }
-
-    private fun goBackToTransactionPerformFragment() {
-        mView.findNavController().navigate(
-            TransactionSplitFragmentDirections
-                .actionTransactionSplitFragmentToTransactionPerformFragment()
-        )
-    }
-
-    private fun goBackToTransactionsAddFragment() {
-        mView.findNavController().navigate(
-            TransactionSplitFragmentDirections
-                .actionTransactionSplitFragmentToTransactionAddFragment()
         )
     }
 
