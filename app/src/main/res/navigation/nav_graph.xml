@@ -450,6 +450,10 @@
         <action
             android:id="@+id/action_transactionUpdateFragment_to_budgetViewFragment"
             app:destination="@id/budgetViewFragment" />
+        <action
+            android:id="@+id/action_transactionUpdateFragment_to_transactionAnalysisFragment"
+            app:destination="@id/transactionAnalysisFragment"
+            app:popUpTo="@id/transactionAnalysisFragment" />
     </fragment>
 
     <!--    transactionPerformFragment-->
