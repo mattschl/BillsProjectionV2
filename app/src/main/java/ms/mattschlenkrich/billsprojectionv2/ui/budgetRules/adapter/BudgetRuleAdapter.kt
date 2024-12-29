@@ -336,7 +336,7 @@ class BudgetRuleAdapter(
     private fun gotoTransactionAverageFragment() {
         mView.findNavController().navigate(
             BudgetRuleFragmentDirections
-                .actionBudgetRuleFragmentToTransactionAverageFragment()
+                .actionBudgetRuleFragmentToTransactionAnalysisFragment()
         )
     }
 }

@@ -151,17 +151,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun chooseDeleteFuturePredictions() {
         AlertDialog.Builder(this).apply {
-            setTitle("*Warning*! Confirm Delete?")
+            setTitle(getString(R.string.warning_confirm_delete))
             setMessage(
-                "This action should only be done when you do a drastic change. " +
-                        "Such as a change in payday source. " +
-                        "Any manually entered items will be overwritten!! " +
-                        "This action cannot be undone!"
+                getString(R.string.this_action_should_only_be_done_when_you_do_a_drastic_change)
             )
-            setPositiveButton("Continue") { _, _ ->
+            setPositiveButton(getString(R.string._continue)) { _, _ ->
                 deleteFuturePredictions()
             }
-            setNegativeButton("Cancel", null)
+            setNegativeButton(getString(R.string.cancel), null)
             create()
         }.show()
     }
@@ -178,52 +175,51 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun gotoBudgetList() {
-        val direction = NavGraphDirections
-            .actionGlobalBudgetListFragment()
-        findNavController(R.id.fragment_container_view)
-            .navigate(direction)
+        findNavController(R.id.fragment_container_view).navigate(
+            NavGraphDirections
+                .actionGlobalBudgetListFragment()
+        )
     }
 
     private fun gotoAnalysis() {
         mainViewModel.eraseAll()
-        val direction =
+        findNavController(R.id.fragment_container_view).navigate(
             NavGraphDirections
-                .actionGlobalTransactionAverageFragment()
-        findNavController(R.id.fragment_container_view)
-            .navigate(direction)
+                .actionGlobalTransactionAnalysisFragment()
+        )
     }
 
     private fun gotoBudgetView() {
         mainViewModel.eraseAll()
-        val direction =
-            NavGraphDirections.actionGlobalBudgetViewFragment()
-        findNavController(R.id.fragment_container_view)
-            .navigate(direction)
+        findNavController(R.id.fragment_container_view).navigate(
+            NavGraphDirections
+                .actionGlobalBudgetViewFragment()
+        )
     }
 
     private fun gotoBudgetRules() {
         mainViewModel.eraseAll()
-        val direction =
-            NavGraphDirections.actionGlobalBudgetRuleFragment()
         findNavController(R.id.fragment_container_view)
-            .navigate(direction)
+            .navigate(
+                NavGraphDirections
+                    .actionGlobalBudgetRuleFragment()
+            )
     }
 
     private fun gotoAccounts() {
         mainViewModel.eraseAll()
-        val direction =
-            NavGraphDirections.actionGlobalAccountsFragment()
-
-        findNavController(R.id.fragment_container_view)
-            .navigate(direction)
+        findNavController(R.id.fragment_container_view).navigate(
+            NavGraphDirections
+                .actionGlobalAccountsFragment()
+        )
     }
 
     private fun gotoTransactions() {
         mainViewModel.eraseAll()
-        val direction =
-            NavGraphDirections.actionGlobalTransactionViewFragment()
-        findNavController(R.id.fragment_container_view)
-            .navigate(direction)
+        findNavController(R.id.fragment_container_view).navigate(
+            NavGraphDirections
+                .actionGlobalTransactionViewFragment()
+        )
     }
 
     private fun updateBudget() {

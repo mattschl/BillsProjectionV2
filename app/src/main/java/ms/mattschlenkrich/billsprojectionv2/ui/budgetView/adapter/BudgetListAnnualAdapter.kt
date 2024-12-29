@@ -177,7 +177,7 @@ class BudgetListAnnualAdapter(
     private fun gotoTransactionAverageFragment() {
         mView.findNavController().navigate(
             BudgetListFragmentDirections
-                .actionBudgetListFragmentToTransactionAverageFragment()
+                .actionBudgetListFragmentToTransactionAnalysisFragment()
         )
     }
 

@@ -209,7 +209,7 @@ class BudgetListOccasionalAdapter(
     private fun gotoTransactionAverageFragment() {
         mView.findNavController().navigate(
             BudgetListFragmentDirections
-                .actionBudgetListFragmentToTransactionAverageFragment()
+                .actionBudgetListFragmentToTransactionAnalysisFragment()
         )
     }
 

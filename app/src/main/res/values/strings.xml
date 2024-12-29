@@ -312,4 +312,7 @@
     <string name="update_this_transaction">Update this Transaction</string>
     <string name="save_anyway">Save anyway</string>
     <string name="are_you_sure_you_want_to_delete_this_transaction">Are you sure you want to delete this Transaction?</string>
+    <string name="warning_confirm_delete">*Warning*! Confirm Delete?</string>
+    <string name="this_action_should_only_be_done_when_you_do_a_drastic_change">This action should only be done when you do a drastic change. Such as a change in payday source or schedule.\nAny manually entered items will be overwritten!! \nThis action cannot be undone!!</string>
+    <string name="_continue">Continue</string>
 </resources>

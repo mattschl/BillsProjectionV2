@@ -341,7 +341,7 @@ class AccountAdapter(
     private fun gotoTransactionAverageFragment() {
         mView.findNavController().navigate(
             AccountsFragmentDirections
-                .actionAccountsFragmentToTransactionAverageFragment()
+                .actionAccountsFragmentToTransactionAnalysisFragment()
         )
     }
 
