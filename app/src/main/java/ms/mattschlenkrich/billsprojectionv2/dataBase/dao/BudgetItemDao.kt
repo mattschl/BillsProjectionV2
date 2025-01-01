@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
-import androidx.room.RoomWarnings
 import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_ID
@@ -38,14 +37,13 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetDeta
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
 
 @Dao
-@SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
 interface BudgetItemDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertBudgetItem(budgetItem: BudgetItem)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun overWriteBudgetItem(budgetItem: BudgetItem)
+    suspend fun insertOrReplaceBudgetItem(budgetItem: BudgetItem)
 
     @Update
     suspend fun updateBudgetItem(budgetItem: BudgetItem)
