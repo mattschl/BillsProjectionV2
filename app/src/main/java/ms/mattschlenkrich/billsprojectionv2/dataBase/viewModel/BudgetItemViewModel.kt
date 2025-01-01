@@ -15,6 +15,10 @@ class BudgetItemViewModel(
         budgetItemRepository.insertBudgetItem(budgetItem)
     }
 
+    fun overWriteBudgetItem(budgetItem: BudgetItem) = viewModelScope.launch {
+        budgetItemRepository.overWriteBudgetItem(budgetItem)
+    }
+
     fun updateBudgetItem(budgetItem: BudgetItem) = viewModelScope.launch {
         budgetItemRepository.updateBudgetItem(budgetItem)
     }

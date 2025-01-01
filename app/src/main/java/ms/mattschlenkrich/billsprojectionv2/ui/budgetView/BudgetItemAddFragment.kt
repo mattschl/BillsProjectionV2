@@ -76,7 +76,17 @@ class BudgetItemAddFragment : Fragment(
             populateFromCache()
         } else {
             populateDateToCurrent()
+            initializeBudgetItemDetailed()
         }
+    }
+
+    private fun initializeBudgetItemDetailed() {
+        budgetRuleDetailed =
+            BudgetRuleDetailed(
+                null,
+                null,
+                null,
+            )
     }
 
     private fun populatePayDays() {
@@ -372,6 +382,7 @@ class BudgetItemAddFragment : Fragment(
     }
 
     private fun gotoCallingFragment() {
+        mainActivity.mainViewModel.setBudgetItem(null)
         mainActivity.mainViewModel.setCallingFragments(
             mainActivity.mainViewModel.getCallingFragments()!!
                 .replace(", $TAG", "")

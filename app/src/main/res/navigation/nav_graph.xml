@@ -116,7 +116,8 @@
             app:destination="@id/accountTypesFragment" />
         <action
             android:id="@+id/action_accountUpdateFragment_to_budgetViewFragment"
-            app:destination="@id/budgetViewFragment" />
+            app:destination="@id/budgetViewFragment"
+            app:popUpTo="@id/budgetViewFragment" />
         <action
             android:id="@+id/action_accountUpdateFragment_to_calcFragment"
             app:destination="@id/calcFragment" />
@@ -226,11 +227,11 @@
         <action
             android:id="@+id/action_budgetRuleAddFragment_to_budgetRuleFragment"
             app:destination="@id/budgetRuleFragment"
-            app:popUpTo="@id/budgetRuleAddFragment" />
+            app:popUpTo="@id/budgetRuleFragment" />
         <action
             android:id="@+id/action_budgetRuleAddFragment_to_accountsFragment"
             app:destination="@id/accountsFragment"
-            app:popUpTo="@id/budgetRuleAddFragment" />
+            app:popUpTo="@id/accountsFragment" />
         <action
             android:id="@+id/action_budgetRuleAddFragment_to_calcFragment"
             app:destination="@id/calcFragment"
@@ -246,11 +247,11 @@
         <action
             android:id="@+id/action_budgetRuleUpdateFragment_to_budgetRuleFragment"
             app:destination="@id/budgetRuleFragment"
-            app:popUpTo="@id/budgetRuleUpdateFragment" />
+            app:popUpTo="@id/budgetRuleFragment" />
         <action
             android:id="@+id/action_budgetRuleUpdateFragment_to_accountsFragment"
             app:destination="@id/accountsFragment"
-            app:popUpTo="@id/budgetRuleUpdateFragment" />
+            app:popUpTo="@id/accountsFragment" />
         <action
             android:id="@+id/action_budgetRuleUpdateFragment_to_budgetViewFragment"
             app:destination="@id/budgetViewFragment"
@@ -265,7 +266,8 @@
             app:popUpTo="@id/budgetListFragment" />
         <action
             android:id="@+id/action_budgetRuleUpdateFragment_to_budgetItemUpdateFragment"
-            app:destination="@id/budgetItemUpdateFragment" />
+            app:destination="@id/budgetItemUpdateFragment"
+            app:popUpTo="@id/budgetItemUpdateFragment" />
     </fragment>
 
     <!--    action_global_budgetViewFragment-->
@@ -324,15 +326,16 @@
         tools:layout="@layout/fragment_budget_item_add">
         <action
             android:id="@+id/action_budgetItemAddFragment_to_budgetViewFragment"
-            app:destination="@id/budgetViewFragment" />
+            app:destination="@id/budgetViewFragment"
+            app:popUpTo="@id/budgetViewFragment" />
         <action
             android:id="@+id/action_budgetItemAddFragment_to_accountsFragment"
             app:destination="@id/accountsFragment"
-            app:popUpTo="@id/budgetItemAddFragment" />
+            app:popUpTo="@id/accountsFragment" />
         <action
             android:id="@+id/action_budgetItemAddFragment_to_budgetRuleFragment"
             app:destination="@id/budgetRuleFragment"
-            app:popUpTo="@id/budgetItemAddFragment" />
+            app:popUpTo="@id/budgetRuleFragment" />
         <action
             android:id="@+id/action_budgetItemAddFragment_to_calcFragment"
             app:destination="@id/calcFragment"
@@ -347,19 +350,23 @@
         tools:layout="@layout/fragment_budget_item_update">
         <action
             android:id="@+id/action_budgetItemUpdateFragment_to_budgetViewFragment"
-            app:destination="@id/budgetViewFragment" />
+            app:destination="@id/budgetViewFragment"
+            app:popUpTo="@id/budgetViewFragment" />
         <action
             android:id="@+id/action_budgetItemUpdateFragment_to_accountsFragment"
-            app:destination="@id/accountsFragment" />
+            app:destination="@id/accountsFragment"
+            app:popUpTo="@id/accountsFragment" />
         <action
             android:id="@+id/action_budgetItemUpdateFragment_to_budgetRuleFragment"
-            app:destination="@id/budgetRuleFragment" />
+            app:destination="@id/budgetRuleFragment"
+            app:popUpTo="@id/budgetRuleFragment" />
         <action
             android:id="@+id/action_budgetItemUpdateFragment_to_calcFragment"
             app:destination="@id/calcFragment" />
         <action
             android:id="@+id/action_budgetItemUpdateFragment_to_budgetRuleUpdateFragment"
-            app:destination="@id/budgetRuleUpdateFragment" />
+            app:destination="@id/budgetRuleUpdateFragment"
+            app:popUpTo="@id/budgetRuleUpdateFragment" />
     </fragment>
 
     <!--    action_global_budgetListFragment-->
@@ -400,18 +407,20 @@
         tools:layout="@layout/fragment_transaction_add">
         <action
             android:id="@+id/action_transactionAddFragment_to_transactionViewFragment"
-            app:destination="@id/transactionViewFragment" />
+            app:destination="@id/transactionViewFragment"
+            app:popUpTo="@id/transactionViewFragment" />
         <action
             android:id="@+id/action_transactionAddFragment_to_budgetRuleFragment"
             app:destination="@id/budgetRuleFragment"
-            app:popUpTo="@id/transactionAddFragment" />
+            app:popUpTo="@id/budgetRuleFragment" />
         <action
             android:id="@+id/action_transactionAddFragment_to_accountsFragment"
             app:destination="@id/accountsFragment"
-            app:popUpTo="@id/transactionAddFragment" />
+            app:popUpTo="@id/accountsFragment" />
         <action
             android:id="@+id/action_transactionAddFragment_to_budgetViewFragment"
-            app:destination="@id/budgetViewFragment" />
+            app:destination="@id/budgetViewFragment"
+            app:popUpTo="@id/budgetViewFragment" />
         <action
             android:id="@+id/action_transactionAddFragment_to_calcFragment"
             app:destination="@id/calcFragment"
@@ -435,7 +444,7 @@
         <action
             android:id="@+id/action_transactionUpdateFragment_to_budgetRuleFragment"
             app:destination="@id/budgetRuleFragment"
-            app:popUpTo="@id/transactionUpdateFragment" />
+            app:popUpTo="@id/budgetRuleFragment" />
         <action
             android:id="@+id/action_transactionUpdateFragment_to_accountsFragment"
             app:destination="@id/accountsFragment"
@@ -449,7 +458,8 @@
             app:destination="@id/transactionSplitFragment" />
         <action
             android:id="@+id/action_transactionUpdateFragment_to_budgetViewFragment"
-            app:destination="@id/budgetViewFragment" />
+            app:destination="@id/budgetViewFragment"
+            app:popUpTo="@id/budgetViewFragment" />
         <action
             android:id="@+id/action_transactionUpdateFragment_to_transactionAnalysisFragment"
             app:destination="@id/transactionAnalysisFragment"
@@ -494,7 +504,8 @@
             app:popUpTo="@id/transactionSplitFragment" />
         <action
             android:id="@+id/action_transactionSplitFragment_to_transactionAddFragment"
-            app:destination="@id/transactionAddFragment" />
+            app:destination="@id/transactionAddFragment"
+            app:popUpTo="@id/transactionAddFragment" />
         <action
             android:id="@+id/action_transactionSplitFragment_to_budgetRuleFragment"
             app:destination="@id/budgetRuleFragment"
@@ -505,13 +516,16 @@
             app:popUpTo="@id/transactionSplitFragment" />
         <action
             android:id="@+id/action_transactionSplitFragment_to_transactionPerformFragment"
-            app:destination="@id/transactionPerformFragment" />
+            app:destination="@id/transactionPerformFragment"
+            app:popUpTo="@id/transactionPerformFragment" />
         <action
             android:id="@+id/action_transactionSplitFragment_to_transactionUpdateFragment"
-            app:destination="@id/transactionUpdateFragment" />
+            app:destination="@id/transactionUpdateFragment"
+            app:popUpTo="@id/transactionUpdateFragment" />
         <action
             android:id="@+id/action_transactionSplitFragment_to_transactionViewFragment"
-            app:destination="@id/transactionViewFragment" />
+            app:destination="@id/transactionViewFragment"
+            app:popUpTo="@id/transactionViewFragment" />
     </fragment>
 
     <!--    action_global_transactionAnalysisFragment-->
