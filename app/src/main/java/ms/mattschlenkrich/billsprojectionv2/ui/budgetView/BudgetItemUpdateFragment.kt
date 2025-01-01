@@ -370,6 +370,7 @@ class BudgetItemUpdateFragment : Fragment(
     }
 
     private fun gotoCallingFragment() {
+        mainActivity.mainViewModel.setBudgetItem(null)
         if (mainActivity.mainViewModel.getCallingFragments()!!.contains(
                 FRAG_BUDGET_VIEW
             )

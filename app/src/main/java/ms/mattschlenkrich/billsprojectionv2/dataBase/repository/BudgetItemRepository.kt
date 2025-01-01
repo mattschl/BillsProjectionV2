@@ -11,6 +11,9 @@ class BudgetItemRepository(private val db: BillsDatabase) {
     suspend fun updateBudgetItem(budgetItem: BudgetItem) =
         db.getBudgetItemDao().updateBudgetItem(budgetItem)
 
+    suspend fun overWriteBudgetItem(budgetItem: BudgetItem) =
+        db.getBudgetItemDao().overWriteBudgetItem(budgetItem)
+
     suspend fun deleteBudgetItem(
         budgetRulId: Long, projectedDate: String, updateTime: String
     ) = db.getBudgetItemDao().deleteBudgetItem(
