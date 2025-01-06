@@ -3,7 +3,6 @@ package ms.mattschlenkrich.billsprojectionv2.ui.transactions
 import android.app.DatePickerDialog
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,8 +38,8 @@ class TransactionAnalysisFragment : Fragment(
     private lateinit var mainViewModel: MainViewModel
     private lateinit var transactionViewModel: TransactionViewModel
     private var transactionAdapter: TransactionAnalysisAdapter? = null
-    private val cf = NumberFunctions()
-    private val nf = DateFunctions()
+    private val nf = NumberFunctions()
+    private val df = DateFunctions()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -84,7 +83,7 @@ class TransactionAnalysisFragment : Fragment(
                 budgetRule.ruleId
             ).observe(viewLifecycleOwner) { sum ->
                 if (sum != null) {
-                    tvTotalCredits.text = cf.displayDollars(sum)
+                    tvTotalCredits.text = nf.displayDollars(sum)
                     lblTotalCredits.text =
                         getString(R.string.total)
                     lblTotalDebits.visibility = View.GONE
@@ -97,12 +96,12 @@ class TransactionAnalysisFragment : Fragment(
                 viewLifecycleOwner
             ) { max ->
                 if (max != null && !max.isNaN()) {
-                    tvHighest.text = cf.displayDollars(max)
+                    tvHighest.text = nf.displayDollars(max)
                 }
             }
             transactionViewModel.getMinTransactionByBudgetRule(budgetRule.ruleId)
                 .observe(viewLifecycleOwner) { min ->
-                    if (min != null) tvLowest.text = cf.displayDollars(min)
+                    if (min != null) tvLowest.text = nf.displayDollars(min)
                 }
             transactionAdapter = null
             transactionAdapter =
@@ -123,7 +122,9 @@ class TransactionAnalysisFragment : Fragment(
                 viewLifecycleOwner
             ) { transactionList ->
                 transactionAdapter!!.differ.submitList(transactionList)
-                populateAnalysisFromBudgetRuleOrSearch(transactionList)
+                populateAnalysisFromBudgetRuleOrSearch(
+                    transactionList, df.getCurrentDateAsString()
+                )
                 updateUiHelpText(transactionList)
             }
         }
@@ -142,7 +143,7 @@ class TransactionAnalysisFragment : Fragment(
             transactionViewModel.getSumTransactionToAccount(account.accountId)
                 .observe(viewLifecycleOwner) { sum ->
                     if (sum != null && !sum.isNaN()) {
-                        tvTotalCredits.text = cf.displayDollars(sum)
+                        tvTotalCredits.text = nf.displayDollars(sum)
                         tvTotalCredits.visibility = View.VISIBLE
                         lblTotalCredits.text = getString(R.string.total_credits)
                         lblTotalCredits.visibility = View.VISIBLE
@@ -152,7 +153,7 @@ class TransactionAnalysisFragment : Fragment(
             transactionViewModel.getSumTransactionFromAccount(account.accountId)
                 .observe(viewLifecycleOwner) { sum ->
                     if (sum != null && !sum.isNaN()) {
-                        tvTotalDebits.text = cf.displayDollars(sum)
+                        tvTotalDebits.text = nf.displayDollars(sum)
                         tvTotalDebits.visibility = View.VISIBLE
                         tvTotalDebits.setTextColor(Color.RED)
                         lblTotalDebits.text = getString(R.string.total_debits)
@@ -163,11 +164,11 @@ class TransactionAnalysisFragment : Fragment(
                 }
             transactionViewModel.getMaxTransactionByAccount(account.accountId)
                 .observe(viewLifecycleOwner) { max ->
-                    if (max != null) tvHighest.text = cf.displayDollars(max)
+                    if (max != null) tvHighest.text = nf.displayDollars(max)
                 }
             transactionViewModel.getMinTransactionByAccount(account.accountId)
                 .observe(viewLifecycleOwner) { min ->
-                    if (min != null) tvLowest.text = cf.displayDollars(min)
+                    if (min != null) tvLowest.text = nf.displayDollars(min)
                 }
             transactionAdapter = null
             transactionAdapter =
@@ -194,10 +195,10 @@ class TransactionAnalysisFragment : Fragment(
     }
 
     private fun populateAnalysisLastMonth() {
-        val startDate = nf.getFirstOfPreviousMonth(
-            nf.getCurrentDateAsString()
+        val startDate = df.getFirstOfPreviousMonth(
+            df.getCurrentDateAsString()
         )
-        val endDate = nf.getLastOfPreviousMonth(nf.getCurrentDateAsString())
+        val endDate = df.getLastOfPreviousMonth(df.getCurrentDateAsString())
         binding.apply {
             if (mainViewModel.getBudgetRuleDetailed() != null) {
                 populateAnalysisFromBudgetRuleAndDates(startDate, endDate)
@@ -225,7 +226,7 @@ class TransactionAnalysisFragment : Fragment(
                 account.accountId, startDate, endDate
             ).observe(viewLifecycleOwner) { sum ->
                 if (sum != null && !sum.isNaN()) {
-                    tvTotalCredits.text = cf.displayDollars(sum)
+                    tvTotalCredits.text = nf.displayDollars(sum)
                     tvTotalCredits.visibility = View.VISIBLE
                     lblTotalCredits.text = getString(R.string.total_credits)
                     lblTotalCredits.visibility = View.VISIBLE
@@ -236,7 +237,7 @@ class TransactionAnalysisFragment : Fragment(
                 account.accountId, startDate, endDate
             ).observe(viewLifecycleOwner) { sum ->
                 if (sum != null && !sum.isNaN()) {
-                    tvTotalDebits.text = cf.displayDollars(-sum)
+                    tvTotalDebits.text = nf.displayDollars(-sum)
                     tvTotalDebits.visibility = View.VISIBLE
                     tvTotalDebits.setTextColor(Color.RED)
                     lblTotalDebits.text = getString(R.string.total_debits)
@@ -248,13 +249,13 @@ class TransactionAnalysisFragment : Fragment(
             transactionViewModel.getMaxTransactionByAccount(
                 account.accountId, startDate, endDate
             ).observe(viewLifecycleOwner) { max ->
-                if (max != null) tvHighest.text = cf.displayDollars(max)
+                if (max != null) tvHighest.text = nf.displayDollars(max)
             }
             transactionViewModel.getMinTransactionByAccount(
                 account.accountId, startDate, endDate
             )
                 .observe(viewLifecycleOwner) { min ->
-                    if (min != null) tvLowest.text = cf.displayDollars(min)
+                    if (min != null) tvLowest.text = nf.displayDollars(min)
                 }
             transactionAdapter = null
             transactionAdapter =
@@ -291,7 +292,7 @@ class TransactionAnalysisFragment : Fragment(
                     startDate, endDate
                 ).observe(viewLifecycleOwner) { sum ->
                     if (sum != null) {
-                        tvTotalCredits.text = cf.displayDollars(sum)
+                        tvTotalCredits.text = nf.displayDollars(sum)
                         lblTotalCredits.text = getString(R.string.total)
                         lblTotalDebits.visibility = View.GONE
                         tvTotalDebits.visibility = View.GONE
@@ -303,7 +304,7 @@ class TransactionAnalysisFragment : Fragment(
                 ).observe(
                     viewLifecycleOwner
                 ) { max ->
-                    if (max != null) tvHighest.text = cf.displayDollars(max)
+                    if (max != null) tvHighest.text = nf.displayDollars(max)
                 }
                 transactionViewModel.getMinTransactionByBudgetRule(
                     budgetRule.ruleId,
@@ -311,7 +312,7 @@ class TransactionAnalysisFragment : Fragment(
                 ).observe(
                     viewLifecycleOwner
                 ) { min ->
-                    if (min != null) tvLowest.text = cf.displayDollars(min)
+                    if (min != null) tvLowest.text = nf.displayDollars(min)
                 }
                 transactionAdapter = null
                 transactionAdapter =
@@ -335,7 +336,7 @@ class TransactionAnalysisFragment : Fragment(
                         transactionAdapter!!.differ.submitList(
                             transactionList
                         )
-                        populateAnalysisFromBudgetRuleOrSearch(transactionList)
+                        populateAnalysisFromBudgetRuleOrSearch(transactionList, endDate)
                         updateUiHelpText(transactionList)
                     }
                 }
@@ -345,28 +346,29 @@ class TransactionAnalysisFragment : Fragment(
     }
 
     private fun populateAnalysisFromBudgetRuleOrSearch(
-        transList: List<TransactionDetailed>,
+        transList: List<TransactionDetailed>, endDate: String
     ) {
         if (transList.isNotEmpty()) {
             binding.apply {
                 CoroutineScope(Dispatchers.Main).launch {
-                    Log.d(TAG, "Total of transactions is ${transList.count()}")
+//                    Log.d(TAG, "Total of transactions is ${transList.count()}")
                     var totals = 0.0
                     for (trans in transList) {
                         totals += trans.transaction!!.transAmount
                     }
                     delay(WAIT_250)
-                    val endDate = transList.first().transaction!!.transDate
                     val startDate = transList.last().transaction!!.transDate
+
+//                    Log.d(TAG, "start date is $startDate, end is $endDate")
                     val months =
-                        nf.getMonthsBetween(startDate, endDate)
-                    Log.d(TAG, "Number of months is $months")
+                        df.getMonthsBetween(startDate, endDate) + 1
+//                    Log.d(TAG, "Number of months is $months")
                     lblAverage.text = getString(R.string.average)
                     tvAverage.text =
-                        cf.displayDollars(totals / months)
+                        nf.displayDollars(totals / months)
 
                     tvRecent.text =
-                        cf.displayDollars(
+                        nf.displayDollars(
                             transList.first().transaction!!.transAmount
                         )
                 }
@@ -403,12 +405,12 @@ class TransactionAnalysisFragment : Fragment(
                 rdDateRange.isChecked = true
                 setDateRangeVisibility(true)
                 tvStartDate.setText(
-                    nf.getFirstOfMonth(
-                        nf.getCurrentDateAsString()
+                    df.getFirstOfMonth(
+                        df.getCurrentDateAsString()
                     )
                 )
                 tvEndDate.setText(
-                    nf.getCurrentDateAsString()
+                    df.getCurrentDateAsString()
                 )
                 tvStartDate.setOnLongClickListener {
                     chooseStartDate()
@@ -491,7 +493,7 @@ class TransactionAnalysisFragment : Fragment(
                 viewLifecycleOwner
             ) { sum ->
                 if (sum != null) {
-                    tvTotalCredits.text = cf.displayDollars(sum)
+                    tvTotalCredits.text = nf.displayDollars(sum)
                     lblTotalCredits.text =
                         getString(R.string.total)
                     lblTotalDebits.visibility = View.GONE
@@ -502,13 +504,13 @@ class TransactionAnalysisFragment : Fragment(
                 viewLifecycleOwner
             ) { max ->
                 if (max != null && !max.isNaN()) {
-                    tvHighest.text = cf.displayDollars(max)
+                    tvHighest.text = nf.displayDollars(max)
                 }
             }
             transactionViewModel.getMinTransactionBySearch(searchQuery).observe(
                 viewLifecycleOwner
             ) { min ->
-                if (min != null) tvLowest.text = cf.displayDollars(min)
+                if (min != null) tvLowest.text = nf.displayDollars(min)
             }
             transactionAdapter = null
             transactionAdapter =
@@ -529,7 +531,9 @@ class TransactionAnalysisFragment : Fragment(
                         searchQuery
                     ).observe(viewLifecycleOwner) { transList ->
                         transactionAdapter!!.differ.submitList(transList)
-                        populateAnalysisFromBudgetRuleOrSearch(transList)
+                        populateAnalysisFromBudgetRuleOrSearch(
+                            transList, df.getCurrentDateAsString()
+                        )
                         updateUiHelpText(transList)
                     }
                 }
@@ -557,17 +561,19 @@ class TransactionAnalysisFragment : Fragment(
         if (transList.isNotEmpty()) {
             binding.apply {
                 CoroutineScope(Dispatchers.Main).launch {
-                    val endDate = transList.first().transaction!!.transDate
+                    val endDate = df.getCurrentDateAsString()
+//                    val endDate = transList.first().transaction!!.transDate
                     val startDate = transList.last().transaction!!.transDate
-                    val months = nf.getMonthsBetween(startDate, endDate)
-                    tvRecent.text = cf.displayDollars(
+//                    Log.d(TAG, "start date is $startDate, end is $endDate")
+                    val months = df.getMonthsBetween(startDate, endDate)
+                    tvRecent.text = nf.displayDollars(
                         transList.first().transaction!!.transAmount
                     )
                     lblAverage.text = getString(R.string.credit_average)
-                    tvAverage.text = cf.displayDollars(totalCredits / months)
+                    tvAverage.text = nf.displayDollars(totalCredits / months)
                     lblHighest.text = getString(R.string.debit_average)
                     lblHighest.setTextColor(Color.RED)
-                    tvHighest.text = cf.displayDollars(totalDebits / months)
+                    tvHighest.text = nf.displayDollars(totalDebits / months)
                     tvHighest.setTextColor(Color.RED)
                 }
             }
@@ -590,7 +596,7 @@ class TransactionAnalysisFragment : Fragment(
                 viewLifecycleOwner
             ) { sum ->
                 if (sum != null) {
-                    tvTotalCredits.text = cf.displayDollars(sum)
+                    tvTotalCredits.text = nf.displayDollars(sum)
                     lblTotalCredits.text =
                         getString(R.string.total)
                     lblTotalDebits.visibility = View.GONE
@@ -603,7 +609,7 @@ class TransactionAnalysisFragment : Fragment(
                 viewLifecycleOwner
             ) { max ->
                 if (max != null && !max.isNaN()) {
-                    tvHighest.text = cf.displayDollars(max)
+                    tvHighest.text = nf.displayDollars(max)
                 }
             }
             transactionViewModel.getMinTransactionBySearch(
@@ -611,7 +617,7 @@ class TransactionAnalysisFragment : Fragment(
             ).observe(
                 viewLifecycleOwner
             ) { min ->
-                if (min != null) tvLowest.text = cf.displayDollars(min)
+                if (min != null) tvLowest.text = nf.displayDollars(min)
             }
             transactionAdapter = null
             transactionAdapter =
@@ -632,7 +638,7 @@ class TransactionAnalysisFragment : Fragment(
                         searchQuery, startDate, endDate
                     ).observe(viewLifecycleOwner) { transList ->
                         transactionAdapter!!.differ.submitList(transList)
-                        populateAnalysisFromBudgetRuleOrSearch(transList)
+                        populateAnalysisFromBudgetRuleOrSearch(transList, endDate)
                         updateUiHelpText(transList)
                     }
                 }
