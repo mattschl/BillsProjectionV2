@@ -2,6 +2,8 @@ package ms.mattschlenkrich.billsprojectionv2.ui
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -40,6 +42,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.TransactionViewMo
 import ms.mattschlenkrich.billsprojectionv2.databinding.ActivityMainBinding
 import java.time.LocalDate
 
+
 private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity() {
@@ -67,6 +70,7 @@ class MainActivity : AppCompatActivity() {
                 menu.add(getString(R.string.view_current_budget_summary))
                 menu.add(getString(R.string.delete_future_predictions))
                 menu.add(getString(R.string.help))
+                menu.add(getString(R.string.privacy_policy))
 //                menu.add(getString(R.string.pay_check))
                 menu.add("${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME}")
             }
@@ -94,10 +98,16 @@ class MainActivity : AppCompatActivity() {
                         true
                     }
 
-//                    getString(R.string.pay_check) -> {
-//                        //future module
-//                        true
-//                    }
+                    getString(R.string.privacy_policy) -> {
+                        val defaultBrowser = Intent.makeMainSelectorActivity(
+                            Intent.ACTION_MAIN,
+                            Intent.CATEGORY_APP_BROWSER
+                        )
+                        defaultBrowser.data =
+                            Uri.parse(getString(R.string.https_www_mschlenkrich_ca_privacy_policy))
+                        startActivity(defaultBrowser)
+                        true
+                    }
 
                     else -> {
                         Log.d(TAG, "other was called")
