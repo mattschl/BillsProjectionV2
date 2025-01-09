@@ -315,5 +315,7 @@
     <string name="zero_int">0</string>
     <string name="zero">0</string>
     <string name="no_accounts_to_view">No Accounts to view</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="https_www_mschlenkrich_ca_privacy_policy">https://www.mschlenkrich.ca/privacy-policy</string>
 
 </resources>
