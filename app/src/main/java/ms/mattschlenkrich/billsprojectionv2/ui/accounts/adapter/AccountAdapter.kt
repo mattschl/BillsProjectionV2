@@ -257,21 +257,27 @@ class AccountAdapter(
                 REQUEST_FROM_ACCOUNT -> {
                     mBudgetRuleDetailed.fromAccount = curAccount.account
                     mainViewModel.setBudgetRuleDetailed(mBudgetRuleDetailed)
-                    if (mainViewModel.getCallingFragments()!!
-                            .contains(FRAG_TRANSACTION_SPLIT)
+                    val callingFragment = mainViewModel.getCallingFragments()!!
+                    if (callingFragment.contains(FRAG_TRANSACTION_SPLIT)
                     ) {
                         mSplitTransactionDetailed.fromAccount = curAccount.account
-                        mSplitTransactionDetailed.transaction!!.transFromAccountPending =
+                        mSplitTransactionDetailed.transaction?.transFromAccountPending =
                             curAccount.accountType!!.tallyOwing
                         mainViewModel.setSplitTransactionDetailed(mSplitTransactionDetailed)
-                    } else {
+                    } else if (callingFragment.contains(FRAG_TRANS_ADD) ||
+                        callingFragment.contains(FRAG_TRANS_PERFORM) ||
+                        callingFragment.contains(FRAG_TRANS_UPDATE)
+                    ) {
                         mTransactionDetailed.fromAccount = curAccount.account
-                        mTransactionDetailed.transaction!!.transFromAccountPending =
+                        mTransactionDetailed.transaction?.transFromAccountPending =
                             curAccount.accountType!!.tallyOwing
                         mainViewModel.setTransactionDetailed(mTransactionDetailed)
+                    } else if (callingFragment.contains(FRAG_BUDGET_ITEM_ADD) ||
+                        callingFragment.contains(FRAG_BUDGET_ITEM_UPDATE)
+                    ) {
+                        mBudgetItem.fromAccount = curAccount.account
+                        mainViewModel.setBudgetItem(mBudgetItem)
                     }
-                    mBudgetItem.fromAccount = curAccount.account
-                    mainViewModel.setBudgetItem(mBudgetItem)
                     gotoCallingFragment()
 
                 }
