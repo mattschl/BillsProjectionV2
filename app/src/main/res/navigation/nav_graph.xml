@@ -272,7 +272,8 @@
     <!--    action_global_budgetViewFragment-->
     <action
         android:id="@+id/action_global_budgetViewFragment"
-        app:destination="@id/budgetViewFragment" />
+        app:destination="@id/budgetViewFragment"
+        app:popUpTo="@id/budgetViewFragment" />
 
     <!--    budgetViewFragment-->
     <fragment
@@ -370,12 +371,14 @@
     <!--    action_global_budgetListFragment-->
     <action
         android:id="@+id/action_global_budgetListFragment"
-        app:destination="@id/budgetListFragment" />
+        app:destination="@id/budgetListFragment"
+        app:popUpTo="@id/budgetListFragment" />
 
     <!--    action_global_transactionViewFragment-->
     <action
         android:id="@+id/action_global_transactionViewFragment"
-        app:destination="@id/transactionViewFragment" />
+        app:destination="@id/transactionViewFragment"
+        app:popUpTo="@id/transactionViewFragment" />
 
     <!--    transactionViewFragment-->
     <fragment
@@ -519,7 +522,8 @@
     <!--    action_global_transactionAnalysisFragment-->
     <action
         android:id="@+id/action_global_transactionAnalysisFragment"
-        app:destination="@id/transactionAnalysisFragment" />
+        app:destination="@id/transactionAnalysisFragment"
+        app:popUpTo="@id/transactionAnalysisFragment" />
 
     <!--    transactionAnalysisFragment-->
     <fragment
