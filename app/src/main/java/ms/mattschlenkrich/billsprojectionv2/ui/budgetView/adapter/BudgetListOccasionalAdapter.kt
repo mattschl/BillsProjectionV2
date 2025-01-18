@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -19,7 +18,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetListItemBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
-import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetListFragmentDirections
+import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetListFragment
 import java.util.Random
 
 private const val PARENT_TAG = FRAG_BUDGET_LIST
@@ -27,6 +26,7 @@ private const val PARENT_TAG = FRAG_BUDGET_LIST
 
 class BudgetListOccasionalAdapter(
     private val mainActivity: MainActivity,
+    private val budgetListFragment: BudgetListFragment,
     private val mView: View,
 ) : RecyclerView.Adapter<BudgetListOccasionalAdapter.BudgetListHolder>() {
 
@@ -181,7 +181,7 @@ class BudgetListOccasionalAdapter(
         )
         mainActivity.mainViewModel.setBudgetRuleDetailed(budgetRule)
         mainActivity.mainViewModel.setCallingFragments(PARENT_TAG)
-        gotoBudgetRuleUpdateFragment()
+        budgetListFragment.gotoBudgetRuleUpdateFragment()
     }
 
     private fun deleteBudgetRule(curRule: BudgetRuleComplete) {
@@ -203,20 +203,6 @@ class BudgetListOccasionalAdapter(
             )
         )
         mainActivity.mainViewModel.setAccountWithType(null)
-        gotoTransactionAverageFragment()
-    }
-
-    private fun gotoTransactionAverageFragment() {
-        mView.findNavController().navigate(
-            BudgetListFragmentDirections
-                .actionBudgetListFragmentToTransactionAnalysisFragment()
-        )
-    }
-
-    private fun gotoBudgetRuleUpdateFragment() {
-        mView.findNavController().navigate(
-            BudgetListFragmentDirections
-                .actionBudgetListFragmentToBudgetRuleUpdateFragment()
-        )
+        budgetListFragment.gotoTransactionAverageFragment()
     }
 }

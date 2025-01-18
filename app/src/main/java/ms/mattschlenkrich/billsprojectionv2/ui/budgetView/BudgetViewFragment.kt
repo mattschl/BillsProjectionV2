@@ -527,10 +527,31 @@ class BudgetViewFragment : Fragment(
         )
     }
 
+    fun gotoBudgetItemUpdateFragment() {
+        mView.findNavController().navigate(
+            BudgetViewFragmentDirections
+                .actionBudgetViewFragmentToBudgetItemUpdateFragment()
+        )
+    }
+
+    fun gotoBudgetRuleUpdateFragment() {
+        mView.findNavController().navigate(
+            BudgetViewFragmentDirections
+                .actionBudgetViewFragmentToBudgetRuleUpdateFragment()
+        )
+    }
+
     private fun gotoTransactionAddFragment() {
         findNavController().navigate(
             BudgetViewFragmentDirections
                 .actionBudgetViewFragmentToTransactionAddFragment()
+        )
+    }
+
+    fun gotoTransactionPerformFragment() {
+        mView.findNavController().navigate(
+            BudgetViewFragmentDirections
+                .actionBudgetViewFragmentToTransactionPerformFragment()
         )
     }
 
