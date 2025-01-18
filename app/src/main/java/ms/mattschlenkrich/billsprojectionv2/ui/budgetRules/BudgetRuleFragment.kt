@@ -69,6 +69,7 @@ class BudgetRuleFragment :
     private fun setupRecyclerView() {
         budgetRuleAdapter = BudgetRuleAdapter(
             mainActivity.budgetRuleViewModel,
+            this@BudgetRuleFragment,
             mainActivity.mainViewModel,
             mView,
         )
@@ -155,6 +156,55 @@ class BudgetRuleFragment :
         mView.findNavController().navigate(
             BudgetRuleFragmentDirections
                 .actionBudgetRuleFragmentToBudgetRuleAddFragment()
+        )
+    }
+
+    fun gotoBudgetRuleUpdateFragment() {
+        mView.findNavController().navigate(
+            BudgetRuleFragmentDirections
+                .actionBudgetRuleFragmentToBudgetRuleUpdateFragment()
+        )
+    }
+
+    fun gotoBudgetItemAddFragment() {
+        mView.findNavController().navigate(
+            BudgetRuleFragmentDirections
+                .actionBudgetRuleFragmentToBudgetItemAddFragment()
+        )
+    }
+
+    fun gotoBudgetItemUpdateFragment() {
+        mView.findNavController().navigate(
+            BudgetRuleFragmentDirections
+                .actionBudgetRuleFragmentToBudgetItemUpdateFragment()
+        )
+    }
+
+    fun gotoTransactionAddFragment() {
+        mView.findNavController().navigate(
+            BudgetRuleFragmentDirections
+                .actionBudgetRuleFragmentToTransactionAddFragment()
+        )
+    }
+
+    fun gotoTransactionAverageFragment() {
+        mView.findNavController().navigate(
+            BudgetRuleFragmentDirections
+                .actionBudgetRuleFragmentToTransactionAnalysisFragment()
+        )
+    }
+
+    fun gotoTransactionSplitFragment() {
+        mView.findNavController().navigate(
+            BudgetRuleFragmentDirections
+                .actionBudgetRuleFragmentToTransactionSplitFragment()
+        )
+    }
+
+    fun gotoTransactionUpdateFragment() {
+        mView.findNavController().navigate(
+            BudgetRuleFragmentDirections
+                .actionBudgetRuleFragmentToTransactionUpdateFragment()
         )
     }
 

@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -28,7 +27,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewModel
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetRuleLayoutBinding
-import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.BudgetRuleFragmentDirections
+import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.BudgetRuleFragment
 import java.util.Random
 
 private const val TAG = ADAPTER_BUDGET_RULE
@@ -36,6 +35,7 @@ private const val PARENT_TAG = FRAG_BUDGET_RULES
 
 class BudgetRuleAdapter(
     private val budgetRuleViewModel: BudgetRuleViewModel,
+    private val budgetRuleFragment: BudgetRuleFragment,
     private val mainViewModel: MainViewModel,
     private val mView: View
 ) : RecyclerView.Adapter<BudgetRuleAdapter.BudgetRuleViewHolder>() {
@@ -182,19 +182,19 @@ class BudgetRuleAdapter(
                     false,
                     budgetRuleDetailed.budgetRule!!.budFixedAmount,
                     budgetRuleDetailed.budgetRule!!.budIsAutoPay,
-                    true,
-                    false,
-                    false,
-                    false,
-                    df.getCurrentTimeAsString(),
-                    true
+                    biManuallyEntered = true,
+                    biIsCompleted = false,
+                    biIsCancelled = false,
+                    biIsDeleted = false,
+                    biUpdateTime = df.getCurrentTimeAsString(),
+                    biLocked = true
                 ),
                 budgetRuleDetailed.budgetRule!!,
                 budgetRuleDetailed.toAccount!!,
                 budgetRuleDetailed.fromAccount!!,
             )
         )
-        gotoBudgetItemAddFragment()
+        budgetRuleFragment.gotoBudgetItemAddFragment()
     }
 
     private fun chooseBudgetRule(
@@ -243,7 +243,7 @@ class BudgetRuleAdapter(
         )
         mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
         mainViewModel.setAccountWithType(null)
-        gotoTransactionAverageFragment()
+        budgetRuleFragment.gotoTransactionAverageFragment()
     }
 
     private fun deleteBudgetRule(budgetRuleDetailed: BudgetRuleDetailed) {
@@ -260,83 +260,34 @@ class BudgetRuleAdapter(
             mainViewModel.getCallingFragments() + ", " + FRAG_BUDGET_RULES
         )
         mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
-        gotoBudgetRuleUpdateFragment()
-    }
-
-    private fun gotoBudgetRuleUpdateFragment() {
-        mView.findNavController().navigate(
-            BudgetRuleFragmentDirections
-                .actionBudgetRuleFragmentToBudgetRuleUpdateFragment()
-        )
+        budgetRuleFragment.gotoBudgetRuleUpdateFragment()
     }
 
     private fun gotoCallingFragment() {
         when {
             mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_SPLIT) -> {
-                gotoTransactionSplitFragment()
+                budgetRuleFragment.gotoTransactionSplitFragment()
             }
 
             mainViewModel.getCallingFragments()!!.contains(FRAG_TRANS_ADD) -> {
-                gotoTransactionAddFragment()
+                budgetRuleFragment.gotoTransactionAddFragment()
             }
 
             mainViewModel.getCallingFragments()!!.contains(FRAG_TRANS_UPDATE) -> {
-                gotoTransactionUpdateFragment()
+                budgetRuleFragment.gotoTransactionUpdateFragment()
             }
 
             mainViewModel.getCallingFragments()!!.contains(FRAG_BUDGET_ITEM_ADD) -> {
-                gotoBudgetItemAddFragment()
+                budgetRuleFragment.gotoBudgetItemAddFragment()
             }
 
             mainViewModel.getCallingFragments()!!.contains(FRAG_BUDGET_ITEM_UPDATE) -> {
-                gotoBudgetItemUpdateFragment()
+                budgetRuleFragment.gotoBudgetItemUpdateFragment()
             }
 
             mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_ANALYSIS) -> {
-                gotoTransactionAverageFragment()
+                budgetRuleFragment.gotoTransactionAverageFragment()
             }
         }
-    }
-
-    private fun gotoBudgetItemUpdateFragment() {
-        mView.findNavController().navigate(
-            BudgetRuleFragmentDirections
-                .actionBudgetRuleFragmentToBudgetItemUpdateFragment()
-        )
-    }
-
-    private fun gotoBudgetItemAddFragment() {
-        mView.findNavController().navigate(
-            BudgetRuleFragmentDirections
-                .actionBudgetRuleFragmentToBudgetItemAddFragment()
-        )
-    }
-
-    private fun gotoTransactionUpdateFragment() {
-        mView.findNavController().navigate(
-            BudgetRuleFragmentDirections
-                .actionBudgetRuleFragmentToTransactionUpdateFragment()
-        )
-    }
-
-    private fun gotoTransactionAddFragment() {
-        mView.findNavController().navigate(
-            BudgetRuleFragmentDirections
-                .actionBudgetRuleFragmentToTransactionAddFragment()
-        )
-    }
-
-    private fun gotoTransactionSplitFragment() {
-        mView.findNavController().navigate(
-            BudgetRuleFragmentDirections
-                .actionBudgetRuleFragmentToTransactionSplitFragment()
-        )
-    }
-
-    private fun gotoTransactionAverageFragment() {
-        mView.findNavController().navigate(
-            BudgetRuleFragmentDirections
-                .actionBudgetRuleFragmentToTransactionAnalysisFragment()
-        )
     }
 }

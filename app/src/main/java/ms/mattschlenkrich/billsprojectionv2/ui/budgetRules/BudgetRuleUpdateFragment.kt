@@ -144,7 +144,9 @@ class BudgetRuleUpdateFragment :
 
     private fun populateDateRecycler(budgetRuleId: Long) {
         val budgetRuleDatesAdapter = BudgetRuleDatesAdapter(
-            mainActivity.mainViewModel, mView, TAG
+            mainActivity.mainViewModel,
+            this@BudgetRuleUpdateFragment,
+            TAG
         )
         binding.rvProjectedDates.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -515,6 +517,13 @@ class BudgetRuleUpdateFragment :
         mView.findNavController().navigate(
             BudgetRuleUpdateFragmentDirections
                 .actionBudgetRuleUpdateFragmentToBudgetRuleFragment()
+        )
+    }
+
+    fun gotoBudgetItemUpdateFragment() {
+        mView.findNavController().navigate(
+            BudgetRuleUpdateFragmentDirections
+                .actionBudgetRuleUpdateFragmentToBudgetItemUpdateFragment()
         )
     }
 
