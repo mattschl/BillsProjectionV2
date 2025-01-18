@@ -1,11 +1,10 @@
-package ms.mattschlenkrich.billsprojectionv2.ui.transactions.adapter
+package ms.mattschlenkrich.billsprojectionv2.ui.budgetView.adapter
 
 import android.app.AlertDialog
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -25,11 +24,8 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transact
 import ms.mattschlenkrich.billsprojectionv2.databinding.PendingTransactionItemBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetViewFragment
-import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetViewFragmentDirections
 
-//private const val TAG = ADAPTER_PENDING
 private const val PARENT_TAG = FRAG_BUDGET_VIEW
-
 
 class TransactionPendingAdapter(
     private val curAccount: String,
@@ -207,7 +203,7 @@ class TransactionPendingAdapter(
         }
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_250)
-            gotoTransactionUpdateFragment()
+            budgetViewFragment.gotoTransactionUpdateFragment()
         }
     }
 
@@ -305,13 +301,6 @@ class TransactionPendingAdapter(
             }
         }
         budgetViewFragment.populatePendingList()
-    }
-
-    private fun gotoTransactionUpdateFragment() {
-        mView.findNavController().navigate(
-            BudgetViewFragmentDirections
-                .actionBudgetViewFragmentToTransactionUpdateFragment()
-        )
     }
 
 }

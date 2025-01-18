@@ -107,6 +107,7 @@ class TransactionAnalysisFragment : Fragment(
             transactionAdapter =
                 TransactionAnalysisAdapter(
                     mainActivity,
+                    this@TransactionAnalysisFragment,
                     mView,
                     TAG
                 )
@@ -174,6 +175,7 @@ class TransactionAnalysisFragment : Fragment(
             transactionAdapter =
                 TransactionAnalysisAdapter(
                     mainActivity,
+                    this@TransactionAnalysisFragment,
                     mView,
                     TAG
                 )
@@ -261,6 +263,7 @@ class TransactionAnalysisFragment : Fragment(
             transactionAdapter =
                 TransactionAnalysisAdapter(
                     mainActivity,
+                    this@TransactionAnalysisFragment,
                     mView,
                     TAG
                 )
@@ -318,6 +321,7 @@ class TransactionAnalysisFragment : Fragment(
                 transactionAdapter =
                     TransactionAnalysisAdapter(
                         mainActivity,
+                        this@TransactionAnalysisFragment,
                         mView,
                         TAG
                     )
@@ -516,6 +520,7 @@ class TransactionAnalysisFragment : Fragment(
             transactionAdapter =
                 TransactionAnalysisAdapter(
                     mainActivity,
+                    this@TransactionAnalysisFragment,
                     mView,
                     TAG
                 )
@@ -623,6 +628,7 @@ class TransactionAnalysisFragment : Fragment(
             transactionAdapter =
                 TransactionAnalysisAdapter(
                     mainActivity,
+                    this@TransactionAnalysisFragment,
                     mView,
                     TAG
                 )
@@ -739,6 +745,13 @@ class TransactionAnalysisFragment : Fragment(
         mView.findNavController().navigate(
             TransactionAnalysisFragmentDirections
                 .actionTransactionAnalysisFragmentToAccountsFragment()
+        )
+    }
+
+    fun gotoTransactionUpdateFragment() {
+        mView.findNavController().navigate(
+            TransactionAnalysisFragmentDirections
+                .actionTransactionAnalysisFragmentToTransactionUpdateFragment()
         )
     }
 
