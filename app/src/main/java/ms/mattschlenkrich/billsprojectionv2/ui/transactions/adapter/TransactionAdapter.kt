@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -17,20 +16,19 @@ import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.databinding.TransactionLinearItemBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
-import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionViewFragmentDirections
+import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionViewFragment
 import java.util.Random
 
 private const val PARENT_TAG = FRAG_TRANSACTION_VIEW
 
 
 class TransactionAdapter(
-    val mainActivity: MainActivity,
-    private val mainViewModel: MainViewModel,
+    private val mainActivity: MainActivity,
+    private val transactionViewFragment: TransactionViewFragment,
     private val mView: View,
 ) : RecyclerView.Adapter<TransactionAdapter.TransactionsViewHolder>() {
 
@@ -251,10 +249,10 @@ class TransactionAdapter(
     private fun gotoTransactionUpdate(
         transaction: TransactionDetailed
     ) {
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments() + ", " + PARENT_TAG
+        mainActivity.mainViewModel.setCallingFragments(
+            mainActivity.mainViewModel.getCallingFragments() + ", " + PARENT_TAG
         )
-        mainViewModel.setTransactionDetailed(transaction)
+        mainActivity.mainViewModel.setTransactionDetailed(transaction)
         CoroutineScope(Dispatchers.IO).launch {
             val oldTransactionFull = async {
                 transactionViewModel.getTransactionFull(
@@ -263,16 +261,9 @@ class TransactionAdapter(
                     transaction.transaction.transFromAccountId
                 )
             }
-            mainViewModel.setOldTransaction(oldTransactionFull.await())
+            mainActivity.mainViewModel.setOldTransaction(oldTransactionFull.await())
         }
-        gotoTransactionUpdateFragment()
-    }
-
-    private fun gotoTransactionUpdateFragment() {
-        mView.findNavController().navigate(
-            TransactionViewFragmentDirections
-                .actionTransactionViewFragmentToTransactionUpdateFragment()
-        )
+        transactionViewFragment.gotoTransactionUpdateFragment()
     }
 
     private fun deleteTransaction(transaction: Transactions) {

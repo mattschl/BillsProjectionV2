@@ -28,7 +28,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transact
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetViewBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.adapter.BudgetViewAdapter
-import ms.mattschlenkrich.billsprojectionv2.ui.transactions.adapter.TransactionPendingAdapter
+import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.adapter.TransactionPendingAdapter
 
 private const val TAG = FRAG_BUDGET_VIEW
 
@@ -559,6 +559,13 @@ class BudgetViewFragment : Fragment(
         findNavController().navigate(
             BudgetViewFragmentDirections
                 .actionBudgetViewFragmentToBudgetItemAddFragment()
+        )
+    }
+
+    fun gotoTransactionUpdateFragment() {
+        mView.findNavController().navigate(
+            BudgetViewFragmentDirections
+                .actionBudgetViewFragmentToTransactionUpdateFragment()
         )
     }
 

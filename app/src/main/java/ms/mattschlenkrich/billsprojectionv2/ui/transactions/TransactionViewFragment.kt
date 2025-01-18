@@ -58,7 +58,7 @@ class TransactionViewFragment :
     private fun setupRecyclerView() {
         transactionAdapter = TransactionAdapter(
             mainActivity,
-            mainActivity.mainViewModel,
+            this@TransactionViewFragment,
             mView,
         )
         binding.rvTransactions.apply {
@@ -137,9 +137,21 @@ class TransactionViewFragment :
             mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
         )
         mainActivity.mainViewModel.setTransactionDetailed(null)
-        val direction = TransactionViewFragmentDirections
-            .actionTransactionViewFragmentToTransactionAddFragment()
-        mView.findNavController().navigate(direction)
+        gotoTransactionAddFragment()
+    }
+
+    private fun gotoTransactionAddFragment() {
+        mView.findNavController().navigate(
+            TransactionViewFragmentDirections
+                .actionTransactionViewFragmentToTransactionAddFragment()
+        )
+    }
+
+    fun gotoTransactionUpdateFragment() {
+        mView.findNavController().navigate(
+            TransactionViewFragmentDirections
+                .actionTransactionViewFragmentToTransactionUpdateFragment()
+        )
     }
 
     override fun onDestroy() {

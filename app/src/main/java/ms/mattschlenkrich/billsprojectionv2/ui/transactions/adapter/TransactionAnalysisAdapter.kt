@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -20,7 +19,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transact
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.databinding.TransactionLinearItemBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
-import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionAnalysisFragmentDirections
+import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionAnalysisFragment
 import java.util.Random
 
 //private const val TAG = ADAPTER_TRANSACTION_ANALYSIS
@@ -28,6 +27,7 @@ import java.util.Random
 
 class TransactionAnalysisAdapter(
     val mainActivity: MainActivity,
+    private val transactionAnalysisFragment: TransactionAnalysisFragment,
     private val mView: View,
     private val parentTag: String,
 ) : RecyclerView.Adapter<TransactionAnalysisAdapter.TransViewHolder>() {
@@ -218,13 +218,6 @@ class TransactionAnalysisAdapter(
             }
             mainActivity.mainViewModel.setOldTransaction(oldTransactionFull.await())
         }
-        gotoTransactionUpdateFragment()
-    }
-
-    private fun gotoTransactionUpdateFragment() {
-        mView.findNavController().navigate(
-            TransactionAnalysisFragmentDirections
-                .actionTransactionAnalysisFragmentToTransactionUpdateFragment()
-        )
+        transactionAnalysisFragment.gotoTransactionUpdateFragment()
     }
 }
