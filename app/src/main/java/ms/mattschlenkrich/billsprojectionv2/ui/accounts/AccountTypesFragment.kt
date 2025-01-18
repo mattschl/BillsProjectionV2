@@ -63,7 +63,9 @@ class AccountTypesFragment
 
     private fun setupRecyclerView() {
         accountTypeAdapter = AccountTypeAdapter(
-            mainActivity.mainViewModel, mView
+            mainActivity.mainViewModel,
+            this@AccountTypesFragment,
+            mView
         )
 
         binding.rvAccountTypes.apply {
@@ -142,6 +144,20 @@ class AccountTypesFragment
         mView.findNavController().navigate(
             AccountTypesFragmentDirections
                 .actionAccountTypesFragmentToAccountTypeAddFragment()
+        )
+    }
+
+    fun gotoAccountAddFragment() {
+        mView.findNavController().navigate(
+            AccountTypesFragmentDirections
+                .actionAccountTypesFragmentToAccountAddFragment()
+        )
+    }
+
+    fun gotoAccountUpdateFragment() {
+        mView.findNavController().navigate(
+            AccountTypesFragmentDirections
+                .actionAccountTypesFragmentToAccountUpdateFragment()
         )
     }
 

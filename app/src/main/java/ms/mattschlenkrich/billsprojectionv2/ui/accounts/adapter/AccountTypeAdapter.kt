@@ -4,7 +4,6 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -16,7 +15,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.databinding.AccountTypeLayoutBinding
-import ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountTypesFragmentDirections
+import ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountTypesFragment
 import java.util.Random
 
 
@@ -24,6 +23,7 @@ private const val PARENT_TAG = FRAG_ACCOUNT_TYPES
 
 class AccountTypeAdapter(
     private val mainViewModel: MainViewModel,
+    private val accountTypesFragment: AccountTypesFragment,
     private val mView: View,
 ) :
     RecyclerView.Adapter<AccountTypeAdapter.AccountTypeViewHolder>() {
@@ -123,7 +123,7 @@ class AccountTypeAdapter(
         mainViewModel.setAccountType(
             curAccountType
         )
-        gotoAccountUpdateFragment()
+        accountTypesFragment.gotoAccountUpdateFragment()
     }
 
     private fun chooseAccountType(
@@ -139,23 +139,9 @@ class AccountTypeAdapter(
             )
         )
         if (mainViewModel.getCallingFragments()!!.contains(FRAG_ACCOUNT_UPDATE)) {
-            gotoAccountUpdateFragment()
+            accountTypesFragment.gotoAccountUpdateFragment()
         } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_ACCOUNT_ADD)) {
-            gotoAccountAddFragment()
+            accountTypesFragment.gotoAccountAddFragment()
         }
-    }
-
-    private fun gotoAccountAddFragment() {
-        mView.findNavController().navigate(
-            AccountTypesFragmentDirections
-                .actionAccountTypesFragmentToAccountAddFragment()
-        )
-    }
-
-    private fun gotoAccountUpdateFragment() {
-        mView.findNavController().navigate(
-            AccountTypesFragmentDirections
-                .actionAccountTypesFragmentToAccountUpdateFragment()
-        )
     }
 }

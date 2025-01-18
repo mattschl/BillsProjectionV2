@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -32,7 +31,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.databinding.AccountLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
-import ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountsFragmentDirections
+import ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountsFragment
 import java.util.Random
 
 
@@ -40,6 +39,7 @@ private const val PARENT_TAG = FRAG_ACCOUNTS
 
 class AccountAdapter(
     val mainActivity: MainActivity,
+    private val accountsFragment: AccountsFragment,
     private val mainViewModel: MainViewModel,
     private val mView: View,
 ) :
@@ -289,7 +289,7 @@ class AccountAdapter(
         mainViewModel.setCallingFragments(mainViewModel.getCallingFragments() + ", " + PARENT_TAG)
         mainViewModel.setAccountWithType(curAccount)
         mainViewModel.setBudgetRuleDetailed(null)
-        gotoTransactionAverageFragment()
+        accountsFragment.gotoTransactionAverageFragment()
     }
 
     private fun gotoUpdateAccount(
@@ -301,7 +301,7 @@ class AccountAdapter(
         mainViewModel.setAccountWithType(
             curAccount
         )
-        gotoAccountUpdateFragment()
+        accountsFragment.gotoAccountUpdateFragment()
     }
 
     private fun gotoCallingFragment() {
@@ -311,107 +311,36 @@ class AccountAdapter(
         )
         val callingFragment = mainViewModel.getCallingFragments()!!
         if (callingFragment.contains(FRAG_TRANSACTION_SPLIT)) {
-            gotoTransactionSplitFragment()
+            accountsFragment.gotoTransactionSplitFragment()
         }
         if (callingFragment
                 .contains(FRAG_BUDGET_RULE_ADD)
         ) {
-            gotoBudgetRuleAddFragment()
+            accountsFragment.gotoBudgetRuleAddFragment()
         } else if (callingFragment
                 .contains(FRAG_BUDGET_RULE_UPDATE)
         ) {
-            gotoBudgetRuleUpdateFragment()
+            accountsFragment.gotoBudgetRuleUpdateFragment()
         } else if (callingFragment
                 .contains(FRAG_TRANS_ADD)
         ) {
-            gotoTransactionAddFragment()
+            accountsFragment.gotoTransactionAddFragment()
         } else if (callingFragment
                 .contains(FRAG_TRANS_UPDATE)
         ) {
-            gotoTransactionUpdateFragment()
+            accountsFragment.gotoTransactionUpdateFragment()
         } else if (callingFragment
                 .contains(FRAG_BUDGET_ITEM_ADD)
         ) {
-            gotoBudgetItemAddFragment()
+            accountsFragment.gotoBudgetItemAddFragment()
         } else if (callingFragment
                 .contains(FRAG_BUDGET_ITEM_UPDATE)
         ) {
-            gotoBudgetItemUpdateFragment()
+            accountsFragment.gotoBudgetItemUpdateFragment()
         } else if (callingFragment
                 .contains(FRAG_TRANS_PERFORM)
         ) {
-            gotoTransactionPerformFragment()
+            accountsFragment.gotoTransactionPerformFragment()
         }
-    }
-
-    private fun gotoTransactionAverageFragment() {
-        mView.findNavController().navigate(
-            AccountsFragmentDirections
-                .actionAccountsFragmentToTransactionAnalysisFragment()
-        )
-    }
-
-    private fun gotoAccountUpdateFragment() {
-        mView.findNavController().navigate(
-            AccountsFragmentDirections
-                .actionAccountsFragmentToAccountUpdateFragment()
-        )
-    }
-
-
-    private fun gotoTransactionPerformFragment() {
-        mView.findNavController().navigate(
-            AccountsFragmentDirections
-                .actionAccountsFragmentToTransactionPerformFragment()
-        )
-    }
-
-    private fun gotoTransactionSplitFragment() {
-        mView.findNavController().navigate(
-            AccountsFragmentDirections
-                .actionAccountsFragmentToTransactionSplitFragment()
-        )
-    }
-
-    private fun gotoBudgetItemUpdateFragment() {
-        mView.findNavController().navigate(
-            AccountsFragmentDirections
-                .actionAccountsFragmentToBudgetItemUpdateFragment()
-        )
-    }
-
-    private fun gotoBudgetItemAddFragment() {
-        mView.findNavController().navigate(
-            AccountsFragmentDirections
-                .actionAccountsFragmentToBudgetItemAddFragment()
-        )
-    }
-
-    private fun gotoTransactionUpdateFragment() {
-        mView.findNavController().navigate(
-            AccountsFragmentDirections
-                .actionAccountsFragmentToTransactionUpdateFragment()
-        )
-    }
-
-    private fun gotoTransactionAddFragment() {
-        mView.findNavController().navigate(
-            AccountsFragmentDirections
-                .actionAccountsFragmentToTransactionAddFragment()
-        )
-    }
-
-    private fun gotoBudgetRuleUpdateFragment() {
-        mView.findNavController().navigate(
-            AccountsFragmentDirections
-                .actionAccountsFragmentToBudgetRuleUpdateFragment()
-        )
-    }
-
-    private fun gotoBudgetRuleAddFragment() {
-        mView.findNavController().navigate(
-            AccountsFragmentDirections
-                .actionAccountsFragmentToBudgetRuleAddFragment()
-        )
     }
 }
