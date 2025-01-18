@@ -43,7 +43,7 @@ class AccountsFragment :
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
-        mainActivity.title = "Choose an Account"
+        mainActivity.title = getString(R.string.choose_an_account)
         mView = binding.root
         return mView
     }
@@ -61,6 +61,7 @@ class AccountsFragment :
     private fun setUpRecyclerView() {
         accountAdapter = AccountAdapter(
             mainActivity,
+            this@AccountsFragment,
             mainActivity.mainViewModel,
             mView
         )
@@ -136,6 +137,76 @@ class AccountsFragment :
         val direction = AccountsFragmentDirections
             .actionAccountsFragmentToAccountAddFragment()
         mView.findNavController().navigate(direction)
+    }
+
+    fun gotoAccountUpdateFragment() {
+        mView.findNavController().navigate(
+            AccountsFragmentDirections
+                .actionAccountsFragmentToAccountUpdateFragment()
+        )
+    }
+
+    fun gotoTransactionAverageFragment() {
+        mView.findNavController().navigate(
+            AccountsFragmentDirections
+                .actionAccountsFragmentToTransactionAnalysisFragment()
+        )
+    }
+
+    fun gotoTransactionPerformFragment() {
+        mView.findNavController().navigate(
+            AccountsFragmentDirections
+                .actionAccountsFragmentToTransactionPerformFragment()
+        )
+    }
+
+    fun gotoTransactionSplitFragment() {
+        mView.findNavController().navigate(
+            AccountsFragmentDirections
+                .actionAccountsFragmentToTransactionSplitFragment()
+        )
+    }
+
+    fun gotoBudgetItemUpdateFragment() {
+        mView.findNavController().navigate(
+            AccountsFragmentDirections
+                .actionAccountsFragmentToBudgetItemUpdateFragment()
+        )
+    }
+
+    fun gotoBudgetItemAddFragment() {
+        mView.findNavController().navigate(
+            AccountsFragmentDirections
+                .actionAccountsFragmentToBudgetItemAddFragment()
+        )
+    }
+
+    fun gotoTransactionUpdateFragment() {
+        mView.findNavController().navigate(
+            AccountsFragmentDirections
+                .actionAccountsFragmentToTransactionUpdateFragment()
+        )
+    }
+
+    fun gotoTransactionAddFragment() {
+        mView.findNavController().navigate(
+            AccountsFragmentDirections
+                .actionAccountsFragmentToTransactionAddFragment()
+        )
+    }
+
+    fun gotoBudgetRuleUpdateFragment() {
+        mView.findNavController().navigate(
+            AccountsFragmentDirections
+                .actionAccountsFragmentToBudgetRuleUpdateFragment()
+        )
+    }
+
+    fun gotoBudgetRuleAddFragment() {
+        mView.findNavController().navigate(
+            AccountsFragmentDirections
+                .actionAccountsFragmentToBudgetRuleAddFragment()
+        )
     }
 
     override fun onDestroy() {
