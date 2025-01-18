@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -27,7 +26,6 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transact
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetViewItemBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetViewFragment
-import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetViewFragmentDirections
 import java.util.Random
 
 private const val PARENT_TAG = FRAG_BUDGET_VIEW
@@ -248,7 +246,7 @@ class BudgetViewAdapter(
         mainActivity.mainViewModel.setBudgetItem(curBudget)
         mainActivity.mainViewModel.setTransactionDetailed(null)
         setToReturn()
-        gotoTransactionPerformFragment()
+        budgetViewFragment.gotoTransactionPerformFragment()
     }
 
     private fun confirmCompleteTransaction(curBudget: BudgetDetailed) {
@@ -420,34 +418,13 @@ class BudgetViewAdapter(
             )
         )
         setToReturn()
-        gotoBudgetRuleUpdateFragment()
+        budgetViewFragment.gotoBudgetRuleUpdateFragment()
     }
 
     private fun gotoBudgetItem(curBudget: BudgetDetailed) {
         mainActivity.mainViewModel.setBudgetItem(curBudget)
         setToReturn()
-        gotoBudgetItemUpdateFragment()
-    }
-
-    private fun gotoBudgetItemUpdateFragment() {
-        mView.findNavController().navigate(
-            BudgetViewFragmentDirections
-                .actionBudgetViewFragmentToBudgetItemUpdateFragment()
-        )
-    }
-
-    private fun gotoBudgetRuleUpdateFragment() {
-        mView.findNavController().navigate(
-            BudgetViewFragmentDirections
-                .actionBudgetViewFragmentToBudgetRuleUpdateFragment()
-        )
-    }
-
-    private fun gotoTransactionPerformFragment() {
-        mView.findNavController().navigate(
-            BudgetViewFragmentDirections
-                .actionBudgetViewFragmentToTransactionPerformFragment()
-        )
+        budgetViewFragment.gotoBudgetItemUpdateFragment()
     }
 
     private fun setToReturn() {

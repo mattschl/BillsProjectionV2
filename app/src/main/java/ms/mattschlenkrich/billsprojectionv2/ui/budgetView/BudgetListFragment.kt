@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_MONTHLY
@@ -87,7 +88,9 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     private fun populateAnnualBudget() {
         activity.let {
             val budgetListAnnualAdapter = BudgetListAnnualAdapter(
-                mainActivity, mView
+                mainActivity,
+                this@BudgetListFragment,
+                mView
             )
             binding.rvAnnual.apply {
                 layoutManager = LinearLayoutManager(requireContext())
@@ -161,7 +164,9 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     private fun populateOccasionalItems() {
         activity.let {
             val budgetListOccasionalAdapter = BudgetListOccasionalAdapter(
-                mainActivity, mView
+                mainActivity,
+                this@BudgetListFragment,
+                mView
             )
             binding.rvOccasional.apply {
                 layoutManager =
@@ -249,7 +254,9 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     private fun populateMonthlyItems() {
         activity?.let {
             val budgetListMonthlyAdapter = BudgetListMonthlyAdapter(
-                mainActivity, mView,
+                mainActivity,
+                this@BudgetListFragment,
+                mView,
             )
             binding.rvMonthly.apply {
                 layoutManager =
@@ -325,6 +332,21 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
                 tvTotalMonthly.text = info
             }
         }
+    }
+
+    fun gotoBudgetRuleUpdateFragment() {
+        mView.findNavController().navigate(
+            BudgetListFragmentDirections
+                .actionBudgetListFragmentToBudgetRuleUpdateFragment()
+
+        )
+    }
+
+    fun gotoTransactionAverageFragment() {
+        mView.findNavController().navigate(
+            BudgetListFragmentDirections
+                .actionBudgetListFragmentToTransactionAnalysisFragment()
+        )
     }
 
     override fun onDestroy() {
