@@ -1,9 +1,7 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -11,11 +9,11 @@ import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetDetailed
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetDateItemBinding
-import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.BudgetRuleUpdateFragmentDirections
+import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.BudgetRuleUpdateFragment
 
 class BudgetRuleDatesAdapter(
     private val mainViewModel: MainViewModel,
-    private val mView: View,
+    private val budgetRuleUpdateFragment: BudgetRuleUpdateFragment,
     private val parentTag: String,
 ) :
     RecyclerView.Adapter<BudgetRuleDatesAdapter.DateViewHolder>() {
@@ -75,13 +73,8 @@ class BudgetRuleDatesAdapter(
             mainViewModel.getCallingFragments() + ", " + parentTag
         )
         mainViewModel.setBudgetItem(curItem)
-        gotoBudgetItemUpdateFragment()
+        budgetRuleUpdateFragment.gotoBudgetItemUpdateFragment()
     }
 
-    private fun gotoBudgetItemUpdateFragment() {
-        mView.findNavController().navigate(
-            BudgetRuleUpdateFragmentDirections
-                .actionBudgetRuleUpdateFragmentToBudgetItemUpdateFragment()
-        )
-    }
+
 }
