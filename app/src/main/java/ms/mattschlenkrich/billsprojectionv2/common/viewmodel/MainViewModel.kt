@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
-import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetDetailed
+import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionFull
@@ -13,7 +13,7 @@ class MainViewModel(
     app: Application,
 ) : AndroidViewModel(app) {
 
-    private var budgetItem: BudgetDetailed? = null
+    private var budgetItemDetailed: BudgetItemDetailed? = null
     private var oldTransactionFull: TransactionFull? = null
     private var transactionDetailed: TransactionDetailed? = null
     private var splitTransactionDetailed: TransactionDetailed? = null
@@ -45,7 +45,7 @@ class MainViewModel(
     }
 
     fun eraseAll() {
-        budgetItem = null
+        budgetItemDetailed = null
         oldTransactionFull = null
         transactionDetailed = null
         splitTransactionDetailed = null
@@ -146,12 +146,12 @@ class MainViewModel(
         return transactionDetailed
     }
 
-    fun setBudgetItem(newBudgetDetailed: BudgetDetailed?) {
-        budgetItem = newBudgetDetailed
+    fun setBudgetItemDetailed(newBudgetDetailed: BudgetItemDetailed?) {
+        budgetItemDetailed = newBudgetDetailed
     }
 
-    fun getBudgetItem(): BudgetDetailed? {
-        return budgetItem
+    fun getBudgetItemDetailed(): BudgetItemDetailed? {
+        return budgetItemDetailed
     }
 
 }

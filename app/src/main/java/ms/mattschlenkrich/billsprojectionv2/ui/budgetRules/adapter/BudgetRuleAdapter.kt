@@ -22,8 +22,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
-import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
+import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewModel
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetRuleLayoutBinding
@@ -167,8 +167,8 @@ class BudgetRuleAdapter(
             mainViewModel.getCallingFragments() +
                     ", $PARENT_TAG"
         )
-        mainViewModel.setBudgetItem(
-            BudgetDetailed(
+        mainViewModel.setBudgetItemDetailed(
+            BudgetItemDetailed(
                 BudgetItem(
                     budgetRuleDetailed.budgetRule!!.ruleId,
                     df.getCurrentDateAsString(),
@@ -227,10 +227,10 @@ class BudgetRuleAdapter(
                 .contains(FRAG_BUDGET_ITEM_UPDATE)
         ) {
             val mBudgetDetailed =
-                mainViewModel.getBudgetItem()
+                mainViewModel.getBudgetItemDetailed()
             mBudgetDetailed?.budgetRule =
                 budgetRuleDetailed.budgetRule
-            mainViewModel.setBudgetItem(mBudgetDetailed)
+            mainViewModel.setBudgetItemDetailed(mBudgetDetailed)
         }
         gotoCallingFragment()
     }

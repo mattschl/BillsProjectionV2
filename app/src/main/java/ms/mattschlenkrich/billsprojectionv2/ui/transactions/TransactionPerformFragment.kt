@@ -72,7 +72,7 @@ class TransactionPerformFragment : Fragment(
         if (mainActivity.mainViewModel.getTransactionDetailed() != null
         ) {
             populateValuesFromTransaction()
-        } else if (mainActivity.mainViewModel.getBudgetItem() != null) {
+        } else if (mainActivity.mainViewModel.getBudgetItemDetailed() != null) {
             populateValuesFromBudgetItem()
         }
     }
@@ -115,7 +115,7 @@ class TransactionPerformFragment : Fragment(
                 mainActivity.mainViewModel.setTransferNum(0.0)
                 etBudgetedAmount.setText(
                     nf.displayDollars(
-                        mainActivity.mainViewModel.getBudgetItem()!!
+                        mainActivity.mainViewModel.getBudgetItemDetailed()!!
                             .budgetItem!!.biProjectedAmount
                     )
                 )
@@ -167,7 +167,7 @@ class TransactionPerformFragment : Fragment(
     }
 
     private fun populateValuesFromBudgetItem() {
-        val budgetItem = mainActivity.mainViewModel.getBudgetItem()!!
+        val budgetItem = mainActivity.mainViewModel.getBudgetItemDetailed()!!
         mToAccount =
             budgetItem.toAccount
         mFromAccount =
@@ -274,16 +274,16 @@ class TransactionPerformFragment : Fragment(
                     calculateRemainder()
                 }
                 if (nf.getDoubleFromDollars(etBudgetedAmount.text.toString()) !=
-                    mainActivity.mainViewModel.getBudgetItem()!!
+                    mainActivity.mainViewModel.getBudgetItemDetailed()!!
                         .budgetItem!!.biProjectedAmount
                 ) {
                     val mBudgetItem =
-                        mainActivity.mainViewModel.getBudgetItem()
+                        mainActivity.mainViewModel.getBudgetItemDetailed()
                     mBudgetItem!!.budgetItem!!.biProjectedAmount =
                         nf.getDoubleFromDollars(
                             etBudgetedAmount.text.toString()
                         )
-                    mainActivity.mainViewModel.setBudgetItem(mBudgetItem)
+                    mainActivity.mainViewModel.setBudgetItemDetailed(mBudgetItem)
                 }
             }
             btnSplit.setOnClickListener {
@@ -487,7 +487,7 @@ class TransactionPerformFragment : Fragment(
             completed = true
         }
         val mBudget =
-            mainActivity.mainViewModel.getBudgetItem()!!.budgetItem!!
+            mainActivity.mainViewModel.getBudgetItemDetailed()!!.budgetItem!!
         mainActivity.budgetItemViewModel.updateBudgetItem(
             BudgetItem(
                 mBudget.biRuleId,

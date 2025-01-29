@@ -29,8 +29,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
-import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
+import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetItemAddBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
@@ -72,7 +72,7 @@ class BudgetItemAddFragment : Fragment(
 
     private fun populateValues() {
         populatePayDays()
-        if (mainActivity.mainViewModel.getBudgetItem() != null) {
+        if (mainActivity.mainViewModel.getBudgetItemDetailed() != null) {
             populateFromCache()
         } else {
             populateDateToCurrent()
@@ -109,8 +109,8 @@ class BudgetItemAddFragment : Fragment(
     }
 
     private fun populateFromCache() {
-        if (mainActivity.mainViewModel.getBudgetItem() != null) {
-            val mBudgetItem = mainActivity.mainViewModel.getBudgetItem()!!
+        if (mainActivity.mainViewModel.getBudgetItemDetailed() != null) {
+            val mBudgetItem = mainActivity.mainViewModel.getBudgetItemDetailed()!!
             binding.apply {
                 etProjectedDate.setText(
                     mBudgetItem.budgetItem?.biProjectedDate
@@ -258,7 +258,7 @@ class BudgetItemAddFragment : Fragment(
         mainActivity.mainViewModel.setCallingFragments(
             mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
         )
-        mainActivity.mainViewModel.setBudgetItem(getCurrentBudgetItemDetailed())
+        mainActivity.mainViewModel.setBudgetItemDetailed(getCurrentBudgetItemDetailed())
         gotoBudgetRulesFragment()
     }
 
@@ -267,7 +267,7 @@ class BudgetItemAddFragment : Fragment(
             mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
         )
         mainActivity.mainViewModel.setRequestedAccount(requestedAccount)
-        mainActivity.mainViewModel.setBudgetItem(getCurrentBudgetItemDetailed())
+        mainActivity.mainViewModel.setBudgetItemDetailed(getCurrentBudgetItemDetailed())
         gotoAccountsFragment()
     }
 
@@ -340,12 +340,12 @@ class BudgetItemAddFragment : Fragment(
         )
     }
 
-    private fun getCurrentBudgetItemDetailed(): BudgetDetailed {
-        return BudgetDetailed(
+    private fun getCurrentBudgetItemDetailed(): BudgetItemDetailed {
+        return BudgetItemDetailed(
             getCurrentBudgetItemForSaving(),
-            mainActivity.mainViewModel.getBudgetItem()?.budgetRule,
-            mainActivity.mainViewModel.getBudgetItem()?.toAccount,
-            mainActivity.mainViewModel.getBudgetItem()?.fromAccount
+            mainActivity.mainViewModel.getBudgetItemDetailed()?.budgetRule,
+            mainActivity.mainViewModel.getBudgetItemDetailed()?.toAccount,
+            mainActivity.mainViewModel.getBudgetItemDetailed()?.fromAccount
         )
     }
 
@@ -382,7 +382,7 @@ class BudgetItemAddFragment : Fragment(
     }
 
     private fun gotoCallingFragment() {
-        mainActivity.mainViewModel.setBudgetItem(null)
+        mainActivity.mainViewModel.setBudgetItemDetailed(null)
         mainActivity.mainViewModel.setCallingFragments(
             mainActivity.mainViewModel.getCallingFragments()!!
                 .replace(", $TAG", "")
@@ -410,7 +410,7 @@ class BudgetItemAddFragment : Fragment(
             )
         )
         mainActivity.mainViewModel.setReturnTo(TAG)
-        mainActivity.mainViewModel.setBudgetItem(getCurrentBudgetItemDetailed())
+        mainActivity.mainViewModel.setBudgetItemDetailed(getCurrentBudgetItemDetailed())
         gotoCalculatorFragment()
     }
 
