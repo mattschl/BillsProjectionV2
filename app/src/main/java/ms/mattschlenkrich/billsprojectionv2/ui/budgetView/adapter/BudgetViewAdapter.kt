@@ -19,8 +19,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_500
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
-import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
+import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetViewItemBinding
@@ -47,10 +47,10 @@ class BudgetViewAdapter(
         RecyclerView.ViewHolder(itemBinding.root)
 
     private val differCallBack =
-        object : DiffUtil.ItemCallback<BudgetDetailed>() {
+        object : DiffUtil.ItemCallback<BudgetItemDetailed>() {
             override fun areContentsTheSame(
-                oldItem: BudgetDetailed,
-                newItem: BudgetDetailed
+                oldItem: BudgetItemDetailed,
+                newItem: BudgetItemDetailed
             ): Boolean {
                 return oldItem.budgetItem!!.biProjectedDate ==
                         newItem.budgetItem!!.biProjectedDate &&
@@ -59,8 +59,8 @@ class BudgetViewAdapter(
             }
 
             override fun areItemsTheSame(
-                oldItem: BudgetDetailed,
-                newItem: BudgetDetailed
+                oldItem: BudgetItemDetailed,
+                newItem: BudgetItemDetailed
             ): Boolean {
                 return oldItem == newItem
             }
@@ -143,7 +143,7 @@ class BudgetViewAdapter(
         }
     }
 
-    private fun chooseLockUnlock(budgetItem: BudgetDetailed) {
+    private fun chooseLockUnlock(budgetItem: BudgetItemDetailed) {
         AlertDialog.Builder(mView.context)
             .setTitle(mView.context.getString(R.string.lock_or_unlock))
             .setItems(
@@ -193,7 +193,7 @@ class BudgetViewAdapter(
     }
 
     private fun chooseOptionsForBudget(
-        curBudget: BudgetDetailed
+        curBudget: BudgetItemDetailed
     ) {
         AlertDialog.Builder(mView.context)
             .setTitle(
@@ -242,14 +242,14 @@ class BudgetViewAdapter(
             .show()
     }
 
-    private fun performTransaction(curBudget: BudgetDetailed) {
-        mainActivity.mainViewModel.setBudgetItem(curBudget)
+    private fun performTransaction(curBudget: BudgetItemDetailed) {
+        mainActivity.mainViewModel.setBudgetItemDetailed(curBudget)
         mainActivity.mainViewModel.setTransactionDetailed(null)
         setToReturn()
         budgetViewFragment.gotoTransactionPerformFragment()
     }
 
-    private fun confirmCompleteTransaction(curBudget: BudgetDetailed) {
+    private fun confirmCompleteTransaction(curBudget: BudgetItemDetailed) {
         if (curBudget.budgetItem!!.biProjectedAmount > 0.0) {
             var display = ""
             CoroutineScope(Dispatchers.IO).launch {
@@ -273,7 +273,7 @@ class BudgetViewAdapter(
 
     private suspend fun getConfirmationsDisplay(
         budgetItem: BudgetItem,
-        curBudget: BudgetDetailed
+        curBudget: BudgetItemDetailed
     ): String {
         var display = mView.context.getString(R.string.this_will_perform) +
                 budgetItem.biBudgetName +
@@ -304,7 +304,7 @@ class BudgetViewAdapter(
         return display
     }
 
-    private fun completeTransaction(curBudget: BudgetDetailed) {
+    private fun completeTransaction(curBudget: BudgetItemDetailed) {
         updateAccountsAndTransaction(curBudget)
         CoroutineScope(Dispatchers.Main).launch {
             delay(WAIT_500)
@@ -312,7 +312,7 @@ class BudgetViewAdapter(
         }
     }
 
-    private fun updateAccountsAndTransaction(curBudget: BudgetDetailed): Boolean {
+    private fun updateAccountsAndTransaction(curBudget: BudgetItemDetailed): Boolean {
         CoroutineScope(Dispatchers.IO).launch {
             mainActivity.accountUpdateViewModel.performTransaction(
                 getCurTransactionObject(
@@ -383,7 +383,7 @@ class BudgetViewAdapter(
         }
     }
 
-    private fun confirmCancelBudgetItem(curBudget: BudgetDetailed) {
+    private fun confirmCancelBudgetItem(curBudget: BudgetItemDetailed) {
         AlertDialog.Builder(mView.context)
             .setTitle(mView.context.getString(R.string.confirm_cancelling_budget_item))
             .setMessage(
@@ -400,7 +400,7 @@ class BudgetViewAdapter(
             .show()
     }
 
-    private fun cancelBudgetItem(curBudget: BudgetDetailed) {
+    private fun cancelBudgetItem(curBudget: BudgetItemDetailed) {
         mainActivity.budgetItemViewModel.cancelBudgetItem(
             curBudget.budgetItem!!.biRuleId,
             curBudget.budgetItem.biProjectedDate,
@@ -409,7 +409,7 @@ class BudgetViewAdapter(
         budgetViewFragment.populateBudgetList()
     }
 
-    private fun gotoBudgetRule(curBudget: BudgetDetailed) {
+    private fun gotoBudgetRule(curBudget: BudgetItemDetailed) {
         mainActivity.mainViewModel.setBudgetRuleDetailed(
             BudgetRuleDetailed(
                 curBudget.budgetRule,
@@ -421,8 +421,8 @@ class BudgetViewAdapter(
         budgetViewFragment.gotoBudgetRuleUpdateFragment()
     }
 
-    private fun gotoBudgetItem(curBudget: BudgetDetailed) {
-        mainActivity.mainViewModel.setBudgetItem(curBudget)
+    private fun gotoBudgetItem(curBudget: BudgetItemDetailed) {
+        mainActivity.mainViewModel.setBudgetItemDetailed(curBudget)
         setToReturn()
         budgetViewFragment.gotoBudgetItemUpdateFragment()
     }

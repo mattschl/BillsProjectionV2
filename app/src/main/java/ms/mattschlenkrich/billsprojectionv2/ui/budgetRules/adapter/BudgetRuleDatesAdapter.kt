@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
-import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetDetailed
+import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetDateItemBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.BudgetRuleUpdateFragment
 
@@ -24,18 +24,18 @@ class BudgetRuleDatesAdapter(
         RecyclerView.ViewHolder(itemBinding.root)
 
     private val differCalBack =
-        object : DiffUtil.ItemCallback<BudgetDetailed>() {
+        object : DiffUtil.ItemCallback<BudgetItemDetailed>() {
             override fun areContentsTheSame(
-                oldItem: BudgetDetailed,
-                newItem: BudgetDetailed
+                oldItem: BudgetItemDetailed,
+                newItem: BudgetItemDetailed
             ): Boolean {
                 return oldItem.budgetItem!!.biProjectedDate == newItem.budgetItem!!.biProjectedDate &&
                         oldItem.budgetItem.biRuleId == newItem.budgetItem.biRuleId
             }
 
             override fun areItemsTheSame(
-                oldItem: BudgetDetailed,
-                newItem: BudgetDetailed
+                oldItem: BudgetItemDetailed,
+                newItem: BudgetItemDetailed
             ): Boolean {
                 return oldItem == newItem
             }
@@ -68,11 +68,11 @@ class BudgetRuleDatesAdapter(
         }
     }
 
-    private fun gotoBudgetItem(curItem: BudgetDetailed?) {
+    private fun gotoBudgetItem(curItem: BudgetItemDetailed?) {
         mainViewModel.setCallingFragments(
             mainViewModel.getCallingFragments() + ", " + parentTag
         )
-        mainViewModel.setBudgetItem(curItem)
+        mainViewModel.setBudgetItemDetailed(curItem)
         budgetRuleUpdateFragment.gotoBudgetItemUpdateFragment()
     }
 

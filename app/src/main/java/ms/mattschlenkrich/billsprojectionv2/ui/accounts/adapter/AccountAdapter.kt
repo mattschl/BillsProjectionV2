@@ -26,7 +26,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
-import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetDetailed
+import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.databinding.AccountLayoutBinding
@@ -46,11 +46,11 @@ class AccountAdapter(
     RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() {
 
     private var mBudgetItem =
-        BudgetDetailed(
-            mainViewModel.getBudgetItem()?.budgetItem,
-            mainViewModel.getBudgetItem()?.budgetRule,
-            mainViewModel.getBudgetItem()?.toAccount,
-            mainViewModel.getBudgetItem()?.fromAccount
+        BudgetItemDetailed(
+            mainViewModel.getBudgetItemDetailed()?.budgetItem,
+            mainViewModel.getBudgetItemDetailed()?.budgetRule,
+            mainViewModel.getBudgetItemDetailed()?.toAccount,
+            mainViewModel.getBudgetItemDetailed()?.fromAccount
         )
 
     private var mBudgetRuleDetailed =
@@ -249,7 +249,7 @@ class AccountAdapter(
                         mainViewModel.setTransactionDetailed(mTransactionDetailed)
                     }
                     mBudgetItem.toAccount = curAccount.account
-                    mainViewModel.setBudgetItem(mBudgetItem)
+                    mainViewModel.setBudgetItemDetailed(mBudgetItem)
                     gotoCallingFragment()
 
                 }
@@ -276,7 +276,7 @@ class AccountAdapter(
                         callingFragment.contains(FRAG_BUDGET_ITEM_UPDATE)
                     ) {
                         mBudgetItem.fromAccount = curAccount.account
-                        mainViewModel.setBudgetItem(mBudgetItem)
+                        mainViewModel.setBudgetItemDetailed(mBudgetItem)
                     }
                     gotoCallingFragment()
 

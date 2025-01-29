@@ -23,7 +23,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
-import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetDetailed
+import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetViewBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
@@ -44,7 +44,7 @@ class BudgetViewFragment : Fragment(
 //    private val df = DateFunctions()
 
     private lateinit var curAsset: AccountWithType
-    private val budgetList = ArrayList<BudgetDetailed>()
+    private val budgetList = ArrayList<BudgetItemDetailed>()
     private var pendingAmount = 0.0
 
     override fun onCreateView(

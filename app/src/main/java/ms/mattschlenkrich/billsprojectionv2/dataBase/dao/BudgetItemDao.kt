@@ -33,8 +33,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_ITEMS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_RULES
-import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
+import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 
 @Dao
 interface BudgetItemDao {
@@ -136,8 +136,7 @@ interface BudgetItemDao {
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
-        "SELECT $TABLE_BUDGET_ITEMS.*, budgetRule.*, " +
-                "toAccount.*, fromAccount.* " +
+        "SELECT * " +
                 "FROM $TABLE_BUDGET_ITEMS " +
                 "LEFT JOIN $TABLE_BUDGET_RULES as budgetRule ON " +
                 "$TABLE_BUDGET_ITEMS.$BI_BUDGET_RULE_ID = " +
@@ -164,7 +163,7 @@ interface BudgetItemDao {
                 "$TABLE_BUDGET_ITEMS.$BI_BUDGET_NAME ;"
     )
     fun getBudgetItems(asset: String, payDay: String)
-            : LiveData<List<BudgetDetailed>>
+            : LiveData<List<BudgetItemDetailed>>
 
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
@@ -189,7 +188,7 @@ interface BudgetItemDao {
                 "ORDER BY $TABLE_BUDGET_ITEMS.$BI_ACTUAL_DATE;"
     )
     fun getBudgetItems(budgetRuleId: Long)
-            : LiveData<List<BudgetDetailed>>
+            : LiveData<List<BudgetItemDetailed>>
 
     @Query(
         "UPDATE $TABLE_BUDGET_ITEMS " +
