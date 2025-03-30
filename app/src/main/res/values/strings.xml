@@ -317,5 +317,6 @@
     <string name="no_accounts_to_view">No Accounts to view</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="https_www_mschlenkrich_ca_privacy_policy">https://www.mschlenkrich.ca/privacy-policy</string>
+    <string name="__current">" - Current"</string>
 
 </resources>

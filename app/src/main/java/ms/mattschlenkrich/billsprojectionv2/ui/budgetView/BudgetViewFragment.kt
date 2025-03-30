@@ -95,8 +95,14 @@ class BudgetViewFragment : Fragment(
             viewLifecycleOwner
         ) { payDayList ->
             payDayAdapter.clear()
+            var count = 0
             payDayList?.forEach {
-                payDayAdapter.add(it)
+                if (count == 0) {
+                    payDayAdapter.add("$it${getString(R.string.__current)}")
+                } else {
+                    payDayAdapter.add(it)
+                }
+                count++
             }
             hideUnHidePayDays(payDayList)
         }
@@ -156,21 +162,19 @@ class BudgetViewFragment : Fragment(
             )
         binding.rvPending.apply {
             layoutManager =
-                LinearLayoutManager(requireContext())
+                LinearLayoutManager(mView.context)
             adapter = transactionPendingAdapter
         }
-        activity?.let {
-            mainActivity.transactionViewModel.getPendingTransactionsDetailed(
-                binding.spAssetNames.selectedItem.toString()
-            ).observe(
-                viewLifecycleOwner
-            ) { transactions ->
-                transactionPendingAdapter.differ.submitList(transactions)
-                updatePendingUI(transactions)
-                updatePendingTotal(transactions)
-                populateAssetDetails()
-                populateBudgetTotals()
-            }
+        mainActivity.transactionViewModel.getPendingTransactionsDetailed(
+            binding.spAssetNames.selectedItem.toString()
+        ).observe(
+            viewLifecycleOwner
+        ) { transactions ->
+            transactionPendingAdapter.differ.submitList(transactions)
+            updatePendingUI(transactions)
+            updatePendingTotal(transactions)
+            populateAssetDetails()
+            populateBudgetTotals()
         }
     }
 
@@ -299,6 +303,7 @@ class BudgetViewFragment : Fragment(
                 val payDay =
                     if (spPayDay.selectedItem != null) {
                         spPayDay.selectedItem.toString()
+                            .replace(getString(R.string.__current), "")
                     } else {
                         ""
                     }
