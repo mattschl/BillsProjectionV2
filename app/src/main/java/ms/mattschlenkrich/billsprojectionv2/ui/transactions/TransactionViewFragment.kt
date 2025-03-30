@@ -42,7 +42,7 @@ class TransactionViewFragment :
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
-        mainActivity.title = "View Transaction History"
+        mainActivity.title = getString(R.string.view_transaction_history)
         mView = binding.root
         return binding.root
     }
