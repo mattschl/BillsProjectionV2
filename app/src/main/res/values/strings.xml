@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">Bills Projection</string>
     <string name="image">image</string>
+
     <string name="__from">"\n\nFROM:   "</string>
+    <string name="__current">" - Current"</string>
     <string name="__pending">"------------- Pending: "</string>
     <string name="_and">"\n and "</string>
     <string name="_continue">Continue</string>
@@ -166,6 +168,7 @@
     <string name="help_text">Help text</string>
     <string name="help">Help Text</string>
     <string name="highest">Highest </string>
+    <string name="https_www_mschlenkrich_ca_privacy_policy">https://www.mschlenkrich.ca/privacy-policy</string>
     <string name="id_not_created_yet">ID Not created yet</string>
     <string name="ignore_this">Ignore this</string>
     <string name="keep_mileage">Keep Mileage</string>
@@ -187,6 +190,7 @@
     <string name="nine">9</string>
     <string name="no_account_selected">No Account Selected</string>
     <string name="no_account_types_to_view">No Account Types to view</string>
+    <string name="no_accounts_to_view">No Accounts to view</string>
     <string name="no_budget_items">No Budget Items to View</string>
     <string name="no_budget_rule_selected">No Budget Rule Selected</string>
     <string name="no_budget_rules_to_view">No Budget Rules to View</string>
@@ -223,6 +227,7 @@
     <string name="please_enter_an_amount_for_this_transaction">Please enter an amount for this transaction</string>
     <string name="plus">+</string>
     <string name="previous_month">Previous Month</string>
+    <string name="privacy_policy">Privacy Policy</string>
     <string name="projected_amount">Projected Amount</string>
     <string name="projected_date">Projected Date</string>
     <string name="regular_monthly_budget">Regular Monthly Budget</string>
@@ -303,6 +308,7 @@
     <string name="view_or_edit">View or Edit</string>
     <string name="view_the_budget">View The Budget</string>
     <string name="view_the_complete_budget">View the complete budget</string>
+    <string name="view_transaction_history">View Transaction History</string>
     <string name="warning_confirm_delete">*Warning*! Confirm Delete?</string>
     <string name="week_day">Week Day</string>
     <string name="weekly_x">" weekly x "</string>
@@ -314,9 +320,6 @@
     <string name="zero_double">0.0</string>
     <string name="zero_int">0</string>
     <string name="zero">0</string>
-    <string name="no_accounts_to_view">No Accounts to view</string>
-    <string name="privacy_policy">Privacy Policy</string>
-    <string name="https_www_mschlenkrich_ca_privacy_policy">https://www.mschlenkrich.ca/privacy-policy</string>
-    <string name="__current">" - Current"</string>
+
 
 </resources>
