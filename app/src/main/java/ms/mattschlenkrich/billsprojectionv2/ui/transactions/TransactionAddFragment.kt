@@ -487,16 +487,20 @@ class TransactionAddFragment :
     }
 
     private fun saveTransactionIfValid() {
-        val mes = validateTransaction()
-        if (mes == ANSWER_OK) {
+        val message = validateTransaction()
+        if (message == ANSWER_OK) {
             confirmSaveTransaction()
         } else {
-            Toast.makeText(
-                mView.context,
-                mes,
-                Toast.LENGTH_LONG
-            ).show()
+            showMessage(getString(R.string.error) + message)
         }
+    }
+
+    private fun showMessage(message: String) {
+        Toast.makeText(
+            mView.context,
+            message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun validateTransaction(): String {
@@ -507,28 +511,24 @@ class TransactionAddFragment :
                 } else {
                     0.0
                 }
-            val errorMes =
-                if (etDescription.text.isNullOrBlank()
-                ) {
-                    getString(R.string.error) +
-                            getString(R.string.please_enter_a_name_or_description)
-                } else if (mToAccount == null
-                ) {
-                    getString(R.string.error) +
-                            getString(R.string.there_needs_to_be_an_account_money_will_go_to)
-                } else if (mFromAccount == null
-                ) {
-                    getString(R.string.error) +
-                            getString(R.string.there_needs_to_be_an_account_money_will_come_from)
-                } else if (etAmount.text.isNullOrEmpty() ||
-                    amount == 0.0
-                ) {
-                    getString(R.string.error) +
-                            getString(R.string.please_enter_an_amount_for_this_transaction)
-                } else {
-                    ANSWER_OK
-                }
-            return errorMes
+            if (etDescription.text.isNullOrBlank()
+            ) {
+                return getString(R.string.please_enter_a_name_or_description)
+            }
+            if (mToAccount == null
+            ) {
+                return getString(R.string.there_needs_to_be_an_account_money_will_go_to)
+            }
+            if (mFromAccount == null
+            ) {
+                return getString(R.string.there_needs_to_be_an_account_money_will_come_from)
+            }
+            if (etAmount.text.isNullOrEmpty() ||
+                amount == 0.0
+            ) {
+                return getString(R.string.please_enter_an_amount_for_this_transaction)
+            }
+            return ANSWER_OK
         }
     }
 

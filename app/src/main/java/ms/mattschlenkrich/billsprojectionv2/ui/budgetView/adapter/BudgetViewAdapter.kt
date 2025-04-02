@@ -245,7 +245,7 @@ class BudgetViewAdapter(
     private fun performTransaction(curBudget: BudgetItemDetailed) {
         mainActivity.mainViewModel.setBudgetItemDetailed(curBudget)
         mainActivity.mainViewModel.setTransactionDetailed(null)
-        setToReturn()
+        setReturnVariables()
         budgetViewFragment.gotoTransactionPerformFragment()
     }
 
@@ -417,17 +417,17 @@ class BudgetViewAdapter(
                 curBudget.fromAccount
             )
         )
-        setToReturn()
+        setReturnVariables()
         budgetViewFragment.gotoBudgetRuleUpdateFragment()
     }
 
     private fun gotoBudgetItem(curBudget: BudgetItemDetailed) {
         mainActivity.mainViewModel.setBudgetItemDetailed(curBudget)
-        setToReturn()
+        setReturnVariables()
         budgetViewFragment.gotoBudgetItemUpdateFragment()
     }
 
-    private fun setToReturn() {
+    private fun setReturnVariables() {
         mainActivity.mainViewModel.setCallingFragments(
             PARENT_TAG
         )

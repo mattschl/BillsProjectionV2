@@ -211,12 +211,16 @@ class AccountAdapter(
                 .setNegativeButton(mView.context.getString(R.string.cancel), null)
                 .show()
         } else {
-            Toast.makeText(
-                mView.context,
-                mView.context.getString(R.string.editing_is_not_allowed_right_now),
-                Toast.LENGTH_LONG
-            ).show()
+            showMessage(mView.context.getString(R.string.editing_is_not_allowed_right_now))
         }
+    }
+
+    private fun showMessage(message: String) {
+        Toast.makeText(
+            mView.context,
+            message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun deleteAccount(curAccount: AccountWithType) {

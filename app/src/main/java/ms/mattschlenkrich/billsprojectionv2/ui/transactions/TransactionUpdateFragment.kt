@@ -339,40 +339,40 @@ class TransactionUpdateFragment :
     }
 
     private fun updateTransactionIfValid() {
-        val mes = validateTransactionForUpdate()
+        val message = validateTransactionForUpdate()
         binding.apply {
-            if (mes == ANSWER_OK) {
+            if (message == ANSWER_OK) {
                 confirmPerformTransaction()
             } else {
-                Toast.makeText(
-                    mView.context,
-                    mes,
-                    Toast.LENGTH_LONG
-                ).show()
+                showMessage(getString(R.string.error) + message)
             }
         }
+    }
+
+    private fun showMessage(message: String) {
+        Toast.makeText(
+            mView.context,
+            message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun validateTransactionForUpdate(): String {
         binding.apply {
             if (etDescription.text.isNullOrBlank()) {
-                return getString(R.string.error) +
-                        getString(R.string.please_enter_a_name_or_description)
+                return getString(R.string.please_enter_a_name_or_description)
             }
             if (mToAccount == null
             ) {
-                return getString(R.string.error) +
-                        getString(R.string.there_needs_to_be_an_account_money_will_go_to)
+                return getString(R.string.there_needs_to_be_an_account_money_will_go_to)
             }
             if (mFromAccount == null
             ) {
-                return getString(R.string.error) +
-                        getString(R.string.there_needs_to_be_an_account_money_will_come_from)
+                return getString(R.string.there_needs_to_be_an_account_money_will_come_from)
             }
             if (etAmount.text.isNullOrEmpty()
             ) {
-                getString(R.string.error) +
-                        getString(R.string.please_enter_an_amount_for_this_transaction)
+                return getString(R.string.please_enter_an_amount_for_this_transaction)
             }
             if (mBudgetRule == null) {
                 return if (updateWithoutBudget()) {
