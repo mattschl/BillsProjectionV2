@@ -139,7 +139,7 @@ class AccountUpdateFragment :
         setMenuActions()
         binding.apply {
             drpAccountUpdateType.setOnClickListener {
-                gotoAccountTypesFragment()
+                gotoAccountTypes()
             }
             fabAccountUpdateDone.setOnClickListener {
                 updateAccountIfValid()
@@ -200,50 +200,42 @@ class AccountUpdateFragment :
 
     private fun validateAccount(): String {
         binding.apply {
-            val nameIsBlank =
-                edAccountUpdateName.text.isNullOrBlank()
-            var nameFound = false
-            if (accountNameList.isNotEmpty() && !nameIsBlank) {
-                for (i in 0 until accountNameList.size) {
-                    if (accountNameList[i] ==
-                        edAccountUpdateName.text.toString() &&
-                        accountNameList[i] !=
-                        mainActivity.mainViewModel.getAccountWithType()!!.account.accountName
-                    ) {
-                        nameFound = true
-                        break
-                    }
+            if (edAccountUpdateName.text.isNullOrBlank()) {
+                return getString(R.string.please_enter_a_name)
+            }
+            for (i in 0 until accountNameList.size) {
+                if (accountNameList[i] ==
+                    edAccountUpdateName.text.toString() &&
+                    accountNameList[i] !=
+                    mainActivity.mainViewModel.getAccountWithType()!!.account.accountName
+                ) {
+                    return getString(R.string.this_budget_rule_already_exists)
                 }
             }
-            val errorMes = if (nameIsBlank) {
-                getString(R.string.error) +
-                        getString(R.string.please_enter_a_name)
-            } else if (nameFound) {
-                getString(R.string.error) +
-                        getString(R.string.this_budget_rule_already_exists)
-            } else if (drpAccountUpdateType.text.isNullOrBlank()) {
-                getString(R.string.error) +
-                        getString(R.string.please_choose_an_account_type)
-            } else {
-                ANSWER_OK
+            if (drpAccountUpdateType.text.isNullOrBlank()) {
+                return getString(R.string.please_choose_an_account_type)
             }
-            return errorMes
+            return ANSWER_OK
         }
     }
 
     private fun updateAccountIfValid() {
-        val mess = validateAccount()
+        val message = validateAccount()
 
-        if (mess == ANSWER_OK) {
+        if (message == ANSWER_OK) {
             confirmUpdateAccount()
         } else {
-            Toast.makeText(
-                mView.context,
-                mess,
-                Toast.LENGTH_LONG
-            ).show()
+            showMessage(getString(R.string.error) + message)
         }
 
+    }
+
+    private fun showMessage(message: String) {
+        Toast.makeText(
+            mView.context,
+            message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun confirmUpdateAccount() {
@@ -355,9 +347,10 @@ class AccountUpdateFragment :
     }
 
     private fun gotoAccountsFragment() {
-        val direction = AccountUpdateFragmentDirections
-            .actionAccountUpdateFragmentToAccountsFragment()
-        mView.findNavController().navigate(direction)
+        mView.findNavController().navigate(
+            AccountUpdateFragmentDirections
+                .actionAccountUpdateFragmentToAccountsFragment()
+        )
     }
 
     private fun gotoBudgetViewFragment() {
@@ -367,7 +360,7 @@ class AccountUpdateFragment :
         )
     }
 
-    private fun gotoAccountTypesFragment() {
+    private fun gotoAccountTypes() {
         mainActivity.mainViewModel.setCallingFragments(
             mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
         )
@@ -377,10 +370,14 @@ class AccountUpdateFragment :
                 mainActivity.mainViewModel.getAccountWithType()!!.accountType
             )
         )
-        val direction = AccountUpdateFragmentDirections
-            .actionAccountUpdateFragmentToAccountTypesFragment()
-        mView.findNavController().navigate(direction)
+        gotoAccountTypesFragment()
+    }
 
+    private fun gotoAccountTypesFragment() {
+        mView.findNavController().navigate(
+            AccountUpdateFragmentDirections
+                .actionAccountUpdateFragmentToAccountTypesFragment()
+        )
     }
 
     override fun onDestroy() {

@@ -324,12 +324,10 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
                 tvOriginalAmount.text.toString()
             )
             if (original <= amount) {
-                Toast.makeText(
-                    mView.context,
+                showMessage(
                     getString(R.string.error) +
-                            getString(R.string.new_amount_cannot_be_more_than_the_original_amount),
-                    Toast.LENGTH_LONG
-                ).show()
+                            getString(R.string.new_amount_cannot_be_more_than_the_original_amount)
+                )
                 etAmount.setText(
                     nf.displayDollars(0.0)
                 )
@@ -342,16 +340,20 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
 
     private fun saveTransactionIfValid() {
         updateAmountsDisplay()
-        val mes = validateTransaction()
-        if (mes == ANSWER_OK) {
+        val message = validateTransaction()
+        if (message == ANSWER_OK) {
             confirmPerformTransaction()
         } else {
-            Toast.makeText(
-                mView.context,
-                mes,
-                Toast.LENGTH_LONG
-            ).show()
+            showMessage(getString(R.string.error) + message)
         }
+    }
+
+    private fun showMessage(message: String) {
+        Toast.makeText(
+            mView.context,
+            message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun confirmPerformTransaction() {
@@ -393,22 +395,18 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
     private fun validateTransaction(): String {
         binding.apply {
             if (etAmount.text.isNullOrBlank()) {
-                return getString(R.string.error) +
-                        getString(R.string.please_enter_an_amount_for_this_transaction)
+                return getString(R.string.please_enter_an_amount_for_this_transaction)
             }
             if (nf.getDoubleFromDollars(etAmount.text.toString()) >=
                 nf.getDoubleFromDollars(tvOriginalAmount.text.toString())
             ) {
-                return getString(R.string.error) +
-                        getString(R.string.the_amount_of_a_split_transaction_must_be_less_than_the_original)
+                return getString(R.string.the_amount_of_a_split_transaction_must_be_less_than_the_original)
             }
             if (etDescription.text.isNullOrBlank()) {
-                return getString(R.string.error) +
-                        getString(R.string.please_enter_a_name_or_description)
+                return getString(R.string.please_enter_a_name_or_description)
             }
             if (mToAccount == null) {
-                return getString(R.string.error) +
-                        getString(R.string.there_needs_to_be_an_account_money_will_go_to)
+                return getString(R.string.there_needs_to_be_an_account_money_will_go_to)
             }
             if (mainActivity.mainViewModel.getSplitTransactionDetailed()!!.budgetRule == null) {
                 return if (!saveWithoutBudget()) {

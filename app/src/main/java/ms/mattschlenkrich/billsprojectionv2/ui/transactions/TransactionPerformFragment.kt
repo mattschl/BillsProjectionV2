@@ -406,15 +406,19 @@ class TransactionPerformFragment : Fragment(
 
     private fun performTransactionIfValid() {
         calculateRemainder()
-        val mes = validateTransaction()
-        if (mes == ANSWER_OK) {
+        val message = validateTransaction()
+        if (message == ANSWER_OK) {
             confirmPerformTransaction()
         } else {
-            Toast.makeText(
-                mView.context,
-                mes, Toast.LENGTH_LONG
-            ).show()
+            showMessage(getString(R.string.error) + message)
         }
+    }
+
+    private fun showMessage(message: String) {
+        Toast.makeText(
+            mView.context,
+            message, Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun confirmPerformTransaction() {
@@ -455,14 +459,12 @@ class TransactionPerformFragment : Fragment(
                 }
             if (etDescription.text.isNullOrBlank()
             ) {
-                return getString(R.string.error) +
-                        getString(R.string.please_enter_a_name_or_description)
+                return getString(R.string.please_enter_a_name_or_description)
             }
             if (etAmount.text.isNullOrEmpty() ||
                 amount == 0.0
             ) {
-                return getString(R.string.error) +
-                        getString(R.string.please_enter_an_amount_for_this_transaction)
+                return getString(R.string.please_enter_an_amount_for_this_transaction)
             }
             return ANSWER_OK
         }

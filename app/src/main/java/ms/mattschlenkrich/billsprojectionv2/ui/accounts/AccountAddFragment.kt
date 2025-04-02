@@ -223,16 +223,20 @@ class AccountAddFragment :
     }
 
     private fun isAccountReadyToSave() {
-        val mes = validateAccount()
-        if (mes == ANSWER_OK) {
+        val message = validateAccount()
+        if (message == ANSWER_OK) {
             saveAccount()
         } else {
-            Toast.makeText(
-                mView.context,
-                mes,
-                Toast.LENGTH_LONG
-            ).show()
+            showMessage(message)
         }
+    }
+
+    private fun showMessage(message: String) {
+        Toast.makeText(
+            mView.context,
+            message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun saveAccount() {

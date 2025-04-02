@@ -285,8 +285,8 @@ class BudgetRuleAddFragment :
     }
 
     private fun saveBudgetRuleIfValid() {
-        val mes = validateBudgetRule()
-        if (mes == ANSWER_OK) {
+        val message = validateBudgetRule()
+        if (message == ANSWER_OK) {
             binding.apply {
                 mainActivity.mainViewModel.setCallingFragments(
                     "${mainActivity.mainViewModel.getCallingFragments()}, $TAG"
@@ -295,12 +295,16 @@ class BudgetRuleAddFragment :
                 gotoBudgetRuleFragment()
             }
         } else {
-            Toast.makeText(
-                mView.context,
-                mes,
-                Toast.LENGTH_LONG
-            ).show()
+            showMessage(getString(R.string.error) + message)
         }
+    }
+
+    private fun showMessage(message: String) {
+        Toast.makeText(
+            mView.context,
+            message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun getCurrentBudgetRuleForSave(): BudgetRule {
@@ -342,39 +346,28 @@ class BudgetRuleAddFragment :
 
     private fun validateBudgetRule(): String {
         binding.apply {
-            val nameIsBlank = etBudgetName.text.isNullOrBlank()
-            var nameFound = false
-            if (budgetNameList!!.isNotEmpty() && !nameIsBlank) {
-                for (i in 0 until budgetNameList!!.size) {
-                    if (budgetNameList!![i] ==
-                        etBudgetName.text.toString().trim()
-                    ) {
-                        nameFound = true
-                        break
-                    }
+            if (etBudgetName.text.isNullOrBlank()) {
+                return getString(R.string.please_enter_a_name)
+            }
+            for (i in 0 until budgetNameList!!.size) {
+                if (budgetNameList!![i] ==
+                    etBudgetName.text.toString().trim()
+                ) {
+                    return getString(R.string.this_budget_rule_already_exists)
                 }
             }
-            val errorMes = if (nameIsBlank) {
-                getString(R.string.error) +
-                        getString(R.string.please_enter_a_name)
-            } else if (nameFound) {
-                getString(R.string.error) +
-                        getString(R.string.this_budget_rule_already_exists)
-            } else if (mainActivity.mainViewModel.getBudgetRuleDetailed()!!.toAccount == null
+            if (mainActivity.mainViewModel.getBudgetRuleDetailed()!!.toAccount == null
             ) {
-                getString(R.string.error) +
-                        getString(R.string.there_needs_to_be_an_account_money_will_go_to)
-            } else if (mainActivity.mainViewModel.getBudgetRuleDetailed()!!.fromAccount == null
-            ) {
-                getString(R.string.error) +
-                        getString(R.string.there_needs_to_be_an_account_money_will_come_from)
-            } else if (etAmount.text.isNullOrEmpty()) {
-                getString(R.string.error) +
-                        getString(R.string.please_enter_a_budgeted_amount_including_zero)
-            } else {
-                ANSWER_OK
+                return getString(R.string.there_needs_to_be_an_account_money_will_go_to)
             }
-            return errorMes
+            if (mainActivity.mainViewModel.getBudgetRuleDetailed()!!.fromAccount == null
+            ) {
+                return getString(R.string.there_needs_to_be_an_account_money_will_come_from)
+            }
+            if (etAmount.text.isNullOrEmpty()) {
+                return getString(R.string.please_enter_a_budgeted_amount_including_zero)
+            }
+            return ANSWER_OK
         }
     }
 
@@ -405,9 +398,10 @@ class BudgetRuleAddFragment :
     }
 
     private fun gotoBudgetRuleFragment() {
-        val direction = BudgetRuleAddFragmentDirections
-            .actionBudgetRuleAddFragmentToBudgetRuleFragment()
-        mView.findNavController().navigate(direction)
+        mView.findNavController().navigate(
+            BudgetRuleAddFragmentDirections
+                .actionBudgetRuleAddFragmentToBudgetRuleFragment()
+        )
     }
 
     override fun onDestroy() {

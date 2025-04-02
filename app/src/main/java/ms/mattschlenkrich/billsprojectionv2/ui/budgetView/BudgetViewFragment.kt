@@ -505,22 +505,22 @@ class BudgetViewFragment : Fragment(
     }
 
     private fun addNewTransaction() {
-        setToReturn()
+        setReturnVariables()
         mainActivity.mainViewModel.setTransactionDetailed(null)
         gotoTransactionAddFragment()
     }
 
     private fun addNewBudgetItem() {
-        setToReturn()
+        setReturnVariables()
         gotoBudgetItemAddFragment()
     }
 
-    private fun setToReturn() {
+    private fun setReturnVariables() {
         mainActivity.mainViewModel.setCallingFragments(TAG)
     }
 
     private fun gotoAccount() {
-        setToReturn()
+        setReturnVariables()
         mainActivity.mainViewModel.setAccountWithType(curAsset)
         gotoAccountUpdateFragment()
     }

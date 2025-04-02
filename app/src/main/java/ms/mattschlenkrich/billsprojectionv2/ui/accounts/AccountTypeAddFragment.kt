@@ -1,7 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.accounts
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -49,7 +48,6 @@ class AccountTypeAddFragment :
         _binding = FragmentAccountTypeAddBinding.inflate(
             inflater, container, false
         )
-        Log.d(TAG, "$TAG is entered")
         mainActivity = (activity as MainActivity)
         mainActivity.title = "Add a new Account Type"
         mView = binding.root
@@ -99,13 +97,16 @@ class AccountTypeAddFragment :
             saveAccountType()
 
         } else {
-            Toast.makeText(
-                mView.context,
-                getString(R.string.enter_a_unique_name_for_this_account_type),
-                Toast.LENGTH_LONG
-            ).show()
-
+            showMessage(getString(R.string.enter_a_unique_name_for_this_account_type))
         }
+    }
+
+    private fun showMessage(message: String) {
+        Toast.makeText(
+            mView.context,
+            message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun validateAccountType(): Boolean {

@@ -2,7 +2,6 @@ package ms.mattschlenkrich.billsprojectionv2.ui.accounts
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -49,7 +48,6 @@ class AccountTypeUpdateFragment :
         _binding = FragmentAccountTypeUpdateBinding.inflate(
             inflater, container, false
         )
-        Log.d(TAG, "$TAG is entered")
         mView = binding.root
         mainActivity = (activity as MainActivity)
         currentAccountType = mainActivity.mainViewModel.getAccountType()!!
@@ -142,12 +140,16 @@ class AccountTypeUpdateFragment :
                 setNegativeButton(getString(R.string.cancel), null)
             }.create().show()
         } else {
-            Toast.makeText(
-                context,
-                getString(R.string.enter_a_name_for_this_account_type),
-                Toast.LENGTH_LONG
-            ).show()
+            showMessage(getString(R.string.enter_a_name_for_this_account_type))
         }
+    }
+
+    private fun showMessage(message: String) {
+        Toast.makeText(
+            context,
+            message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun validateAccountType(): Boolean {
@@ -203,9 +205,10 @@ class AccountTypeUpdateFragment :
     }
 
     private fun gotoAccountTypesUpdate() {
-        val direction = AccountTypeUpdateFragmentDirections
-            .actionAccountTypeUpdateFragmentToAccountTypesFragment()
-        mView.findNavController().navigate(direction)
+        mView.findNavController().navigate(
+            AccountTypeUpdateFragmentDirections
+                .actionAccountTypeUpdateFragmentToAccountTypesFragment()
+        )
     }
 
     override fun onDestroy() {

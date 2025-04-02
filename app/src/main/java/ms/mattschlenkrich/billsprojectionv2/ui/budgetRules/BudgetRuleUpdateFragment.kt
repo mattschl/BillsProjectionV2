@@ -389,17 +389,21 @@ class BudgetRuleUpdateFragment :
     }
 
     private fun updateBudgetRuleIfValid() {
-        val mes = validateBudgetRule()
-        if (mes == ANSWER_OK) {
+        val message = validateBudgetRule()
+        if (message == ANSWER_OK) {
             updateBudgetRule()
             gotoCallingFragment()
         } else {
-            Toast.makeText(
-                mView.context,
-                mes,
-                Toast.LENGTH_LONG
-            ).show()
+            showMessage(getString(R.string.error) + message)
         }
+    }
+
+    private fun showMessage(message: String) {
+        Toast.makeText(
+            mView.context,
+            message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun updateBudgetRule() {
@@ -410,42 +414,31 @@ class BudgetRuleUpdateFragment :
 
     private fun validateBudgetRule(): String {
         binding.apply {
-            val nameIsBlank = etBudgetName.text.isNullOrBlank()
-            var nameFound = false
-            if (budgetNameList!!.isNotEmpty() && !nameIsBlank) {
-                for (i in 0 until budgetNameList!!.size) {
-                    if (budgetNameList!![i] ==
-                        etBudgetName.text.toString() &&
-                        mainActivity.mainViewModel.getBudgetRuleDetailed() != null &&
-                        budgetNameList!![i] !=
-                        budgetRuleDetailed.budgetRule!!.budgetRuleName
-                    ) {
-                        nameFound = true
-                        break
-                    }
+            if (etBudgetName.text.isNullOrBlank()) {
+                return getString(R.string.please_enter_a_name)
+            }
+            for (i in 0 until budgetNameList!!.size) {
+                if (budgetNameList!![i] ==
+                    etBudgetName.text.toString() &&
+                    mainActivity.mainViewModel.getBudgetRuleDetailed() != null &&
+                    budgetNameList!![i] !=
+                    budgetRuleDetailed.budgetRule!!.budgetRuleName
+                ) {
+                    return getString(R.string.this_budget_rule_already_exists)
                 }
             }
-            val errorMes = if (nameIsBlank) {
-                getString(R.string.error) +
-                        getString(R.string.please_enter_a_name)
-            } else if (nameFound) {
-                getString(R.string.error) +
-                        getString(R.string.this_budget_rule_already_exists)
-            } else if (budgetRuleDetailed.toAccount == null
+            if (budgetRuleDetailed.toAccount == null
             ) {
-                getString(R.string.error) +
-                        getString(R.string.there_needs_to_be_an_account_money_will_go_to)
-            } else if (budgetRuleDetailed.fromAccount == null
-            ) {
-                getString(R.string.error) +
-                        getString(R.string.there_needs_to_be_an_account_money_will_come_from)
-            } else if (etAmount.text.isNullOrEmpty()) {
-                getString(R.string.error) +
-                        getString(R.string.please_enter_a_budgeted_amount_including_zero)
-            } else {
-                ANSWER_OK
+                return getString(R.string.there_needs_to_be_an_account_money_will_go_to)
             }
-            return errorMes
+            if (budgetRuleDetailed.fromAccount == null
+            ) {
+                return getString(R.string.there_needs_to_be_an_account_money_will_come_from)
+            }
+            if (etAmount.text.isNullOrEmpty()) {
+                return getString(R.string.please_enter_a_budgeted_amount_including_zero)
+            }
+            return ANSWER_OK
         }
     }
 

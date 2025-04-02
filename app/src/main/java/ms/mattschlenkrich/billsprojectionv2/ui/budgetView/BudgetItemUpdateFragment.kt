@@ -3,7 +3,6 @@ package ms.mattschlenkrich.billsprojectionv2.ui.budgetView
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -57,7 +56,6 @@ class BudgetItemUpdateFragment : Fragment(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Log.d(TAG, "Entering $TAG")
         _binding = FragmentBudgetItemUpdateBinding.inflate(
             inflater, container, false
         )
@@ -249,38 +247,38 @@ class BudgetItemUpdateFragment : Fragment(
     }
 
     private fun updateBudgetItemIfValid() {
-        val mess = validateBudgetItem()
-        if (mess == ANSWER_OK) {
+        val message = validateBudgetItem()
+        if (message == ANSWER_OK) {
             updateBudgetItem()
             gotoCallingFragment()
         } else {
-            Toast.makeText(
-                requireContext(),
-                mess,
-                Toast.LENGTH_LONG
-            ).show()
+            showMessage(getString(R.string.error) + message)
         }
+    }
+
+    private fun showMessage(message: String) {
+        Toast.makeText(
+            requireContext(),
+            message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun validateBudgetItem(): String {
         binding.apply {
             if (etBudgetItemName.text.isNullOrBlank()) {
-                return getString(R.string.error) +
-                        getString(R.string.please_enter_a_name_or_description)
+                return getString(R.string.please_enter_a_name_or_description)
             }
             if (mBudgetRuleDetailed.toAccount == null) {
-                return getString(R.string.error) +
-                        getString(R.string.there_needs_to_be_an_account_money_will_go_to)
+                return getString(R.string.there_needs_to_be_an_account_money_will_go_to)
             }
             if (mBudgetRuleDetailed.fromAccount == null
             ) {
-                return getString(R.string.error) +
-                        getString(R.string.there_needs_to_be_an_account_money_will_come_from)
+                return getString(R.string.there_needs_to_be_an_account_money_will_come_from)
             }
             if (etProjectedAmount.text.isNullOrEmpty()
             ) {
-                return getString(R.string.error) +
-                        getString(R.string.please_enter_a_budgeted_amount_including_zero)
+                return getString(R.string.please_enter_a_budgeted_amount_including_zero)
             }
             return ANSWER_OK
         }
@@ -295,7 +293,6 @@ class BudgetItemUpdateFragment : Fragment(
     private fun getCurrentBudgetItemDetailed(): BudgetItemDetailed {
         val budgetItem =
             getCurrentBudgetItemForUpdating()
-        Log.d(TAG, "Current budget item is ${budgetItem.biBudgetName}")
         return BudgetItemDetailed(
             budgetItem,
             curBudgetItem.budgetRule,

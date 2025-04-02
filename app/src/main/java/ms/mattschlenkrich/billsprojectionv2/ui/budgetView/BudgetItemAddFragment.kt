@@ -297,38 +297,38 @@ class BudgetItemAddFragment : Fragment(
     }
 
     private fun saveBudgetItemIfValid() {
-        val mes = validateBudgetItem()
-        if (mes == ANSWER_OK) {
+        val message = validateBudgetItem()
+        if (message == ANSWER_OK) {
             saveBudgetItem()
             gotoCallingFragment()
         } else {
-            Toast.makeText(
-                requireContext(),
-                mes,
-                Toast.LENGTH_LONG
-            ).show()
+            showMessage(getString(R.string.error) + message)
         }
+    }
+
+    private fun showMessage(message: String) {
+        Toast.makeText(
+            requireContext(),
+            message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun validateBudgetItem(): String {
         binding.apply {
             if (etBudgetItemName.text.isNullOrBlank()) {
-                return getString(R.string.error) +
-                        getString(R.string.please_enter_a_name_or_description)
+                return getString(R.string.please_enter_a_name_or_description)
             }
             if (budgetRuleDetailed.toAccount == null) {
-                return getString(R.string.error) +
-                        getString(R.string.there_needs_to_be_an_account_money_will_go_to)
+                return getString(R.string.there_needs_to_be_an_account_money_will_go_to)
             }
             if (budgetRuleDetailed.fromAccount == null
             ) {
-                return getString(R.string.error) +
-                        getString(R.string.there_needs_to_be_an_account_money_will_come_from)
+                return getString(R.string.there_needs_to_be_an_account_money_will_come_from)
             }
             if (etProjectedAmount.text.isNullOrEmpty()
             ) {
-                return getString(R.string.error) +
-                        getString(R.string.please_enter_a_budgeted_amount_including_zero)
+                return getString(R.string.please_enter_a_budgeted_amount_including_zero)
             }
             return ANSWER_OK
         }

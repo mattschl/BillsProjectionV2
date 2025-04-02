@@ -2,7 +2,6 @@ package ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.adapter
 
 import android.app.AlertDialog
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -70,7 +69,6 @@ class BudgetRuleAdapter(
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
     ): BudgetRuleViewHolder {
-        Log.d(TAG, "starting $TAG")
         return BudgetRuleViewHolder(
             BudgetRuleLayoutBinding.inflate(
                 LayoutInflater.from(parent.context),
@@ -153,12 +151,16 @@ class BudgetRuleAdapter(
                 .setNegativeButton("Cancel", null)
                 .show()
         } else {
-            Toast.makeText(
-                mView.context,
-                mView.context.getString(R.string.editing_is_not_allowed_right_now),
-                Toast.LENGTH_LONG
-            ).show()
+            showMessage(mView.context.getString(R.string.editing_is_not_allowed_right_now))
         }
+    }
+
+    private fun showMessage(message: String) {
+        Toast.makeText(
+            mView.context,
+            message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun gotoCreateBudgetItem(budgetRuleDetailed: BudgetRuleDetailed) {
