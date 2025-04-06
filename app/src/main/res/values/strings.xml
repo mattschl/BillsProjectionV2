@@ -28,7 +28,7 @@
     <string name="add_a_new_transaction">Add a new Transaction</string>
     <string name="add_account_type">Add Account Type</string>
     <string name="add_an_unscheduled_transaction">Add an Unscheduled transaction</string>
-    <string name="adjust_this_item">ADJUST this item.</string>
+    <string name="adjust_the_projections_for_this_item">ADJUST the projections for this item.</string>
     <string name="allow_transactions_pending">Allow transactions pending</string>
     <string name="amount">Amount</string>
     <string name="analysis_view_help">Analysis View Help</string>
@@ -75,7 +75,7 @@
     <string name="calculate_owing">Calculate Owing</string>
     <string name="calculator">Calculator</string>
     <string name="cancel_now">Cancel Now</string>
-    <string name="cancel_this_item">CANCEL this item.</string>
+    <string name="cancel_this_projected_item">CANCEL this projected item.</string>
     <string name="cancel">Cancel</string>
     <string name="category">Category </string>
     <string name="choose_a_budget_asset">Choose a budget Asset</string>
@@ -154,7 +154,7 @@
     <string name="fixed_budgeted">Fixed budgeted</string>
     <string name="fixed_expenses">Fixed Expenses</string>
     <string name="fixed">Fixed</string>
-    <string name="for_amount_of">"\nfor amount of "</string>
+    <string name="for_amount_of_the_full_amount_">"\nfor the full mount of "</string>
     <string name="four">4</string>
     <string name="from_">"From: "</string>
     <string name="from_account_name">From Account Name</string>
@@ -162,7 +162,7 @@
     <string name="from">"\n\nFROM:   "</string>
     <string name="general">General</string>
     <string name="go_back">Go back</string>
-    <string name="go_to_the_rules_for_this_item">Go to the RULES for this item.</string>
+    <string name="go_to_the_rules_for_future_budgets_of_this_kind">Go to the RULES for future budgets of this kind.</string>
     <string name="go">GO</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="help_text">Help text</string>
@@ -215,7 +215,7 @@
     <string name="pay_day">Pay Day</string>
     <string name="pending_lined">-------------- Pending --------------</string>
     <string name="pending">Pending</string>
-    <string name="perform_a_transaction_on_this_budget_item">Perform a TRANSACTION on this budget item.</string>
+    <string name="perform_a_transaction_on_">Perform a TRANSACTION with a custom amount on </string>
     <string name="perform_a_transaction">Perform a Transaction</string>
     <string name="perform_action">"PERFORM action "</string>
     <string name="period">.</string>
@@ -320,5 +320,6 @@
     <string name="zero_double">0.0</string>
     <string name="zero_int">0</string>
     <string name="zero">0</string>
+    <string name="with_a_custom_amount">with a custom amount.</string>
 
 </resources>
