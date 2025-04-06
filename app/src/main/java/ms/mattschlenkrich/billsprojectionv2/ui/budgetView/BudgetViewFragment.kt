@@ -2,7 +2,6 @@ package ms.mattschlenkrich.billsprojectionv2.ui.budgetView
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +10,6 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
@@ -331,7 +329,6 @@ class BudgetViewFragment : Fragment(
                         }
                         populateAssetDetails()
                         populateBudgetTotals()
-                        Log.d(TAG, "Budget Items count = ${budgetItems.size}")
                         updateBudgetListUi(budgetItems)
                     }
                 }
@@ -526,21 +523,21 @@ class BudgetViewFragment : Fragment(
     }
 
     private fun gotoAccountUpdateFragment() {
-        mView.findNavController().navigate(
+        findNavController().navigate(
             BudgetViewFragmentDirections
                 .actionBudgetViewFragmentToAccountUpdateFragment()
         )
     }
 
     fun gotoBudgetItemUpdateFragment() {
-        mView.findNavController().navigate(
+        findNavController().navigate(
             BudgetViewFragmentDirections
                 .actionBudgetViewFragmentToBudgetItemUpdateFragment()
         )
     }
 
     fun gotoBudgetRuleUpdateFragment() {
-        mView.findNavController().navigate(
+        findNavController().navigate(
             BudgetViewFragmentDirections
                 .actionBudgetViewFragmentToBudgetRuleUpdateFragment()
         )
@@ -554,7 +551,7 @@ class BudgetViewFragment : Fragment(
     }
 
     fun gotoTransactionPerformFragment() {
-        mView.findNavController().navigate(
+        findNavController().navigate(
             BudgetViewFragmentDirections
                 .actionBudgetViewFragmentToTransactionPerformFragment()
         )
@@ -568,7 +565,7 @@ class BudgetViewFragment : Fragment(
     }
 
     fun gotoTransactionUpdateFragment() {
-        mView.findNavController().navigate(
+        findNavController().navigate(
             BudgetViewFragmentDirections
                 .actionBudgetViewFragmentToTransactionUpdateFragment()
         )

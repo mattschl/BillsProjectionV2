@@ -51,15 +51,18 @@ class TransactionPendingAdapter(
                 oldItem: TransactionDetailed,
                 newItem: TransactionDetailed
             ): Boolean {
-                return oldItem.transaction!!.transId == newItem.transaction!!.transId &&
-                        oldItem.transaction.transName == newItem.transaction.transName
+                return oldItem == newItem
             }
 
             override fun areContentsTheSame(
                 oldItem: TransactionDetailed,
                 newItem: TransactionDetailed
             ): Boolean {
-                return oldItem == newItem
+                return oldItem.transaction!!.transId == newItem.transaction!!.transId &&
+                        oldItem.transaction.transName == newItem.transaction.transName &&
+                        oldItem.toAccount?.accountId == newItem.toAccount?.accountId &&
+                        oldItem.fromAccount?.accountId == newItem.fromAccount?.accountId &&
+                        oldItem.budgetRule?.ruleId == newItem.budgetRule?.ruleId
             }
         }
 

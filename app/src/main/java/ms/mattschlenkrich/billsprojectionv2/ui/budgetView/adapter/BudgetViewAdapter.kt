@@ -52,10 +52,11 @@ class BudgetViewAdapter(
                 oldItem: BudgetItemDetailed,
                 newItem: BudgetItemDetailed
             ): Boolean {
-                return oldItem.budgetItem!!.biProjectedDate ==
-                        newItem.budgetItem!!.biProjectedDate &&
-                        oldItem.budgetItem.biRuleId ==
-                        newItem.budgetItem.biRuleId
+                return oldItem.budgetItem!!.biProjectedDate == newItem.budgetItem!!.biProjectedDate &&
+                        oldItem.budgetItem.biRuleId == newItem.budgetItem.biRuleId &&
+                        oldItem.budgetRule?.ruleId == newItem.budgetRule?.ruleId &&
+                        oldItem.toAccount?.accountId == newItem.toAccount?.accountId &&
+                        oldItem.fromAccount?.accountId == newItem.fromAccount?.accountId
             }
 
             override fun areItemsTheSame(
@@ -202,18 +203,20 @@ class BudgetViewAdapter(
             )
             .setItems(
                 arrayOf(
-                    mView.context.getString(R.string.perform_a_transaction_on_this_budget_item),
+                    mView.context.getString(R.string.perform_a_transaction_on_) +
+                            " \"${curBudget.budgetItem.biBudgetName}\" " +
+                            mView.context.getString(R.string.with_a_custom_amount),
                     if (curBudget.budgetItem.biProjectedAmount == 0.0) {
                         ""
                     } else {
                         mView.context.getString(R.string.perform_action) +
                                 "\"${curBudget.budgetItem.biBudgetName}\" " +
-                                mView.context.getString(R.string.for_amount_of) +
+                                mView.context.getString(R.string.for_amount_of_the_full_amount_) +
                                 nf.displayDollars(curBudget.budgetItem.biProjectedAmount)
                     },
-                    mView.context.getString(R.string.adjust_this_item),
-                    mView.context.getString(R.string.cancel_this_item),
-                    mView.context.getString(R.string.go_to_the_rules_for_this_item)
+                    mView.context.getString(R.string.adjust_the_projections_for_this_item),
+                    mView.context.getString(R.string.cancel_this_projected_item),
+                    mView.context.getString(R.string.go_to_the_rules_for_future_budgets_of_this_kind)
                 )
             ) { _, pos ->
                 when (pos) {
