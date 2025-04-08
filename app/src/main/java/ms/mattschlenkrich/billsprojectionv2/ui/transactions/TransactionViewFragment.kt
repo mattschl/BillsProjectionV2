@@ -58,8 +58,8 @@ class TransactionViewFragment :
     private fun setupRecyclerView() {
         transactionAdapter = TransactionAdapter(
             mainActivity,
-            this@TransactionViewFragment,
             mView,
+            this@TransactionViewFragment,
         )
         binding.rvTransactions.apply {
             layoutManager = LinearLayoutManager(

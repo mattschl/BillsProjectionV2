@@ -28,8 +28,8 @@ private const val PARENT_TAG = FRAG_TRANSACTION_VIEW
 
 class TransactionAdapter(
     private val mainActivity: MainActivity,
-    private val transactionViewFragment: TransactionViewFragment,
     private val mView: View,
+    private val transactionViewFragment: TransactionViewFragment,
 ) : RecyclerView.Adapter<TransactionAdapter.TransactionsViewHolder>() {
 
     private val nf = NumberFunctions()
@@ -205,18 +205,22 @@ class TransactionAdapter(
                     }
 
                     2 -> {
-                        AlertDialog.Builder(mView.context)
-                            .setTitle(
-                                mView.context.getString(R.string.are_you_sure_you_want_to_delete) +
-                                        transaction.transaction.transName
-                            )
-                            .setPositiveButton(mView.context.getString(R.string.delete)) { _, _ ->
-                                deleteTransaction(transaction.transaction)
-                            }
-                            .setNegativeButton(mView.context.getString(R.string.cancel), null)
-                            .show()
+                        confirmDeleteTransaction(transaction.transaction)
                     }
                 }
+            }
+            .setNegativeButton(mView.context.getString(R.string.cancel), null)
+            .show()
+    }
+
+    private fun confirmDeleteTransaction(transaction: Transactions) {
+        AlertDialog.Builder(mView.context)
+            .setTitle(
+                mView.context.getString(R.string.are_you_sure_you_want_to_delete) +
+                        transaction.transName
+            )
+            .setPositiveButton(mView.context.getString(R.string.delete)) { _, _ ->
+                deleteTransaction(transaction)
             }
             .setNegativeButton(mView.context.getString(R.string.cancel), null)
             .show()

@@ -1,19 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:id="@+id/lblActualDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/date"
-            android:textSize="@dimen/text_info_size"
-            app:layout_constraintEnd_toStartOf="@id/tvActualDate"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/dimen_5dp">
 
         <TextView
             android:id="@+id/tvActualDate"
@@ -21,34 +13,34 @@
             android:layout_height="wrap_content"
             android:text="@string/date"
             android:textColor="@color/black"
-            android:textSize="@dimen/title_text_size"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@id/lblPayDay"
-            app:layout_constraintStart_toEndOf="@id/lblActualDate"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/lblPayDay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/pay_day"
             android:textSize="@dimen/text_info_size"
+            android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/tvPayDay"
-            app:layout_constraintStart_toEndOf="@id/tvActualDate"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tvPayDay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/top_margin_medium"
             android:text="@string/date"
             android:textColor="@color/black"
-            android:textSize="@dimen/title_text_size"
+            android:textSize="@dimen/text_info_size"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvActualDate"
+            app:layout_constraintEnd_toStartOf="@id/tvAmount"
+            app:layout_constraintStart_toEndOf="@id/tvActualDate" />
+
+        <TextView
+            android:id="@+id/tvAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/date"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_info_size"
             android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvPayDay"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/lblPayDay"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toEndOf="@id/tvPayDay" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
