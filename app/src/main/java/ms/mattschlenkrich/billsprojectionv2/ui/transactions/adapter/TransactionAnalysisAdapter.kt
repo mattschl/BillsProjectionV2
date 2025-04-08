@@ -174,7 +174,7 @@ class TransactionAnalysisAdapter(
         AlertDialog.Builder(mView.context)
             .setTitle(
                 mView.context.getString(R.string.choose_an_action_for) +
-                        transaction.transaction!!.transName
+                        transaction.transaction.transName
             )
             .setItems(
                 arrayOf(
