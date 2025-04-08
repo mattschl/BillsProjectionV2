@@ -27,12 +27,12 @@ import java.util.Random
 
 class TransactionAnalysisAdapter(
     val mainActivity: MainActivity,
-    private val transactionAnalysisFragment: TransactionAnalysisFragment,
     private val mView: View,
+    private val transactionAnalysisFragment: TransactionAnalysisFragment,
     private val parentTag: String,
 ) : RecyclerView.Adapter<TransactionAnalysisAdapter.TransViewHolder>() {
 
-    private val cf = NumberFunctions()
+    private val nf = NumberFunctions()
     private val df = DateFunctions()
 //    private val transactionViewModel =
 //        mainActivity.transactionViewModel
@@ -47,14 +47,10 @@ class TransactionAnalysisAdapter(
                 oldItem: TransactionDetailed,
                 newItem: TransactionDetailed
             ): Boolean {
-                return oldItem.transaction?.transId ==
-                        newItem.transaction?.transId &&
-                        oldItem.budgetRule?.ruleId ==
-                        newItem.budgetRule?.ruleId &&
-                        oldItem.toAccount?.accountId ==
-                        newItem.toAccount?.accountId &&
-                        oldItem.fromAccount?.accountId ==
-                        newItem.fromAccount?.accountId
+                return oldItem.transaction?.transId == newItem.transaction?.transId &&
+                        oldItem.budgetRule?.ruleId == newItem.budgetRule?.ruleId &&
+                        oldItem.toAccount?.accountId == newItem.toAccount?.accountId &&
+                        oldItem.fromAccount?.accountId == newItem.fromAccount?.accountId
             }
 
             override fun areContentsTheSame(
@@ -97,7 +93,7 @@ class TransactionAnalysisAdapter(
             tvTransDescription.text =
                 transactionDetailed.transaction.transName
             tvTransAmount.text =
-                cf.displayDollars(transactionDetailed.transaction.transAmount)
+                nf.displayDollars(transactionDetailed.transaction.transAmount)
             var info = mView.context.getString(R.string._to_) +
                     transactionDetailed.toAccount!!
                         .accountName
@@ -155,31 +151,83 @@ class TransactionAnalysisAdapter(
         }
     }
 
-    private fun chooseOptions(transactionDetailed: TransactionDetailed) {
+    private fun chooseOptions(transaction: TransactionDetailed) {
+        var display = ""
+        if (transaction.transaction!!.transToAccountPending) {
+            display += mView.context.getString(R.string.complete_the_pending_amount_of) +
+                    nf.displayDollars(transaction.transaction.transAmount) +
+                    mView.context.getString(R.string._to_) +
+                    transaction.toAccount!!.accountName
+        }
+        if (transaction.transaction.transToAccountPending) {
+            display += mView.context.getString(R.string._pending)
+        }
+        if (display != "" && transaction.transaction.transFromAccountPending) {
+            display += mView.context.getString(R.string._and)
+        }
+        if (transaction.transaction.transFromAccountPending) {
+            display += mView.context.getString(R.string.complete_the_pending_amount_of) +
+                    nf.displayDollars(transaction.transaction.transAmount) +
+                    mView.context.getString(R.string._From_) +
+                    transaction.fromAccount!!.accountName
+        }
         AlertDialog.Builder(mView.context)
             .setTitle(
                 mView.context.getString(R.string.choose_an_action_for) +
-                        transactionDetailed.transaction!!.transName
+                        transaction.transaction!!.transName
             )
             .setItems(
                 arrayOf(
                     mView.context.getString(R.string.edit_this_transaction),
+                    display,
                     mView.context.getString(R.string.delete_this_transaction)
                 )
             ) { _, pos ->
                 when (pos) {
                     0 -> {
-                        gotoTransactionUpdate(transactionDetailed)
+                        gotoTransactionUpdate(transaction)
                     }
 
                     1 -> {
-                        confirmDeleteTransaction(transactionDetailed)
+                        if (transaction.transaction.transToAccountPending ||
+                            transaction.transaction.transFromAccountPending
+                        ) {
+                            completePendingTransactions(transaction)
+                        }
+                    }
+
+                    2 -> {
+                        confirmDeleteTransaction(transaction)
 
                     }
                 }
             }
             .setNegativeButton(mView.context.getString(R.string.cancel), null)
             .show()
+    }
+
+    private fun completePendingTransactions(transaction: TransactionDetailed) {
+        transaction.transaction!!.apply {
+            val newTransaction =
+                Transactions(
+                    transId,
+                    transDate,
+                    transName,
+                    transNote,
+                    transRuleId,
+                    transToAccountId,
+                    false,
+                    transFromAccountId,
+                    false,
+                    transAmount,
+                    transIsDeleted,
+                    transUpdateTime
+                )
+            mainActivity.accountUpdateViewModel.updateTransaction(
+                transaction.transaction,
+                newTransaction
+            )
+        }
     }
 
     private fun confirmDeleteTransaction(transactionDetailed: TransactionDetailed) {

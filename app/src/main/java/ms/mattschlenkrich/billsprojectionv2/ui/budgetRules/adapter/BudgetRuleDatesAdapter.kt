@@ -1,11 +1,15 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.adapter
 
+import android.app.AlertDialog
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetDateItemBinding
@@ -13,12 +17,14 @@ import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.BudgetRuleUpdateFragm
 
 class BudgetRuleDatesAdapter(
     private val mainViewModel: MainViewModel,
+    private val mView: View,
     private val budgetRuleUpdateFragment: BudgetRuleUpdateFragment,
     private val parentTag: String,
 ) :
     RecyclerView.Adapter<BudgetRuleDatesAdapter.DateViewHolder>() {
 
     private val df = DateFunctions()
+    private val nf = NumberFunctions()
 
     class DateViewHolder(val itemBinding: BudgetDateItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -30,7 +36,10 @@ class BudgetRuleDatesAdapter(
                 newItem: BudgetItemDetailed
             ): Boolean {
                 return oldItem.budgetItem!!.biProjectedDate == newItem.budgetItem!!.biProjectedDate &&
-                        oldItem.budgetItem.biRuleId == newItem.budgetItem.biRuleId
+                        oldItem.budgetItem.biRuleId == newItem.budgetItem.biRuleId &&
+                        oldItem.budgetRule?.ruleId == newItem.budgetRule?.ruleId &&
+                        oldItem.toAccount?.accountId == newItem.toAccount?.accountId &&
+                        oldItem.fromAccount?.accountId == newItem.fromAccount?.accountId
             }
 
             override fun areItemsTheSame(
@@ -58,17 +67,31 @@ class BudgetRuleDatesAdapter(
     override fun onBindViewHolder(holder: DateViewHolder, position: Int) {
         val curItem = differ.currentList[position]
         holder.itemBinding.apply {
-            tvActualDate.text =
-                df.getDisplayDate(curItem.budgetItem!!.biActualDate)
-            tvPayDay.text =
-                df.getDisplayDate(curItem.budgetItem.biPayDay)
+            tvActualDate.text = df.getDisplayDate(curItem.budgetItem!!.biActualDate)
+            var display = " (pay day ${df.getDisplayDate(curItem.budgetItem.biPayDay)})"
+            tvPayDay.text = display
+            display = " for ${nf.displayDollars(curItem.budgetItem.biProjectedAmount)}"
+            tvAmount.text = display
         }
         holder.itemView.setOnClickListener {
-            gotoBudgetItem(curItem)
+            confirmGotoBudgetItem(curItem)
         }
     }
 
-    private fun gotoBudgetItem(curItem: BudgetItemDetailed?) {
+    private fun confirmGotoBudgetItem(curItem: BudgetItemDetailed) {
+        AlertDialog.Builder(mView.context)
+            .setTitle(
+                mView.context.getString(R.string.would_you_like_to_go_to_this_budget_item_on) +
+                        " ${df.getDisplayDate(curItem.budgetItem!!.biActualDate)}?"
+            )
+            .setPositiveButton(mView.context.getString(R.string.yes)) { _, _ ->
+                gotoBudgetItem(curItem)
+            }
+            .setNegativeButton(mView.context.getString(R.string.cancel), null)
+            .show()
+    }
+
+    private fun gotoBudgetItem(curItem: BudgetItemDetailed) {
         mainViewModel.setCallingFragments(
             mainViewModel.getCallingFragments() + ", " + parentTag
         )

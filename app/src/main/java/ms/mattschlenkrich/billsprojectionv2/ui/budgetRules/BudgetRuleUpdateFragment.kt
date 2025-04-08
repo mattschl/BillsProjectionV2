@@ -145,6 +145,7 @@ class BudgetRuleUpdateFragment :
     private fun populateDateRecycler(budgetRuleId: Long) {
         val budgetRuleDatesAdapter = BudgetRuleDatesAdapter(
             mainActivity.mainViewModel,
+            mView,
             this@BudgetRuleUpdateFragment,
             TAG
         )

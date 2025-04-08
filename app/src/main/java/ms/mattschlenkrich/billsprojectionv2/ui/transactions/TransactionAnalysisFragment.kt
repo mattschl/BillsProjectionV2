@@ -107,8 +107,8 @@ class TransactionAnalysisFragment : Fragment(
             transactionAdapter =
                 TransactionAnalysisAdapter(
                     mainActivity,
-                    this@TransactionAnalysisFragment,
                     mView,
+                    this@TransactionAnalysisFragment,
                     TAG
                 )
             rvTransactions.apply {
@@ -175,8 +175,8 @@ class TransactionAnalysisFragment : Fragment(
             transactionAdapter =
                 TransactionAnalysisAdapter(
                     mainActivity,
-                    this@TransactionAnalysisFragment,
                     mView,
+                    this@TransactionAnalysisFragment,
                     TAG
                 )
             rvTransactions.apply {
@@ -263,8 +263,8 @@ class TransactionAnalysisFragment : Fragment(
             transactionAdapter =
                 TransactionAnalysisAdapter(
                     mainActivity,
-                    this@TransactionAnalysisFragment,
                     mView,
+                    this@TransactionAnalysisFragment,
                     TAG
                 )
             rvTransactions.apply {
@@ -321,8 +321,8 @@ class TransactionAnalysisFragment : Fragment(
                 transactionAdapter =
                     TransactionAnalysisAdapter(
                         mainActivity,
-                        this@TransactionAnalysisFragment,
                         mView,
+                        this@TransactionAnalysisFragment,
                         TAG
                     )
                 rvTransactions.apply {
@@ -520,8 +520,8 @@ class TransactionAnalysisFragment : Fragment(
             transactionAdapter =
                 TransactionAnalysisAdapter(
                     mainActivity,
-                    this@TransactionAnalysisFragment,
                     mView,
+                    this@TransactionAnalysisFragment,
                     TAG
                 )
             if (etSearch.text.isNotEmpty()) {
@@ -628,8 +628,8 @@ class TransactionAnalysisFragment : Fragment(
             transactionAdapter =
                 TransactionAnalysisAdapter(
                     mainActivity,
-                    this@TransactionAnalysisFragment,
                     mView,
+                    this@TransactionAnalysisFragment,
                     TAG
                 )
             if (etSearch.text.isNotEmpty()) {

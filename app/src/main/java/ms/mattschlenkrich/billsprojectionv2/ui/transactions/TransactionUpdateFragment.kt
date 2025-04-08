@@ -342,7 +342,7 @@ class TransactionUpdateFragment :
         val message = validateTransactionForUpdate()
         binding.apply {
             if (message == ANSWER_OK) {
-                confirmPerformTransaction()
+                confirmUpdateTransaction()
             } else {
                 showMessage(getString(R.string.error) + message)
             }
@@ -385,7 +385,7 @@ class TransactionUpdateFragment :
         }
     }
 
-    private fun confirmPerformTransaction() {
+    private fun confirmUpdateTransaction() {
         binding.apply {
             var display =
                 getString(R.string.this_will_perform) +
