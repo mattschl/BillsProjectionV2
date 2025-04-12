@@ -34,9 +34,9 @@ private const val PARENT_TAG = FRAG_BUDGET_RULES
 
 class BudgetRuleAdapter(
     private val budgetRuleViewModel: BudgetRuleViewModel,
-    private val budgetRuleFragment: BudgetRuleFragment,
     private val mainViewModel: MainViewModel,
-    private val mView: View
+    private val mView: View,
+    private val budgetRuleFragment: BudgetRuleFragment,
 ) : RecyclerView.Adapter<BudgetRuleAdapter.BudgetRuleViewHolder>() {
 
     private val cf = NumberFunctions()

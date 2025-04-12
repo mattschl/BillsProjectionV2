@@ -258,7 +258,7 @@ class BudgetRuleUpdateFragment :
                 curDateAll[1].toInt() - 1,
                 curDateAll[2].toInt()
             )
-            datePickerDialog.setTitle("Choose the final date")
+            datePickerDialog.setTitle(getString(R.string.choose_the_final_date))
             datePickerDialog.show()
         }
     }
@@ -280,7 +280,7 @@ class BudgetRuleUpdateFragment :
                 curDateAll[1].toInt() - 1,
                 curDateAll[2].toInt()
             )
-            datePickerDialog.setTitle("Choose the first date")
+            datePickerDialog.setTitle(getString(R.string.choose_the_first_date))
             datePickerDialog.show()
         }
     }

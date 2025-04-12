@@ -23,8 +23,8 @@ private const val PARENT_TAG = FRAG_ACCOUNT_TYPES
 
 class AccountTypeAdapter(
     private val mainViewModel: MainViewModel,
-    private val accountTypesFragment: AccountTypesFragment,
     private val mView: View,
+    private val accountTypesFragment: AccountTypesFragment,
 ) :
     RecyclerView.Adapter<AccountTypeAdapter.AccountTypeViewHolder>() {
 

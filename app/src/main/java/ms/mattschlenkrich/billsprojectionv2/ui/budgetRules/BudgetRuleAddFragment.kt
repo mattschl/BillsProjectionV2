@@ -2,7 +2,6 @@ package ms.mattschlenkrich.billsprojectionv2.ui.budgetRules
 
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -55,7 +54,6 @@ class BudgetRuleAddFragment :
         )
         mainActivity = (activity as MainActivity)
         mainActivity.title = getString(R.string.update_budget_rule)
-        Log.d(TAG, "$TAG is entered")
         mView = binding.root
         return mView
     }

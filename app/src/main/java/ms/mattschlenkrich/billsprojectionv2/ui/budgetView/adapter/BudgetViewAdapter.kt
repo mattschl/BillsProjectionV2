@@ -204,8 +204,7 @@ class BudgetViewAdapter(
             .setItems(
                 arrayOf(
                     mView.context.getString(R.string.perform_a_transaction_on_) +
-                            " \"${curBudget.budgetItem.biBudgetName}\" " +
-                            mView.context.getString(R.string.with_a_custom_amount),
+                            " \"${curBudget.budgetItem.biBudgetName}\" ",
                     if (curBudget.budgetItem.biProjectedAmount == 0.0) {
                         ""
                     } else {
