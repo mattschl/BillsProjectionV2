@@ -140,7 +140,10 @@ class AccountTypeUpdateFragment :
                 setNegativeButton(getString(R.string.cancel), null)
             }.create().show()
         } else {
-            showMessage(getString(R.string.enter_a_name_for_this_account_type))
+            showMessage(
+                getString(R.string.error) +
+                        getString(R.string.enter_a_name_for_this_account_type)
+            )
         }
     }
 

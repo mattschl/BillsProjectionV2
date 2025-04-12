@@ -151,30 +151,30 @@ class TransactionAnalysisAdapter(
         }
     }
 
-    private fun chooseOptions(transaction: TransactionDetailed) {
+    private fun chooseOptions(transactionDetailed: TransactionDetailed) {
         var display = ""
-        if (transaction.transaction!!.transToAccountPending) {
+        if (transactionDetailed.transaction!!.transToAccountPending) {
             display += mView.context.getString(R.string.complete_the_pending_amount_of) +
-                    nf.displayDollars(transaction.transaction.transAmount) +
+                    nf.displayDollars(transactionDetailed.transaction.transAmount) +
                     mView.context.getString(R.string._to_) +
-                    transaction.toAccount!!.accountName
+                    transactionDetailed.toAccount!!.accountName
         }
-        if (transaction.transaction.transToAccountPending) {
+        if (transactionDetailed.transaction.transToAccountPending) {
             display += mView.context.getString(R.string._pending)
         }
-        if (display != "" && transaction.transaction.transFromAccountPending) {
+        if (display != "" && transactionDetailed.transaction.transFromAccountPending) {
             display += mView.context.getString(R.string._and)
         }
-        if (transaction.transaction.transFromAccountPending) {
+        if (transactionDetailed.transaction.transFromAccountPending) {
             display += mView.context.getString(R.string.complete_the_pending_amount_of) +
-                    nf.displayDollars(transaction.transaction.transAmount) +
+                    nf.displayDollars(transactionDetailed.transaction.transAmount) +
                     mView.context.getString(R.string._From_) +
-                    transaction.fromAccount!!.accountName
+                    transactionDetailed.fromAccount!!.accountName
         }
         AlertDialog.Builder(mView.context)
             .setTitle(
                 mView.context.getString(R.string.choose_an_action_for) +
-                        transaction.transaction.transName
+                        transactionDetailed.transaction.transName
             )
             .setItems(
                 arrayOf(
@@ -185,19 +185,19 @@ class TransactionAnalysisAdapter(
             ) { _, pos ->
                 when (pos) {
                     0 -> {
-                        gotoTransactionUpdate(transaction)
+                        gotoTransactionUpdate(transactionDetailed)
                     }
 
                     1 -> {
-                        if (transaction.transaction.transToAccountPending ||
-                            transaction.transaction.transFromAccountPending
+                        if (transactionDetailed.transaction.transToAccountPending ||
+                            transactionDetailed.transaction.transFromAccountPending
                         ) {
-                            completePendingTransactions(transaction)
+                            completePendingTransactions(transactionDetailed)
                         }
                     }
 
                     2 -> {
-                        confirmDeleteTransaction(transaction)
+                        confirmDeleteTransaction(transactionDetailed)
 
                     }
                 }
@@ -206,8 +206,8 @@ class TransactionAnalysisAdapter(
             .show()
     }
 
-    private fun completePendingTransactions(transaction: TransactionDetailed) {
-        transaction.transaction!!.apply {
+    private fun completePendingTransactions(transactionDetailed: TransactionDetailed) {
+        transactionDetailed.transaction!!.apply {
             val newTransaction =
                 Transactions(
                     transId,
@@ -224,7 +224,7 @@ class TransactionAnalysisAdapter(
                     transUpdateTime
                 )
             mainActivity.accountUpdateViewModel.updateTransaction(
-                transaction.transaction,
+                transactionDetailed.transaction,
                 newTransaction
             )
         }

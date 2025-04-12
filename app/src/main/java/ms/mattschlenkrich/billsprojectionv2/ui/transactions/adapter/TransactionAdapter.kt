@@ -34,10 +34,8 @@ class TransactionAdapter(
 
     private val nf = NumberFunctions()
     private val df = DateFunctions()
-    private val transactionViewModel =
-        mainActivity.transactionViewModel
-    private val accountUpdateViewModel =
-        mainActivity.accountUpdateViewModel
+    private val transactionViewModel = mainActivity.transactionViewModel
+    private val accountUpdateViewModel = mainActivity.accountUpdateViewModel
 
 
     class TransactionsViewHolder(
@@ -50,14 +48,10 @@ class TransactionAdapter(
                 oldItem: TransactionDetailed,
                 newItem: TransactionDetailed
             ): Boolean {
-                return oldItem.transaction?.transId ==
-                        newItem.transaction?.transId &&
-                        oldItem.budgetRule?.ruleId ==
-                        newItem.budgetRule?.ruleId &&
-                        oldItem.toAccount?.accountId ==
-                        newItem.toAccount?.accountId &&
-                        oldItem.fromAccount?.accountId ==
-                        newItem.fromAccount?.accountId
+                return oldItem.transaction?.transId == newItem.transaction?.transId &&
+                        oldItem.budgetRule?.ruleId == newItem.budgetRule?.ruleId &&
+                        oldItem.toAccount?.accountId == newItem.toAccount?.accountId &&
+                        oldItem.fromAccount?.accountId == newItem.fromAccount?.accountId
             }
 
             override fun areContentsTheSame(
@@ -90,21 +84,21 @@ class TransactionAdapter(
         holder: TransactionsViewHolder,
         position: Int,
     ) {
-        val transaction =
+        val transactionDetailed =
             differ.currentList[
                 position
             ]
         holder.itemBinding.apply {
             tvDate.text =
-                df.getDisplayDate(transaction.transaction!!.transDate)
+                df.getDisplayDate(transactionDetailed.transaction!!.transDate)
             tvTransDescription.text =
-                transaction.transaction.transName
+                transactionDetailed.transaction.transName
             tvTransAmount.text =
-                nf.displayDollars(transaction.transaction.transAmount)
+                nf.displayDollars(transactionDetailed.transaction.transAmount)
             var info = mView.context.getString(R.string.to_) +
-                    transaction.toAccount!!
+                    transactionDetailed.toAccount!!
                         .accountName
-            if (transaction.transaction.transToAccountPending) {
+            if (transactionDetailed.transaction.transToAccountPending) {
                 info += mView.context.getString(R.string._pending)
                 tvToAccount.setTextColor(
                     Color.RED
@@ -116,9 +110,9 @@ class TransactionAdapter(
             }
             tvToAccount.text = info
             info = mView.context.getString(R.string.from_) +
-                    transaction.fromAccount!!
+                    transactionDetailed.fromAccount!!
                         .accountName
-            if (transaction.transaction.transFromAccountPending) {
+            if (transactionDetailed.transaction.transFromAccountPending) {
                 info += mView.context.getString(R.string._pending)
                 tvFromAccount.setTextColor(
                     Color.RED
@@ -128,19 +122,19 @@ class TransactionAdapter(
                     Color.BLACK
                 )
             }
-            if (transaction.transaction.transToAccountPending &&
-                transaction.transaction.transFromAccountPending
+            if (transactionDetailed.transaction.transToAccountPending &&
+                transactionDetailed.transaction.transFromAccountPending
             ) {
                 tvToAccount.setLines(2)
                 tvFromAccount.setLines(2)
 
             }
             tvFromAccount.text = info
-            if (transaction.transaction.transNote.isEmpty()) {
+            if (transactionDetailed.transaction.transNote.isEmpty()) {
                 tvTransInfo.visibility = View.GONE
             } else {
                 info = mView.context.getString(R.string.note_) +
-                        transaction.transaction.transNote
+                        transactionDetailed.transaction.transNote
                 tvTransInfo.text = info
                 tvTransInfo.visibility = View.VISIBLE
             }
@@ -152,37 +146,36 @@ class TransactionAdapter(
                 random.nextInt(256)
             )
             ibColor.setBackgroundColor(color)
-
             holder.itemView.setOnClickListener {
-                chooseOptions(transaction)
+                chooseOptions(transactionDetailed)
             }
         }
     }
 
-    private fun chooseOptions(transaction: TransactionDetailed) {
+    private fun chooseOptions(transactionDetailed: TransactionDetailed) {
         var display = ""
-        if (transaction.transaction!!.transToAccountPending) {
+        if (transactionDetailed.transaction!!.transToAccountPending) {
             display += mView.context.getString(R.string.complete_the_pending_amount_of) +
-                    nf.displayDollars(transaction.transaction.transAmount) +
+                    nf.displayDollars(transactionDetailed.transaction.transAmount) +
                     mView.context.getString(R.string._to_) +
-                    transaction.toAccount!!.accountName
+                    transactionDetailed.toAccount!!.accountName
         }
-        if (transaction.transaction.transToAccountPending) {
+        if (transactionDetailed.transaction.transToAccountPending) {
             display += mView.context.getString(R.string._pending)
         }
-        if (display != "" && transaction.transaction.transFromAccountPending) {
+        if (display != "" && transactionDetailed.transaction.transFromAccountPending) {
             display += mView.context.getString(R.string._and)
         }
-        if (transaction.transaction.transFromAccountPending) {
+        if (transactionDetailed.transaction.transFromAccountPending) {
             display += mView.context.getString(R.string.complete_the_pending_amount_of) +
-                    nf.displayDollars(transaction.transaction.transAmount) +
+                    nf.displayDollars(transactionDetailed.transaction.transAmount) +
                     mView.context.getString(R.string._From_) +
-                    transaction.fromAccount!!.accountName
+                    transactionDetailed.fromAccount!!.accountName
         }
         AlertDialog.Builder(mView.context)
             .setTitle(
                 mView.context.getString(R.string.choose_an_action_for) +
-                        transaction.transaction.transName
+                        transactionDetailed.transaction.transName
             )
             .setItems(
                 arrayOf(
@@ -192,21 +185,16 @@ class TransactionAdapter(
                 )
             ) { _, pos ->
                 when (pos) {
-                    0 -> {
-                        gotoTransactionUpdate(transaction)
-                    }
-
+                    0 -> gotoTransactionUpdate(transactionDetailed)
                     1 -> {
-                        if (transaction.transaction.transToAccountPending ||
-                            transaction.transaction.transFromAccountPending
+                        if (transactionDetailed.transaction.transToAccountPending ||
+                            transactionDetailed.transaction.transFromAccountPending
                         ) {
-                            completePendingTransactions(transaction)
+                            completePendingTransactions(transactionDetailed)
                         }
                     }
 
-                    2 -> {
-                        confirmDeleteTransaction(transaction.transaction)
-                    }
+                    2 -> confirmDeleteTransaction(transactionDetailed.transaction)
                 }
             }
             .setNegativeButton(mView.context.getString(R.string.cancel), null)
@@ -226,8 +214,8 @@ class TransactionAdapter(
             .show()
     }
 
-    private fun completePendingTransactions(transaction: TransactionDetailed) {
-        transaction.transaction!!.apply {
+    private fun completePendingTransactions(transactionDetailed: TransactionDetailed) {
+        transactionDetailed.transaction!!.apply {
             val newTransaction =
                 Transactions(
                     transId,
@@ -244,25 +232,23 @@ class TransactionAdapter(
                     transUpdateTime
                 )
             accountUpdateViewModel.updateTransaction(
-                transaction.transaction,
+                transactionDetailed.transaction,
                 newTransaction
             )
         }
     }
 
-    private fun gotoTransactionUpdate(
-        transaction: TransactionDetailed
-    ) {
+    private fun gotoTransactionUpdate(transactionDetailed: TransactionDetailed) {
         mainActivity.mainViewModel.setCallingFragments(
             mainActivity.mainViewModel.getCallingFragments() + ", " + PARENT_TAG
         )
-        mainActivity.mainViewModel.setTransactionDetailed(transaction)
+        mainActivity.mainViewModel.setTransactionDetailed(transactionDetailed)
         CoroutineScope(Dispatchers.IO).launch {
             val oldTransactionFull = async {
                 transactionViewModel.getTransactionFull(
-                    transaction.transaction!!.transId,
-                    transaction.transaction.transToAccountId,
-                    transaction.transaction.transFromAccountId
+                    transactionDetailed.transaction!!.transId,
+                    transactionDetailed.transaction.transToAccountId,
+                    transactionDetailed.transaction.transFromAccountId
                 )
             }
             mainActivity.mainViewModel.setOldTransaction(oldTransactionFull.await())

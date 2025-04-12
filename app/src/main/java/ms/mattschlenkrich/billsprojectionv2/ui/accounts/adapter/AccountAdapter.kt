@@ -39,8 +39,8 @@ private const val PARENT_TAG = FRAG_ACCOUNTS
 
 class AccountAdapter(
     val mainActivity: MainActivity,
-    private val accountsFragment: AccountsFragment,
     private val mainViewModel: MainViewModel,
+    private val accountsFragment: AccountsFragment,
     private val mView: View,
 ) :
     RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() {

@@ -46,7 +46,7 @@ class AccountTypesFragment
         mView = binding.root
         mainActivity = (activity as MainActivity)
 
-        mainActivity.title = "Choose an Account Type"
+        mainActivity.title = getString(R.string.choose_an_account_type)
         return mView
     }
 
@@ -64,8 +64,8 @@ class AccountTypesFragment
     private fun setupRecyclerView() {
         accountTypeAdapter = AccountTypeAdapter(
             mainActivity.mainViewModel,
+            mView,
             this@AccountTypesFragment,
-            mView
         )
 
         binding.rvAccountTypes.apply {

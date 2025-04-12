@@ -49,7 +49,7 @@ class AccountTypeAddFragment :
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
-        mainActivity.title = "Add a new Account Type"
+        mainActivity.title = getString(R.string.add_a_new_account_type)
         mView = binding.root
         return mView
     }
