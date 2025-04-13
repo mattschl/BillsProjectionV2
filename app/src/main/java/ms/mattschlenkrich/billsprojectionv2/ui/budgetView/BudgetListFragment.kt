@@ -33,8 +33,8 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     private val budgetsMonthly = ArrayList<BudgetRuleComplete>()
     private val budgetsOccasional = ArrayList<BudgetRuleComplete>()
     private val budgetsAnnual = ArrayList<BudgetRuleComplete>()
-    val nf = NumberFunctions()
-    val df = DateFunctions()
+    private val nf = NumberFunctions()
+    private val df = DateFunctions()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -86,7 +86,6 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     }
 
     private fun populateAnnualBudget() {
-        activity.let {
             val budgetListAnnualAdapter = BudgetListAnnualAdapter(
                 mainActivity,
                 this@BudgetListFragment,
@@ -106,7 +105,6 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
                 budgetListAnnualAdapter.differ.submitList(budgetsAnnual)
                 populateAnnualTotals()
             }
-        }
     }
 
     private fun populateAnnualTotals() {
@@ -162,7 +160,6 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     }
 
     private fun populateOccasionalItems() {
-        activity.let {
             val budgetListOccasionalAdapter = BudgetListOccasionalAdapter(
                 mainActivity,
                 this@BudgetListFragment,
@@ -183,7 +180,6 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
                 budgetListOccasionalAdapter.differ.submitList(budgetsOccasional)
                 populateOccasionalTotals()
             }
-        }
     }
 
     private fun populateOccasionalTotals() {
@@ -252,7 +248,6 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     }
 
     private fun populateMonthlyItems() {
-        activity?.let {
             val budgetListMonthlyAdapter = BudgetListMonthlyAdapter(
                 mainActivity,
                 this@BudgetListFragment,
@@ -272,7 +267,6 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
                     budgetListMonthlyAdapter.differ.submitList(budgetsMonthly)
                     populateMonthlyTotals()
                 }
-        }
     }
 
     private fun populateMonthlyTotals() {

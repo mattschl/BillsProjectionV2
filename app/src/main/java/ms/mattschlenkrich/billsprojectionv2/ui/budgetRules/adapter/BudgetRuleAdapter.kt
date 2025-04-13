@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.ADAPTER_BUDGET_RULE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
@@ -29,7 +28,7 @@ import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetRuleLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.BudgetRuleFragment
 import java.util.Random
 
-private const val TAG = ADAPTER_BUDGET_RULE
+//private const val TAG = ADAPTER_BUDGET_RULE
 private const val PARENT_TAG = FRAG_BUDGET_RULES
 
 class BudgetRuleAdapter(
