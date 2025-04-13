@@ -39,8 +39,8 @@ class BudgetViewAdapter(
     private val mView: View,
 ) : RecyclerView.Adapter<BudgetViewAdapter.BudgetViewHolder>() {
 
-    val nf = NumberFunctions()
-    val df = DateFunctions()
+    private val nf = NumberFunctions()
+    private val df = DateFunctions()
     var message = ""
 
     class BudgetViewHolder(val itemBinding: BudgetViewItemBinding) :
@@ -69,9 +69,7 @@ class BudgetViewAdapter(
 
     val differ = AsyncListDiffer(this, differCallBack)
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup, viewType: Int
-    ): BudgetViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BudgetViewHolder {
         return BudgetViewHolder(
             BudgetViewItemBinding.inflate(
                 LayoutInflater.from(parent.context),
@@ -85,9 +83,7 @@ class BudgetViewAdapter(
         return differ.currentList.size
     }
 
-    override fun onBindViewHolder(
-        holder: BudgetViewHolder, position: Int
-    ) {
+    override fun onBindViewHolder(holder: BudgetViewHolder, position: Int) {
         val curBudget = differ.currentList[position]
 
         holder.itemBinding.apply {
@@ -193,9 +189,7 @@ class BudgetViewAdapter(
             .show()
     }
 
-    private fun chooseOptionsForBudget(
-        curBudget: BudgetItemDetailed
-    ) {
+    private fun chooseOptionsForBudget(curBudget: BudgetItemDetailed) {
         AlertDialog.Builder(mView.context)
             .setTitle(
                 mView.context.getString(R.string.choose_an_action_for) +
@@ -274,8 +268,7 @@ class BudgetViewAdapter(
     }
 
     private suspend fun getConfirmationsDisplay(
-        budgetItem: BudgetItem,
-        curBudget: BudgetItemDetailed
+        budgetItem: BudgetItem, curBudget: BudgetItemDetailed
     ): String {
         var display = mView.context.getString(R.string.this_will_perform) +
                 budgetItem.biBudgetName +

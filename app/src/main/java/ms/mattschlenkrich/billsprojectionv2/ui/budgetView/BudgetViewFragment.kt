@@ -153,7 +153,6 @@ class BudgetViewFragment : Fragment(
         val transactionPendingAdapter =
             TransactionPendingAdapter(
                 binding.spAssetNames.selectedItem.toString(),
-                mainActivity.mainViewModel,
                 mainActivity,
                 this,
                 mView,

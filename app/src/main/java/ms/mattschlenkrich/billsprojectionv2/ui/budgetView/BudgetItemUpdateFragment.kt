@@ -186,12 +186,10 @@ class BudgetItemUpdateFragment : Fragment(
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                // Add menu items here
                 menuInflater.inflate(R.menu.delete_menu, menu)
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                // Handle the menu selection
                 return when (menuItem.itemId) {
                     R.id.menu_delete -> {
                         confirmDeleteBudgetItem()

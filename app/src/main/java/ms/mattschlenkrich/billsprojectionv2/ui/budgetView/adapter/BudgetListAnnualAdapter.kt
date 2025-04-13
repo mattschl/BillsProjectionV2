@@ -27,7 +27,7 @@ class BudgetListAnnualAdapter(
     private val mView: View,
 ) : RecyclerView.Adapter<BudgetListAnnualAdapter.BudgetListHolder>() {
     private val nf = NumberFunctions()
-    val df = DateFunctions()
+    private val df = DateFunctions()
 
     class BudgetListHolder(val itemBinding: BudgetListItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -121,8 +121,7 @@ class BudgetListAnnualAdapter(
     private fun chooseOptionsForBudgetItem(curRule: BudgetRuleComplete) {
         AlertDialog.Builder(mView.context)
             .setTitle(
-                mView.context.getString(R.string.choose_an_action_for) +
-                        curRule.budgetRule!!.budgetRuleName
+                mView.context.getString(R.string.choose_an_action_for) + curRule.budgetRule!!.budgetRuleName
             )
             .setItems(
                 arrayOf(

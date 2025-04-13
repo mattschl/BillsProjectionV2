@@ -19,13 +19,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_TYPE_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountTypeUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 
-private const val TAG = FRAG_ACCOUNT_TYPE_UPDATE
+//private const val TAG = FRAG_ACCOUNT_TYPE_UPDATE
 
 class AccountTypeUpdateFragment :
     Fragment(R.layout.fragment_account_type_update) {

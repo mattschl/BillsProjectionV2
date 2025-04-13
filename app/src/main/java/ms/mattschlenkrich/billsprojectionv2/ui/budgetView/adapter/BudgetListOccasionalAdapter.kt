@@ -31,7 +31,7 @@ class BudgetListOccasionalAdapter(
 ) : RecyclerView.Adapter<BudgetListOccasionalAdapter.BudgetListHolder>() {
 
     private val cf = NumberFunctions()
-    val df = DateFunctions()
+    private val df = DateFunctions()
 
     class BudgetListHolder(val itemBinding: BudgetListItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
