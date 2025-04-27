@@ -325,5 +325,6 @@
     <string name="would_you_like_to_go_to_this_budget_item_on">"Would you like to go to this Budget Item projected for "</string>
     <string name="choose_an_account_type">Choose an Account Type</string>
     <string name="add_a_new_account_type">Add a new Account Type</string>
+    <string name="start_typing_for_matches">Start typing for matches</string>
 
 </resources>
