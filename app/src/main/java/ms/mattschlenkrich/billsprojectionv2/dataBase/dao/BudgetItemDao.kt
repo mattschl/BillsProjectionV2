@@ -133,8 +133,8 @@ interface BudgetItemDao {
     fun getAssetsForBudget(): LiveData<List<String>>
 
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
-    @RewriteQueriesToDropUnusedColumns
     @Transaction
+    @RewriteQueriesToDropUnusedColumns
     @Query(
         "SELECT * " +
                 "FROM $TABLE_BUDGET_ITEMS " +
@@ -166,8 +166,8 @@ interface BudgetItemDao {
             : LiveData<List<BudgetItemDetailed>>
 
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
-    @RewriteQueriesToDropUnusedColumns
     @Transaction
+    @RewriteQueriesToDropUnusedColumns
     @Query(
         "SELECT $TABLE_BUDGET_ITEMS.*, budgetRule.*, " +
                 "toAccount.*, fromAccount.* " +
