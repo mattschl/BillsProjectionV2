@@ -208,8 +208,8 @@ class BudgetViewAdapter(
                                 nf.displayDollars(curBudget.budgetItem.biProjectedAmount)
                     },
                     mView.context.getString(R.string.adjust_the_projections_for_this_item),
+                    mView.context.getString(R.string.go_to_the_rules_for_future_budgets_of_this_kind),
                     mView.context.getString(R.string.cancel_this_projected_item),
-                    mView.context.getString(R.string.go_to_the_rules_for_future_budgets_of_this_kind)
                 )
             ) { _, pos ->
                 when (pos) {
@@ -226,11 +226,11 @@ class BudgetViewAdapter(
                     }
 
                     3 -> {
-                        confirmCancelBudgetItem(curBudget)
+                        gotoBudgetRule(curBudget)
                     }
 
                     4 -> {
-                        gotoBudgetRule(curBudget)
+                        confirmCancelBudgetItem(curBudget)
                     }
                 }
             }
