@@ -398,6 +398,9 @@
         <action
             android:id="@+id/action_transactionViewFragment_to_transactionSplitFragment"
             app:destination="@id/transactionSplitFragment" />
+        <action
+            android:id="@+id/action_transactionViewFragment_to_budgetRuleUpdateFragment"
+            app:destination="@id/budgetRuleUpdateFragment" />
     </fragment>
 
     <!--    transactionAddFragment-->
