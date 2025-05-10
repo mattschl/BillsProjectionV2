@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -181,6 +182,7 @@ class TransactionAdapter(
                 arrayOf(
                     mView.context.getString(R.string.edit_this_transaction),
                     display,
+                    mView.context.getString(R.string.go_to_the_rules_for_future_budgets_of_this_kind),
                     mView.context.getString(R.string.delete_this_transaction)
                 )
             ) { _, pos ->
@@ -194,11 +196,22 @@ class TransactionAdapter(
                         }
                     }
 
-                    2 -> confirmDeleteTransaction(transactionDetailed.transaction)
+                    2 -> gotoBudgetRule(transactionDetailed)
+
+                    3 -> confirmDeleteTransaction(transactionDetailed.transaction)
                 }
             }
             .setNegativeButton(mView.context.getString(R.string.cancel), null)
             .show()
+    }
+
+    private fun gotoBudgetRule(transactionDetailed: TransactionDetailed) {
+        mainActivity.budgetRuleViewModel.getBudgetRuleFullLive(
+            transactionDetailed.transaction!!.transRuleId
+        ).observe(mView.findViewTreeLifecycleOwner()!!) { bRuleDetailed ->
+            mainActivity.mainViewModel.setBudgetRuleDetailed(bRuleDetailed)
+            transactionViewFragment.gotoBudgetRuleUpdate()
+        }
     }
 
     private fun confirmDeleteTransaction(transaction: Transactions) {

@@ -154,6 +154,16 @@ class TransactionViewFragment :
         )
     }
 
+    fun gotoBudgetRuleUpdate() {
+        mainActivity.mainViewModel.setCallingFragments(
+            mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
+        )
+        mView.findNavController().navigate(
+            TransactionViewFragmentDirections
+                .actionTransactionViewFragmentToBudgetRuleUpdateFragment()
+        )
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
