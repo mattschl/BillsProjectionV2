@@ -267,6 +267,13 @@
             android:id="@+id/action_budgetRuleUpdateFragment_to_budgetItemUpdateFragment"
             app:destination="@id/budgetItemUpdateFragment"
             app:popUpTo="@id/budgetItemUpdateFragment" />
+        <action
+            android:id="@+id/action_budgetRuleUpdateFragment_to_transactionViewFragment"
+            app:destination="@id/transactionViewFragment" />
+        <action
+            android:id="@+id/action_budgetRuleUpdateFragment_to_transactionAnalysisFragment"
+            app:destination="@id/transactionAnalysisFragment"
+            app:popUpTo="@id/transactionAnalysisFragment" />
     </fragment>
 
     <!--    action_global_budgetViewFragment-->
@@ -549,6 +556,9 @@
         <action
             android:id="@+id/action_transactionAnalysisFragment_to_transactionUpdateFragment"
             app:destination="@id/transactionUpdateFragment" />
+        <action
+            android:id="@+id/action_transactionAnalysisFragment_to_budgetRuleUpdateFragment"
+            app:destination="@id/budgetRuleUpdateFragment" />
     </fragment>
 
     <!--    calcFragment-->

@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -28,14 +29,12 @@ import java.util.Random
 class TransactionAnalysisAdapter(
     val mainActivity: MainActivity,
     private val mView: View,
-    private val transactionAnalysisFragment: TransactionAnalysisFragment,
     private val parentTag: String,
+    private val transactionAnalysisFragment: TransactionAnalysisFragment,
 ) : RecyclerView.Adapter<TransactionAnalysisAdapter.TransViewHolder>() {
 
     private val nf = NumberFunctions()
     private val df = DateFunctions()
-//    private val transactionViewModel =
-//        mainActivity.transactionViewModel
 
     class TransViewHolder(
         val itemBinding: TransactionLinearItemBinding
@@ -83,20 +82,13 @@ class TransactionAnalysisAdapter(
         holder: TransViewHolder,
         position: Int,
     ) {
-        val transactionDetailed =
-            differ.currentList[
-                position
-            ]
+        val transactionDetailed = differ.currentList[position]
         holder.itemBinding.apply {
-            tvDate.text =
-                df.getDisplayDate(transactionDetailed.transaction!!.transDate)
-            tvTransDescription.text =
-                transactionDetailed.transaction.transName
-            tvTransAmount.text =
-                nf.displayDollars(transactionDetailed.transaction.transAmount)
-            var info = mView.context.getString(R.string._to_) +
-                    transactionDetailed.toAccount!!
-                        .accountName
+            tvDate.text = df.getDisplayDate(transactionDetailed.transaction!!.transDate)
+            tvTransDescription.text = transactionDetailed.transaction.transName
+            tvTransAmount.text = nf.displayDollars(transactionDetailed.transaction.transAmount)
+            var info =
+                mView.context.getString(R.string._to_) + transactionDetailed.toAccount!!.accountName
             if (transactionDetailed.transaction.transToAccountPending) {
                 info += mView.context.getString(R.string._pending)
                 tvToAccount.setTextColor(
@@ -180,6 +172,7 @@ class TransactionAnalysisAdapter(
                 arrayOf(
                     mView.context.getString(R.string.edit_this_transaction),
                     display,
+                    mView.context.getString(R.string.go_to_the_rules_for_future_budgets_of_this_kind),
                     mView.context.getString(R.string.delete_this_transaction)
                 )
             ) { _, pos ->
@@ -197,6 +190,10 @@ class TransactionAnalysisAdapter(
                     }
 
                     2 -> {
+                        gotoBudgetRuleUpdate(transactionDetailed)
+                    }
+
+                    4 -> {
                         confirmDeleteTransaction(transactionDetailed)
 
                     }
@@ -204,6 +201,17 @@ class TransactionAnalysisAdapter(
             }
             .setNegativeButton(mView.context.getString(R.string.cancel), null)
             .show()
+    }
+
+    private fun gotoBudgetRuleUpdate(transactionDetailed: TransactionDetailed) {
+        mainActivity.mainViewModel.setCallingFragments(parentTag)
+        mainActivity.budgetRuleViewModel.getBudgetRuleFullLive(
+            transactionDetailed.transaction!!.transRuleId
+        ).observe(mView.findViewTreeLifecycleOwner()!!) { bRuleDetailed ->
+            mainActivity.mainViewModel.setBudgetRuleDetailed(bRuleDetailed)
+            transactionAnalysisFragment.gotoBudgetRuleUpdateFragment()
+        }
+
     }
 
     private fun completePendingTransactions(transactionDetailed: TransactionDetailed) {
@@ -251,10 +259,7 @@ class TransactionAnalysisAdapter(
     }
 
     private fun gotoTransactionUpdate(transactionDetailed: TransactionDetailed) {
-        mainActivity.mainViewModel.setCallingFragments(
-            mainActivity.mainViewModel.getCallingFragments() +
-                    ", " + parentTag
-        )
+        mainActivity.mainViewModel.addCallingFragment(parentTag)
         mainActivity.mainViewModel.setTransactionDetailed(transactionDetailed)
         CoroutineScope(Dispatchers.IO).launch {
             val oldTransactionFull = async {

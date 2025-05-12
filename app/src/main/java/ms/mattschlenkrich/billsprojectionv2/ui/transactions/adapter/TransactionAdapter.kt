@@ -14,7 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
@@ -24,12 +23,10 @@ import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionViewFragment
 import java.util.Random
 
-private const val PARENT_TAG = FRAG_TRANSACTION_VIEW
-
-
 class TransactionAdapter(
     private val mainActivity: MainActivity,
     private val mView: View,
+    private val parentFragment: String,
     private val transactionViewFragment: TransactionViewFragment,
 ) : RecyclerView.Adapter<TransactionAdapter.TransactionsViewHolder>() {
 
@@ -196,7 +193,7 @@ class TransactionAdapter(
                         }
                     }
 
-                    2 -> gotoBudgetRule(transactionDetailed)
+                    2 -> gotoBudgetRuleUpdate(transactionDetailed)
 
                     3 -> confirmDeleteTransaction(transactionDetailed.transaction)
                 }
@@ -205,12 +202,13 @@ class TransactionAdapter(
             .show()
     }
 
-    private fun gotoBudgetRule(transactionDetailed: TransactionDetailed) {
+    private fun gotoBudgetRuleUpdate(transactionDetailed: TransactionDetailed) {
+        mainActivity.mainViewModel.setCallingFragments(parentFragment)
         mainActivity.budgetRuleViewModel.getBudgetRuleFullLive(
             transactionDetailed.transaction!!.transRuleId
         ).observe(mView.findViewTreeLifecycleOwner()!!) { bRuleDetailed ->
             mainActivity.mainViewModel.setBudgetRuleDetailed(bRuleDetailed)
-            transactionViewFragment.gotoBudgetRuleUpdate()
+            transactionViewFragment.gotoBudgetRuleUpdateFragment()
         }
     }
 
@@ -252,9 +250,7 @@ class TransactionAdapter(
     }
 
     private fun gotoTransactionUpdate(transactionDetailed: TransactionDetailed) {
-        mainActivity.mainViewModel.setCallingFragments(
-            mainActivity.mainViewModel.getCallingFragments() + ", " + PARENT_TAG
-        )
+        mainActivity.mainViewModel.addCallingFragment(parentFragment)
         mainActivity.mainViewModel.setTransactionDetailed(transactionDetailed)
         CoroutineScope(Dispatchers.IO).launch {
             val oldTransactionFull = async {
@@ -270,8 +266,6 @@ class TransactionAdapter(
     }
 
     private fun deleteTransaction(transaction: Transactions) {
-        mainActivity.accountUpdateViewModel.deleteTransaction(
-            transaction
-        )
+        mainActivity.accountUpdateViewModel.deleteTransaction(transaction)
     }
 }

@@ -165,8 +165,7 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
 
     private fun populateToAccountFromTransaction() {
         binding.apply {
-            mToAccount =
-                mainActivity.mainViewModel.getSplitTransactionDetailed()!!.toAccount
+            mToAccount = mainActivity.mainViewModel.getSplitTransactionDetailed()!!.toAccount
             tvToAccount.text = mToAccount!!.accountName
             mainActivity.accountViewModel.getAccountDetailed(mToAccount!!.accountId).observe(
                 viewLifecycleOwner
@@ -211,32 +210,20 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
     private fun setClickActions() {
         setMenuActions()
         binding.apply {
-            tvBudgetRule.setOnClickListener {
-                chooseBudgetRule()
-            }
-            tvToAccount.setOnClickListener {
-                chooseToAccount()
-            }
+            tvBudgetRule.setOnClickListener { chooseBudgetRule() }
+            tvToAccount.setOnClickListener { chooseToAccount() }
             etAmount.setOnLongClickListener {
                 gotoCalculator()
                 false
             }
-            etAmount.setOnFocusChangeListener { _, b ->
-                if (!b) updateAmountsDisplay()
-            }
-            etDescription.setOnFocusChangeListener { _, _ ->
-                updateAmountsDisplay()
-            }
-            etNote.setOnFocusChangeListener { _, _ ->
-                updateAmountsDisplay()
-            }
+            etAmount.setOnFocusChangeListener { _, b -> if (!b) updateAmountsDisplay() }
+            etDescription.setOnFocusChangeListener { _, _ -> updateAmountsDisplay() }
+            etNote.setOnFocusChangeListener { _, _ -> updateAmountsDisplay() }
         }
     }
 
     private fun chooseBudgetRule() {
-        mainActivity.mainViewModel.setCallingFragments(
-            mainActivity.mainViewModel.getCallingFragments() + "', " + TAG
-        )
+        mainActivity.mainViewModel.addCallingFragment(TAG)
         mainActivity.mainViewModel.setSplitTransactionDetailed(
             getSplitTransDetailed()
         )
@@ -268,9 +255,7 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
     }
 
     private fun chooseToAccount() {
-        mainActivity.mainViewModel.setCallingFragments(
-            "${mainActivity.mainViewModel.getCallingFragments()}, $TAG"
-        )
+        mainActivity.mainViewModel.addCallingFragment(TAG)
         mainActivity.mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
         mainActivity.mainViewModel.setSplitTransactionDetailed(getSplitTransDetailed())
         gotoAccountsFragment()
@@ -317,20 +302,14 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
                     )
                 )
             )
-            val amount = nf.getDoubleFromDollars(
-                etAmount.text.toString()
-            )
-            val original = nf.getDoubleFromDollars(
-                tvOriginalAmount.text.toString()
-            )
+            val amount = nf.getDoubleFromDollars(etAmount.text.toString())
+            val original = nf.getDoubleFromDollars(tvOriginalAmount.text.toString())
             if (original <= amount) {
                 showMessage(
                     getString(R.string.error) +
                             getString(R.string.new_amount_cannot_be_more_than_the_original_amount)
                 )
-                etAmount.setText(
-                    nf.displayDollars(0.0)
-                )
+                etAmount.setText(nf.displayDollars(0.0))
             } else {
                 tvRemainder.text = nf.displayDollars(original - amount)
             }
@@ -349,11 +328,7 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
     }
 
     private fun showMessage(message: String) {
-        Toast.makeText(
-            mView.context,
-            message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun confirmPerformTransaction() {
@@ -446,8 +421,7 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
 
     private fun gotoCallingFragment() {
         val transactionDetailed = mainActivity.mainViewModel.getTransactionDetailed()!!
-        val oldTransaction =
-            transactionDetailed.transaction!!
+        val oldTransaction = transactionDetailed.transaction!!
         oldTransaction.transAmount =
             nf.getDoubleFromDollars(binding.tvRemainder.text.toString())
         if (mainActivity.mainViewModel.getUpdatingTransaction()) {
