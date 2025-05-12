@@ -67,11 +67,10 @@ class BudgetViewFragment : Fragment(
     }
 
     private fun populateAssets() {
-        val assetAdapter =
-            ArrayAdapter<Any>(
-                requireContext(),
-                R.layout.spinner_item_bold
-            )
+        val assetAdapter = ArrayAdapter<Any>(
+            requireContext(),
+            R.layout.spinner_item_bold
+        )
         mainActivity.budgetItemViewModel.getAssetsForBudget().observe(
             viewLifecycleOwner
         ) { assetList ->
@@ -84,11 +83,10 @@ class BudgetViewFragment : Fragment(
     }
 
     private fun populatePayDays(asset: String) {
-        val payDayAdapter =
-            ArrayAdapter<Any>(
-                requireContext(),
-                R.layout.spinner_item_bold
-            )
+        val payDayAdapter = ArrayAdapter<Any>(
+            requireContext(),
+            R.layout.spinner_item_bold
+        )
         mainActivity.budgetItemViewModel.getPayDays(asset).observe(
             viewLifecycleOwner
         ) { payDayList ->
@@ -150,13 +148,12 @@ class BudgetViewFragment : Fragment(
     }
 
     fun populatePendingList() {
-        val transactionPendingAdapter =
-            TransactionPendingAdapter(
-                binding.spAssetNames.selectedItem.toString(),
-                mainActivity,
-                this,
-                mView,
-            )
+        val transactionPendingAdapter = TransactionPendingAdapter(
+            binding.spAssetNames.selectedItem.toString(),
+            mainActivity,
+            this,
+            mView,
+        )
         binding.rvPending.apply {
             layoutManager =
                 LinearLayoutManager(mView.context)
@@ -164,9 +161,7 @@ class BudgetViewFragment : Fragment(
         }
         mainActivity.transactionViewModel.getPendingTransactionsDetailed(
             binding.spAssetNames.selectedItem.toString()
-        ).observe(
-            viewLifecycleOwner
-        ) { transactions ->
+        ).observe(viewLifecycleOwner) { transactions ->
             transactionPendingAdapter.differ.submitList(transactions)
             updatePendingUI(transactions)
             updatePendingTotal(transactions)
@@ -318,9 +313,7 @@ class BudgetViewFragment : Fragment(
                 activity?.let {
                     mainActivity.budgetItemViewModel.getBudgetItems(
                         asset, payDay
-                    ).observe(
-                        viewLifecycleOwner
-                    ) { budgetItems ->
+                    ).observe(viewLifecycleOwner) { budgetItems ->
                         budgetList.clear()
                         budgetViewAdapter.differ.submitList(budgetItems)
                         budgetItems.listIterator().forEach {
