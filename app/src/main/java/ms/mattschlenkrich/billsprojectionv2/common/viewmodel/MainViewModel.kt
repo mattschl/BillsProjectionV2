@@ -106,6 +106,14 @@ class MainViewModel(
         return callingFragments
     }
 
+    fun addCallingFragment(newFragment: String) {
+        callingFragments = "$callingFragments, $newFragment"
+    }
+
+    fun removeCallingFragment(oldFragment: String) {
+        callingFragments = callingFragments?.replace(", $oldFragment", "")
+    }
+
     fun setRequestedAccount(newRequestedAccount: String?) {
         requestedAccount = newRequestedAccount
     }

@@ -79,27 +79,14 @@ class TransactionPerformFragment : Fragment(
 
     private fun populateValuesFromTransaction() {
         if (mainActivity.mainViewModel.getTransactionDetailed()!!.transaction != null) {
-            mTransactionDetailed =
-                mainActivity.mainViewModel.getTransactionDetailed()!!
-            val mTransaction =
-                mainActivity.mainViewModel.getTransactionDetailed()!!
-                    .transaction!!
-            mBudgetRule =
-                mainActivity.mainViewModel.getTransactionDetailed()!!
-                    .budgetRule
-            mToAccount =
-                mainActivity.mainViewModel.getTransactionDetailed()!!
-                    .toAccount
-            mFromAccount =
-                mainActivity.mainViewModel.getTransactionDetailed()!!
-                    .fromAccount
+            mTransactionDetailed = mainActivity.mainViewModel.getTransactionDetailed()!!
+            val mTransaction = mainActivity.mainViewModel.getTransactionDetailed()!!.transaction!!
+            mBudgetRule = mainActivity.mainViewModel.getTransactionDetailed()!!.budgetRule
+            mToAccount = mainActivity.mainViewModel.getTransactionDetailed()!!.toAccount
+            mFromAccount = mainActivity.mainViewModel.getTransactionDetailed()!!.fromAccount
             binding.apply {
-                etDescription.setText(
-                    mTransaction.transName
-                )
-                etNote.setText(
-                    mTransaction.transNote
-                )
+                etDescription.setText(mTransaction.transName)
+                etNote.setText(mTransaction.transNote)
                 etTransDate.text = mTransaction.transDate
                 etAmount.setText(
                     nf.displayDollars(
@@ -119,48 +106,35 @@ class TransactionPerformFragment : Fragment(
                             .budgetItem!!.biProjectedAmount
                     )
                 )
-                mBudgetRule =
-                    mTransactionDetailed!!.budgetRule
-                tvBudgetRule.text =
-                    mBudgetRule!!.budgetRuleName
-                mToAccount =
-                    mTransactionDetailed!!.toAccount!!
-                tvToAccount.text =
-                    mToAccount!!.accountName
-                mainActivity.accountViewModel.getAccountDetailed(
-                    mToAccount!!.accountId
-                ).observe(
-                    viewLifecycleOwner
-                ) { accWType ->
-                    if (accWType.accountType!!.allowPending) {
-                        chkToAccPending.visibility = View.VISIBLE
-                    } else {
-                        chkToAccPending.visibility = View.GONE
+                mBudgetRule = mTransactionDetailed!!.budgetRule
+                tvBudgetRule.text = mBudgetRule!!.budgetRuleName
+                mToAccount = mTransactionDetailed!!.toAccount!!
+                tvToAccount.text = mToAccount!!.accountName
+                mainActivity.accountViewModel.getAccountDetailed(mToAccount!!.accountId)
+                    .observe(
+                        viewLifecycleOwner
+                    ) { accWType ->
+                        if (accWType.accountType!!.allowPending) {
+                            chkToAccPending.visibility = View.VISIBLE
+                        } else {
+                            chkToAccPending.visibility = View.GONE
+                        }
                     }
-                }
                 chkToAccPending.isChecked =
-                    mTransactionDetailed!!.transaction!!
-                        .transToAccountPending
-                mFromAccount =
-                    mTransactionDetailed!!.fromAccount!!
-                tvFromAccount.text =
-                    mFromAccount!!.accountName
-                mainActivity.accountViewModel.getAccountDetailed(
-                    mFromAccount!!.accountId
-                ).observe(
-                    viewLifecycleOwner
-                ) { accWType ->
-                    if (accWType.accountType!!.allowPending) {
-                        chkFromAccPending.visibility = View.VISIBLE
-                    } else {
-                        chkFromAccPending.visibility = View.GONE
+                    mTransactionDetailed!!.transaction!!.transToAccountPending
+                mFromAccount = mTransactionDetailed!!.fromAccount!!
+                tvFromAccount.text = mFromAccount!!.accountName
+                mainActivity.accountViewModel.getAccountDetailed(mFromAccount!!.accountId)
+                    .observe(viewLifecycleOwner) { accWType ->
+                        if (accWType.accountType!!.allowPending) {
+                            chkFromAccPending.visibility = View.VISIBLE
+                        } else {
+                            chkFromAccPending.visibility = View.GONE
+                        }
                     }
-                }
                 chkFromAccPending.isChecked =
-                    mTransactionDetailed!!.transaction!!
-                        .transFromAccountPending
-                etTransDate.text =
-                    mTransactionDetailed!!.transaction!!.transDate
+                    mTransactionDetailed!!.transaction!!.transFromAccountPending
+                etTransDate.text = mTransactionDetailed!!.transaction!!.transDate
             }
             calculateRemainder()
         }
@@ -168,55 +142,40 @@ class TransactionPerformFragment : Fragment(
 
     private fun populateValuesFromBudgetItem() {
         val budgetItem = mainActivity.mainViewModel.getBudgetItemDetailed()!!
-        mToAccount =
-            budgetItem.toAccount
-        mFromAccount =
-            budgetItem.fromAccount
-        mBudgetRule =
-            budgetItem.budgetRule
+        mToAccount = budgetItem.toAccount
+        mFromAccount = budgetItem.fromAccount
+        mBudgetRule = budgetItem.budgetRule
         binding.apply {
-            val mBudgetItem =
-                budgetItem.budgetItem!!
-            tvBudgetRule.text =
-                mBudgetRule!!.budgetRuleName
-            etDescription.setText(
-                mBudgetItem.biBudgetName
-            )
+            val mBudgetItem = budgetItem.budgetItem!!
+            tvBudgetRule.text = mBudgetRule!!.budgetRuleName
+            etDescription.setText(mBudgetItem.biBudgetName)
             etTransDate.text = df.getCurrentDateAsString()
             etAmount.hint =
                 getString(R.string.budgeted_) +
                         nf.displayDollars(mBudgetItem.biProjectedAmount)
-            tvToAccount.text =
-                mToAccount!!.accountName
-            mainActivity.accountViewModel.getAccountDetailed(
-                mToAccount!!.accountId
-            ).observe(
-                viewLifecycleOwner
-            ) { accWType ->
-                if (accWType.accountType!!.allowPending) {
-                    chkToAccPending.visibility = View.VISIBLE
-                    if (accWType.accountType.tallyOwing) {
-                        chkToAccPending.isChecked = true
+            tvToAccount.text = mToAccount!!.accountName
+            mainActivity.accountViewModel.getAccountDetailed(mToAccount!!.accountId)
+                .observe(viewLifecycleOwner) { accWType ->
+                    if (accWType.accountType!!.allowPending) {
+                        chkToAccPending.visibility = View.VISIBLE
+                        if (accWType.accountType.tallyOwing) {
+                            chkToAccPending.isChecked = true
+                        }
+                    } else {
+                        chkToAccPending.visibility = View.GONE
                     }
-                } else {
-                    chkToAccPending.visibility = View.GONE
                 }
-            }
-            tvFromAccount.text =
-                mFromAccount!!.accountName
-            mainActivity.accountViewModel.getAccountDetailed(
-                mFromAccount!!.accountId
-            ).observe(
-                viewLifecycleOwner
-            ) { accWType ->
-                if (accWType.accountType!!.allowPending) {
-                    chkFromAccPending.visibility = View.VISIBLE
-                    chkFromAccPending.isChecked =
-                        accWType.accountType.tallyOwing
-                } else {
-                    chkFromAccPending.visibility = View.GONE
+            tvFromAccount.text = mFromAccount!!.accountName
+            mainActivity.accountViewModel.getAccountDetailed(mFromAccount!!.accountId)
+                .observe(viewLifecycleOwner) { accWType ->
+                    if (accWType.accountType!!.allowPending) {
+                        chkFromAccPending.visibility = View.VISIBLE
+                        chkFromAccPending.isChecked =
+                            accWType.accountType.tallyOwing
+                    } else {
+                        chkFromAccPending.visibility = View.GONE
+                    }
                 }
-            }
             etBudgetedAmount.setText(
                 nf.displayDollars(
                     mBudgetItem.biProjectedAmount
@@ -229,15 +188,9 @@ class TransactionPerformFragment : Fragment(
     private fun setClickActions() {
         setMenuActions()
         binding.apply {
-            tvToAccount.setOnClickListener {
-                chooseToAccount()
-            }
-            tvFromAccount.setOnClickListener {
-                chooseFromAccount()
-            }
-            etTransDate.setOnClickListener {
-                chooseDate()
-            }
+            tvToAccount.setOnClickListener { chooseToAccount() }
+            tvFromAccount.setOnClickListener { chooseFromAccount() }
+            etTransDate.setOnClickListener { chooseDate() }
             etAmount.setOnLongClickListener {
                 gotoCalculator()
                 false
@@ -322,9 +275,7 @@ class TransactionPerformFragment : Fragment(
         if (mFromAccount != null &&
             nf.getDoubleFromDollars(binding.etAmount.text.toString()) > 2.0
         ) {
-            mainActivity.mainViewModel.setCallingFragments(
-                mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
-            )
+            mainActivity.mainViewModel.addCallingFragment(TAG)
             mainActivity.mainViewModel
                 .setTransactionDetailed(getTransactionDetailed())
             gotoTransactionSplitFragment()
@@ -352,8 +303,7 @@ class TransactionPerformFragment : Fragment(
 
     private fun chooseDate() {
         binding.apply {
-            val curDateAll = etTransDate.text.toString()
-                .split("-")
+            val curDateAll = etTransDate.text.toString().split("-")
             val datePickerDialog = DatePickerDialog(
                 requireContext(),
                 { _, year, monthOfYear, dayOfMonth ->
@@ -376,22 +326,16 @@ class TransactionPerformFragment : Fragment(
     }
 
     private fun chooseFromAccount() {
-        mainActivity.mainViewModel.setCallingFragments(
-            "${mainActivity.mainViewModel.getCallingFragments()}, $TAG"
-        )
+        mainActivity.mainViewModel.addCallingFragment(TAG)
         mainActivity.mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
-        mainActivity.mainViewModel
-            .setTransactionDetailed(getTransactionDetailed())
+        mainActivity.mainViewModel.setTransactionDetailed(getTransactionDetailed())
         gotoAccountsFragment()
     }
 
     private fun chooseToAccount() {
-        mainActivity.mainViewModel.setCallingFragments(
-            "${mainActivity.mainViewModel.getCallingFragments()}, $TAG"
-        )
+        mainActivity.mainViewModel.addCallingFragment(TAG)
         mainActivity.mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
-        mainActivity.mainViewModel
-            .setTransactionDetailed(getTransactionDetailed())
+        mainActivity.mainViewModel.setTransactionDetailed(getTransactionDetailed())
         gotoAccountsFragment()
     }
 
@@ -472,24 +416,19 @@ class TransactionPerformFragment : Fragment(
 
     private fun performTransaction() {
         val mTransaction = getCurrentTransactionForSave()
-        mainActivity.accountUpdateViewModel.performTransaction(
-            mTransaction
-        )
+        mainActivity.accountUpdateViewModel.performTransaction(mTransaction)
         updateBudgetItem()
         gotoCallingFragment()
     }
 
     private fun updateBudgetItem() {
         val remainder =
-            nf.getDoubleFromDollars(
-                binding.tvRemainder.text.toString()
-            )
+            nf.getDoubleFromDollars(binding.tvRemainder.text.toString())
         var completed = false
         if (remainder < 2.0) {
             completed = true
         }
-        val mBudget =
-            mainActivity.mainViewModel.getBudgetItemDetailed()!!.budgetItem!!
+        val mBudget = mainActivity.mainViewModel.getBudgetItemDetailed()!!.budgetItem!!
         mainActivity.budgetItemViewModel.updateBudgetItem(
             BudgetItem(
                 mBudget.biRuleId,
@@ -538,15 +477,10 @@ class TransactionPerformFragment : Fragment(
     }
 
     private fun gotoCallingFragment() {
-        mainActivity.mainViewModel.setCallingFragments(
-            mainActivity.mainViewModel.getCallingFragments()!!
-                .replace(", $TAG", "")
-        )
+        mainActivity.mainViewModel.removeCallingFragment(TAG)
         mainActivity.mainViewModel.setTransactionDetailed(null)
         mainActivity.mainViewModel.setBudgetRuleDetailed(null)
-        if (mainActivity.mainViewModel.getCallingFragments()!!
-                .contains(FRAG_BUDGET_VIEW)
-        ) {
+        if (mainActivity.mainViewModel.getCallingFragments()!!.contains(FRAG_BUDGET_VIEW)) {
             gotoBudgetViewFragment()
         }
     }
@@ -560,8 +494,7 @@ class TransactionPerformFragment : Fragment(
             )
         )
         mainActivity.mainViewModel.setReturnTo(TAG)
-        mainActivity.mainViewModel
-            .setTransactionDetailed(getTransactionDetailed())
+        mainActivity.mainViewModel.setTransactionDetailed(getTransactionDetailed())
         gotoCalculatorFragment()
     }
 

@@ -71,12 +71,9 @@ class TransactionAddFragment :
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
-        mainViewModel =
-            mainActivity.mainViewModel
-        transactionViewModel =
-            mainActivity.transactionViewModel
-        accountViewModel =
-            mainActivity.accountViewModel
+        mainViewModel = mainActivity.mainViewModel
+        transactionViewModel = mainActivity.transactionViewModel
+        accountViewModel = mainActivity.accountViewModel
         mainActivity.title = getString(R.string.add_a_new_transaction)
         mView = binding.root
         return mView
@@ -124,10 +121,8 @@ class TransactionAddFragment :
 
     private fun populateValuesFromAccount() {
         binding.apply {
-            mFromAccount =
-                mainViewModel.getTransactionDetailed()!!.fromAccount
-            tvFromAccount.text =
-                mainViewModel.getTransactionDetailed()?.fromAccount!!.accountName
+            mFromAccount = mainViewModel.getTransactionDetailed()!!.fromAccount
+            tvFromAccount.text = mainViewModel.getTransactionDetailed()?.fromAccount!!.accountName
             CoroutineScope(Dispatchers.IO).launch {
                 val acc = async {
                     accountViewModel.getAccountWithType(
@@ -149,10 +144,8 @@ class TransactionAddFragment :
 
     private fun populateValuesFromToAccount() {
         binding.apply {
-            mToAccount =
-                mainViewModel.getTransactionDetailed()!!.toAccount
-            tvToAccount.text =
-                mainViewModel.getTransactionDetailed()!!.toAccount!!.accountName
+            mToAccount = mainViewModel.getTransactionDetailed()!!.toAccount
+            tvToAccount.text = mainViewModel.getTransactionDetailed()!!.toAccount!!.accountName
             CoroutineScope(Dispatchers.IO).launch {
                 val acc = async {
                     accountViewModel.getAccountWithType(
@@ -322,18 +315,10 @@ class TransactionAddFragment :
     private fun setClickActions() {
         setMenuActions()
         binding.apply {
-            tvBudgetRule.setOnClickListener {
-                chooseBudgetRule()
-            }
-            tvToAccount.setOnClickListener {
-                chooseToAccount()
-            }
-            tvFromAccount.setOnClickListener {
-                chooseFromAccount()
-            }
-            etTransDate.setOnClickListener {
-                chooseDate()
-            }
+            tvBudgetRule.setOnClickListener { chooseBudgetRule() }
+            tvToAccount.setOnClickListener { chooseToAccount() }
+            tvFromAccount.setOnClickListener { chooseFromAccount() }
+            etTransDate.setOnClickListener { chooseDate() }
             etAmount.setOnLongClickListener {
                 gotoCalculator()
                 false
@@ -382,9 +367,7 @@ class TransactionAddFragment :
     }
 
     private fun chooseBudgetRule() {
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments() + "', " + TAG
-        )
+        mainViewModel.addCallingFragment(TAG)
         mainViewModel.setTransactionDetailed(
             getTransactionDetailed()
         )
@@ -399,18 +382,14 @@ class TransactionAddFragment :
     }
 
     private fun chooseFromAccount() {
-        mainViewModel.setCallingFragments(
-            "${mainViewModel.getCallingFragments()}, $TAG"
-        )
+        mainViewModel.addCallingFragment(TAG)
         mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
         mainViewModel.setTransactionDetailed(getTransactionDetailed())
         gotoAccountsFragment()
     }
 
     private fun chooseToAccount() {
-        mainViewModel.setCallingFragments(
-            "${mainViewModel.getCallingFragments()}, $TAG"
-        )
+        mainViewModel.addCallingFragment(TAG)
         mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
         mainViewModel.setTransactionDetailed(getTransactionDetailed())
         gotoAccountsFragment()
@@ -421,9 +400,7 @@ class TransactionAddFragment :
         if (mFromAccount != null &&
             nf.getDoubleFromDollars(binding.etAmount.text.toString()) > 2.0
         ) {
-            mainViewModel.setCallingFragments(
-                mainViewModel.getCallingFragments() + ", " + TAG
-            )
+            mainViewModel.addCallingFragment(TAG)
             mainViewModel.setTransactionDetailed(getTransactionDetailed())
             gotoTransactionSplitFragment()
         }
@@ -560,18 +537,13 @@ class TransactionAddFragment :
 
     private fun saveTransaction() {
         val mTransaction = getCurrentTransactionForSave()
-        mainActivity.accountUpdateViewModel.performTransaction(
-            mTransaction
-        )
+        mainActivity.accountUpdateViewModel.performTransaction(mTransaction)
         gotoCallingFragment()
     }
 
     private fun gotoCallingFragment() {
         updateAmountDisplay()
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments()!!
-                .replace(", $TAG", "")
-        )
+        mainViewModel.removeCallingFragment(TAG)
         mainViewModel.setTransactionDetailed(null)
         mainViewModel.setBudgetRuleDetailed(null)
         if (mainViewModel.getCallingFragments()!!
@@ -611,10 +583,10 @@ class TransactionAddFragment :
     }
 
     private fun gotoBudgetViewFragment() {
-        val direction =
+        mView.findNavController().navigate(
             TransactionAddFragmentDirections
                 .actionTransactionAddFragmentToBudgetViewFragment()
-        mView.findNavController().navigate(direction)
+        )
     }
 
     private fun gotoTransactionViewFragment() {

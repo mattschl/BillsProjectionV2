@@ -75,24 +75,19 @@ class TransactionAnalysisFragment : Fragment(
         val budgetRule =
             mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!
         binding.apply {
-            tvBudgetRule.text =
-                budgetRule.budgetRuleName
-            tvAccount.text =
-                getString(R.string.no_account_selected)
-            transactionViewModel.getSumTransactionByBudgetRule(
-                budgetRule.ruleId
-            ).observe(viewLifecycleOwner) { sum ->
-                if (sum != null) {
-                    tvTotalCredits.text = nf.displayDollars(sum)
-                    lblTotalCredits.text =
-                        getString(R.string.total)
-                    lblTotalDebits.visibility = View.GONE
-                    tvTotalDebits.visibility = View.GONE
+            tvBudgetRule.text = budgetRule.budgetRuleName
+            tvAccount.text = getString(R.string.no_account_selected)
+            transactionViewModel.getSumTransactionByBudgetRule(budgetRule.ruleId)
+                .observe(viewLifecycleOwner) { sum ->
+                    if (sum != null) {
+                        tvTotalCredits.text = nf.displayDollars(sum)
+                        lblTotalCredits.text =
+                            getString(R.string.total)
+                        lblTotalDebits.visibility = View.GONE
+                        tvTotalDebits.visibility = View.GONE
+                    }
                 }
-            }
-            transactionViewModel.getMaxTransactionByBudgetRule(
-                budgetRule.ruleId
-            ).observe(
+            transactionViewModel.getMaxTransactionByBudgetRule(budgetRule.ruleId).observe(
                 viewLifecycleOwner
             ) { max ->
                 if (max != null && !max.isNaN()) {
@@ -108,8 +103,8 @@ class TransactionAnalysisFragment : Fragment(
                 TransactionAnalysisAdapter(
                     mainActivity,
                     mView,
+                    TAG,
                     this@TransactionAnalysisFragment,
-                    TAG
                 )
             rvTransactions.apply {
                 layoutManager = LinearLayoutManager(
@@ -137,10 +132,8 @@ class TransactionAnalysisFragment : Fragment(
         val account =
             mainViewModel.getAccountWithType()!!.account
         binding.apply {
-            tvBudgetRule.text =
-                getString(R.string.no_budget_rule_selected)
-            tvAccount.text =
-                account.accountName
+            tvBudgetRule.text = getString(R.string.no_budget_rule_selected)
+            tvAccount.text = account.accountName
             transactionViewModel.getSumTransactionToAccount(account.accountId)
                 .observe(viewLifecycleOwner) { sum ->
                     if (sum != null && !sum.isNaN()) {
@@ -172,13 +165,12 @@ class TransactionAnalysisFragment : Fragment(
                     if (min != null) tvLowest.text = nf.displayDollars(min)
                 }
             transactionAdapter = null
-            transactionAdapter =
-                TransactionAnalysisAdapter(
-                    mainActivity,
-                    mView,
-                    this@TransactionAnalysisFragment,
-                    TAG
-                )
+            transactionAdapter = TransactionAnalysisAdapter(
+                mainActivity,
+                mView,
+                TAG,
+                this@TransactionAnalysisFragment,
+            )
             rvTransactions.apply {
                 layoutManager = LinearLayoutManager(
                     requireContext()
@@ -197,9 +189,7 @@ class TransactionAnalysisFragment : Fragment(
     }
 
     private fun populateAnalysisLastMonth() {
-        val startDate = df.getFirstOfPreviousMonth(
-            df.getCurrentDateAsString()
-        )
+        val startDate = df.getFirstOfPreviousMonth(df.getCurrentDateAsString())
         val endDate = df.getLastOfPreviousMonth(df.getCurrentDateAsString())
         binding.apply {
             if (mainViewModel.getBudgetRuleDetailed() != null) {
@@ -219,8 +209,7 @@ class TransactionAnalysisFragment : Fragment(
     private fun populateAnalysisFromAccountAndDates(startDate: String, endDate: String) {
         var totalCredits = 0.0
         var totalDebits = 0.0
-        val account =
-            mainViewModel.getAccountWithType()!!.account
+        val account = mainViewModel.getAccountWithType()!!.account
         binding.apply {
             tvBudgetRule.text = getString(R.string.no_budget_rule_selected)
             tvAccount.text = account.accountName
@@ -235,19 +224,18 @@ class TransactionAnalysisFragment : Fragment(
                     totalCredits = sum
                 }
             }
-            transactionViewModel.getSumTransactionFromAccount(
-                account.accountId, startDate, endDate
-            ).observe(viewLifecycleOwner) { sum ->
-                if (sum != null && !sum.isNaN()) {
-                    tvTotalDebits.text = nf.displayDollars(-sum)
-                    tvTotalDebits.visibility = View.VISIBLE
-                    tvTotalDebits.setTextColor(Color.RED)
-                    lblTotalDebits.text = getString(R.string.total_debits)
-                    lblTotalDebits.visibility = View.VISIBLE
-                    lblTotalDebits.setTextColor(Color.RED)
-                    totalDebits = sum
+            transactionViewModel.getSumTransactionFromAccount(account.accountId, startDate, endDate)
+                .observe(viewLifecycleOwner) { sum ->
+                    if (sum != null && !sum.isNaN()) {
+                        tvTotalDebits.text = nf.displayDollars(-sum)
+                        tvTotalDebits.visibility = View.VISIBLE
+                        tvTotalDebits.setTextColor(Color.RED)
+                        lblTotalDebits.text = getString(R.string.total_debits)
+                        lblTotalDebits.visibility = View.VISIBLE
+                        lblTotalDebits.setTextColor(Color.RED)
+                        totalDebits = sum
+                    }
                 }
-            }
             transactionViewModel.getMaxTransactionByAccount(
                 account.accountId, startDate, endDate
             ).observe(viewLifecycleOwner) { max ->
@@ -264,8 +252,8 @@ class TransactionAnalysisFragment : Fragment(
                 TransactionAnalysisAdapter(
                     mainActivity,
                     mView,
+                    TAG,
                     this@TransactionAnalysisFragment,
-                    TAG
                 )
             rvTransactions.apply {
                 layoutManager = LinearLayoutManager(requireContext())
@@ -318,13 +306,12 @@ class TransactionAnalysisFragment : Fragment(
                     if (min != null) tvLowest.text = nf.displayDollars(min)
                 }
                 transactionAdapter = null
-                transactionAdapter =
-                    TransactionAnalysisAdapter(
-                        mainActivity,
-                        mView,
-                        this@TransactionAnalysisFragment,
-                        TAG
-                    )
+                transactionAdapter = TransactionAnalysisAdapter(
+                    mainActivity,
+                    mView,
+                    TAG,
+                    this@TransactionAnalysisFragment,
+                )
                 rvTransactions.apply {
                     layoutManager = LinearLayoutManager(
                         requireContext()
@@ -346,7 +333,6 @@ class TransactionAnalysisFragment : Fragment(
                 }
             }
         }
-
     }
 
     private fun populateAnalysisFromBudgetRuleOrSearch(
@@ -413,9 +399,7 @@ class TransactionAnalysisFragment : Fragment(
                         df.getCurrentDateAsString()
                     )
                 )
-                tvEndDate.setText(
-                    df.getCurrentDateAsString()
-                )
+                tvEndDate.setText(df.getCurrentDateAsString())
                 tvStartDate.setOnLongClickListener {
                     chooseStartDate()
                     false
@@ -450,12 +434,8 @@ class TransactionAnalysisFragment : Fragment(
 
     private fun setClickOptions() {
         binding.apply {
-            tvBudgetRule.setOnClickListener {
-                gotoBudgetRule()
-            }
-            tvAccount.setOnClickListener {
-                gotoAccount()
-            }
+            tvBudgetRule.setOnClickListener { gotoBudgetRule() }
+            tvAccount.setOnClickListener { gotoAccount() }
         }
     }
 
@@ -488,11 +468,8 @@ class TransactionAnalysisFragment : Fragment(
         searchQuery: String
     ) {
         binding.apply {
-            tvBudgetRule.text =
-                getString(R.string.no_budget_rule_selected)
-            tvAccount.text =
-                getString(R.string.no_account_selected)
-
+            tvBudgetRule.text = getString(R.string.no_budget_rule_selected)
+            tvAccount.text = getString(R.string.no_account_selected)
             transactionViewModel.getSumTransactionBySearch(searchQuery).observe(
                 viewLifecycleOwner
             ) { sum ->
@@ -521,8 +498,8 @@ class TransactionAnalysisFragment : Fragment(
                 TransactionAnalysisAdapter(
                     mainActivity,
                     mView,
+                    TAG,
                     this@TransactionAnalysisFragment,
-                    TAG
                 )
             if (etSearch.text.isNotEmpty()) {
                 rvTransactions.apply {
@@ -591,10 +568,8 @@ class TransactionAnalysisFragment : Fragment(
         endDate: String
     ) {
         binding.apply {
-            tvBudgetRule.text =
-                getString(R.string.no_budget_rule_selected)
-            tvAccount.text =
-                getString(R.string.no_account_selected)
+            tvBudgetRule.text = getString(R.string.no_budget_rule_selected)
+            tvAccount.text = getString(R.string.no_account_selected)
             transactionViewModel.getSumTransactionBySearch(
                 searchQuery, startDate, endDate
             ).observe(
@@ -629,8 +604,8 @@ class TransactionAnalysisFragment : Fragment(
                 TransactionAnalysisAdapter(
                     mainActivity,
                     mView,
+                    TAG,
                     this@TransactionAnalysisFragment,
-                    TAG
                 )
             if (etSearch.text.isNotEmpty()) {
                 rvTransactions.apply {
@@ -752,6 +727,13 @@ class TransactionAnalysisFragment : Fragment(
         mView.findNavController().navigate(
             TransactionAnalysisFragmentDirections
                 .actionTransactionAnalysisFragmentToTransactionUpdateFragment()
+        )
+    }
+
+    fun gotoBudgetRuleUpdateFragment() {
+        mView.findNavController().navigate(
+            TransactionAnalysisFragmentDirections
+                .actionTransactionAnalysisFragmentToBudgetRuleUpdateFragment()
         )
     }
 

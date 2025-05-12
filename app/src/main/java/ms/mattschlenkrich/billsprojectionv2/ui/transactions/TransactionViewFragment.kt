@@ -59,6 +59,7 @@ class TransactionViewFragment :
         transactionAdapter = TransactionAdapter(
             mainActivity,
             mView,
+            TAG,
             this@TransactionViewFragment,
         )
         binding.rvTransactions.apply {
@@ -93,9 +94,7 @@ class TransactionViewFragment :
     }
 
     private fun setClickActions() {
-        binding.fabAddTransaction.setOnClickListener {
-            gotoAddTransactionFragment()
-        }
+        binding.fabAddTransaction.setOnClickListener { gotoAddTransactionFragment() }
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -133,9 +132,7 @@ class TransactionViewFragment :
     }
 
     private fun gotoAddTransactionFragment() {
-        mainActivity.mainViewModel.setCallingFragments(
-            mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
-        )
+        mainActivity.mainViewModel.addCallingFragment(TAG)
         mainActivity.mainViewModel.setTransactionDetailed(null)
         gotoTransactionAddFragment()
     }
@@ -154,10 +151,7 @@ class TransactionViewFragment :
         )
     }
 
-    fun gotoBudgetRuleUpdate() {
-        mainActivity.mainViewModel.setCallingFragments(
-            mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
-        )
+    fun gotoBudgetRuleUpdateFragment() {
         mView.findNavController().navigate(
             TransactionViewFragmentDirections
                 .actionTransactionViewFragmentToBudgetRuleUpdateFragment()
