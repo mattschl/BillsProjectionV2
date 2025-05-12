@@ -65,6 +65,7 @@ class AccountTypesFragment
         accountTypeAdapter = AccountTypeAdapter(
             mainActivity.mainViewModel,
             mView,
+            TAG,
             this@AccountTypesFragment,
         )
 
@@ -98,9 +99,7 @@ class AccountTypesFragment
     }
 
     private fun setClickActions() {
-        binding.fabAddAccountType.setOnClickListener {
-            gotoAccountTypeAdd()
-        }
+        binding.fabAddAccountType.setOnClickListener { gotoAccountTypeAdd() }
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -134,9 +133,7 @@ class AccountTypesFragment
     }
 
     private fun gotoAccountTypeAdd() {
-        mainActivity.mainViewModel.setCallingFragments(
-            mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
-        )
+        mainActivity.mainViewModel.addCallingFragment(TAG)
         gotoAccountYpeAddFragment()
     }
 

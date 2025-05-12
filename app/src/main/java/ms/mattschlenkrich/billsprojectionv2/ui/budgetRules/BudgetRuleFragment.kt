@@ -60,10 +60,7 @@ class BudgetRuleFragment :
     }
 
     private fun removeFragmentReference() {
-        mainActivity.mainViewModel.setCallingFragments(
-            mainActivity.mainViewModel.getCallingFragments()!!
-                .replace(", $TAG", "")
-        )
+        mainActivity.mainViewModel.removeCallingFragment(TAG)
     }
 
     private fun setupRecyclerView() {
@@ -71,6 +68,7 @@ class BudgetRuleFragment :
             mainActivity.budgetRuleViewModel,
             mainActivity.mainViewModel,
             mView,
+            TAG,
             this@BudgetRuleFragment,
         )
         binding.rvBudgetRules.apply {
@@ -146,9 +144,7 @@ class BudgetRuleFragment :
 
     private fun gotoBudgetRuleAdd() {
         mainActivity.mainViewModel.setBudgetRuleDetailed(null)
-        mainActivity.mainViewModel.setCallingFragments(
-            mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
-        )
+        mainActivity.mainViewModel.addCallingFragment(TAG)
         gotoBudgetRuleAddFragment()
     }
 

@@ -35,13 +35,14 @@ import ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountsFragment
 import java.util.Random
 
 
-private const val PARENT_TAG = FRAG_ACCOUNTS
+//private const val PARENT_TAG = FRAG_ACCOUNTS
 
 class AccountAdapter(
     val mainActivity: MainActivity,
     private val mainViewModel: MainViewModel,
-    private val accountsFragment: AccountsFragment,
     private val mView: View,
+    private val parentTag: String,
+    private val accountsFragment: AccountsFragment,
 ) :
     RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() {
 
@@ -124,8 +125,7 @@ class AccountAdapter(
         val curAccount = differ.currentList[position]
 
         holder.itemBinding.apply {
-            tvAccountName.text =
-                curAccount.account.accountName
+            tvAccountName.text = curAccount.account.accountName
             var info = if (curAccount.account.accountNumber.isNotEmpty()) {
                 "# ${curAccount.account.accountNumber} "
             } else {
@@ -175,9 +175,7 @@ class AccountAdapter(
             )
             ibAccountColor.setBackgroundColor(color)
 
-            holder.itemView.setOnClickListener {
-                chooseAccount(curAccount)
-            }
+            holder.itemView.setOnClickListener { chooseAccount(curAccount) }
             holder.itemView.setOnLongClickListener {
                 chooseOptionsForAccount(curAccount)
                 false
@@ -216,11 +214,7 @@ class AccountAdapter(
     }
 
     private fun showMessage(message: String) {
-        Toast.makeText(
-            mView.context,
-            message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun deleteAccount(curAccount: AccountWithType) {
@@ -290,7 +284,7 @@ class AccountAdapter(
     }
 
     private fun gotoTransactionAverage(curAccount: AccountWithType) {
-        mainViewModel.setCallingFragments(mainViewModel.getCallingFragments() + ", " + PARENT_TAG)
+        mainViewModel.addCallingFragment(parentTag)
         mainViewModel.setAccountWithType(curAccount)
         mainViewModel.setBudgetRuleDetailed(null)
         accountsFragment.gotoTransactionAverageFragment()
@@ -299,50 +293,36 @@ class AccountAdapter(
     private fun gotoUpdateAccount(
         curAccount: AccountWithType,
     ) {
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments() + ", " + PARENT_TAG
-        )
-        mainViewModel.setAccountWithType(
-            curAccount
-        )
+        mainViewModel.addCallingFragment(parentTag)
+        mainViewModel.setAccountWithType(curAccount)
         accountsFragment.gotoAccountUpdateFragment()
     }
 
     private fun gotoCallingFragment() {
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments()!!
-                .replace(", $FRAG_ACCOUNTS", "")
-        )
+        mainViewModel.removeCallingFragment(FRAG_ACCOUNTS)
         val callingFragment = mainViewModel.getCallingFragments()!!
         if (callingFragment.contains(FRAG_TRANSACTION_SPLIT)) {
             accountsFragment.gotoTransactionSplitFragment()
         }
-        if (callingFragment
-                .contains(FRAG_BUDGET_RULE_ADD)
+        if (callingFragment.contains(FRAG_BUDGET_RULE_ADD)
         ) {
             accountsFragment.gotoBudgetRuleAddFragment()
-        } else if (callingFragment
-                .contains(FRAG_BUDGET_RULE_UPDATE)
+        } else if (callingFragment.contains(FRAG_BUDGET_RULE_UPDATE)
         ) {
             accountsFragment.gotoBudgetRuleUpdateFragment()
-        } else if (callingFragment
-                .contains(FRAG_TRANS_ADD)
+        } else if (callingFragment.contains(FRAG_TRANS_ADD)
         ) {
             accountsFragment.gotoTransactionAddFragment()
-        } else if (callingFragment
-                .contains(FRAG_TRANS_UPDATE)
+        } else if (callingFragment.contains(FRAG_TRANS_UPDATE)
         ) {
             accountsFragment.gotoTransactionUpdateFragment()
-        } else if (callingFragment
-                .contains(FRAG_BUDGET_ITEM_ADD)
+        } else if (callingFragment.contains(FRAG_BUDGET_ITEM_ADD)
         ) {
             accountsFragment.gotoBudgetItemAddFragment()
-        } else if (callingFragment
-                .contains(FRAG_BUDGET_ITEM_UPDATE)
+        } else if (callingFragment.contains(FRAG_BUDGET_ITEM_UPDATE)
         ) {
             accountsFragment.gotoBudgetItemUpdateFragment()
-        } else if (callingFragment
-                .contains(FRAG_TRANS_PERFORM)
+        } else if (callingFragment.contains(FRAG_TRANS_PERFORM)
         ) {
             accountsFragment.gotoTransactionPerformFragment()
         }

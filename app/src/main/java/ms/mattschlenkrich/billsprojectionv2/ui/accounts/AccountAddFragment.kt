@@ -73,12 +73,8 @@ class AccountAddFragment :
     private fun populateAccountFromCache() {
         val accountWithType = mainActivity.mainViewModel.getAccountWithType()!!
         binding.apply {
-            etAccAddName.setText(
-                accountWithType.account.accountName
-            )
-            etAccAddHandle.setText(
-                accountWithType.account.accountNumber
-            )
+            etAccAddName.setText(accountWithType.account.accountName)
+            etAccAddHandle.setText(accountWithType.account.accountNumber)
             etAccAddBalance.setText(
                 nf.displayDollars(
                     if (mainActivity.mainViewModel.getTransferNum()!! != 0.0 &&
@@ -125,8 +121,7 @@ class AccountAddFragment :
     private fun populateAccountTypeFromCache() {
         val accountWithType = mainActivity.mainViewModel.getAccountWithType()!!
         binding.apply {
-            tvAccAddType.text =
-                accountWithType.accountType!!.accountType
+            tvAccAddType.text = accountWithType.accountType!!.accountType
             var display =
                 if (
                     accountWithType.accountType.keepTotals
@@ -152,9 +147,7 @@ class AccountAddFragment :
     }
 
     private fun getAccountNameListForValidation() {
-        mainActivity.accountViewModel.getAccountNameList().observe(
-            viewLifecycleOwner
-        ) { accounts ->
+        mainActivity.accountViewModel.getAccountNameList().observe(viewLifecycleOwner) { accounts ->
             accountNameList.clear()
             accounts.listIterator().forEach {
                 accountNameList.add(it)
@@ -165,9 +158,7 @@ class AccountAddFragment :
     private fun setClickActions() {
         setMenuActions()
         binding.apply {
-            tvAccAddType.setOnClickListener {
-                gotoAccountTypes()
-            }
+            tvAccAddType.setOnClickListener { gotoAccountTypes() }
             etAccAddBalance.setOnLongClickListener {
                 gotoCalculator(BALANCE)
                 false
@@ -232,18 +223,11 @@ class AccountAddFragment :
     }
 
     private fun showMessage(message: String) {
-        Toast.makeText(
-            mView.context,
-            message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun saveAccount() {
-        mainActivity.mainViewModel.setCallingFragments(
-            mainActivity.mainViewModel.getCallingFragments()!!
-                .replace(", $FRAG_ACCOUNT_ADD", "")
-        )
+        mainActivity.mainViewModel.removeCallingFragment(TAG)
         val curAccount = getCurrentAccount()
         mainActivity.accountViewModel.addAccount(curAccount)
         mainActivity.mainViewModel.setAccountWithType(
@@ -257,45 +241,28 @@ class AccountAddFragment :
 
     private fun validateAccount(): String {
         binding.apply {
-            val nameIsBlank =
-                etAccAddName.text.isNullOrEmpty()
-            var nameFound = false
-            if (accountNameList.isNotEmpty() && !nameIsBlank) {
-                for (i in 0 until accountNameList.size) {
-                    if (accountNameList[i] ==
-                        etAccAddName.text.toString().trim()
-                    ) {
-                        nameFound = true
-                        break
-                    }
+            if (etAccAddName.text.isNullOrEmpty()) {
+                return getString(R.string.error) + getString(R.string.please_enter_a_name)
+            }
+            for (i in 0 until accountNameList.size) {
+                if (accountNameList[i] == etAccAddName.text.toString().trim()
+                ) {
+                    return getString(R.string.error) + getString(R.string.this_account_rule_already_exists)
                 }
             }
-            val errorMess = if (nameIsBlank) {
-                getString(R.string.error) +
-                        getString(R.string.please_enter_a_name)
-            } else if (nameFound) {
-                getString(R.string.error) +
-                        getString(R.string.this_account_rule_already_exists)
-            } else if (mainActivity.mainViewModel.getAccountWithType()?.accountType == null
+            if (mainActivity.mainViewModel.getAccountWithType()?.accountType == null
             ) {
-                getString(R.string.error) +
+                return getString(R.string.error) +
                         getString(R.string.this_account_must_have_an_account_type)
-            } else {
-                ANSWER_OK
             }
-            return errorMess
+            return ANSWER_OK
         }
     }
 
     private fun gotoAccountTypes() {
-        mainActivity.mainViewModel.setCallingFragments(
-            mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
-        )
+        mainActivity.mainViewModel.addCallingFragment(TAG)
         mainActivity.mainViewModel.setAccountWithType(
-            AccountWithType(
-                getCurrentAccount(),
-                null
-            )
+            AccountWithType(getCurrentAccount(), null)
         )
         gotoAccountTypesFragment()
 

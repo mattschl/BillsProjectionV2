@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_ADD
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType
@@ -19,11 +18,12 @@ import ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountTypesFragment
 import java.util.Random
 
 
-private const val PARENT_TAG = FRAG_ACCOUNT_TYPES
+//private const val PARENT_TAG = FRAG_ACCOUNT_TYPES
 
 class AccountTypeAdapter(
     private val mainViewModel: MainViewModel,
     private val mView: View,
+    private val parentTag: String,
     private val accountTypesFragment: AccountTypesFragment,
 ) :
     RecyclerView.Adapter<AccountTypeAdapter.AccountTypeViewHolder>() {
@@ -108,39 +108,32 @@ class AccountTypeAdapter(
                 gotoAccountTypeUpdate(curAccountType)
                 false
             }
-            holder.itemView.setOnClickListener {
-                chooseAccountType(curAccountType)
-            }
+            holder.itemView.setOnClickListener { chooseAccountType(curAccountType) }
         }
     }
 
     private fun gotoAccountTypeUpdate(
         curAccountType: AccountType?,
     ) {
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments() + ", " + PARENT_TAG
-        )
-        mainViewModel.setAccountType(
-            curAccountType
-        )
+        mainViewModel.addCallingFragment(parentTag)
+        mainViewModel.setAccountType(curAccountType)
         accountTypesFragment.gotoAccountUpdateFragment()
     }
 
     private fun chooseAccountType(
         curAccountType: AccountType?,
     ) {
-        mainViewModel.setAccountType(
-            curAccountType
-        )
+        mainViewModel.setAccountType(curAccountType)
         mainViewModel.setAccountWithType(
             AccountWithType(
                 mainViewModel.getAccountWithType()!!.account,
                 curAccountType
             )
         )
-        if (mainViewModel.getCallingFragments()!!.contains(FRAG_ACCOUNT_UPDATE)) {
+        val mCallingFragment = mainViewModel.getCallingFragments()!!
+        if (mCallingFragment.contains(FRAG_ACCOUNT_UPDATE)) {
             accountTypesFragment.gotoAccountUpdateFragment()
-        } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_ACCOUNT_ADD)) {
+        } else if (mCallingFragment.contains(FRAG_ACCOUNT_ADD)) {
             accountTypesFragment.gotoAccountAddFragment()
         }
     }

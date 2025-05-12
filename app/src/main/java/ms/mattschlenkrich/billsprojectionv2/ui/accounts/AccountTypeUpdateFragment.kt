@@ -64,16 +64,11 @@ class AccountTypeUpdateFragment :
         getAccountTypeListForValidation()
         binding.apply {
             etAccTypeUpdate.setText(currentAccountType.accountType)
-            chkAccountTypeUKeepTotals.isChecked =
-                currentAccountType.keepTotals
-            chkAccountTypeUKeepOwing.isChecked =
-                currentAccountType.tallyOwing
-            chkAccTypeAddIsAsset.isChecked =
-                currentAccountType.isAsset
-            chkAccountTypeUDisplayAsset.isChecked =
-                currentAccountType.displayAsAsset
-            chkAccTypeUAllowPending.isChecked =
-                currentAccountType.allowPending
+            chkAccountTypeUKeepTotals.isChecked = currentAccountType.keepTotals
+            chkAccountTypeUKeepOwing.isChecked = currentAccountType.tallyOwing
+            chkAccTypeAddIsAsset.isChecked = currentAccountType.isAsset
+            chkAccountTypeUDisplayAsset.isChecked = currentAccountType.displayAsAsset
+            chkAccTypeUAllowPending.isChecked = currentAccountType.allowPending
         }
     }
 
@@ -89,9 +84,7 @@ class AccountTypeUpdateFragment :
 
     private fun setClickActions() {
         setMenuActions()
-        binding.fabAccountTypeUpdate.setOnClickListener {
-            isAccountTypeReadyToUpdate()
-        }
+        binding.fabAccountTypeUpdate.setOnClickListener { isAccountTypeReadyToUpdate() }
     }
 
     private fun setMenuActions() {
@@ -106,7 +99,7 @@ class AccountTypeUpdateFragment :
                 // Handle the menu selection
                 return when (menuItem.itemId) {
                     R.id.menu_delete -> {
-                        chooseToDeleteAccountType()
+                        confirmDeleteAccountType()
                         true
                     }
 
@@ -124,20 +117,7 @@ class AccountTypeUpdateFragment :
         } else if (binding.etAccTypeUpdate.text.toString().isNotBlank() &&
             validateAccountType()
         ) {
-            AlertDialog.Builder(activity).apply {
-                setTitle(getString(R.string.rename_account_type))
-                setMessage(
-                    getString(R.string.are_you_sure_you_want_to_rename_this_account_type) +
-                            getString(R.string.note) +
-                            getString(R.string.this_will_not_replace_an_existing_account_type)
-                )
-                setPositiveButton(
-                    getString(R.string.update_account_type)
-                ) { _, _ ->
-                    updateAccountType()
-                }
-                setNegativeButton(getString(R.string.cancel), null)
-            }.create().show()
+            confirmRenameAccountType()
         } else {
             showMessage(
                 getString(R.string.error) +
@@ -146,12 +126,25 @@ class AccountTypeUpdateFragment :
         }
     }
 
+    private fun confirmRenameAccountType() {
+        AlertDialog.Builder(activity).apply {
+            setTitle(getString(R.string.rename_account_type))
+            setMessage(
+                getString(R.string.are_you_sure_you_want_to_rename_this_account_type) +
+                        getString(R.string.note) +
+                        getString(R.string.this_will_not_replace_an_existing_account_type)
+            )
+            setPositiveButton(
+                getString(R.string.update_account_type)
+            ) { _, _ ->
+                updateAccountType()
+            }
+            setNegativeButton(getString(R.string.cancel), null)
+        }.create().show()
+    }
+
     private fun showMessage(message: String) {
-        Toast.makeText(
-            context,
-            message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun validateAccountType(): Boolean {
@@ -183,11 +176,11 @@ class AccountTypeUpdateFragment :
                 )
 
             )
-            gotoAccountTypesUpdate()
+            gotoAccountTypesFragment()
         }
     }
 
-    private fun chooseToDeleteAccountType() {
+    private fun confirmDeleteAccountType() {
         AlertDialog.Builder(activity).apply {
             setTitle(getString(R.string.delete_account_type))
             setMessage(getString(R.string.are_you_sure_you_want_to_delete_this_account_type))
@@ -203,10 +196,10 @@ class AccountTypeUpdateFragment :
             currentAccountType.typeId,
             df.getCurrentTimeAsString()
         )
-        gotoAccountTypesUpdate()
+        gotoAccountTypesFragment()
     }
 
-    private fun gotoAccountTypesUpdate() {
+    private fun gotoAccountTypesFragment() {
         mView.findNavController().navigate(
             AccountTypeUpdateFragmentDirections
                 .actionAccountTypeUpdateFragmentToAccountTypesFragment()
