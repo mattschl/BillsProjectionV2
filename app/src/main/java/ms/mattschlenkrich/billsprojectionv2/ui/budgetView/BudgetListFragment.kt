@@ -56,15 +56,9 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
 
     private fun createArrowActions() {
         binding.apply {
-            imgMonthlyArrow.setOnClickListener {
-                toggleShowMonthlyItems()
-            }
-            imgOccasionalArrow.setOnClickListener {
-                toggleShowOccasionalItems()
-            }
-            imgAnnualArrow.setOnClickListener {
-                toggleShowAnnualItems()
-            }
+            imgMonthlyArrow.setOnClickListener { toggleShowMonthlyItems() }
+            imgOccasionalArrow.setOnClickListener { toggleShowOccasionalItems() }
+            imgAnnualArrow.setOnClickListener { toggleShowAnnualItems() }
         }
     }
 
@@ -86,25 +80,25 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     }
 
     private fun populateAnnualBudget() {
-            val budgetListAnnualAdapter = BudgetListAnnualAdapter(
-                mainActivity,
-                this@BudgetListFragment,
-                mView
-            )
-            binding.rvAnnual.apply {
-                layoutManager = LinearLayoutManager(requireContext())
-                adapter = budgetListAnnualAdapter
+        val budgetListAnnualAdapter = BudgetListAnnualAdapter(
+            mainActivity,
+            this@BudgetListFragment,
+            mView
+        )
+        binding.rvAnnual.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = budgetListAnnualAdapter
+        }
+        mainActivity.budgetRuleViewModel.getBudgetRulesCompletedAnnually(
+            df.getCurrentDateAsString()
+        ).observe(viewLifecycleOwner) { rules ->
+            budgetsAnnual.clear()
+            rules.listIterator().forEach {
+                budgetsAnnual.add(it)
             }
-            mainActivity.budgetRuleViewModel.getBudgetRulesCompletedAnnually(
-                df.getCurrentDateAsString()
-            ).observe(viewLifecycleOwner) { rules ->
-                budgetsAnnual.clear()
-                rules.listIterator().forEach {
-                    budgetsAnnual.add(it)
-                }
-                budgetListAnnualAdapter.differ.submitList(budgetsAnnual)
-                populateAnnualTotals()
-            }
+            budgetListAnnualAdapter.differ.submitList(budgetsAnnual)
+            populateAnnualTotals()
+        }
     }
 
     private fun populateAnnualTotals() {
@@ -160,26 +154,26 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     }
 
     private fun populateOccasionalItems() {
-            val budgetListOccasionalAdapter = BudgetListOccasionalAdapter(
-                mainActivity,
-                this@BudgetListFragment,
-                mView
-            )
-            binding.rvOccasional.apply {
-                layoutManager =
-                    LinearLayoutManager(requireContext())
-                adapter = budgetListOccasionalAdapter
+        val budgetListOccasionalAdapter = BudgetListOccasionalAdapter(
+            mainActivity,
+            this@BudgetListFragment,
+            mView
+        )
+        binding.rvOccasional.apply {
+            layoutManager =
+                LinearLayoutManager(requireContext())
+            adapter = budgetListOccasionalAdapter
+        }
+        mainActivity.budgetRuleViewModel.getBudgetRulesCompletedOccasional(
+            df.getCurrentDateAsString()
+        ).observe(viewLifecycleOwner) { rules ->
+            budgetsOccasional.clear()
+            rules.listIterator().forEach {
+                budgetsOccasional.add(it)
             }
-            mainActivity.budgetRuleViewModel.getBudgetRulesCompletedOccasional(
-                df.getCurrentDateAsString()
-            ).observe(viewLifecycleOwner) { rules ->
-                budgetsOccasional.clear()
-                rules.listIterator().forEach {
-                    budgetsOccasional.add(it)
-                }
-                budgetListOccasionalAdapter.differ.submitList(budgetsOccasional)
-                populateOccasionalTotals()
-            }
+            budgetListOccasionalAdapter.differ.submitList(budgetsOccasional)
+            populateOccasionalTotals()
+        }
     }
 
     private fun populateOccasionalTotals() {
@@ -206,23 +200,18 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
                 if (budget.fromAccount!!.accountType!!.displayAsAsset) {
                     totalDebits += amt
                 }
-                var info =
-                    getString(R.string.credits_) +
-                            nf.displayDollars(totalCredits)
+                var info = getString(R.string.credits_) + nf.displayDollars(totalCredits)
                 tvCreditsOccasional.text = info
                 info =
-                    getString(R.string.debits_) +
-                            nf.displayDollars(totalDebits)
+                    getString(R.string.debits_) + nf.displayDollars(totalDebits)
                 tvDebitsOccasional.text = info
                 if (totalCredits >= totalDebits) {
                     info =
-                        getString(R.string.surplus_of) +
-                                nf.displayDollars(totalCredits - totalDebits)
+                        getString(R.string.surplus_of) + nf.displayDollars(totalCredits - totalDebits)
                     tvTotalOccasional.setTextColor(Color.BLACK)
                 } else {
                     info =
-                        getString(R.string.deficit_of) +
-                                nf.displayDollars(totalDebits - totalCredits)
+                        getString(R.string.deficit_of) + nf.displayDollars(totalDebits - totalCredits)
                     tvTotalOccasional.setTextColor(Color.RED)
                 }
                 tvTotalOccasional.text = info
@@ -248,25 +237,24 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     }
 
     private fun populateMonthlyItems() {
-            val budgetListMonthlyAdapter = BudgetListMonthlyAdapter(
-                mainActivity,
-                this@BudgetListFragment,
-                mView,
-            )
-            binding.rvMonthly.apply {
-                layoutManager =
-                    LinearLayoutManager(requireContext())
-                adapter = budgetListMonthlyAdapter
-            }
-            mainActivity.budgetRuleViewModel.getBudgetRulesCompleteMonthly(df.getCurrentDateAsString())
-                .observe(viewLifecycleOwner) { rules ->
-                    budgetsMonthly.clear()
-                    rules.listIterator().forEach {
-                        budgetsMonthly.add(it)
-                    }
-                    budgetListMonthlyAdapter.differ.submitList(budgetsMonthly)
-                    populateMonthlyTotals()
+        val budgetListMonthlyAdapter = BudgetListMonthlyAdapter(
+            mainActivity,
+            this@BudgetListFragment,
+            mView,
+        )
+        binding.rvMonthly.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = budgetListMonthlyAdapter
+        }
+        mainActivity.budgetRuleViewModel.getBudgetRulesCompleteMonthly(df.getCurrentDateAsString())
+            .observe(viewLifecycleOwner) { rules ->
+                budgetsMonthly.clear()
+                rules.listIterator().forEach {
+                    budgetsMonthly.add(it)
                 }
+                budgetListMonthlyAdapter.differ.submitList(budgetsMonthly)
+                populateMonthlyTotals()
+            }
     }
 
     private fun populateMonthlyTotals() {
@@ -332,7 +320,6 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
         mView.findNavController().navigate(
             BudgetListFragmentDirections
                 .actionBudgetListFragmentToBudgetRuleUpdateFragment()
-
         )
     }
 

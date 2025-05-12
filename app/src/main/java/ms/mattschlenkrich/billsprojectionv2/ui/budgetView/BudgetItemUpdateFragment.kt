@@ -73,12 +73,11 @@ class BudgetItemUpdateFragment : Fragment(
     }
 
     private fun setBudgetRuleDetailedToBlank() {
-        mBudgetRuleDetailed =
-            BudgetRuleDetailed(
-                null,
-                null,
-                null
-            )
+        mBudgetRuleDetailed = BudgetRuleDetailed(
+            null,
+            null,
+            null
+        )
     }
 
     private fun populateValues() {
@@ -86,16 +85,10 @@ class BudgetItemUpdateFragment : Fragment(
         if (mainActivity.mainViewModel.getBudgetItemDetailed() != null) {
             curBudgetItem = mainActivity.mainViewModel.getBudgetItemDetailed()!!
             binding.apply {
-                etProjectedDate.setText(
-                    curBudgetItem.budgetItem?.biActualDate
-                )
-                etBudgetItemName.setText(
-                    curBudgetItem.budgetItem?.biBudgetName
-                )
-                tvBudgetRule.text =
-                    curBudgetItem.budgetRule?.budgetRuleName
-                mBudgetRuleDetailed.budgetRule =
-                    curBudgetItem.budgetRule
+                etProjectedDate.setText(curBudgetItem.budgetItem?.biActualDate)
+                etBudgetItemName.setText(curBudgetItem.budgetItem?.biBudgetName)
+                tvBudgetRule.text = curBudgetItem.budgetRule?.budgetRuleName
+                mBudgetRuleDetailed.budgetRule = curBudgetItem.budgetRule
                 etProjectedAmount.setText(
                     nf.displayDollars(
                         if (mainActivity.mainViewModel.getTransferNum()!! != 0.0) {
@@ -106,22 +99,14 @@ class BudgetItemUpdateFragment : Fragment(
                     )
                 )
                 mainActivity.mainViewModel.setTransferNum(0.0)
-                tvToAccount.text =
-                    curBudgetItem.toAccount?.accountName
-                mBudgetRuleDetailed.toAccount =
-                    curBudgetItem.toAccount
-                tvBiFromAccount.text =
-                    curBudgetItem.fromAccount?.accountName
-                mBudgetRuleDetailed.fromAccount =
-                    curBudgetItem.fromAccount
-                chkFixedAmount.isChecked =
-                    curBudgetItem.budgetItem!!.biIsFixed
-                chkIsAutoPayment.isChecked =
-                    curBudgetItem.budgetItem!!.biIsAutomatic
-                chkIsPayDay.isChecked =
-                    curBudgetItem.budgetItem!!.biIsPayDayItem
-                chkIsLocked.isChecked =
-                    curBudgetItem.budgetItem!!.biLocked
+                tvToAccount.text = curBudgetItem.toAccount?.accountName
+                mBudgetRuleDetailed.toAccount = curBudgetItem.toAccount
+                tvBiFromAccount.text = curBudgetItem.fromAccount?.accountName
+                mBudgetRuleDetailed.fromAccount = curBudgetItem.fromAccount
+                chkFixedAmount.isChecked = curBudgetItem.budgetItem!!.biIsFixed
+                chkIsAutoPayment.isChecked = curBudgetItem.budgetItem!!.biIsAutomatic
+                chkIsPayDay.isChecked = curBudgetItem.budgetItem!!.biIsPayDayItem
+                chkIsLocked.isChecked = curBudgetItem.budgetItem!!.biLocked
                 CoroutineScope(Dispatchers.Main).launch {
                     delay(WAIT_250)
                     for (i in 0 until spPayDays.adapter.count) {
@@ -138,14 +123,11 @@ class BudgetItemUpdateFragment : Fragment(
     }
 
     private fun populatePayDaySpinner() {
-        val payDayAdapter =
-            ArrayAdapter<Any>(
-                requireContext(),
-                R.layout.spinner_item_bold
-            )
-        payDayAdapter.setDropDownViewResource(
+        val payDayAdapter = ArrayAdapter<Any>(
+            requireContext(),
             R.layout.spinner_item_bold
         )
+        payDayAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
         mainActivity.budgetItemViewModel.getPayDays().observe(
             viewLifecycleOwner
         ) { payDayList ->
@@ -159,15 +141,9 @@ class BudgetItemUpdateFragment : Fragment(
     private fun setClickActions() {
         setMenuActions()
         binding.apply {
-            tvBudgetRule.setOnClickListener {
-                chooseBudgetRule()
-            }
-            tvToAccount.setOnClickListener {
-                chooseAccount(REQUEST_TO_ACCOUNT)
-            }
-            tvBiFromAccount.setOnClickListener {
-                chooseAccount(REQUEST_FROM_ACCOUNT)
-            }
+            tvBudgetRule.setOnClickListener { chooseBudgetRule() }
+            tvToAccount.setOnClickListener { chooseAccount(REQUEST_TO_ACCOUNT) }
+            tvBiFromAccount.setOnClickListener { chooseAccount(REQUEST_FROM_ACCOUNT) }
             etProjectedDate.setOnLongClickListener {
                 chooseDate()
                 false
@@ -176,9 +152,7 @@ class BudgetItemUpdateFragment : Fragment(
                 gotoCalculator()
                 false
             }
-            fabUpdateDone.setOnClickListener {
-                updateBudgetItemIfValid()
-            }
+            fabUpdateDone.setOnClickListener { updateBudgetItemIfValid() }
         }
     }
 
@@ -203,17 +177,13 @@ class BudgetItemUpdateFragment : Fragment(
     }
 
     private fun chooseBudgetRule() {
-        mainActivity.mainViewModel.setCallingFragments(
-            mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
-        )
+        mainActivity.mainViewModel.addCallingFragment(TAG)
         mainActivity.mainViewModel.setBudgetItemDetailed(getCurrentBudgetItemDetailed())
         gotoBudgetRulesFragment()
     }
 
     private fun chooseAccount(requestedAccount: String) {
-        mainActivity.mainViewModel.setCallingFragments(
-            mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
-        )
+        mainActivity.mainViewModel.addCallingFragment(TAG)
         mainActivity.mainViewModel.setRequestedAccount(requestedAccount)
         mainActivity.mainViewModel.setBudgetItemDetailed(getCurrentBudgetItemDetailed())
         gotoAccountsFragment()
@@ -221,8 +191,7 @@ class BudgetItemUpdateFragment : Fragment(
 
     private fun chooseDate() {
         binding.apply {
-            val curDateAll = etProjectedDate.text.toString()
-                .split("-")
+            val curDateAll = etProjectedDate.text.toString().split("-")
             val datePickerDialog = DatePickerDialog(
                 mView.context,
                 { _, year, monthOfYear, dayOfMonth ->
@@ -255,11 +224,7 @@ class BudgetItemUpdateFragment : Fragment(
     }
 
     private fun showMessage(message: String) {
-        Toast.makeText(
-            requireContext(),
-            message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
     }
 
     private fun validateBudgetItem(): String {
@@ -283,14 +248,11 @@ class BudgetItemUpdateFragment : Fragment(
     }
 
     private fun updateBudgetItem() {
-        mainActivity.budgetItemViewModel.updateBudgetItem(
-            getCurrentBudgetItemForUpdating()
-        )
+        mainActivity.budgetItemViewModel.updateBudgetItem(getCurrentBudgetItemForUpdating())
     }
 
     private fun getCurrentBudgetItemDetailed(): BudgetItemDetailed {
-        val budgetItem =
-            getCurrentBudgetItemForUpdating()
+        val budgetItem = getCurrentBudgetItemForUpdating()
         return BudgetItemDetailed(
             budgetItem,
             curBudgetItem.budgetRule,
