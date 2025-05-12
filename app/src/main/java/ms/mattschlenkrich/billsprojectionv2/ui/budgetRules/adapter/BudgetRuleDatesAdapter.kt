@@ -18,8 +18,8 @@ import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.BudgetRuleUpdateFragm
 class BudgetRuleDatesAdapter(
     private val mainViewModel: MainViewModel,
     private val mView: View,
-    private val budgetRuleUpdateFragment: BudgetRuleUpdateFragment,
     private val parentTag: String,
+    private val budgetRuleUpdateFragment: BudgetRuleUpdateFragment,
 ) :
     RecyclerView.Adapter<BudgetRuleDatesAdapter.DateViewHolder>() {
 
@@ -73,9 +73,7 @@ class BudgetRuleDatesAdapter(
             display = " for ${nf.displayDollars(curItem.budgetItem.biProjectedAmount)}"
             tvAmount.text = display
         }
-        holder.itemView.setOnClickListener {
-            confirmGotoBudgetItem(curItem)
-        }
+        holder.itemView.setOnClickListener { confirmGotoBudgetItem(curItem) }
     }
 
     private fun confirmGotoBudgetItem(curItem: BudgetItemDetailed) {
@@ -92,9 +90,7 @@ class BudgetRuleDatesAdapter(
     }
 
     private fun gotoBudgetItem(curItem: BudgetItemDetailed) {
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments() + ", " + parentTag
-        )
+        mainViewModel.addCallingFragment(parentTag)
         mainViewModel.setBudgetItemDetailed(curItem)
         budgetRuleUpdateFragment.gotoBudgetItemUpdateFragment()
     }

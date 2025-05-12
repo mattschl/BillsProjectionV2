@@ -62,8 +62,9 @@ class AccountsFragment :
         accountAdapter = AccountAdapter(
             mainActivity,
             mainActivity.mainViewModel,
+            mView,
+            TAG,
             this@AccountsFragment,
-            mView
         )
         binding.rvAccounts.apply {
             layoutManager = StaggeredGridLayoutManager(
@@ -94,9 +95,7 @@ class AccountsFragment :
     }
 
     private fun setClickActions() {
-        binding.fabAddNewAccount.setOnClickListener {
-            gotoAccountAddFragment()
-        }
+        binding.fabAddNewAccount.setOnClickListener { gotoAccountAddFragment() }
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -124,19 +123,17 @@ class AccountsFragment :
 
     private fun searchAccount(query: String?) {
         val searchQuery = "%$query%"
-        mainActivity.accountViewModel.searchAccountsWithType(searchQuery).observe(
-            this
-        ) { list -> accountAdapter.differ.submitList(list) }
+        mainActivity.accountViewModel.searchAccountsWithType(searchQuery)
+            .observe(this) { list -> accountAdapter.differ.submitList(list) }
     }
 
     private fun gotoAccountAddFragment() {
-        mainActivity.mainViewModel.setCallingFragments(
-            mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
-        )
+        mainActivity.mainViewModel.addCallingFragment(TAG)
         mainActivity.mainViewModel.setAccountWithType(null)
-        val direction = AccountsFragmentDirections
-            .actionAccountsFragmentToAccountAddFragment()
-        mView.findNavController().navigate(direction)
+        mView.findNavController().navigate(
+            AccountsFragmentDirections
+                .actionAccountsFragmentToAccountAddFragment()
+        )
     }
 
     fun gotoAccountUpdateFragment() {

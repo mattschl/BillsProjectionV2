@@ -101,53 +101,38 @@ class BudgetRuleAddFragment :
                 )
                 mainActivity.mainViewModel.setTransferNum(0.0)
                 if (budgetRuleDetailed.toAccount != null) {
-                    tvToAccount.text =
-                        budgetRuleDetailed.toAccount!!.accountName
+                    tvToAccount.text = budgetRuleDetailed.toAccount!!.accountName
                 }
                 if (budgetRuleDetailed.fromAccount != null) {
-                    tvFromAccount.text =
-                        budgetRuleDetailed.fromAccount!!.accountName
+                    tvFromAccount.text = budgetRuleDetailed.fromAccount!!.accountName
                 }
-                chkFixedAmount.isChecked =
-                    budgetRuleDetailed.budgetRule!!.budFixedAmount
-                chkMakePayDay.isChecked =
-                    budgetRuleDetailed.budgetRule!!.budIsPayDay
-                chkAutoPayment.isChecked =
-                    budgetRuleDetailed.budgetRule!!.budIsAutoPay
-                etStartDate.setText(
-                    budgetRuleDetailed.budgetRule!!.budStartDate
-                )
-                etEndDate.setText(
-                    budgetRuleDetailed.budgetRule!!.budEndDate
-                )
-                spFrequencyType.setSelection(
-                    budgetRuleDetailed.budgetRule!!.budFrequencyTypeId
-                )
-                spDayOfWeek.setSelection(
-                    budgetRuleDetailed.budgetRule!!.budDayOfWeekId
-                )
+                chkFixedAmount.isChecked = budgetRuleDetailed.budgetRule!!.budFixedAmount
+                chkMakePayDay.isChecked = budgetRuleDetailed.budgetRule!!.budIsPayDay
+                chkAutoPayment.isChecked = budgetRuleDetailed.budgetRule!!.budIsAutoPay
+                etStartDate.setText(budgetRuleDetailed.budgetRule!!.budStartDate)
+                etEndDate.setText(budgetRuleDetailed.budgetRule!!.budEndDate)
+                spFrequencyType.setSelection(budgetRuleDetailed.budgetRule!!.budFrequencyTypeId)
+                spDayOfWeek.setSelection(budgetRuleDetailed.budgetRule!!.budDayOfWeekId)
             }
         }
     }
 
     private fun populateSpinners() {
-        val adapterFrequencyType =
-            ArrayAdapter(
-                mView.context,
-                R.layout.spinner_item_normal,
-                resources.getStringArray(R.array.frequency_types)
-            )
+        val adapterFrequencyType = ArrayAdapter(
+            mView.context,
+            R.layout.spinner_item_normal,
+            resources.getStringArray(R.array.frequency_types)
+        )
         adapterFrequencyType.setDropDownViewResource(
             R.layout.spinner_item_normal
         )
         binding.spFrequencyType.adapter = adapterFrequencyType
 
-        val adapterDayOfWeek =
-            ArrayAdapter(
-                mView.context,
-                R.layout.spinner_item_normal,
-                resources.getStringArray(R.array.days_of_week)
-            )
+        val adapterDayOfWeek = ArrayAdapter(
+            mView.context,
+            R.layout.spinner_item_normal,
+            resources.getStringArray(R.array.days_of_week)
+        )
         adapterDayOfWeek.setDropDownViewResource(
             R.layout.spinner_item_normal
         )
@@ -156,19 +141,14 @@ class BudgetRuleAddFragment :
 
     private fun getBudgetRuleNameListForValidation() {
         CoroutineScope(Dispatchers.IO).launch {
-            budgetNameList =
-                mainActivity.budgetRuleViewModel.getBudgetRuleNameList()
+            budgetNameList = mainActivity.budgetRuleViewModel.getBudgetRuleNameList()
         }
     }
 
     private fun setClickActions() {
         binding.apply {
-            tvToAccount.setOnClickListener {
-                chooseToAccount()
-            }
-            tvFromAccount.setOnClickListener {
-                chooseFromAccount()
-            }
+            tvToAccount.setOnClickListener { chooseToAccount() }
+            tvFromAccount.setOnClickListener { chooseFromAccount() }
             etStartDate.setOnLongClickListener {
                 chooseStartDate()
                 false
@@ -208,25 +188,14 @@ class BudgetRuleAddFragment :
     }
 
     private fun chooseFromAccount() {
-        mainActivity.mainViewModel.setCallingFragments(
-            "${mainActivity.mainViewModel.getCallingFragments()}, $TAG"
-        )
+        mainActivity.mainViewModel.addCallingFragment(TAG)
         mainActivity.mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
         mainActivity.mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
         gotoAccountsFragment()
     }
 
-    private fun gotoAccountsFragment() {
-        mView.findNavController().navigate(
-            BudgetRuleAddFragmentDirections
-                .actionBudgetRuleAddFragmentToAccountsFragment()
-        )
-    }
-
     private fun chooseToAccount() {
-        mainActivity.mainViewModel.setCallingFragments(
-            "${mainActivity.mainViewModel.getCallingFragments()}, $TAG"
-        )
+        mainActivity.mainViewModel.addCallingFragment(TAG)
         mainActivity.mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
         mainActivity.mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
         gotoAccountsFragment()
@@ -298,11 +267,7 @@ class BudgetRuleAddFragment :
     }
 
     private fun showMessage(message: String) {
-        Toast.makeText(
-            mView.context,
-            message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun getCurrentBudgetRuleForSave(): BudgetRule {
@@ -370,9 +335,7 @@ class BudgetRuleAddFragment :
     }
 
     private fun saveBudgetRule() {
-        mainActivity.budgetRuleViewModel.insertBudgetRule(
-            getCurrentBudgetRuleForSave()
-        )
+        mainActivity.budgetRuleViewModel.insertBudgetRule(getCurrentBudgetRuleForSave())
     }
 
     private fun gotoCalculator() {
@@ -386,6 +349,13 @@ class BudgetRuleAddFragment :
         mainActivity.mainViewModel.setReturnTo(TAG)
         mainActivity.mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
         gotoCalculatorFragment()
+    }
+
+    private fun gotoAccountsFragment() {
+        mView.findNavController().navigate(
+            BudgetRuleAddFragmentDirections
+                .actionBudgetRuleAddFragmentToAccountsFragment()
+        )
     }
 
     private fun gotoCalculatorFragment() {

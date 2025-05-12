@@ -69,15 +69,10 @@ class AccountUpdateFragment :
         val accountWithType = mainActivity.mainViewModel.getAccountWithType()!!
         getAccountListNamesForValidation()
         binding.apply {
-            edAccountUpdateName.setText(
-                accountWithType.account.accountName
-            )
-            edAccountUpdateHandle.setText(
-                accountWithType.account.accountNumber
-            )
+            edAccountUpdateName.setText(accountWithType.account.accountName)
+            edAccountUpdateHandle.setText(accountWithType.account.accountNumber)
             if (accountWithType.accountType != null) {
-                drpAccountUpdateType.text =
-                    accountWithType.accountType.accountType
+                drpAccountUpdateType.text = accountWithType.accountType.accountType
             }
             edAccountUpdateBalance.setText(
                 nf.displayDollars(
@@ -115,9 +110,7 @@ class AccountUpdateFragment :
             )
             mainActivity.mainViewModel.setTransferNum(0.0)
             etAccUpdateLimit.setText(
-                nf.displayDollars(
-                    accountWithType.account.accountCreditLimit
-                )
+                nf.displayDollars(accountWithType.account.accountCreditLimit)
             )
             txtAccountUpdateAccountId.text =
                 String.format(accountWithType.account.accountId.toString())
@@ -138,12 +131,8 @@ class AccountUpdateFragment :
     private fun setClickActions() {
         setMenuActions()
         binding.apply {
-            drpAccountUpdateType.setOnClickListener {
-                gotoAccountTypes()
-            }
-            fabAccountUpdateDone.setOnClickListener {
-                updateAccountIfValid()
-            }
+            drpAccountUpdateType.setOnClickListener { gotoAccountTypes() }
+            fabAccountUpdateDone.setOnClickListener { updateAccountIfValid() }
             edAccountUpdateBalance.setOnLongClickListener {
                 gotoCalculator(BALANCE)
                 false
@@ -221,7 +210,6 @@ class AccountUpdateFragment :
 
     private fun updateAccountIfValid() {
         val message = validateAccount()
-
         if (message == ANSWER_OK) {
             confirmUpdateAccount()
         } else {
@@ -231,11 +219,7 @@ class AccountUpdateFragment :
     }
 
     private fun showMessage(message: String) {
-        Toast.makeText(
-            mView.context,
-            message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun confirmUpdateAccount() {
@@ -245,21 +229,25 @@ class AccountUpdateFragment :
             mainActivity.accountViewModel.updateAccount(getUpdatedAccount())
             gotoCallingFragment()
         } else if (name != accountWithType.account.accountName.trim()) {
-            AlertDialog.Builder(activity).apply {
-                setTitle(getString(R.string.rename_account))
-                setMessage(
-                    getString(R.string.are_you_sure_you_want_to_rename_this_account) +
-                            getString(R.string.note) +
-                            getString(R.string.this_will_not_replace_an_existing_account_type)
-                )
-                setPositiveButton(getString(R.string.update_account)) { _, _ ->
-                    mainActivity.accountViewModel.updateAccount(getUpdatedAccount())
-                    gotoCallingFragment()
-
-                }
-                setNegativeButton(getString(R.string.cancel), null)
-            }.create().show()
+            confirmRenameAccount()
         }
+    }
+
+    private fun confirmRenameAccount() {
+        AlertDialog.Builder(activity).apply {
+            setTitle(getString(R.string.rename_account))
+            setMessage(
+                getString(R.string.are_you_sure_you_want_to_rename_this_account) +
+                        getString(R.string.note) +
+                        getString(R.string.this_will_not_replace_an_existing_account_type)
+            )
+            setPositiveButton(getString(R.string.update_account)) { _, _ ->
+                mainActivity.accountViewModel.updateAccount(getUpdatedAccount())
+                gotoCallingFragment()
+
+            }
+            setNegativeButton(getString(R.string.cancel), null)
+        }.create().show()
     }
 
     private fun confirmDeleteAccount() {
@@ -328,10 +316,7 @@ class AccountUpdateFragment :
     }
 
     private fun gotoCallingFragment() {
-        mainActivity.mainViewModel.setCallingFragments(
-            mainActivity.mainViewModel.getCallingFragments()!!
-                .replace(", $TAG", "")
-        )
+        mainActivity.mainViewModel.removeCallingFragment(TAG)
         if (mainActivity.mainViewModel.getCallingFragments()!!.contains(FRAG_ACCOUNTS)) {
             gotoAccountsFragment()
         } else if (mainActivity.mainViewModel.getCallingFragments()!!.contains(FRAG_BUDGET_VIEW)) {
@@ -361,9 +346,7 @@ class AccountUpdateFragment :
     }
 
     private fun gotoAccountTypes() {
-        mainActivity.mainViewModel.setCallingFragments(
-            mainActivity.mainViewModel.getCallingFragments() + ", " + TAG
-        )
+        mainActivity.mainViewModel.addCallingFragment(TAG)
         mainActivity.mainViewModel.setAccountWithType(
             AccountWithType(
                 getUpdatedAccount(),

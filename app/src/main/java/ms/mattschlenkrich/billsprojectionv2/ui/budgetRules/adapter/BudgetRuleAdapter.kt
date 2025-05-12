@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_UPDATE
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_SPLIT
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
@@ -29,12 +28,13 @@ import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.BudgetRuleFragment
 import java.util.Random
 
 //private const val TAG = ADAPTER_BUDGET_RULE
-private const val PARENT_TAG = FRAG_BUDGET_RULES
+//private const val PARENT_TAG = FRAG_BUDGET_RULES
 
 class BudgetRuleAdapter(
     private val budgetRuleViewModel: BudgetRuleViewModel,
     private val mainViewModel: MainViewModel,
     private val mView: View,
+    private val parentTag: String,
     private val budgetRuleFragment: BudgetRuleFragment,
 ) : RecyclerView.Adapter<BudgetRuleAdapter.BudgetRuleViewHolder>() {
 
@@ -83,24 +83,17 @@ class BudgetRuleAdapter(
     override fun onBindViewHolder(
         holder: BudgetRuleViewHolder, position: Int
     ) {
-        val budgetRuleDetailed =
-            differ.currentList[position]
-        holder.itemBinding.tvBudgetRule.text =
-            budgetRuleDetailed.budgetRule!!.budgetRuleName
+        val budgetRuleDetailed = differ.currentList[position]
+        holder.itemBinding.tvBudgetRule.text = budgetRuleDetailed.budgetRule!!.budgetRuleName
         var info = "To: " + budgetRuleDetailed.toAccount!!.accountName
         holder.itemBinding.tvToAccount.text = info
         info = "From: " + budgetRuleDetailed.fromAccount!!.accountName
         holder.itemBinding.tvFromAccount.text = info
-        val amount =
-            cf.displayDollars(budgetRuleDetailed.budgetRule!!.budgetAmount)
-        val frequencyTypes =
-            mView.context.resources.getStringArray(R.array.frequency_types)
-        val frequencyType =
-            frequencyTypes[budgetRuleDetailed.budgetRule!!.budFrequencyTypeId]
-        val daysOfWeek =
-            mView.context.resources.getStringArray(R.array.days_of_week)
-        val dayOfWeek =
-            daysOfWeek[budgetRuleDetailed.budgetRule!!.budDayOfWeekId]
+        val amount = cf.displayDollars(budgetRuleDetailed.budgetRule!!.budgetAmount)
+        val frequencyTypes = mView.context.resources.getStringArray(R.array.frequency_types)
+        val frequencyType = frequencyTypes[budgetRuleDetailed.budgetRule!!.budFrequencyTypeId]
+        val daysOfWeek = mView.context.resources.getStringArray(R.array.days_of_week)
+        val dayOfWeek = daysOfWeek[budgetRuleDetailed.budgetRule!!.budDayOfWeekId]
         info = "$amount " + frequencyType +
                 " X " + budgetRuleDetailed.budgetRule!!.budFrequencyCount +
                 "\nOn " + dayOfWeek
@@ -113,9 +106,7 @@ class BudgetRuleAdapter(
             random.nextInt(256)
         )
         holder.itemBinding.ibColor.setBackgroundColor(color)
-        holder.itemView.setOnClickListener {
-            chooseBudgetRule(budgetRuleDetailed)
-        }
+        holder.itemView.setOnClickListener { chooseBudgetRule(budgetRuleDetailed) }
 
         holder.itemView.setOnLongClickListener {
             chooseOptionsForBudgetRule(budgetRuleDetailed)
@@ -155,19 +146,12 @@ class BudgetRuleAdapter(
     }
 
     private fun showMessage(message: String) {
-        Toast.makeText(
-            mView.context,
-            message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun gotoCreateBudgetItem(budgetRuleDetailed: BudgetRuleDetailed) {
         mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments() +
-                    ", $PARENT_TAG"
-        )
+        mainViewModel.addCallingFragment(parentTag)
         mainViewModel.setBudgetItemDetailed(
             BudgetItemDetailed(
                 BudgetItem(
@@ -201,36 +185,24 @@ class BudgetRuleAdapter(
     private fun chooseBudgetRule(
         budgetRuleDetailed: BudgetRuleDetailed
     ) {
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments()!!
-                .replace(", $PARENT_TAG", "")
-        )
-        mainViewModel.setBudgetRuleDetailed(
-            budgetRuleDetailed
-        )
-        if (mainViewModel.getCallingFragments()!!
-                .contains(FRAG_TRANSACTION_SPLIT)
+        mainViewModel.removeCallingFragment(parentTag)
+        mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
+        val mCallingFragment = mainViewModel.getCallingFragments()!!
+        if (mCallingFragment.contains(FRAG_TRANSACTION_SPLIT)
         ) {
             val mTransactionSplit = mainViewModel.getSplitTransactionDetailed()
-            mTransactionSplit?.budgetRule =
-                budgetRuleDetailed.budgetRule
+            mTransactionSplit?.budgetRule = budgetRuleDetailed.budgetRule
             mainViewModel.setSplitTransactionDetailed(mTransactionSplit)
         } else {
-            val mTransaction =
-                mainViewModel.getTransactionDetailed()
-            mTransaction?.budgetRule =
-                budgetRuleDetailed.budgetRule
+            val mTransaction = mainViewModel.getTransactionDetailed()
+            mTransaction?.budgetRule = budgetRuleDetailed.budgetRule
             mainViewModel.setTransactionDetailed(mTransaction)
         }
-        if (mainViewModel.getCallingFragments()!!
-                .contains(FRAG_BUDGET_ITEM_ADD) ||
-            mainViewModel.getCallingFragments()!!
-                .contains(FRAG_BUDGET_ITEM_UPDATE)
+        if (mCallingFragment.contains(FRAG_BUDGET_ITEM_ADD) ||
+            mCallingFragment.contains(FRAG_BUDGET_ITEM_UPDATE)
         ) {
-            val mBudgetDetailed =
-                mainViewModel.getBudgetItemDetailed()
-            mBudgetDetailed?.budgetRule =
-                budgetRuleDetailed.budgetRule
+            val mBudgetDetailed = mainViewModel.getBudgetItemDetailed()
+            mBudgetDetailed?.budgetRule = budgetRuleDetailed.budgetRule
             mainViewModel.setBudgetItemDetailed(mBudgetDetailed)
         }
         gotoCallingFragment()
@@ -239,9 +211,7 @@ class BudgetRuleAdapter(
     private fun gotoAverages(
         budgetRuleDetailed: BudgetRuleDetailed,
     ) {
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments() + ", " + FRAG_BUDGET_RULES
-        )
+        mainViewModel.addCallingFragment(parentTag)
         mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
         mainViewModel.setAccountWithType(null)
         budgetRuleFragment.gotoTransactionAverageFragment()
@@ -257,36 +227,35 @@ class BudgetRuleAdapter(
     private fun editBudgetRule(
         budgetRuleDetailed: BudgetRuleDetailed?,
     ) {
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments() + ", " + FRAG_BUDGET_RULES
-        )
+        mainViewModel.addCallingFragment(parentTag)
         mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
         budgetRuleFragment.gotoBudgetRuleUpdateFragment()
     }
 
     private fun gotoCallingFragment() {
+        val mCallingFragment = mainViewModel.getCallingFragments()!!
         when {
-            mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_SPLIT) -> {
+            mCallingFragment.contains(FRAG_TRANSACTION_SPLIT) -> {
                 budgetRuleFragment.gotoTransactionSplitFragment()
             }
 
-            mainViewModel.getCallingFragments()!!.contains(FRAG_TRANS_ADD) -> {
+            mCallingFragment.contains(FRAG_TRANS_ADD) -> {
                 budgetRuleFragment.gotoTransactionAddFragment()
             }
 
-            mainViewModel.getCallingFragments()!!.contains(FRAG_TRANS_UPDATE) -> {
+            mCallingFragment.contains(FRAG_TRANS_UPDATE) -> {
                 budgetRuleFragment.gotoTransactionUpdateFragment()
             }
 
-            mainViewModel.getCallingFragments()!!.contains(FRAG_BUDGET_ITEM_ADD) -> {
+            mCallingFragment.contains(FRAG_BUDGET_ITEM_ADD) -> {
                 budgetRuleFragment.gotoBudgetItemAddFragment()
             }
 
-            mainViewModel.getCallingFragments()!!.contains(FRAG_BUDGET_ITEM_UPDATE) -> {
+            mCallingFragment.contains(FRAG_BUDGET_ITEM_UPDATE) -> {
                 budgetRuleFragment.gotoBudgetItemUpdateFragment()
             }
 
-            mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_ANALYSIS) -> {
+            mCallingFragment.contains(FRAG_TRANSACTION_ANALYSIS) -> {
                 budgetRuleFragment.gotoTransactionAverageFragment()
             }
         }

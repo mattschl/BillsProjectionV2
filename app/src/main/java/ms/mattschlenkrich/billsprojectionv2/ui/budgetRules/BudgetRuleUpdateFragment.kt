@@ -95,9 +95,7 @@ class BudgetRuleUpdateFragment :
     private fun populateFromCache() {
         binding.apply {
             if (budgetRuleDetailed.budgetRule != null) {
-                etBudgetName.setText(
-                    budgetRuleDetailed.budgetRule!!.budgetRuleName
-                )
+                etBudgetName.setText(budgetRuleDetailed.budgetRule!!.budgetRuleName)
                 etAmount.setText(
                     nf.displayDollars(
                         if (mainActivity.mainViewModel.getTransferNum()!! != 0.0) {
@@ -135,8 +133,8 @@ class BudgetRuleUpdateFragment :
         val budgetRuleDatesAdapter = BudgetRuleDatesAdapter(
             mainActivity.mainViewModel,
             mView,
+            TAG,
             this@BudgetRuleUpdateFragment,
-            TAG
         )
         binding.rvProjectedDates.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -152,23 +150,21 @@ class BudgetRuleUpdateFragment :
     }
 
     private fun populateSpinners() {
-        val adapterFrequencyType =
-            ArrayAdapter(
-                mView.context,
-                R.layout.spinner_item_normal,
-                resources.getStringArray(R.array.frequency_types)
-            )
+        val adapterFrequencyType = ArrayAdapter(
+            mView.context,
+            R.layout.spinner_item_normal,
+            resources.getStringArray(R.array.frequency_types)
+        )
         adapterFrequencyType.setDropDownViewResource(
             R.layout.spinner_item_normal
         )
         binding.spFrequencyType.adapter = adapterFrequencyType
 
-        val adapterDayOfWeek =
-            ArrayAdapter(
-                mView.context,
-                R.layout.spinner_item_normal,
-                resources.getStringArray(R.array.days_of_week)
-            )
+        val adapterDayOfWeek = ArrayAdapter(
+            mView.context,
+            R.layout.spinner_item_normal,
+            resources.getStringArray(R.array.days_of_week)
+        )
         adapterDayOfWeek.setDropDownViewResource(
             R.layout.spinner_item_normal
         )
@@ -373,11 +369,7 @@ class BudgetRuleUpdateFragment :
     }
 
     private fun showMessage(message: String) {
-        Toast.makeText(
-            mView.context,
-            message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun updateBudgetRule() {
