@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_LIST
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_MONTHLY
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_WEEKLY
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
@@ -20,7 +21,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.adapter.BudgetListAnnu
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.adapter.BudgetListMonthlyAdapter
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.adapter.BudgetListOccasionalAdapter
 
-//private const val TAG = FRAG_BUDGET_LIST
+private const val TAG = FRAG_BUDGET_LIST
 
 class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     private var _binding: FragmentBudgetListBinding? = null
@@ -82,8 +83,9 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     private fun populateAnnualBudget() {
         val budgetListAnnualAdapter = BudgetListAnnualAdapter(
             mainActivity,
+            mView,
+            TAG,
             this@BudgetListFragment,
-            mView
         )
         binding.rvAnnual.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -156,8 +158,9 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     private fun populateOccasionalItems() {
         val budgetListOccasionalAdapter = BudgetListOccasionalAdapter(
             mainActivity,
+            mView,
+            TAG,
             this@BudgetListFragment,
-            mView
         )
         binding.rvOccasional.apply {
             layoutManager =
@@ -239,8 +242,9 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
     private fun populateMonthlyItems() {
         val budgetListMonthlyAdapter = BudgetListMonthlyAdapter(
             mainActivity,
-            this@BudgetListFragment,
             mView,
+            TAG,
+            this@BudgetListFragment,
         )
         binding.rvMonthly.apply {
             layoutManager = LinearLayoutManager(requireContext())

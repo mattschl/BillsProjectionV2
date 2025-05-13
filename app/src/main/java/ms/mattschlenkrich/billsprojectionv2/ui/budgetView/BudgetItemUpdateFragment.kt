@@ -362,9 +362,10 @@ class BudgetItemUpdateFragment : Fragment(
     }
 
     private fun gotoBudgetViewFragment() {
-        val direction = BudgetItemUpdateFragmentDirections
-            .actionBudgetItemUpdateFragmentToBudgetViewFragment()
-        mView.findNavController().navigate(direction)
+        mView.findNavController().navigate(
+            BudgetItemUpdateFragmentDirections
+                .actionBudgetItemUpdateFragmentToBudgetViewFragment()
+        )
     }
 
     private fun gotoBudgetRuleUpdateFragment() {

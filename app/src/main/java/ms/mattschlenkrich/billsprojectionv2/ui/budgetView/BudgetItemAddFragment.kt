@@ -160,37 +160,25 @@ class BudgetItemAddFragment : Fragment(
                         }
                         mainActivity.mainViewModel.setTransferNum(0.0)
                         if (mBudgetItem.toAccount != null) {
-                            tvToAccount.text =
-                                mBudgetItem.toAccount!!.accountName
-                            budgetRuleDetailed.toAccount =
-                                mBudgetItem.toAccount
+                            tvToAccount.text = mBudgetItem.toAccount!!.accountName
+                            budgetRuleDetailed.toAccount = mBudgetItem.toAccount
                         } else {
-                            tvToAccount.text =
-                                budgetRuleDetailed.toAccount?.accountName
-                            budgetRuleDetailed.toAccount =
-                                budgetRuleDetailed.toAccount
+                            tvToAccount.text = budgetRuleDetailed.toAccount?.accountName
+                            budgetRuleDetailed.toAccount = budgetRuleDetailed.toAccount
                         }
                         if (mBudgetItem.fromAccount != null) {
-                            tvFromAccount.text =
-                                mBudgetItem.fromAccount!!.accountName
-                            budgetRuleDetailed.fromAccount =
-                                mBudgetItem.fromAccount
+                            tvFromAccount.text = mBudgetItem.fromAccount!!.accountName
+                            budgetRuleDetailed.fromAccount = mBudgetItem.fromAccount
                         } else {
-                            tvFromAccount.text =
-                                budgetRuleDetailed.fromAccount?.accountName
-                            budgetRuleDetailed.fromAccount =
-                                budgetRuleDetailed.fromAccount
+                            tvFromAccount.text = budgetRuleDetailed.fromAccount?.accountName
+                            budgetRuleDetailed.fromAccount = budgetRuleDetailed.fromAccount
                         }
                     }
                 }
-                chkFixedAmount.isChecked =
-                    mBudgetItem.budgetItem!!.biIsFixed
-                chkIsAutoPayment.isChecked =
-                    mBudgetItem.budgetItem.biIsAutomatic
-                chkIsPayDay.isChecked =
-                    mBudgetItem.budgetItem.biIsPayDayItem
-                chkIsLocked.isChecked =
-                    mBudgetItem.budgetItem.biLocked
+                chkFixedAmount.isChecked = mBudgetItem.budgetItem!!.biIsFixed
+                chkIsAutoPayment.isChecked = mBudgetItem.budgetItem.biIsAutomatic
+                chkIsPayDay.isChecked = mBudgetItem.budgetItem.biIsPayDayItem
+                chkIsLocked.isChecked = mBudgetItem.budgetItem.biLocked
                 for (i in 0 until spPayDays.adapter.count) {
                     if (spPayDays.getItemAtPosition(i) ==
                         mBudgetItem.budgetItem.biPayDay
@@ -305,11 +293,7 @@ class BudgetItemAddFragment : Fragment(
     }
 
     private fun showMessage(message: String) {
-        Toast.makeText(
-            requireContext(),
-            message,
-            Toast.LENGTH_LONG
-        ).show()
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
     }
 
     private fun validateBudgetItem(): String {
