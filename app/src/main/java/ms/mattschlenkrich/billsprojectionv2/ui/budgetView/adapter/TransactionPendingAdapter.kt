@@ -14,7 +14,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
@@ -24,13 +23,14 @@ import ms.mattschlenkrich.billsprojectionv2.databinding.PendingTransactionItemBi
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetViewFragment
 
-private const val PARENT_TAG = FRAG_BUDGET_VIEW
+//private const val PARENT_TAG = FRAG_BUDGET_VIEW
 
 class TransactionPendingAdapter(
     private val curAccount: String,
     val mainActivity: MainActivity,
+    private val mView: View,
+    private val parentTag: String,
     private val budgetViewFragment: BudgetViewFragment,
-    private val mView: View
 ) : RecyclerView.Adapter<TransactionPendingAdapter.TransactionPendingHolder>() {
 
     private val nf = NumberFunctions()
@@ -122,7 +122,7 @@ class TransactionPendingAdapter(
             ) { _, pos ->
                 when (pos) {
                     0 -> {
-                        confirmCompleteTransaction(
+                        confirmTransaction(
                             pendingTransaction,
                             curAccount,
                         )
@@ -143,7 +143,7 @@ class TransactionPendingAdapter(
             .show()
     }
 
-    private fun confirmCompleteTransaction(
+    private fun confirmTransaction(
         pendingTransaction: TransactionDetailed, curAccount: String
     ) {
         var display = mView.context.getString(R.string.this_will_apply_the_amount_of) +
@@ -154,6 +154,14 @@ class TransactionPendingAdapter(
             mView.context.getString(R.string._From_)
         }
         display += curAccount
+        confirmCompleteTransaction(display, pendingTransaction, curAccount)
+    }
+
+    private fun confirmCompleteTransaction(
+        display: String,
+        pendingTransaction: TransactionDetailed,
+        curAccount: String
+    ) {
         AlertDialog.Builder(mView.context)
             .setTitle(display)
             .setPositiveButton(
@@ -174,7 +182,7 @@ class TransactionPendingAdapter(
     }
 
     private fun editTransaction(transaction: TransactionDetailed) {
-        mainActivity.mainViewModel.setCallingFragments(PARENT_TAG)
+        mainActivity.mainViewModel.setCallingFragments(parentTag)
         mainActivity.mainViewModel.setTransactionDetailed(transaction)
         CoroutineScope(Dispatchers.IO).launch {
             val transactionFull = async {

@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_LIST
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleComplete
@@ -19,12 +18,13 @@ import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetListFragment
 import java.util.Random
 
-private const val PARENT_TAG = FRAG_BUDGET_LIST
+//private const val PARENT_TAG = FRAG_BUDGET_LIST
 
 class BudgetListAnnualAdapter(
     private val mainActivity: MainActivity,
-    private val budgetListFragment: BudgetListFragment,
     private val mView: View,
+    private val parentTag: String,
+    private val budgetListFragment: BudgetListFragment,
 ) : RecyclerView.Adapter<BudgetListAnnualAdapter.BudgetListHolder>() {
     private val nf = NumberFunctions()
     private val df = DateFunctions()
@@ -147,7 +147,7 @@ class BudgetListAnnualAdapter(
             curRule.fromAccount!!.account
         )
         mainActivity.mainViewModel.setBudgetRuleDetailed(budgetRule)
-        mainActivity.mainViewModel.setCallingFragments(PARENT_TAG)
+        mainActivity.mainViewModel.setCallingFragments(parentTag)
         budgetListFragment.gotoBudgetRuleUpdateFragment()
     }
 
@@ -159,9 +159,7 @@ class BudgetListAnnualAdapter(
     }
 
     private fun gotoAverages(curRule: BudgetRuleComplete) {
-        mainActivity.mainViewModel.setCallingFragments(
-            mainActivity.mainViewModel.getCallingFragments() + ", " + PARENT_TAG
-        )
+        mainActivity.mainViewModel.addCallingFragment(parentTag)
         mainActivity.mainViewModel.setBudgetRuleDetailed(
             BudgetRuleDetailed(
                 curRule.budgetRule!!,

@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_LIST
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_MONTHLY
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_WEEKLY
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
@@ -21,13 +20,13 @@ import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetListFragment
 import java.util.Random
 
-private const val PARENT_TAG = FRAG_BUDGET_LIST
-
+//private const val PARENT_TAG = FRAG_BUDGET_LIST
 
 class BudgetListOccasionalAdapter(
     private val mainActivity: MainActivity,
-    private val budgetListFragment: BudgetListFragment,
     private val mView: View,
+    private val parentTag: String,
+    private val budgetListFragment: BudgetListFragment,
 ) : RecyclerView.Adapter<BudgetListOccasionalAdapter.BudgetListHolder>() {
 
     private val cf = NumberFunctions()
@@ -180,7 +179,7 @@ class BudgetListOccasionalAdapter(
             curRule.fromAccount!!.account
         )
         mainActivity.mainViewModel.setBudgetRuleDetailed(budgetRule)
-        mainActivity.mainViewModel.setCallingFragments(PARENT_TAG)
+        mainActivity.mainViewModel.setCallingFragments(parentTag)
         budgetListFragment.gotoBudgetRuleUpdateFragment()
     }
 
@@ -192,9 +191,7 @@ class BudgetListOccasionalAdapter(
     }
 
     private fun gotoAverages(curRule: BudgetRuleComplete) {
-        mainActivity.mainViewModel.setCallingFragments(
-            mainActivity.mainViewModel.getCallingFragments() + ", " + PARENT_TAG
-        )
+        mainActivity.mainViewModel.addCallingFragment(parentTag)
         mainActivity.mainViewModel.setBudgetRuleDetailed(
             BudgetRuleDetailed(
                 curRule.budgetRule!!,

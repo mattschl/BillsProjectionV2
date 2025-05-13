@@ -13,7 +13,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_100
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_500
@@ -28,15 +27,16 @@ import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetViewFragment
 import java.util.Random
 
-private const val PARENT_TAG = FRAG_BUDGET_VIEW
+//private const val PARENT_TAG = FRAG_BUDGET_VIEW
 
 
 class BudgetViewAdapter(
-    private val budgetViewFragment: BudgetViewFragment,
     private val mainActivity: MainActivity,
     private val curAccount: String,
     private val curPayDay: String,
     private val mView: View,
+    private val parentTag: String,
+    private val budgetViewFragment: BudgetViewFragment,
 ) : RecyclerView.Adapter<BudgetViewAdapter.BudgetViewHolder>() {
 
     private val nf = NumberFunctions()
@@ -218,7 +218,7 @@ class BudgetViewAdapter(
                     }
 
                     1 -> {
-                        confirmCompleteTransaction(curBudget)
+                        confirmTransaction(curBudget)
                     }
 
                     2 -> {
@@ -245,7 +245,7 @@ class BudgetViewAdapter(
         budgetViewFragment.gotoTransactionPerformFragment()
     }
 
-    private fun confirmCompleteTransaction(curBudget: BudgetItemDetailed) {
+    private fun confirmTransaction(curBudget: BudgetItemDetailed) {
         if (curBudget.budgetItem!!.biProjectedAmount > 0.0) {
             var display = ""
             CoroutineScope(Dispatchers.IO).launch {
@@ -253,18 +253,25 @@ class BudgetViewAdapter(
             }
             CoroutineScope(Dispatchers.Main).launch {
                 delay(WAIT_250)
-                AlertDialog.Builder(mView.context)
-                    .setTitle(mView.context.getString(R.string.confirm_completing_transaction))
-                    .setMessage(
-                        display
-                    )
-                    .setPositiveButton(mView.context.getString(R.string.complete_now)) { _, _ ->
-                        completeTransaction(curBudget)
-                    }
-                    .setNegativeButton(mView.context.getString(R.string.cancel), null)
-                    .show()
+                confirmCompleteTransaction(display, curBudget)
             }
         }
+    }
+
+    private fun confirmCompleteTransaction(
+        display: String,
+        curBudget: BudgetItemDetailed
+    ) {
+        AlertDialog.Builder(mView.context)
+            .setTitle(mView.context.getString(R.string.confirm_completing_transaction))
+            .setMessage(
+                display
+            )
+            .setPositiveButton(mView.context.getString(R.string.complete_now)) { _, _ ->
+                completeTransaction(curBudget)
+            }
+            .setNegativeButton(mView.context.getString(R.string.cancel), null)
+            .show()
     }
 
     private suspend fun getConfirmationsDisplay(
@@ -285,8 +292,7 @@ class BudgetViewAdapter(
             ""
         }
         delay(WAIT_100)
-        display += mView.context.getString(R.string._to) +
-                curBudget.toAccount!!.accountName
+        display += mView.context.getString(R.string._to) + curBudget.toAccount!!.accountName
         display += if (mainActivity.accountUpdateViewModel.isTransactionPending(
                 budgetItem.biToAccountId
             )
@@ -424,7 +430,7 @@ class BudgetViewAdapter(
 
     private fun setReturnVariables() {
         mainActivity.mainViewModel.setCallingFragments(
-            PARENT_TAG
+            parentTag
         )
         mainActivity.mainViewModel.setReturnToAsset(curAccount)
         mainActivity.mainViewModel.setReturnToPayDay(curPayDay)

@@ -107,7 +107,6 @@ class BudgetRuleAdapter(
         )
         holder.itemBinding.ibColor.setBackgroundColor(color)
         holder.itemView.setOnClickListener { chooseBudgetRule(budgetRuleDetailed) }
-
         holder.itemView.setOnLongClickListener {
             chooseOptionsForBudgetRule(budgetRuleDetailed)
             false

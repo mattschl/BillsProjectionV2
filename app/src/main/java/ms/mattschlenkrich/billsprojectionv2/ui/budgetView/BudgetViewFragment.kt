@@ -137,11 +137,9 @@ class BudgetViewFragment : Fragment(
                     tvBalanceOwing.text =
                         nf.displayDollars(curAsset.account.accountOwing)
                 } else {
-                    lblBalanceOwing.text =
-                        getString(R.string.credit_of)
+                    lblBalanceOwing.text = getString(R.string.credit_of)
                     tvBalanceOwing.setTextColor(Color.BLACK)
-                    tvBalanceOwing.text =
-                        nf.displayDollars(-curAsset.account.accountOwing)
+                    tvBalanceOwing.text = nf.displayDollars(-curAsset.account.accountOwing)
                 }
             }
         }
@@ -151,8 +149,9 @@ class BudgetViewFragment : Fragment(
         val transactionPendingAdapter = TransactionPendingAdapter(
             binding.spAssetNames.selectedItem.toString(),
             mainActivity,
-            this,
             mView,
+            TAG,
+            this@BudgetViewFragment,
         )
         binding.rvPending.apply {
             layoutManager =
@@ -300,11 +299,12 @@ class BudgetViewFragment : Fragment(
                         ""
                     }
                 val budgetViewAdapter = BudgetViewAdapter(
-                    this@BudgetViewFragment,
                     mainActivity,
                     asset,
                     payDay,
-                    mView
+                    mView,
+                    TAG,
+                    this@BudgetViewFragment,
                 )
                 binding.rvBudgetSummary.apply {
                     layoutManager = LinearLayoutManager(requireContext())
