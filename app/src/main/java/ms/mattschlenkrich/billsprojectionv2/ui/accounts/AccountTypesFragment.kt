@@ -63,7 +63,7 @@ class AccountTypesFragment
 
     private fun setupRecyclerView() {
         accountTypeAdapter = AccountTypeAdapter(
-            mainActivity.mainViewModel,
+            mainActivity,
             mView,
             TAG,
             this@AccountTypesFragment,

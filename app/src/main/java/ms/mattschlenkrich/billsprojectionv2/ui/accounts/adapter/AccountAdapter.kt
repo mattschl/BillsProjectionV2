@@ -24,7 +24,6 @@ import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
@@ -38,8 +37,7 @@ import java.util.Random
 //private const val PARENT_TAG = FRAG_ACCOUNTS
 
 class AccountAdapter(
-    val mainActivity: MainActivity,
-    private val mainViewModel: MainViewModel,
+    private val mainActivity: MainActivity,
     private val mView: View,
     private val parentTag: String,
     private val accountsFragment: AccountsFragment,
@@ -48,31 +46,31 @@ class AccountAdapter(
 
     private var mBudgetItem =
         BudgetItemDetailed(
-            mainViewModel.getBudgetItemDetailed()?.budgetItem,
-            mainViewModel.getBudgetItemDetailed()?.budgetRule,
-            mainViewModel.getBudgetItemDetailed()?.toAccount,
-            mainViewModel.getBudgetItemDetailed()?.fromAccount
+            mainActivity.mainViewModel.getBudgetItemDetailed()?.budgetItem,
+            mainActivity.mainViewModel.getBudgetItemDetailed()?.budgetRule,
+            mainActivity.mainViewModel.getBudgetItemDetailed()?.toAccount,
+            mainActivity.mainViewModel.getBudgetItemDetailed()?.fromAccount
         )
 
     private var mBudgetRuleDetailed =
         BudgetRuleDetailed(
-            mainViewModel.getBudgetRuleDetailed()?.budgetRule,
-            mainViewModel.getBudgetRuleDetailed()?.toAccount,
-            mainViewModel.getBudgetRuleDetailed()?.fromAccount
+            mainActivity.mainViewModel.getBudgetRuleDetailed()?.budgetRule,
+            mainActivity.mainViewModel.getBudgetRuleDetailed()?.toAccount,
+            mainActivity.mainViewModel.getBudgetRuleDetailed()?.fromAccount
         )
     private var mTransactionDetailed =
         TransactionDetailed(
-            mainViewModel.getTransactionDetailed()?.transaction,
-            mainViewModel.getTransactionDetailed()?.budgetRule,
-            mainViewModel.getTransactionDetailed()?.toAccount,
-            mainViewModel.getTransactionDetailed()?.fromAccount
+            mainActivity.mainViewModel.getTransactionDetailed()?.transaction,
+            mainActivity.mainViewModel.getTransactionDetailed()?.budgetRule,
+            mainActivity.mainViewModel.getTransactionDetailed()?.toAccount,
+            mainActivity.mainViewModel.getTransactionDetailed()?.fromAccount
         )
     private var mSplitTransactionDetailed =
         TransactionDetailed(
-            mainViewModel.getSplitTransactionDetailed()?.transaction,
-            mainViewModel.getSplitTransactionDetailed()?.budgetRule,
-            mainViewModel.getSplitTransactionDetailed()?.toAccount,
-            mainViewModel.getSplitTransactionDetailed()?.fromAccount
+            mainActivity.mainViewModel.getSplitTransactionDetailed()?.transaction,
+            mainActivity.mainViewModel.getSplitTransactionDetailed()?.budgetRule,
+            mainActivity.mainViewModel.getSplitTransactionDetailed()?.toAccount,
+            mainActivity.mainViewModel.getSplitTransactionDetailed()?.fromAccount
         )
     private val accountViewModel = mainActivity.accountViewModel
 
@@ -186,7 +184,9 @@ class AccountAdapter(
     private fun chooseOptionsForAccount(
         curAccount: AccountWithType
     ) {
-        if (!mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_ANALYSIS)) {
+        if (!mainActivity.mainViewModel.getCallingFragments()!!
+                .contains(FRAG_TRANSACTION_ANALYSIS)
+        ) {
             AlertDialog.Builder(mView.context)
                 .setTitle(
                     mView.context.getString(R.string.choose_an_action_for) +
@@ -226,42 +226,48 @@ class AccountAdapter(
     private fun chooseAccount(
         curAccount: AccountWithType,
     ) {
-        if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_ANALYSIS)) {
+        if (mainActivity.mainViewModel.getCallingFragments()!!
+                .contains(FRAG_TRANSACTION_ANALYSIS)
+        ) {
             gotoTransactionAverage(curAccount)
         } else {
-            when (mainViewModel.getRequestedAccount()) {
+            when (mainActivity.mainViewModel.getRequestedAccount()) {
                 REQUEST_TO_ACCOUNT -> {
                     mBudgetRuleDetailed.toAccount = curAccount.account
-                    mainViewModel.setBudgetRuleDetailed(mBudgetRuleDetailed)
-                    if (mainViewModel.getCallingFragments()!!
+                    mainActivity.mainViewModel.setBudgetRuleDetailed(mBudgetRuleDetailed)
+                    if (mainActivity.mainViewModel.getCallingFragments()!!
                             .contains(FRAG_TRANSACTION_SPLIT)
                     ) {
                         mSplitTransactionDetailed.toAccount = curAccount.account
                         mSplitTransactionDetailed.transaction!!.transToAccountPending =
                             curAccount.accountType!!.tallyOwing
-                        mainViewModel.setSplitTransactionDetailed(mSplitTransactionDetailed)
+                        mainActivity.mainViewModel.setSplitTransactionDetailed(
+                            mSplitTransactionDetailed
+                        )
                     } else {
                         mTransactionDetailed.toAccount = curAccount.account
                         mTransactionDetailed.transaction!!.transToAccountPending =
                             curAccount.accountType!!.tallyOwing
-                        mainViewModel.setTransactionDetailed(mTransactionDetailed)
+                        mainActivity.mainViewModel.setTransactionDetailed(mTransactionDetailed)
                     }
                     mBudgetItem.toAccount = curAccount.account
-                    mainViewModel.setBudgetItemDetailed(mBudgetItem)
+                    mainActivity.mainViewModel.setBudgetItemDetailed(mBudgetItem)
                     gotoCallingFragment()
 
                 }
 
                 REQUEST_FROM_ACCOUNT -> {
                     mBudgetRuleDetailed.fromAccount = curAccount.account
-                    mainViewModel.setBudgetRuleDetailed(mBudgetRuleDetailed)
-                    val callingFragment = mainViewModel.getCallingFragments()!!
+                    mainActivity.mainViewModel.setBudgetRuleDetailed(mBudgetRuleDetailed)
+                    val callingFragment = mainActivity.mainViewModel.getCallingFragments()!!
                     if (callingFragment.contains(FRAG_TRANSACTION_SPLIT)
                     ) {
                         mSplitTransactionDetailed.fromAccount = curAccount.account
                         mSplitTransactionDetailed.transaction?.transFromAccountPending =
                             curAccount.accountType!!.tallyOwing
-                        mainViewModel.setSplitTransactionDetailed(mSplitTransactionDetailed)
+                        mainActivity.mainViewModel.setSplitTransactionDetailed(
+                            mSplitTransactionDetailed
+                        )
                     } else if (callingFragment.contains(FRAG_TRANS_ADD) ||
                         callingFragment.contains(FRAG_TRANS_PERFORM) ||
                         callingFragment.contains(FRAG_TRANS_UPDATE)
@@ -269,12 +275,12 @@ class AccountAdapter(
                         mTransactionDetailed.fromAccount = curAccount.account
                         mTransactionDetailed.transaction?.transFromAccountPending =
                             curAccount.accountType!!.tallyOwing
-                        mainViewModel.setTransactionDetailed(mTransactionDetailed)
+                        mainActivity.mainViewModel.setTransactionDetailed(mTransactionDetailed)
                     } else if (callingFragment.contains(FRAG_BUDGET_ITEM_ADD) ||
                         callingFragment.contains(FRAG_BUDGET_ITEM_UPDATE)
                     ) {
                         mBudgetItem.fromAccount = curAccount.account
-                        mainViewModel.setBudgetItemDetailed(mBudgetItem)
+                        mainActivity.mainViewModel.setBudgetItemDetailed(mBudgetItem)
                     }
                     gotoCallingFragment()
 
@@ -284,23 +290,23 @@ class AccountAdapter(
     }
 
     private fun gotoTransactionAverage(curAccount: AccountWithType) {
-        mainViewModel.addCallingFragment(parentTag)
-        mainViewModel.setAccountWithType(curAccount)
-        mainViewModel.setBudgetRuleDetailed(null)
+        mainActivity.mainViewModel.addCallingFragment(parentTag)
+        mainActivity.mainViewModel.setAccountWithType(curAccount)
+        mainActivity.mainViewModel.setBudgetRuleDetailed(null)
         accountsFragment.gotoTransactionAverageFragment()
     }
 
     private fun gotoUpdateAccount(
         curAccount: AccountWithType,
     ) {
-        mainViewModel.addCallingFragment(parentTag)
-        mainViewModel.setAccountWithType(curAccount)
+        mainActivity.mainViewModel.addCallingFragment(parentTag)
+        mainActivity.mainViewModel.setAccountWithType(curAccount)
         accountsFragment.gotoAccountUpdateFragment()
     }
 
     private fun gotoCallingFragment() {
-        mainViewModel.removeCallingFragment(FRAG_ACCOUNTS)
-        val callingFragment = mainViewModel.getCallingFragments()!!
+        mainActivity.mainViewModel.removeCallingFragment(FRAG_ACCOUNTS)
+        val callingFragment = mainActivity.mainViewModel.getCallingFragments()!!
         if (callingFragment.contains(FRAG_TRANSACTION_SPLIT)) {
             accountsFragment.gotoTransactionSplitFragment()
         }
