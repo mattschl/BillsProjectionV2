@@ -147,8 +147,8 @@ class BudgetViewFragment : Fragment(
 
     fun populatePendingList() {
         val transactionPendingAdapter = TransactionPendingAdapter(
-            binding.spAssetNames.selectedItem.toString(),
             mainActivity,
+            binding.spAssetNames.selectedItem.toString(),
             mView,
             TAG,
             this@BudgetViewFragment,
