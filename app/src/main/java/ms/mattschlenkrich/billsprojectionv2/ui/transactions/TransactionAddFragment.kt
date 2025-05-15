@@ -99,15 +99,17 @@ class TransactionAddFragment :
                 } else {
                     chkToAccPending.visibility = View.GONE
                 }
-                chkToAccPending.isChecked =
-                    mainViewModel.getTransactionDetailed()!!.transaction!!.transToAccountPending
                 if (mainViewModel.getTransactionDetailed()!!.fromAccount != null) {
                     populateValuesFromAccount()
                 } else {
                     chkFromAccPending.visibility = View.GONE
                 }
-                chkFromAccPending.isChecked =
-                    mainViewModel.getTransactionDetailed()!!.transaction!!.transFromAccountPending
+                if (mainViewModel.getTransactionDetailed()!!.transaction != null) {
+                    chkToAccPending.isChecked =
+                        mainViewModel.getTransactionDetailed()!!.transaction!!.transToAccountPending
+                    chkFromAccPending.isChecked =
+                        mainViewModel.getTransactionDetailed()!!.transaction!!.transFromAccountPending
+                }
 
             } else {
                 etTransDate.text = df.getCurrentDateAsString()
@@ -134,9 +136,11 @@ class TransactionAddFragment :
             CoroutineScope(Dispatchers.Main).launch {
                 delay(WAIT_250)
                 if (mFromAccountWithType!!.accountType!!.allowPending) {
+                    chkFromAccPending.isChecked = true
                     chkFromAccPending.visibility = View.VISIBLE
                 } else {
                     chkFromAccPending.visibility = View.GONE
+                    chkFromAccPending.isChecked = false
                 }
             }
         }
@@ -158,8 +162,10 @@ class TransactionAddFragment :
                 delay(WAIT_250)
                 if (mToAccountWithType!!.accountType!!.allowPending) {
                     chkToAccPending.visibility = View.VISIBLE
+                    chkToAccPending.isChecked = true
                 } else {
                     chkToAccPending.visibility = View.GONE
+                    chkToAccPending.isChecked = false
                 }
             }
         }
@@ -167,7 +173,7 @@ class TransactionAddFragment :
 
     private fun populateValuesFromBudgetRule() {
         binding.apply {
-            mBudgetRule = mainViewModel.getTransactionDetailed()!!.budgetRule
+            mBudgetRule = mainViewModel.getTransactionDetailed()!!.budgetRule!!
             tvBudgetRule.text = mBudgetRule!!.budgetRuleName
             if (mainViewModel.getTransactionDetailed()!!.toAccount == null &&
                 mainViewModel.getTransactionDetailed()!!.budgetRule!!.budToAccountId != 0L
@@ -178,6 +184,9 @@ class TransactionAddFragment :
                 mainViewModel.getTransactionDetailed()!!.budgetRule!!.budFromAccountId != 0L
             ) {
                 populateFromAccountFromBudgetRule()
+            }
+            if (mainViewModel.getTransactionDetailed()!!.transaction == null) {
+                binding.etAmount.setText(nf.displayDollars(mBudgetRule!!.budgetAmount))
             }
         }
     }
@@ -546,11 +555,11 @@ class TransactionAddFragment :
         mainViewModel.removeCallingFragment(TAG)
         mainViewModel.setTransactionDetailed(null)
         mainViewModel.setBudgetRuleDetailed(null)
-        if (mainViewModel.getCallingFragments()!!
-                .contains(FRAG_TRANSACTION_VIEW)
+        val mCallingFragment = mainViewModel.getCallingFragments()!!
+        if (mCallingFragment.contains(FRAG_TRANSACTION_VIEW)
         ) {
             gotoTransactionViewFragment()
-        } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_BUDGET_VIEW)) {
+        } else if (mCallingFragment.contains(FRAG_BUDGET_VIEW)) {
             gotoBudgetViewFragment()
         }
     }
