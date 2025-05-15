@@ -61,7 +61,6 @@ class AccountsFragment :
     private fun setUpRecyclerView() {
         accountAdapter = AccountAdapter(
             mainActivity,
-            mainActivity.mainViewModel,
             mView,
             TAG,
             this@AccountsFragment,
