@@ -26,8 +26,8 @@ import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetViewFragment
 //private const val PARENT_TAG = FRAG_BUDGET_VIEW
 
 class TransactionPendingAdapter(
+    private val mainActivity: MainActivity,
     private val curAccount: String,
-    val mainActivity: MainActivity,
     private val mView: View,
     private val parentTag: String,
     private val budgetViewFragment: BudgetViewFragment,
