@@ -26,7 +26,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetViewFragment
 //private const val PARENT_TAG = FRAG_BUDGET_VIEW
 
 class TransactionPendingAdapter(
-    private val mainActivity: MainActivity,
+    val mainActivity: MainActivity,
     private val curAccount: String,
     private val mView: View,
     private val parentTag: String,
@@ -35,7 +35,8 @@ class TransactionPendingAdapter(
 
     private val nf = NumberFunctions()
     private val df = DateFunctions()
-    val accountViewModel = mainActivity.accountViewModel
+    private val mainViewModel = mainActivity.mainViewModel
+    private val accountViewModel = mainActivity.accountViewModel
     private val transactionViewModel = mainActivity.transactionViewModel
 
     class TransactionPendingHolder(val itemBinding: PendingTransactionItemBinding) :
@@ -174,7 +175,7 @@ class TransactionPendingAdapter(
     }
 
     private fun deleteTransaction(transaction: TransactionDetailed) {
-        mainActivity.transactionViewModel.deleteTransaction(
+        transactionViewModel.deleteTransaction(
             transaction.transaction!!.transId,
             df.getCurrentTimeAsString()
         )
@@ -182,8 +183,8 @@ class TransactionPendingAdapter(
     }
 
     private fun editTransaction(transaction: TransactionDetailed) {
-        mainActivity.mainViewModel.setCallingFragments(parentTag)
-        mainActivity.mainViewModel.setTransactionDetailed(transaction)
+        mainViewModel.setCallingFragments(parentTag)
+        mainViewModel.setTransactionDetailed(transaction)
         CoroutineScope(Dispatchers.IO).launch {
             val transactionFull = async {
                 transactionViewModel.getTransactionFull(
@@ -192,7 +193,7 @@ class TransactionPendingAdapter(
                     transaction.transaction.transFromAccountId
                 )
             }
-            mainActivity.mainViewModel.setOldTransaction(transactionFull.await())
+            mainViewModel.setOldTransaction(transactionFull.await())
 
         }
         CoroutineScope(Dispatchers.Main).launch {

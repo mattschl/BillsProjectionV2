@@ -24,7 +24,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionViewFragm
 import java.util.Random
 
 class TransactionAdapter(
-    private val mainActivity: MainActivity,
+    val mainActivity: MainActivity,
     private val mView: View,
     private val parentFragment: String,
     private val transactionViewFragment: TransactionViewFragment,
@@ -34,7 +34,8 @@ class TransactionAdapter(
     private val df = DateFunctions()
     private val transactionViewModel = mainActivity.transactionViewModel
     private val accountUpdateViewModel = mainActivity.accountUpdateViewModel
-
+    private val budgetRuleViewModel = mainActivity.budgetRuleViewModel
+    private val mainViewModel = mainActivity.mainViewModel
 
     class TransactionsViewHolder(
         val itemBinding: TransactionLinearItemBinding
@@ -203,11 +204,11 @@ class TransactionAdapter(
     }
 
     private fun gotoBudgetRuleUpdate(transactionDetailed: TransactionDetailed) {
-        mainActivity.mainViewModel.setCallingFragments(parentFragment)
-        mainActivity.budgetRuleViewModel.getBudgetRuleFullLive(
+        mainViewModel.setCallingFragments(parentFragment)
+        budgetRuleViewModel.getBudgetRuleFullLive(
             transactionDetailed.transaction!!.transRuleId
         ).observe(mView.findViewTreeLifecycleOwner()!!) { bRuleDetailed ->
-            mainActivity.mainViewModel.setBudgetRuleDetailed(bRuleDetailed)
+            mainViewModel.setBudgetRuleDetailed(bRuleDetailed)
             transactionViewFragment.gotoBudgetRuleUpdateFragment()
         }
     }
@@ -250,8 +251,8 @@ class TransactionAdapter(
     }
 
     private fun gotoTransactionUpdate(transactionDetailed: TransactionDetailed) {
-        mainActivity.mainViewModel.addCallingFragment(parentFragment)
-        mainActivity.mainViewModel.setTransactionDetailed(transactionDetailed)
+        mainViewModel.addCallingFragment(parentFragment)
+        mainViewModel.setTransactionDetailed(transactionDetailed)
         CoroutineScope(Dispatchers.IO).launch {
             val oldTransactionFull = async {
                 transactionViewModel.getTransactionFull(
@@ -260,12 +261,12 @@ class TransactionAdapter(
                     transactionDetailed.transaction.transFromAccountId
                 )
             }
-            mainActivity.mainViewModel.setOldTransaction(oldTransactionFull.await())
+            mainViewModel.setOldTransaction(oldTransactionFull.await())
         }
         transactionViewFragment.gotoTransactionUpdateFragment()
     }
 
     private fun deleteTransaction(transaction: Transactions) {
-        mainActivity.accountUpdateViewModel.deleteTransaction(transaction)
+        accountUpdateViewModel.deleteTransaction(transaction)
     }
 }

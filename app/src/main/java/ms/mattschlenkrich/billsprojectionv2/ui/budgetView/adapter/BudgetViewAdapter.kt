@@ -31,7 +31,7 @@ import java.util.Random
 
 
 class BudgetViewAdapter(
-    private val mainActivity: MainActivity,
+    val mainActivity: MainActivity,
     private val curAccount: String,
     private val curPayDay: String,
     private val mView: View,
@@ -41,6 +41,9 @@ class BudgetViewAdapter(
 
     private val nf = NumberFunctions()
     private val df = DateFunctions()
+    private val mainViewModel = mainActivity.mainViewModel
+    private val accountUpdateViewModel = mainActivity.accountUpdateViewModel
+    private val budgetItemViewModel = mainActivity.budgetItemViewModel
     var message = ""
 
     class BudgetViewHolder(val itemBinding: BudgetViewItemBinding) :
@@ -155,7 +158,7 @@ class BudgetViewAdapter(
             ) { _, pos ->
                 when (pos) {
                     0 -> {
-                        mainActivity.budgetItemViewModel.lockUnlockBudgetItem(
+                        budgetItemViewModel.lockUnlockBudgetItem(
                             true, budgetItem.budgetItem.biRuleId,
                             budgetItem.budgetItem.biPayDay,
                             df.getCurrentTimeAsString()
@@ -163,7 +166,7 @@ class BudgetViewAdapter(
                     }
 
                     1 -> {
-                        mainActivity.budgetItemViewModel.lockUnlockBudgetItem(
+                        budgetItemViewModel.lockUnlockBudgetItem(
                             false, budgetItem.budgetItem.biRuleId,
                             budgetItem.budgetItem.biPayDay,
                             df.getCurrentTimeAsString()
@@ -171,14 +174,14 @@ class BudgetViewAdapter(
                     }
 
                     2 -> {
-                        mainActivity.budgetItemViewModel.lockUnlockBudgetItem(
+                        budgetItemViewModel.lockUnlockBudgetItem(
                             true, budgetItem.budgetItem.biPayDay,
                             df.getCurrentTimeAsString()
                         )
                     }
 
                     3 -> {
-                        mainActivity.budgetItemViewModel.lockUnlockBudgetItem(
+                        budgetItemViewModel.lockUnlockBudgetItem(
                             false, budgetItem.budgetItem.biPayDay,
                             df.getCurrentTimeAsString()
                         )
@@ -239,8 +242,8 @@ class BudgetViewAdapter(
     }
 
     private fun performTransaction(curBudget: BudgetItemDetailed) {
-        mainActivity.mainViewModel.setBudgetItemDetailed(curBudget)
-        mainActivity.mainViewModel.setTransactionDetailed(null)
+        mainViewModel.setBudgetItemDetailed(curBudget)
+        mainViewModel.setTransactionDetailed(null)
         setReturnVariables()
         budgetViewFragment.gotoTransactionPerformFragment()
     }
@@ -283,7 +286,7 @@ class BudgetViewAdapter(
                 nf.displayDollars(curBudget.budgetItem!!.biProjectedAmount) +
                 mView.context.getString(R.string.from) +
                 curBudget.fromAccount!!.accountName
-        display += if (mainActivity.accountUpdateViewModel.isTransactionPending(
+        display += if (accountUpdateViewModel.isTransactionPending(
                 budgetItem.biFromAccountId
             )
         ) {
@@ -293,7 +296,7 @@ class BudgetViewAdapter(
         }
         delay(WAIT_100)
         display += mView.context.getString(R.string._to) + curBudget.toAccount!!.accountName
-        display += if (mainActivity.accountUpdateViewModel.isTransactionPending(
+        display += if (accountUpdateViewModel.isTransactionPending(
                 budgetItem.biToAccountId
             )
         ) {
@@ -315,13 +318,13 @@ class BudgetViewAdapter(
 
     private fun updateAccountsAndTransaction(curBudget: BudgetItemDetailed): Boolean {
         CoroutineScope(Dispatchers.IO).launch {
-            mainActivity.accountUpdateViewModel.performTransaction(
+            accountUpdateViewModel.performTransaction(
                 getCurTransactionObject(
                     curBudget.budgetItem!!,
-                    mainActivity.accountUpdateViewModel.isTransactionPending(
+                    accountUpdateViewModel.isTransactionPending(
                         curBudget.budgetItem.biToAccountId
                     ),
-                    mainActivity.accountUpdateViewModel.isTransactionPending(
+                    accountUpdateViewModel.isTransactionPending(
                         curBudget.budgetItem.biFromAccountId
                     )
                 )
@@ -335,7 +338,7 @@ class BudgetViewAdapter(
 
     private fun updateBudgetItem(budgetItem: BudgetItem) {
         budgetItem.apply {
-            mainActivity.budgetItemViewModel.updateBudgetItem(
+            budgetItemViewModel.updateBudgetItem(
                 BudgetItem(
                     biRuleId,
                     biProjectedDate,
@@ -402,7 +405,7 @@ class BudgetViewAdapter(
     }
 
     private fun cancelBudgetItem(curBudget: BudgetItemDetailed) {
-        mainActivity.budgetItemViewModel.cancelBudgetItem(
+        budgetItemViewModel.cancelBudgetItem(
             curBudget.budgetItem!!.biRuleId,
             curBudget.budgetItem.biProjectedDate,
             df.getCurrentTimeAsString()
@@ -411,7 +414,7 @@ class BudgetViewAdapter(
     }
 
     private fun gotoBudgetRule(curBudget: BudgetItemDetailed) {
-        mainActivity.mainViewModel.setBudgetRuleDetailed(
+        mainViewModel.setBudgetRuleDetailed(
             BudgetRuleDetailed(
                 curBudget.budgetRule,
                 curBudget.toAccount,
@@ -423,16 +426,16 @@ class BudgetViewAdapter(
     }
 
     private fun gotoBudgetItem(curBudget: BudgetItemDetailed) {
-        mainActivity.mainViewModel.setBudgetItemDetailed(curBudget)
+        mainViewModel.setBudgetItemDetailed(curBudget)
         setReturnVariables()
         budgetViewFragment.gotoBudgetItemUpdateFragment()
     }
 
     private fun setReturnVariables() {
-        mainActivity.mainViewModel.setCallingFragments(
+        mainViewModel.setCallingFragments(
             parentTag
         )
-        mainActivity.mainViewModel.setReturnToAsset(curAccount)
-        mainActivity.mainViewModel.setReturnToPayDay(curPayDay)
+        mainViewModel.setReturnToAsset(curAccount)
+        mainViewModel.setReturnToPayDay(curPayDay)
     }
 }

@@ -21,12 +21,14 @@ import java.util.Random
 //private const val PARENT_TAG = FRAG_ACCOUNT_TYPES
 
 class AccountTypeAdapter(
-    private val mainActivity: MainActivity,
+    val mainActivity: MainActivity,
     private val mView: View,
     private val parentTag: String,
     private val accountTypesFragment: AccountTypesFragment,
 ) :
     RecyclerView.Adapter<AccountTypeAdapter.AccountTypeViewHolder>() {
+
+    val mainViewModel = mainActivity.mainViewModel
 
     class AccountTypeViewHolder(val itemBinding: AccountTypeLayoutBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -115,22 +117,22 @@ class AccountTypeAdapter(
     private fun gotoAccountTypeUpdate(
         curAccountType: AccountType?,
     ) {
-        mainActivity.mainViewModel.addCallingFragment(parentTag)
-        mainActivity.mainViewModel.setAccountType(curAccountType)
+        mainViewModel.addCallingFragment(parentTag)
+        mainViewModel.setAccountType(curAccountType)
         accountTypesFragment.gotoAccountUpdateFragment()
     }
 
     private fun chooseAccountType(
         curAccountType: AccountType?,
     ) {
-        mainActivity.mainViewModel.setAccountType(curAccountType)
-        mainActivity.mainViewModel.setAccountWithType(
+        mainViewModel.setAccountType(curAccountType)
+        mainViewModel.setAccountWithType(
             AccountWithType(
-                mainActivity.mainViewModel.getAccountWithType()!!.account,
+                mainViewModel.getAccountWithType()!!.account,
                 curAccountType
             )
         )
-        val mCallingFragment = mainActivity.mainViewModel.getCallingFragments()!!
+        val mCallingFragment = mainViewModel.getCallingFragments()!!
         if (mCallingFragment.contains(FRAG_ACCOUNT_UPDATE)) {
             accountTypesFragment.gotoAccountUpdateFragment()
         } else if (mCallingFragment.contains(FRAG_ACCOUNT_ADD)) {

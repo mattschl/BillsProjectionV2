@@ -24,7 +24,7 @@ import java.util.Random
 
 
 class BudgetListMonthlyAdapter(
-    private val mainActivity: MainActivity,
+    val mainActivity: MainActivity,
     private val mView: View,
     private val parentTag: String,
     private val budgetListFragment: BudgetListFragment,
@@ -32,6 +32,8 @@ class BudgetListMonthlyAdapter(
 
     private val cf = NumberFunctions()
     private val df = DateFunctions()
+    private val mainViewModel = mainActivity.mainViewModel
+    private val budgetRuleViewModel = mainActivity.budgetRuleViewModel
 
     class BudgetListHolder(val itemBinding: BudgetListItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -163,28 +165,28 @@ class BudgetListMonthlyAdapter(
             curRule.toAccount!!.account,
             curRule.fromAccount!!.account
         )
-        mainActivity.mainViewModel.setBudgetRuleDetailed(budgetRule)
-        mainActivity.mainViewModel.setCallingFragments(parentTag)
+        mainViewModel.setBudgetRuleDetailed(budgetRule)
+        mainViewModel.setCallingFragments(parentTag)
         budgetListFragment.gotoBudgetRuleUpdateFragment()
     }
 
     private fun deleteBudgetRule(curRule: BudgetRuleComplete) {
-        mainActivity.budgetRuleViewModel.deleteBudgetRule(
+        budgetRuleViewModel.deleteBudgetRule(
             curRule.budgetRule!!.ruleId,
             df.getCurrentTimeAsString()
         )
     }
 
     private fun gotoAverages(curRule: BudgetRuleComplete) {
-        mainActivity.mainViewModel.addCallingFragment(parentTag)
-        mainActivity.mainViewModel.setBudgetRuleDetailed(
+        mainViewModel.addCallingFragment(parentTag)
+        mainViewModel.setBudgetRuleDetailed(
             BudgetRuleDetailed(
                 curRule.budgetRule!!,
                 curRule.toAccount!!.account,
                 curRule.fromAccount!!.account
             )
         )
-        mainActivity.mainViewModel.setAccountWithType(null)
+        mainViewModel.setAccountWithType(null)
         budgetListFragment.gotoTransactionAverageFragment()
     }
 }
