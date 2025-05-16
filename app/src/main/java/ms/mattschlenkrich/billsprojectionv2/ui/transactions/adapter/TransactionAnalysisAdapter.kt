@@ -35,6 +35,10 @@ class TransactionAnalysisAdapter(
 
     private val nf = NumberFunctions()
     private val df = DateFunctions()
+    private val mainViewModel = mainActivity.mainViewModel
+    private val budgetRuleViewModel = mainActivity.budgetRuleViewModel
+    private val accountUpdateViewModel = mainActivity.accountUpdateViewModel
+    private val transactionViewModel = mainActivity.transactionViewModel
 
     class TransViewHolder(
         val itemBinding: TransactionLinearItemBinding
@@ -204,11 +208,11 @@ class TransactionAnalysisAdapter(
     }
 
     private fun gotoBudgetRuleUpdate(transactionDetailed: TransactionDetailed) {
-        mainActivity.mainViewModel.setCallingFragments(parentTag)
-        mainActivity.budgetRuleViewModel.getBudgetRuleFullLive(
+        mainViewModel.setCallingFragments(parentTag)
+        budgetRuleViewModel.getBudgetRuleFullLive(
             transactionDetailed.transaction!!.transRuleId
         ).observe(mView.findViewTreeLifecycleOwner()!!) { bRuleDetailed ->
-            mainActivity.mainViewModel.setBudgetRuleDetailed(bRuleDetailed)
+            mainViewModel.setBudgetRuleDetailed(bRuleDetailed)
             transactionAnalysisFragment.gotoBudgetRuleUpdateFragment()
         }
 
@@ -231,7 +235,7 @@ class TransactionAnalysisAdapter(
                     transIsDeleted,
                     transUpdateTime
                 )
-            mainActivity.accountUpdateViewModel.updateTransaction(
+            accountUpdateViewModel.updateTransaction(
                 transactionDetailed.transaction,
                 newTransaction
             )
@@ -253,23 +257,23 @@ class TransactionAnalysisAdapter(
     }
 
     private fun deleteTransaction(transaction: Transactions) {
-        mainActivity.accountUpdateViewModel.deleteTransaction(
+        accountUpdateViewModel.deleteTransaction(
             transaction
         )
     }
 
     private fun gotoTransactionUpdate(transactionDetailed: TransactionDetailed) {
-        mainActivity.mainViewModel.addCallingFragment(parentTag)
-        mainActivity.mainViewModel.setTransactionDetailed(transactionDetailed)
+        mainViewModel.addCallingFragment(parentTag)
+        mainViewModel.setTransactionDetailed(transactionDetailed)
         CoroutineScope(Dispatchers.IO).launch {
             val oldTransactionFull = async {
-                mainActivity.transactionViewModel.getTransactionFull(
+                transactionViewModel.getTransactionFull(
                     transactionDetailed.transaction!!.transId,
                     transactionDetailed.transaction.transToAccountId,
                     transactionDetailed.transaction.transFromAccountId
                 )
             }
-            mainActivity.mainViewModel.setOldTransaction(oldTransactionFull.await())
+            mainViewModel.setOldTransaction(oldTransactionFull.await())
         }
         transactionAnalysisFragment.gotoTransactionUpdateFragment()
     }

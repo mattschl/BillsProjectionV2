@@ -32,7 +32,7 @@ import java.util.Random
 //private const val PARENT_TAG = FRAG_BUDGET_RULES
 
 class BudgetRuleAdapter(
-    private val mainActivity: MainActivity,
+    val mainActivity: MainActivity,
     private val mView: View,
     private val parentTag: String,
     private val budgetRuleFragment: BudgetRuleFragment,
@@ -40,6 +40,8 @@ class BudgetRuleAdapter(
 
     private val nf = NumberFunctions()
     private val df = DateFunctions()
+    private val mainViewModel = mainActivity.mainViewModel
+    val budgetRuleViewModel = mainActivity.budgetRuleViewModel
 
     class BudgetRuleViewHolder(
         val itemBinding: BudgetRuleLayoutBinding
@@ -116,7 +118,7 @@ class BudgetRuleAdapter(
     private fun chooseOptionsForBudgetRule(
         budgetRuleDetailed: BudgetRuleDetailed,
     ) {
-        if (!mainActivity.mainViewModel.getCallingFragments()!!
+        if (!mainViewModel.getCallingFragments()!!
                 .contains(FRAG_TRANSACTION_ANALYSIS)
         ) {
             AlertDialog.Builder(mView.context)
@@ -163,7 +165,7 @@ class BudgetRuleAdapter(
             false,
             df.getCurrentTimeAsString()
         )
-        mainActivity.mainViewModel.setTransactionDetailed(
+        mainViewModel.setTransactionDetailed(
             TransactionDetailed(
                 mTransaction,
                 budgetRuleDetailed.budgetRule,
@@ -171,7 +173,7 @@ class BudgetRuleAdapter(
                 null,
             )
         )
-        mainActivity.mainViewModel.addCallingFragment(parentTag)
+        mainViewModel.addCallingFragment(parentTag)
         budgetRuleFragment.gotoTransactionAddFragment()
     }
 
@@ -180,9 +182,9 @@ class BudgetRuleAdapter(
     }
 
     private fun gotoCreateBudgetItem(budgetRuleDetailed: BudgetRuleDetailed) {
-        mainActivity.mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
-        mainActivity.mainViewModel.addCallingFragment(parentTag)
-        mainActivity.mainViewModel.setBudgetItemDetailed(
+        mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
+        mainViewModel.addCallingFragment(parentTag)
+        mainViewModel.setBudgetItemDetailed(
             BudgetItemDetailed(
                 BudgetItem(
                     budgetRuleDetailed.budgetRule!!.ruleId,
@@ -215,25 +217,25 @@ class BudgetRuleAdapter(
     private fun chooseBudgetRule(
         budgetRuleDetailed: BudgetRuleDetailed
     ) {
-        mainActivity.mainViewModel.removeCallingFragment(parentTag)
-        mainActivity.mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
-        val mCallingFragment = mainActivity.mainViewModel.getCallingFragments()!!
+        mainViewModel.removeCallingFragment(parentTag)
+        mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
+        val mCallingFragment = mainViewModel.getCallingFragments()!!
         if (mCallingFragment.contains(FRAG_TRANSACTION_SPLIT)
         ) {
-            val mTransactionSplit = mainActivity.mainViewModel.getSplitTransactionDetailed()
+            val mTransactionSplit = mainViewModel.getSplitTransactionDetailed()
             mTransactionSplit?.budgetRule = budgetRuleDetailed.budgetRule
-            mainActivity.mainViewModel.setSplitTransactionDetailed(mTransactionSplit)
+            mainViewModel.setSplitTransactionDetailed(mTransactionSplit)
         } else {
-            val mTransaction = mainActivity.mainViewModel.getTransactionDetailed()
+            val mTransaction = mainViewModel.getTransactionDetailed()
             mTransaction?.budgetRule = budgetRuleDetailed.budgetRule
-            mainActivity.mainViewModel.setTransactionDetailed(mTransaction)
+            mainViewModel.setTransactionDetailed(mTransaction)
         }
         if (mCallingFragment.contains(FRAG_BUDGET_ITEM_ADD) ||
             mCallingFragment.contains(FRAG_BUDGET_ITEM_UPDATE)
         ) {
-            val mBudgetDetailed = mainActivity.mainViewModel.getBudgetItemDetailed()
+            val mBudgetDetailed = mainViewModel.getBudgetItemDetailed()
             mBudgetDetailed?.budgetRule = budgetRuleDetailed.budgetRule
-            mainActivity.mainViewModel.setBudgetItemDetailed(mBudgetDetailed)
+            mainViewModel.setBudgetItemDetailed(mBudgetDetailed)
         }
         gotoCallingFragment()
     }
@@ -241,14 +243,14 @@ class BudgetRuleAdapter(
     private fun gotoAverages(
         budgetRuleDetailed: BudgetRuleDetailed,
     ) {
-        mainActivity.mainViewModel.addCallingFragment(parentTag)
-        mainActivity.mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
-        mainActivity.mainViewModel.setAccountWithType(null)
+        mainViewModel.addCallingFragment(parentTag)
+        mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
+        mainViewModel.setAccountWithType(null)
         budgetRuleFragment.gotoTransactionAverageFragment()
     }
 
     private fun deleteBudgetRule(budgetRuleDetailed: BudgetRuleDetailed) {
-        mainActivity.budgetRuleViewModel.deleteBudgetRule(
+        budgetRuleViewModel.deleteBudgetRule(
             budgetRuleDetailed.budgetRule!!.ruleId,
             df.getCurrentTimeAsString()
         )
@@ -257,13 +259,13 @@ class BudgetRuleAdapter(
     private fun editBudgetRule(
         budgetRuleDetailed: BudgetRuleDetailed?,
     ) {
-        mainActivity.mainViewModel.addCallingFragment(parentTag)
-        mainActivity.mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
+        mainViewModel.addCallingFragment(parentTag)
+        mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
         budgetRuleFragment.gotoBudgetRuleUpdateFragment()
     }
 
     private fun gotoCallingFragment() {
-        val mCallingFragment = mainActivity.mainViewModel.getCallingFragments()!!
+        val mCallingFragment = mainViewModel.getCallingFragments()!!
         when {
             mCallingFragment.contains(FRAG_TRANSACTION_SPLIT) -> {
                 budgetRuleFragment.gotoTransactionSplitFragment()

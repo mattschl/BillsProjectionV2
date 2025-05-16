@@ -10,13 +10,13 @@ import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetDateItemBinding
+import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.BudgetRuleUpdateFragment
 
 class BudgetRuleDatesAdapter(
-    private val mainViewModel: MainViewModel,
+    val mainActivity: MainActivity,
     private val mView: View,
     private val parentTag: String,
     private val budgetRuleUpdateFragment: BudgetRuleUpdateFragment,
@@ -25,6 +25,7 @@ class BudgetRuleDatesAdapter(
 
     private val df = DateFunctions()
     private val nf = NumberFunctions()
+    private val mainViewModel = mainActivity.mainViewModel
 
     class DateViewHolder(val itemBinding: BudgetDateItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
