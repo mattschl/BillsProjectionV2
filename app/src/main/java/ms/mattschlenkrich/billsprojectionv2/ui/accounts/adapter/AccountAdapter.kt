@@ -186,13 +186,12 @@ class AccountAdapter(
     private fun chooseOptionsForAccount(
         curAccount: AccountWithType
     ) {
-        if (mainViewModel.getCallingFragments()!!
-                .contains(FRAG_TRANSACTION_ANALYSIS)
+        val callingFragment = mainViewModel.getCallingFragments()
+        if (callingFragment == null
         ) {
             AlertDialog.Builder(mView.context)
                 .setTitle(
-                    mView.context.getString(R.string.choose_an_action_for) +
-                            curAccount.account.accountName
+                    mView.context.getString(R.string.choose_an_action_for) + curAccount.account.accountName
                 )
                 .setItems(
                     arrayOf(
@@ -237,8 +236,7 @@ class AccountAdapter(
                 REQUEST_TO_ACCOUNT -> {
                     mBudgetRuleDetailed.toAccount = curAccount.account
                     mainViewModel.setBudgetRuleDetailed(mBudgetRuleDetailed)
-                    if (mainViewModel.getCallingFragments()!!
-                            .contains(FRAG_TRANSACTION_SPLIT)
+                    if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_SPLIT)
                     ) {
                         mSplitTransactionDetailed.toAccount = curAccount.account
                         mSplitTransactionDetailed.transaction!!.transToAccountPending =

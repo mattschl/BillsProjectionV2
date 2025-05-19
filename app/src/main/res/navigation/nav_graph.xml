@@ -32,7 +32,8 @@
     <action
         android:id="@+id/action_global_accountsFragment"
         app:destination="@id/accountsFragment"
-        app:popUpTo="@id/accountsFragment" />
+        app:popUpTo="@id/accountsFragment"
+        app:popUpToInclusive="true" />
 
     <!--    accountsFragment-->
     <fragment
@@ -175,7 +176,8 @@
     <action
         android:id="@+id/action_global_budgetRuleFragment"
         app:destination="@id/budgetRuleFragment"
-        app:popUpTo="@id/budgetRuleFragment" />
+        app:popUpTo="@id/budgetRuleFragment"
+        app:popUpToInclusive="true" />
 
     <!--    budgetRuleFragment-->
     <fragment
@@ -280,7 +282,8 @@
     <action
         android:id="@+id/action_global_budgetViewFragment"
         app:destination="@id/budgetViewFragment"
-        app:popUpTo="@id/budgetViewFragment" />
+        app:popUpTo="@id/budgetViewFragment"
+        app:popUpToInclusive="true" />
 
     <!--    budgetViewFragment-->
     <fragment
@@ -385,7 +388,8 @@
     <action
         android:id="@+id/action_global_transactionViewFragment"
         app:destination="@id/transactionViewFragment"
-        app:popUpTo="@id/transactionViewFragment" />
+        app:popUpTo="@id/transactionViewFragment"
+        app:popUpToInclusive="true" />
 
     <!--    transactionViewFragment-->
     <fragment
@@ -533,7 +537,8 @@
     <action
         android:id="@+id/action_global_transactionAnalysisFragment"
         app:destination="@id/transactionAnalysisFragment"
-        app:popUpTo="@id/transactionAnalysisFragment" />
+        app:popUpTo="@id/transactionAnalysisFragment"
+        app:popUpToInclusive="true" />
 
     <!--    transactionAnalysisFragment-->
     <fragment

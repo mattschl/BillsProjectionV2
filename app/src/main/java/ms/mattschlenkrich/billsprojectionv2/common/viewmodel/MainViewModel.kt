@@ -52,9 +52,9 @@ class MainViewModel(
         budgetRuleDetailed = null
         account = null
         accountType = null
-        requestedAccount = ""
-        callingFragments = ""
-        returnTo = ""
+        requestedAccount = null
+        callingFragments = null
+        returnTo = null
         transferNum = 0.0
     }
 
