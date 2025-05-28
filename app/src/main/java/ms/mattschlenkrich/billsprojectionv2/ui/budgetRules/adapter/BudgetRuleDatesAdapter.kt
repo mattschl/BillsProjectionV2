@@ -20,8 +20,7 @@ class BudgetRuleDatesAdapter(
     private val mView: View,
     private val parentTag: String,
     private val budgetRuleUpdateFragment: BudgetRuleUpdateFragment,
-) :
-    RecyclerView.Adapter<BudgetRuleDatesAdapter.DateViewHolder>() {
+) : RecyclerView.Adapter<BudgetRuleDatesAdapter.DateViewHolder>() {
 
     private val df = DateFunctions()
     private val nf = NumberFunctions()
@@ -30,26 +29,19 @@ class BudgetRuleDatesAdapter(
     class DateViewHolder(val itemBinding: BudgetDateItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
 
-    private val differCalBack =
-        object : DiffUtil.ItemCallback<BudgetItemDetailed>() {
-            override fun areContentsTheSame(
-                oldItem: BudgetItemDetailed,
-                newItem: BudgetItemDetailed
-            ): Boolean {
-                return oldItem.budgetItem!!.biProjectedDate == newItem.budgetItem!!.biProjectedDate &&
-                        oldItem.budgetItem.biRuleId == newItem.budgetItem.biRuleId &&
-                        oldItem.budgetRule?.ruleId == newItem.budgetRule?.ruleId &&
-                        oldItem.toAccount?.accountId == newItem.toAccount?.accountId &&
-                        oldItem.fromAccount?.accountId == newItem.fromAccount?.accountId
-            }
-
-            override fun areItemsTheSame(
-                oldItem: BudgetItemDetailed,
-                newItem: BudgetItemDetailed
-            ): Boolean {
-                return oldItem == newItem
-            }
+    private val differCalBack = object : DiffUtil.ItemCallback<BudgetItemDetailed>() {
+        override fun areContentsTheSame(
+            oldItem: BudgetItemDetailed, newItem: BudgetItemDetailed
+        ): Boolean {
+            return oldItem.budgetItem!!.biProjectedDate == newItem.budgetItem!!.biProjectedDate && oldItem.budgetItem.biRuleId == newItem.budgetItem.biRuleId && oldItem.budgetRule?.ruleId == newItem.budgetRule?.ruleId && oldItem.toAccount?.accountId == newItem.toAccount?.accountId && oldItem.fromAccount?.accountId == newItem.fromAccount?.accountId
         }
+
+        override fun areItemsTheSame(
+            oldItem: BudgetItemDetailed, newItem: BudgetItemDetailed
+        ): Boolean {
+            return oldItem == newItem
+        }
+    }
 
     val differ = AsyncListDiffer(this, differCalBack)
 
@@ -78,16 +70,15 @@ class BudgetRuleDatesAdapter(
     }
 
     private fun confirmGotoBudgetItem(curItem: BudgetItemDetailed) {
-        AlertDialog.Builder(mView.context)
-            .setTitle(
-                mView.context.getString(R.string.would_you_like_to_go_to_this_budget_item_on) +
-                        " ${df.getDisplayDate(curItem.budgetItem!!.biActualDate)}?"
-            )
-            .setPositiveButton(mView.context.getString(R.string.yes)) { _, _ ->
-                gotoBudgetItem(curItem)
-            }
-            .setNegativeButton(mView.context.getString(R.string.cancel), null)
-            .show()
+        AlertDialog.Builder(mView.context).setTitle(
+            mView.context.getString(R.string.would_you_like_to_go_to_this_budget_item_on) + " ${
+                df.getDisplayDate(
+                    curItem.budgetItem!!.biActualDate
+                )
+            }?"
+        ).setPositiveButton(mView.context.getString(R.string.yes)) { _, _ ->
+            gotoBudgetItem(curItem)
+        }.setNegativeButton(mView.context.getString(R.string.cancel), null).show()
     }
 
     private fun gotoBudgetItem(curItem: BudgetItemDetailed) {
@@ -95,6 +86,4 @@ class BudgetRuleDatesAdapter(
         mainViewModel.setBudgetItemDetailed(curItem)
         budgetRuleUpdateFragment.gotoBudgetItemUpdateFragment()
     }
-
-
 }

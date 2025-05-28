@@ -24,8 +24,10 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.OWING
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
+import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 
@@ -37,6 +39,8 @@ class AccountUpdateFragment :
     private var _binding: FragmentAccountUpdateBinding? = null
     private val binding get() = _binding!!
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var accountViewModel: AccountViewModel
     private lateinit var mView: View
 
     private val nf = NumberFunctions()
@@ -51,9 +55,8 @@ class AccountUpdateFragment :
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
-        mainActivity.mainViewModel = mainActivity.mainViewModel
-        mainActivity.accountViewModel =
-            mainActivity.accountViewModel
+        mainViewModel = mainActivity.mainViewModel
+        accountViewModel = mainActivity.accountViewModel
         mainActivity.title = getString(R.string.update_account)
         mView = binding.root
         return mView
@@ -66,7 +69,7 @@ class AccountUpdateFragment :
     }
 
     private fun populateValues() {
-        val accountWithType = mainActivity.mainViewModel.getAccountWithType()!!
+        val accountWithType = mainViewModel.getAccountWithType()!!
         getAccountListNamesForValidation()
         binding.apply {
             edAccountUpdateName.setText(accountWithType.account.accountName)
@@ -76,10 +79,10 @@ class AccountUpdateFragment :
             }
             edAccountUpdateBalance.setText(
                 nf.displayDollars(
-                    if (mainActivity.mainViewModel.getTransferNum()!! != 0.0 &&
-                        mainActivity.mainViewModel.getReturnTo()!!.contains(BALANCE)
+                    if (mainViewModel.getTransferNum()!! != 0.0 &&
+                        mainViewModel.getReturnTo()!!.contains(BALANCE)
                     ) {
-                        mainActivity.mainViewModel.getTransferNum()!!
+                        mainViewModel.getTransferNum()!!
                     } else {
                         accountWithType.account.accountBalance
                     }
@@ -87,11 +90,11 @@ class AccountUpdateFragment :
             )
             edAccountUpdateOwing.setText(
                 nf.displayDollars(
-                    if (mainActivity.mainViewModel.getTransferNum()!! != 0.0 &&
-                        mainActivity.mainViewModel.getReturnTo()!!.contains(OWING)
+                    if (mainViewModel.getTransferNum()!! != 0.0 &&
+                        mainViewModel.getReturnTo()!!.contains(OWING)
 
                     ) {
-                        mainActivity.mainViewModel.getTransferNum()!!
+                        mainViewModel.getTransferNum()!!
                     } else {
                         accountWithType.account.accountOwing
                     }
@@ -99,16 +102,16 @@ class AccountUpdateFragment :
             )
             edAccountUpdateBudgeted.setText(
                 nf.displayDollars(
-                    if (mainActivity.mainViewModel.getTransferNum()!! != 0.0 &&
-                        mainActivity.mainViewModel.getReturnTo()!!.contains(BUDGETED)
+                    if (mainViewModel.getTransferNum()!! != 0.0 &&
+                        mainViewModel.getReturnTo()!!.contains(BUDGETED)
                     ) {
-                        mainActivity.mainViewModel.getTransferNum()!!
+                        mainViewModel.getTransferNum()!!
                     } else {
                         accountWithType.account.accBudgetedAmount
                     }
                 )
             )
-            mainActivity.mainViewModel.setTransferNum(0.0)
+            mainViewModel.setTransferNum(0.0)
             etAccUpdateLimit.setText(
                 nf.displayDollars(accountWithType.account.accountCreditLimit)
             )
@@ -118,7 +121,7 @@ class AccountUpdateFragment :
     }
 
     private fun getAccountListNamesForValidation() {
-        mainActivity.accountViewModel.getAccountNameList().observe(
+        accountViewModel.getAccountNameList().observe(
             viewLifecycleOwner
         ) { accounts ->
             accountNameList.clear()
@@ -173,10 +176,10 @@ class AccountUpdateFragment :
     private fun getUpdatedAccount(): Account {
         binding.apply {
             return Account(
-                mainActivity.mainViewModel.getAccountWithType()!!.account.accountId,
+                mainViewModel.getAccountWithType()!!.account.accountId,
                 edAccountUpdateName.text.toString().trim(),
                 edAccountUpdateHandle.text.toString().trim(),
-                mainActivity.mainViewModel.getAccountWithType()!!.accountType?.typeId ?: 0L,
+                mainViewModel.getAccountWithType()!!.accountType?.typeId ?: 0L,
                 nf.getDoubleFromDollars(edAccountUpdateBudgeted.text.toString()),
                 nf.getDoubleFromDollars(edAccountUpdateBalance.text.toString()),
                 nf.getDoubleFromDollars(edAccountUpdateOwing.text.toString()),
@@ -196,7 +199,7 @@ class AccountUpdateFragment :
                 if (accountNameList[i] ==
                     edAccountUpdateName.text.toString() &&
                     accountNameList[i] !=
-                    mainActivity.mainViewModel.getAccountWithType()!!.account.accountName
+                    mainViewModel.getAccountWithType()!!.account.accountName
                 ) {
                     return getString(R.string.this_budget_rule_already_exists)
                 }
@@ -223,10 +226,10 @@ class AccountUpdateFragment :
     }
 
     private fun confirmUpdateAccount() {
-        val accountWithType = mainActivity.mainViewModel.getAccountWithType()!!
+        val accountWithType = mainViewModel.getAccountWithType()!!
         val name = binding.edAccountUpdateName.text.trim().toString()
         if (name == accountWithType.account.accountName.trim()) {
-            mainActivity.accountViewModel.updateAccount(getUpdatedAccount())
+            accountViewModel.updateAccount(getUpdatedAccount())
             gotoCallingFragment()
         } else if (name != accountWithType.account.accountName.trim()) {
             confirmRenameAccount()
@@ -242,7 +245,7 @@ class AccountUpdateFragment :
                         getString(R.string.this_will_not_replace_an_existing_account_type)
             )
             setPositiveButton(getString(R.string.update_account)) { _, _ ->
-                mainActivity.accountViewModel.updateAccount(getUpdatedAccount())
+                accountViewModel.updateAccount(getUpdatedAccount())
                 gotoCallingFragment()
 
             }
@@ -262,12 +265,12 @@ class AccountUpdateFragment :
     }
 
     private fun deleteAccount() {
-        mainActivity.accountViewModel.deleteAccount(
-            mainActivity.mainViewModel.getAccountWithType()!!.account.accountId,
+        accountViewModel.deleteAccount(
+            mainViewModel.getAccountWithType()!!.account.accountId,
             df.getCurrentTimeAsString()
         )
-        mainActivity.mainViewModel.setCallingFragments(
-            mainActivity.mainViewModel.getCallingFragments()!!
+        mainViewModel.setCallingFragments(
+            mainViewModel.getCallingFragments()!!
                 .replace(", $FRAG_ACCOUNT_UPDATE", "")
         )
         gotoAccountsFragment()
@@ -276,7 +279,7 @@ class AccountUpdateFragment :
     private fun gotoCalculator(type: String) {
         when (type) {
             BALANCE -> {
-                mainActivity.mainViewModel.setTransferNum(
+                mainViewModel.setTransferNum(
                     nf.getDoubleFromDollars(
                         binding.edAccountUpdateBalance.text.toString().ifBlank {
                             getString(R.string.zero_double)
@@ -286,7 +289,7 @@ class AccountUpdateFragment :
             }
 
             OWING -> {
-                mainActivity.mainViewModel.setTransferNum(
+                mainViewModel.setTransferNum(
                     nf.getDoubleFromDollars(
                         binding.edAccountUpdateOwing.text.toString().ifBlank {
                             getString(R.string.zero_double)
@@ -296,7 +299,7 @@ class AccountUpdateFragment :
             }
 
             BUDGETED -> {
-                mainActivity.mainViewModel.setTransferNum(
+                mainViewModel.setTransferNum(
                     nf.getDoubleFromDollars(
                         binding.edAccountUpdateBudgeted.text.toString().ifBlank {
                             getString(R.string.zero_double)
@@ -305,21 +308,21 @@ class AccountUpdateFragment :
                 )
             }
         }
-        mainActivity.mainViewModel.setReturnTo("$TAG, $type")
-        mainActivity.mainViewModel.setAccountWithType(
+        mainViewModel.setReturnTo("$TAG, $type")
+        mainViewModel.setAccountWithType(
             AccountWithType(
                 getUpdatedAccount(),
-                mainActivity.mainViewModel.getAccountWithType()!!.accountType
+                mainViewModel.getAccountWithType()!!.accountType
             )
         )
         gotoCalculatorFragment()
     }
 
     private fun gotoCallingFragment() {
-        mainActivity.mainViewModel.removeCallingFragment(TAG)
-        if (mainActivity.mainViewModel.getCallingFragments()!!.contains(FRAG_ACCOUNTS)) {
+        mainViewModel.removeCallingFragment(TAG)
+        if (mainViewModel.getCallingFragments()!!.contains(FRAG_ACCOUNTS)) {
             gotoAccountsFragment()
-        } else if (mainActivity.mainViewModel.getCallingFragments()!!.contains(FRAG_BUDGET_VIEW)) {
+        } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_BUDGET_VIEW)) {
             gotoBudgetViewFragment()
         }
     }
@@ -346,11 +349,11 @@ class AccountUpdateFragment :
     }
 
     private fun gotoAccountTypes() {
-        mainActivity.mainViewModel.addCallingFragment(TAG)
-        mainActivity.mainViewModel.setAccountWithType(
+        mainViewModel.addCallingFragment(TAG)
+        mainViewModel.setAccountWithType(
             AccountWithType(
                 getUpdatedAccount(),
-                mainActivity.mainViewModel.getAccountWithType()!!.accountType
+                mainViewModel.getAccountWithType()!!.accountType
             )
         )
         gotoAccountTypesFragment()

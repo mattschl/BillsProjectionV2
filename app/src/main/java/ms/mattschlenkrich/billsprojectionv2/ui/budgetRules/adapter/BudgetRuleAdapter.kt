@@ -41,29 +41,25 @@ class BudgetRuleAdapter(
     private val nf = NumberFunctions()
     private val df = DateFunctions()
     private val mainViewModel = mainActivity.mainViewModel
-    val budgetRuleViewModel = mainActivity.budgetRuleViewModel
+    private val budgetRuleViewModel = mainActivity.budgetRuleViewModel
 
     class BudgetRuleViewHolder(
         val itemBinding: BudgetRuleLayoutBinding
     ) : RecyclerView.ViewHolder(itemBinding.root)
 
-    private val differCallBack =
-        object : DiffUtil.ItemCallback<BudgetRuleDetailed>() {
-            override fun areItemsTheSame(
-                oldItem: BudgetRuleDetailed,
-                newItem: BudgetRuleDetailed
-            ): Boolean {
-                return oldItem.budgetRule!!.ruleId ==
-                        newItem.budgetRule!!.ruleId
-            }
-
-            override fun areContentsTheSame(
-                oldItem: BudgetRuleDetailed,
-                newItem: BudgetRuleDetailed
-            ): Boolean {
-                return oldItem == newItem
-            }
+    private val differCallBack = object : DiffUtil.ItemCallback<BudgetRuleDetailed>() {
+        override fun areItemsTheSame(
+            oldItem: BudgetRuleDetailed, newItem: BudgetRuleDetailed
+        ): Boolean {
+            return oldItem.budgetRule!!.ruleId == newItem.budgetRule!!.ruleId
         }
+
+        override fun areContentsTheSame(
+            oldItem: BudgetRuleDetailed, newItem: BudgetRuleDetailed
+        ): Boolean {
+            return oldItem == newItem
+        }
+    }
 
     val differ = AsyncListDiffer(this, differCallBack)
 
@@ -72,8 +68,7 @@ class BudgetRuleAdapter(
     ): BudgetRuleViewHolder {
         return BudgetRuleViewHolder(
             BudgetRuleLayoutBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent, false
+                LayoutInflater.from(parent.context), parent, false
             )
         )
     }
@@ -96,16 +91,12 @@ class BudgetRuleAdapter(
         val frequencyType = frequencyTypes[budgetRuleDetailed.budgetRule!!.budFrequencyTypeId]
         val daysOfWeek = mView.context.resources.getStringArray(R.array.days_of_week)
         val dayOfWeek = daysOfWeek[budgetRuleDetailed.budgetRule!!.budDayOfWeekId]
-        info = "$amount " + frequencyType +
-                " X " + budgetRuleDetailed.budgetRule!!.budFrequencyCount +
-                "\nOn " + dayOfWeek
+        info =
+            "$amount " + frequencyType + " X " + budgetRuleDetailed.budgetRule!!.budFrequencyCount + "\nOn " + dayOfWeek
         holder.itemBinding.tvInfo.text = info
         val random = Random()
         val color = Color.argb(
-            255,
-            random.nextInt(256),
-            random.nextInt(256),
-            random.nextInt(256)
+            255, random.nextInt(256), random.nextInt(256), random.nextInt(256)
         )
         holder.itemBinding.ibColor.setBackgroundColor(color)
         holder.itemView.setOnClickListener { chooseBudgetRule(budgetRuleDetailed) }
@@ -118,33 +109,28 @@ class BudgetRuleAdapter(
     private fun chooseOptionsForBudgetRule(
         budgetRuleDetailed: BudgetRuleDetailed,
     ) {
-        if (!mainViewModel.getCallingFragments()!!
-                .contains(FRAG_TRANSACTION_ANALYSIS)
+        if ((mainViewModel.getCallingFragments() != null && !mainViewModel.getCallingFragments()!!
+                .contains(FRAG_TRANSACTION_ANALYSIS) || mainViewModel.getCallingFragments() == null)
         ) {
-            AlertDialog.Builder(mView.context)
-                .setTitle(
-                    mView.context.getString(R.string.choose_an_action_for) +
-                            budgetRuleDetailed.budgetRule!!.budgetRuleName
+            AlertDialog.Builder(mView.context).setTitle(
+                mView.context.getString(R.string.choose_an_action_for) + budgetRuleDetailed.budgetRule!!.budgetRuleName
+            ).setItems(
+                arrayOf(
+                    mView.context.getString(R.string.view_or_edit_this_budget_rule),
+                    mView.context.getString(R.string.add_a_new_transaction_based_on_the_budget_rule),
+                    mView.context.getString(R.string.create_a_scheduled_item_with_this_budget_rule),
+                    mView.context.getString(R.string.view_a_summary_of_transactions_for_this_budget_rule),
+                    mView.context.getString(R.string.delete_this_budget_rule),
                 )
-                .setItems(
-                    arrayOf(
-                        mView.context.getString(R.string.view_or_edit_this_budget_rule),
-                        mView.context.getString(R.string.add_a_new_transaction_based_on_the_budget_rule),
-                        mView.context.getString(R.string.create_a_scheduled_item_with_this_budget_rule),
-                        mView.context.getString(R.string.view_a_summary_of_transactions_for_this_budget_rule),
-                        mView.context.getString(R.string.delete_this_budget_rule),
-                    )
-                ) { _, pos ->
-                    when (pos) {
-                        0 -> editBudgetRule(budgetRuleDetailed)
-                        1 -> gotoAddTransaction(budgetRuleDetailed)
-                        2 -> gotoCreateBudgetItem(budgetRuleDetailed)
-                        3 -> gotoAverages(budgetRuleDetailed)
-                        4 -> deleteBudgetRule(budgetRuleDetailed)
-                    }
+            ) { _, pos ->
+                when (pos) {
+                    0 -> editBudgetRule(budgetRuleDetailed)
+                    1 -> gotoAddTransaction(budgetRuleDetailed)
+                    2 -> gotoCreateBudgetItem(budgetRuleDetailed)
+                    3 -> gotoAverages(budgetRuleDetailed)
+                    4 -> deleteBudgetRule(budgetRuleDetailed)
                 }
-                .setNegativeButton("Cancel", null)
-                .show()
+            }.setNegativeButton("Cancel", null).show()
         } else {
             showMessage(mView.context.getString(R.string.editing_is_not_allowed_right_now))
         }
@@ -217,27 +203,29 @@ class BudgetRuleAdapter(
     private fun chooseBudgetRule(
         budgetRuleDetailed: BudgetRuleDetailed
     ) {
-        mainViewModel.removeCallingFragment(parentTag)
-        mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
-        val mCallingFragment = mainViewModel.getCallingFragments()!!
-        if (mCallingFragment.contains(FRAG_TRANSACTION_SPLIT)
-        ) {
-            val mTransactionSplit = mainViewModel.getSplitTransactionDetailed()
-            mTransactionSplit?.budgetRule = budgetRuleDetailed.budgetRule
-            mainViewModel.setSplitTransactionDetailed(mTransactionSplit)
-        } else {
-            val mTransaction = mainViewModel.getTransactionDetailed()
-            mTransaction?.budgetRule = budgetRuleDetailed.budgetRule
-            mainViewModel.setTransactionDetailed(mTransaction)
+        if (mainViewModel.getCallingFragments() != null) {
+            mainViewModel.removeCallingFragment(parentTag)
+            mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
+            val mCallingFragment = mainViewModel.getCallingFragments()!!
+            if (mCallingFragment.contains(FRAG_TRANSACTION_SPLIT)) {
+                val mTransactionSplit = mainViewModel.getSplitTransactionDetailed()
+                mTransactionSplit?.budgetRule = budgetRuleDetailed.budgetRule
+                mainViewModel.setSplitTransactionDetailed(mTransactionSplit)
+            } else {
+                val mTransaction = mainViewModel.getTransactionDetailed()
+                mTransaction?.budgetRule = budgetRuleDetailed.budgetRule
+                mainViewModel.setTransactionDetailed(mTransaction)
+            }
+            if (mCallingFragment.contains(FRAG_BUDGET_ITEM_ADD) || mCallingFragment.contains(
+                    FRAG_BUDGET_ITEM_UPDATE
+                )
+            ) {
+                val mBudgetDetailed = mainViewModel.getBudgetItemDetailed()
+                mBudgetDetailed?.budgetRule = budgetRuleDetailed.budgetRule
+                mainViewModel.setBudgetItemDetailed(mBudgetDetailed)
+            }
+            gotoCallingFragment()
         }
-        if (mCallingFragment.contains(FRAG_BUDGET_ITEM_ADD) ||
-            mCallingFragment.contains(FRAG_BUDGET_ITEM_UPDATE)
-        ) {
-            val mBudgetDetailed = mainViewModel.getBudgetItemDetailed()
-            mBudgetDetailed?.budgetRule = budgetRuleDetailed.budgetRule
-            mainViewModel.setBudgetItemDetailed(mBudgetDetailed)
-        }
-        gotoCallingFragment()
     }
 
     private fun gotoAverages(
@@ -251,8 +239,7 @@ class BudgetRuleAdapter(
 
     private fun deleteBudgetRule(budgetRuleDetailed: BudgetRuleDetailed) {
         budgetRuleViewModel.deleteBudgetRule(
-            budgetRuleDetailed.budgetRule!!.ruleId,
-            df.getCurrentTimeAsString()
+            budgetRuleDetailed.budgetRule!!.ruleId, df.getCurrentTimeAsString()
         )
     }
 
