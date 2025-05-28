@@ -41,39 +41,34 @@ class AccountAdapter(
     private val mView: View,
     private val parentTag: String,
     private val accountsFragment: AccountsFragment,
-) :
-    RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() {
+) : RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() {
 
     private val mainViewModel = mainActivity.mainViewModel
 
-    private var mBudgetItem =
-        BudgetItemDetailed(
-            mainViewModel.getBudgetItemDetailed()?.budgetItem,
-            mainViewModel.getBudgetItemDetailed()?.budgetRule,
-            mainViewModel.getBudgetItemDetailed()?.toAccount,
-            mainViewModel.getBudgetItemDetailed()?.fromAccount
-        )
+    private var mBudgetItem = BudgetItemDetailed(
+        mainViewModel.getBudgetItemDetailed()?.budgetItem,
+        mainViewModel.getBudgetItemDetailed()?.budgetRule,
+        mainViewModel.getBudgetItemDetailed()?.toAccount,
+        mainViewModel.getBudgetItemDetailed()?.fromAccount
+    )
 
-    private var mBudgetRuleDetailed =
-        BudgetRuleDetailed(
-            mainViewModel.getBudgetRuleDetailed()?.budgetRule,
-            mainViewModel.getBudgetRuleDetailed()?.toAccount,
-            mainViewModel.getBudgetRuleDetailed()?.fromAccount
-        )
-    private var mTransactionDetailed =
-        TransactionDetailed(
-            mainViewModel.getTransactionDetailed()?.transaction,
-            mainViewModel.getTransactionDetailed()?.budgetRule,
-            mainViewModel.getTransactionDetailed()?.toAccount,
-            mainViewModel.getTransactionDetailed()?.fromAccount
-        )
-    private var mSplitTransactionDetailed =
-        TransactionDetailed(
-            mainViewModel.getSplitTransactionDetailed()?.transaction,
-            mainViewModel.getSplitTransactionDetailed()?.budgetRule,
-            mainViewModel.getSplitTransactionDetailed()?.toAccount,
-            mainViewModel.getSplitTransactionDetailed()?.fromAccount
-        )
+    private var mBudgetRuleDetailed = BudgetRuleDetailed(
+        mainViewModel.getBudgetRuleDetailed()?.budgetRule,
+        mainViewModel.getBudgetRuleDetailed()?.toAccount,
+        mainViewModel.getBudgetRuleDetailed()?.fromAccount
+    )
+    private var mTransactionDetailed = TransactionDetailed(
+        mainViewModel.getTransactionDetailed()?.transaction,
+        mainViewModel.getTransactionDetailed()?.budgetRule,
+        mainViewModel.getTransactionDetailed()?.toAccount,
+        mainViewModel.getTransactionDetailed()?.fromAccount
+    )
+    private var mSplitTransactionDetailed = TransactionDetailed(
+        mainViewModel.getSplitTransactionDetailed()?.transaction,
+        mainViewModel.getSplitTransactionDetailed()?.budgetRule,
+        mainViewModel.getSplitTransactionDetailed()?.toAccount,
+        mainViewModel.getSplitTransactionDetailed()?.fromAccount
+    )
     private val accountViewModel = mainActivity.accountViewModel
 
     private val cf = NumberFunctions()
@@ -82,35 +77,28 @@ class AccountAdapter(
     class AccountViewHolder(val itemBinding: AccountLayoutBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
 
-    private val differCallBack =
-        object : DiffUtil.ItemCallback<AccountWithType>() {
-            override fun areItemsTheSame(
-                oldItem: AccountWithType,
-                newItem: AccountWithType
-            ): Boolean {
-                return oldItem.account.accountId == newItem.account.accountId &&
-                        oldItem.account.accountName == newItem.account.accountName &&
-                        oldItem.account.accountNumber == newItem.account.accountNumber
-            }
-
-            override fun areContentsTheSame(
-                oldItem: AccountWithType,
-                newItem: AccountWithType
-            ): Boolean {
-                return oldItem == newItem
-            }
+    private val differCallBack = object : DiffUtil.ItemCallback<AccountWithType>() {
+        override fun areItemsTheSame(
+            oldItem: AccountWithType, newItem: AccountWithType
+        ): Boolean {
+            return oldItem.account.accountId == newItem.account.accountId && oldItem.account.accountName == newItem.account.accountName && oldItem.account.accountNumber == newItem.account.accountNumber
         }
+
+        override fun areContentsTheSame(
+            oldItem: AccountWithType, newItem: AccountWithType
+        ): Boolean {
+            return oldItem == newItem
+        }
+    }
 
     val differ = AsyncListDiffer(this, differCallBack)
 
     override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
+        parent: ViewGroup, viewType: Int
     ): AccountViewHolder {
         return AccountViewHolder(
             AccountLayoutBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent, false
+                LayoutInflater.from(parent.context), parent, false
             )
         )
     }
@@ -132,28 +120,27 @@ class AccountAdapter(
                 ""
             }
             if (curAccount.account.accountBalance != 0.0) {
-                info += (if (info.isNotEmpty()) "\n" else "") +
-                        mView.context.getString(R.string.balance) +
-                        cf.displayDollars(curAccount.account.accountBalance)
+                info += (if (info.isNotEmpty()) "\n" else "") + mView.context.getString(R.string.balance) + cf.displayDollars(
+                    curAccount.account.accountBalance
+                )
             }
             if (curAccount.account.accountOwing != 0.0) {
-                info += (if (info.isNotEmpty()) "\n" else "") +
-                        mView.context.getString(R.string.owing) +
-                        cf.displayDollars(curAccount.account.accountOwing)
+                info += (if (info.isNotEmpty()) "\n" else "") + mView.context.getString(R.string.owing) + cf.displayDollars(
+                    curAccount.account.accountOwing
+                )
             }
             if (curAccount.account.accBudgetedAmount != 0.0) {
-                info += (if (info.isNotEmpty()) "\n" else "") +
-                        mView.context.getString(R.string.budgeted) +
-                        cf.displayDollars(curAccount.account.accBudgetedAmount)
+                info += (if (info.isNotEmpty()) "\n" else "") + mView.context.getString(R.string.budgeted) + cf.displayDollars(
+                    curAccount.account.accBudgetedAmount
+                )
             }
             if (curAccount.account.accountCreditLimit != 0.0) {
-                info += (if (info.isNotEmpty()) "\n" else "") +
-                        mView.context.getString(R.string.credit_limit) +
-                        cf.displayDollars(curAccount.account.accountCreditLimit)
+                info += (if (info.isNotEmpty()) "\n" else "") + mView.context.getString(R.string.credit_limit) + cf.displayDollars(
+                    curAccount.account.accountCreditLimit
+                )
             }
             if (curAccount.account.accIsDeleted) {
-                info += (if (info.isNotEmpty()) "\n" else "") +
-                        mView.context.getString(R.string.deleted)
+                info += (if (info.isNotEmpty()) "\n" else "") + mView.context.getString(R.string.deleted)
             }
             if (info.isBlank()) {
                 info = mView.context.getString(R.string.no_info)
@@ -168,10 +155,7 @@ class AccountAdapter(
 
             val random = Random()
             val color = Color.argb(
-                255,
-                random.nextInt(256),
-                random.nextInt(256),
-                random.nextInt(256)
+                255, random.nextInt(256), random.nextInt(256), random.nextInt(256)
             )
             ibAccountColor.setBackgroundColor(color)
 
@@ -187,28 +171,23 @@ class AccountAdapter(
         curAccount: AccountWithType
     ) {
         val callingFragment = mainViewModel.getCallingFragments()
-        if (callingFragment == null
-        ) {
-            AlertDialog.Builder(mView.context)
-                .setTitle(
-                    mView.context.getString(R.string.choose_an_action_for) + curAccount.account.accountName
+        if (callingFragment == null) {
+            AlertDialog.Builder(mView.context).setTitle(
+                mView.context.getString(R.string.choose_an_action_for) + curAccount.account.accountName
+            ).setItems(
+                arrayOf(
+                    mView.context.getString(R.string.edit_this_account),
+                    mView.context.getString(R.string.delete_this_account),
+                    mView.context.getString(R.string.view_a_summary_of_transactions_using_this_account)
                 )
-                .setItems(
-                    arrayOf(
-                        mView.context.getString(R.string.edit_this_account),
-                        mView.context.getString(R.string.delete_this_account),
-                        mView.context.getString(R.string.view_a_summary_of_transactions_using_this_account)
-                    )
-                ) { _, pos ->
-                    when (pos) {
-                        0 -> gotoUpdateAccount(curAccount)
-                        1 -> deleteAccount(curAccount)
-                        2 -> gotoTransactionAverage(curAccount)
-                    }
-
+            ) { _, pos ->
+                when (pos) {
+                    0 -> gotoUpdateAccount(curAccount)
+                    1 -> deleteAccount(curAccount)
+                    2 -> gotoTransactionAverage(curAccount)
                 }
-                .setNegativeButton(mView.context.getString(R.string.cancel), null)
-                .show()
+
+            }.setNegativeButton(mView.context.getString(R.string.cancel), null).show()
         } else {
             showMessage(mView.context.getString(R.string.editing_is_not_allowed_right_now))
         }
@@ -227,63 +206,63 @@ class AccountAdapter(
     private fun chooseAccount(
         curAccount: AccountWithType,
     ) {
-        if (mainViewModel.getCallingFragments()!!
-                .contains(FRAG_TRANSACTION_ANALYSIS)
-        ) {
-            gotoTransactionAverage(curAccount)
-        } else {
-            when (mainViewModel.getRequestedAccount()) {
-                REQUEST_TO_ACCOUNT -> {
-                    mBudgetRuleDetailed.toAccount = curAccount.account
-                    mainViewModel.setBudgetRuleDetailed(mBudgetRuleDetailed)
-                    if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_SPLIT)
-                    ) {
-                        mSplitTransactionDetailed.toAccount = curAccount.account
-                        mSplitTransactionDetailed.transaction!!.transToAccountPending =
-                            curAccount.accountType!!.tallyOwing
-                        mainViewModel.setSplitTransactionDetailed(
-                            mSplitTransactionDetailed
-                        )
-                    } else {
-                        mTransactionDetailed.toAccount = curAccount.account
-                        mTransactionDetailed.transaction!!.transToAccountPending =
-                            curAccount.accountType!!.tallyOwing
-                        mainViewModel.setTransactionDetailed(mTransactionDetailed)
-                    }
-                    mBudgetItem.toAccount = curAccount.account
-                    mainViewModel.setBudgetItemDetailed(mBudgetItem)
-                    gotoCallingFragment()
-
-                }
-
-                REQUEST_FROM_ACCOUNT -> {
-                    mBudgetRuleDetailed.fromAccount = curAccount.account
-                    mainViewModel.setBudgetRuleDetailed(mBudgetRuleDetailed)
-                    val callingFragment = mainViewModel.getCallingFragments()!!
-                    if (callingFragment.contains(FRAG_TRANSACTION_SPLIT)
-                    ) {
-                        mSplitTransactionDetailed.fromAccount = curAccount.account
-                        mSplitTransactionDetailed.transaction?.transFromAccountPending =
-                            curAccount.accountType!!.tallyOwing
-                        mainViewModel.setSplitTransactionDetailed(
-                            mSplitTransactionDetailed
-                        )
-                    } else if (callingFragment.contains(FRAG_TRANS_ADD) ||
-                        callingFragment.contains(FRAG_TRANS_PERFORM) ||
-                        callingFragment.contains(FRAG_TRANS_UPDATE)
-                    ) {
-                        mTransactionDetailed.fromAccount = curAccount.account
-                        mTransactionDetailed.transaction?.transFromAccountPending =
-                            curAccount.accountType!!.tallyOwing
-                        mainViewModel.setTransactionDetailed(mTransactionDetailed)
-                    } else if (callingFragment.contains(FRAG_BUDGET_ITEM_ADD) ||
-                        callingFragment.contains(FRAG_BUDGET_ITEM_UPDATE)
-                    ) {
-                        mBudgetItem.fromAccount = curAccount.account
+        if (mainViewModel.getCallingFragments() != null) {
+            if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_ANALYSIS)) {
+                gotoTransactionAverage(curAccount)
+            } else {
+                when (mainViewModel.getRequestedAccount()) {
+                    REQUEST_TO_ACCOUNT -> {
+                        mBudgetRuleDetailed.toAccount = curAccount.account
+                        mainViewModel.setBudgetRuleDetailed(mBudgetRuleDetailed)
+                        if (mainViewModel.getCallingFragments()!!
+                                .contains(FRAG_TRANSACTION_SPLIT)
+                        ) {
+                            mSplitTransactionDetailed.toAccount = curAccount.account
+                            mSplitTransactionDetailed.transaction!!.transToAccountPending =
+                                curAccount.accountType!!.tallyOwing
+                            mainViewModel.setSplitTransactionDetailed(
+                                mSplitTransactionDetailed
+                            )
+                        } else {
+                            mTransactionDetailed.toAccount = curAccount.account
+                            mTransactionDetailed.transaction!!.transToAccountPending =
+                                curAccount.accountType!!.tallyOwing
+                            mainViewModel.setTransactionDetailed(mTransactionDetailed)
+                        }
+                        mBudgetItem.toAccount = curAccount.account
                         mainViewModel.setBudgetItemDetailed(mBudgetItem)
-                    }
-                    gotoCallingFragment()
+                        gotoCallingFragment()
 
+                    }
+
+                    REQUEST_FROM_ACCOUNT -> {
+                        mBudgetRuleDetailed.fromAccount = curAccount.account
+                        mainViewModel.setBudgetRuleDetailed(mBudgetRuleDetailed)
+                        val callingFragment = mainViewModel.getCallingFragments()!!
+                        if (callingFragment.contains(FRAG_TRANSACTION_SPLIT)) {
+                            mSplitTransactionDetailed.fromAccount = curAccount.account
+                            mSplitTransactionDetailed.transaction?.transFromAccountPending =
+                                curAccount.accountType!!.tallyOwing
+                            mainViewModel.setSplitTransactionDetailed(
+                                mSplitTransactionDetailed
+                            )
+                        } else if (callingFragment.contains(FRAG_TRANS_ADD) || callingFragment.contains(
+                                FRAG_TRANS_PERFORM
+                            ) || callingFragment.contains(FRAG_TRANS_UPDATE)
+                        ) {
+                            mTransactionDetailed.fromAccount = curAccount.account
+                            mTransactionDetailed.transaction?.transFromAccountPending =
+                                curAccount.accountType!!.tallyOwing
+                            mainViewModel.setTransactionDetailed(mTransactionDetailed)
+                        } else if (callingFragment.contains(FRAG_BUDGET_ITEM_ADD) || callingFragment.contains(
+                                FRAG_BUDGET_ITEM_UPDATE
+                            )
+                        ) {
+                            mBudgetItem.fromAccount = curAccount.account
+                            mainViewModel.setBudgetItemDetailed(mBudgetItem)
+                        }
+                        gotoCallingFragment()
+                    }
                 }
             }
         }
@@ -310,26 +289,19 @@ class AccountAdapter(
         if (callingFragment.contains(FRAG_TRANSACTION_SPLIT)) {
             accountsFragment.gotoTransactionSplitFragment()
         }
-        if (callingFragment.contains(FRAG_BUDGET_RULE_ADD)
-        ) {
+        if (callingFragment.contains(FRAG_BUDGET_RULE_ADD)) {
             accountsFragment.gotoBudgetRuleAddFragment()
-        } else if (callingFragment.contains(FRAG_BUDGET_RULE_UPDATE)
-        ) {
+        } else if (callingFragment.contains(FRAG_BUDGET_RULE_UPDATE)) {
             accountsFragment.gotoBudgetRuleUpdateFragment()
-        } else if (callingFragment.contains(FRAG_TRANS_ADD)
-        ) {
+        } else if (callingFragment.contains(FRAG_TRANS_ADD)) {
             accountsFragment.gotoTransactionAddFragment()
-        } else if (callingFragment.contains(FRAG_TRANS_UPDATE)
-        ) {
+        } else if (callingFragment.contains(FRAG_TRANS_UPDATE)) {
             accountsFragment.gotoTransactionUpdateFragment()
-        } else if (callingFragment.contains(FRAG_BUDGET_ITEM_ADD)
-        ) {
+        } else if (callingFragment.contains(FRAG_BUDGET_ITEM_ADD)) {
             accountsFragment.gotoBudgetItemAddFragment()
-        } else if (callingFragment.contains(FRAG_BUDGET_ITEM_UPDATE)
-        ) {
+        } else if (callingFragment.contains(FRAG_BUDGET_ITEM_UPDATE)) {
             accountsFragment.gotoBudgetItemUpdateFragment()
-        } else if (callingFragment.contains(FRAG_TRANS_PERFORM)
-        ) {
+        } else if (callingFragment.contains(FRAG_TRANS_PERFORM)) {
             accountsFragment.gotoTransactionPerformFragment()
         }
     }

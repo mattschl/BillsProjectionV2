@@ -21,8 +21,10 @@ import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_TYPE_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
+import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountTypeAddBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 
@@ -34,6 +36,8 @@ class AccountTypeAddFragment :
     private var _binding: FragmentAccountTypeAddBinding? = null
     private val binding get() = _binding!!
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var accountViewModel: AccountViewModel
     private lateinit var mView: View
     private lateinit var accountTypeList: List<String>
     private val df = DateFunctions()
@@ -48,6 +52,8 @@ class AccountTypeAddFragment :
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        accountViewModel = mainActivity.accountViewModel
         mainActivity.title = getString(R.string.add_a_new_account_type)
         mView = binding.root
         return mView
@@ -63,7 +69,7 @@ class AccountTypeAddFragment :
         CoroutineScope(Dispatchers.IO).launch {
             val typeList =
                 async {
-                    mainActivity.accountViewModel.getAccountTypeNames()
+                    accountViewModel.getAccountTypeNames()
                 }
             accountTypeList = typeList.await()
         }
@@ -129,10 +135,10 @@ class AccountTypeAddFragment :
 
     private fun saveAccountType() {
         val accountType = getCurrentAccountType()
-        mainActivity.accountViewModel.addAccountType(accountType)
-        mainActivity.mainViewModel.setAccountWithType(
+        accountViewModel.addAccountType(accountType)
+        mainViewModel.setAccountWithType(
             AccountWithType(
-                mainActivity.mainViewModel.getAccountWithType()!!.account,
+                mainViewModel.getAccountWithType()!!.account,
                 accountType
             )
         )
@@ -140,7 +146,7 @@ class AccountTypeAddFragment :
     }
 
     private fun gotoAccountTypes() {
-        mainActivity.mainViewModel.removeCallingFragment(TAG)
+        mainViewModel.removeCallingFragment(TAG)
         gotoAccountTypesFragment()
     }
 

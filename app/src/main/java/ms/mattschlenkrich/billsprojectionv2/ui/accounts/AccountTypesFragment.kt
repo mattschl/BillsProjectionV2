@@ -16,7 +16,9 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_TYPES
+import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType
+import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountTypesBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.accounts.adapter.AccountTypeAdapter
@@ -32,6 +34,8 @@ class AccountTypesFragment
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var accountViewModel: AccountViewModel
     private lateinit var accountTypeAdapter: AccountTypeAdapter
 
     override fun onCreateView(
@@ -45,7 +49,8 @@ class AccountTypesFragment
 //        Log.d(TAG, "$TAG is entered")
         mView = binding.root
         mainActivity = (activity as MainActivity)
-
+        mainViewModel = mainActivity.mainViewModel
+        accountViewModel = mainActivity.accountViewModel
         mainActivity.title = getString(R.string.choose_an_account_type)
         return mView
     }
@@ -77,14 +82,12 @@ class AccountTypesFragment
             setHasFixedSize(true)
             adapter = accountTypeAdapter
         }
-        activity?.let {
-            mainActivity.accountViewModel.getActiveAccountTypes().observe(
-                viewLifecycleOwner
-            ) { accountType ->
-                accountTypeAdapter.differ.submitList(accountType)
-                updateUI(accountType)
+        accountViewModel.getActiveAccountTypes().observe(
+            viewLifecycleOwner
+        ) { accountType ->
+            accountTypeAdapter.differ.submitList(accountType)
+            updateUI(accountType)
 
-            }
         }
     }
 
@@ -127,13 +130,13 @@ class AccountTypesFragment
 
     private fun searchAccountTypes(query: String?) {
         val searchQuery = "%$query%"
-        mainActivity.accountViewModel.searchAccountTypes(searchQuery).observe(
+        accountViewModel.searchAccountTypes(searchQuery).observe(
             this
         ) { list -> accountTypeAdapter.differ.submitList(list) }
     }
 
     private fun gotoAccountTypeAdd() {
-        mainActivity.mainViewModel.addCallingFragment(TAG)
+        mainViewModel.addCallingFragment(TAG)
         gotoAccountYpeAddFragment()
     }
 

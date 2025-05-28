@@ -25,8 +25,10 @@ import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
+import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewModel
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetRuleAddBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 
@@ -38,6 +40,8 @@ class BudgetRuleAddFragment :
     private var _binding: FragmentBudgetRuleAddBinding? = null
     private val binding get() = _binding!!
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var budgetRuleViewModel: BudgetRuleViewModel
     private lateinit var mView: View
     private var budgetNameList: List<String>? = null
 
@@ -53,6 +57,8 @@ class BudgetRuleAddFragment :
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        budgetRuleViewModel = mainActivity.budgetRuleViewModel
         mainActivity.title = getString(R.string.update_budget_rule)
         mView = binding.root
         return mView
@@ -68,7 +74,7 @@ class BudgetRuleAddFragment :
         getBudgetRuleNameListForValidation()
         populateSpinners()
         binding.apply {
-            if (mainActivity.mainViewModel.getBudgetRuleDetailed() != null) {
+            if (mainViewModel.getBudgetRuleDetailed() != null) {
                 populateFromCache()
             } else {
                 populateDatesOnly()
@@ -85,21 +91,21 @@ class BudgetRuleAddFragment :
 
     private fun populateFromCache() {
         binding.apply {
-            if (mainActivity.mainViewModel.getBudgetRuleDetailed()!!.budgetRule != null) {
-                val budgetRuleDetailed = mainActivity.mainViewModel.getBudgetRuleDetailed()!!
+            if (mainViewModel.getBudgetRuleDetailed()!!.budgetRule != null) {
+                val budgetRuleDetailed = mainViewModel.getBudgetRuleDetailed()!!
                 etBudgetName.setText(
                     budgetRuleDetailed.budgetRule!!.budgetRuleName
                 )
                 etAmount.setText(
                     nf.displayDollars(
-                        if (mainActivity.mainViewModel.getTransferNum()!! != 0.0) {
-                            mainActivity.mainViewModel.getTransferNum()!!
+                        if (mainViewModel.getTransferNum()!! != 0.0) {
+                            mainViewModel.getTransferNum()!!
                         } else {
                             budgetRuleDetailed.budgetRule!!.budgetAmount
                         }
                     )
                 )
-                mainActivity.mainViewModel.setTransferNum(0.0)
+                mainViewModel.setTransferNum(0.0)
                 if (budgetRuleDetailed.toAccount != null) {
                     tvToAccount.text = budgetRuleDetailed.toAccount!!.accountName
                 }
@@ -141,7 +147,7 @@ class BudgetRuleAddFragment :
 
     private fun getBudgetRuleNameListForValidation() {
         CoroutineScope(Dispatchers.IO).launch {
-            budgetNameList = mainActivity.budgetRuleViewModel.getBudgetRuleNameList()
+            budgetNameList = budgetRuleViewModel.getBudgetRuleNameList()
         }
     }
 
@@ -188,16 +194,16 @@ class BudgetRuleAddFragment :
     }
 
     private fun chooseFromAccount() {
-        mainActivity.mainViewModel.addCallingFragment(TAG)
-        mainActivity.mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
-        mainActivity.mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
+        mainViewModel.addCallingFragment(TAG)
+        mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
+        mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
         gotoAccountsFragment()
     }
 
     private fun chooseToAccount() {
-        mainActivity.mainViewModel.addCallingFragment(TAG)
-        mainActivity.mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
-        mainActivity.mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
+        mainViewModel.addCallingFragment(TAG)
+        mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
+        mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
         gotoAccountsFragment()
     }
 
@@ -255,8 +261,8 @@ class BudgetRuleAddFragment :
         val message = validateBudgetRule()
         if (message == ANSWER_OK) {
             binding.apply {
-                mainActivity.mainViewModel.setCallingFragments(
-                    "${mainActivity.mainViewModel.getCallingFragments()}, $TAG"
+                mainViewModel.setCallingFragments(
+                    "${mainViewModel.getCallingFragments()}, $TAG"
                 )
                 saveBudgetRule()
                 gotoBudgetRuleFragment()
@@ -302,8 +308,8 @@ class BudgetRuleAddFragment :
     private fun getBudgetRuleDetailed(): BudgetRuleDetailed {
         return BudgetRuleDetailed(
             getCurrentBudgetRuleForSave(),
-            mainActivity.mainViewModel.getBudgetRuleDetailed()?.toAccount,
-            mainActivity.mainViewModel.getBudgetRuleDetailed()?.fromAccount
+            mainViewModel.getBudgetRuleDetailed()?.toAccount,
+            mainViewModel.getBudgetRuleDetailed()?.fromAccount
         )
     }
 
@@ -319,11 +325,11 @@ class BudgetRuleAddFragment :
                     return getString(R.string.this_budget_rule_already_exists)
                 }
             }
-            if (mainActivity.mainViewModel.getBudgetRuleDetailed()!!.toAccount == null
+            if (mainViewModel.getBudgetRuleDetailed()!!.toAccount == null
             ) {
                 return getString(R.string.there_needs_to_be_an_account_money_will_go_to)
             }
-            if (mainActivity.mainViewModel.getBudgetRuleDetailed()!!.fromAccount == null
+            if (mainViewModel.getBudgetRuleDetailed()!!.fromAccount == null
             ) {
                 return getString(R.string.there_needs_to_be_an_account_money_will_come_from)
             }
@@ -346,8 +352,8 @@ class BudgetRuleAddFragment :
                 }
             )
         )
-        mainActivity.mainViewModel.setReturnTo(TAG)
-        mainActivity.mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
+        mainViewModel.setReturnTo(TAG)
+        mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
         gotoCalculatorFragment()
     }
 
