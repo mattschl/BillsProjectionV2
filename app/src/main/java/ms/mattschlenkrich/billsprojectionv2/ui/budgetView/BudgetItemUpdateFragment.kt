@@ -30,9 +30,11 @@ import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
+import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetItemViewModel
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetItemUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 
@@ -46,6 +48,8 @@ class BudgetItemUpdateFragment : Fragment(
     private val binding get() = _binding!!
     private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var budgetItemViewModel: BudgetItemViewModel
     private lateinit var mBudgetRuleDetailed: BudgetRuleDetailed
     private lateinit var curBudgetItem: BudgetItemDetailed
 
@@ -53,13 +57,14 @@ class BudgetItemUpdateFragment : Fragment(
     private val df = DateFunctions()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentBudgetItemUpdateBinding.inflate(
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        budgetItemViewModel = mainActivity.budgetItemViewModel
         mainActivity.title = getString(R.string.update_this_budget_item)
         mView = binding.root
         return binding.root
@@ -74,16 +79,14 @@ class BudgetItemUpdateFragment : Fragment(
 
     private fun setBudgetRuleDetailedToBlank() {
         mBudgetRuleDetailed = BudgetRuleDetailed(
-            null,
-            null,
-            null
+            null, null, null
         )
     }
 
     private fun populateValues() {
         populatePayDaySpinner()
-        if (mainActivity.mainViewModel.getBudgetItemDetailed() != null) {
-            curBudgetItem = mainActivity.mainViewModel.getBudgetItemDetailed()!!
+        if (mainViewModel.getBudgetItemDetailed() != null) {
+            curBudgetItem = mainViewModel.getBudgetItemDetailed()!!
             binding.apply {
                 etProjectedDate.setText(curBudgetItem.budgetItem?.biActualDate)
                 etBudgetItemName.setText(curBudgetItem.budgetItem?.biBudgetName)
@@ -91,14 +94,14 @@ class BudgetItemUpdateFragment : Fragment(
                 mBudgetRuleDetailed.budgetRule = curBudgetItem.budgetRule
                 etProjectedAmount.setText(
                     nf.displayDollars(
-                        if (mainActivity.mainViewModel.getTransferNum()!! != 0.0) {
-                            mainActivity.mainViewModel.getTransferNum()!!
+                        if (mainViewModel.getTransferNum()!! != 0.0) {
+                            mainViewModel.getTransferNum()!!
                         } else {
                             curBudgetItem.budgetItem!!.biProjectedAmount
                         }
                     )
                 )
-                mainActivity.mainViewModel.setTransferNum(0.0)
+                mainViewModel.setTransferNum(0.0)
                 tvToAccount.text = curBudgetItem.toAccount?.accountName
                 mBudgetRuleDetailed.toAccount = curBudgetItem.toAccount
                 tvBiFromAccount.text = curBudgetItem.fromAccount?.accountName
@@ -110,9 +113,7 @@ class BudgetItemUpdateFragment : Fragment(
                 CoroutineScope(Dispatchers.Main).launch {
                     delay(WAIT_250)
                     for (i in 0 until spPayDays.adapter.count) {
-                        if (spPayDays.getItemAtPosition(i) ==
-                            curBudgetItem.budgetItem!!.biPayDay
-                        ) {
+                        if (spPayDays.getItemAtPosition(i) == curBudgetItem.budgetItem!!.biPayDay) {
                             spPayDays.setSelection(i)
                             break
                         }
@@ -124,11 +125,10 @@ class BudgetItemUpdateFragment : Fragment(
 
     private fun populatePayDaySpinner() {
         val payDayAdapter = ArrayAdapter<Any>(
-            requireContext(),
-            R.layout.spinner_item_bold
+            requireContext(), R.layout.spinner_item_bold
         )
         payDayAdapter.setDropDownViewResource(R.layout.spinner_item_bold)
-        mainActivity.budgetItemViewModel.getPayDays().observe(
+        budgetItemViewModel.getPayDays().observe(
             viewLifecycleOwner
         ) { payDayList ->
             payDayList?.forEach {
@@ -177,15 +177,15 @@ class BudgetItemUpdateFragment : Fragment(
     }
 
     private fun chooseBudgetRule() {
-        mainActivity.mainViewModel.addCallingFragment(TAG)
-        mainActivity.mainViewModel.setBudgetItemDetailed(getCurrentBudgetItemDetailed())
+        mainViewModel.addCallingFragment(TAG)
+        mainViewModel.setBudgetItemDetailed(getCurrentBudgetItemDetailed())
         gotoBudgetRulesFragment()
     }
 
     private fun chooseAccount(requestedAccount: String) {
-        mainActivity.mainViewModel.addCallingFragment(TAG)
-        mainActivity.mainViewModel.setRequestedAccount(requestedAccount)
-        mainActivity.mainViewModel.setBudgetItemDetailed(getCurrentBudgetItemDetailed())
+        mainViewModel.addCallingFragment(TAG)
+        mainViewModel.setRequestedAccount(requestedAccount)
+        mainViewModel.setBudgetItemDetailed(getCurrentBudgetItemDetailed())
         gotoAccountsFragment()
     }
 
@@ -193,20 +193,15 @@ class BudgetItemUpdateFragment : Fragment(
         binding.apply {
             val curDateAll = etProjectedDate.text.toString().split("-")
             val datePickerDialog = DatePickerDialog(
-                mView.context,
-                { _, year, monthOfYear, dayOfMonth ->
+                mView.context, { _, year, monthOfYear, dayOfMonth ->
                     val month = monthOfYear + 1
                     val display = "$year-${
-                        month.toString()
-                            .padStart(2, '0')
+                        month.toString().padStart(2, '0')
                     }-${
                         dayOfMonth.toString().padStart(2, '0')
                     }"
                     etProjectedDate.setText(display)
-                },
-                curDateAll[0].toInt(),
-                curDateAll[1].toInt() - 1,
-                curDateAll[2].toInt()
+                }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
             )
             datePickerDialog.setTitle(getString(R.string.choose_the_projected_date))
             datePickerDialog.show()
@@ -235,12 +230,10 @@ class BudgetItemUpdateFragment : Fragment(
             if (mBudgetRuleDetailed.toAccount == null) {
                 return getString(R.string.there_needs_to_be_an_account_money_will_go_to)
             }
-            if (mBudgetRuleDetailed.fromAccount == null
-            ) {
+            if (mBudgetRuleDetailed.fromAccount == null) {
                 return getString(R.string.there_needs_to_be_an_account_money_will_come_from)
             }
-            if (etProjectedAmount.text.isNullOrEmpty()
-            ) {
+            if (etProjectedAmount.text.isNullOrEmpty()) {
                 return getString(R.string.please_enter_a_budgeted_amount_including_zero)
             }
             return ANSWER_OK
@@ -248,16 +241,13 @@ class BudgetItemUpdateFragment : Fragment(
     }
 
     private fun updateBudgetItem() {
-        mainActivity.budgetItemViewModel.updateBudgetItem(getCurrentBudgetItemForUpdating())
+        budgetItemViewModel.updateBudgetItem(getCurrentBudgetItemForUpdating())
     }
 
     private fun getCurrentBudgetItemDetailed(): BudgetItemDetailed {
         val budgetItem = getCurrentBudgetItemForUpdating()
         return BudgetItemDetailed(
-            budgetItem,
-            curBudgetItem.budgetRule,
-            curBudgetItem.toAccount,
-            curBudgetItem.fromAccount
+            budgetItem, curBudgetItem.budgetRule, curBudgetItem.toAccount, curBudgetItem.fromAccount
         )
     }
 
@@ -288,7 +278,7 @@ class BudgetItemUpdateFragment : Fragment(
 
     private fun deleteBudgetItem() {
         binding.apply {
-            mainActivity.budgetItemViewModel.deleteBudgetItem(
+            budgetItemViewModel.deleteBudgetItem(
                 curBudgetItem.budgetItem!!.biRuleId,
                 curBudgetItem.budgetItem!!.biProjectedDate,
                 df.getCurrentTimeAsString()
@@ -310,75 +300,63 @@ class BudgetItemUpdateFragment : Fragment(
     }
 
     private fun gotoCalculator() {
-        mainActivity.mainViewModel.setTransferNum(
+        mainViewModel.setTransferNum(
             nf.getDoubleFromDollars(
                 binding.etProjectedAmount.text.toString().ifBlank {
                     "0.0"
-                }
-            )
+                })
         )
-        mainActivity.mainViewModel.setReturnTo(TAG)
-        mainActivity.mainViewModel.setBudgetItemDetailed(getCurrentBudgetItemDetailed())
+        mainViewModel.setReturnTo(TAG)
+        mainViewModel.setBudgetItemDetailed(getCurrentBudgetItemDetailed())
         gotoCalculatorFragment()
     }
 
     private fun gotoCallingFragment() {
-        mainActivity.mainViewModel.setBudgetItemDetailed(null)
-        if (mainActivity.mainViewModel.getCallingFragments()!!.contains(
-                FRAG_BUDGET_VIEW
-            )
-        ) {
-            mainActivity.mainViewModel.setCallingFragments(
-                mainActivity.mainViewModel.getCallingFragments()!!
-                    .replace(", $TAG", "")
-            )
-            gotoBudgetViewFragment()
-        }
-        if (mainActivity.mainViewModel.getCallingFragments()!!.contains(
-                FRAG_BUDGET_RULE_UPDATE
-            )
-        ) {
-            mainActivity.mainViewModel.setCallingFragments(
-                mainActivity.mainViewModel.getCallingFragments()!!
-                    .replace(", $TAG", "")
-            )
-            gotoBudgetRuleUpdateFragment()
-        }
+        mainViewModel.setBudgetItemDetailed(null)
 
+        if (mainViewModel.getCallingFragments() != null) {
+            val mCallingFragment = mainViewModel.getCallingFragments()!!
+            if (mCallingFragment.contains(FRAG_BUDGET_VIEW)) {
+                mainActivity.mainViewModel.setCallingFragments(
+                    mainActivity.mainViewModel.getCallingFragments()!!.replace(", $TAG", "")
+                )
+                gotoBudgetViewFragment()
+            } else if (mCallingFragment.contains(FRAG_BUDGET_RULE_UPDATE)) {
+                mainActivity.mainViewModel.setCallingFragments(
+                    mainActivity.mainViewModel.getCallingFragments()!!.replace(", $TAG", "")
+                )
+                gotoBudgetRuleUpdateFragment()
+            }
+        }
     }
 
     private fun gotoAccountsFragment() {
         mView.findNavController().navigate(
-            BudgetItemUpdateFragmentDirections
-                .actionBudgetItemUpdateFragmentToAccountsFragment()
+            BudgetItemUpdateFragmentDirections.actionBudgetItemUpdateFragmentToAccountsFragment()
         )
     }
 
     private fun gotoCalculatorFragment() {
         mView.findNavController().navigate(
-            BudgetItemUpdateFragmentDirections
-                .actionBudgetItemUpdateFragmentToCalcFragment()
+            BudgetItemUpdateFragmentDirections.actionBudgetItemUpdateFragmentToCalcFragment()
         )
     }
 
     private fun gotoBudgetViewFragment() {
         mView.findNavController().navigate(
-            BudgetItemUpdateFragmentDirections
-                .actionBudgetItemUpdateFragmentToBudgetViewFragment()
+            BudgetItemUpdateFragmentDirections.actionBudgetItemUpdateFragmentToBudgetViewFragment()
         )
     }
 
     private fun gotoBudgetRuleUpdateFragment() {
         mView.findNavController().navigate(
-            BudgetItemUpdateFragmentDirections
-                .actionBudgetItemUpdateFragmentToBudgetRuleUpdateFragment()
+            BudgetItemUpdateFragmentDirections.actionBudgetItemUpdateFragmentToBudgetRuleUpdateFragment()
         )
     }
 
     private fun gotoBudgetRulesFragment() {
         mView.findNavController().navigate(
-            BudgetItemUpdateFragmentDirections
-                .actionBudgetItemUpdateFragmentToBudgetRuleFragment()
+            BudgetItemUpdateFragmentDirections.actionBudgetItemUpdateFragmentToBudgetRuleFragment()
         )
     }
 

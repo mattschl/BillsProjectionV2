@@ -42,35 +42,30 @@ class TransactionPendingAdapter(
     class TransactionPendingHolder(val itemBinding: PendingTransactionItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
 
-    private val differCallBack =
-        object : DiffUtil.ItemCallback<TransactionDetailed>() {
-            override fun areItemsTheSame(
-                oldItem: TransactionDetailed,
-                newItem: TransactionDetailed
-            ): Boolean {
-                return oldItem == newItem
-            }
-
-            override fun areContentsTheSame(
-                oldItem: TransactionDetailed,
-                newItem: TransactionDetailed
-            ): Boolean {
-                return oldItem.transaction!!.transId == newItem.transaction!!.transId &&
-                        oldItem.transaction.transName == newItem.transaction.transName &&
-                        oldItem.toAccount?.accountId == newItem.toAccount?.accountId &&
-                        oldItem.fromAccount?.accountId == newItem.fromAccount?.accountId &&
-                        oldItem.budgetRule?.ruleId == newItem.budgetRule?.ruleId
-            }
+    private val differCallBack = object : DiffUtil.ItemCallback<TransactionDetailed>() {
+        override fun areItemsTheSame(
+            oldItem: TransactionDetailed, newItem: TransactionDetailed
+        ): Boolean {
+            return oldItem == newItem
         }
+
+        override fun areContentsTheSame(
+            oldItem: TransactionDetailed, newItem: TransactionDetailed
+        ): Boolean {
+            return oldItem.transaction!!.transId == newItem.transaction!!.transId &&
+                    oldItem.transaction.transName == newItem.transaction.transName &&
+                    oldItem.toAccount?.accountId == newItem.toAccount?.accountId &&
+                    oldItem.fromAccount?.accountId == newItem.fromAccount?.accountId &&
+                    oldItem.budgetRule?.ruleId == newItem.budgetRule?.ruleId
+        }
+    }
 
     val differ = AsyncListDiffer(this, differCallBack)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionPendingHolder {
         return TransactionPendingHolder(
             PendingTransactionItemBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
+                LayoutInflater.from(parent.context), parent, false
             )
         )
     }
@@ -85,8 +80,7 @@ class TransactionPendingAdapter(
             tvPendingDate.text = df.getDisplayDate(pendingTransaction.transaction!!.transDate)
             tvPendingDate.setTextColor(Color.BLACK)
             tvPendingAmount.text = nf.displayDollars(pendingTransaction.transaction.transAmount)
-            if (pendingTransaction.toAccount!!.accountName == curAccount
-            ) {
+            if (pendingTransaction.toAccount!!.accountName == curAccount) {
                 tvPendingAmount.setTextColor(Color.BLACK)
                 tvPendingDescription.setTextColor(Color.BLACK)
             } else {
@@ -107,48 +101,45 @@ class TransactionPendingAdapter(
     }
 
     private fun chooseOptionsForTransaction(pendingTransaction: TransactionDetailed) {
-        AlertDialog.Builder(mView.context)
-            .setTitle(
-                mView.context.getString(R.string.choose_an_action_for) +
-                        nf.displayDollars(pendingTransaction.transaction!!.transAmount) +
-                        mView.context.getString(R.string._to_) +
-                        pendingTransaction.transaction.transName
+        AlertDialog.Builder(mView.context).setTitle(
+            mView.context.getString(R.string.choose_an_action_for) + nf.displayDollars(
+                pendingTransaction.transaction!!.transAmount
+            ) + mView.context.getString(R.string._to_) + pendingTransaction.transaction.transName
+        ).setItems(
+            arrayOf(
+                mView.context.getString(R.string.complete_this_pending_transaction),
+                mView.context.getString(R.string.open_the_transaction_to_edit_it),
+                mView.context.getString(R.string.delete_this_pending_transaction)
             )
-            .setItems(
-                arrayOf(
-                    mView.context.getString(R.string.complete_this_pending_transaction),
-                    mView.context.getString(R.string.open_the_transaction_to_edit_it),
-                    mView.context.getString(R.string.delete_this_pending_transaction)
-                )
-            ) { _, pos ->
-                when (pos) {
-                    0 -> {
-                        confirmTransaction(
-                            pendingTransaction,
-                            curAccount,
-                        )
-                    }
+        ) { _, pos ->
+            when (pos) {
+                0 -> {
+                    confirmTransaction(
+                        pendingTransaction,
+                        curAccount,
+                    )
+                }
 
-                    1 -> {
-                        editTransaction(
-                            pendingTransaction
-                        )
-                    }
+                1 -> {
+                    editTransaction(
+                        pendingTransaction
+                    )
+                }
 
-                    2 -> {
-                        deleteTransaction(pendingTransaction)
-                    }
+                2 -> {
+                    deleteTransaction(pendingTransaction)
                 }
             }
-            .setNegativeButton(mView.context.getString(R.string.cancel), null)
-            .show()
+        }.setNegativeButton(mView.context.getString(R.string.cancel), null).show()
     }
 
     private fun confirmTransaction(
         pendingTransaction: TransactionDetailed, curAccount: String
     ) {
-        var display = mView.context.getString(R.string.this_will_apply_the_amount_of) +
-                nf.displayDollars(pendingTransaction.transaction!!.transAmount)
+        var display =
+            mView.context.getString(R.string.this_will_apply_the_amount_of) + nf.displayDollars(
+                pendingTransaction.transaction!!.transAmount
+            )
         display += if (pendingTransaction.transaction.transToAccountPending) {
             mView.context.getString(R.string._to_)
         } else {
@@ -159,25 +150,18 @@ class TransactionPendingAdapter(
     }
 
     private fun confirmCompleteTransaction(
-        display: String,
-        pendingTransaction: TransactionDetailed,
-        curAccount: String
+        display: String, pendingTransaction: TransactionDetailed, curAccount: String
     ) {
-        AlertDialog.Builder(mView.context)
-            .setTitle(display)
-            .setPositiveButton(
-                mView.context.getString(R.string.confirm)
-            ) { _, _ ->
-                completeTransaction(pendingTransaction, curAccount)
-            }
-            .setNegativeButton(mView.context.getString(R.string.cancel), null)
-            .show()
+        AlertDialog.Builder(mView.context).setTitle(display).setPositiveButton(
+            mView.context.getString(R.string.confirm)
+        ) { _, _ ->
+            completeTransaction(pendingTransaction, curAccount)
+        }.setNegativeButton(mView.context.getString(R.string.cancel), null).show()
     }
 
     private fun deleteTransaction(transaction: TransactionDetailed) {
         transactionViewModel.deleteTransaction(
-            transaction.transaction!!.transId,
-            df.getCurrentTimeAsString()
+            transaction.transaction!!.transId, df.getCurrentTimeAsString()
         )
         budgetViewFragment.populatePendingList()
     }
@@ -203,8 +187,7 @@ class TransactionPendingAdapter(
     }
 
     private fun completeTransaction(transaction: TransactionDetailed?, curAccount: String) {
-        if (transaction!!.toAccount!!.accountName == curAccount
-        ) {
+        if (transaction!!.toAccount!!.accountName == curAccount) {
             CoroutineScope(Dispatchers.IO).launch {
                 transactionViewModel.updateTransaction(
                     Transactions(
@@ -230,15 +213,13 @@ class TransactionPendingAdapter(
                 val accountDetailed = account.await()
                 if (accountDetailed.accountType!!.keepTotals) {
                     transactionViewModel.updateAccountBalance(
-                        accountDetailed.account.accountBalance +
-                                transaction.transaction.transAmount,
+                        accountDetailed.account.accountBalance + transaction.transaction.transAmount,
                         accountDetailed.account.accountId,
                         df.getCurrentTimeAsString()
                     )
                 } else if (accountDetailed.accountType.tallyOwing) {
                     transactionViewModel.updateAccountOwing(
-                        accountDetailed.account.accountOwing -
-                                transaction.transaction.transAmount,
+                        accountDetailed.account.accountOwing - transaction.transaction.transAmount,
                         accountDetailed.account.accountId,
                         df.getCurrentTimeAsString()
 
@@ -271,15 +252,13 @@ class TransactionPendingAdapter(
                 val accountDetailed = account.await()
                 if (accountDetailed.accountType!!.keepTotals) {
                     transactionViewModel.updateAccountBalance(
-                        accountDetailed.account.accountBalance -
-                                transaction.transaction.transAmount,
+                        accountDetailed.account.accountBalance - transaction.transaction.transAmount,
                         accountDetailed.account.accountId,
                         df.getCurrentTimeAsString()
                     )
                 } else if (accountDetailed.accountType.tallyOwing) {
                     transactionViewModel.updateAccountOwing(
-                        accountDetailed.account.accountOwing +
-                                transaction.transaction.transAmount,
+                        accountDetailed.account.accountOwing + transaction.transaction.transAmount,
                         accountDetailed.account.accountId,
                         df.getCurrentTimeAsString()
 
