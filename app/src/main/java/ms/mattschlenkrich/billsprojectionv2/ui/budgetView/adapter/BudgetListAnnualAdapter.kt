@@ -26,6 +26,7 @@ class BudgetListAnnualAdapter(
     private val parentTag: String,
     private val budgetListFragment: BudgetListFragment,
 ) : RecyclerView.Adapter<BudgetListAnnualAdapter.BudgetListHolder>() {
+
     private val nf = NumberFunctions()
     private val df = DateFunctions()
     private val mainViewModel = mainActivity.mainViewModel
@@ -33,40 +34,26 @@ class BudgetListAnnualAdapter(
     class BudgetListHolder(val itemBinding: BudgetListItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
 
-    private val differCallBack =
-        object : DiffUtil.ItemCallback<BudgetRuleComplete>() {
-            override fun areContentsTheSame(
-                oldItem: BudgetRuleComplete,
-                newItem: BudgetRuleComplete
-            ): Boolean {
-                return oldItem.budgetRule!!.ruleId == newItem.budgetRule!!.ruleId &&
-                        oldItem.budgetRule!!.budgetRuleName == newItem.budgetRule!!.budgetRuleName &&
-                        oldItem.budgetRule!!.budgetAmount == newItem.budgetRule!!.budgetAmount &&
-                        oldItem.toAccount!!.accountType!!.isAsset ==
-                        newItem.toAccount!!.accountType!!.isAsset &&
-                        oldItem.fromAccount!!.accountType!!.isAsset ==
-                        newItem.fromAccount!!.accountType!!.isAsset
-            }
-
-            override fun areItemsTheSame(
-                oldItem: BudgetRuleComplete,
-                newItem: BudgetRuleComplete
-            ): Boolean {
-                return oldItem == newItem
-            }
+    private val differCallBack = object : DiffUtil.ItemCallback<BudgetRuleComplete>() {
+        override fun areContentsTheSame(
+            oldItem: BudgetRuleComplete, newItem: BudgetRuleComplete
+        ): Boolean {
+            return oldItem.budgetRule!!.ruleId == newItem.budgetRule!!.ruleId && oldItem.budgetRule!!.budgetRuleName == newItem.budgetRule!!.budgetRuleName && oldItem.budgetRule!!.budgetAmount == newItem.budgetRule!!.budgetAmount && oldItem.toAccount!!.accountType!!.isAsset == newItem.toAccount!!.accountType!!.isAsset && oldItem.fromAccount!!.accountType!!.isAsset == newItem.fromAccount!!.accountType!!.isAsset
         }
+
+        override fun areItemsTheSame(
+            oldItem: BudgetRuleComplete, newItem: BudgetRuleComplete
+        ): Boolean {
+            return oldItem == newItem
+        }
+    }
     val differ = AsyncListDiffer(this, differCallBack)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
-            BudgetListHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BudgetListHolder {
         return BudgetListHolder(
-            (
-                    BudgetListItemBinding.inflate(
-                        LayoutInflater.from(parent.context),
-                        parent,
-                        false
-                    )
-                    )
+            (BudgetListItemBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false
+            ))
         )
     }
 
@@ -80,36 +67,28 @@ class BudgetListAnnualAdapter(
             holder.itemBinding.apply {
                 llOthers.visibility = View.VISIBLE
                 var info = if (curRule.budgetRule!!.budFrequencyCount > 1) {
-                    budgetRule!!.budgetRuleName + " - " +
-                            df.getDisplayDateInComingYear(
-                                budgetRule!!.budStartDate, budgetRule!!.budFrequencyCount.toLong()
-                            )
+                    budgetRule!!.budgetRuleName + " - " + df.getDisplayDateInComingYear(
+                        budgetRule!!.budStartDate, budgetRule!!.budFrequencyCount.toLong()
+                    )
                 } else {
-                    budgetRule!!.budgetRuleName + " - " +
-                            df.getDisplayDateInComingYear(budgetRule!!.budStartDate)
+                    budgetRule!!.budgetRuleName + " - " + df.getDisplayDateInComingYear(budgetRule!!.budStartDate)
                 }
                 tvBudgetName.text = info
                 info = nf.displayDollars(budgetRule!!.budgetAmount)
                 tvAmount.text = info
                 val random = Random()
                 val color = Color.argb(
-                    255,
-                    random.nextInt(256),
-                    random.nextInt(256),
-                    random.nextInt(256)
+                    255, random.nextInt(256), random.nextInt(256), random.nextInt(256)
                 )
                 ibColor.setBackgroundColor(color)
                 info =
-                    mView.context.getString(R.string.annually_every) +
-                            budgetRule!!.budFrequencyCount +
-                            mView.context.getString(R.string._years)
+                    mView.context.getString(R.string.annually_every) + budgetRule!!.budFrequencyCount + mView.context.getString(
+                        R.string._years
+                    )
                 tvFrequency.text = info
-                info =
-                    mView.context.getString(R.string.average_per_month) +
-                            nf.displayDollars(
-                                budgetRule!!.budgetAmount / 12 /
-                                        budgetRule!!.budFrequencyCount
-                            )
+                info = mView.context.getString(R.string.average_per_month) + nf.displayDollars(
+                    budgetRule!!.budgetAmount / 12 / budgetRule!!.budFrequencyCount
+                )
                 tvAverage.text = info
                 holder.itemView.setOnLongClickListener {
                     chooseOptionsForBudgetItem(curRule)
@@ -120,32 +99,26 @@ class BudgetListAnnualAdapter(
     }
 
     private fun chooseOptionsForBudgetItem(curRule: BudgetRuleComplete) {
-        AlertDialog.Builder(mView.context)
-            .setTitle(
-                mView.context.getString(R.string.choose_an_action_for) + curRule.budgetRule!!.budgetRuleName
+        AlertDialog.Builder(mView.context).setTitle(
+            mView.context.getString(R.string.choose_an_action_for) + curRule.budgetRule!!.budgetRuleName
+        ).setItems(
+            arrayOf(
+                mView.context.getString(R.string.view_or_edit_this_budget_rule),
+                mView.context.getString(R.string.delete_this_budget_rule),
+                mView.context.getString(R.string.view_a_summary_of_transactions_for_this_budget_rule)
             )
-            .setItems(
-                arrayOf(
-                    mView.context.getString(R.string.view_or_edit_this_budget_rule),
-                    mView.context.getString(R.string.delete_this_budget_rule),
-                    mView.context.getString(R.string.view_a_summary_of_transactions_for_this_budget_rule)
-                )
-            ) { _, pos ->
-                when (pos) {
-                    0 -> editBudgetRule(curRule)
-                    1 -> deleteBudgetRule(curRule)
-                    2 -> gotoAverages(curRule)
-                }
+        ) { _, pos ->
+            when (pos) {
+                0 -> editBudgetRule(curRule)
+                1 -> deleteBudgetRule(curRule)
+                2 -> gotoAverages(curRule)
             }
-            .setNegativeButton(mView.context.getString(R.string.cancel), null)
-            .show()
+        }.setNegativeButton(mView.context.getString(R.string.cancel), null).show()
     }
 
     private fun editBudgetRule(curRule: BudgetRuleComplete) {
         val budgetRule = BudgetRuleDetailed(
-            curRule.budgetRule!!,
-            curRule.toAccount!!.account,
-            curRule.fromAccount!!.account
+            curRule.budgetRule!!, curRule.toAccount!!.account, curRule.fromAccount!!.account
         )
         mainViewModel.setBudgetRuleDetailed(budgetRule)
         mainViewModel.setCallingFragments(parentTag)
@@ -154,8 +127,7 @@ class BudgetListAnnualAdapter(
 
     private fun deleteBudgetRule(curRule: BudgetRuleComplete) {
         mainActivity.budgetRuleViewModel.deleteBudgetRule(
-            curRule.budgetRule!!.ruleId,
-            df.getCurrentTimeAsString()
+            curRule.budgetRule!!.ruleId, df.getCurrentTimeAsString()
         )
     }
 
@@ -163,9 +135,7 @@ class BudgetListAnnualAdapter(
         mainViewModel.addCallingFragment(parentTag)
         mainViewModel.setBudgetRuleDetailed(
             BudgetRuleDetailed(
-                curRule.budgetRule!!,
-                curRule.toAccount!!.account,
-                curRule.fromAccount!!.account
+                curRule.budgetRule!!, curRule.toAccount!!.account, curRule.fromAccount!!.account
             )
         )
         mainViewModel.setAccountWithType(null)
