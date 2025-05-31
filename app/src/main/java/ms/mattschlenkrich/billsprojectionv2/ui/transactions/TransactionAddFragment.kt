@@ -43,8 +43,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 
 private const val TAG = FRAG_TRANS_ADD
 
-class TransactionAddFragment :
-    Fragment(R.layout.fragment_transaction_add) {
+class TransactionAddFragment : Fragment(R.layout.fragment_transaction_add) {
 
     private var _binding: FragmentTransactionAddBinding? = null
     private val binding get() = _binding!!
@@ -64,8 +63,7 @@ class TransactionAddFragment :
     private val df = DateFunctions()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentTransactionAddBinding.inflate(
             inflater, container, false
@@ -175,14 +173,10 @@ class TransactionAddFragment :
         binding.apply {
             mBudgetRule = mainViewModel.getTransactionDetailed()!!.budgetRule!!
             tvBudgetRule.text = mBudgetRule!!.budgetRuleName
-            if (mainViewModel.getTransactionDetailed()!!.toAccount == null &&
-                mainViewModel.getTransactionDetailed()!!.budgetRule!!.budToAccountId != 0L
-            ) {
+            if (mainViewModel.getTransactionDetailed()!!.toAccount == null && mainViewModel.getTransactionDetailed()!!.budgetRule!!.budToAccountId != 0L) {
                 populateToAccountFromBudgetRule()
             }
-            if (mainViewModel.getTransactionDetailed()!!.fromAccount == null &&
-                mainViewModel.getTransactionDetailed()!!.budgetRule!!.budFromAccountId != 0L
-            ) {
+            if (mainViewModel.getTransactionDetailed()!!.fromAccount == null && mainViewModel.getTransactionDetailed()!!.budgetRule!!.budFromAccountId != 0L) {
                 populateFromAccountFromBudgetRule()
             }
             if (mainViewModel.getTransactionDetailed()!!.transaction == null) {
@@ -265,9 +259,7 @@ class TransactionAddFragment :
 
     private fun populateValuesFromTransactionDetailed() {
         binding.apply {
-            if (mainViewModel.getTransactionDetailed()!!.budgetRule != null &&
-                mainViewModel.getTransactionDetailed()!!.transaction!!.transName.isBlank()
-            ) {
+            if (mainViewModel.getTransactionDetailed()!!.budgetRule != null && mainViewModel.getTransactionDetailed()!!.transaction!!.transName.isBlank()) {
                 etDescription.setText(
                     mainViewModel.getTransactionDetailed()!!.budgetRule!!.budgetRuleName
                 )
@@ -280,18 +272,16 @@ class TransactionAddFragment :
                 mainViewModel.getTransactionDetailed()!!.transaction!!.transNote
             )
             etTransDate.text = mainViewModel.getTransactionDetailed()!!.transaction!!.transDate
-            etAmount.hint = getString(R.string.budgeted) +
-                    if (mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount == 0.0 &&
-                        mainViewModel.getTransactionDetailed()!!.budgetRule != null
-                    ) {
-                        nf.displayDollars(
-                            mainViewModel.getTransactionDetailed()!!.budgetRule!!.budgetAmount
-                        )
-                    } else {
-                        nf.displayDollars(
-                            mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount
-                        )
-                    }
+            etAmount.hint =
+                getString(R.string.budgeted) + if (mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount == 0.0 && mainViewModel.getTransactionDetailed()!!.budgetRule != null) {
+                    nf.displayDollars(
+                        mainViewModel.getTransactionDetailed()!!.budgetRule!!.budgetAmount
+                    )
+                } else {
+                    nf.displayDollars(
+                        mainViewModel.getTransactionDetailed()!!.transaction!!.transAmount
+                    )
+                }
             etAmount.setText(
                 nf.displayDollars(
                     if (mainViewModel.getTransferNum()!! != 0.0) {
@@ -307,10 +297,9 @@ class TransactionAddFragment :
 
     private fun updateAmountDisplay() {
         binding.apply {
-            btnSplit.isEnabled =
-                etAmount.text.toString().isNotEmpty() &&
-                        nf.getDoubleFromDollars(etAmount.text.toString()) > 0.0 &&
-                        mFromAccount != null
+            btnSplit.isEnabled = etAmount.text.toString().isNotEmpty() && nf.getDoubleFromDollars(
+                etAmount.text.toString()
+            ) > 0.0 && mFromAccount != null
             etAmount.setText(
                 nf.displayDollars(
                     nf.getDoubleFromDollars(
@@ -333,8 +322,7 @@ class TransactionAddFragment :
                 false
             }
             etAmount.setOnFocusChangeListener { _, b ->
-                if (!b)
-                    updateAmountDisplay()
+                if (!b) updateAmountDisplay()
             }
             etDescription.setOnFocusChangeListener { _, _ ->
                 updateAmountDisplay()
@@ -385,8 +373,7 @@ class TransactionAddFragment :
 
     private fun gotoBudgetRuleFragment() {
         mView.findNavController().navigate(
-            TransactionAddFragmentDirections
-                .actionTransactionAddFragmentToBudgetRuleFragment()
+            TransactionAddFragmentDirections.actionTransactionAddFragmentToBudgetRuleFragment()
         )
     }
 
@@ -406,9 +393,7 @@ class TransactionAddFragment :
 
     private fun splitTransactions() {
         mainViewModel.setSplitTransactionDetailed(null)
-        if (mFromAccount != null &&
-            nf.getDoubleFromDollars(binding.etAmount.text.toString()) > 2.0
-        ) {
+        if (mFromAccount != null && nf.getDoubleFromDollars(binding.etAmount.text.toString()) > 2.0) {
             mainViewModel.addCallingFragment(TAG)
             mainViewModel.setTransactionDetailed(getTransactionDetailed())
             gotoTransactionSplitFragment()
@@ -417,23 +402,17 @@ class TransactionAddFragment :
 
     private fun chooseDate() {
         binding.apply {
-            val curDateAll = etTransDate.text.toString()
-                .split("-")
+            val curDateAll = etTransDate.text.toString().split("-")
             val datePickerDialog = DatePickerDialog(
-                requireContext(),
-                { _, year, monthOfYear, dayOfMonth ->
+                requireContext(), { _, year, monthOfYear, dayOfMonth ->
                     val month = monthOfYear + 1
                     val display = "$year-${
-                        month.toString()
-                            .padStart(2, '0')
+                        month.toString().padStart(2, '0')
                     }-${
                         dayOfMonth.toString().padStart(2, '0')
                     }"
                     etTransDate.text = display
-                },
-                curDateAll[0].toInt(),
-                curDateAll[1].toInt() - 1,
-                curDateAll[2].toInt()
+                }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
             )
             datePickerDialog.setTitle(getString(R.string.choose_transaction_date))
             datePickerDialog.show()
@@ -465,10 +444,7 @@ class TransactionAddFragment :
 
     private fun getTransactionDetailed(): TransactionDetailed {
         return TransactionDetailed(
-            getCurrentTransactionForSave(),
-            mBudgetRule,
-            mToAccount,
-            mFromAccount
+            getCurrentTransactionForSave(), mBudgetRule, mToAccount, mFromAccount
         )
     }
 
@@ -483,35 +459,27 @@ class TransactionAddFragment :
 
     private fun showMessage(message: String) {
         Toast.makeText(
-            mView.context,
-            message,
-            Toast.LENGTH_LONG
+            mView.context, message, Toast.LENGTH_LONG
         ).show()
     }
 
     private fun validateTransaction(): String {
         binding.apply {
-            val amount =
-                if (etAmount.text.isNotEmpty()) {
-                    nf.getDoubleFromDollars(etAmount.text.toString())
-                } else {
-                    0.0
-                }
-            if (etDescription.text.isNullOrBlank()
-            ) {
+            val amount = if (etAmount.text.isNotEmpty()) {
+                nf.getDoubleFromDollars(etAmount.text.toString())
+            } else {
+                0.0
+            }
+            if (etDescription.text.isNullOrBlank()) {
                 return getString(R.string.please_enter_a_name_or_description)
             }
-            if (mToAccount == null
-            ) {
+            if (mToAccount == null) {
                 return getString(R.string.there_needs_to_be_an_account_money_will_go_to)
             }
-            if (mFromAccount == null
-            ) {
+            if (mFromAccount == null) {
                 return getString(R.string.there_needs_to_be_an_account_money_will_come_from)
             }
-            if (etAmount.text.isNullOrEmpty() ||
-                amount == 0.0
-            ) {
+            if (etAmount.text.isNullOrEmpty() || amount == 0.0) {
                 return getString(R.string.please_enter_an_amount_for_this_transaction)
             }
             return ANSWER_OK
@@ -521,26 +489,18 @@ class TransactionAddFragment :
     private fun confirmSaveTransaction() {
         binding.apply {
             var display =
-                getString(R.string.this_will_perform) +
-                        etDescription.text +
-                        getString(R.string._for_) +
-                        nf.getDollarsFromDouble(nf.getDoubleFromDollars(etAmount.text.toString())) +
-                        getString(R.string.__from) +
-                        "${mFromAccount!!.accountName} "
+                getString(R.string.this_will_perform) + etDescription.text + getString(R.string._for_) + nf.getDollarsFromDouble(
+                    nf.getDoubleFromDollars(etAmount.text.toString())
+                ) + getString(R.string.__from) + "${mFromAccount!!.accountName} "
             display += if (chkFromAccPending.isChecked) getString(R.string._pending) else ""
-            display += getString(R.string._to) +
-                    " ${mToAccount!!.accountName}"
+            display += getString(R.string._to) + " ${mToAccount!!.accountName}"
             display += if (chkToAccPending.isChecked) getString(R.string._pending) else ""
             AlertDialog.Builder(mView.context)
-                .setTitle(getString(R.string.confirm_performing_transaction))
-                .setMessage(
+                .setTitle(getString(R.string.confirm_performing_transaction)).setMessage(
                     display
-                )
-                .setPositiveButton(getString(R.string.confirm)) { _, _ ->
+                ).setPositiveButton(getString(R.string.confirm)) { _, _ ->
                     saveTransaction()
-                }
-                .setNegativeButton(getString(R.string.go_back), null)
-                .show()
+                }.setNegativeButton(getString(R.string.go_back), null).show()
         }
     }
 
@@ -556,8 +516,7 @@ class TransactionAddFragment :
         mainViewModel.setTransactionDetailed(null)
         mainViewModel.setBudgetRuleDetailed(null)
         val mCallingFragment = mainViewModel.getCallingFragments()!!
-        if (mCallingFragment.contains(FRAG_TRANSACTION_VIEW)
-        ) {
+        if (mCallingFragment.contains(FRAG_TRANSACTION_VIEW)) {
             gotoTransactionViewFragment()
         } else if (mCallingFragment.contains(FRAG_BUDGET_VIEW)) {
             gotoBudgetViewFragment()
@@ -569,8 +528,7 @@ class TransactionAddFragment :
             nf.getDoubleFromDollars(
                 binding.etAmount.text.toString().ifBlank {
                     getString(R.string.zero_double)
-                }
-            )
+                })
         )
         mainViewModel.setReturnTo(TAG)
         mainViewModel.setTransactionDetailed(getTransactionDetailed())
@@ -579,36 +537,31 @@ class TransactionAddFragment :
 
     private fun gotoCalculatorFragment() {
         mView.findNavController().navigate(
-            TransactionAddFragmentDirections
-                .actionTransactionAddFragmentToCalcFragment()
+            TransactionAddFragmentDirections.actionTransactionAddFragmentToCalcFragment()
         )
     }
 
     private fun gotoAccountsFragment() {
         mView.findNavController().navigate(
-            TransactionAddFragmentDirections
-                .actionTransactionAddFragmentToAccountsFragment()
+            TransactionAddFragmentDirections.actionTransactionAddFragmentToAccountsFragment()
         )
     }
 
     private fun gotoBudgetViewFragment() {
         mView.findNavController().navigate(
-            TransactionAddFragmentDirections
-                .actionTransactionAddFragmentToBudgetViewFragment()
+            TransactionAddFragmentDirections.actionTransactionAddFragmentToBudgetViewFragment()
         )
     }
 
     private fun gotoTransactionViewFragment() {
         mView.findNavController().navigate(
-            TransactionAddFragmentDirections
-                .actionTransactionAddFragmentToTransactionViewFragment()
+            TransactionAddFragmentDirections.actionTransactionAddFragmentToTransactionViewFragment()
         )
     }
 
     private fun gotoTransactionSplitFragment() {
         mView.findNavController().navigate(
-            TransactionAddFragmentDirections
-                .actionTransactionAddFragmentToTransactionSplitFragment()
+            TransactionAddFragmentDirections.actionTransactionAddFragmentToTransactionSplitFragment()
         )
     }
 

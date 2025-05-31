@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_1000
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
@@ -90,11 +91,11 @@ class AccountUpdateViewModel(
     fun updateTransaction(
         oldTransaction: Transactions, newTransaction: Transactions
     ) {
-        CoroutineScope(Dispatchers.Default).launch {
+        CoroutineScope(Dispatchers.Main).launch {
             doTransaction(oldTransaction, true)
             delay(WAIT_1000)
             doTransaction(newTransaction, false)
-            transactionViewModel.updateTransaction(newTransaction)
+            withContext(Dispatchers.Default) { transactionViewModel.updateTransaction(newTransaction) }
         }
     }
 

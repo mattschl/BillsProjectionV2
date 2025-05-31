@@ -75,14 +75,14 @@ class TransactionAdapter(
         holder: TransactionsViewHolder,
         position: Int,
     ) {
-        val transactionDetailed = differ.currentList[position]
+        val mTransactionDetailed = differ.currentList[position]
         holder.itemBinding.apply {
-            tvDate.text = df.getDisplayDate(transactionDetailed.transaction!!.transDate)
-            tvTransDescription.text = transactionDetailed.transaction.transName
-            tvTransAmount.text = nf.displayDollars(transactionDetailed.transaction.transAmount)
+            tvDate.text = df.getDisplayDate(mTransactionDetailed.transaction!!.transDate)
+            tvTransDescription.text = mTransactionDetailed.transaction.transName
+            tvTransAmount.text = nf.displayDollars(mTransactionDetailed.transaction.transAmount)
             var info =
-                mView.context.getString(R.string.to_) + transactionDetailed.toAccount!!.accountName
-            if (transactionDetailed.transaction.transToAccountPending) {
+                mView.context.getString(R.string.to_) + mTransactionDetailed.toAccount!!.accountName
+            if (mTransactionDetailed.transaction.transToAccountPending) {
                 info += mView.context.getString(R.string._pending)
                 tvToAccount.setTextColor(
                     Color.RED
@@ -94,8 +94,8 @@ class TransactionAdapter(
             }
             tvToAccount.text = info
             info =
-                mView.context.getString(R.string.from_) + transactionDetailed.fromAccount!!.accountName
-            if (transactionDetailed.transaction.transFromAccountPending) {
+                mView.context.getString(R.string.from_) + mTransactionDetailed.fromAccount!!.accountName
+            if (mTransactionDetailed.transaction.transFromAccountPending) {
                 info += mView.context.getString(R.string._pending)
                 tvFromAccount.setTextColor(
                     Color.RED
@@ -105,17 +105,17 @@ class TransactionAdapter(
                     Color.BLACK
                 )
             }
-            if (transactionDetailed.transaction.transToAccountPending && transactionDetailed.transaction.transFromAccountPending) {
+            if (mTransactionDetailed.transaction.transToAccountPending && mTransactionDetailed.transaction.transFromAccountPending) {
                 tvToAccount.setLines(2)
                 tvFromAccount.setLines(2)
 
             }
             tvFromAccount.text = info
-            if (transactionDetailed.transaction.transNote.isEmpty()) {
+            if (mTransactionDetailed.transaction.transNote.isEmpty()) {
                 tvTransInfo.visibility = View.GONE
             } else {
                 info =
-                    mView.context.getString(R.string.note_) + transactionDetailed.transaction.transNote
+                    mView.context.getString(R.string.note_) + mTransactionDetailed.transaction.transNote
                 tvTransInfo.text = info
                 tvTransInfo.visibility = View.VISIBLE
             }
@@ -125,7 +125,7 @@ class TransactionAdapter(
             )
             ibColor.setBackgroundColor(color)
             holder.itemView.setOnClickListener {
-                chooseOptions(transactionDetailed)
+                chooseOptions(mTransactionDetailed)
             }
         }
     }

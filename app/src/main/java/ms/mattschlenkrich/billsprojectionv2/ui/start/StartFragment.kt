@@ -24,8 +24,7 @@ class StartFragment : Fragment(
     private var mView: View? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentStartBinding.inflate(
             inflater, container, false
@@ -43,9 +42,7 @@ class StartFragment : Fragment(
     }
 
     private fun gotoBudgetViewFragment() {
-        val direction =
-            NavGraphDirections
-                .actionGlobalBudgetViewFragment()
+        val direction = NavGraphDirections.actionGlobalBudgetViewFragment()
         mView!!.findNavController().navigate(direction)
     }
 
