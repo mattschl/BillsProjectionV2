@@ -31,11 +31,14 @@ import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
+import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountUpdateViewModel
+import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 
@@ -46,9 +49,9 @@ class TransactionUpdateFragment : Fragment(R.layout.fragment_transaction_update)
     private var _binding: FragmentTransactionUpdateBinding? = null
     private val binding get() = _binding!!
     private lateinit var mainActivity: MainActivity
-    private val mainViewModel = mainActivity.mainViewModel
-    private val accountViewModel = mainActivity.accountViewModel
-    private val accountUpdateViewModel = mainActivity.accountUpdateViewModel
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var accountViewModel: AccountViewModel
+    private lateinit var accountUpdateViewModel: AccountUpdateViewModel
     private lateinit var mView: View
     private val nf = NumberFunctions()
     private val df = DateFunctions()
@@ -68,6 +71,9 @@ class TransactionUpdateFragment : Fragment(R.layout.fragment_transaction_update)
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        accountViewModel = mainActivity.accountViewModel
+        accountUpdateViewModel = mainActivity.accountUpdateViewModel
         mainActivity.title = getString(R.string.update_this_transaction)
         mView = binding.root
         return binding.root
@@ -371,8 +377,7 @@ class TransactionUpdateFragment : Fragment(R.layout.fragment_transaction_update)
 
     private fun updateTransaction() {
         accountUpdateViewModel.updateTransaction(
-            mainViewModel.getOldTransaction()!!.transaction,
-            getCurrentTransactionForSave()
+            mainViewModel.getOldTransaction()!!.transaction, getCurrentTransactionForSave()
         )
         mainViewModel.removeCallingFragment(TAG)
         gotoCallingFragment()
@@ -382,7 +387,6 @@ class TransactionUpdateFragment : Fragment(R.layout.fragment_transaction_update)
         return TransactionDetailed(
             getCurrentTransactionForSave(), mBudgetRule, mToAccount, mFromAccount
         )
-
     }
 
     private fun getCurrentTransactionForSave(): Transactions {

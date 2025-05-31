@@ -43,8 +43,7 @@ class CalculatorFragment : Fragment(R.layout.fragment_calc) {
     private lateinit var mView: View
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentCalcBinding.inflate(
             inflater, container, false
@@ -141,71 +140,61 @@ class CalculatorFragment : Fragment(R.layout.fragment_calc) {
 
     private fun gotoTransactionSplitFragment() {
         mView.findNavController().navigate(
-            CalculatorFragmentDirections
-                .actionCalcFragmentToTransactionSplitFragment()
+            CalculatorFragmentDirections.actionCalcFragmentToTransactionSplitFragment()
         )
     }
 
     private fun gotoTransactionAddFragment() {
         mView.findNavController().navigate(
-            CalculatorFragmentDirections
-                .actionCalcFragmentToTransactionAddFragment()
+            CalculatorFragmentDirections.actionCalcFragmentToTransactionAddFragment()
         )
     }
 
     private fun gotoTransactionPerformFragment() {
         mView.findNavController().navigate(
-            CalculatorFragmentDirections
-                .actionCalcFragmentToTransactionPerformFragment()
+            CalculatorFragmentDirections.actionCalcFragmentToTransactionPerformFragment()
         )
     }
 
     private fun gotoBudgetRuleAddFragment() {
         mView.findNavController().navigate(
-            CalculatorFragmentDirections
-                .actionCalcFragmentToBudgetRuleAddFragment()
+            CalculatorFragmentDirections.actionCalcFragmentToBudgetRuleAddFragment()
         )
     }
 
     private fun gotoBudgetItemAddFragment() {
         mView.findNavController().navigate(
-            CalculatorFragmentDirections
-                .actionCalcFragmentToBudgetItemAddFragment()
+            CalculatorFragmentDirections.actionCalcFragmentToBudgetItemAddFragment()
         )
     }
 
     private fun gotoTransactionUpdateFragment() {
         mView.findNavController().navigate(
-            CalculatorFragmentDirections
-                .actionCalcFragmentToTransactionUpdateFragment()
+            CalculatorFragmentDirections.actionCalcFragmentToTransactionUpdateFragment()
         )
     }
 
     private fun gotoBudgetItemUpdateFragment() {
         mView.findNavController().navigate(
-            CalculatorFragmentDirections
-                .actionCalcFragmentToBudgetItemUpdateFragment()
+            CalculatorFragmentDirections.actionCalcFragmentToBudgetItemUpdateFragment()
         )
     }
 
     private fun gotoBudgetRuleUpdateFragment() {
         mView.findNavController().navigate(
-            CalculatorFragmentDirections
-                .actionCalcFragmentToBudgetRuleUpdateFragment()
+            CalculatorFragmentDirections.actionCalcFragmentToBudgetRuleUpdateFragment()
         )
     }
 
     private fun gotoAccountUpdateFragment() {
         mView.findNavController().navigate(
-            CalculatorFragmentDirections
-                .actionCalcFragmentToAccountUpdateFragment()
+            CalculatorFragmentDirections.actionCalcFragmentToAccountUpdateFragment()
         )
     }
 
     private fun gotoAccountAddFragment() {
         mView.findNavController().navigate(
-            CalculatorFragmentDirections
-                .actionCalcFragmentToAccountAddFragment()
+            CalculatorFragmentDirections.actionCalcFragmentToAccountAddFragment()
         )
     }
 
@@ -300,8 +289,7 @@ class CalculatorFragment : Fragment(R.layout.fragment_calc) {
                 prefix = "-"
             }
             var number = tvDisplay.text.toString().replace("-", "")
-            @Suppress("KotlinConstantConditions")
-            if (digit == "0" && number != "0") {
+            @Suppress("KotlinConstantConditions") if (digit == "0" && number != "0") {
                 number += "0"
             } else if (number == "0") {
                 number = digit
@@ -311,8 +299,7 @@ class CalculatorFragment : Fragment(R.layout.fragment_calc) {
             if ((digit == ".") && !number.contains(".")) {
                 number += "."
             }
-            @Suppress("KotlinConstantConditions")
-            if ((digit == "-") && prefix != "-") {
+            @Suppress("KotlinConstantConditions") if ((digit == "-") && prefix != "-") {
                 prefix = "-"
             } else if (digit == "-" && prefix == "-") {
                 prefix = ""
@@ -326,9 +313,7 @@ class CalculatorFragment : Fragment(R.layout.fragment_calc) {
     private fun performMath() {
         binding.apply {
             curNumber[counter] =
-                if (tvDisplay.text.toString() == "0" ||
-                    tvDisplay.text.toString() == "-0"
-                ) {
+                if (tvDisplay.text.toString() == "0" || tvDisplay.text.toString() == "-0") {
                     0.0
                 } else {
                     nf.getDoubleFromDollars(tvDisplay.text.toString())
@@ -368,34 +353,34 @@ class CalculatorFragment : Fragment(R.layout.fragment_calc) {
 
     private fun performAddition() {
         result[counter] = prevNumber[counter] + curNumber[counter]
-        formula[counter] = "${nf.getNumberFromDouble(prevNumber[counter])} " +
-                "${operator[counter]} " +
-                "${nf.getNumberFromDouble(curNumber[counter])} " +
-                "= ${nf.getDollarsFromDouble(result[counter])}"
+        formula[counter] =
+            "${nf.getNumberFromDouble(prevNumber[counter])} " + "${operator[counter]} " + "${
+                nf.getNumberFromDouble(curNumber[counter])
+            } " + "= ${nf.getDollarsFromDouble(result[counter])}"
     }
 
     private fun performSubtraction() {
         result[counter] = prevNumber[counter] - curNumber[counter]
-        formula[counter] = "${nf.getNumberFromDouble(prevNumber[counter])} " +
-                "${operator[counter]} " +
-                "${nf.getNumberFromDouble(curNumber[counter])} " +
-                "= ${nf.getDollarsFromDouble(result[counter])}"
+        formula[counter] =
+            "${nf.getNumberFromDouble(prevNumber[counter])} " + "${operator[counter]} " + "${
+                nf.getNumberFromDouble(curNumber[counter])
+            } " + "= ${nf.getDollarsFromDouble(result[counter])}"
     }
 
     private fun performMultiplication() {
         result[counter] = prevNumber[counter] * curNumber[counter]
-        formula[counter] = "${nf.getNumberFromDouble(prevNumber[counter])} " +
-                "${operator[counter]} " +
-                "${nf.getNumberFromDouble(curNumber[counter])} " +
-                "= ${nf.getDollarsFromDouble(result[counter])}"
+        formula[counter] =
+            "${nf.getNumberFromDouble(prevNumber[counter])} " + "${operator[counter]} " + "${
+                nf.getNumberFromDouble(curNumber[counter])
+            } " + "= ${nf.getDollarsFromDouble(result[counter])}"
     }
 
     private fun performDivision() {
         result[counter] = prevNumber[counter] / curNumber[counter]
-        formula[counter] = "${nf.getNumberFromDouble(prevNumber[counter])} " +
-                "${operator[counter]} " +
-                "${nf.getNumberFromDouble(curNumber[counter])} " +
-                "= ${nf.getDollarsFromDouble(result[counter])}"
+        formula[counter] =
+            "${nf.getNumberFromDouble(prevNumber[counter])} " + "${operator[counter]} " + "${
+                nf.getNumberFromDouble(curNumber[counter])
+            } " + "= ${nf.getDollarsFromDouble(result[counter])}"
     }
 
     override fun onDestroyView() {

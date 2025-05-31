@@ -44,36 +44,28 @@ class TransactionAnalysisAdapter(
         val itemBinding: TransactionLinearItemBinding
     ) : RecyclerView.ViewHolder(itemBinding.root)
 
-    private val differCallBack =
-        object : DiffUtil.ItemCallback<TransactionDetailed>() {
-            override fun areItemsTheSame(
-                oldItem: TransactionDetailed,
-                newItem: TransactionDetailed
-            ): Boolean {
-                return oldItem.transaction?.transId == newItem.transaction?.transId &&
-                        oldItem.budgetRule?.ruleId == newItem.budgetRule?.ruleId &&
-                        oldItem.toAccount?.accountId == newItem.toAccount?.accountId &&
-                        oldItem.fromAccount?.accountId == newItem.fromAccount?.accountId
-            }
-
-            override fun areContentsTheSame(
-                oldItem: TransactionDetailed,
-                newItem: TransactionDetailed
-            ): Boolean {
-                return oldItem == newItem
-            }
+    private val differCallBack = object : DiffUtil.ItemCallback<TransactionDetailed>() {
+        override fun areItemsTheSame(
+            oldItem: TransactionDetailed, newItem: TransactionDetailed
+        ): Boolean {
+            return oldItem.transaction?.transId == newItem.transaction?.transId && oldItem.budgetRule?.ruleId == newItem.budgetRule?.ruleId && oldItem.toAccount?.accountId == newItem.toAccount?.accountId && oldItem.fromAccount?.accountId == newItem.fromAccount?.accountId
         }
+
+        override fun areContentsTheSame(
+            oldItem: TransactionDetailed, newItem: TransactionDetailed
+        ): Boolean {
+            return oldItem == newItem
+        }
+    }
 
     val differ = AsyncListDiffer(this, differCallBack)
 
     override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
+        parent: ViewGroup, viewType: Int
     ): TransViewHolder {
         return TransViewHolder(
             TransactionLinearItemBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent, false
+                LayoutInflater.from(parent.context), parent, false
             )
         )
     }
@@ -104,9 +96,8 @@ class TransactionAnalysisAdapter(
                 )
             }
             tvToAccount.text = info
-            info = mView.context.getString(R.string.from_) +
-                    transactionDetailed.fromAccount!!
-                        .accountName
+            info =
+                mView.context.getString(R.string.from_) + transactionDetailed.fromAccount!!.accountName
             if (transactionDetailed.transaction.transFromAccountPending) {
                 info += mView.context.getString(R.string._pending)
                 tvFromAccount.setTextColor(
@@ -117,9 +108,7 @@ class TransactionAnalysisAdapter(
                     Color.BLACK
                 )
             }
-            if (transactionDetailed.transaction.transToAccountPending &&
-                transactionDetailed.transaction.transFromAccountPending
-            ) {
+            if (transactionDetailed.transaction.transToAccountPending && transactionDetailed.transaction.transFromAccountPending) {
                 tvToAccount.setLines(2)
                 tvFromAccount.setLines(2)
 
@@ -128,17 +117,14 @@ class TransactionAnalysisAdapter(
             if (transactionDetailed.transaction.transNote.isEmpty()) {
                 tvTransInfo.visibility = View.GONE
             } else {
-                info = mView.context.getString(R.string.note_) +
-                        transactionDetailed.transaction.transNote
+                info =
+                    mView.context.getString(R.string.note_) + transactionDetailed.transaction.transNote
                 tvTransInfo.text = info
                 tvTransInfo.visibility = View.VISIBLE
             }
             val random = Random()
             val color = Color.argb(
-                255,
-                random.nextInt(256),
-                random.nextInt(256),
-                random.nextInt(256)
+                255, random.nextInt(256), random.nextInt(256), random.nextInt(256)
             )
             ibColor.setBackgroundColor(color)
         }
@@ -150,10 +136,9 @@ class TransactionAnalysisAdapter(
     private fun chooseOptions(transactionDetailed: TransactionDetailed) {
         var display = ""
         if (transactionDetailed.transaction!!.transToAccountPending) {
-            display += mView.context.getString(R.string.complete_the_pending_amount_of) +
-                    nf.displayDollars(transactionDetailed.transaction.transAmount) +
-                    mView.context.getString(R.string._to_) +
-                    transactionDetailed.toAccount!!.accountName
+            display += mView.context.getString(R.string.complete_the_pending_amount_of) + nf.displayDollars(
+                transactionDetailed.transaction.transAmount
+            ) + mView.context.getString(R.string._to_) + transactionDetailed.toAccount!!.accountName
         }
         if (transactionDetailed.transaction.transToAccountPending) {
             display += mView.context.getString(R.string._pending)
@@ -162,49 +147,41 @@ class TransactionAnalysisAdapter(
             display += mView.context.getString(R.string._and)
         }
         if (transactionDetailed.transaction.transFromAccountPending) {
-            display += mView.context.getString(R.string.complete_the_pending_amount_of) +
-                    nf.displayDollars(transactionDetailed.transaction.transAmount) +
-                    mView.context.getString(R.string._From_) +
-                    transactionDetailed.fromAccount!!.accountName
+            display += mView.context.getString(R.string.complete_the_pending_amount_of) + nf.displayDollars(
+                transactionDetailed.transaction.transAmount
+            ) + mView.context.getString(R.string._From_) + transactionDetailed.fromAccount!!.accountName
         }
-        AlertDialog.Builder(mView.context)
-            .setTitle(
-                mView.context.getString(R.string.choose_an_action_for) +
-                        transactionDetailed.transaction.transName
+        AlertDialog.Builder(mView.context).setTitle(
+            mView.context.getString(R.string.choose_an_action_for) + transactionDetailed.transaction.transName
+        ).setItems(
+            arrayOf(
+                mView.context.getString(R.string.edit_this_transaction),
+                display,
+                mView.context.getString(R.string.go_to_the_rules_for_future_budgets_of_this_kind),
+                mView.context.getString(R.string.delete_this_transaction)
             )
-            .setItems(
-                arrayOf(
-                    mView.context.getString(R.string.edit_this_transaction),
-                    display,
-                    mView.context.getString(R.string.go_to_the_rules_for_future_budgets_of_this_kind),
-                    mView.context.getString(R.string.delete_this_transaction)
-                )
-            ) { _, pos ->
-                when (pos) {
-                    0 -> {
-                        gotoTransactionUpdate(transactionDetailed)
-                    }
+        ) { _, pos ->
+            when (pos) {
+                0 -> {
+                    gotoTransactionUpdate(transactionDetailed)
+                }
 
-                    1 -> {
-                        if (transactionDetailed.transaction.transToAccountPending ||
-                            transactionDetailed.transaction.transFromAccountPending
-                        ) {
-                            completePendingTransactions(transactionDetailed)
-                        }
-                    }
-
-                    2 -> {
-                        gotoBudgetRuleUpdate(transactionDetailed)
-                    }
-
-                    4 -> {
-                        confirmDeleteTransaction(transactionDetailed)
-
+                1 -> {
+                    if (transactionDetailed.transaction.transToAccountPending || transactionDetailed.transaction.transFromAccountPending) {
+                        completePendingTransactions(transactionDetailed)
                     }
                 }
+
+                2 -> {
+                    gotoBudgetRuleUpdate(transactionDetailed)
+                }
+
+                4 -> {
+                    confirmDeleteTransaction(transactionDetailed)
+
+                }
             }
-            .setNegativeButton(mView.context.getString(R.string.cancel), null)
-            .show()
+        }.setNegativeButton(mView.context.getString(R.string.cancel), null).show()
     }
 
     private fun gotoBudgetRuleUpdate(transactionDetailed: TransactionDetailed) {
@@ -220,39 +197,32 @@ class TransactionAnalysisAdapter(
 
     private fun completePendingTransactions(transactionDetailed: TransactionDetailed) {
         transactionDetailed.transaction!!.apply {
-            val newTransaction =
-                Transactions(
-                    transId,
-                    transDate,
-                    transName,
-                    transNote,
-                    transRuleId,
-                    transToAccountId,
-                    false,
-                    transFromAccountId,
-                    false,
-                    transAmount,
-                    transIsDeleted,
-                    transUpdateTime
-                )
+            val newTransaction = Transactions(
+                transId,
+                transDate,
+                transName,
+                transNote,
+                transRuleId,
+                transToAccountId,
+                false,
+                transFromAccountId,
+                false,
+                transAmount,
+                transIsDeleted,
+                transUpdateTime
+            )
             accountUpdateViewModel.updateTransaction(
-                transactionDetailed.transaction,
-                newTransaction
+                transactionDetailed.transaction, newTransaction
             )
         }
     }
 
     private fun confirmDeleteTransaction(transactionDetailed: TransactionDetailed) {
-        AlertDialog.Builder(mView.context)
-            .setTitle(
-                mView.context.getString(R.string.are_you_sure_you_want_to_delete) +
-                        transactionDetailed.transaction!!.transName
-            )
-            .setPositiveButton(mView.context.getString(R.string.delete)) { _, _ ->
-                deleteTransaction(transactionDetailed.transaction)
-            }
-            .setNegativeButton(mView.context.getString(R.string.cancel), null)
-            .show()
+        AlertDialog.Builder(mView.context).setTitle(
+            mView.context.getString(R.string.are_you_sure_you_want_to_delete) + transactionDetailed.transaction!!.transName
+        ).setPositiveButton(mView.context.getString(R.string.delete)) { _, _ ->
+            deleteTransaction(transactionDetailed.transaction)
+        }.setNegativeButton(mView.context.getString(R.string.cancel), null).show()
 
     }
 
