@@ -328,5 +328,6 @@
     <string name="start_typing_for_matches">Start typing for matches</string>
     <string name="perform_a_new_transaction_based_on_this_budget_rule">Perform a new Transaction based on this Budget Rule</string>
     <string name="add_a_new_transaction_based_on_the_budget_rule">Add a new Transaction based on the Budget Rule</string>
+    <string name="operation_did_not_complete">Operation did not complete!</string>
 
 </resources>
