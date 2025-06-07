@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.billsprojectionv2.common.projections
 
-import android.util.Log
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.DAY_ANY_DAY
 import ms.mattschlenkrich.billsprojectionv2.common.DAY_FRIDAY
@@ -21,9 +20,6 @@ import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import java.time.DayOfWeek
 import java.time.LocalDate
 
-private const val TAG = "ProjectBudgetDates"
-
-//@Suppress("unused")
 class ProjectBudgetDates(private val mainActivity: MainActivity) {
 
     fun projectDates(
@@ -34,10 +30,10 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
         dayOfWeekId: Int,
         leadDays: Long,
     ): ArrayList<LocalDate> {
-        val intervalType = mainActivity.baseContext.resources
-            .getStringArray(R.array.frequency_types)[intervalTypeId]
-        val dayOfWeek = mainActivity.baseContext.resources
-            .getStringArray(R.array.days_of_week)[dayOfWeekId]
+        val intervalType =
+            mainActivity.baseContext.resources.getStringArray(R.array.frequency_types)[intervalTypeId]
+        val dayOfWeek =
+            mainActivity.baseContext.resources.getStringArray(R.array.days_of_week)[dayOfWeekId]
         when (intervalType) {
             INTERVAL_WEEKLY -> {
                 return projectWeekly(
@@ -62,7 +58,6 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
             }
 
             INTERVAL_SPECIAL -> {
-                //special projections
                 return ArrayList()
             }
 
@@ -89,7 +84,6 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
         } else {
             for (i in 0 until datesToFix.size) {
                 minusDates.add(datesToFix[i].minusDays(leadDays))
-//                Log.d(TAG, "fixing lead days ${minusDates[i]}")
             }
         }
         var fixedDates = ArrayList<LocalDate>()
@@ -111,40 +105,39 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
             }
 
             else -> {
-                val dayNumber =
-                    when (dayOfWeek) {
-                        DAY_MONDAY -> {
-                            1
-                        }
-
-                        DAY_TUESDAY -> {
-                            2
-                        }
-
-                        DAY_WEDNESDAY -> {
-                            3
-                        }
-
-                        DAY_THURSDAY -> {
-                            4
-                        }
-
-                        DAY_FRIDAY -> {
-                            5
-                        }
-
-                        DAY_SATURDAY -> {
-                            6
-                        }
-
-                        DAY_SUNDAY -> {
-                            7
-                        }
-
-                        else -> {
-                            0
-                        }
+                val dayNumber = when (dayOfWeek) {
+                    DAY_MONDAY -> {
+                        1
                     }
+
+                    DAY_TUESDAY -> {
+                        2
+                    }
+
+                    DAY_WEDNESDAY -> {
+                        3
+                    }
+
+                    DAY_THURSDAY -> {
+                        4
+                    }
+
+                    DAY_FRIDAY -> {
+                        5
+                    }
+
+                    DAY_SATURDAY -> {
+                        6
+                    }
+
+                    DAY_SUNDAY -> {
+                        7
+                    }
+
+                    else -> {
+                        0
+                    }
+                }
                 for (i in 0 until minusDates.size) {
                     val dateToFix = minusDates[i]
                     if (dateToFix.dayOfWeek.value == dayNumber) {
@@ -155,18 +148,15 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
                             .plusDays(dayNumber.toLong())
                         if (newDate.isAfter(minusDates[i])) {
                             newDate = newDate.minusWeeks(1)
-//                            Log.d(TAG, "subtracting a week")
                         }
                         while (newDate.isBefore(minusDates[i].minusWeeks(1))) {
                             newDate = newDate.plusWeeks(1)
-//                            Log.d(TAG, "Adding a week")
                         }
                         fixedDates.add(newDate)
                     }
                 }
             }
         }
-//        return fixedDates
         return fixedDates
     }
 
@@ -181,21 +171,19 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
         if (LocalDate.now() < LocalDate.parse(endDate)) {
             var workingDate: LocalDate
             workingDate = LocalDate.parse(startDate)
-             do {
-                 if (workingDate > LocalDate.now().minusMonths(interval).plusDays(1)) {
-                     datesToFix.add(workingDate)
-                 }
-                 workingDate = workingDate.plusMonths(interval)
-             } while (workingDate <= LocalDate.parse(endDate))
+            do {
+                if (workingDate > LocalDate.now().minusMonths(interval).plusDays(1)) {
+                    datesToFix.add(workingDate)
+                }
+                workingDate = workingDate.plusMonths(interval)
+            } while (workingDate <= LocalDate.parse(endDate))
         }
         return fixDates(datesToFix, dayOfWeek, leadDays)
     }
 
 
     private fun projectWeekly(
-        startDate: String,
-        endDate: String,
-        interval: Long
+        startDate: String, endDate: String, interval: Long
     ): ArrayList<LocalDate> {
         val dates = ArrayList<LocalDate>()
         if (LocalDate.now() < LocalDate.parse(endDate)) {
@@ -208,16 +196,11 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
                 workingDate = workingDate.plusWeeks(interval)
             }
         }
-        Log.d(TAG, "dates size = ${dates.size}")
         return dates
     }
 
     private fun projectYearly(
-        startDate: String,
-        endDate: String,
-        interval: Long,
-        dayOfWeek: String,
-        leadDays: Long
+        startDate: String, endDate: String, interval: Long, dayOfWeek: String, leadDays: Long
     ): ArrayList<LocalDate> {
         val datesToFix = ArrayList<LocalDate>()
         if (LocalDate.now() < LocalDate.parse(endDate)) {
@@ -244,19 +227,13 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
     }
 
     fun projectOnPayDay(
-        startDate: String,
-        interval: Long,
-        payDayList: List<String>,
-        endDate: String
+        startDate: String, interval: Long, payDayList: List<String>, endDate: String
     ): ArrayList<LocalDate> {
         val dates = ArrayList<LocalDate>()
         for (d in 0 until payDayList.size - 1) {
-            Log.d(TAG, "new date is ${payDayList[d]}")
-            if (payDayList[d] in startDate..endDate &&
-                (d + 1) % interval.toInt() == 0 &&
-                payDayList[d] >= LocalDate.now().toString()
+            if (payDayList[d] in startDate..endDate && (d + 1) % interval.toInt() == 0 && payDayList[d] >= LocalDate.now()
+                    .toString()
             ) {
-                Log.d(TAG, "adding date to list ${payDayList[d]}")
                 dates.add(LocalDate.parse(payDayList[d]))
             }
         }

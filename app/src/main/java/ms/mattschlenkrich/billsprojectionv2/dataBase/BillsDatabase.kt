@@ -54,6 +54,7 @@ abstract class BillsDatabase : RoomDatabase() {
                 DB_NAME
             )
                 .createFromAsset("bills2.db")
+                .fallbackToDestructiveMigration(false)
                 .build()
         }
     }
