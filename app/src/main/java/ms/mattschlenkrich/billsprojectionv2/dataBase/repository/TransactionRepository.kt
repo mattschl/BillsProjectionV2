@@ -15,18 +15,16 @@ class TransactionRepository(private val db: BillsDatabase) {
             transId, updateTime
         )
 
-    fun getActiveTransactionsDetailed() =
-        db.getTransactionDao().getActiveTransactionsDetailed()
+    fun getActiveTransactionsDetailed() = db.getTransactionDao().getActiveTransactionsDetailed()
 
     fun getActiveTransactionsDetailed(budgetRuleId: Long) =
         db.getTransactionDao().getActiveTransactionsDetailed(budgetRuleId)
 
     fun getActiveTransactionsDetailed(
         budgetRuleId: Long, startDate: String, endDate: String
-    ) =
-        db.getTransactionDao().getActiveTransactionsDetailed(
-            budgetRuleId, startDate, endDate
-        )
+    ) = db.getTransactionDao().getActiveTransactionsDetailed(
+        budgetRuleId, startDate, endDate
+    )
 
     fun getTransactionDetailed(transId: Long) =
         db.getTransactionDao().getTransactionDetailed(transId)
@@ -38,23 +36,18 @@ class TransactionRepository(private val db: BillsDatabase) {
         transId: Long,
         toAccountID: Long,
         fromAccountID: Long,
-    ) =
-        db.getTransactionDao().getTransactionFull(
-            transId, toAccountID, fromAccountID
-        )
+    ) = db.getTransactionDao().getTransactionFull(
+        transId, toAccountID, fromAccountID
+    )
 
     suspend fun updateAccountBalance(
-        newBalance: Double,
-        accountId: Long,
-        updateTime: String
+        newBalance: Double, accountId: Long, updateTime: String
     ) = db.getTransactionDao().updateAccountBalance(
         newBalance, accountId, updateTime
     )
 
     suspend fun updateAccountOwing(
-        newOwing: Double,
-        accountId: Long,
-        updateTime: String
+        newOwing: Double, accountId: Long, updateTime: String
     ) = db.getTransactionDao().updateAccountOwing(
         newOwing, accountId, updateTime
     )
@@ -66,87 +59,73 @@ class TransactionRepository(private val db: BillsDatabase) {
         db.getTransactionDao().getMaxTransactionByBudgetRule(budgetRuleId)
 
     fun getMaxTransactionByBudgetRule(
-        budgetRuleId: Long,
-        startDate: String,
-        endDate: String
-    ) =
-        db.getTransactionDao().getMaxTransactionByBudgetRule(
-            budgetRuleId, startDate, endDate
-        )
+        budgetRuleId: Long, startDate: String, endDate: String
+    ) = db.getTransactionDao().getMaxTransactionByBudgetRule(
+        budgetRuleId, startDate, endDate
+    )
 
     fun getMinTransactionByBudgetRule(budgetRuleId: Long) =
         db.getTransactionDao().getMinTransactionByBudgetRule(budgetRuleId)
 
     fun getMinTransactionByBudgetRule(
-        budgetRuleId: Long,
-        startDate: String,
-        endDate: String
-    ) =
-        db.getTransactionDao().getMinTransactionByBudgetRule(
-            budgetRuleId, startDate, endDate
-        )
+        budgetRuleId: Long, startDate: String, endDate: String
+    ) = db.getTransactionDao().getMinTransactionByBudgetRule(
+        budgetRuleId, startDate, endDate
+    )
 
     fun getSumTransactionByBudgetRule(budgetRuleId: Long) =
         db.getTransactionDao().getSumTransactionByBudgetRule(budgetRuleId)
 
     fun getSumTransactionByBudgetRule(
-        budgetRuleId: Long,
-        startDate: String,
-        endDate: String
-    ) =
-        db.getTransactionDao().getSumTransactionByBudgetRule(
-            budgetRuleId, startDate, endDate
-        )
+        budgetRuleId: Long, startDate: String, endDate: String
+    ) = db.getTransactionDao().getSumTransactionByBudgetRule(
+        budgetRuleId, startDate, endDate
+    )
 
     fun getActiveTransactionByAccount(accountId: Long) =
         db.getTransactionDao().getActiveTransactionByAccount(accountId)
 
     fun getActiveTransactionByAccount(
         accountId: Long, startDate: String, endDate: String
-    ) =
-        db.getTransactionDao().getActiveTransactionByAccount(
-            accountId, startDate, endDate
-        )
+    ) = db.getTransactionDao().getActiveTransactionByAccount(
+        accountId, startDate, endDate
+    )
 
     fun getSumTransactionToAccount(accountId: Long) =
         db.getTransactionDao().getSumTransactionToAccount(accountId)
 
     fun getSumTransactionToAccount(
         accountId: Long, startDate: String, endDate: String
-    ) =
-        db.getTransactionDao().getSumTransactionToAccount(
-            accountId, startDate, endDate
-        )
+    ) = db.getTransactionDao().getSumTransactionToAccount(
+        accountId, startDate, endDate
+    )
 
     fun getSumTransactionFromAccount(accountId: Long) =
         db.getTransactionDao().getSumTransactionFromAccount(accountId)
 
     fun getSumTransactionFromAccount(
         accountId: Long, startDate: String, endDate: String
-    ) =
-        db.getTransactionDao().getSumTransactionFromAccount(
-            accountId, startDate, endDate
-        )
+    ) = db.getTransactionDao().getSumTransactionFromAccount(
+        accountId, startDate, endDate
+    )
 
     fun getMaxTransactionByAccount(accountId: Long) =
         db.getTransactionDao().getMaxTransactionByAccount(accountId)
 
     fun getMaxTransactionByAccount(
         accountId: Long, startDate: String, endDate: String
-    ) =
-        db.getTransactionDao().getMaxTransactionByAccount(
-            accountId, startDate, endDate
-        )
+    ) = db.getTransactionDao().getMaxTransactionByAccount(
+        accountId, startDate, endDate
+    )
 
     fun getMinTransactionByAccount(accountId: Long) =
         db.getTransactionDao().getMinTransactionByAccount(accountId)
 
     fun getMinTransactionByAccount(
         accountId: Long, startDate: String, endDate: String
-    ) =
-        db.getTransactionDao().getMinTransactionByAccount(
-            accountId, startDate, endDate
-        )
+    ) = db.getTransactionDao().getMinTransactionByAccount(
+        accountId, startDate, endDate
+    )
 
     fun getActiveTransactionBySearch(
         query: String?, startDate: String, endDate: String
@@ -163,22 +142,19 @@ class TransactionRepository(private val db: BillsDatabase) {
 
     fun getSumTransactionBySearch(
         query: String?, startDate: String, endDate: String
-    ) =
-        db.getTransactionDao().getSumTransactionBySearch(query, startDate, endDate)
+    ) = db.getTransactionDao().getSumTransactionBySearch(query, startDate, endDate)
 
     fun getMaxTransactionBySearch(query: String?) =
         db.getTransactionDao().getMaxTransactionBySearch(query)
 
     fun getMaxTransactionBySearch(
         query: String?, startDate: String, endDate: String
-    ) =
-        db.getTransactionDao().getMaxTransactionBySearch(query, startDate, endDate)
+    ) = db.getTransactionDao().getMaxTransactionBySearch(query, startDate, endDate)
 
     fun getMinTransactionBySearch(query: String?) =
         db.getTransactionDao().getMinTransactionBySearch(query)
 
     fun getMinTransactionBySearch(
         query: String?, startDate: String, endDate: String
-    ) =
-        db.getTransactionDao().getMinTransactionBySearch(query, startDate, endDate)
+    ) = db.getTransactionDao().getMinTransactionBySearch(query, startDate, endDate)
 }

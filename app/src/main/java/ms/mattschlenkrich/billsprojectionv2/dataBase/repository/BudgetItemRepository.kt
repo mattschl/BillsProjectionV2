@@ -38,8 +38,7 @@ class BudgetItemRepository(private val db: BillsDatabase) {
     fun getBudgetItems(asset: String, payDay: String) =
         db.getBudgetItemDao().getBudgetItems(asset, payDay)
 
-    fun getBudgetItems(budgetRuleId: Long) =
-        db.getBudgetItemDao().getBudgetItems(budgetRuleId)
+    fun getBudgetItems(budgetRuleId: Long) = db.getBudgetItemDao().getBudgetItems(budgetRuleId)
 
     fun getPayDays() = db.getBudgetItemDao().getPayDays()
 
@@ -49,29 +48,43 @@ class BudgetItemRepository(private val db: BillsDatabase) {
         budgetRuleId, projectedDate, updateTime
     )
 
-//    fun getBudgetItemWritable(budgetRuleId: Long, projectedDate: String) =
-//        db.getBudgetItemDao().getBudgetItemWritable(budgetRuleId, projectedDate)
-
     fun rewriteBudgetItem(
-        budgetRuleId: Long, projectedDate: String, actualDate: String, payDay: String,
-        budgetName: String, isPayDay: Boolean, toAccountId: Long, fromAccountId: Long,
-        projectedAmount: Double, isFixed: Boolean, isAutomatic: Boolean, updateTime: String
+        budgetRuleId: Long,
+        projectedDate: String,
+        actualDate: String,
+        payDay: String,
+        budgetName: String,
+        isPayDay: Boolean,
+        toAccountId: Long,
+        fromAccountId: Long,
+        projectedAmount: Double,
+        isFixed: Boolean,
+        isAutomatic: Boolean,
+        updateTime: String
     ) = db.getBudgetItemDao().rewriteBudgetItem(
-        budgetRuleId, projectedDate, actualDate, payDay, budgetName, isPayDay,
-        toAccountId, fromAccountId, projectedAmount, isFixed, isAutomatic, updateTime
+        budgetRuleId,
+        projectedDate,
+        actualDate,
+        payDay,
+        budgetName,
+        isPayDay,
+        toAccountId,
+        fromAccountId,
+        projectedAmount,
+        isFixed,
+        isAutomatic,
+        updateTime
     )
 
     suspend fun lockUnlockBudgetItem(
         lock: Boolean, budgetRuleId: Long, payDay: String, updateTime: String
-    ) =
-        db.getBudgetItemDao().lockUnlockBudgetItem(
-            lock, budgetRuleId, payDay, updateTime
-        )
+    ) = db.getBudgetItemDao().lockUnlockBudgetItem(
+        lock, budgetRuleId, payDay, updateTime
+    )
 
     suspend fun lockUnlockBudgetItem(
         lock: Boolean, payDay: String, updateTime: String
-    ) =
-        db.getBudgetItemDao().lockUnlockBudgetItem(
-            lock, payDay, updateTime
-        )
+    ) = db.getBudgetItemDao().lockUnlockBudgetItem(
+        lock, payDay, updateTime
+    )
 }

@@ -11,10 +11,7 @@ class NumberFunctions {
 
     fun getDoubleFromDollars(dollars: String): Double {
         return if (dollars != "") {
-            dollars.trim()
-                .replace("$", "")
-                .replace(",", "")
-                .toDouble()
+            dollars.trim().replace("$", "").replace(",", "").toDouble()
         } else {
             0.0
         }
@@ -34,8 +31,7 @@ class NumberFunctions {
     }
 
     fun generateId(): Long {
-        var id =
-            Random().nextInt(Int.MAX_VALUE).toLong()
+        var id = Random().nextInt(Int.MAX_VALUE).toLong()
         id = if (Random().nextBoolean()) -id
         else id
         return id

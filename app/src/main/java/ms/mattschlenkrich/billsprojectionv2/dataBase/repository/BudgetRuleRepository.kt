@@ -14,26 +14,19 @@ class BudgetRuleRepository(private val db: BillsDatabase) {
     suspend fun deleteBudgetRule(budgetRuleId: Long, updateTime: String) =
         db.getBudgetRuleDao().deleteBudgetRule(budgetRuleId, updateTime)
 
-    suspend fun getBudgetRulesActive() =
-        db.getBudgetRuleDao().getBudgetRulesActive()
+    suspend fun getBudgetRulesActive() = db.getBudgetRuleDao().getBudgetRulesActive()
 
-    fun getActiveBudgetRulesDetailed() =
-        db.getBudgetRuleDao().getActiveBudgetRulesDetailed()
+    fun getActiveBudgetRulesDetailed() = db.getBudgetRuleDao().getActiveBudgetRulesDetailed()
 
-    fun searchBudgetRules(query: String?) =
-        db.getBudgetRuleDao().searchBudgetRules(query)
+    fun searchBudgetRules(query: String?) = db.getBudgetRuleDao().searchBudgetRules(query)
 
-    fun getBudgetRuleNameList() =
-        db.getBudgetRuleDao().getBudgetRuleNameList()
+    fun getBudgetRuleNameList() = db.getBudgetRuleDao().getBudgetRuleNameList()
 
-    fun getBudgetRuleDetailed(ruleId: Long) =
-        db.getBudgetRuleDao().getBudgetRuleDetailed(ruleId)
+    fun getBudgetRuleDetailed(ruleId: Long) = db.getBudgetRuleDao().getBudgetRuleDetailed(ruleId)
 
-    fun getBudgetRuleFullLive(ruleId: Long) =
-        db.getBudgetRuleDao().getBudgetRuleFullLive(ruleId)
+    fun getBudgetRuleFullLive(ruleId: Long) = db.getBudgetRuleDao().getBudgetRuleFullLive(ruleId)
 
-    fun getBudgetRulesMonthly(today: String) =
-        db.getBudgetRuleDao().getBudgetRulesMonthly(today)
+    fun getBudgetRulesMonthly(today: String) = db.getBudgetRuleDao().getBudgetRulesMonthly(today)
 
     fun getBudgetRulesCompleteMonthly(today: String) =
         db.getBudgetRuleDao().getBudgetRulesCompletedMonthly(today)
