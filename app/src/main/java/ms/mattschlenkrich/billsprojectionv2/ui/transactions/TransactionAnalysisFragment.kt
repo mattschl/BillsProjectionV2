@@ -172,12 +172,12 @@ class TransactionAnalysisFragment : Fragment(
                 )
                 adapter = transactionAdapter
             }
-                transactionViewModel.getActiveTransactionByAccount(account.accountId)
-                    .observe(viewLifecycleOwner) { transactionList ->
-                        transactionAdapter!!.differ.submitList(transactionList)
-                        populateAnalysisFromAccount(transactionList, totalCredits, totalDebits)
-                        updateUiHelpText(transactionList)
-                    }
+            transactionViewModel.getActiveTransactionByAccount(account.accountId)
+                .observe(viewLifecycleOwner) { transactionList ->
+                    transactionAdapter!!.differ.submitList(transactionList)
+                    populateAnalysisFromAccount(transactionList, totalCredits, totalDebits)
+                    updateUiHelpText(transactionList)
+                }
         }
     }
 
@@ -235,8 +235,8 @@ class TransactionAnalysisFragment : Fragment(
             transactionViewModel.getMinTransactionByAccount(
                 account.accountId, startDate, endDate
             ).observe(viewLifecycleOwner) { min ->
-                    if (min != null) tvLowest.text = nf.displayDollars(min)
-                }
+                if (min != null) tvLowest.text = nf.displayDollars(min)
+            }
             transactionAdapter = null
             transactionAdapter = TransactionAnalysisAdapter(
                 mainActivity,
@@ -248,13 +248,13 @@ class TransactionAnalysisFragment : Fragment(
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = transactionAdapter
             }
-                transactionViewModel.getActiveTransactionByAccount(
-                    account.accountId, startDate, endDate
-                ).observe(viewLifecycleOwner) { transactionList ->
-                    transactionAdapter!!.differ.submitList(transactionList)
-                    populateAnalysisFromAccount(transactionList, totalCredits, totalDebits)
-                    updateUiHelpText(transactionList)
-                }
+            transactionViewModel.getActiveTransactionByAccount(
+                account.accountId, startDate, endDate
+            ).observe(viewLifecycleOwner) { transactionList ->
+                transactionAdapter!!.differ.submitList(transactionList)
+                populateAnalysisFromAccount(transactionList, totalCredits, totalDebits)
+                updateUiHelpText(transactionList)
+            }
         }
     }
 
@@ -301,17 +301,17 @@ class TransactionAnalysisFragment : Fragment(
                     )
                     adapter = transactionAdapter
                 }
-                    transactionViewModel.getActiveTransactionsDetailed(
-                        budgetRule.ruleId, startDate, endDate
-                    ).observe(
-                        viewLifecycleOwner
-                    ) { transactionList ->
-                        transactionAdapter!!.differ.submitList(
-                            transactionList
-                        )
-                        populateAnalysisFromBudgetRuleOrSearch(transactionList, endDate)
-                        updateUiHelpText(transactionList)
-                    }
+                transactionViewModel.getActiveTransactionsDetailed(
+                    budgetRule.ruleId, startDate, endDate
+                ).observe(
+                    viewLifecycleOwner
+                ) { transactionList ->
+                    transactionAdapter!!.differ.submitList(
+                        transactionList
+                    )
+                    populateAnalysisFromBudgetRuleOrSearch(transactionList, endDate)
+                    updateUiHelpText(transactionList)
+                }
             }
         }
     }
@@ -334,8 +334,9 @@ class TransactionAnalysisFragment : Fragment(
                     val months = df.getMonthsBetween(startDate, endDate) + 1
 //                    Log.d(TAG, "Number of months is $months")
                     lblAverage.text = getString(R.string.average)
-                    tvAverage.text = nf.displayDollars(totals / months)
-
+                    val display = nf.displayDollars(totals / months) +
+                            " / $months months"
+                    tvAverage.text = display
                     tvRecent.text = nf.displayDollars(
                         transList.first().transaction!!.transAmount
                     )
@@ -482,15 +483,15 @@ class TransactionAnalysisFragment : Fragment(
                     )
                     adapter = transactionAdapter
                 }
-                    transactionViewModel.getActiveTransactionBySearch(
-                        searchQuery
-                    ).observe(viewLifecycleOwner) { transList ->
-                        transactionAdapter!!.differ.submitList(transList)
-                        populateAnalysisFromBudgetRuleOrSearch(
-                            transList, df.getCurrentDateAsString()
-                        )
-                        updateUiHelpText(transList)
-                    }
+                transactionViewModel.getActiveTransactionBySearch(
+                    searchQuery
+                ).observe(viewLifecycleOwner) { transList ->
+                    transactionAdapter!!.differ.submitList(transList)
+                    populateAnalysisFromBudgetRuleOrSearch(
+                        transList, df.getCurrentDateAsString()
+                    )
+                    updateUiHelpText(transList)
+                }
             }
         }
     }
@@ -518,11 +519,14 @@ class TransactionAnalysisFragment : Fragment(
                     val startDate = transList.last().transaction!!.transDate
 //                    Log.d(TAG, "start date is $startDate, end is $endDate")
                     val months = df.getMonthsBetween(startDate, endDate)
-                    tvRecent.text = nf.displayDollars(
+                    var display = nf.displayDollars(
                         transList.first().transaction!!.transAmount
                     )
+                    tvRecent.text = display
                     lblAverage.text = getString(R.string.credit_average)
-                    tvAverage.text = nf.displayDollars(totalCredits / months)
+                    display = nf.displayDollars(totalCredits / months) +
+                            " / $months months"
+                    tvAverage.text = display
                     lblHighest.text = getString(R.string.debit_average)
                     lblHighest.setTextColor(Color.RED)
                     tvHighest.text = nf.displayDollars(totalDebits / months)

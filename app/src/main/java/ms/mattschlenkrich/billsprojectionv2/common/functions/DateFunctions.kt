@@ -89,7 +89,7 @@ class DateFunctions {
         val end = endDate.split("-")
         val years = end[0].toInt() - start[0].toInt()
         var months = end[1].toInt() - start[1].toInt()
-        months -= if (end[2].toInt() < start[2].toInt()) 1 else 0
+        months -= if (end[2].toInt() <= start[2].toInt()) 1 else 0
         return months + (years * 12)
     }
 
