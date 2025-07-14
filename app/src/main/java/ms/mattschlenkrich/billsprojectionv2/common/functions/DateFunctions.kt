@@ -38,7 +38,7 @@ class DateFunctions {
     }
 
     fun getDisplayDate(date: String): String {
-        return displayDateString.format(
+        return displayDateWithYear.format(
             dateChecker.parse(date)!!
         )
     }
