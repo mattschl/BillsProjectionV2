@@ -4,6 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.transactions.TransactionAnalysisFragment">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -437,14 +440,16 @@
                         android:layout_height="wrap_content"
                         android:gravity="start"
                         android:padding="@dimen/margin_medium"
-                        android:visibility="gone"
                         android:text="@string/instructions_transactions_analysis_view"
                         android:textColor="@color/black"
                         android:textSize="@dimen/text_info_size"
+                        android:visibility="gone"
                         tools:ignore="VisualLintLongText" />
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
 </layout>

@@ -14,6 +14,7 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.BALANCE
@@ -27,9 +28,12 @@ import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
+import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModel
+import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.TransactionViewModel
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.ui.accounts.adapter.AccountHistoryAdapter
 
 private const val TAG = FRAG_ACCOUNT_UPDATE
 
@@ -41,6 +45,7 @@ class AccountUpdateFragment :
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var accountViewModel: AccountViewModel
+    private lateinit var transactionViewModel: TransactionViewModel
     private lateinit var mView: View
 
     private val nf = NumberFunctions()
@@ -57,6 +62,7 @@ class AccountUpdateFragment :
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         accountViewModel = mainActivity.accountViewModel
+        transactionViewModel = mainActivity.transactionViewModel
         mainActivity.title = getString(R.string.update_account)
         mView = binding.root
         return mView
@@ -71,6 +77,7 @@ class AccountUpdateFragment :
     private fun populateValues() {
         val accountWithType = mainViewModel.getAccountWithType()!!
         getAccountListNamesForValidation()
+        populateHistory(accountWithType)
         binding.apply {
             edAccountUpdateName.setText(accountWithType.account.accountName)
             edAccountUpdateHandle.setText(accountWithType.account.accountNumber)
@@ -117,6 +124,29 @@ class AccountUpdateFragment :
             )
             txtAccountUpdateAccountId.text =
                 String.format(accountWithType.account.accountId.toString())
+        }
+    }
+
+    private fun populateHistory(accountWithType: AccountWithType) {
+        val historyAdapter = AccountHistoryAdapter(mainActivity, mView, TAG, this)
+        binding.rvHistory.apply {
+            layoutManager = LinearLayoutManager(mView.context)
+            adapter = historyAdapter
+        }
+        transactionViewModel.getActiveTransactionByAccount(accountWithType.account.accountId)
+            .observe(viewLifecycleOwner) { transactionList ->
+                historyAdapter.differ.submitList(transactionList)
+                toggleRecycler(transactionList)
+            }
+    }
+
+    private fun toggleRecycler(transactionList: List<TransactionDetailed>) {
+        binding.apply {
+            if (transactionList.isEmpty()) {
+                rvHistory.visibility = View.GONE
+            } else {
+                rvHistory.visibility = View.VISIBLE
+            }
         }
     }
 

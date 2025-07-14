@@ -171,7 +171,9 @@ class AccountAdapter(
         curAccount: AccountWithType
     ) {
         val callingFragment = mainViewModel.getCallingFragments()
-        if (callingFragment == null) {
+        if (callingFragment == null || callingFragment.contains("BudgetRule") ||
+            callingFragment.contains("Account")
+        ) {
             AlertDialog.Builder(mView.context).setTitle(
                 mView.context.getString(R.string.choose_an_action_for) + curAccount.account.accountName
             ).setItems(

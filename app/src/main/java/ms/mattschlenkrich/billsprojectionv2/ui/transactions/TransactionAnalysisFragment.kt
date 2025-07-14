@@ -64,13 +64,13 @@ class TransactionAnalysisFragment : Fragment(
 
     private fun populateValues() {
         if (mainViewModel.getBudgetRuleDetailed() != null) {
-            populateAnalysisFromBudgetRule()
+            populateListsFromBudgetRule()
         } else if (mainViewModel.getAccountWithType() != null) {
-            populateAnalysisFromAccount()
+            populateListsFromAccount()
         }
     }
 
-    private fun populateAnalysisFromBudgetRule() {
+    private fun populateListsFromBudgetRule() {
         val budgetRule = mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!
         binding.apply {
             tvBudgetRule.text = budgetRule.budgetRuleName
@@ -122,7 +122,7 @@ class TransactionAnalysisFragment : Fragment(
         }
     }
 
-    private fun populateAnalysisFromAccount() {
+    private fun populateListsFromAccount() {
         var totalCredits = 0.0
         var totalDebits = 0.0
         val account = mainViewModel.getAccountWithType()!!.account
@@ -186,18 +186,18 @@ class TransactionAnalysisFragment : Fragment(
         val endDate = df.getLastOfPreviousMonth(df.getCurrentDateAsString())
         binding.apply {
             if (mainViewModel.getBudgetRuleDetailed() != null) {
-                populateAnalysisFromBudgetRuleAndDates(startDate, endDate)
+                populateListsFromBudgetRuleAndDates(startDate, endDate)
             } else if (mainViewModel.getAccountWithType() != null) {
-                populateAnalysisFromAccountAndDates(startDate, endDate)
+                populateListsFromAccountAndDates(startDate, endDate)
             } else if (chkSearch.isChecked) {
-                populateAnalysisFromSearchAndDates(
+                populateListsFromSearchAndDates(
                     "%${etSearch.text}%", startDate, endDate
                 )
             }
         }
     }
 
-    private fun populateAnalysisFromAccountAndDates(startDate: String, endDate: String) {
+    private fun populateListsFromAccountAndDates(startDate: String, endDate: String) {
         var totalCredits = 0.0
         var totalDebits = 0.0
         val account = mainViewModel.getAccountWithType()!!.account
@@ -258,7 +258,7 @@ class TransactionAnalysisFragment : Fragment(
         }
     }
 
-    private fun populateAnalysisFromBudgetRuleAndDates(startDate: String, endDate: String) {
+    private fun populateListsFromBudgetRuleAndDates(startDate: String, endDate: String) {
         val budgetRule = mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!
         binding.apply {
             CoroutineScope(Dispatchers.Main).launch {
@@ -329,17 +329,18 @@ class TransactionAnalysisFragment : Fragment(
                     }
                     delay(WAIT_250)
                     val startDate = transList.last().transaction!!.transDate
-
 //                    Log.d(TAG, "start date is $startDate, end is $endDate")
                     val months = df.getMonthsBetween(startDate, endDate) + 1
 //                    Log.d(TAG, "Number of months is $months")
                     lblAverage.text = getString(R.string.average)
-                    val display = nf.displayDollars(totals / months) +
+                    var display = nf.displayDollars(totals / months) +
                             " / $months months"
                     tvAverage.text = display
                     tvRecent.text = nf.displayDollars(
                         transList.first().transaction!!.transAmount
                     )
+                    display = "Total (${transList.count()})"
+                    lblTotalCredits.text = display
                 }
             }
         }
@@ -389,15 +390,15 @@ class TransactionAnalysisFragment : Fragment(
                 }
                 btnFill.setOnClickListener {
                     if (mainViewModel.getBudgetRuleDetailed() != null) {
-                        populateAnalysisFromBudgetRuleAndDates(
+                        populateListsFromBudgetRuleAndDates(
                             tvStartDate.text.toString(), tvEndDate.text.toString()
                         )
                     } else if (mainViewModel.getAccountWithType() != null) {
-                        populateAnalysisFromAccountAndDates(
+                        populateListsFromAccountAndDates(
                             tvStartDate.text.toString(), tvEndDate.text.toString()
                         )
                     } else if (chkSearch.isChecked) {
-                        populateAnalysisFromSearchAndDates(
+                        populateListsFromSearchAndDates(
                             "%${etSearch.text}%",
                             tvStartDate.text.toString(),
                             tvEndDate.text.toString()
@@ -420,7 +421,7 @@ class TransactionAnalysisFragment : Fragment(
         binding.apply {
             btnSearch.setOnClickListener {
                 val searchQuery = "%${etSearch.text}%"
-                populateFromSearch(searchQuery)
+                populateListsFromSearch(searchQuery)
             }
         }
     }
@@ -441,7 +442,7 @@ class TransactionAnalysisFragment : Fragment(
         }
     }
 
-    private fun populateFromSearch(
+    private fun populateListsFromSearch(
         searchQuery: String
     ) {
         binding.apply {
@@ -536,7 +537,7 @@ class TransactionAnalysisFragment : Fragment(
         }
     }
 
-    private fun populateAnalysisFromSearchAndDates(
+    private fun populateListsFromSearchAndDates(
         searchQuery: String, startDate: String, endDate: String
     ) {
         binding.apply {
