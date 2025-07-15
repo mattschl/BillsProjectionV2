@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.ui.transactions.adapter
+package ms.mattschlenkrich.billsprojectionv2.ui.accounts.adapter
 
 import android.app.AlertDialog
 import android.graphics.Color
@@ -12,32 +12,34 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.databinding.TransactionLinearItemBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
-import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionViewFragment
+import ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountUpdateFragment
 import java.util.Random
 
-class TransactionAdapter(
+class AccountUpdateHistoryAdapter(
     val mainActivity: MainActivity,
     private val mView: View,
     private val parentFragment: String,
-    private val transactionViewFragment: TransactionViewFragment,
-) : RecyclerView.Adapter<TransactionAdapter.TransactionsViewHolder>() {
+    private val accountUpdateFragment: AccountUpdateFragment,
+) : RecyclerView.Adapter<AccountUpdateHistoryAdapter.HistoryHolder>() {
 
+    private val nf = NumberFunctions()
+    private val df = DateFunctions()
+    private val mainViewModel = mainActivity.mainViewModel
     private val transactionViewModel = mainActivity.transactionViewModel
     private val accountUpdateViewModel = mainActivity.accountUpdateViewModel
     private val budgetRuleViewModel = mainActivity.budgetRuleViewModel
-    private val mainViewModel = mainActivity.mainViewModel
-    private val nf = NumberFunctions()
-    private val df = DateFunctions()
 
-    class TransactionsViewHolder(
+    class HistoryHolder(
         val itemBinding: TransactionLinearItemBinding
     ) : RecyclerView.ViewHolder(itemBinding.root)
 
@@ -59,8 +61,8 @@ class TransactionAdapter(
 
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
-    ): TransactionsViewHolder {
-        return TransactionsViewHolder(
+    ): HistoryHolder {
+        return HistoryHolder(
             TransactionLinearItemBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             )
@@ -71,18 +73,15 @@ class TransactionAdapter(
         return differ.currentList.size
     }
 
-    override fun onBindViewHolder(
-        holder: TransactionsViewHolder,
-        position: Int,
-    ) {
-        val mTransactionDetailed = differ.currentList[position]
+    override fun onBindViewHolder(holder: HistoryHolder, position: Int) {
+        val transactionDetailed = differ.currentList[position]
         holder.itemBinding.apply {
-            tvDate.text = df.getDisplayDate(mTransactionDetailed.transaction!!.transDate)
-            tvTransDescription.text = mTransactionDetailed.transaction.transName
-            tvTransAmount.text = nf.displayDollars(mTransactionDetailed.transaction.transAmount)
+            tvDate.text = df.getDisplayDate(transactionDetailed.transaction!!.transDate)
+            tvTransDescription.text = transactionDetailed.transaction.transName
+            tvTransAmount.text = nf.displayDollars(transactionDetailed.transaction.transAmount)
             var info =
-                mView.context.getString(R.string.to_) + mTransactionDetailed.toAccount!!.accountName
-            if (mTransactionDetailed.transaction.transToAccountPending) {
+                mView.context.getString(R.string.to_) + transactionDetailed.toAccount!!.accountName
+            if (transactionDetailed.transaction.transToAccountPending) {
                 info += mView.context.getString(R.string._pending)
                 tvToAccount.setTextColor(
                     Color.RED
@@ -94,8 +93,8 @@ class TransactionAdapter(
             }
             tvToAccount.text = info
             info =
-                mView.context.getString(R.string.from_) + mTransactionDetailed.fromAccount!!.accountName
-            if (mTransactionDetailed.transaction.transFromAccountPending) {
+                mView.context.getString(R.string.from_) + transactionDetailed.fromAccount!!.accountName
+            if (transactionDetailed.transaction.transFromAccountPending) {
                 info += mView.context.getString(R.string._pending)
                 tvFromAccount.setTextColor(
                     Color.RED
@@ -105,17 +104,17 @@ class TransactionAdapter(
                     Color.BLACK
                 )
             }
-            if (mTransactionDetailed.transaction.transToAccountPending && mTransactionDetailed.transaction.transFromAccountPending) {
+            if (transactionDetailed.transaction.transToAccountPending && transactionDetailed.transaction.transFromAccountPending) {
                 tvToAccount.setLines(2)
                 tvFromAccount.setLines(2)
 
             }
             tvFromAccount.text = info
-            if (mTransactionDetailed.transaction.transNote.isEmpty()) {
+            if (transactionDetailed.transaction.transNote.isEmpty()) {
                 tvTransInfo.visibility = View.GONE
             } else {
                 info =
-                    mView.context.getString(R.string.note_) + mTransactionDetailed.transaction.transNote
+                    mView.context.getString(R.string.note_) + transactionDetailed.transaction.transNote
                 tvTransInfo.text = info
                 tvTransInfo.visibility = View.VISIBLE
             }
@@ -125,7 +124,7 @@ class TransactionAdapter(
             )
             ibColor.setBackgroundColor(color)
             holder.itemView.setOnClickListener {
-                chooseOptions(mTransactionDetailed)
+                chooseOptions(transactionDetailed)
             }
         }
     }
@@ -159,40 +158,44 @@ class TransactionAdapter(
             )
         ) { _, pos ->
             when (pos) {
-                0 -> gotoTransactionUpdate(transactionDetailed)
+                0 -> {
+                    gotoTransactionUpdate(transactionDetailed)
+                }
+
                 1 -> {
                     if (transactionDetailed.transaction.transToAccountPending || transactionDetailed.transaction.transFromAccountPending) {
                         completePendingTransactions(transactionDetailed)
                     }
                 }
 
-                2 -> gotoBudgetRuleUpdate(transactionDetailed)
+                2 -> {
+                    gotoBudgetRuleUpdate(transactionDetailed)
+                }
 
-                3 -> confirmDeleteTransaction(transactionDetailed.transaction)
+                3 -> {
+                    confirmDeleteTransaction(transactionDetailed)
+                }
             }
         }.setNegativeButton(mView.context.getString(R.string.cancel), null).show()
     }
 
-    private fun gotoBudgetRuleUpdate(transactionDetailed: TransactionDetailed) {
-        mainViewModel.setCallingFragments(parentFragment)
-        budgetRuleViewModel.getBudgetRuleFullLive(
-            transactionDetailed.transaction!!.transRuleId
-        ).observe(mView.findViewTreeLifecycleOwner()!!) { bRuleDetailed ->
-            mainViewModel.setBudgetRuleDetailed(bRuleDetailed)
-            transactionViewFragment.gotoBudgetRuleUpdateFragment()
+    private fun gotoTransactionUpdate(transactionDetailed: TransactionDetailed) {
+        mainViewModel.addCallingFragment(parentFragment)
+        mainViewModel.setTransactionDetailed(transactionDetailed)
+        CoroutineScope(Dispatchers.IO).launch {
+            val oldTransactionFull = async {
+                transactionViewModel.getTransactionFull(
+                    transactionDetailed.transaction!!.transId,
+                    transactionDetailed.transaction.transToAccountId,
+                    transactionDetailed.transaction.transFromAccountId
+                )
+            }
+            mainViewModel.setOldTransaction(oldTransactionFull.await())
         }
-    }
-
-    private fun confirmDeleteTransaction(transaction: Transactions) {
-        AlertDialog.Builder(mView.context).setTitle(
-            mView.context.getString(R.string.are_you_sure_you_want_to_delete) + transaction.transName
-        ).setPositiveButton(mView.context.getString(R.string.delete)) { _, _ ->
-            deleteTransaction(transaction)
-        }.setNegativeButton(mView.context.getString(R.string.cancel), null).show()
-    }
-
-    private fun deleteTransaction(transaction: Transactions) {
-        accountUpdateViewModel.deleteTransaction(transaction)
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_250)
+            accountUpdateFragment.gotoTransactionUpdate()
+        }
     }
 
     private fun completePendingTransactions(transactionDetailed: TransactionDetailed) {
@@ -217,19 +220,26 @@ class TransactionAdapter(
         }
     }
 
-    private fun gotoTransactionUpdate(transactionDetailed: TransactionDetailed) {
-        mainViewModel.addCallingFragment(parentFragment)
-        mainViewModel.setTransactionDetailed(transactionDetailed)
-        CoroutineScope(Dispatchers.IO).launch {
-            val oldTransactionFull = async {
-                transactionViewModel.getTransactionFull(
-                    transactionDetailed.transaction!!.transId,
-                    transactionDetailed.transaction.transToAccountId,
-                    transactionDetailed.transaction.transFromAccountId
-                )
-            }
-            mainViewModel.setOldTransaction(oldTransactionFull.await())
+    private fun gotoBudgetRuleUpdate(transactionDetailed: TransactionDetailed) {
+        mainViewModel.setCallingFragments(parentFragment)
+        budgetRuleViewModel.getBudgetRuleFullLive(
+            transactionDetailed.transaction!!.transRuleId
+        ).observe(mView.findViewTreeLifecycleOwner()!!) { bRuleDetailed ->
+            mainViewModel.setBudgetRuleDetailed(bRuleDetailed)
+            accountUpdateFragment.gotoBudgetRuleUpdateFragment()
         }
-        transactionViewFragment.gotoTransactionUpdateFragment()
     }
+
+    private fun confirmDeleteTransaction(transactionDetailed: TransactionDetailed) {
+        AlertDialog.Builder(mView.context).setTitle(
+            mView.context.getString(R.string.are_you_sure_you_want_to_delete) + transactionDetailed.transaction!!.transName
+        ).setPositiveButton(mView.context.getString(R.string.delete)) { _, _ ->
+            deleteTransaction(transactionDetailed.transaction)
+        }.setNegativeButton(mView.context.getString(R.string.cancel), null).show()
+    }
+
+    private fun deleteTransaction(transaction: Transactions) {
+        accountUpdateViewModel.deleteTransaction(transaction)
+    }
+
 }

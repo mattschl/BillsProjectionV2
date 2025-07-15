@@ -33,7 +33,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.TransactionViewModel
 import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
-import ms.mattschlenkrich.billsprojectionv2.ui.accounts.adapter.AccountHistoryAdapter
+import ms.mattschlenkrich.billsprojectionv2.ui.accounts.adapter.AccountUpdateHistoryAdapter
 
 private const val TAG = FRAG_ACCOUNT_UPDATE
 
@@ -128,7 +128,7 @@ class AccountUpdateFragment :
     }
 
     private fun populateHistory(accountWithType: AccountWithType) {
-        val historyAdapter = AccountHistoryAdapter(mainActivity, mView, TAG, this)
+        val historyAdapter = AccountUpdateHistoryAdapter(mainActivity, mView, TAG, this)
         binding.rvHistory.apply {
             layoutManager = LinearLayoutManager(mView.context)
             adapter = historyAdapter
@@ -393,6 +393,24 @@ class AccountUpdateFragment :
         mView.findNavController().navigate(
             AccountUpdateFragmentDirections
                 .actionAccountUpdateFragmentToAccountTypesFragment()
+        )
+    }
+
+    fun gotoTransactionUpdate() {
+        mainViewModel.setCallingFragments(TAG)
+        gotoTransactionUpdateFragment()
+    }
+
+    private fun gotoTransactionUpdateFragment() {
+        mView.findNavController().navigate(
+            AccountUpdateFragmentDirections.actionAccountUpdateFragmentToTransactionUpdateFragment()
+        )
+    }
+
+    fun gotoBudgetRuleUpdateFragment() {
+        mainViewModel.setCallingFragments(TAG)
+        mView.findNavController().navigate(
+            AccountUpdateFragmentDirections.actionAccountUpdateFragmentToBudgetRuleUpdateFragment()
         )
     }
 

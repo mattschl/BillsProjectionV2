@@ -123,6 +123,12 @@
         <action
             android:id="@+id/action_accountUpdateFragment_to_calcFragment"
             app:destination="@id/calcFragment" />
+        <action
+            android:id="@+id/action_accountUpdateFragment_to_transactionUpdateFragment"
+            app:destination="@id/transactionUpdateFragment" />
+        <action
+            android:id="@+id/action_accountUpdateFragment_to_budgetRuleUpdateFragment"
+            app:destination="@id/budgetRuleUpdateFragment" />
     </fragment>
 
     <!--    accountTypesFragment-->
@@ -276,6 +282,10 @@
             android:id="@+id/action_budgetRuleUpdateFragment_to_transactionAnalysisFragment"
             app:destination="@id/transactionAnalysisFragment"
             app:popUpTo="@id/transactionAnalysisFragment" />
+        <action
+            android:id="@+id/action_budgetRuleUpdateFragment_to_accountUpdateFragment"
+            app:destination="@id/accountUpdateFragment"
+            app:popUpTo="@id/accountUpdateFragment" />
     </fragment>
 
     <!--    action_global_budgetViewFragment-->
@@ -472,6 +482,10 @@
             android:id="@+id/action_transactionUpdateFragment_to_transactionAnalysisFragment"
             app:destination="@id/transactionAnalysisFragment"
             app:popUpTo="@id/transactionAnalysisFragment" />
+        <action
+            android:id="@+id/action_transactionUpdateFragment_to_accountUpdateFragment"
+            app:destination="@id/accountUpdateFragment"
+            app:popUpTo="@id/accountUpdateFragment" />
     </fragment>
 
     <!--    transactionPerformFragment-->

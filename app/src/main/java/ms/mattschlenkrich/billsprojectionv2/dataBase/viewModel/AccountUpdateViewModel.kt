@@ -8,6 +8,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_1000
+import ms.mattschlenkrich.billsprojectionv2.common.WAIT_500
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 
@@ -19,7 +20,7 @@ class AccountUpdateViewModel(
 
     val df = DateFunctions()
 
-    private fun doTransaction(
+    private fun doAccountUpdates(
         mTransaction: Transactions,
         reverse: Boolean,
     ): Boolean {
@@ -62,14 +63,19 @@ class AccountUpdateViewModel(
 
 
     fun deleteTransaction(mTransaction: Transactions) {
-        doTransaction(mTransaction, true)
-        transactionViewModel.deleteTransaction(mTransaction.transId, df.getCurrentTimeAsString())
+        CoroutineScope(Dispatchers.Main).launch {
+            doAccountUpdates(mTransaction, true)
+            delay(WAIT_500)
+            transactionViewModel.deleteTransaction(
+                mTransaction.transId, df.getCurrentTimeAsString()
+            )
+        }
     }
 
     fun performTransaction(
         mTransaction: Transactions
     ) {
-        doTransaction(mTransaction, false)
+        doAccountUpdates(mTransaction, false)
         transactionViewModel.insertTransaction(mTransaction)
     }
 
@@ -77,9 +83,9 @@ class AccountUpdateViewModel(
         oldTransaction: Transactions, newTransaction: Transactions
     ) {
         CoroutineScope(Dispatchers.Main).launch {
-            doTransaction(oldTransaction, true)
+            doAccountUpdates(oldTransaction, true)
             delay(WAIT_1000)
-            doTransaction(newTransaction, false)
+            doAccountUpdates(newTransaction, false)
             withContext(Dispatchers.Default) { transactionViewModel.updateTransaction(newTransaction) }
         }
     }
