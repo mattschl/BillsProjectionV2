@@ -22,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_LIST
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_UPDATE
@@ -405,7 +406,15 @@ class BudgetRuleUpdateFragment : Fragment(R.layout.fragment_budget_rule_update) 
             gotoTransactionViewFragment()
         } else if (mCallingFragments.contains(FRAG_TRANSACTION_ANALYSIS)) {
             gotoTransactionAnalysisFragment()
+        } else if (mCallingFragments.contains(FRAG_ACCOUNT_UPDATE)) {
+            gotoAccountUpdateFragment()
         }
+    }
+
+    private fun gotoAccountUpdateFragment() {
+        mView.findNavController().navigate(
+            BudgetRuleUpdateFragmentDirections.actionBudgetRuleUpdateFragmentToAccountUpdateFragment()
+        )
     }
 
     private fun gotoTransactionAnalysisFragment() {

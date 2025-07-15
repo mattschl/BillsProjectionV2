@@ -22,6 +22,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
@@ -438,7 +439,15 @@ class TransactionUpdateFragment : Fragment(R.layout.fragment_transaction_update)
             gotoTransactionViewFragment()
         } else if (mCallingFragment.contains(FRAG_TRANSACTION_ANALYSIS)) {
             gotoTransactionAnalysisFragment()
+        } else if (mCallingFragment.contains(FRAG_ACCOUNT_UPDATE)) {
+            gotoAccountUpdateFragment()
         }
+    }
+
+    private fun gotoAccountUpdateFragment() {
+        mView.findNavController().navigate(
+            TransactionUpdateFragmentDirections.actionTransactionUpdateFragmentToAccountUpdateFragment()
+        )
     }
 
     private fun gotoSplitTransaction() {

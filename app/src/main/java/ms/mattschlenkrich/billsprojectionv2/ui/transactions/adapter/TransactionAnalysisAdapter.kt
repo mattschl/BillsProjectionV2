@@ -12,8 +12,10 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
@@ -176,7 +178,7 @@ class TransactionAnalysisAdapter(
                     gotoBudgetRuleUpdate(transactionDetailed)
                 }
 
-                4 -> {
+                3 -> {
                     confirmDeleteTransaction(transactionDetailed)
 
                 }
@@ -192,7 +194,6 @@ class TransactionAnalysisAdapter(
             mainViewModel.setBudgetRuleDetailed(bRuleDetailed)
             transactionAnalysisFragment.gotoBudgetRuleUpdateFragment()
         }
-
     }
 
     private fun completePendingTransactions(transactionDetailed: TransactionDetailed) {
@@ -223,7 +224,6 @@ class TransactionAnalysisAdapter(
         ).setPositiveButton(mView.context.getString(R.string.delete)) { _, _ ->
             deleteTransaction(transactionDetailed.transaction)
         }.setNegativeButton(mView.context.getString(R.string.cancel), null).show()
-
     }
 
     private fun deleteTransaction(transaction: Transactions) {
@@ -245,6 +245,9 @@ class TransactionAnalysisAdapter(
             }
             mainViewModel.setOldTransaction(oldTransactionFull.await())
         }
-        transactionAnalysisFragment.gotoTransactionUpdateFragment()
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(WAIT_250)
+            transactionAnalysisFragment.gotoTransactionUpdateFragment()
+        }
     }
 }
