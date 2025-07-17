@@ -15,7 +15,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
+import ms.mattschlenkrich.billsprojectionv2.common.WAIT_500
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
@@ -164,7 +164,7 @@ class AccountUpdateHistoryAdapter(
 
                 1 -> {
                     if (transactionDetailed.transaction.transToAccountPending || transactionDetailed.transaction.transFromAccountPending) {
-                        completePendingTransactions(transactionDetailed)
+                        confirmCompletePendingTransactions(transactionDetailed)
                     }
                 }
 
@@ -180,7 +180,7 @@ class AccountUpdateHistoryAdapter(
     }
 
     private fun gotoTransactionUpdate(transactionDetailed: TransactionDetailed) {
-        mainViewModel.addCallingFragment(parentFragment)
+        mainViewModel.setCallingFragments(parentFragment)
         mainViewModel.setTransactionDetailed(transactionDetailed)
         CoroutineScope(Dispatchers.IO).launch {
             val oldTransactionFull = async {
@@ -193,30 +193,63 @@ class AccountUpdateHistoryAdapter(
             mainViewModel.setOldTransaction(oldTransactionFull.await())
         }
         CoroutineScope(Dispatchers.Main).launch {
-            delay(WAIT_250)
+            delay(WAIT_500)
             accountUpdateFragment.gotoTransactionUpdate()
         }
     }
 
+    private fun confirmCompletePendingTransactions(transactionDetailed: TransactionDetailed) {
+        var display = mView.context.getString(R.string.this_will_apply_the_amount_of) +
+                nf.displayDollars(transactionDetailed.transaction!!.transAmount)
+        display += if (transactionDetailed.transaction.transToAccountPending) {
+            mView.context.getString(R.string.to_) + transactionDetailed.toAccount!!.accountName
+        } else {
+            ""
+        }
+        display += if (transactionDetailed.transaction.transToAccountPending && transactionDetailed.transaction.transFromAccountPending) {
+            mView.context.getString(R.string._and)
+        } else {
+            ""
+        }
+        display += if (transactionDetailed.transaction.transFromAccountPending) {
+            mView.context.getString(R.string.from) + transactionDetailed.fromAccount!!.accountName
+        } else {
+            ""
+        }
+        AlertDialog.Builder(mView.context)
+            .setTitle(mView.context.getString(R.string.confirm_completing_transaction))
+            .setMessage(display)
+            .setPositiveButton(mView.context.getString(R.string.confirm)) { _, _ ->
+                completePendingTransactions(
+                    transactionDetailed
+                )
+            }
+            .setNegativeButton(mView.context.getString(R.string.cancel), null).show()
+    }
+
     private fun completePendingTransactions(transactionDetailed: TransactionDetailed) {
-        transactionDetailed.transaction!!.apply {
-            val newTransaction = Transactions(
-                transId,
-                transDate,
-                transName,
-                transNote,
-                transRuleId,
-                transToAccountId,
-                false,
-                transFromAccountId,
-                false,
-                transAmount,
-                transIsDeleted,
-                transUpdateTime
-            )
-            accountUpdateViewModel.updateTransaction(
-                transactionDetailed.transaction, newTransaction
-            )
+        CoroutineScope(Dispatchers.Main).launch {
+            transactionDetailed.transaction!!.apply {
+                val newTransaction = Transactions(
+                    transId,
+                    transDate,
+                    transName,
+                    transNote,
+                    transRuleId,
+                    transToAccountId,
+                    false,
+                    transFromAccountId,
+                    false,
+                    transAmount,
+                    transIsDeleted,
+                    df.getCurrentTimeAsString()
+                )
+                accountUpdateViewModel.updateTransaction(
+                    transactionDetailed.transaction, newTransaction
+                )
+            }
+            delay(WAIT_500)
+            accountUpdateFragment.updateBalances()
         }
     }
 
@@ -239,7 +272,11 @@ class AccountUpdateHistoryAdapter(
     }
 
     private fun deleteTransaction(transaction: Transactions) {
-        accountUpdateViewModel.deleteTransaction(transaction)
+        CoroutineScope(Dispatchers.Main).launch {
+            accountUpdateViewModel.deleteTransaction(transaction)
+            delay(WAIT_500)
+            accountUpdateFragment.updateBalances()
+        }
     }
 
 }

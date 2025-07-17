@@ -15,6 +15,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.BALANCE
@@ -75,9 +78,17 @@ class AccountUpdateFragment :
     }
 
     private fun populateValues() {
-        val accountWithType = mainViewModel.getAccountWithType()!!
-        getAccountListNamesForValidation()
-        populateHistory(accountWithType)
+        CoroutineScope(Dispatchers.Main).launch {
+            val accountWithType = mainViewModel.getAccountWithType()!!
+            getAccountListNamesForValidation()
+            populateHistory(accountWithType)
+            populateAccountInfo(accountWithType)
+            updateBalances()
+        }
+    }
+
+    private fun populateAccountInfo(accountWithType: AccountWithType) {
+        mainViewModel.setAccountWithType(accountWithType)
         binding.apply {
             edAccountUpdateName.setText(accountWithType.account.accountName)
             edAccountUpdateHandle.setText(accountWithType.account.accountNumber)
@@ -124,6 +135,23 @@ class AccountUpdateFragment :
             )
             txtAccountUpdateAccountId.text =
                 String.format(accountWithType.account.accountId.toString())
+        }
+    }
+
+    fun updateBalances() {
+        binding.apply {
+            accountViewModel.getAccountWithTypeLive(mainViewModel.getAccountWithType()!!.account.accountId)
+                .observe(viewLifecycleOwner) { accountWithType ->
+                    if (accountWithType.accountType!!.keepTotals) {
+                        edAccountUpdateBalance.setText(
+                            nf.displayDollars(accountWithType.account.accountBalance)
+                        )
+                    } else if (accountWithType.accountType.tallyOwing) {
+                        edAccountUpdateOwing.setText(
+                            nf.displayDollars(accountWithType.account.accountOwing)
+                        )
+                    }
+                }
         }
     }
 
@@ -397,7 +425,7 @@ class AccountUpdateFragment :
     }
 
     fun gotoTransactionUpdate() {
-        mainViewModel.setCallingFragments(TAG)
+        mainViewModel.addCallingFragment(TAG)
         gotoTransactionUpdateFragment()
     }
 
@@ -408,7 +436,7 @@ class AccountUpdateFragment :
     }
 
     fun gotoBudgetRuleUpdateFragment() {
-        mainViewModel.setCallingFragments(TAG)
+        mainViewModel.addCallingFragment(TAG)
         mView.findNavController().navigate(
             AccountUpdateFragmentDirections.actionAccountUpdateFragmentToBudgetRuleUpdateFragment()
         )

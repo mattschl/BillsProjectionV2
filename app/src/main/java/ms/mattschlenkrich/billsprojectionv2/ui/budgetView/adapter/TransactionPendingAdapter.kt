@@ -152,11 +152,16 @@ class TransactionPendingAdapter(
     private fun confirmCompleteTransaction(
         display: String, pendingTransaction: TransactionDetailed, curAccount: String
     ) {
-        AlertDialog.Builder(mView.context).setTitle(display).setPositiveButton(
-            mView.context.getString(R.string.confirm)
-        ) { _, _ ->
-            completeTransaction(pendingTransaction, curAccount)
-        }.setNegativeButton(mView.context.getString(R.string.cancel), null).show()
+        AlertDialog.Builder(mView.context)
+            .setTitle(mView.context.getString(R.string.confirm_completing_transaction))
+            .setMessage(display)
+            .setPositiveButton(mView.context.getString(R.string.confirm)) { _, _ ->
+                completeTransaction(
+                    pendingTransaction,
+                    curAccount
+                )
+            }
+            .setNegativeButton(mView.context.getString(R.string.cancel), null).show()
     }
 
     private fun deleteTransaction(transaction: TransactionDetailed) {
