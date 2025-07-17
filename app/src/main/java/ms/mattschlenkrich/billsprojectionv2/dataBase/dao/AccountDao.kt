@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
-import androidx.room.RoomWarnings
 import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_ID
@@ -24,7 +23,6 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountAndTyp
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
 
 @Dao
-@SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
 interface AccountDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAccount(account: Account)
@@ -129,6 +127,18 @@ interface AccountDao {
                 "WHERE $TABLE_ACCOUNTS.$ACCOUNT_ID = :accountId  "
     )
     fun getAccountWithType(accountId: Long): AccountWithType
+
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
+    @Query(
+        "SELECT $TABLE_ACCOUNTS.*, $TABLE_ACCOUNT_TYPES.* " +
+                "FROM $TABLE_ACCOUNTS " +
+                "LEFT JOIN $TABLE_ACCOUNT_TYPES ON " +
+                "$TABLE_ACCOUNT_TYPES.$TYPE_ID = " +
+                "$TABLE_ACCOUNTS.$ACCOUNT_TYPE_ID " +
+                "WHERE $TABLE_ACCOUNTS.$ACCOUNT_ID = :accountId  "
+    )
+    fun getAccountWithTypeLive(accountId: Long): LiveData<AccountWithType>
 
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @RewriteQueriesToDropUnusedColumns

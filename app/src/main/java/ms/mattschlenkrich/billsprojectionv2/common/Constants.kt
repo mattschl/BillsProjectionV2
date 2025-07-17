@@ -252,4 +252,5 @@ const val WAIT_100 = 100L
 const val WAIT_250 = 250L
 const val WAIT_500 = 500L
 const val WAIT_1000 = 1000L
+const val WAIT_1500 = 1500L
 
