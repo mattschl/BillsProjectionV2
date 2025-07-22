@@ -38,12 +38,12 @@ class DateFunctions {
     }
 
     fun getDisplayDate(date: String): String {
-        return displayDateWithYear.format(
+        return displayDateString.format(
             dateChecker.parse(date)!!
         )
     }
 
-    private fun getDisplayDateWithYear(date: String): String {
+    fun getDisplayDateWithYear(date: String): String {
         return displayDateWithYear.format(
             dateChecker.parse(date)!!
         )
