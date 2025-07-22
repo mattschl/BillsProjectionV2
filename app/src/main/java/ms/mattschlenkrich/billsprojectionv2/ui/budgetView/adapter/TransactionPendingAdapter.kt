@@ -22,6 +22,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transact
 import ms.mattschlenkrich.billsprojectionv2.databinding.PendingTransactionItemBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetViewFragment
+import java.util.Random
 
 //private const val PARENT_TAG = FRAG_BUDGET_VIEW
 
@@ -94,9 +95,15 @@ class TransactionPendingAdapter(
                 ""
             }
             tvPendingDescription.text = display
+            val random = Random()
+            val color = Color.argb(
+                255, random.nextInt(256), random.nextInt(256), random.nextInt(256)
+            )
+            vColor.setBackgroundColor(color)
             holder.itemView.setOnClickListener {
                 chooseOptionsForTransaction(pendingTransaction)
             }
+
         }
     }
 

@@ -82,7 +82,7 @@ class TransactionAnalysisAdapter(
     ) {
         val transactionDetailed = differ.currentList[position]
         holder.itemBinding.apply {
-            tvDate.text = df.getDisplayDate(transactionDetailed.transaction!!.transDate)
+            tvDate.text = df.getDisplayDateWithYear(transactionDetailed.transaction!!.transDate)
             tvTransDescription.text = transactionDetailed.transaction.transName
             tvTransAmount.text = nf.displayDollars(transactionDetailed.transaction.transAmount)
             var info =
