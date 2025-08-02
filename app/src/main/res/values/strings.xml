@@ -329,5 +329,7 @@
     <string name="perform_a_new_transaction_based_on_this_budget_rule">Perform a new Transaction based on this Budget Rule</string>
     <string name="add_a_new_transaction_based_on_the_budget_rule">Add a new Transaction based on the Budget Rule</string>
     <string name="operation_did_not_complete">Operation did not complete!</string>
+    <string name="this_budget_rule_has_not_been_saved">This Budget Rule has not been saved!</string>
+    <string name="would_you_like_to_save_this_budget_rule_and_continue">Would you like to save this Budget Rule and continue?</string>
 
 </resources>

@@ -19,7 +19,9 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
@@ -31,9 +33,12 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
+import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
+import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
+import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetItemViewModel
@@ -197,11 +202,106 @@ class BudgetRuleUpdateFragment : Fragment(R.layout.fragment_budget_rule_update) 
                 false
             }
             fabUpdateDone.setOnClickListener { updateBudgetRuleIfValid() }
+            fabAddTransaction.setOnClickListener { chooseAddOptionsIfBudgetRuleIsSaved() }
             etAmount.setOnLongClickListener {
                 gotoCalculator()
                 false
             }
         }
+    }
+
+    private fun chooseAddOptionsIfBudgetRuleIsSaved() {
+        if (getCurrentBudgetRuleForSaving() != budgetRuleDetailed.budgetRule) {
+            chooseOptions()
+        } else {
+            AlertDialog.Builder(mView.context)
+                .setTitle(getString(R.string.this_budget_rule_has_not_been_saved))
+                .setMessage(getString(R.string.would_you_like_to_save_this_budget_rule_and_continue))
+                .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                    updateBudgetRule()
+                    chooseOptions()
+                }
+                .setNegativeButton(getString(R.string.cancel), null)
+                .show()
+        }
+    }
+
+    private fun chooseOptions() {
+        AlertDialog.Builder(mView.context)
+            .setTitle(
+                getString(R.string.choose_an_action_for) + " " +
+                        budgetRuleDetailed.budgetRule!!.budgetRuleName
+            )
+            .setItems(
+                arrayOf(
+                    getString(R.string.add_a_new_transaction_based_on_the_budget_rule),
+                    getString(R.string.create_a_scheduled_item_with_this_budget_rule),
+                    mView.context.getString(R.string.view_a_summary_of_transactions_for_this_budget_rule)
+                )
+            ) { _, pos ->
+                when (pos) {
+                    0 -> addNewTransaction()
+                    1 -> createNewBudgetItem()
+                    2 -> gotoAnalysis()
+                }
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
+    }
+
+    private fun addNewTransaction() {
+        mainViewModel.setBudgetItemDetailed(createBudgetItemDetailed())
+
+    }
+
+    private fun createNewBudgetItem() {
+        budgetItemViewModel.insertBudgetItem(createBudgetItemDetailed().budgetItem!!)
+    }
+
+    private fun createBudgetItemDetailed(): BudgetItemDetailed {
+        lateinit var tempBudgetItemDetailed: BudgetItemDetailed
+        CoroutineScope(Dispatchers.Main).launch {
+            var curPayday: String
+            withContext(Dispatchers.Default) {
+                curPayday = budgetItemViewModel.getPayDaysActive().first()
+            }
+            delay(WAIT_250)
+            binding.apply {
+                val tempBudgetItem =
+                    BudgetItem(
+                        budgetRuleDetailed.budgetRule!!.ruleId,
+                        biProjectedDate = df.getCurrentDateAsString(),
+                        biActualDate = df.getCurrentDateAsString(),
+                        biPayDay = curPayday,
+                        biBudgetName = etBudgetName.text.toString(),
+                        biIsPayDayItem = false,
+                        biToAccountId = budgetRuleDetailed.toAccount!!.accountId,
+                        biFromAccountId = budgetRuleDetailed.fromAccount!!.accountId,
+                        biProjectedAmount = budgetRuleDetailed.budgetRule!!.budgetAmount,
+                        biIsPending = true,
+                        biIsFixed = chkFixedAmount.isChecked,
+                        biIsAutomatic = chkAutoPayment.isChecked,
+                        biManuallyEntered = true,
+                        biIsCompleted = false,
+                        biIsCancelled = false,
+                        biIsDeleted = false,
+                        biUpdateTime = df.getCurrentTimeAsString(),
+                        biLocked = true,
+                    )
+                tempBudgetItemDetailed = BudgetItemDetailed(
+                    tempBudgetItem,
+                    budgetRuleDetailed.budgetRule!!,
+                    budgetRuleDetailed.toAccount!!,
+                    budgetRuleDetailed.fromAccount!!
+                )
+            }
+            delay(WAIT_250)
+        }
+        return tempBudgetItemDetailed
+    }
+
+    private fun gotoAnalysis() {
+        mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
     }
 
     private fun setMenuActions() {
@@ -366,7 +466,12 @@ class BudgetRuleUpdateFragment : Fragment(R.layout.fragment_budget_rule_update) 
     }
 
     private fun updateBudgetRule() {
-        mainActivity.budgetRuleViewModel.updateBudgetRule(getCurrentBudgetRuleForSaving())
+        budgetRuleDetailed = BudgetRuleDetailed(
+            getCurrentBudgetRuleForSaving(),
+            budgetRuleDetailed.toAccount!!,
+            budgetRuleDetailed.fromAccount
+        )
+        mainActivity.budgetRuleViewModel.updateBudgetRule(budgetRuleDetailed.budgetRule!!)
     }
 
     private fun validateBudgetRule(): String {
