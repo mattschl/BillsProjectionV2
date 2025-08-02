@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.accounts.adapter
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,12 +9,12 @@ import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
+import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.databinding.AccountTypeLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountTypesFragment
-import java.util.Random
 
 
 //private const val PARENT_TAG = FRAG_ACCOUNT_TYPES
@@ -28,6 +27,7 @@ class AccountTypeAdapter(
 ) : RecyclerView.Adapter<AccountTypeAdapter.AccountTypeViewHolder>() {
 
     val mainViewModel = mainActivity.mainViewModel
+    private val vf = VisualsFunctions()
 
     class AccountTypeViewHolder(val itemBinding: AccountTypeLayoutBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -86,13 +86,7 @@ class AccountTypeAdapter(
                     mView.context.getString(R.string.this_account_does_not_keep_a_balance_owing_amount)
             }
             tvAccountTypeInfo.text = info
-
-            val random = Random()
-            val color = Color.argb(
-                255, random.nextInt(256), random.nextInt(256), random.nextInt(256)
-            )
-            ibAccountTypeColor.setBackgroundColor(color)
-
+            ibAccountTypeColor.setBackgroundColor(vf.getRandomColorInt())
             holder.itemView.setOnLongClickListener {
                 gotoAccountTypeUpdate(curAccountType)
                 false

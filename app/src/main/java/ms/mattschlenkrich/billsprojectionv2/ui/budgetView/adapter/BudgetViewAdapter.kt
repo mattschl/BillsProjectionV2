@@ -18,6 +18,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_500
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
@@ -25,7 +26,6 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transact
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetViewItemBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetViewFragment
-import java.util.Random
 
 //private const val PARENT_TAG = FRAG_BUDGET_VIEW
 
@@ -44,6 +44,7 @@ class BudgetViewAdapter(
     private val mainViewModel = mainActivity.mainViewModel
     private val accountUpdateViewModel = mainActivity.accountUpdateViewModel
     private val budgetItemViewModel = mainActivity.budgetItemViewModel
+    private val vf = VisualsFunctions()
     var message = ""
 
     class BudgetViewHolder(val itemBinding: BudgetViewItemBinding) :
@@ -115,11 +116,7 @@ class BudgetViewAdapter(
                     R.drawable.ic_unlocked_foreground
                 )
             }
-            val random = Random()
-            val color = Color.argb(
-                255, random.nextInt(256), random.nextInt(256), random.nextInt(256)
-            )
-            ibColor.setBackgroundColor(color)
+            ibColor.setBackgroundColor(vf.getRandomColorInt())
             imgLocked.setOnClickListener {
                 chooseLockUnlock(curBudget)
             }

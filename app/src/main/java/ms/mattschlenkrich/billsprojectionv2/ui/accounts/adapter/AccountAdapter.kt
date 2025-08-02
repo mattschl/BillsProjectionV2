@@ -1,7 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.accounts.adapter
 
 import android.app.AlertDialog
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +23,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
@@ -31,7 +31,6 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transact
 import ms.mattschlenkrich.billsprojectionv2.databinding.AccountLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountsFragment
-import java.util.Random
 
 
 //private const val PARENT_TAG = FRAG_ACCOUNTS
@@ -44,6 +43,7 @@ class AccountAdapter(
 ) : RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() {
 
     private val mainViewModel = mainActivity.mainViewModel
+    private val vf = VisualsFunctions()
 
     private var mBudgetItem = BudgetItemDetailed(
         mainViewModel.getBudgetItemDetailed()?.budgetItem,
@@ -152,13 +152,7 @@ class AccountAdapter(
                 tvAccountInfo.text = info
             }
             tvAccType.text = curAccount.accountType?.accountType
-
-            val random = Random()
-            val color = Color.argb(
-                255, random.nextInt(256), random.nextInt(256), random.nextInt(256)
-            )
-            ibAccountColor.setBackgroundColor(color)
-
+            ibAccountColor.setBackgroundColor(vf.getRandomColorInt())
             holder.itemView.setOnClickListener { chooseAccount(curAccount) }
             holder.itemView.setOnLongClickListener {
                 chooseOptionsForAccount(curAccount)

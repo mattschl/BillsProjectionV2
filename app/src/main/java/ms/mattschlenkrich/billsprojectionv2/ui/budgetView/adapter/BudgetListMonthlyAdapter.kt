@@ -13,12 +13,12 @@ import ms.mattschlenkrich.billsprojectionv2.common.FREQ_MONTHLY
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_WEEKLY
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleComplete
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetListItemBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetListFragment
-import java.util.Random
 
 //private const val PARENT_TAG = FRAG_BUDGET_LIST
 
@@ -34,6 +34,7 @@ class BudgetListMonthlyAdapter(
     private val df = DateFunctions()
     private val mainViewModel = mainActivity.mainViewModel
     private val budgetRuleViewModel = mainActivity.budgetRuleViewModel
+    private val vf = VisualsFunctions()
 
     class BudgetListHolder(val itemBinding: BudgetListItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -110,11 +111,7 @@ class BudgetListMonthlyAdapter(
                     info = "(f)   $info"
                 }
                 tvAmount.text = info
-                val random = Random()
-                val color = Color.argb(
-                    255, random.nextInt(256), random.nextInt(256), random.nextInt(256)
-                )
-                ibColor.setBackgroundColor(color)
+                ibColor.setBackgroundColor(vf.getRandomColorInt())
                 holder.itemView.setOnLongClickListener {
                     chooseOptionsForBudgetItem(curRule)
                     false
