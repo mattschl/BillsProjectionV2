@@ -1,7 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.budgetView.adapter
 
 import android.app.AlertDialog
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,12 +10,12 @@ import androidx.recyclerview.widget.RecyclerView
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleComplete
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetListItemBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetListFragment
-import java.util.Random
 
 //private const val PARENT_TAG = FRAG_BUDGET_LIST
 
@@ -30,6 +29,7 @@ class BudgetListAnnualAdapter(
     private val nf = NumberFunctions()
     private val df = DateFunctions()
     private val mainViewModel = mainActivity.mainViewModel
+    private val vf = VisualsFunctions()
 
     class BudgetListHolder(val itemBinding: BudgetListItemBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
@@ -76,11 +76,7 @@ class BudgetListAnnualAdapter(
                 tvBudgetName.text = info
                 info = nf.displayDollars(budgetRule!!.budgetAmount)
                 tvAmount.text = info
-                val random = Random()
-                val color = Color.argb(
-                    255, random.nextInt(256), random.nextInt(256), random.nextInt(256)
-                )
-                ibColor.setBackgroundColor(color)
+                ibColor.setBackgroundColor(vf.getRandomColorInt())
                 info =
                     mView.context.getString(R.string.annually_every) + budgetRule!!.budFrequencyCount + mView.context.getString(
                         R.string._years

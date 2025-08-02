@@ -18,12 +18,12 @@ import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_500
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.databinding.TransactionLinearItemBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountUpdateFragment
-import java.util.Random
 
 class AccountUpdateHistoryAdapter(
     val mainActivity: MainActivity,
@@ -38,6 +38,7 @@ class AccountUpdateHistoryAdapter(
     private val transactionViewModel = mainActivity.transactionViewModel
     private val accountUpdateViewModel = mainActivity.accountUpdateViewModel
     private val budgetRuleViewModel = mainActivity.budgetRuleViewModel
+    private val vf = VisualsFunctions()
 
     class HistoryHolder(
         val itemBinding: TransactionLinearItemBinding
@@ -118,11 +119,7 @@ class AccountUpdateHistoryAdapter(
                 tvTransInfo.text = info
                 tvTransInfo.visibility = View.VISIBLE
             }
-            val random = Random()
-            val color = Color.argb(
-                255, random.nextInt(256), random.nextInt(256), random.nextInt(256)
-            )
-            ibColor.setBackgroundColor(color)
+            ibColor.setBackgroundColor(vf.getRandomColorInt())
             holder.itemView.setOnClickListener {
                 chooseOptions(transactionDetailed)
             }

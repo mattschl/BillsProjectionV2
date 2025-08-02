@@ -16,12 +16,12 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.databinding.TransactionLinearItemBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionViewFragment
-import java.util.Random
 
 class TransactionAdapter(
     val mainActivity: MainActivity,
@@ -36,6 +36,7 @@ class TransactionAdapter(
     private val mainViewModel = mainActivity.mainViewModel
     private val nf = NumberFunctions()
     private val df = DateFunctions()
+    private val vf = VisualsFunctions()
 
     class TransactionsViewHolder(
         val itemBinding: TransactionLinearItemBinding
@@ -119,11 +120,7 @@ class TransactionAdapter(
                 tvTransInfo.text = info
                 tvTransInfo.visibility = View.VISIBLE
             }
-            val random = Random()
-            val color = Color.argb(
-                255, random.nextInt(256), random.nextInt(256), random.nextInt(256)
-            )
-            ibColor.setBackgroundColor(color)
+            ibColor.setBackgroundColor(vf.getRandomColorInt())
             holder.itemView.setOnClickListener {
                 chooseOptions(mTransactionDetailed)
             }

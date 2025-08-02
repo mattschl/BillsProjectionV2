@@ -1,7 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.adapter
 
 import android.app.AlertDialog
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +17,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
@@ -26,7 +26,6 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transact
 import ms.mattschlenkrich.billsprojectionv2.databinding.BudgetRuleLayoutBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.BudgetRuleFragment
-import java.util.Random
 
 //private const val TAG = ADAPTER_BUDGET_RULE
 //private const val PARENT_TAG = FRAG_BUDGET_RULES
@@ -42,6 +41,7 @@ class BudgetRuleAdapter(
     private val df = DateFunctions()
     private val mainViewModel = mainActivity.mainViewModel
     private val budgetRuleViewModel = mainActivity.budgetRuleViewModel
+    private val vf = VisualsFunctions()
 
     class BudgetRuleViewHolder(
         val itemBinding: BudgetRuleLayoutBinding
@@ -94,11 +94,7 @@ class BudgetRuleAdapter(
         info =
             "$amount " + frequencyType + " X " + budgetRuleDetailed.budgetRule!!.budFrequencyCount + "\nOn " + dayOfWeek
         holder.itemBinding.tvInfo.text = info
-        val random = Random()
-        val color = Color.argb(
-            255, random.nextInt(256), random.nextInt(256), random.nextInt(256)
-        )
-        holder.itemBinding.ibColor.setBackgroundColor(color)
+        holder.itemBinding.ibColor.setBackgroundColor(vf.getRandomColorInt())
         holder.itemView.setOnClickListener { chooseBudgetRule(budgetRuleDetailed) }
         holder.itemView.setOnLongClickListener {
             chooseOptionsForBudgetRule(budgetRuleDetailed)
