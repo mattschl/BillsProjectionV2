@@ -368,12 +368,12 @@ class TransactionAddFragment : Fragment(R.layout.fragment_transaction_add) {
         mainViewModel.setTransactionDetailed(
             getTransactionDetailed()
         )
-        gotoBudgetRuleFragment()
+        gotoBudgetRuleChooseFragment()
     }
 
-    private fun gotoBudgetRuleFragment() {
+    private fun gotoBudgetRuleChooseFragment() {
         mView.findNavController().navigate(
-            TransactionAddFragmentDirections.actionTransactionAddFragmentToBudgetRuleFragment()
+            TransactionAddFragmentDirections.actionTransactionAddFragmentToBudgetRuleChooseFragment()
         )
     }
 

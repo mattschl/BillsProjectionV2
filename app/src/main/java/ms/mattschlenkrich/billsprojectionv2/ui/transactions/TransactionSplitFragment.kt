@@ -232,7 +232,7 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
         mainViewModel.setSplitTransactionDetailed(
             getSplitTransDetailed()
         )
-        gotoBudgetRuleFragment()
+        gotoBudgetRuleChooseFragment()
     }
 
     private fun setMenuActions() {
@@ -464,9 +464,9 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
         )
     }
 
-    private fun gotoBudgetRuleFragment() {
+    private fun gotoBudgetRuleChooseFragment() {
         mView.findNavController().navigate(
-            TransactionSplitFragmentDirections.actionTransactionSplitFragmentToBudgetRuleFragment()
+            TransactionSplitFragmentDirections.actionTransactionSplitFragmentToBudgetRuleChooseFragment()
         )
     }
 

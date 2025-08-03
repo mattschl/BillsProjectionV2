@@ -227,6 +227,29 @@
             app:popUpTo="@id/budgetRuleFragment" />
     </fragment>
 
+    <!--    budgetRuleChooseFragment-->
+    <fragment
+        android:id="@+id/budgetRuleChooseFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.BudgetRuleChooseFragment"
+        android:label="BudgetRuleChooseFragment">
+        <action
+            android:id="@+id/action_budgetRuleChooseFragment_to_transactionSplitFragment"
+            app:destination="@id/transactionSplitFragment"
+            app:popUpTo="@id/transactionSplitFragment" />
+        <action
+            android:id="@+id/action_budgetRuleChooseFragment_to_budgetItemAddFragment"
+            app:destination="@id/budgetItemAddFragment"
+            app:popUpTo="@id/budgetItemAddFragment" />
+        <action
+            android:id="@+id/action_budgetRuleChooseFragment_to_budgetItemUpdateFragment"
+            app:destination="@id/budgetItemUpdateFragment"
+            app:popUpTo="@id/budgetItemUpdateFragment" />
+        <action
+            android:id="@+id/action_budgetRuleChooseFragment_to_transactionAddFragment"
+            app:destination="@id/transactionAddFragment"
+            app:popUpTo="@id/transactionAddFragment" />
+    </fragment>
+
     <!--    budgetRuleAddFragment-->
     <fragment
         android:id="@+id/budgetRuleAddFragment"
@@ -359,6 +382,9 @@
         <action
             android:id="@+id/action_budgetItemAddFragment_to_calcFragment"
             app:destination="@id/calcFragment" />
+        <action
+            android:id="@+id/action_budgetItemAddFragment_to_budgetRuleChooseFragment"
+            app:destination="@id/budgetRuleChooseFragment" />
     </fragment>
 
     <!--    budgetItemUpdateFragment-->
@@ -386,6 +412,9 @@
             android:id="@+id/action_budgetItemUpdateFragment_to_budgetRuleUpdateFragment"
             app:destination="@id/budgetRuleUpdateFragment"
             app:popUpTo="@id/budgetRuleUpdateFragment" />
+        <action
+            android:id="@+id/action_budgetItemUpdateFragment_to_budgetRuleChooseFragment"
+            app:destination="@id/budgetRuleChooseFragment" />
     </fragment>
 
     <!--    action_global_budgetListFragment-->
@@ -450,6 +479,9 @@
         <action
             android:id="@+id/action_transactionAddFragment_to_transactionSplitFragment"
             app:destination="@id/transactionSplitFragment" />
+        <action
+            android:id="@+id/action_transactionAddFragment_to_budgetRuleChooseFragment"
+            app:destination="@id/budgetRuleChooseFragment" />
     </fragment>
 
     <!--    transactionUpdateFragment-->
@@ -545,6 +577,9 @@
             android:id="@+id/action_transactionSplitFragment_to_transactionViewFragment"
             app:destination="@id/transactionViewFragment"
             app:popUpTo="@id/transactionViewFragment" />
+        <action
+            android:id="@+id/action_transactionSplitFragment_to_budgetRuleChooseFragment"
+            app:destination="@id/budgetRuleChooseFragment" />
     </fragment>
 
     <!--    action_global_transactionAnalysisFragment-->
@@ -628,4 +663,5 @@
             app:destination="@id/transactionSplitFragment"
             app:popUpTo="@id/transactionSplitFragment" />
     </fragment>
+
 </navigation>

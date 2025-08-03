@@ -179,7 +179,7 @@ class BudgetItemUpdateFragment : Fragment(
     private fun chooseBudgetRule() {
         mainViewModel.addCallingFragment(TAG)
         mainViewModel.setBudgetItemDetailed(getCurrentBudgetItemDetailed())
-        gotoBudgetRulesFragment()
+        gotoBudgetRulesChooseFragment()
     }
 
     private fun chooseAccount(requestedAccount: String) {
@@ -354,9 +354,9 @@ class BudgetItemUpdateFragment : Fragment(
         )
     }
 
-    private fun gotoBudgetRulesFragment() {
+    private fun gotoBudgetRulesChooseFragment() {
         mView.findNavController().navigate(
-            BudgetItemUpdateFragmentDirections.actionBudgetItemUpdateFragmentToBudgetRuleFragment()
+            BudgetItemUpdateFragmentDirections.actionBudgetItemUpdateFragmentToBudgetRuleChooseFragment()
         )
     }
 

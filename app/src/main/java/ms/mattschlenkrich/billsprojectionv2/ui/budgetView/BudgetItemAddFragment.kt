@@ -244,7 +244,7 @@ class BudgetItemAddFragment : Fragment(
     private fun chooseBudgetRule() {
         mainViewModel.addCallingFragment(TAG)
         mainViewModel.setBudgetItemDetailed(getCurrentBudgetItemDetailed())
-        gotoBudgetRulesFragment()
+        gotoBudgetRulesChooseFragment()
     }
 
     private fun chooseAccount(requestedAccount: String) {
@@ -360,7 +360,7 @@ class BudgetItemAddFragment : Fragment(
                 gotoBudgetViewFragment()
             }
             if (mCallingFragment.contains(FRAG_BUDGET_RULES)) {
-                gotoBudgetRulesFragment()
+                gotoBudgetRulesChooseFragment()
             }
         }
     }
@@ -389,9 +389,9 @@ class BudgetItemAddFragment : Fragment(
         )
     }
 
-    private fun gotoBudgetRulesFragment() {
+    private fun gotoBudgetRulesChooseFragment() {
         mView.findNavController().navigate(
-            BudgetItemAddFragmentDirections.actionBudgetItemAddFragmentToBudgetRuleFragment()
+            BudgetItemAddFragmentDirections.actionBudgetItemAddFragmentToBudgetRuleChooseFragment()
         )
     }
 
