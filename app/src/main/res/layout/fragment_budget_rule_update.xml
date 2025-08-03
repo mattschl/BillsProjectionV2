@@ -296,14 +296,15 @@
                 android:layout_marginTop="@dimen/top_margin_medium"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/etLeadDays" />
+                app:layout_constraintTop_toBottomOf="@id/vSpacer" />
 
             <View
+                android:id="@+id/vSpacer"
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
                 android:shadowColor="@color/white"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/rvProjectedDates" />
+                app:layout_constraintTop_toBottomOf="@id/etLeadDays" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabUpdateDone"
@@ -318,7 +319,7 @@
                 android:src="@drawable/ic_done"
                 android:tintMode="@color/white"
                 app:borderWidth="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/vSpacer"
                 app:layout_constraintEnd_toEndOf="parent" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -336,7 +337,7 @@
                 app:borderWidth="0dp"
                 app:fabSize="normal"
                 app:icon="@drawable/ic_add"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/vSpacer"
                 app:layout_constraintStart_toStartOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

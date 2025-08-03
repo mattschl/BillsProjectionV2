@@ -95,8 +95,7 @@ class BudgetRuleAdapter(
             "$amount " + frequencyType + " X " + budgetRuleDetailed.budgetRule!!.budFrequencyCount + "\nOn " + dayOfWeek
         holder.itemBinding.tvInfo.text = info
         holder.itemBinding.ibColor.setBackgroundColor(vf.getRandomColorInt())
-        holder.itemView.setOnClickListener { chooseBudgetRule(budgetRuleDetailed) }
-        holder.itemView.setOnLongClickListener {
+        holder.itemView.setOnClickListener {
             chooseOptionsForBudgetRule(budgetRuleDetailed)
             false
         }
