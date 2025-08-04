@@ -358,6 +358,8 @@ class BudgetRuleUpdateFragment : Fragment(R.layout.fragment_budget_rule_update) 
 
     private fun gotoAnalysis() {
         mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
+        mainViewModel.addCallingFragment(TAG)
+        gotoTransactionAnalysisFragment()
     }
 
     private fun setMenuActions() {
