@@ -136,11 +136,11 @@ class BudgetItemAddFragment : Fragment(
                             )
                         } else {
                             etBudgetItemName.setText(
-                                mBudgetItem.budgetItem.biBudgetName
+                                mBudgetItem.budgetItem!!.biBudgetName
                             )
                         }
 
-                        if (mBudgetItem.budgetItem.biProjectedAmount == 0.0) {
+                        if (mBudgetItem.budgetItem!!.biProjectedAmount == 0.0) {
                             etProjectedAmount.setText(
                                 nf.displayDollars(
                                     if (mainViewModel.getTransferNum()!! != 0.0) {
@@ -156,7 +156,7 @@ class BudgetItemAddFragment : Fragment(
                                     if (mainViewModel.getTransferNum()!! != 0.0) {
                                         mainViewModel.getTransferNum()!!
                                     } else {
-                                        mBudgetItem.budgetItem.biProjectedAmount
+                                        mBudgetItem.budgetItem!!.biProjectedAmount
                                     }
                                 )
                             )
@@ -179,11 +179,11 @@ class BudgetItemAddFragment : Fragment(
                     }
                 }
                 chkFixedAmount.isChecked = mBudgetItem.budgetItem!!.biIsFixed
-                chkIsAutoPayment.isChecked = mBudgetItem.budgetItem.biIsAutomatic
-                chkIsPayDay.isChecked = mBudgetItem.budgetItem.biIsPayDayItem
-                chkIsLocked.isChecked = mBudgetItem.budgetItem.biLocked
+                chkIsAutoPayment.isChecked = mBudgetItem.budgetItem!!.biIsAutomatic
+                chkIsPayDay.isChecked = mBudgetItem.budgetItem!!.biIsPayDayItem
+                chkIsLocked.isChecked = mBudgetItem.budgetItem!!.biLocked
                 for (i in 0 until spPayDays.adapter.count) {
-                    if (spPayDays.getItemAtPosition(i) == mBudgetItem.budgetItem.biPayDay) {
+                    if (spPayDays.getItemAtPosition(i) == mBudgetItem.budgetItem!!.biPayDay) {
                         spPayDays.setSelection(i)
                         break
                     }

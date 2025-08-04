@@ -33,7 +33,7 @@ class BudgetRuleDatesAdapter(
         override fun areContentsTheSame(
             oldItem: BudgetItemDetailed, newItem: BudgetItemDetailed
         ): Boolean {
-            return oldItem.budgetItem!!.biProjectedDate == newItem.budgetItem!!.biProjectedDate && oldItem.budgetItem.biRuleId == newItem.budgetItem.biRuleId && oldItem.budgetRule?.ruleId == newItem.budgetRule?.ruleId && oldItem.toAccount?.accountId == newItem.toAccount?.accountId && oldItem.fromAccount?.accountId == newItem.fromAccount?.accountId
+            return oldItem.budgetItem?.biProjectedDate == newItem.budgetItem?.biProjectedDate && oldItem.budgetItem?.biRuleId == newItem.budgetItem?.biRuleId && oldItem.budgetRule?.ruleId == newItem.budgetRule?.ruleId && oldItem.toAccount?.accountId == newItem.toAccount?.accountId && oldItem.fromAccount?.accountId == newItem.fromAccount?.accountId
         }
 
         override fun areItemsTheSame(
@@ -61,9 +61,9 @@ class BudgetRuleDatesAdapter(
         val curItem = differ.currentList[position]
         holder.itemBinding.apply {
             tvActualDate.text = df.getDisplayDate(curItem.budgetItem!!.biActualDate)
-            var display = " (pay day ${df.getDisplayDate(curItem.budgetItem.biPayDay)})"
+            var display = " (pay day ${df.getDisplayDate(curItem.budgetItem!!.biPayDay)})"
             tvPayDay.text = display
-            display = " for ${nf.displayDollars(curItem.budgetItem.biProjectedAmount)}"
+            display = " for ${nf.displayDollars(curItem.budgetItem!!.biProjectedAmount)}"
             tvAmount.text = display
         }
         holder.itemView.setOnClickListener { confirmGotoBudgetItem(curItem) }
