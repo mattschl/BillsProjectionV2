@@ -55,7 +55,7 @@ class BudgetViewAdapter(
             oldItem: BudgetItemDetailed, newItem: BudgetItemDetailed
         ): Boolean {
             return oldItem.budgetItem!!.biProjectedDate == newItem.budgetItem!!.biProjectedDate &&
-                    oldItem.budgetItem.biRuleId == newItem.budgetItem.biRuleId &&
+                    oldItem.budgetItem?.biRuleId == newItem.budgetItem?.biRuleId &&
                     oldItem.budgetRule?.ruleId == newItem.budgetRule?.ruleId &&
                     oldItem.toAccount?.accountId == newItem.toAccount?.accountId &&
                     oldItem.fromAccount?.accountId == newItem.fromAccount?.accountId
@@ -87,17 +87,17 @@ class BudgetViewAdapter(
 
         holder.itemBinding.apply {
             tvDate.text = df.getDisplayDate(curBudget.budgetItem!!.biActualDate)
-            tvName.text = curBudget.budgetItem.biBudgetName
-            if (curBudget.budgetItem.biIsFixed) {
+            tvName.text = curBudget.budgetItem!!.biBudgetName
+            if (curBudget.budgetItem!!.biIsFixed) {
                 val newText =
-                    curBudget.budgetItem.biBudgetName + mView.context.getString(R.string._fixed_)
+                    curBudget.budgetItem!!.biBudgetName + mView.context.getString(R.string._fixed_)
                 tvName.text = newText
                 tvName.setTextColor(Color.RED)
             } else {
-                tvName.text = curBudget.budgetItem.biBudgetName
+                tvName.text = curBudget.budgetItem!!.biBudgetName
                 tvName.setTextColor(Color.BLACK)
             }
-            tvAmount.text = nf.displayDollars(curBudget.budgetItem.biProjectedAmount)
+            tvAmount.text = nf.displayDollars(curBudget.budgetItem!!.biProjectedAmount)
             if (curBudget.toAccount!!.accountName == curAccount) {
                 tvAmount.setTextColor(Color.BLACK)
             } else {
@@ -107,7 +107,7 @@ class BudgetViewAdapter(
             tvToAccount.text = info
             info = mView.context.getString(R.string.from_) + curBudget.fromAccount!!.accountName
             tvFromAccount.text = info
-            if (curBudget.budgetItem.biLocked) {
+            if (curBudget.budgetItem!!.biLocked) {
                 imgLocked.setImageResource(
                     R.drawable.ic_liocked_foreground
                 )
@@ -133,7 +133,7 @@ class BudgetViewAdapter(
             .setTitle(mView.context.getString(R.string.lock_or_unlock)).setItems(
                 arrayOf(
                     mView.context.getString(R.string.lock) + budgetItem.budgetItem!!.biBudgetName,
-                    mView.context.getString(R.string.un_lock) + budgetItem.budgetItem.biBudgetName,
+                    mView.context.getString(R.string.un_lock) + budgetItem.budgetItem!!.biBudgetName,
                     mView.context.getString(R.string.lock_all_items_for_this_payday),
                     mView.context.getString(R.string.un_lock_all_items_for_this_payday)
                 )
@@ -142,8 +142,8 @@ class BudgetViewAdapter(
                     0 -> {
                         budgetItemViewModel.lockUnlockBudgetItem(
                             true,
-                            budgetItem.budgetItem.biRuleId,
-                            budgetItem.budgetItem.biPayDay,
+                            budgetItem.budgetItem!!.biRuleId,
+                            budgetItem.budgetItem!!.biPayDay,
                             df.getCurrentTimeAsString()
                         )
                     }
@@ -151,21 +151,21 @@ class BudgetViewAdapter(
                     1 -> {
                         budgetItemViewModel.lockUnlockBudgetItem(
                             false,
-                            budgetItem.budgetItem.biRuleId,
-                            budgetItem.budgetItem.biPayDay,
+                            budgetItem.budgetItem!!.biRuleId,
+                            budgetItem.budgetItem!!.biPayDay,
                             df.getCurrentTimeAsString()
                         )
                     }
 
                     2 -> {
                         budgetItemViewModel.lockUnlockBudgetItem(
-                            true, budgetItem.budgetItem.biPayDay, df.getCurrentTimeAsString()
+                            true, budgetItem.budgetItem!!.biPayDay, df.getCurrentTimeAsString()
                         )
                     }
 
                     3 -> {
                         budgetItemViewModel.lockUnlockBudgetItem(
-                            false, budgetItem.budgetItem.biPayDay, df.getCurrentTimeAsString()
+                            false, budgetItem.budgetItem!!.biPayDay, df.getCurrentTimeAsString()
                         )
                     }
                 }
@@ -178,15 +178,15 @@ class BudgetViewAdapter(
         ).setItems(
             arrayOf(
                 mView.context.getString(R.string.perform_a_transaction_on_) +
-                        " \"${curBudget.budgetItem.biBudgetName}\" ",
-                if (curBudget.budgetItem.biProjectedAmount == 0.0) {
+                        " \"${curBudget.budgetItem!!.biBudgetName}\" ",
+                if (curBudget.budgetItem!!.biProjectedAmount == 0.0) {
                     ""
                 } else {
-                    mView.context.getString(R.string.perform_action) + "\"${curBudget.budgetItem.biBudgetName}\" " +
+                    mView.context.getString(R.string.perform_action) + "\"${curBudget.budgetItem!!.biBudgetName}\" " +
                             mView.context.getString(
                                 R.string.for_amount_of_the_full_amount_
                             ) +
-                            nf.displayDollars(curBudget.budgetItem.biProjectedAmount)
+                            nf.displayDollars(curBudget.budgetItem!!.biProjectedAmount)
                 },
                 mView.context.getString(R.string.adjust_the_projections_for_this_item),
                 mView.context.getString(R.string.go_to_the_rules_for_future_budgets_of_this_kind),
@@ -228,7 +228,7 @@ class BudgetViewAdapter(
         if (curBudget.budgetItem!!.biProjectedAmount > 0.0) {
             var display = ""
             CoroutineScope(Dispatchers.IO).launch {
-                display = getConfirmationsDisplay(curBudget.budgetItem, curBudget)
+                display = getConfirmationsDisplay(curBudget.budgetItem!!, curBudget)
             }
             CoroutineScope(Dispatchers.Main).launch {
                 delay(WAIT_250)
@@ -295,13 +295,13 @@ class BudgetViewAdapter(
             accountUpdateViewModel.performTransaction(
                 getCurTransactionObject(
                     curBudget.budgetItem!!, accountUpdateViewModel.isTransactionPending(
-                        curBudget.budgetItem.biToAccountId
+                        curBudget.budgetItem!!.biToAccountId
                     ), accountUpdateViewModel.isTransactionPending(
-                        curBudget.budgetItem.biFromAccountId
+                        curBudget.budgetItem!!.biFromAccountId
                     )
                 )
             )
-            updateBudgetItem(curBudget.budgetItem)
+            updateBudgetItem(curBudget.budgetItem!!)
             delay(WAIT_500)
             budgetViewFragment.populateBudgetList()
         }
@@ -364,7 +364,7 @@ class BudgetViewAdapter(
                         mView.context.getString(
                             R.string.with_the_amount_of
                         ) +
-                        nf.displayDollars(curBudget.budgetItem.biProjectedAmount) + mView.context.getString(
+                        nf.displayDollars(curBudget.budgetItem!!.biProjectedAmount) + mView.context.getString(
                     R.string._remaining
                 )
             ).setPositiveButton(mView.context.getString(R.string.cancel_now)) { _, _ ->
@@ -375,7 +375,7 @@ class BudgetViewAdapter(
     private fun cancelBudgetItem(curBudget: BudgetItemDetailed) {
         budgetItemViewModel.cancelBudgetItem(
             curBudget.budgetItem!!.biRuleId,
-            curBudget.budgetItem.biProjectedDate,
+            curBudget.budgetItem!!.biProjectedDate,
             df.getCurrentTimeAsString()
         )
         budgetViewFragment.populateBudgetList()

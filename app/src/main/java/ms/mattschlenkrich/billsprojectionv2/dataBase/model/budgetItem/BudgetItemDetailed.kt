@@ -18,7 +18,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
 @Parcelize
 data class BudgetItemDetailed(
     @Embedded
-    val budgetItem: BudgetItem?,
+    var budgetItem: BudgetItem?,
     @Relation(
         entity = BudgetRule::class,
         parentColumn = BI_BUDGET_RULE_ID,

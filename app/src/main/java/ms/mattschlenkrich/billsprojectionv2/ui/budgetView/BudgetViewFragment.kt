@@ -404,10 +404,10 @@ class BudgetViewFragment : Fragment(
                         debits += details.budgetItem!!.biProjectedAmount
                     }
                     if (details.fromAccount!!.accountName == curAsset.account.accountName) {
-                        if (details.budgetItem.biIsFixed) {
-                            fixedExpenses += details.budgetItem.biProjectedAmount
+                        if (details.budgetItem!!.biIsFixed) {
+                            fixedExpenses += details.budgetItem!!.biProjectedAmount
                         } else {
-                            otherExpenses += details.budgetItem.biProjectedAmount
+                            otherExpenses += details.budgetItem!!.biProjectedAmount
                         }
                     }
                 }

@@ -309,6 +309,13 @@
             android:id="@+id/action_budgetRuleUpdateFragment_to_accountUpdateFragment"
             app:destination="@id/accountUpdateFragment"
             app:popUpTo="@id/accountUpdateFragment" />
+        <action
+            android:id="@+id/action_budgetRuleUpdateFragment_to_transactionAddFragment"
+            app:destination="@id/transactionAddFragment"
+            app:popUpTo="@id/transactionAddFragment" />
+        <action
+            android:id="@+id/action_budgetRuleUpdateFragment_to_budgetItemAddFragment"
+            app:destination="@id/budgetItemAddFragment" />
     </fragment>
 
     <!--    action_global_budgetViewFragment-->
@@ -385,6 +392,10 @@
         <action
             android:id="@+id/action_budgetItemAddFragment_to_budgetRuleChooseFragment"
             app:destination="@id/budgetRuleChooseFragment" />
+        <action
+            android:id="@+id/action_budgetItemAddFragment_to_budgetRuleUpdateFragment"
+            app:destination="@id/budgetRuleUpdateFragment"
+            app:popUpTo="@id/budgetRuleUpdateFragment" />
     </fragment>
 
     <!--    budgetItemUpdateFragment-->
@@ -482,6 +493,9 @@
         <action
             android:id="@+id/action_transactionAddFragment_to_budgetRuleChooseFragment"
             app:destination="@id/budgetRuleChooseFragment" />
+        <action
+            android:id="@+id/action_transactionAddFragment_to_budgetRuleUpdateFragment"
+            app:destination="@id/budgetRuleUpdateFragment" />
     </fragment>
 
     <!--    transactionUpdateFragment-->
