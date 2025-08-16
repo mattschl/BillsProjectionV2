@@ -9,7 +9,7 @@
         android:orientation="vertical">
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/crdBudgetRule"
+            android:id="@+id/crdList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/dimen_5dp"
@@ -23,14 +23,14 @@
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:id="@+id/llBudgetRule"
+                    android:id="@+id/llListItems"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/tvBudgetRule"
+                        android:id="@+id/tvItemName"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="10"

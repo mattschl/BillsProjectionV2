@@ -17,6 +17,7 @@ const val DISPLAY_DATE_WITH_YEAR = "EEE dd LLL /yy"
 
 const val FRAG_ACCOUNT_ADD = "AccountAdd"
 const val FRAG_ACCOUNTS = "Accounts"
+const val FRAG_ACCOUNT_CHOOSE = "AccountsChooseFragment"
 const val FRAG_ACCOUNT_TYPE_ADD = "AccountTypeAdd"
 const val FRAG_ACCOUNT_TYPES = "AccountTypes"
 const val FRAG_ACCOUNT_TYPE_UPDATE = "AccountTypeUpdate"

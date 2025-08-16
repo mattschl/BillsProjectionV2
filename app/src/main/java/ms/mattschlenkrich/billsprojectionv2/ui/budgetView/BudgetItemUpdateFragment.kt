@@ -186,7 +186,7 @@ class BudgetItemUpdateFragment : Fragment(
         mainViewModel.addCallingFragment(TAG)
         mainViewModel.setRequestedAccount(requestedAccount)
         mainViewModel.setBudgetItemDetailed(getCurrentBudgetItemDetailed())
-        gotoAccountsFragment()
+        gotoAccountChooseFragment()
     }
 
     private fun chooseDate() {
@@ -330,9 +330,9 @@ class BudgetItemUpdateFragment : Fragment(
         }
     }
 
-    private fun gotoAccountsFragment() {
+    private fun gotoAccountChooseFragment() {
         mView.findNavController().navigate(
-            BudgetItemUpdateFragmentDirections.actionBudgetItemUpdateFragmentToAccountsFragment()
+            BudgetItemUpdateFragmentDirections.actionBudgetItemUpdateFragmentToAccountChooseFragment()
         )
     }
 

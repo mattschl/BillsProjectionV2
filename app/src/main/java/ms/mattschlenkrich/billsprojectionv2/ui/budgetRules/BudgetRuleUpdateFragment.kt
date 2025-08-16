@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_CHOOSE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_LIST
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
@@ -93,12 +94,29 @@ class BudgetRuleUpdateFragment : Fragment(R.layout.fragment_budget_rule_update) 
     private fun populateValues() {
         getBudgetRuleNameForValidation()
         populateSpinners()
-        if (mainViewModel.getBudgetRuleDetailed() != null) {
-            budgetRuleDetailed = mainViewModel.getBudgetRuleDetailed()!!
-            populateFromCache()
+        if (mainViewModel.getCallingFragments() != null) {
+            if (mainViewModel.getBudgetRuleDetailed() != null) {
+                val mCallingFragment = mainViewModel.getCallingFragments()!!
+                CoroutineScope(Dispatchers.Main).launch {
+                    if (mCallingFragment.contains(FRAG_TRANSACTION_VIEW) &&
+                        !mCallingFragment.contains(FRAG_ACCOUNT_CHOOSE)
+                    ) {
+                        withContext(Dispatchers.Default) {
+                            budgetRuleDetailed = budgetRuleViewModel.getBudgetRuleDetailed(
+                                mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.ruleId
+                            )
+                        }
+                    } else {
+                        budgetRuleDetailed = mainViewModel.getBudgetRuleDetailed()!!
+                    }
+                    delay(WAIT_250)
+                    populateFromBudgetRuleDetailed()
+                }
+            }
         } else {
             populateDatesOnly()
         }
+
         populateDateRecycler(budgetRuleDetailed.budgetRule!!.ruleId)
     }
 
@@ -109,7 +127,7 @@ class BudgetRuleUpdateFragment : Fragment(R.layout.fragment_budget_rule_update) 
         }
     }
 
-    private fun populateFromCache() {
+    private fun populateFromBudgetRuleDetailed() {
         binding.apply {
             if (budgetRuleDetailed.budgetRule != null) {
                 etBudgetName.setText(budgetRuleDetailed.budgetRule!!.budgetRuleName)
@@ -481,14 +499,14 @@ class BudgetRuleUpdateFragment : Fragment(R.layout.fragment_budget_rule_update) 
         mainViewModel.addCallingFragment(TAG)
         mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
         mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
-        gotoAccountsFragment()
+        gotoAccountChooseFragment()
     }
 
     private fun chooseToAccount() {
         mainViewModel.addCallingFragment(TAG)
         mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
         mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
-        gotoAccountsFragment()
+        gotoAccountChooseFragment()
     }
 
     private fun confirmDeleteBudgetRule() {
@@ -574,30 +592,6 @@ class BudgetRuleUpdateFragment : Fragment(R.layout.fragment_budget_rule_update) 
         }
     }
 
-    private fun gotoAccountUpdateFragment() {
-        mView.findNavController().navigate(
-            BudgetRuleUpdateFragmentDirections.actionBudgetRuleUpdateFragmentToAccountUpdateFragment()
-        )
-    }
-
-    private fun gotoTransactionAnalysisFragment() {
-        mView.findNavController().navigate(
-            BudgetRuleUpdateFragmentDirections.actionBudgetRuleUpdateFragmentToTransactionAnalysisFragment()
-        )
-    }
-
-    private fun gotoTransactionViewFragment() {
-        mView.findNavController().navigate(
-            BudgetRuleUpdateFragmentDirections.actionBudgetRuleUpdateFragmentToTransactionViewFragment()
-        )
-    }
-
-    private fun gotoAccountsFragment() {
-        mView.findNavController().navigate(
-            BudgetRuleUpdateFragmentDirections.actionBudgetRuleUpdateFragmentToAccountsFragment()
-        )
-    }
-
     private fun gotoCalculator() {
         mainViewModel.setTransferNum(
             nf.getDoubleFromDollars(
@@ -649,6 +643,30 @@ class BudgetRuleUpdateFragment : Fragment(R.layout.fragment_budget_rule_update) 
     private fun gotoTransactionAddFragment() {
         mView.findNavController().navigate(
             BudgetRuleUpdateFragmentDirections.actionBudgetRuleUpdateFragmentToTransactionAddFragment()
+        )
+    }
+
+    private fun gotoAccountUpdateFragment() {
+        mView.findNavController().navigate(
+            BudgetRuleUpdateFragmentDirections.actionBudgetRuleUpdateFragmentToAccountUpdateFragment()
+        )
+    }
+
+    private fun gotoTransactionAnalysisFragment() {
+        mView.findNavController().navigate(
+            BudgetRuleUpdateFragmentDirections.actionBudgetRuleUpdateFragmentToTransactionAnalysisFragment()
+        )
+    }
+
+    private fun gotoTransactionViewFragment() {
+        mView.findNavController().navigate(
+            BudgetRuleUpdateFragmentDirections.actionBudgetRuleUpdateFragmentToTransactionViewFragment()
+        )
+    }
+
+    private fun gotoAccountChooseFragment() {
+        mView.findNavController().navigate(
+            BudgetRuleUpdateFragmentDirections.actionBudgetRuleUpdateFragmentToAccountChooseFragment()
         )
     }
 

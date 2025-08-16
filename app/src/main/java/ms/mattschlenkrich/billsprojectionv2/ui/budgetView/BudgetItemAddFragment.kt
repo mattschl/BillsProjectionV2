@@ -19,6 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_ADD
@@ -30,6 +31,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
+import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
@@ -52,6 +54,8 @@ class BudgetItemAddFragment : Fragment(
     private lateinit var budgetItemViewModel: BudgetItemViewModel
     private lateinit var budgetRuleViewModel: BudgetRuleViewModel
     private lateinit var budgetRuleDetailed: BudgetRuleDetailed
+    private var mTopAccount: Account? = null
+    private var mTFromAccount: Account? = null
 
     private val nf = NumberFunctions()
     private val df = DateFunctions()
@@ -80,11 +84,11 @@ class BudgetItemAddFragment : Fragment(
 
     private fun populateValues() {
         populatePayDays()
+        initializeBudgetItemDetailed()
         if (mainViewModel.getBudgetItemDetailed() != null) {
             populateFromCache()
         } else {
             populateDateToCurrent()
-            initializeBudgetItemDetailed()
         }
     }
 
@@ -115,32 +119,46 @@ class BudgetItemAddFragment : Fragment(
 
     private fun populateFromCache() {
         if (mainViewModel.getBudgetItemDetailed() != null) {
-            val mBudgetItem = mainViewModel.getBudgetItemDetailed()!!
+            val mBudgetItemDetailed = mainViewModel.getBudgetItemDetailed()!!
             binding.apply {
                 etProjectedDate.setText(
-                    mBudgetItem.budgetItem?.biProjectedDate
+                    mBudgetItemDetailed.budgetItem?.biProjectedDate
                 )
-                if (mBudgetItem.budgetRule != null) {
-                    val mBudgetRule = mBudgetItem.budgetRule!!
+                mainViewModel.setTransferNum(0.0)
+                if (mBudgetItemDetailed.budgetRule != null) {
+                    val mBudgetRule = mBudgetItemDetailed.budgetRule!!
                     tvBudgetRule.text = mBudgetRule.budgetRuleName
-                    CoroutineScope(Dispatchers.IO).launch {
-                        budgetRuleDetailed = budgetRuleViewModel.getBudgetRuleDetailed(
-                            mBudgetRule.ruleId
-                        )
-                    }
                     CoroutineScope(Dispatchers.Main).launch {
+                        withContext(Dispatchers.Default) {
+                            budgetRuleDetailed = budgetRuleViewModel.getBudgetRuleDetailed(
+                                mBudgetRule.ruleId
+                            )
+                        }
                         delay(WAIT_250)
-                        if (mBudgetItem.budgetItem!!.biBudgetName.isEmpty()) {
+                        if (mBudgetItemDetailed.toAccount != null) {
+                            tvToAccount.text = mBudgetItemDetailed.toAccount!!.accountName
+                            budgetRuleDetailed.toAccount = mBudgetItemDetailed.toAccount
+                        } else {
+                            tvToAccount.text = budgetRuleDetailed.toAccount?.accountName
+                        }
+                        if (mBudgetItemDetailed.fromAccount != null) {
+                            tvFromAccount.text = mBudgetItemDetailed.fromAccount!!.accountName
+                            budgetRuleDetailed.fromAccount = mBudgetItemDetailed.fromAccount
+                        } else {
+                            tvFromAccount.text = budgetRuleDetailed.fromAccount?.accountName
+                        }
+                        delay(WAIT_250)
+                        if (mBudgetItemDetailed.budgetItem!!.biBudgetName.isEmpty()) {
                             etBudgetItemName.setText(
                                 mBudgetRule.budgetRuleName
                             )
                         } else {
                             etBudgetItemName.setText(
-                                mBudgetItem.budgetItem!!.biBudgetName
+                                mBudgetItemDetailed.budgetItem!!.biBudgetName
                             )
                         }
 
-                        if (mBudgetItem.budgetItem!!.biProjectedAmount == 0.0) {
+                        if (mBudgetItemDetailed.budgetItem!!.biProjectedAmount == 0.0) {
                             etProjectedAmount.setText(
                                 nf.displayDollars(
                                     if (mainViewModel.getTransferNum()!! != 0.0) {
@@ -156,34 +174,27 @@ class BudgetItemAddFragment : Fragment(
                                     if (mainViewModel.getTransferNum()!! != 0.0) {
                                         mainViewModel.getTransferNum()!!
                                     } else {
-                                        mBudgetItem.budgetItem!!.biProjectedAmount
+                                        mBudgetItemDetailed.budgetItem!!.biProjectedAmount
                                     }
                                 )
                             )
                         }
-                        mainViewModel.setTransferNum(0.0)
-                        if (mBudgetItem.toAccount != null) {
-                            tvToAccount.text = mBudgetItem.toAccount!!.accountName
-                            budgetRuleDetailed.toAccount = mBudgetItem.toAccount
-                        } else {
-                            tvToAccount.text = budgetRuleDetailed.toAccount?.accountName
-                            budgetRuleDetailed.toAccount = budgetRuleDetailed.toAccount
-                        }
-                        if (mBudgetItem.fromAccount != null) {
-                            tvFromAccount.text = mBudgetItem.fromAccount!!.accountName
-                            budgetRuleDetailed.fromAccount = mBudgetItem.fromAccount
-                        } else {
-                            tvFromAccount.text = budgetRuleDetailed.fromAccount?.accountName
-                            budgetRuleDetailed.fromAccount = budgetRuleDetailed.fromAccount
-                        }
                     }
                 }
-                chkFixedAmount.isChecked = mBudgetItem.budgetItem!!.biIsFixed
-                chkIsAutoPayment.isChecked = mBudgetItem.budgetItem!!.biIsAutomatic
-                chkIsPayDay.isChecked = mBudgetItem.budgetItem!!.biIsPayDayItem
-                chkIsLocked.isChecked = mBudgetItem.budgetItem!!.biLocked
+                if (mBudgetItemDetailed.toAccount != null && mBudgetItemDetailed.budgetRule == null) {
+                    tvToAccount.text = mBudgetItemDetailed.toAccount!!.accountName
+                    budgetRuleDetailed.toAccount = mBudgetItemDetailed.toAccount
+                }
+                if (mBudgetItemDetailed.fromAccount != null && mBudgetItemDetailed.budgetRule == null) {
+                    tvFromAccount.text = mBudgetItemDetailed.fromAccount!!.accountName
+                    budgetRuleDetailed.fromAccount = mBudgetItemDetailed.fromAccount
+                }
+                chkFixedAmount.isChecked = mBudgetItemDetailed.budgetItem!!.biIsFixed
+                chkIsAutoPayment.isChecked = mBudgetItemDetailed.budgetItem!!.biIsAutomatic
+                chkIsPayDay.isChecked = mBudgetItemDetailed.budgetItem!!.biIsPayDayItem
+                chkIsLocked.isChecked = mBudgetItemDetailed.budgetItem!!.biLocked
                 for (i in 0 until spPayDays.adapter.count) {
-                    if (spPayDays.getItemAtPosition(i) == mBudgetItem.budgetItem!!.biPayDay) {
+                    if (spPayDays.getItemAtPosition(i) == mBudgetItemDetailed.budgetItem!!.biPayDay) {
                         spPayDays.setSelection(i)
                         break
                     }
@@ -251,7 +262,7 @@ class BudgetItemAddFragment : Fragment(
         mainActivity.mainViewModel.addCallingFragment(TAG)
         mainActivity.mainViewModel.setRequestedAccount(requestedAccount)
         mainActivity.mainViewModel.setBudgetItemDetailed(getCurrentBudgetItemDetailed())
-        gotoAccountsFragment()
+        gotoAccountChooseFragment()
     }
 
     private fun chooseDate() {
@@ -377,9 +388,9 @@ class BudgetItemAddFragment : Fragment(
         gotoCalculatorFragment()
     }
 
-    private fun gotoAccountsFragment() {
+    private fun gotoAccountChooseFragment() {
         mView.findNavController().navigate(
-            BudgetItemAddFragmentDirections.actionBudgetItemAddFragmentToAccountsFragment()
+            BudgetItemAddFragmentDirections.actionBudgetItemAddFragmentToAccountChooseFragment()
         )
     }
 
