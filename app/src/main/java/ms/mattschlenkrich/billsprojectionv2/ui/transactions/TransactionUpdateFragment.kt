@@ -267,14 +267,14 @@ class TransactionUpdateFragment : Fragment(R.layout.fragment_transaction_update)
         mainViewModel.addCallingFragment(TAG)
         mainViewModel.setTransactionDetailed(getCurrentTransDetailed())
         mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
-        gotoAccountsFragment()
+        gotoAccountChooseFragment()
     }
 
     private fun chooseFromAccount() {
         mainViewModel.addCallingFragment(TAG)
         mainViewModel.setTransactionDetailed(getCurrentTransDetailed())
         mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
-        gotoAccountsFragment()
+        gotoAccountChooseFragment()
     }
 
     private fun chooseDate() {
@@ -479,9 +479,9 @@ class TransactionUpdateFragment : Fragment(R.layout.fragment_transaction_update)
         )
     }
 
-    private fun gotoAccountsFragment() {
+    private fun gotoAccountChooseFragment() {
         mView.findNavController().navigate(
-            TransactionUpdateFragmentDirections.actionTransactionUpdateFragmentToAccountsFragment()
+            TransactionUpdateFragmentDirections.actionTransactionUpdateFragmentToAccountChooseFragment()
         )
     }
 

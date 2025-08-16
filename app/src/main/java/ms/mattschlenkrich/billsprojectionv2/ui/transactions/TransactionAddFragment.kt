@@ -381,14 +381,14 @@ class TransactionAddFragment : Fragment(R.layout.fragment_transaction_add) {
         mainViewModel.addCallingFragment(TAG)
         mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
         mainViewModel.setTransactionDetailed(getTransactionDetailed())
-        gotoAccountsFragment()
+        gotoAccountChooseFragment()
     }
 
     private fun chooseToAccount() {
         mainViewModel.addCallingFragment(TAG)
         mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
         mainViewModel.setTransactionDetailed(getTransactionDetailed())
-        gotoAccountsFragment()
+        gotoAccountChooseFragment()
     }
 
     private fun splitTransactions() {
@@ -541,9 +541,9 @@ class TransactionAddFragment : Fragment(R.layout.fragment_transaction_add) {
         )
     }
 
-    private fun gotoAccountsFragment() {
+    private fun gotoAccountChooseFragment() {
         mView.findNavController().navigate(
-            TransactionAddFragmentDirections.actionTransactionAddFragmentToAccountsFragment()
+            TransactionAddFragmentDirections.actionTransactionAddFragmentToAccountChooseFragment()
         )
     }
 

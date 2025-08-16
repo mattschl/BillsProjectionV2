@@ -93,10 +93,10 @@ class BudgetRuleFragment : Fragment(R.layout.fragment_budget_rule), SearchView.O
 
     private fun updateUI(budgetRuleDetailed: List<BudgetRuleDetailed>?) {
         if (budgetRuleDetailed!!.isNotEmpty()) {
-            binding.crdBudgetRule.visibility = View.GONE
+            binding.crdList.visibility = View.GONE
             binding.rvBudgetRules.visibility = View.VISIBLE
         } else {
-            binding.crdBudgetRule.visibility = View.VISIBLE
+            binding.crdList.visibility = View.VISIBLE
             binding.rvBudgetRules.visibility = View.GONE
         }
     }

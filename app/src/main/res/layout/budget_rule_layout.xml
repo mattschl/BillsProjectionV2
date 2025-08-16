@@ -10,7 +10,7 @@
 
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/crdBudgetRule"
+            android:id="@+id/crdList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"

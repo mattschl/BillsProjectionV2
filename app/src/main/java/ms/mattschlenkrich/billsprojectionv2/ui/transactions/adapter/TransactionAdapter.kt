@@ -215,7 +215,7 @@ class TransactionAdapter(
     }
 
     private fun gotoTransactionUpdate(transactionDetailed: TransactionDetailed) {
-        mainViewModel.addCallingFragment(parentFragment)
+        mainViewModel.setCallingFragments(parentFragment)
         mainViewModel.setTransactionDetailed(transactionDetailed)
         CoroutineScope(Dispatchers.IO).launch {
             val oldTransactionFull = async {

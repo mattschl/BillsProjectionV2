@@ -318,14 +318,14 @@ class TransactionPerformFragment : Fragment(
         mainViewModel.addCallingFragment(TAG)
         mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
         mainViewModel.setTransactionDetailed(getTransactionDetailed())
-        gotoAccountsFragment()
+        gotoAccountChooseFragment()
     }
 
     private fun chooseToAccount() {
         mainViewModel.addCallingFragment(TAG)
         mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
         mainViewModel.setTransactionDetailed(getTransactionDetailed())
-        gotoAccountsFragment()
+        gotoAccountChooseFragment()
     }
 
     private fun getTransactionDetailed(): TransactionDetailed {
@@ -467,9 +467,9 @@ class TransactionPerformFragment : Fragment(
         gotoCalculatorFragment()
     }
 
-    private fun gotoAccountsFragment() {
+    private fun gotoAccountChooseFragment() {
         mView.findNavController().navigate(
-            TransactionPerformFragmentDirections.actionTransactionPerformFragmentToAccountsFragment()
+            TransactionPerformFragmentDirections.actionTransactionPerformFragmentToAccountChooseFragment()
         )
     }
 

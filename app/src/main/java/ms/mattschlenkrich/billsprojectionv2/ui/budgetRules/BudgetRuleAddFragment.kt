@@ -197,14 +197,14 @@ class BudgetRuleAddFragment :
         mainViewModel.addCallingFragment(TAG)
         mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
         mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
-        gotoAccountsFragment()
+        gotoAccountChooseFragment()
     }
 
     private fun chooseToAccount() {
         mainViewModel.addCallingFragment(TAG)
         mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
         mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
-        gotoAccountsFragment()
+        gotoAccountChooseFragment()
     }
 
     private fun chooseEndDate() {
@@ -357,10 +357,10 @@ class BudgetRuleAddFragment :
         gotoCalculatorFragment()
     }
 
-    private fun gotoAccountsFragment() {
+    private fun gotoAccountChooseFragment() {
         mView.findNavController().navigate(
             BudgetRuleAddFragmentDirections
-                .actionBudgetRuleAddFragmentToAccountsFragment()
+                .actionBudgetRuleAddFragmentToAccountChooseFragment()
         )
     }
 

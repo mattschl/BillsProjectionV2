@@ -11,7 +11,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_SPLIT
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
-import ms.mattschlenkrich.billsprojectionv2.databinding.ListBudgetRuleChooseBinding
+import ms.mattschlenkrich.billsprojectionv2.databinding.ListChooseItemsBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.BudgetRuleChooseFragment
 
@@ -27,7 +27,7 @@ class BudgetRuleChooseAdapter(
     private val vf = VisualsFunctions()
 
     class BudgetRuleViewHolder(
-        val itemBinding: ListBudgetRuleChooseBinding
+        val itemBinding: ListChooseItemsBinding
     ) : RecyclerView.ViewHolder(itemBinding.root)
 
     private val differCallBack = object : DiffUtil.ItemCallback<BudgetRuleDetailed>() {
@@ -50,7 +50,7 @@ class BudgetRuleChooseAdapter(
         parent: ViewGroup, viewType: Int
     ): BudgetRuleViewHolder {
         return BudgetRuleViewHolder(
-            ListBudgetRuleChooseBinding.inflate(
+            ListChooseItemsBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             )
         )
@@ -64,11 +64,7 @@ class BudgetRuleChooseAdapter(
         holder: BudgetRuleViewHolder, position: Int
     ) {
         val budgetRuleDetailed = differ.currentList[position]
-        holder.itemBinding.tvBudgetRule.text = budgetRuleDetailed.budgetRule!!.budgetRuleName
-//        var info = "To: " + budgetRuleDetailed.toAccount!!.accountName
-//        holder.itemBinding.tvToAccount.text = info
-//        info = "From: " + budgetRuleDetailed.fromAccount!!.accountName
-//        holder.itemBinding.tvFromAccount.text = info
+        holder.itemBinding.tvItemName.text = budgetRuleDetailed.budgetRule!!.budgetRuleName
         holder.itemBinding.ibColor.setBackgroundColor(vf.getRandomColorInt())
         holder.itemView.setOnClickListener { chooseBudgetRule(budgetRuleDetailed) }
     }
