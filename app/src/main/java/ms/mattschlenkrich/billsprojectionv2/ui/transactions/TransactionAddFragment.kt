@@ -20,6 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
@@ -28,6 +29,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
+import ms.mattschlenkrich.billsprojectionv2.common.WAIT_500
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
@@ -86,27 +88,30 @@ class TransactionAddFragment : Fragment(R.layout.fragment_transaction_add) {
     private fun populateValues() {
         binding.apply {
             if (mainViewModel.getTransactionDetailed() != null) {
-                if (mainViewModel.getTransactionDetailed()!!.transaction != null) {
-                    populateValuesFromTransactionDetailed()
-                }
-                if (mainViewModel.getTransactionDetailed()!!.budgetRule != null) {
-                    populateValuesFromBudgetRule()
-                }
-                if (mainViewModel.getTransactionDetailed()!!.toAccount != null) {
-                    populateValuesFromToAccount()
-                } else {
-                    chkToAccPending.visibility = View.GONE
-                }
-                if (mainViewModel.getTransactionDetailed()!!.fromAccount != null) {
-                    populateValuesFromAccount()
-                } else {
-                    chkFromAccPending.visibility = View.GONE
-                }
-                if (mainViewModel.getTransactionDetailed()!!.transaction != null) {
-                    chkToAccPending.isChecked =
-                        mainViewModel.getTransactionDetailed()!!.transaction!!.transToAccountPending
-                    chkFromAccPending.isChecked =
-                        mainViewModel.getTransactionDetailed()!!.transaction!!.transFromAccountPending
+                CoroutineScope(Dispatchers.Main).launch {
+                    if (mainViewModel.getTransactionDetailed()!!.transaction != null) {
+                        populateValuesFromTransactionDetailed()
+                    }
+                    if (mainViewModel.getTransactionDetailed()!!.budgetRule != null) {
+                        populateValuesFromBudgetRule()
+                    }
+                    if (mainViewModel.getTransactionDetailed()!!.toAccount != null) {
+                        populateToAccountWithCache()
+                    } else {
+                        chkToAccPending.visibility = View.GONE
+                    }
+                    if (mainViewModel.getTransactionDetailed()!!.fromAccount != null) {
+                        populateFromAccountWithCache()
+                    } else {
+                        chkFromAccPending.visibility = View.GONE
+                    }
+                    delay(WAIT_500)
+                    if (mainViewModel.getTransactionDetailed()!!.transaction != null) {
+                        chkToAccPending.isChecked =
+                            mainViewModel.getTransactionDetailed()!!.transaction!!.transToAccountPending
+                        chkFromAccPending.isChecked =
+                            mainViewModel.getTransactionDetailed()!!.transaction!!.transFromAccountPending
+                    }
                 }
 
             } else {
@@ -119,19 +124,17 @@ class TransactionAddFragment : Fragment(R.layout.fragment_transaction_add) {
         }
     }
 
-    private fun populateValuesFromAccount() {
+    private fun populateFromAccountWithCache() {
         binding.apply {
-            mFromAccount = mainViewModel.getTransactionDetailed()!!.fromAccount
-            tvFromAccount.text = mainViewModel.getTransactionDetailed()?.fromAccount!!.accountName
-            CoroutineScope(Dispatchers.IO).launch {
-                val acc = async {
-                    accountViewModel.getAccountWithType(
+            CoroutineScope(Dispatchers.Main).launch {
+                mFromAccount = mainViewModel.getTransactionDetailed()!!.fromAccount
+                tvFromAccount.text =
+                    mainViewModel.getTransactionDetailed()?.fromAccount!!.accountName
+                withContext(Dispatchers.Default) {
+                    mFromAccountWithType = accountViewModel.getAccountWithType(
                         mainViewModel.getTransactionDetailed()?.fromAccount!!.accountName
                     )
                 }
-                mFromAccountWithType = acc.await()
-            }
-            CoroutineScope(Dispatchers.Main).launch {
                 delay(WAIT_250)
                 if (mFromAccountWithType!!.accountType!!.allowPending) {
                     chkFromAccPending.isChecked = true
@@ -144,19 +147,16 @@ class TransactionAddFragment : Fragment(R.layout.fragment_transaction_add) {
         }
     }
 
-    private fun populateValuesFromToAccount() {
+    private fun populateToAccountWithCache() {
         binding.apply {
-            mToAccount = mainViewModel.getTransactionDetailed()!!.toAccount
-            tvToAccount.text = mainViewModel.getTransactionDetailed()!!.toAccount!!.accountName
-            CoroutineScope(Dispatchers.IO).launch {
-                val acc = async {
-                    accountViewModel.getAccountWithType(
+            CoroutineScope(Dispatchers.Main).launch {
+                mToAccount = mainViewModel.getTransactionDetailed()!!.toAccount
+                tvToAccount.text = mainViewModel.getTransactionDetailed()!!.toAccount!!.accountName
+                withContext(Dispatchers.Default) {
+                    mToAccountWithType = accountViewModel.getAccountWithType(
                         mainViewModel.getTransactionDetailed()!!.toAccount!!.accountName
                     )
                 }
-                mToAccountWithType = acc.await()
-            }
-            CoroutineScope(Dispatchers.Main).launch {
                 delay(WAIT_250)
                 if (mToAccountWithType!!.accountType!!.allowPending) {
                     chkToAccPending.visibility = View.VISIBLE
@@ -198,23 +198,18 @@ class TransactionAddFragment : Fragment(R.layout.fragment_transaction_add) {
             CoroutineScope(Dispatchers.Main).launch {
                 delay(WAIT_250)
                 tvFromAccount.text = mFromAccount!!.accountName
-                CoroutineScope(Dispatchers.IO).launch {
-                    val acc = async {
-                        accountViewModel.getAccountWithType(
-                            mFromAccount!!.accountName
-                        )
-                    }
-                    mFromAccountWithType = acc.await()
+                withContext(Dispatchers.Default) {
+                    mFromAccountWithType = accountViewModel.getAccountWithType(
+                        mFromAccount!!.accountName
+                    )
                 }
-                CoroutineScope(Dispatchers.Main).launch {
-                    delay(WAIT_250)
-                    if (mFromAccountWithType!!.accountType!!.allowPending) {
-                        chkFromAccPending.visibility = View.VISIBLE
-                        chkFromAccPending.isChecked =
-                            mFromAccountWithType!!.accountType!!.tallyOwing
-                    } else {
-                        chkFromAccPending.visibility = View.GONE
-                    }
+                delay(WAIT_250)
+                if (mFromAccountWithType!!.accountType!!.allowPending) {
+                    chkFromAccPending.visibility = View.VISIBLE
+                    chkFromAccPending.isChecked =
+                        mFromAccountWithType!!.accountType!!.tallyOwing
+                } else {
+                    chkFromAccPending.visibility = View.GONE
                 }
             }
         }
@@ -222,28 +217,19 @@ class TransactionAddFragment : Fragment(R.layout.fragment_transaction_add) {
 
     private fun populateToAccountFromBudgetRule() {
         binding.apply {
-            CoroutineScope(Dispatchers.IO).launch {
-                val acc = async {
-                    accountViewModel.getAccount(
+            CoroutineScope(Dispatchers.Main).launch {
+                withContext(Dispatchers.Default) {
+                    mToAccount = accountViewModel.getAccount(
                         mainViewModel.getTransactionDetailed()!!.budgetRule!!.budToAccountId
                     )
                 }
-                mToAccount = acc.await()
-            }
-            CoroutineScope(Dispatchers.Main).launch {
                 delay(WAIT_250)
                 tvToAccount.text = mToAccount!!.accountName
-            }
-
-            CoroutineScope(Dispatchers.IO).launch {
-                val acc = async {
-                    accountViewModel.getAccountWithType(
+                withContext(Dispatchers.Default) {
+                    mToAccountWithType = accountViewModel.getAccountWithType(
                         mainViewModel.getTransactionDetailed()!!.budgetRule!!.budToAccountId
                     )
                 }
-                mToAccountWithType = acc.await()
-            }
-            CoroutineScope(Dispatchers.Main).launch {
                 delay(WAIT_250)
                 if (mToAccountWithType!!.accountType!!.allowPending) {
                     chkToAccPending.visibility = View.VISIBLE
