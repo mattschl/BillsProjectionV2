@@ -278,7 +278,7 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
                 chkToAccPending.isChecked,
                 mFromAccount.accountId,
                 chkFromAccPending.isChecked,
-                if (etAmount.text.isNotEmpty()) {
+                if (!etAmount.text.isNullOrBlank()) {
                     nf.getDoubleFromDollars(etAmount.text.toString())
                 } else {
                     0.0

@@ -218,8 +218,8 @@ class TransactionUpdateFragment : Fragment(R.layout.fragment_transaction_update)
         setMenuActions()
         binding.apply {
             tvBudgetRule.setOnClickListener { chooseBudgetRule() }
-            tvToAccount.setOnClickListener { chooseToAccount() }
-            tvFromAccount.setOnClickListener { chooseFromAccount() }
+            tvToAccount.setOnClickListener { chooseNewAccount(REQUEST_TO_ACCOUNT) }
+            tvFromAccount.setOnClickListener { chooseNewAccount(REQUEST_FROM_ACCOUNT) }
             etTransDate.setOnClickListener { chooseDate() }
             etAmount.setOnLongClickListener {
                 gotoCalculator()
@@ -263,17 +263,10 @@ class TransactionUpdateFragment : Fragment(R.layout.fragment_transaction_update)
         gotoBudgetRuleFragment()
     }
 
-    private fun chooseToAccount() {
+    private fun chooseNewAccount(requestedAccount: String) {
         mainViewModel.addCallingFragment(TAG)
         mainViewModel.setTransactionDetailed(getCurrentTransDetailed())
-        mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
-        gotoAccountChooseFragment()
-    }
-
-    private fun chooseFromAccount() {
-        mainViewModel.addCallingFragment(TAG)
-        mainViewModel.setTransactionDetailed(getCurrentTransDetailed())
-        mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
+        mainViewModel.setRequestedAccount(requestedAccount)
         gotoAccountChooseFragment()
     }
 
