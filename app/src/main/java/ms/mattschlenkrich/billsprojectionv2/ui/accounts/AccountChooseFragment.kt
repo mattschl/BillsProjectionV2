@@ -178,7 +178,7 @@ class AccountChooseFragment :
     fun gotoTransactionUpdateFragment() {
         mView.findNavController().navigate(
             AccountChooseFragmentDirections
-                .actionAccountChooseFragmentToBudgetItemUpdateFragment()
+                .actionAccountChooseFragmentToTransactionUpdateFragment()
         )
     }
 

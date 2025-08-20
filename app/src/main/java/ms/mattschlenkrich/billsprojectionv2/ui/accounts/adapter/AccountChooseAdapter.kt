@@ -98,11 +98,12 @@ class AccountChooseAdapter(
                     REQUEST_TO_ACCOUNT -> {
                         if (mCallingFragment.contains(FRAG_TRANSACTION_SPLIT)
                         ) {
+                            val splitTrans = mainViewModel.getSplitTransactionDetailed()!!
                             val splitTransactionDetailed = TransactionDetailed(
-                                mainViewModel.getTransactionDetailed()?.transaction,
-                                mainViewModel.getTransactionDetailed()?.budgetRule,
+                                splitTrans.transaction,
+                                splitTrans.budgetRule,
                                 curAccount.account,
-                                mainViewModel.getTransactionDetailed()?.fromAccount,
+                                splitTrans.fromAccount,
                             )
                             splitTransactionDetailed.transaction!!.transToAccountPending =
                                 curAccount.accountType!!.tallyOwing
@@ -111,11 +112,12 @@ class AccountChooseAdapter(
                             mCallingFragment.contains(FRAG_TRANS_PERFORM) ||
                             mCallingFragment.contains(FRAG_TRANS_UPDATE)
                         ) {
+                            val tempTrans = mainViewModel.getTransactionDetailed()!!
                             val transactionDetailed = TransactionDetailed(
-                                mainViewModel.getTransactionDetailed()?.transaction,
-                                mainViewModel.getTransactionDetailed()?.budgetRule,
+                                tempTrans.transaction,
+                                tempTrans.budgetRule,
                                 curAccount.account,
-                                mainViewModel.getTransactionDetailed()?.fromAccount,
+                                tempTrans.fromAccount,
                             )
                             transactionDetailed.transaction!!.transToAccountPending =
                                 curAccount.accountType!!.tallyOwing
@@ -147,10 +149,11 @@ class AccountChooseAdapter(
 
                     REQUEST_FROM_ACCOUNT -> {
                         if (mCallingFragment.contains(FRAG_TRANSACTION_SPLIT)) {
+                            val splitTrans = mainViewModel.getSplitTransactionDetailed()
                             val splitTransactionDetailed = TransactionDetailed(
-                                mainViewModel.getTransactionDetailed()?.transaction,
-                                mainViewModel.getTransactionDetailed()?.budgetRule,
-                                mainViewModel.getTransactionDetailed()?.toAccount,
+                                splitTrans?.transaction,
+                                splitTrans?.budgetRule,
+                                splitTrans?.toAccount,
                                 curAccount.account,
                             )
                             splitTransactionDetailed.transaction?.transFromAccountPending =
