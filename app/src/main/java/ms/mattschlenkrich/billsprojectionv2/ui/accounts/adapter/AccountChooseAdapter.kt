@@ -10,12 +10,10 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_UPDATE
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_SPLIT
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_PERFORM
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
-import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
@@ -30,7 +28,6 @@ import ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountChooseFragment
 
 class AccountChooseAdapter(
     val mainActivity: MainActivity,
-    private val parentTag: String,
     private val accountChooseFragment: AccountChooseFragment,
 ) : RecyclerView.Adapter<AccountChooseAdapter.AccountViewHolder>() {
 
@@ -82,130 +79,84 @@ class AccountChooseAdapter(
             } else {
                 tvItemName.setTextColor(Color.BLACK)
             }
-            holder.itemView.setOnClickListener { chooseAccount(curAccount) }
+            holder.itemView.setOnClickListener { chooseAccountAndPopulateCache(curAccount) }
         }
     }
 
-    private fun chooseAccount(
-        curAccount: AccountWithType,
-    ) {
+    private fun chooseAccountAndPopulateCache(curAccount: AccountWithType) {
         if (mainViewModel.getCallingFragments() != null) {
-            if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANSACTION_ANALYSIS)) {
-                gotoTransactionAverage(curAccount)
-            } else {
-                val mCallingFragment = mainViewModel.getCallingFragments()!!
-                when (mainViewModel.getRequestedAccount()) {
-                    REQUEST_TO_ACCOUNT -> {
-                        if (mCallingFragment.contains(FRAG_TRANSACTION_SPLIT)
-                        ) {
-                            val splitTrans = mainViewModel.getSplitTransactionDetailed()!!
-                            val splitTransactionDetailed = TransactionDetailed(
-                                splitTrans.transaction,
-                                splitTrans.budgetRule,
-                                curAccount.account,
-                                splitTrans.fromAccount,
-                            )
-                            splitTransactionDetailed.transaction!!.transToAccountPending =
-                                curAccount.accountType!!.tallyOwing
-                            mainViewModel.setSplitTransactionDetailed(splitTransactionDetailed)
-                        } else if (mCallingFragment.contains(FRAG_TRANS_ADD) ||
-                            mCallingFragment.contains(FRAG_TRANS_PERFORM) ||
-                            mCallingFragment.contains(FRAG_TRANS_UPDATE)
-                        ) {
-                            val tempTrans = mainViewModel.getTransactionDetailed()!!
-                            val transactionDetailed = TransactionDetailed(
-                                tempTrans.transaction,
-                                tempTrans.budgetRule,
-                                curAccount.account,
-                                tempTrans.fromAccount,
-                            )
-                            transactionDetailed.transaction!!.transToAccountPending =
-                                curAccount.accountType!!.tallyOwing
-                            mainViewModel.setTransactionDetailed(transactionDetailed)
-                        } else if (mCallingFragment.contains(FRAG_BUDGET_ITEM_ADD) ||
-                            mCallingFragment.contains(FRAG_BUDGET_ITEM_UPDATE)
-                        ) {
-                            mainViewModel.setBudgetItemDetailed(
-                                BudgetItemDetailed(
-                                    mainViewModel.getBudgetItemDetailed()?.budgetItem,
-                                    mainViewModel.getBudgetItemDetailed()?.budgetRule,
-                                    curAccount.account,
-                                    mainViewModel.getBudgetItemDetailed()?.fromAccount,
-                                )
-                            )
-                        } else if (mCallingFragment.contains(FRAG_BUDGET_RULE_ADD) ||
-                            mCallingFragment.contains(FRAG_BUDGET_RULE_UPDATE)
-                        ) {
-                            mainViewModel.setBudgetRuleDetailed(
-                                BudgetRuleDetailed(
-                                    mainViewModel.getBudgetRuleDetailed()?.budgetRule,
-                                    curAccount.account,
-                                    mainViewModel.getBudgetRuleDetailed()?.fromAccount,
-                                )
-                            )
-                        }
-                        gotoCallingFragment()
-                    }
-
-                    REQUEST_FROM_ACCOUNT -> {
-                        if (mCallingFragment.contains(FRAG_TRANSACTION_SPLIT)) {
-                            val splitTrans = mainViewModel.getSplitTransactionDetailed()
-                            val splitTransactionDetailed = TransactionDetailed(
-                                splitTrans?.transaction,
-                                splitTrans?.budgetRule,
-                                splitTrans?.toAccount,
-                                curAccount.account,
-                            )
-                            splitTransactionDetailed.transaction?.transFromAccountPending =
-                                curAccount.accountType!!.tallyOwing
-                            mainViewModel.setSplitTransactionDetailed(splitTransactionDetailed)
-                        } else if (mCallingFragment.contains(FRAG_TRANS_ADD) ||
-                            mCallingFragment.contains(FRAG_TRANS_PERFORM) ||
-                            mCallingFragment.contains(FRAG_TRANS_UPDATE)
-                        ) {
-                            val transactionDetailed = TransactionDetailed(
-                                mainViewModel.getTransactionDetailed()?.transaction,
-                                mainViewModel.getTransactionDetailed()?.budgetRule,
-                                mainViewModel.getTransactionDetailed()?.toAccount,
-                                curAccount.account,
-                            )
-                            transactionDetailed.transaction?.transFromAccountPending =
-                                curAccount.accountType!!.tallyOwing
-                            mainViewModel.setTransactionDetailed(transactionDetailed)
-                        } else if (mCallingFragment.contains(FRAG_BUDGET_ITEM_ADD) ||
-                            mCallingFragment.contains(FRAG_BUDGET_ITEM_UPDATE)
-                        ) {
-                            mainViewModel.setBudgetItemDetailed(
-                                BudgetItemDetailed(
-                                    mainViewModel.getBudgetItemDetailed()?.budgetItem,
-                                    mainViewModel.getBudgetItemDetailed()?.budgetRule,
-                                    mainViewModel.getBudgetItemDetailed()?.toAccount,
-                                    curAccount.account,
-                                )
-                            )
-                        } else if (mCallingFragment.contains(FRAG_BUDGET_RULE_ADD) ||
-                            mCallingFragment.contains(FRAG_BUDGET_RULE_UPDATE)
-                        ) {
-                            mainViewModel.setBudgetRuleDetailed(
-                                BudgetRuleDetailed(
-                                    mainViewModel.getBudgetRuleDetailed()?.budgetRule,
-                                    mainViewModel.getBudgetRuleDetailed()?.toAccount,
-                                    curAccount.account
-                                )
-                            )
-                        }
-                        gotoCallingFragment()
-                    }
-                }
+            val mCallingFragment = mainViewModel.getCallingFragments()!!
+            if (mCallingFragment.contains(FRAG_TRANSACTION_SPLIT)) {
+                populateSplitTransaction(curAccount)
+            } else if (mCallingFragment.contains(FRAG_TRANS_ADD) ||
+                mCallingFragment.contains(FRAG_TRANS_PERFORM) ||
+                mCallingFragment.contains(FRAG_TRANS_UPDATE)
+            ) {
+                populateTransactionDetailed(curAccount)
+            } else if (mCallingFragment.contains(FRAG_BUDGET_ITEM_ADD) ||
+                mCallingFragment.contains(FRAG_BUDGET_ITEM_UPDATE)
+            ) {
+                populateBudgetItemDetailed(curAccount)
+            } else if (mCallingFragment.contains(FRAG_BUDGET_RULE_ADD) ||
+                mCallingFragment.contains(FRAG_BUDGET_RULE_UPDATE)
+            ) {
+                populateBudgetRuleDetailed(curAccount)
             }
+            gotoCallingFragment()
         }
     }
 
-    private fun gotoTransactionAverage(curAccount: AccountWithType) {
-        mainViewModel.addCallingFragment(parentTag)
-        mainViewModel.setAccountWithType(curAccount)
-        mainViewModel.setBudgetRuleDetailed(null)
-        accountChooseFragment.gotoTransactionAverageFragment()
+    private fun populateSplitTransaction(curAccount: AccountWithType) {
+        val splitTrans = mainViewModel.getSplitTransactionDetailed()!!
+        val isToAccount = mainViewModel.getRequestedAccount()!! == REQUEST_TO_ACCOUNT
+        val splitTransactionDetailed = TransactionDetailed(
+            splitTrans.transaction,
+            splitTrans.budgetRule,
+            if (isToAccount) curAccount.account else splitTrans.toAccount,
+            if (!isToAccount) curAccount.account else splitTrans.fromAccount,
+        )
+        splitTransactionDetailed.transaction!!.transToAccountPending =
+            curAccount.accountType!!.tallyOwing
+        mainViewModel.setSplitTransactionDetailed(splitTransactionDetailed)
+    }
+
+    private fun populateTransactionDetailed(curAccount: AccountWithType) {
+        val tempTrans = mainViewModel.getTransactionDetailed()!!
+        val isToAccount = mainViewModel.getRequestedAccount()!! == REQUEST_TO_ACCOUNT
+        val transactionDetailed = TransactionDetailed(
+            tempTrans.transaction,
+            tempTrans.budgetRule,
+            if (isToAccount) curAccount.account else tempTrans.toAccount,
+            if (!isToAccount) curAccount.account else tempTrans.fromAccount,
+        )
+        transactionDetailed.transaction!!.transToAccountPending =
+            curAccount.accountType!!.tallyOwing
+        mainViewModel.setTransactionDetailed(transactionDetailed)
+    }
+
+    private fun populateBudgetItemDetailed(curAccount: AccountWithType) {
+        val tempBudgetItem = mainViewModel.getBudgetItemDetailed()!!
+        val isToAccount = mainViewModel.getRequestedAccount()!! == REQUEST_TO_ACCOUNT
+        mainViewModel.setBudgetItemDetailed(
+            BudgetItemDetailed(
+                tempBudgetItem.budgetItem,
+                tempBudgetItem.budgetRule,
+                if (isToAccount) curAccount.account else tempBudgetItem.toAccount,
+                if (!isToAccount) curAccount.account else tempBudgetItem.fromAccount,
+            )
+        )
+    }
+
+    private fun populateBudgetRuleDetailed(curAccount: AccountWithType) {
+        val tempBudgetRule = mainViewModel.getBudgetRuleDetailed()!!
+        val isToAccount = mainViewModel.getRequestedAccount()!! == REQUEST_TO_ACCOUNT
+        mainViewModel.setBudgetRuleDetailed(
+            BudgetRuleDetailed(
+                tempBudgetRule.budgetRule,
+                if (isToAccount) curAccount.account else tempBudgetRule.toAccount,
+                if (!isToAccount) tempBudgetRule.fromAccount else tempBudgetRule.fromAccount,
+            )
+        )
     }
 
     private fun gotoCallingFragment() {

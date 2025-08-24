@@ -94,10 +94,10 @@ class BudgetRuleUpdateFragment : Fragment(R.layout.fragment_budget_rule_update) 
     private fun populateValues() {
         getBudgetRuleNameForValidation()
         populateSpinners()
-        if (mainViewModel.getCallingFragments() != null) {
-            if (mainViewModel.getBudgetRuleDetailed() != null) {
-                val mCallingFragment = mainViewModel.getCallingFragments()!!
-                CoroutineScope(Dispatchers.Main).launch {
+        CoroutineScope(Dispatchers.Main).launch {
+            if (mainViewModel.getCallingFragments() != null) {
+                if (mainViewModel.getBudgetRuleDetailed() != null) {
+                    val mCallingFragment = mainViewModel.getCallingFragments()!!
                     if (mCallingFragment.contains(FRAG_TRANSACTION_VIEW) &&
                         !mCallingFragment.contains(FRAG_ACCOUNT_CHOOSE)
                     ) {
@@ -112,12 +112,13 @@ class BudgetRuleUpdateFragment : Fragment(R.layout.fragment_budget_rule_update) 
                     delay(WAIT_250)
                     populateFromBudgetRuleDetailed()
                 }
+            } else {
+                populateDatesOnly()
             }
-        } else {
-            populateDatesOnly()
+            delay(WAIT_500)
+            populateDateRecycler(budgetRuleDetailed.budgetRule!!.ruleId)
         }
 
-        populateDateRecycler(budgetRuleDetailed.budgetRule!!.ruleId)
     }
 
     private fun populateDatesOnly() {

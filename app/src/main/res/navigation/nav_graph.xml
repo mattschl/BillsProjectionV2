@@ -94,10 +94,12 @@
         <action
             android:id="@+id/action_accountAddFragment_to_accountsFragment"
             app:destination="@id/accountsFragment"
-            app:popUpTo="@id/accountsFragment" />
+            app:popUpTo="@id/accountsFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_accountAddFragment_to_accountTypesFragment"
-            app:destination="@id/accountTypesFragment" />
+            app:destination="@id/accountTypesFragment"
+            app:popUpToInclusive="false" />
         <action
             android:id="@+id/action_accountAddFragment_to_calcFragment"
             app:destination="@id/calcFragment" />
@@ -198,7 +200,8 @@
         <action
             android:id="@+id/action_accountTypesFragment_to_accountAddFragment"
             app:destination="@id/accountAddFragment"
-            app:popUpTo="@id/accountAddFragment" />
+            app:popUpTo="@id/accountAddFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <!--    accountTypeAddFragment-->
@@ -210,7 +213,8 @@
         <action
             android:id="@+id/action_accountTypeAddFragment_to_accountTypesFragment"
             app:destination="@id/accountTypesFragment"
-            app:popUpTo="@id/accountTypesFragment" />
+            app:popUpTo="@id/accountTypesFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <!--    accountTypeUpdateFragment-->
@@ -222,7 +226,8 @@
         <action
             android:id="@+id/action_accountTypeUpdateFragment_to_accountTypesFragment"
             app:destination="@id/accountTypesFragment"
-            app:popUpTo="@id/accountTypesFragment" />
+            app:popUpTo="@id/accountTypesFragment"
+            app:popUpToInclusive="true" />
 
     </fragment>
 
@@ -284,19 +289,23 @@
         <action
             android:id="@+id/action_budgetRuleChooseFragment_to_transactionSplitFragment"
             app:destination="@id/transactionSplitFragment"
-            app:popUpTo="@id/transactionSplitFragment" />
+            app:popUpTo="@id/transactionSplitFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_budgetRuleChooseFragment_to_budgetItemAddFragment"
             app:destination="@id/budgetItemAddFragment"
-            app:popUpTo="@id/budgetItemAddFragment" />
+            app:popUpTo="@id/budgetItemAddFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_budgetRuleChooseFragment_to_budgetItemUpdateFragment"
             app:destination="@id/budgetItemUpdateFragment"
-            app:popUpTo="@id/budgetItemUpdateFragment" />
+            app:popUpTo="@id/budgetItemUpdateFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_budgetRuleChooseFragment_to_transactionAddFragment"
             app:destination="@id/transactionAddFragment"
-            app:popUpTo="@id/transactionAddFragment" />
+            app:popUpTo="@id/transactionAddFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <!--    budgetRuleAddFragment-->
@@ -537,7 +546,9 @@
             app:popUpTo="@id/transactionViewFragment" />
         <action
             android:id="@+id/action_transactionAddFragment_to_budgetRuleFragment"
-            app:destination="@id/budgetRuleFragment" />
+            app:destination="@id/budgetRuleFragment"
+            app:popUpTo="@id/budgetRuleFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_transactionAddFragment_to_accountsFragment"
             app:destination="@id/accountsFragment" />
@@ -715,11 +726,13 @@
         <action
             android:id="@+id/action_calcFragment_to_budgetRuleUpdateFragment"
             app:destination="@id/budgetRuleUpdateFragment"
-            app:popUpTo="@id/budgetRuleUpdateFragment" />
+            app:popUpTo="@id/budgetRuleUpdateFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_calcFragment_to_budgetRuleAddFragment"
             app:destination="@id/budgetRuleAddFragment"
-            app:popUpTo="@id/budgetRuleAddFragment" />
+            app:popUpTo="@id/budgetRuleAddFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_calcFragment_to_transactionUpdateFragment"
             app:destination="@id/transactionUpdateFragment"
@@ -727,7 +740,8 @@
         <action
             android:id="@+id/action_calcFragment_to_transactionAddFragment"
             app:destination="@id/transactionAddFragment"
-            app:popUpTo="@id/transactionAddFragment" />
+            app:popUpTo="@id/transactionAddFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_calcFragment_to_budgetItemAddFragment"
             app:destination="@id/budgetItemAddFragment"
@@ -740,7 +754,8 @@
         <action
             android:id="@+id/action_calcFragment_to_accountUpdateFragment"
             app:destination="@id/accountUpdateFragment"
-            app:popUpTo="@id/accountUpdateFragment" />
+            app:popUpTo="@id/accountUpdateFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_calcFragment_to_accountAddFragment"
             app:destination="@id/accountAddFragment"
@@ -748,7 +763,8 @@
         <action
             android:id="@+id/action_calcFragment_to_transactionSplitFragment"
             app:destination="@id/transactionSplitFragment"
-            app:popUpTo="@id/transactionSplitFragment" />
+            app:popUpTo="@id/transactionSplitFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
 </navigation>
