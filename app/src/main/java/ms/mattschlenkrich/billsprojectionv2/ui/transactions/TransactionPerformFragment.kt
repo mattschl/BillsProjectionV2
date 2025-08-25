@@ -81,13 +81,13 @@ class TransactionPerformFragment : Fragment(
 
     private fun populateValues() {
         if (mainViewModel.getTransactionDetailed() != null) {
-            populateValuesFromTransaction()
+            populateValuesFromTransactionDetailedInCache()
         } else if (mainViewModel.getBudgetItemDetailed() != null) {
-            populateValuesFromBudgetItem()
+            populateValuesFromBudgetItemDetailedInCache()
         }
     }
 
-    private fun populateValuesFromTransaction() {
+    private fun populateValuesFromTransactionDetailedInCache() {
         if (mainViewModel.getTransactionDetailed()!!.transaction != null) {
             mTransactionDetailed = mainViewModel.getTransactionDetailed()!!
             val mTransaction = mainViewModel.getTransactionDetailed()!!.transaction!!
@@ -124,6 +124,7 @@ class TransactionPerformFragment : Fragment(
                         chkToAccPending.visibility = View.VISIBLE
                     } else {
                         chkToAccPending.visibility = View.GONE
+                        chkToAccPending.isChecked = false
                     }
                 }
                 chkToAccPending.isChecked =
@@ -136,6 +137,7 @@ class TransactionPerformFragment : Fragment(
                             chkFromAccPending.visibility = View.VISIBLE
                         } else {
                             chkFromAccPending.visibility = View.GONE
+                            chkFromAccPending.isChecked = false
                         }
                     }
                 chkFromAccPending.isChecked =
@@ -146,7 +148,7 @@ class TransactionPerformFragment : Fragment(
         }
     }
 
-    private fun populateValuesFromBudgetItem() {
+    private fun populateValuesFromBudgetItemDetailedInCache() {
         val budgetItem = mainActivity.mainViewModel.getBudgetItemDetailed()!!
         mToAccount = budgetItem.toAccount
         mFromAccount = budgetItem.fromAccount
@@ -168,6 +170,7 @@ class TransactionPerformFragment : Fragment(
                         }
                     } else {
                         chkToAccPending.visibility = View.GONE
+                        chkToAccPending.isChecked = false
                     }
                 }
             tvFromAccount.text = mFromAccount!!.accountName
@@ -178,6 +181,7 @@ class TransactionPerformFragment : Fragment(
                         chkFromAccPending.isChecked = accWType.accountType.tallyOwing
                     } else {
                         chkFromAccPending.visibility = View.GONE
+                        chkFromAccPending.isChecked = false
                     }
                 }
             etBudgetedAmount.setText(

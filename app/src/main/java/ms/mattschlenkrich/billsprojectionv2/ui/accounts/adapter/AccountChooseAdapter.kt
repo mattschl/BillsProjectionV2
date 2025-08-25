@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.accounts.adapter
 
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -14,6 +15,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_SPLIT
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_PERFORM
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
+import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
@@ -24,7 +26,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountChooseFragment
 
 
-//private const val PARENT_TAG = FRAG_ACCOUNTS
+private const val TAG = "AccountChoose"
 
 class AccountChooseAdapter(
     val mainActivity: MainActivity,
@@ -122,15 +124,27 @@ class AccountChooseAdapter(
 
     private fun populateTransactionDetailed(curAccount: AccountWithType) {
         val tempTrans = mainViewModel.getTransactionDetailed()!!
-        val isToAccount = mainViewModel.getRequestedAccount()!! == REQUEST_TO_ACCOUNT
+
+        tempTrans.transaction!!.transToAccountPending =
+            curAccount.accountType!!.allowPending && curAccount.accountType.tallyOwing &&
+                    mainViewModel.getRequestedAccount()!! == REQUEST_TO_ACCOUNT
+        tempTrans.transaction.transFromAccountPending =
+            curAccount.accountType.allowPending && curAccount.accountType.tallyOwing &&
+                    mainViewModel.getRequestedAccount()!! == REQUEST_FROM_ACCOUNT
+        Log.d(
+            TAG, "ToAccountPending = ${
+                curAccount.accountType.allowPending && curAccount.accountType.tallyOwing && mainViewModel.getRequestedAccount()!! == REQUEST_TO_ACCOUNT
+            } \n" +
+                    "FromAccountPending =  ${curAccount.accountType.allowPending && curAccount.accountType.tallyOwing && mainViewModel.getRequestedAccount()!! == REQUEST_FROM_ACCOUNT}"
+        )
         val transactionDetailed = TransactionDetailed(
             tempTrans.transaction,
             tempTrans.budgetRule,
-            if (isToAccount) curAccount.account else tempTrans.toAccount,
-            if (!isToAccount) curAccount.account else tempTrans.fromAccount,
+            if (mainViewModel.getRequestedAccount()!! == REQUEST_TO_ACCOUNT) curAccount.account else tempTrans.toAccount,
+            if (mainViewModel.getRequestedAccount()!! == REQUEST_FROM_ACCOUNT) curAccount.account else tempTrans.fromAccount,
         )
         transactionDetailed.transaction!!.transToAccountPending =
-            curAccount.accountType!!.tallyOwing
+            curAccount.accountType.tallyOwing
         mainViewModel.setTransactionDetailed(transactionDetailed)
     }
 
