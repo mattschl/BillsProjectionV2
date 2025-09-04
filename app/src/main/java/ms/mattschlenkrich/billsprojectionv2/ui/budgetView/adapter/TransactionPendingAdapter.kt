@@ -15,6 +15,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
+import ms.mattschlenkrich.billsprojectionv2.common.WAIT_500
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
@@ -100,9 +101,7 @@ class TransactionPendingAdapter(
                 255, random.nextInt(256), random.nextInt(256), random.nextInt(256)
             )
             vColor.setBackgroundColor(color)
-            holder.itemView.setOnClickListener {
-                chooseOptionsForTransaction(pendingTransaction)
-            }
+            holder.itemView.setOnClickListener { chooseOptionsForTransaction(pendingTransaction) }
 
         }
     }
@@ -121,16 +120,11 @@ class TransactionPendingAdapter(
         ) { _, pos ->
             when (pos) {
                 0 -> {
-                    confirmTransaction(
-                        pendingTransaction,
-                        curAccount,
-                    )
+                    confirmTransaction(pendingTransaction, curAccount)
                 }
 
                 1 -> {
-                    editTransaction(
-                        pendingTransaction
-                    )
+                    editTransaction(pendingTransaction)
                 }
 
                 2 -> {
@@ -199,85 +193,86 @@ class TransactionPendingAdapter(
     }
 
     private fun completeTransaction(transaction: TransactionDetailed?, curAccount: String) {
-        if (transaction!!.toAccount!!.accountName == curAccount) {
-            CoroutineScope(Dispatchers.IO).launch {
-                transactionViewModel.updateTransaction(
-                    Transactions(
-                        transaction.transaction!!.transId,
-                        transaction.transaction.transDate,
-                        transaction.transaction.transName,
-                        transaction.transaction.transNote,
-                        transaction.transaction.transRuleId,
-                        transaction.transaction.transToAccountId,
-                        false,
-                        transaction.transaction.transFromAccountId,
-                        transaction.transaction.transFromAccountPending,
-                        transaction.transaction.transAmount,
-                        transaction.transaction.transIsDeleted,
-                        df.getCurrentTimeAsString()
+        CoroutineScope(Dispatchers.Main).launch {
+            if (transaction!!.toAccount!!.accountName == curAccount) {
+                CoroutineScope(Dispatchers.Default).launch {
+                    transactionViewModel.updateTransaction(
+                        Transactions(
+                            transaction.transaction!!.transId,
+                            transaction.transaction.transDate,
+                            transaction.transaction.transName,
+                            transaction.transaction.transNote,
+                            transaction.transaction.transRuleId,
+                            transaction.transaction.transToAccountId,
+                            false,
+                            transaction.transaction.transFromAccountId,
+                            transaction.transaction.transFromAccountPending,
+                            transaction.transaction.transAmount,
+                            transaction.transaction.transIsDeleted,
+                            df.getCurrentTimeAsString()
+                        )
                     )
-                )
-                val account = async {
-                    accountViewModel.getAccountWithType(
-                        curAccount
-                    )
-                }
-                val accountDetailed = account.await()
-                if (accountDetailed.accountType!!.keepTotals) {
-                    transactionViewModel.updateAccountBalance(
-                        accountDetailed.account.accountBalance + transaction.transaction.transAmount,
-                        accountDetailed.account.accountId,
-                        df.getCurrentTimeAsString()
-                    )
-                } else if (accountDetailed.accountType.tallyOwing) {
-                    transactionViewModel.updateAccountOwing(
-                        accountDetailed.account.accountOwing - transaction.transaction.transAmount,
-                        accountDetailed.account.accountId,
-                        df.getCurrentTimeAsString()
+                    val account = async {
+                        accountViewModel.getAccountWithType(
+                            curAccount
+                        )
+                    }
+                    val accountDetailed = account.await()
+                    if (accountDetailed.accountType!!.keepTotals) {
+                        transactionViewModel.updateAccountBalance(
+                            accountDetailed.account.accountBalance + transaction.transaction.transAmount,
+                            accountDetailed.account.accountId,
+                            df.getCurrentTimeAsString()
+                        )
+                    } else if (accountDetailed.accountType.tallyOwing) {
+                        transactionViewModel.updateAccountOwing(
+                            accountDetailed.account.accountOwing - transaction.transaction.transAmount,
+                            accountDetailed.account.accountId,
+                            df.getCurrentTimeAsString()
 
+                        )
+                    }
+                }
+            } else {
+                CoroutineScope(Dispatchers.Default).launch {
+                    transactionViewModel.updateTransaction(
+                        Transactions(
+                            transaction.transaction!!.transId,
+                            transaction.transaction.transDate,
+                            transaction.transaction.transName,
+                            transaction.transaction.transNote,
+                            transaction.transaction.transRuleId,
+                            transaction.transaction.transToAccountId,
+                            transaction.transaction.transToAccountPending,
+                            transaction.transaction.transFromAccountId,
+                            false,
+                            transaction.transaction.transAmount,
+                            transaction.transaction.transIsDeleted,
+                            df.getCurrentTimeAsString()
+                        )
                     )
+                    val account = async {
+                        accountViewModel.getAccountWithType(curAccount)
+                    }
+                    val accountDetailed = account.await()
+                    if (accountDetailed.accountType!!.keepTotals) {
+                        transactionViewModel.updateAccountBalance(
+                            accountDetailed.account.accountBalance - transaction.transaction.transAmount,
+                            accountDetailed.account.accountId,
+                            df.getCurrentTimeAsString()
+                        )
+                    } else if (accountDetailed.accountType.tallyOwing) {
+                        transactionViewModel.updateAccountOwing(
+                            accountDetailed.account.accountOwing + transaction.transaction.transAmount,
+                            accountDetailed.account.accountId,
+                            df.getCurrentTimeAsString()
+
+                        )
+                    }
                 }
             }
-        } else {
-            CoroutineScope(Dispatchers.IO).launch {
-                transactionViewModel.updateTransaction(
-                    Transactions(
-                        transaction.transaction!!.transId,
-                        transaction.transaction.transDate,
-                        transaction.transaction.transName,
-                        transaction.transaction.transNote,
-                        transaction.transaction.transRuleId,
-                        transaction.transaction.transToAccountId,
-                        transaction.transaction.transToAccountPending,
-                        transaction.transaction.transFromAccountId,
-                        false,
-                        transaction.transaction.transAmount,
-                        transaction.transaction.transIsDeleted,
-                        df.getCurrentTimeAsString()
-                    )
-                )
-                val account = async {
-                    accountViewModel.getAccountWithType(
-                        curAccount
-                    )
-                }
-                val accountDetailed = account.await()
-                if (accountDetailed.accountType!!.keepTotals) {
-                    transactionViewModel.updateAccountBalance(
-                        accountDetailed.account.accountBalance - transaction.transaction.transAmount,
-                        accountDetailed.account.accountId,
-                        df.getCurrentTimeAsString()
-                    )
-                } else if (accountDetailed.accountType.tallyOwing) {
-                    transactionViewModel.updateAccountOwing(
-                        accountDetailed.account.accountOwing + transaction.transaction.transAmount,
-                        accountDetailed.account.accountId,
-                        df.getCurrentTimeAsString()
-
-                    )
-                }
-            }
+            delay(WAIT_500)
+            budgetViewFragment.populatePendingList()
         }
-        budgetViewFragment.populatePendingList()
     }
 }
