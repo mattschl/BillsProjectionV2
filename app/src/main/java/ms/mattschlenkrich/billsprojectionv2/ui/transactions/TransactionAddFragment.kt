@@ -18,9 +18,9 @@ import androidx.navigation.findNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
@@ -59,6 +59,8 @@ class TransactionAddFragment : Fragment(R.layout.fragment_transaction_add) {
     private var mFromAccount: Account? = null
     private var mToAccountWithType: AccountWithType? = null
     private var mFromAccountWithType: AccountWithType? = null
+    private val mainScope = CoroutineScope(Dispatchers.Main)
+    private val defaultScope = CoroutineScope(Dispatchers.Default)
 
     private val nf = NumberFunctions()
     private val df = DateFunctions()
@@ -85,7 +87,7 @@ class TransactionAddFragment : Fragment(R.layout.fragment_transaction_add) {
     }
 
     private fun populateValues() {
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             if (mainViewModel.getTransactionDetailed() != null) {
                 populateValuesFromTransactionDetailedInCache()
             } else {
@@ -124,11 +126,11 @@ class TransactionAddFragment : Fragment(R.layout.fragment_transaction_add) {
 
     private fun populateFromAccountWithCache() {
         binding.apply {
-            CoroutineScope(Dispatchers.Main).launch {
+            mainScope.launch {
                 mFromAccount = mainViewModel.getTransactionDetailed()!!.fromAccount
                 tvFromAccount.text =
                     mainViewModel.getTransactionDetailed()?.fromAccount!!.accountName
-                withContext(Dispatchers.Default) {
+                defaultScope.launch {
                     mFromAccountWithType = accountViewModel.getAccountWithType(
                         mFromAccount!!.accountName
                     )
@@ -147,10 +149,10 @@ class TransactionAddFragment : Fragment(R.layout.fragment_transaction_add) {
 
     private fun populateToAccountWithCache() {
         binding.apply {
-            CoroutineScope(Dispatchers.Main).launch {
+            mainScope.launch {
                 mToAccount = mainViewModel.getTransactionDetailed()!!.toAccount
                 tvToAccount.text = mainViewModel.getTransactionDetailed()!!.toAccount!!.accountName
-                withContext(Dispatchers.Default) {
+                defaultScope.launch {
                     mToAccountWithType = accountViewModel.getAccountWithType(
                         mToAccount!!.accountName
                     )
@@ -193,10 +195,10 @@ class TransactionAddFragment : Fragment(R.layout.fragment_transaction_add) {
                 }
                 mFromAccount = acc.await()
             }
-            CoroutineScope(Dispatchers.Main).launch {
+            mainScope.launch {
                 delay(WAIT_250)
                 tvFromAccount.text = mFromAccount!!.accountName
-                withContext(Dispatchers.Default) {
+                defaultScope.launch {
                     mFromAccountWithType = accountViewModel.getAccountWithType(
                         mFromAccount!!.accountName
                     )
@@ -215,15 +217,15 @@ class TransactionAddFragment : Fragment(R.layout.fragment_transaction_add) {
 
     private fun populateToAccountFromBudgetRule() {
         binding.apply {
-            CoroutineScope(Dispatchers.Main).launch {
-                withContext(Dispatchers.Default) {
+            mainScope.launch {
+                defaultScope.launch {
                     mToAccount = accountViewModel.getAccount(
                         mainViewModel.getTransactionDetailed()!!.budgetRule!!.budToAccountId
                     )
                 }
                 delay(WAIT_250)
                 tvToAccount.text = mToAccount!!.accountName
-                withContext(Dispatchers.Default) {
+                defaultScope.launch {
                     mToAccountWithType = accountViewModel.getAccountWithType(
                         mainViewModel.getTransactionDetailed()!!.budgetRule!!.budToAccountId
                     )
@@ -549,7 +551,13 @@ class TransactionAddFragment : Fragment(R.layout.fragment_transaction_add) {
         )
     }
 
+    override fun onStop() {
+        super.onStop()
+    }
+
     override fun onDestroy() {
+        mainScope.cancel()
+        defaultScope.cancel()
         super.onDestroy()
         _binding = null
     }

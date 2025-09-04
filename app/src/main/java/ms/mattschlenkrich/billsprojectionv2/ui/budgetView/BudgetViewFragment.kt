@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -35,9 +36,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.adapter.TransactionPen
 
 private const val TAG = FRAG_BUDGET_VIEW
 
-class BudgetViewFragment : Fragment(
-    R.layout.fragment_budget_view
-) {
+class BudgetViewFragment : Fragment(R.layout.fragment_budget_view) {
 
     private var _binding: FragmentBudgetViewBinding? = null
     private val binding get() = _binding!!
@@ -54,6 +53,8 @@ class BudgetViewFragment : Fragment(
     private lateinit var curAsset: AccountWithType
     private val budgetList = ArrayList<BudgetItemDetailed>()
     private var pendingAmount = 0.0
+    private val mainScope = CoroutineScope(Dispatchers.Main)
+    private val defaultScope = CoroutineScope(Dispatchers.Default)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -288,7 +289,7 @@ class BudgetViewFragment : Fragment(
     }
 
     fun populateBudgetList() {
-        CoroutineScope(Dispatchers.Main).launch {
+        mainScope.launch {
             delay(WAIT_250)
             binding.apply {
                 val asset = spAssetNames.selectedItem.toString()
@@ -309,20 +310,19 @@ class BudgetViewFragment : Fragment(
                     layoutManager = LinearLayoutManager(requireContext())
                     adapter = budgetViewAdapter
                 }
-                activity?.let {
-                    budgetItemViewModel.getBudgetItems(
-                        asset, payDay
-                    ).observe(viewLifecycleOwner) { budgetItems ->
-                        budgetList.clear()
-                        budgetViewAdapter.differ.submitList(budgetItems)
-                        budgetItems.listIterator().forEach {
-                            budgetList.add(it)
-                        }
-                        populateAssetDetails()
-                        populateBudgetTotals()
-                        updateBudgetListUi(budgetItems)
+                budgetItemViewModel.getBudgetItems(
+                    asset, payDay
+                ).observe(viewLifecycleOwner) { budgetItems ->
+                    budgetList.clear()
+                    budgetViewAdapter.differ.submitList(budgetItems)
+                    budgetItems.listIterator().forEach {
+                        budgetList.add(it)
                     }
+                    populateAssetDetails()
+                    populateBudgetTotals()
+                    updateBudgetListUi(budgetItems)
                 }
+
             }
         }
     }
@@ -349,7 +349,7 @@ class BudgetViewFragment : Fragment(
     private fun resumeHistory() {
         val waitTime = WAIT_250
         binding.apply {
-            CoroutineScope(Dispatchers.Main).launch {
+            mainScope.launch {
                 delay(waitTime)
                 if (spAssetNames.adapter != null) {
                     for (i in 0 until spAssetNames.adapter.count) {
@@ -553,6 +553,7 @@ class BudgetViewFragment : Fragment(
     }
 
     override fun onDestroy() {
+        mainScope.cancel()
         super.onDestroy()
         _binding = null
     }
