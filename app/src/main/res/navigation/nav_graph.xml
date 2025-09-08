@@ -103,6 +103,11 @@
         <action
             android:id="@+id/action_accountAddFragment_to_calcFragment"
             app:destination="@id/calcFragment" />
+        <action
+            android:id="@+id/action_accountAddFragment_to_accountChooseFragment"
+            app:destination="@id/accountChooseFragment"
+            app:popUpTo="@id/accountChooseFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <!--    accountUpdateFragment-->
@@ -179,6 +184,9 @@
             app:destination="@id/transactionUpdateFragment"
             app:popUpTo="@id/transactionUpdateFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_accountChooseFragment_to_accountAddFragment"
+            app:destination="@id/accountAddFragment" />
     </fragment>
 
     <!--    accountTypesFragment-->
@@ -306,6 +314,9 @@
             app:destination="@id/transactionAddFragment"
             app:popUpTo="@id/transactionAddFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_budgetRuleChooseFragment_to_budgetRuleAddFragment"
+            app:destination="@id/budgetRuleAddFragment" />
     </fragment>
 
     <!--    budgetRuleAddFragment-->
@@ -328,6 +339,11 @@
         <action
             android:id="@+id/action_budgetRuleAddFragment_to_accountChooseFragment"
             app:destination="@id/accountChooseFragment" />
+        <action
+            android:id="@+id/action_budgetRuleAddFragment_to_budgetRuleChooseFragment"
+            app:destination="@id/budgetRuleChooseFragment"
+            app:popUpTo="@id/budgetRuleChooseFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <!--    budgetRuleUpdateFragment-->

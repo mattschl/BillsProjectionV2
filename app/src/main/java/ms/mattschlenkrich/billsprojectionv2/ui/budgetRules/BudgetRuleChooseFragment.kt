@@ -15,6 +15,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_CHOOSE
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewModel
@@ -22,7 +23,7 @@ import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetRuleBindin
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.adapter.BudgetRuleChooseAdapter
 
-private const val TAG = "BudgetRuleChooseFragment"
+private const val TAG = FRAG_BUDGET_RULE_CHOOSE
 
 class BudgetRuleChooseFragment : Fragment(R.layout.fragment_budget_rule),
     SearchView.OnQueryTextListener,
@@ -59,7 +60,7 @@ class BudgetRuleChooseFragment : Fragment(R.layout.fragment_budget_rule),
         super.onViewCreated(view, savedInstanceState)
         removeFragmentReference()
         setupRecyclerView()
-        createClickActions()
+        setClickActions()
     }
 
     private fun removeFragmentReference() {
@@ -100,7 +101,8 @@ class BudgetRuleChooseFragment : Fragment(R.layout.fragment_budget_rule),
         }
     }
 
-    private fun createClickActions() {
+    private fun setClickActions() {
+        binding.fabAddNew.setOnClickListener { gotoBudgetRuleAdd() }
         setMenu()
     }
 
@@ -136,6 +138,18 @@ class BudgetRuleChooseFragment : Fragment(R.layout.fragment_budget_rule),
         budgetRuleViewModel.searchBudgetRules(searchQuery).observe(
             this
         ) { list -> budgetRuleChooseAdapter.differ.submitList(list) }
+    }
+
+    private fun gotoBudgetRuleAdd() {
+        mainViewModel.addCallingFragment(TAG)
+        mainViewModel.setBudgetRuleDetailed(null)
+        gotoBudgetRuleAddFragment()
+    }
+
+    private fun gotoBudgetRuleAddFragment() {
+        mView.findNavController().navigate(
+            BudgetRuleChooseFragmentDirections.actionBudgetRuleChooseFragmentToBudgetRuleAddFragment()
+        )
     }
 
     fun gotoBudgetItemAddFragment() {

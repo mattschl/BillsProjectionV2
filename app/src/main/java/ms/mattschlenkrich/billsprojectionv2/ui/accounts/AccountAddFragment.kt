@@ -17,7 +17,9 @@ import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.BALANCE
 import ms.mattschlenkrich.billsprojectionv2.common.BUDGETED
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_ADD
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_CHOOSE
 import ms.mattschlenkrich.billsprojectionv2.common.OWING
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
@@ -242,7 +244,7 @@ class AccountAddFragment :
                 mainViewModel.getAccountWithType()?.accountType!!
             )
         )
-        gotoAccountsFragment()
+        gotoCallingFragment()
     }
 
     private fun validateAccount(): String {
@@ -272,6 +274,29 @@ class AccountAddFragment :
         )
         gotoAccountTypesFragment()
 
+    }
+
+    private fun gotoCallingFragment() {
+        if (mainViewModel.getCallingFragments() != null) {
+            val callingFragments = mainViewModel.getCallingFragments()!!
+            if (callingFragments.contains(FRAG_ACCOUNT_CHOOSE)) {
+                gotoAccountChoose()
+            } else if (callingFragments.contains(FRAG_ACCOUNTS)) {
+                gotoAccounts()
+            }
+        }
+    }
+
+    private fun gotoAccounts() {
+        mainViewModel.removeCallingFragment(TAG)
+        mainViewModel.setAccountWithType(null)
+        gotoAccountsFragment()
+    }
+
+    private fun gotoAccountChoose() {
+        mainViewModel.removeCallingFragment(TAG)
+        mainViewModel.setAccountWithType(null)
+        gotoAccountChooseFragment()
     }
 
     private fun gotoCalculator(type: String) {
@@ -316,24 +341,27 @@ class AccountAddFragment :
         gotoCalculatorFragment()
     }
 
+    private fun gotoAccountChooseFragment() {
+        mView.findNavController().navigate(
+            AccountAddFragmentDirections.actionAccountAddFragmentToAccountChooseFragment()
+        )
+    }
+
     private fun gotoAccountsFragment() {
         mView.findNavController().navigate(
-            AccountAddFragmentDirections
-                .actionAccountAddFragmentToAccountsFragment()
+            AccountAddFragmentDirections.actionAccountAddFragmentToAccountsFragment()
         )
     }
 
     private fun gotoAccountTypesFragment() {
         mView.findNavController().navigate(
-            AccountAddFragmentDirections
-                .actionAccountAddFragmentToAccountTypesFragment()
+            AccountAddFragmentDirections.actionAccountAddFragmentToAccountTypesFragment()
         )
     }
 
     private fun gotoCalculatorFragment() {
         mView.findNavController().navigate(
-            AccountAddFragmentDirections
-                .actionAccountAddFragmentToCalcFragment()
+            AccountAddFragmentDirections.actionAccountAddFragmentToCalcFragment()
         )
     }
 
