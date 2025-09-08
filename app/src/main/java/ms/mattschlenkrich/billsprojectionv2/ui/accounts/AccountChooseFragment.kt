@@ -134,71 +134,55 @@ class AccountChooseFragment :
         mainViewModel.addCallingFragment(TAG)
         mainViewModel.setAccountWithType(null)
         mView.findNavController().navigate(
-            AccountsFragmentDirections
-                .actionAccountsFragmentToAccountAddFragment()
-        )
-    }
-
-    fun gotoTransactionAverageFragment() {
-        mView.findNavController().navigate(
-            AccountsFragmentDirections
-                .actionAccountsFragmentToTransactionAnalysisFragment()
+            AccountChooseFragmentDirections.actionAccountChooseFragmentToAccountAddFragment()
         )
     }
 
     fun gotoTransactionPerformFragment() {
         mView.findNavController().navigate(
-            AccountChooseFragmentDirections
-                .actionAccountChooseFragmentToTransactionPerformFragment()
+            AccountChooseFragmentDirections.actionAccountChooseFragmentToTransactionPerformFragment()
         )
     }
 
     fun gotoTransactionSplitFragment() {
         mView.findNavController().navigate(
-            AccountChooseFragmentDirections
-                .actionAccountChooseFragmentToTransactionSplitFragment()
+            AccountChooseFragmentDirections.actionAccountChooseFragmentToTransactionSplitFragment()
         )
     }
 
     fun gotoBudgetItemUpdateFragment() {
         mView.findNavController().navigate(
-            AccountChooseFragmentDirections
-                .actionAccountChooseFragmentToBudgetItemUpdateFragment()
+            AccountChooseFragmentDirections.actionAccountChooseFragmentToBudgetItemUpdateFragment()
         )
     }
 
     fun gotoBudgetItemAddFragment() {
         mView.findNavController().navigate(
-            AccountChooseFragmentDirections
-                .actionAccountChooseFragmentToBudgetItemAddFragment()
+            AccountChooseFragmentDirections.actionAccountChooseFragmentToBudgetItemAddFragment()
         )
     }
 
     fun gotoTransactionUpdateFragment() {
         mView.findNavController().navigate(
-            AccountChooseFragmentDirections
-                .actionAccountChooseFragmentToTransactionUpdateFragment()
+            AccountChooseFragmentDirections.actionAccountChooseFragmentToTransactionUpdateFragment()
         )
     }
 
     fun gotoTransactionAddFragment() {
         mView.findNavController().navigate(
-            AccountChooseFragmentDirections
-                .actionAccountChooseFragmentToTransactionAddFragment()
+            AccountChooseFragmentDirections.actionAccountChooseFragmentToTransactionAddFragment()
         )
     }
 
     fun gotoBudgetRuleUpdateFragment() {
         mView.findNavController().navigate(
-            AccountChooseFragmentDirections
-                .actionAccountChooseFragmentToBudgetRuleUpdateFragment()
+            AccountChooseFragmentDirections.actionAccountChooseFragmentToBudgetRuleUpdateFragment()
         )
     }
 
     fun gotoBudgetRuleAddFragment() {
         mView.findNavController().navigate(
-            AccountChooseFragmentDirections
-                .actionAccountChooseFragmentToBudgetRuleAddFragment()
+            AccountChooseFragmentDirections.actionAccountChooseFragmentToBudgetRuleAddFragment()
         )
     }
 

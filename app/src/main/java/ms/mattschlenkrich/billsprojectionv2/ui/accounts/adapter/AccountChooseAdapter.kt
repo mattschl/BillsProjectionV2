@@ -88,21 +88,21 @@ class AccountChooseAdapter(
     private fun chooseAccountAndPopulateCache(curAccount: AccountWithType) {
         if (mainViewModel.getCallingFragments() != null) {
             val mCallingFragment = mainViewModel.getCallingFragments()!!
-            if (mCallingFragment.contains(FRAG_TRANSACTION_SPLIT)) {
+            if (mCallingFragment.contains(FRAG_BUDGET_RULE_ADD) ||
+                mCallingFragment.contains(FRAG_BUDGET_RULE_UPDATE)
+            ) {
+                populateBudgetRuleDetailed(curAccount)
+            } else if (mCallingFragment.contains(FRAG_BUDGET_ITEM_ADD) ||
+                mCallingFragment.contains(FRAG_BUDGET_ITEM_UPDATE)
+            ) {
+                populateBudgetItemDetailed(curAccount)
+            } else if (mCallingFragment.contains(FRAG_TRANSACTION_SPLIT)) {
                 populateSplitTransaction(curAccount)
             } else if (mCallingFragment.contains(FRAG_TRANS_ADD) ||
                 mCallingFragment.contains(FRAG_TRANS_PERFORM) ||
                 mCallingFragment.contains(FRAG_TRANS_UPDATE)
             ) {
                 populateTransactionDetailed(curAccount)
-            } else if (mCallingFragment.contains(FRAG_BUDGET_ITEM_ADD) ||
-                mCallingFragment.contains(FRAG_BUDGET_ITEM_UPDATE)
-            ) {
-                populateBudgetItemDetailed(curAccount)
-            } else if (mCallingFragment.contains(FRAG_BUDGET_RULE_ADD) ||
-                mCallingFragment.contains(FRAG_BUDGET_RULE_UPDATE)
-            ) {
-                populateBudgetRuleDetailed(curAccount)
             }
             gotoCallingFragment()
         }
@@ -168,14 +168,23 @@ class AccountChooseAdapter(
             BudgetRuleDetailed(
                 tempBudgetRule.budgetRule,
                 if (isToAccount) curAccount.account else tempBudgetRule.toAccount,
-                if (!isToAccount) tempBudgetRule.fromAccount else tempBudgetRule.fromAccount,
+                if (!isToAccount) curAccount.account else tempBudgetRule.fromAccount,
             )
+        )
+        Log.d(
+            TAG,
+            "toAccount is ${mainViewModel.getBudgetRuleDetailed()?.toAccount?.accountName} " +
+                    "\nfromAccount is ${mainViewModel.getBudgetRuleDetailed()?.fromAccount?.accountName}"
         )
     }
 
     private fun gotoCallingFragment() {
         val callingFragment = mainViewModel.getCallingFragments()!!
-        if (callingFragment.contains(FRAG_TRANSACTION_SPLIT)) {
+        if (callingFragment.contains(FRAG_BUDGET_RULE_ADD)) {
+            accountChooseFragment.gotoBudgetRuleAddFragment()
+        } else if (callingFragment.contains(FRAG_BUDGET_ITEM_ADD)) {
+            accountChooseFragment.gotoBudgetItemAddFragment()
+        } else if (callingFragment.contains(FRAG_TRANSACTION_SPLIT)) {
             accountChooseFragment.gotoTransactionSplitFragment()
         } else if (callingFragment.contains(FRAG_TRANS_ADD)) {
             accountChooseFragment.gotoTransactionAddFragment()
@@ -183,12 +192,8 @@ class AccountChooseAdapter(
             accountChooseFragment.gotoTransactionUpdateFragment()
         } else if (callingFragment.contains(FRAG_TRANS_PERFORM)) {
             accountChooseFragment.gotoTransactionPerformFragment()
-        } else if (callingFragment.contains(FRAG_BUDGET_RULE_ADD)) {
-            accountChooseFragment.gotoBudgetRuleAddFragment()
         } else if (callingFragment.contains(FRAG_BUDGET_RULE_UPDATE)) {
             accountChooseFragment.gotoBudgetRuleUpdateFragment()
-        } else if (callingFragment.contains(FRAG_BUDGET_ITEM_ADD)) {
-            accountChooseFragment.gotoBudgetItemAddFragment()
         } else if (callingFragment.contains(FRAG_BUDGET_ITEM_UPDATE)) {
             accountChooseFragment.gotoBudgetItemUpdateFragment()
         }

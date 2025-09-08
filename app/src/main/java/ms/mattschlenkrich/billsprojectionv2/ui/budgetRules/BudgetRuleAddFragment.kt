@@ -20,7 +20,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_ADD
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_CHOOSE
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
@@ -47,6 +49,7 @@ class BudgetRuleAddFragment :
 
     private val nf = NumberFunctions()
     private val df = DateFunctions()
+//    val mainScope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,7 +62,7 @@ class BudgetRuleAddFragment :
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         budgetRuleViewModel = mainActivity.budgetRuleViewModel
-        mainActivity.title = getString(R.string.update_budget_rule)
+        mainActivity.title = getString(R.string.add_budget_rule)
         mView = binding.root
         return mView
     }
@@ -93,15 +96,14 @@ class BudgetRuleAddFragment :
         binding.apply {
             if (mainViewModel.getBudgetRuleDetailed()!!.budgetRule != null) {
                 val budgetRuleDetailed = mainViewModel.getBudgetRuleDetailed()!!
-                etBudgetName.setText(
-                    budgetRuleDetailed.budgetRule!!.budgetRuleName
-                )
+                val budgetRule = mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!
+                etBudgetName.setText(budgetRule.budgetRuleName)
                 etAmount.setText(
                     nf.displayDollars(
                         if (mainViewModel.getTransferNum()!! != 0.0) {
                             mainViewModel.getTransferNum()!!
                         } else {
-                            budgetRuleDetailed.budgetRule!!.budgetAmount
+                            budgetRule.budgetAmount
                         }
                     )
                 )
@@ -112,13 +114,13 @@ class BudgetRuleAddFragment :
                 if (budgetRuleDetailed.fromAccount != null) {
                     tvFromAccount.text = budgetRuleDetailed.fromAccount!!.accountName
                 }
-                chkFixedAmount.isChecked = budgetRuleDetailed.budgetRule!!.budFixedAmount
-                chkMakePayDay.isChecked = budgetRuleDetailed.budgetRule!!.budIsPayDay
-                chkAutoPayment.isChecked = budgetRuleDetailed.budgetRule!!.budIsAutoPay
-                etStartDate.setText(budgetRuleDetailed.budgetRule!!.budStartDate)
-                etEndDate.setText(budgetRuleDetailed.budgetRule!!.budEndDate)
-                spFrequencyType.setSelection(budgetRuleDetailed.budgetRule!!.budFrequencyTypeId)
-                spDayOfWeek.setSelection(budgetRuleDetailed.budgetRule!!.budDayOfWeekId)
+                chkFixedAmount.isChecked = budgetRule.budFixedAmount
+                chkMakePayDay.isChecked = budgetRule.budIsPayDay
+                chkAutoPayment.isChecked = budgetRule.budIsAutoPay
+                etStartDate.setText(budgetRule.budStartDate)
+                etEndDate.setText(budgetRule.budEndDate)
+                spFrequencyType.setSelection(budgetRule.budFrequencyTypeId)
+                spDayOfWeek.setSelection(budgetRule.budDayOfWeekId)
             }
         }
     }
@@ -265,11 +267,34 @@ class BudgetRuleAddFragment :
                     "${mainViewModel.getCallingFragments()}, $TAG"
                 )
                 saveBudgetRule()
-                gotoBudgetRuleFragment()
+                gotoCallingFragment()
             }
         } else {
             showMessage(getString(R.string.error) + message)
         }
+    }
+
+    private fun gotoCallingFragment() {
+        if (mainViewModel.getCallingFragments() != null) {
+            val callingFragment = mainViewModel.getCallingFragments()!!
+            if (callingFragment.contains(FRAG_BUDGET_RULE_CHOOSE)) {
+                gotoBudgetRuleChoose()
+            } else if (callingFragment.contains(FRAG_BUDGET_RULES)) {
+                gotoBudgetRuleFragment()
+            }
+        }
+    }
+
+    private fun gotoBudgetRuleChoose() {
+        mainViewModel.removeCallingFragment(TAG)
+        mainViewModel.setBudgetRuleDetailed(null)
+        gotoBudgetRuleChooseFragment()
+    }
+
+    private fun gotoBudgetRuleChooseFragment() {
+        mView.findNavController().navigate(
+            BudgetRuleAddFragmentDirections.actionBudgetRuleAddFragmentToBudgetRuleChooseFragment()
+        )
     }
 
     private fun showMessage(message: String) {
