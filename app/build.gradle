@@ -9,13 +9,13 @@ plugins {
 android {
     signingConfigs {
         debug {
-            storeFile file('/mnt/02D83355D83345E7/project/AndroidProject/keystore/matt__new_signing.jks')
+            storeFile file("C:\\Users\\matt_\\OneDrive\\projects\\AndroidProject\\keystore\\matt__new_signing.jks")
             storePassword '!935Gr8t'
             keyAlias 'key0'
             keyPassword '!935Gr8t'
         }
         release {
-            storeFile file('/mnt/02D83355D83345E7/project/AndroidProject/keystore/matt__new_signing.jks')
+            storeFile file("C:\\Users\\matt_\\OneDrive\\projects\\AndroidProject\\keystore\\matt_signing.jks")
             storePassword '!935Gr8t'
             keyAlias 'key0'
             keyPassword '!935Gr8t'
@@ -94,7 +94,7 @@ dependencies {
 //    implementation("androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version")
 
     //Lifecycle architecture
-    def lifecycle_version = '2.9.3'
+    def lifecycle_version = '2.9.4'
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
     // LiveData
