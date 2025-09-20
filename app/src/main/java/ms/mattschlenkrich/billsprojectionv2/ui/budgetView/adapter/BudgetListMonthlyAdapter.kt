@@ -75,7 +75,7 @@ class BudgetListMonthlyAdapter(
         var info = ""
         curRule.apply {
             holder.itemBinding.apply {
-                llOthers.visibility = View.GONE
+                clBottom.visibility = View.GONE
                 if (budgetRule!!.budFrequencyTypeId == FREQ_MONTHLY) {
                     info =
                         budgetRule!!.budgetRuleName + " - " + mView.context.getString(R.string.monthly)

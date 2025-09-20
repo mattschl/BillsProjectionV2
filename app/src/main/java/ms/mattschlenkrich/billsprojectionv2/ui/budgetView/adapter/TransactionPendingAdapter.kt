@@ -78,8 +78,11 @@ class TransactionPendingAdapter(
 
     override fun onBindViewHolder(holder: TransactionPendingHolder, position: Int) {
         val pendingTransaction = differ.currentList[position]
+        val widthPixels = mView.context.resources.displayMetrics.widthPixels
+
         holder.itemBinding.apply {
             tvPendingDate.text = df.getDisplayDate(pendingTransaction.transaction!!.transDate)
+            tvPendingDate.width = widthPixels * 78 / 360
             tvPendingDate.setTextColor(Color.BLACK)
             tvPendingAmount.text = nf.displayDollars(pendingTransaction.transaction.transAmount)
             if (pendingTransaction.toAccount!!.accountName == curAccount) {
@@ -89,6 +92,7 @@ class TransactionPendingAdapter(
                 tvPendingAmount.setTextColor(Color.RED)
                 tvPendingDescription.setTextColor(Color.RED)
             }
+            tvPendingDescription.maxWidth = widthPixels * 200 / 360
             var display = pendingTransaction.transaction.transName
             display += if (pendingTransaction.transaction.transNote.isNotBlank()) {
                 " - " + pendingTransaction.transaction.transNote

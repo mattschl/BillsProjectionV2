@@ -19,7 +19,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
-import ms.mattschlenkrich.billsprojectionv2.databinding.TransactionLinearItemBinding
+import ms.mattschlenkrich.billsprojectionv2.databinding.TransactionItemBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionViewFragment
 
@@ -39,7 +39,7 @@ class TransactionAdapter(
     private val vf = VisualsFunctions()
 
     class TransactionsViewHolder(
-        val itemBinding: TransactionLinearItemBinding
+        val itemBinding: TransactionItemBinding
     ) : RecyclerView.ViewHolder(itemBinding.root)
 
     private val differCallBack = object : DiffUtil.ItemCallback<TransactionDetailed>() {
@@ -62,7 +62,7 @@ class TransactionAdapter(
         parent: ViewGroup, viewType: Int
     ): TransactionsViewHolder {
         return TransactionsViewHolder(
-            TransactionLinearItemBinding.inflate(
+            TransactionItemBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             )
         )
