@@ -84,9 +84,11 @@ class BudgetViewAdapter(
 
     override fun onBindViewHolder(holder: BudgetViewHolder, position: Int) {
         val curBudget = differ.currentList[position]
+        val widthPixels = mView.context.resources.displayMetrics.widthPixels
 
         holder.itemBinding.apply {
             tvDate.text = df.getDisplayDate(curBudget.budgetItem!!.biActualDate)
+            tvDate.width = widthPixels * 78 / 360
             tvName.text = curBudget.budgetItem!!.biBudgetName
             if (curBudget.budgetItem!!.biIsFixed) {
                 val newText =
@@ -97,7 +99,9 @@ class BudgetViewAdapter(
                 tvName.text = curBudget.budgetItem!!.biBudgetName
                 tvName.setTextColor(Color.BLACK)
             }
+            tvName.width = widthPixels * 150 / 360
             tvAmount.text = nf.displayDollars(curBudget.budgetItem!!.biProjectedAmount)
+//            tvAmount.width = widthPixels *78/360
             if (curBudget.toAccount!!.accountName == curAccount) {
                 tvAmount.setTextColor(Color.BLACK)
             } else {
@@ -105,8 +109,10 @@ class BudgetViewAdapter(
             }
             var info = mView.context.getString(R.string.to_) + curBudget.toAccount!!.accountName
             tvToAccount.text = info
+            tvToAccount.width = widthPixels * 150 / 360
             info = mView.context.getString(R.string.from_) + curBudget.fromAccount!!.accountName
             tvFromAccount.text = info
+            tvFromAccount.width = widthPixels * 150 / 360
             if (curBudget.budgetItem!!.biLocked) {
                 imgLocked.setImageResource(
                     R.drawable.ic_liocked_foreground

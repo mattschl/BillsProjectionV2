@@ -73,7 +73,7 @@ class BudgetListOccasionalAdapter(
         var info = ""
         curRule.apply {
             holder.itemBinding.apply {
-                llOthers.visibility = View.VISIBLE
+                clBottom.visibility = View.VISIBLE
                 if (budgetRule!!.budFrequencyTypeId != FREQ_MONTHLY) {
                     if (budgetRule!!.budFrequencyTypeId == FREQ_WEEKLY) {
                         info = budgetRule!!.budgetRuleName + " - " + df.getNextWeeklyDate(
