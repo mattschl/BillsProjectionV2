@@ -88,7 +88,7 @@ class BudgetViewAdapter(
 
         holder.itemBinding.apply {
             tvDate.text = df.getDisplayDate(curBudget.budgetItem!!.biActualDate)
-            tvDate.width = widthPixels * 78 / 360
+            tvDate.maxWidth = widthPixels * 90 / 360
             tvName.text = curBudget.budgetItem!!.biBudgetName
             if (curBudget.budgetItem!!.biIsFixed) {
                 val newText =
@@ -99,7 +99,7 @@ class BudgetViewAdapter(
                 tvName.text = curBudget.budgetItem!!.biBudgetName
                 tvName.setTextColor(Color.BLACK)
             }
-            tvName.width = widthPixels * 150 / 360
+            tvName.maxWidth = widthPixels * 140 / 360
             tvAmount.text = nf.displayDollars(curBudget.budgetItem!!.biProjectedAmount)
 //            tvAmount.width = widthPixels *78/360
             if (curBudget.toAccount!!.accountName == curAccount) {
@@ -109,10 +109,10 @@ class BudgetViewAdapter(
             }
             var info = mView.context.getString(R.string.to_) + curBudget.toAccount!!.accountName
             tvToAccount.text = info
-            tvToAccount.width = widthPixels * 150 / 360
+            tvToAccount.maxWidth = widthPixels * 150 / 360
             info = mView.context.getString(R.string.from_) + curBudget.fromAccount!!.accountName
             tvFromAccount.text = info
-            tvFromAccount.width = widthPixels * 150 / 360
+            tvFromAccount.maxWidth = widthPixels * 150 / 360
             if (curBudget.budgetItem!!.biLocked) {
                 imgLocked.setImageResource(
                     R.drawable.ic_liocked_foreground
