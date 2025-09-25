@@ -82,7 +82,7 @@ class TransactionPendingAdapter(
 
         holder.itemBinding.apply {
             tvPendingDate.text = df.getDisplayDate(pendingTransaction.transaction!!.transDate)
-            tvPendingDate.width = widthPixels * 78 / 360
+            tvPendingDate.width = widthPixels * 85 / 360
             tvPendingDate.setTextColor(Color.BLACK)
             tvPendingAmount.text = nf.displayDollars(pendingTransaction.transaction.transAmount)
             if (pendingTransaction.toAccount!!.accountName == curAccount) {

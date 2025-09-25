@@ -9,13 +9,13 @@ plugins {
 android {
     signingConfigs {
         debug {
-            storeFile file("C:\\Users\\matt_\\OneDrive\\projects\\AndroidProject\\keystore\\matt__new_signing.jks")
+            storeFile file("C:\\Projects\\AndroidProject\\keystore\\matt__new_signing.jks")
             storePassword 'REMOVED'
             keyAlias 'key0'
             keyPassword 'REMOVED'
         }
         release {
-            storeFile file("C:\\Users\\matt_\\OneDrive\\projects\\AndroidProject\\keystore\\matt_signing.jks")
+            storeFile file("C:\\Projects\\AndroidProject\\keystore\\matt_signing.jks")
             storePassword 'REMOVED'
             keyAlias 'key0'
             keyPassword 'REMOVED'
