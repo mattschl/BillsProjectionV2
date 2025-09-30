@@ -77,7 +77,7 @@ class BudgetViewFragment : Fragment(R.layout.fragment_budget_view) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         populateAssets()
-        setOnClickActions()
+        setClickActions()
         resumeHistory()
     }
 
@@ -219,7 +219,7 @@ class BudgetViewFragment : Fragment(R.layout.fragment_budget_view) {
         }
     }
 
-    private fun setOnClickActions() {
+    private fun setClickActions() {
         binding.apply {
             onSelectAsset()
             onSelectPayDay()

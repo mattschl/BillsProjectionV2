@@ -378,9 +378,10 @@ class AccountUpdateFragment :
 
     private fun gotoCallingFragment() {
         mainViewModel.removeCallingFragment(TAG)
-        if (mainViewModel.getCallingFragments()!!.contains(FRAG_ACCOUNTS)) {
+        val callingFragments = mainViewModel.getCallingFragments()!!
+        if (callingFragments.contains(FRAG_ACCOUNTS)) {
             gotoAccountsFragment()
-        } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_BUDGET_VIEW)) {
+        } else if (callingFragments.contains(FRAG_BUDGET_VIEW)) {
             gotoBudgetViewFragment()
         }
     }
