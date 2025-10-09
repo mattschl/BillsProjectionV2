@@ -428,13 +428,14 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
             )
         )
         mainViewModel.setSplitTransactionDetailed(null)
-        if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANS_ADD)) {
+        val callingFragments = mainViewModel.getCallingFragments()!!
+        if (callingFragments.contains(FRAG_TRANS_ADD)) {
             mainViewModel.setUpdatingTransaction(false)
             goBackToTransactionsAddFragment()
-        } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANS_PERFORM)) {
+        } else if (callingFragments.contains(FRAG_TRANS_PERFORM)) {
             mainViewModel.setUpdatingTransaction(false)
             goBackToTransactionPerformFragment()
-        } else if (mainViewModel.getCallingFragments()!!.contains(FRAG_TRANS_UPDATE)) {
+        } else if (callingFragments.contains(FRAG_TRANS_UPDATE)) {
             mainViewModel.setUpdatingTransaction(true)
             gotoTransactionViewFragment()
         }

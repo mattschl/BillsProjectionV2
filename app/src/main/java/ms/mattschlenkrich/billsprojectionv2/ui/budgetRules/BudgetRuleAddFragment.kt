@@ -263,9 +263,7 @@ class BudgetRuleAddFragment :
         val message = validateBudgetRule()
         if (message == ANSWER_OK) {
             binding.apply {
-                mainViewModel.setCallingFragments(
-                    "${mainViewModel.getCallingFragments()}, $TAG"
-                )
+                mainViewModel.addCallingFragment(TAG)
                 saveBudgetRule()
                 gotoCallingFragment()
             }
