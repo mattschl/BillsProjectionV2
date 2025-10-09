@@ -226,7 +226,7 @@ class AccountAddFragment :
         if (message == ANSWER_OK) {
             saveAccount()
         } else {
-            showMessage(message)
+            showMessage("${getString(R.string.error)}: $message   ")
         }
     }
 
@@ -250,18 +250,17 @@ class AccountAddFragment :
     private fun validateAccount(): String {
         binding.apply {
             if (etAccAddName.text.isNullOrEmpty()) {
-                return getString(R.string.error) + getString(R.string.please_enter_a_name)
+                return getString(R.string.please_enter_a_name_for_this_account)
             }
             for (i in 0 until accountNameList.size) {
                 if (accountNameList[i] == etAccAddName.text.toString().trim()
                 ) {
-                    return getString(R.string.error) + getString(R.string.this_account_rule_already_exists)
+                    return getString(R.string.this_account_already_exists)
                 }
             }
             if (mainViewModel.getAccountWithType()?.accountType == null
             ) {
-                return getString(R.string.error) +
-                        getString(R.string.this_account_must_have_an_account_type)
+                return getString(R.string.this_account_must_have_an_account_type)
             }
             return ANSWER_OK
         }

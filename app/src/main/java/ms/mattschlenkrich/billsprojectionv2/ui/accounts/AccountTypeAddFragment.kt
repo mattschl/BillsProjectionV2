@@ -18,6 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_TYPE_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
@@ -98,11 +99,12 @@ class AccountTypeAddFragment :
     }
 
     private fun saveAccountIfValid() {
-        if (validateAccountType()) {
+        val answer = validateAccountType()
+        if (answer == ANSWER_OK) {
             saveAccountType()
 
         } else {
-            showMessage(getString(R.string.enter_a_unique_name_for_this_account_type))
+            showMessage("${getString(R.string.error)}: $answer")
         }
     }
 
@@ -110,14 +112,16 @@ class AccountTypeAddFragment :
         Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
     }
 
-    private fun validateAccountType(): Boolean {
-        if (binding.etAccTypeAdd.text.isNullOrBlank()) return false
+    private fun validateAccountType(): String {
+        if (binding.etAccTypeAdd.text.isNullOrBlank()) {
+            return getString(R.string.enter_a_name_for_this_account_type)
+        }
         for (accType in accountTypeList) {
             if (accType == binding.etAccTypeAdd.text.toString()) {
-                return false
+                return getString(R.string.enter_a_unique_name_for_this_account_type)
             }
         }
-        return true
+        return ANSWER_OK
     }
 
     private fun getCurrentAccountType() = AccountType(

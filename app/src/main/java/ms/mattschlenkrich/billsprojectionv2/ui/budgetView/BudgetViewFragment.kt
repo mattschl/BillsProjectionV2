@@ -54,7 +54,7 @@ class BudgetViewFragment : Fragment(R.layout.fragment_budget_view) {
     private val budgetList = ArrayList<BudgetItemDetailed>()
     private var pendingAmount = 0.0
     private val mainScope = CoroutineScope(Dispatchers.Main)
-    private val defaultScope = CoroutineScope(Dispatchers.Default)
+//    private val defaultScope = CoroutineScope(Dispatchers.Default)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?

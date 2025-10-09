@@ -142,14 +142,16 @@ class AccountUpdateFragment :
         binding.apply {
             accountViewModel.getAccountWithTypeLive(mainViewModel.getAccountWithType()!!.account.accountId)
                 .observe(viewLifecycleOwner) { accountWithType ->
-                    if (accountWithType.accountType!!.keepTotals) {
-                        edAccountUpdateBalance.setText(
-                            nf.displayDollars(accountWithType.account.accountBalance)
-                        )
-                    } else if (accountWithType.accountType.tallyOwing) {
-                        edAccountUpdateOwing.setText(
-                            nf.displayDollars(accountWithType.account.accountOwing)
-                        )
+                    if (accountWithType.accountType != null) {
+                        if (accountWithType.accountType.keepTotals) {
+                            edAccountUpdateBalance.setText(
+                                nf.displayDollars(accountWithType.account.accountBalance)
+                            )
+                        } else if (accountWithType.accountType.tallyOwing) {
+                            edAccountUpdateOwing.setText(
+                                nf.displayDollars(accountWithType.account.accountOwing)
+                            )
+                        }
                     }
                 }
         }
@@ -270,11 +272,11 @@ class AccountUpdateFragment :
     }
 
     private fun updateAccountIfValid() {
-        val message = validateAccount()
-        if (message == ANSWER_OK) {
+        val answer = validateAccount()
+        if (answer == ANSWER_OK) {
             confirmUpdateAccount()
         } else {
-            showMessage(getString(R.string.error) + message)
+            showMessage(getString(R.string.error) + answer)
         }
 
     }
@@ -327,10 +329,8 @@ class AccountUpdateFragment :
             mainViewModel.getAccountWithType()!!.account.accountId,
             df.getCurrentTimeAsString()
         )
-        mainViewModel.setCallingFragments(
-            mainViewModel.getCallingFragments()!!
-                .replace(", $FRAG_ACCOUNT_UPDATE", "")
-        )
+        mainViewModel.removeCallingFragment(TAG)
+        mainViewModel.setAccountWithType(null)
         gotoAccountsFragment()
     }
 

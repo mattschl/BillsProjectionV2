@@ -332,5 +332,7 @@
     <string name="this_budget_rule_has_not_been_saved">This Budget Rule has not been saved!</string>
     <string name="would_you_like_to_save_this_budget_rule_and_continue">Would you like to save this Budget Rule and continue?</string>
     <string name="add_budget_rule">Add Budget Rule</string>
+    <string name="this_account_already_exists">This account already exists!</string>
+    <string name="please_enter_a_name_for_this_account">Please enter a name for this account</string>
 
 </resources>

@@ -317,14 +317,10 @@ class BudgetItemUpdateFragment : Fragment(
         if (mainViewModel.getCallingFragments() != null) {
             val mCallingFragment = mainViewModel.getCallingFragments()!!
             if (mCallingFragment.contains(FRAG_BUDGET_VIEW)) {
-                mainActivity.mainViewModel.setCallingFragments(
-                    mainActivity.mainViewModel.getCallingFragments()!!.replace(", $TAG", "")
-                )
+                mainViewModel.removeCallingFragment(TAG)
                 gotoBudgetViewFragment()
             } else if (mCallingFragment.contains(FRAG_BUDGET_RULE_UPDATE)) {
-                mainActivity.mainViewModel.setCallingFragments(
-                    mainActivity.mainViewModel.getCallingFragments()!!.replace(", $TAG", "")
-                )
+                mainViewModel.removeCallingFragment(TAG)
                 gotoBudgetRuleUpdateFragment()
             }
         }

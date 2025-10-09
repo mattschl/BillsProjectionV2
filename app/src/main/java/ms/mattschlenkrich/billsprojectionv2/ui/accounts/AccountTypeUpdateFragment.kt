@@ -19,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType
@@ -119,16 +120,19 @@ class AccountTypeUpdateFragment :
         if (binding.etAccTypeUpdate.text.toString().trim() ==
             currentAccountType.accountType
         ) {
-            updateAccountType()
-        } else if (binding.etAccTypeUpdate.text.toString().isNotBlank() &&
-            validateAccountType()
-        ) {
-            confirmRenameAccountType()
+            val answer = validateAccountType()
+            if (answer == ANSWER_OK) {
+                updateAccountType()
+            } else {
+                showMessage("${getString(R.string.error)}: $answer")
+            }
         } else {
-            showMessage(
-                getString(R.string.error) +
-                        getString(R.string.enter_a_name_for_this_account_type)
-            )
+            val answer = validateAccountType()
+            if (answer == ANSWER_OK) {
+                confirmRenameAccountType()
+            } else {
+                showMessage("${getString(R.string.error)}: $answer")
+            }
         }
     }
 
@@ -153,16 +157,16 @@ class AccountTypeUpdateFragment :
         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
 
-    private fun validateAccountType(): Boolean {
-        binding.apply {
-            if (etAccTypeUpdate.text.isNullOrBlank()) return false
-            for (accType in accountTypeList) {
-                if (accType == etAccTypeUpdate.text.toString()) {
-                    return false
-                }
-            }
-            return true
+    private fun validateAccountType(): String {
+        if (binding.etAccTypeUpdate.text.isNullOrBlank()) {
+            return getString(R.string.enter_a_name_for_this_account_type)
         }
+        for (accType in accountTypeList) {
+            if (accType == binding.etAccTypeUpdate.text.toString()) {
+                return getString(R.string.enter_a_unique_name_for_this_account_type)
+            }
+        }
+        return ANSWER_OK
     }
 
     private fun updateAccountType() {
