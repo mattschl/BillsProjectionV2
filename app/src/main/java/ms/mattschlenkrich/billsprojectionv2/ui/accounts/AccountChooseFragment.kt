@@ -67,6 +67,7 @@ class AccountChooseFragment :
     private fun setUpRecyclerView() {
         accountChooseAdapter = AccountChooseAdapter(
             mainActivity,
+            mView,
             this,
         )
         binding.rvAccounts.apply {

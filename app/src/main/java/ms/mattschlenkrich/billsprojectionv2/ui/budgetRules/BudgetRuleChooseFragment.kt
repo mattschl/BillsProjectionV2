@@ -70,6 +70,7 @@ class BudgetRuleChooseFragment : Fragment(R.layout.fragment_budget_rule),
     private fun setupRecyclerView() {
         budgetRuleChooseAdapter = BudgetRuleChooseAdapter(
             mainActivity,
+            mView,
             TAG,
             this@BudgetRuleChooseFragment,
         )
