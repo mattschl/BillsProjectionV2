@@ -1,10 +1,12 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_SPLIT
@@ -20,6 +22,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.BudgetRuleChooseFragm
 
 class BudgetRuleChooseAdapter(
     val mainActivity: MainActivity,
+    val mView: View,
     private val parentTag: String,
     private val budgetRuleChooseFragment: BudgetRuleChooseFragment,
 ) : RecyclerView.Adapter<BudgetRuleChooseAdapter.BudgetRuleViewHolder>() {
@@ -64,7 +67,14 @@ class BudgetRuleChooseAdapter(
         holder: BudgetRuleViewHolder, position: Int
     ) {
         val budgetRuleDetailed = differ.currentList[position]
-        holder.itemBinding.tvItemName.text = budgetRuleDetailed.budgetRule!!.budgetRuleName
+        var display = budgetRuleDetailed.budgetRule!!.budgetRuleName
+        if (budgetRuleDetailed.budgetRule!!.budIsDeleted) {
+            display += " " + mView.context.getString(R.string.deleted)
+            holder.itemView.setBackgroundColor(mView.context.getColor(R.color.deep_red))
+        } else {
+            holder.itemView.setBackgroundColor(mView.context.getColor(R.color.white))
+        }
+        holder.itemBinding.tvItemName.text = display
         holder.itemBinding.ibColor.setBackgroundColor(vf.getRandomColorInt())
         holder.itemView.setOnClickListener { chooseBudgetRule(budgetRuleDetailed) }
     }

@@ -75,8 +75,15 @@ class BudgetRuleAdapter(
         holder: BudgetRuleViewHolder, position: Int
     ) {
         val budgetRuleDetailed = differ.currentList[position]
-        holder.itemBinding.tvBudgetRule.text = budgetRuleDetailed.budgetRule!!.budgetRuleName
-        var info = "To: " + budgetRuleDetailed.toAccount!!.accountName
+        var info = budgetRuleDetailed.budgetRule!!.budgetRuleName
+        if (budgetRuleDetailed.budgetRule!!.budIsDeleted) {
+            info += " " + mView.context.getString(R.string.deleted)
+            holder.itemView.setBackgroundColor(mView.context.getColor(R.color.deep_red))
+        } else {
+            holder.itemView.setBackgroundColor(mView.context.getColor(R.color.white))
+        }
+        holder.itemBinding.tvBudgetRule.text = info
+        info = "To: " + budgetRuleDetailed.toAccount!!.accountName
         holder.itemBinding.tvToAccount.text = info
         info = "From: " + budgetRuleDetailed.fromAccount!!.accountName
         holder.itemBinding.tvFromAccount.text = info

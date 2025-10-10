@@ -102,6 +102,9 @@ class AccountAdapter(
             }
             if (curAccount.account.accIsDeleted) {
                 info += (if (info.isNotEmpty()) "\n" else "") + mView.context.getString(R.string.deleted)
+                holder.itemView.setBackgroundColor(mView.context.getColor(R.color.deep_red))
+            } else {
+                holder.itemView.setBackgroundColor(mView.context.getColor(R.color.white))
             }
             if (info.isBlank()) {
                 info = mView.context.getString(R.string.no_info)

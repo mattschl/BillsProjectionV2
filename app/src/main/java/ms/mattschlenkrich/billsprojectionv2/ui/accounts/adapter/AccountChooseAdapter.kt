@@ -3,10 +3,12 @@ package ms.mattschlenkrich.billsprojectionv2.ui.accounts.adapter
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_ADD
@@ -30,6 +32,7 @@ private const val TAG = "AccountChoose"
 
 class AccountChooseAdapter(
     val mainActivity: MainActivity,
+    val mView: View,
     private val accountChooseFragment: AccountChooseFragment,
 ) : RecyclerView.Adapter<AccountChooseAdapter.AccountViewHolder>() {
 
@@ -73,7 +76,14 @@ class AccountChooseAdapter(
     ) {
         val curAccount = differ.currentList[position]
         holder.itemBinding.apply {
-            tvItemName.text = curAccount.account.accountName
+            var display = curAccount.account.accountName
+            if (curAccount.account.accIsDeleted) {
+                holder.itemView.setBackgroundColor(mView.context.getColor(R.color.deep_red))
+                display += " " + mView.context.getString(R.string.deleted)
+            } else {
+                holder.itemView.setBackgroundColor(mView.context.getColor(R.color.white))
+            }
+            tvItemName.text = display
             if ((curAccount.accountType!!.tallyOwing || curAccount.accountType.keepTotals) &&
                 curAccount.accountType.displayAsAsset
             ) {
