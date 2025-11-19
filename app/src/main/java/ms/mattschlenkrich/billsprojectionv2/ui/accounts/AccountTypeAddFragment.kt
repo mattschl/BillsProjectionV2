@@ -55,7 +55,7 @@ class AccountTypeAddFragment :
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         accountViewModel = mainActivity.accountViewModel
-        mainActivity.title = getString(R.string.add_a_new_account_type)
+        mainActivity.topMenuBar.title = getString(R.string.add_a_new_account_type)
         mView = binding.root
         return mView
     }

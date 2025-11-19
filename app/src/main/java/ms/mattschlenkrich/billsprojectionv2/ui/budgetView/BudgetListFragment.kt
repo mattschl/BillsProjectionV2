@@ -48,7 +48,7 @@ class BudgetListFragment : Fragment(R.layout.fragment_budget_list) {
         )
         mainActivity = (activity as MainActivity)
         budgetRuleViewModel = mainActivity.budgetRuleViewModel
-        mainActivity.title = getString(R.string.view_the_complete_budget)
+        mainActivity.topMenuBar.title = getString(R.string.view_the_complete_budget)
         mView = binding.root
         return mView
     }

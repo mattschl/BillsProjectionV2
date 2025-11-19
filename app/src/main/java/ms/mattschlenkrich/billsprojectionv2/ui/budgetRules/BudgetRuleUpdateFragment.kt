@@ -80,7 +80,7 @@ class BudgetRuleUpdateFragment : Fragment(R.layout.fragment_budget_rule_update) 
         mainViewModel = mainActivity.mainViewModel
         budgetRuleViewModel = mainActivity.budgetRuleViewModel
         budgetItemViewModel = mainActivity.budgetItemViewModel
-        mainActivity.title = getString(R.string.update_budget_rule)
+        mainActivity.topMenuBar.title = getString(R.string.update_budget_rule)
         mView = binding.root
         return binding.root
     }

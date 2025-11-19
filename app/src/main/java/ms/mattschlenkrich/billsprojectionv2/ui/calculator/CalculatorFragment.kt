@@ -52,7 +52,7 @@ class CalculatorFragment : Fragment(R.layout.fragment_calc) {
         mainViewModel = mainActivity.mainViewModel
         mView = binding.root
         Log.d(TAG, "creating $TAG")
-        mainActivity.setTitle(R.string.calculator)
+        mainActivity.topMenuBar.setTitle(R.string.calculator)
         return binding.root
     }
 

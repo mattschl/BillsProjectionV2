@@ -70,7 +70,7 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
         budgetRuleViewModel = mainActivity.budgetRuleViewModel
         accountUpdateViewModel = mainActivity.accountUpdateViewModel
         transactionViewModel = mainActivity.transactionViewModel
-        mainActivity.title = getString(R.string.splitting_transaction)
+        mainActivity.topMenuBar.title = getString(R.string.splitting_transaction)
         mView = binding.root
         return binding.root
     }

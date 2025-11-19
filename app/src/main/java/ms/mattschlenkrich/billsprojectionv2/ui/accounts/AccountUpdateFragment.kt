@@ -66,7 +66,7 @@ class AccountUpdateFragment :
         mainViewModel = mainActivity.mainViewModel
         accountViewModel = mainActivity.accountViewModel
         transactionViewModel = mainActivity.transactionViewModel
-        mainActivity.title = getString(R.string.update_account)
+        mainActivity.topMenuBar.title = getString(R.string.update_account)
         mView = binding.root
         return mView
     }

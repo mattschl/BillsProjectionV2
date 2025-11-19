@@ -71,7 +71,7 @@ class BudgetItemAddFragment : Fragment(
         mainViewModel = mainActivity.mainViewModel
         budgetItemViewModel = mainActivity.budgetItemViewModel
         budgetRuleViewModel = mainActivity.budgetRuleViewModel
-        mainActivity.title = getString(R.string.add_a_new_budget_item)
+        mainActivity.topMenuBar.title = getString(R.string.add_a_new_budget_item)
         mView = binding.root
         return binding.root
     }

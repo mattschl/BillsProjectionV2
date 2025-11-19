@@ -64,7 +64,7 @@ class BudgetViewFragment : Fragment(R.layout.fragment_budget_view) {
             inflater, container, false
         )
         mainActivity = (activity as MainActivity)
-        mainActivity.title = getString(R.string.view_the_budget)
+        mainActivity.topMenuBar.title = getString(R.string.view_the_budget)
         mainViewModel = mainActivity.mainViewModel
         accountViewModel = mainActivity.accountViewModel
         budgetItemViewModel = mainActivity.budgetItemViewModel

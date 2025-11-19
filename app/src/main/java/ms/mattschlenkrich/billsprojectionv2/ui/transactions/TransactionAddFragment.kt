@@ -75,7 +75,7 @@ class TransactionAddFragment : Fragment(R.layout.fragment_transaction_add) {
         mainViewModel = mainActivity.mainViewModel
         transactionViewModel = mainActivity.transactionViewModel
         accountViewModel = mainActivity.accountViewModel
-        mainActivity.title = getString(R.string.add_a_new_transaction)
+        mainActivity.topMenuBar.title = getString(R.string.add_a_new_transaction)
         mView = binding.root
         return mView
     }
