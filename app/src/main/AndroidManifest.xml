@@ -9,7 +9,7 @@
         android:icon="@mipmap/ic_bills_projection_round"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.BillsProjectionV2"
+        android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
         tools:targetApi="36">
         <activity
             android:name=".ui.MainActivity"

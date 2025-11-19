@@ -65,7 +65,7 @@ class BudgetItemUpdateFragment : Fragment(
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         budgetItemViewModel = mainActivity.budgetItemViewModel
-        mainActivity.title = getString(R.string.update_this_budget_item)
+        mainActivity.topMenuBar.title = getString(R.string.update_this_budget_item)
         mView = binding.root
         return binding.root
     }

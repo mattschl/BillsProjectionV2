@@ -68,7 +68,7 @@ class TransactionPerformFragment : Fragment(
         accountViewModel = mainActivity.accountViewModel
         accountUpdateViewModel = mainActivity.accountUpdateViewModel
         budgetItemViewModel = mainActivity.budgetItemViewModel
-        mainActivity.title = getString(R.string.perform_a_transaction)
+        mainActivity.topMenuBar.title = getString(R.string.perform_a_transaction)
         mView = binding.root
         return mView
     }

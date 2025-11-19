@@ -57,7 +57,7 @@ class AccountTypeUpdateFragment :
         mainViewModel = mainActivity.mainViewModel
         accountViewModel = mainActivity.accountViewModel
         currentAccountType = mainActivity.mainViewModel.getAccountType()!!
-        mainActivity.title = getString(R.string.update_account_type)
+        mainActivity.topMenuBar.title = getString(R.string.update_account_type)
         return binding.root
     }
 

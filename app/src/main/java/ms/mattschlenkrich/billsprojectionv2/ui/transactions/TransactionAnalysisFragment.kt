@@ -49,7 +49,7 @@ class TransactionAnalysisFragment : Fragment(
         )
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
-        mainActivity.title = getString(R.string.transaction_analysis)
+        mainActivity.topMenuBar.title = getString(R.string.transaction_analysis)
         transactionViewModel = mainActivity.transactionViewModel
         mView = binding.root
         return binding.root

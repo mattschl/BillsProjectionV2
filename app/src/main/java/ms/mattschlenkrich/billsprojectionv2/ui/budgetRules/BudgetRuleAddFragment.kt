@@ -62,7 +62,7 @@ class BudgetRuleAddFragment :
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         budgetRuleViewModel = mainActivity.budgetRuleViewModel
-        mainActivity.title = getString(R.string.add_budget_rule)
+        mainActivity.topMenuBar.title = getString(R.string.add_budget_rule)
         mView = binding.root
         return mView
     }

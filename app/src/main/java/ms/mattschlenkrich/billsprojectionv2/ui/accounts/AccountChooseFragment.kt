@@ -49,7 +49,7 @@ class AccountChooseFragment :
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         accountViewModel = mainActivity.accountViewModel
-        mainActivity.title = getString(R.string.choose_an_account)
+        mainActivity.topMenuBar.title = getString(R.string.choose_an_account)
         mView = binding.root
         return mView
     }

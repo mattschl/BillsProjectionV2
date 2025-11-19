@@ -47,7 +47,7 @@ class BudgetRuleFragment : Fragment(R.layout.fragment_budget_rule), SearchView.O
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         budgetRuleViewModel = mainActivity.budgetRuleViewModel
-        mainActivity.title = getString(R.string.choose_a_budget_rule)
+        mainActivity.topMenuBar.title = getString(R.string.choose_a_budget_rule)
 //        Log.d(TAG, "$TAG is entered")
         mView = binding.root
         return mView
