@@ -60,7 +60,7 @@ class AccountTypesFragment
     ) {
         super.onViewCreated(view, savedInstanceState)
 //        Log.d(TAG, "onViewCreated Entered")
-        val menuHost: MenuHost = requireActivity()
+        val menuHost: MenuHost = mainActivity.topMenuBar
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         setupRecyclerView()
         setClickActions()
