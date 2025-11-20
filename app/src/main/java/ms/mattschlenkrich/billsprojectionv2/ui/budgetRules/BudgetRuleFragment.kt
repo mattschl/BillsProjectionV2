@@ -109,7 +109,7 @@ class BudgetRuleFragment : Fragment(R.layout.fragment_budget_rule), SearchView.O
     }
 
     private fun setMenu() {
-        val menuHost: MenuHost = requireActivity()
+        val menuHost: MenuHost = mainActivity.topMenuBar
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 

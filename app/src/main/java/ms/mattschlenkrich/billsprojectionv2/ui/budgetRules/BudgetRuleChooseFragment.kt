@@ -108,7 +108,7 @@ class BudgetRuleChooseFragment : Fragment(R.layout.fragment_budget_rule),
     }
 
     private fun setMenu() {
-        val menuHost: MenuHost = requireActivity()
+        val menuHost: MenuHost = mainActivity.topMenuBar
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
