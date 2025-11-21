@@ -9,13 +9,16 @@ plugins {
 android {
     signingConfigs {
         debug {
-            storeFile file("/media/matt/047353E96D6DD7F2/Projects/AndroidProject/keystore/matt__new_signing.jks")
+//            storeFile file("/media/matt/047353E96D6DD7F2/Projects/AndroidProject/keystore/matt__new_signing.jks")
+            storeFile file("C:\\Users\\matt_\\OneDrive\\projects\\AndroidProject\\keystore\\matt__new_signing.jks")
+//                file("/mnt/047353E96D6DD7F2//Projects/AndroidProject/keystore/matt__new_signing.jks")
             storePassword '!935Gr8t'
             keyAlias 'key0'
             keyPassword '!935Gr8t'
         }
         release {
-            storeFile file("/media/matt/047353E96D6DD7F2/Projects/AndroidProject/keystore/matt_signing.jks")
+//            storeFile file("/media/matt/047353E96D6DD7F2/Projects/AndroidProject/keystore/matt_signing.jks")
+            storeFile file("C:\\Users\\matt_\\OneDrive\\projects\\AndroidProject\\keystore\\matt_signing.jks")
             storePassword '!935Gr8t'
             keyAlias 'key0'
             keyPassword '!935Gr8t'
@@ -68,8 +71,8 @@ android {
 dependencies {
 
     def nav_version = "2.9.6"
-    def room_version = "2.8.3"
-    def lifecycle_version = "2.9.4"
+    def room_version = "2.8.4"
+    def lifecycle_version = "2.10.0"
     def material3_version = "1.3.2"
     implementation 'androidx.core:core-ktx:1.17.0'
     implementation 'androidx.appcompat:appcompat:1.7.1'
