@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
+import androidx.room.RoomWarnings
 import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_ID
@@ -67,6 +68,7 @@ interface BudgetRuleDao {
 
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @Transaction
     @Query(
         "SELECT $TABLE_BUDGET_RULES.*, " +

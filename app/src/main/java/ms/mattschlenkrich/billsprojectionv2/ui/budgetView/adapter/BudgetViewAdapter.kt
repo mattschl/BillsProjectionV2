@@ -249,7 +249,7 @@ class BudgetViewAdapter(
         AlertDialog.Builder(mView.context)
             .setTitle(mView.context.getString(R.string.confirm_completing_transaction)).setMessage(
                 display
-            ).setPositiveButton(mView.context.getString(R.string.complete_now)) { _, _ ->
+            ).setPositiveButton(mView.context.getString(R.string.perform_action)) { _, _ ->
                 completeTransaction(curBudget)
             }.setNegativeButton(mView.context.getString(R.string.cancel), null).show()
     }
