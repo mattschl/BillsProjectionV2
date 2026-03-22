@@ -85,7 +85,7 @@
                 <Button
                     android:id="@+id/btnDivide"
                     android:layout_margin="@dimen/normal_margin"
-                    android:backgroundTint="@color/black"
+                    android:backgroundTint="@color/red"
                     android:minWidth="48dp"
                     android:minHeight="48dp"
                     android:text="@string/divide"
@@ -138,7 +138,7 @@
                 <Button
                     android:id="@+id/btnTimes"
                     android:layout_margin="@dimen/normal_margin"
-                    android:backgroundTint="@color/black"
+                    android:backgroundTint="@color/red"
                     android:minWidth="48dp"
                     android:minHeight="48dp"
                     android:text="@string/times"
@@ -191,7 +191,7 @@
                 <Button
                     android:id="@+id/btnMinus"
                     android:layout_margin="@dimen/normal_margin"
-                    android:backgroundTint="@color/black"
+                    android:backgroundTint="@color/red"
                     android:minWidth="48dp"
                     android:minHeight="48dp"
                     android:text="@string/minus"
@@ -245,7 +245,7 @@
                 <Button
                     android:id="@+id/btnPlus"
                     android:layout_margin="@dimen/normal_margin"
-                    android:backgroundTint="@color/black"
+                    android:backgroundTint="@color/red"
                     android:minWidth="48dp"
                     android:minHeight="48dp"
                     android:text="@string/plus"

@@ -45,7 +45,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/zero_dollars"
-                android:textSize="@dimen/text_heading_size"
+                android:textSize="@dimen/text_size_normal"
                 android:textStyle="bold"
                 app:layout_constraintBaseline_toBaselineOf="@id/tvDate"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -78,7 +78,7 @@
                 android:maxLines="3"
                 android:text="@string/to_account_name"
                 android:textColor="@color/blue"
-                android:textSize="@dimen/text_info_size"
+                android:textSize="@dimen/text_size_normal"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -91,7 +91,7 @@
                 android:maxLines="3"
                 android:text="@string/from_account_name"
                 android:textColor="@color/deep_red"
-                android:textSize="@dimen/text_info_size"
+                android:textSize="@dimen/text_size_normal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/tvToAccount"
                 app:layout_constraintTop_toTopOf="parent" />
