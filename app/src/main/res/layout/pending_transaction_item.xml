@@ -22,7 +22,7 @@
             android:layout_marginTop="8dp"
             android:text="@string/date"
             android:textColor="@color/deep_red"
-            android:textSize="@dimen/text_info_size"
+            android:textSize="@dimen/text_size_normal"
             app:layout_constraintStart_toEndOf="@id/vColor"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -36,7 +36,7 @@
             android:paddingEnd="@dimen/dimen_5dp"
             android:text="@string/zero_dollars"
             android:textColor="@color/deep_red"
-            android:textSize="@dimen/text_info_size"
+            android:textSize="@dimen/text_size_normal"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/tvPendingDescription"
             app:layout_constraintStart_toEndOf="@id/tvPendingDate"
@@ -52,7 +52,7 @@
             android:maxLines="3"
             android:text="@string/account_info"
             android:textColor="@color/deep_red"
-            android:textSize="@dimen/text_info_size"
+            android:textSize="@dimen/text_size_normal"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/tvPendingAmount"
