@@ -334,5 +334,13 @@
     <string name="add_budget_rule">Add Budget Rule</string>
     <string name="this_account_already_exists">This account already exists!</string>
     <string name="please_enter_a_name_for_this_account">Please enter a name for this account</string>
+    <string name="default_web_client_id">460339349167-sam5237fckel7qjbsar8b0ekfodoij2j.apps.googleusercontent.com</string>
+    <string name="query">Query Results</string>
+    <string name="sync">Sync Data</string>
+    <string name="return_button">Return</string>
+    <string name="oath_client">460339349167-sam5237fckel7qjbsar8b0ekfodoij2j.apps.googleusercontent.com</string>
 
+    <!--    /mnt/047353E96D6DD7F2/Projects/AndroidProject/keystore/matt__new_signing.jks-->
+    <!--    SHA1: A2:3B:1F:1A:1D:B0:CC:D8:F0:D3:92:2B:CE:D6:B2:85:0A:7F:5E:E0-->
+    <!--    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-->
 </resources>

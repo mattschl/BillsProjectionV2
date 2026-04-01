@@ -20,6 +20,7 @@ import ms.mattschlenkrich.billsprojectionv2.BuildConfig
 import ms.mattschlenkrich.billsprojectionv2.NavGraphDirections
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.projections.UpdateBudgetPredictions
+import ms.mattschlenkrich.billsprojectionv2.common.sync.NewActivity
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.dataBase.BillsDatabase
@@ -65,6 +66,7 @@ class MainActivity : AppCompatActivity() {
         topMenuBar = binding.topMenu
 
         topMenuBar.menu.apply {
+            add(Menu.NONE, 1, Menu.NONE, R.string.sync)
             add(R.string.update_budget_predictions)
             add(R.string.view_current_budget_summary)
             add(R.string.delete_future_predictions)
@@ -74,6 +76,11 @@ class MainActivity : AppCompatActivity() {
         }
         topMenuBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.title) {
+                getString(R.string.sync) -> {
+                    startActivity(Intent(this, NewActivity::class.java))
+                    true
+                }
+
                 getString(R.string.update_budget_predictions) -> {
                     updateBudget()
                     true
@@ -111,60 +118,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
-
-//        addMenuProvider(object : MenuProvider {
-//            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-//                menu.add(getString(R.string.update_budget_predictions))
-//                menu.add(getString(R.string.view_current_budget_summary))
-//                menu.add(getString(R.string.delete_future_predictions))
-//                menu.add(getString(R.string.help))
-//                menu.add(getString(R.string.privacy_policy))
-//                menu.add("${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME}")
-//            }
-//
-//            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-//                return when (menuItem.title) {
-//
-//                    getString(R.string.update_budget_predictions) -> {
-//                        updateBudget()
-//                        true
-//                    }
-//
-//                    getString(R.string.view_current_budget_summary) -> {
-//                        gotoBudgetList()
-//                        true
-//                    }
-//
-//                    getString(R.string.delete_future_predictions) -> {
-//                        chooseDeleteFuturePredictions()
-//                        true
-//                    }
-//
-//                    getString(R.string.help) -> {
-//                        gotoHelp()
-//                        true
-//                    }
-//
-//                    getString(R.string.privacy_policy) -> {
-//                        val defaultBrowser = Intent.makeMainSelectorActivity(
-//                            Intent.ACTION_MAIN,
-//                            Intent.CATEGORY_APP_BROWSER
-//                        )
-//                        defaultBrowser.data =
-//                            getString(R.string.https_www_mschlenkrich_ca_privacy_policy).toUri()
-//                        startActivity(defaultBrowser)
-//                        true
-//                    }
-//
-//                    else -> {
-//                        Log.d(TAG, "other was called")
-//                        false
-//                    }
-//                }
-//
-//            }
-//        })
 
 
         val bottomNav =
