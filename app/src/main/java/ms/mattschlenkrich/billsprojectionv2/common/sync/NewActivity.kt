@@ -10,6 +10,8 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.lifecycle.lifecycleScope
@@ -44,7 +46,9 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.sync.SyncHistory
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.databinding.ActivityNewBinding
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileNotFoundException
+import java.io.FileOutputStream
 import java.security.SecureRandom
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -69,6 +73,12 @@ class NewActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityNewBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
 
         credentialManager = CredentialManager.create(this)
 
@@ -111,62 +121,119 @@ class NewActivity : AppCompatActivity() {
         showProgress("Synchronizing...")
         lifecycleScope.launch {
             var status = "Failed"
-            var recordsProcessed = 0
+            var syncReport = "No records processed"
             val syncTime = SimpleDateFormat(SQLITE_TIME, Locale.getDefault()).format(Date())
             try {
                 val helper = mDriveServiceHelper ?: return@launch
                 val targetFolderId = getTargetFolderId(helper)
+
+//                // 1. First action: Upload current local database as a backup
+//                showProgress("Creating pre-sync backup...")
+//                val preSyncUpload = performUpload(helper, targetFolderId)
+//                syncReport = "Pre-sync backup uploaded: $preSyncUpload\n"
+
+                // 2. Query for the latest backup on Drive
                 val fileList: FileList = helper.queryFiles(targetFolderId)
-
-                val latestFile = fileList.files
+                val driveFiles = fileList.files
                     ?.filter { it.name.startsWith("bills2_") && it.name.endsWith(".db") }
-                    ?.maxByOrNull { it.name }
+                    ?.sortedByDescending { it.name } ?: emptyList()
 
-                if (latestFile == null) {
-                    Toast.makeText(this@NewActivity, "No backups found", Toast.LENGTH_SHORT).show()
+                if (driveFiles.isEmpty()) {
+                    Toast.makeText(
+                        this@NewActivity,
+                        "No backups found on Drive",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     status = "No Backups"
                     return@launch
                 }
 
-                val tempFile = File(cacheDir, "temp_sync.db")
-                showProgress("Downloading ${latestFile.name}...")
-                helper.downloadBinaryFile(latestFile.name, tempFile, targetFolderId)
+                // We want to merge with the LATEST file that is NOT the one we just uploaded
+                // Or simply the latest one if we want to ensure we're at parity.
+                val latestFile = driveFiles[0]
 
+                // 3. Download and keep the most recent backup copy on the device
+                val backupFolder = File(filesDir, "backups")
+                if (!backupFolder.exists()) backupFolder.mkdirs()
+                val localBackupFile = File(backupFolder, latestFile.name)
+
+                showProgress("Downloading ${latestFile.name}...")
+                helper.downloadBinaryFile(latestFile.name, localBackupFile, targetFolderId)
+                syncReport += "- Latest backup saved locally: ${latestFile.name}\n"
+
+                // 4. Compare and update records (Merge)
                 showProgress("Comparing and updating records...")
-                recordsProcessed = processSync(tempFile)
-                tempFile.delete()
+                syncReport += processSync(localBackupFile)
+
+                // 5. Final upload of merged database
+                showProgress("Uploading merged database...")
+                val uploadedFile = performUpload(helper, targetFolderId)
+                syncReport += "\n- Merged database uploaded: $uploadedFile"
+
+                // Cleanup: keep only the latest local backup file
+                backupFolder.listFiles()?.filter { it.name != latestFile.name }
+                    ?.forEach { it.delete() }
 
                 status = "Success"
-                Toast.makeText(
-                    this@NewActivity,
-                    "Sync complete: $recordsProcessed records updated",
-                    Toast.LENGTH_SHORT
-                ).show()
+                withContext(Dispatchers.Main) {
+                    binding.docContentEdittext.setText(syncReport)
+                    Toast.makeText(this@NewActivity, "Sync complete", Toast.LENGTH_SHORT).show()
+                }
 
             } catch (e: Exception) {
                 status = "Error: ${e.message}"
+                syncReport = "Error during sync: ${e.message}"
                 handleError("Sync failed", e) { sync() }
             } finally {
-                logSyncHistory(syncTime, status, recordsProcessed.toString())
+                logSyncHistory(syncTime, status, syncReport)
                 hideProgress()
             }
         }
     }
 
-    private suspend fun processSync(backupFile: File): Int {
+    private suspend fun processSync(backupFile: File): String {
         return withContext(Dispatchers.IO) {
-            var count = 0
             val backupDb = SQLiteDatabase.openDatabase(
                 backupFile.absolutePath,
                 null,
                 SQLiteDatabase.OPEN_READONLY
             )
             val appDb = BillsDatabase(this@NewActivity)
+            val report = StringBuilder("Sync Results:\n")
+            var totalCount = 0
+
+            // Helper to handle sync logic for each table
+            suspend fun <T> syncTable(
+                tableName: String,
+                mapCursorToItem: (android.database.Cursor) -> T,
+                getExisting: (T) -> T?,
+                getUpdateTime: (T) -> String,
+                insert: suspend (T) -> Unit,
+                update: suspend (T) -> Unit
+            ): Pair<Int, Int> {
+                var inserts = 0
+                var updates = 0
+                backupDb.query(tableName, null, null, null, null, null, null).use { cursor ->
+                    while (cursor.moveToNext()) {
+                        val item = mapCursorToItem(cursor)
+                        val existing = getExisting(item)
+                        if (existing == null) {
+                            insert(item)
+                            inserts++
+                        } else if (getUpdateTime(item) > getUpdateTime(existing)) {
+                            update(item)
+                            updates++
+                        }
+                    }
+                }
+                return Pair(inserts, updates)
+            }
 
             // Sync Account Types
-            backupDb.query(TABLE_ACCOUNT_TYPES, null, null, null, null, null, null).use { cursor ->
-                while (cursor.moveToNext()) {
-                    val item = AccountType(
+            val at = syncTable(
+                TABLE_ACCOUNT_TYPES,
+                { cursor ->
+                    AccountType(
                         typeId = cursor.getLong(cursor.getColumnIndexOrThrow("typeId")),
                         accountType = cursor.getString(cursor.getColumnIndexOrThrow("accountType")),
                         keepTotals = cursor.getInt(cursor.getColumnIndexOrThrow("keepTotals")) != 0,
@@ -178,19 +245,20 @@ class NewActivity : AppCompatActivity() {
                         acctIsDeleted = cursor.getInt(cursor.getColumnIndexOrThrow("acctIsDeleted")) != 0,
                         acctUpdateTime = cursor.getString(cursor.getColumnIndexOrThrow("acctUpdateTime"))
                     )
-                    val existing = appDb.getAccountTypesDao().findAccountType(item.typeId)
-                    if (existing.isEmpty() || existing[0].acctUpdateTime < item.acctUpdateTime) {
-                        if (existing.isEmpty()) appDb.getAccountTypesDao().insertAccountType(item)
-                        else appDb.getAccountTypesDao().updateAccountType(item)
-                        count++
-                    }
-                }
-            }
+                },
+                { appDb.getAccountTypesDao().findAccountType(it.typeId).firstOrNull() },
+                { it.acctUpdateTime },
+                { appDb.getAccountTypesDao().insertAccountType(it) },
+                { appDb.getAccountTypesDao().updateAccountType(it) }
+            )
+            if (at.first > 0 || at.second > 0) report.append("- Account Types: ${at.first} added, ${at.second} updated\n")
+            totalCount += at.first + at.second
 
             // Sync Accounts
-            backupDb.query(TABLE_ACCOUNTS, null, null, null, null, null, null).use { cursor ->
-                while (cursor.moveToNext()) {
-                    val item = AccountModel(
+            val acc = syncTable(
+                TABLE_ACCOUNTS,
+                { cursor ->
+                    AccountModel(
                         accountId = cursor.getLong(cursor.getColumnIndexOrThrow("accountId")),
                         accountName = cursor.getString(cursor.getColumnIndexOrThrow("accountName")),
                         accountNumber = cursor.getString(cursor.getColumnIndexOrThrow("accountNumber")),
@@ -202,19 +270,20 @@ class NewActivity : AppCompatActivity() {
                         accIsDeleted = cursor.getInt(cursor.getColumnIndexOrThrow("accIsDeleted")) != 0,
                         accUpdateTime = cursor.getString(cursor.getColumnIndexOrThrow("accUpdateTime"))
                     )
-                    val existing = appDb.getAccountDao().findAccount(item.accountId)
-                    if (existing.isEmpty() || existing[0].accUpdateTime < item.accUpdateTime) {
-                        if (existing.isEmpty()) appDb.getAccountDao().insertAccount(item)
-                        else appDb.getAccountDao().updateAccount(item)
-                        count++
-                    }
-                }
-            }
+                },
+                { appDb.getAccountDao().findAccount(it.accountId).firstOrNull() },
+                { it.accUpdateTime },
+                { appDb.getAccountDao().insertAccount(it) },
+                { appDb.getAccountDao().updateAccount(it) }
+            )
+            if (acc.first > 0 || acc.second > 0) report.append("- Accounts: ${acc.first} added, ${acc.second} updated\n")
+            totalCount += acc.first + acc.second
 
             // Sync Budget Rules
-            backupDb.query(TABLE_BUDGET_RULES, null, null, null, null, null, null).use { cursor ->
-                while (cursor.moveToNext()) {
-                    val item = BudgetRule(
+            val br = syncTable(
+                TABLE_BUDGET_RULES,
+                { cursor ->
+                    BudgetRule(
                         ruleId = cursor.getLong(cursor.getColumnIndexOrThrow("ruleId")),
                         budgetRuleName = cursor.getString(cursor.getColumnIndexOrThrow("budgetRuleName")),
                         budToAccountId = cursor.getLong(cursor.getColumnIndexOrThrow("budToAccountId")),
@@ -232,19 +301,20 @@ class NewActivity : AppCompatActivity() {
                         budIsDeleted = cursor.getInt(cursor.getColumnIndexOrThrow("budIsDeleted")) != 0,
                         budUpdateTime = cursor.getString(cursor.getColumnIndexOrThrow("budUpdateTime"))
                     )
-                    val existing = appDb.getBudgetRuleDao().getBudgetRule(item.ruleId)
-                    if (existing == null || existing.budUpdateTime < item.budUpdateTime) {
-                        if (existing == null) appDb.getBudgetRuleDao().insertBudgetRule(item)
-                        else appDb.getBudgetRuleDao().updateBudgetRule(item)
-                        count++
-                    }
-                }
-            }
+                },
+                { appDb.getBudgetRuleDao().getBudgetRule(it.ruleId) },
+                { it.budUpdateTime },
+                { appDb.getBudgetRuleDao().insertBudgetRule(it) },
+                { appDb.getBudgetRuleDao().updateBudgetRule(it) }
+            )
+            if (br.first > 0 || br.second > 0) report.append("- Budget Rules: ${br.first} added, ${br.second} updated\n")
+            totalCount += br.first + br.second
 
             // Sync Transactions
-            backupDb.query(TABLE_TRANSACTION, null, null, null, null, null, null).use { cursor ->
-                while (cursor.moveToNext()) {
-                    val item = Transactions(
+            val trans = syncTable(
+                TABLE_TRANSACTION,
+                { cursor ->
+                    Transactions(
                         transId = cursor.getLong(cursor.getColumnIndexOrThrow("transId")),
                         transDate = cursor.getString(cursor.getColumnIndexOrThrow("transDate")),
                         transName = cursor.getString(cursor.getColumnIndexOrThrow("transName")),
@@ -258,19 +328,20 @@ class NewActivity : AppCompatActivity() {
                         transIsDeleted = cursor.getInt(cursor.getColumnIndexOrThrow("transIsDeleted")) != 0,
                         transUpdateTime = cursor.getString(cursor.getColumnIndexOrThrow("transUpdateTime"))
                     )
-                    val existing = appDb.getTransactionDao().getTransaction(item.transId)
-                    if (existing == null || existing.transUpdateTime < item.transUpdateTime) {
-                        if (existing == null) appDb.getTransactionDao().insertTransaction(item)
-                        else appDb.getTransactionDao().updateTransaction(item)
-                        count++
-                    }
-                }
-            }
+                },
+                { appDb.getTransactionDao().getTransaction(it.transId) },
+                { it.transUpdateTime },
+                { appDb.getTransactionDao().insertTransaction(it) },
+                { appDb.getTransactionDao().updateTransaction(it) }
+            )
+            if (trans.first > 0 || trans.second > 0) report.append("- Transactions: ${trans.first} added, ${trans.second} updated\n")
+            totalCount += trans.first + trans.second
 
             // Sync Budget Items
-            backupDb.query(TABLE_BUDGET_ITEMS, null, null, null, null, null, null).use { cursor ->
-                while (cursor.moveToNext()) {
-                    val item = BudgetItem(
+            val bi = syncTable(
+                TABLE_BUDGET_ITEMS,
+                { cursor ->
+                    BudgetItem(
                         biRuleId = cursor.getLong(cursor.getColumnIndexOrThrow("biRuleId")),
                         biProjectedDate = cursor.getString(cursor.getColumnIndexOrThrow("biProjectedDate")),
                         biActualDate = cursor.getString(cursor.getColumnIndexOrThrow("biActualDate")),
@@ -290,18 +361,20 @@ class NewActivity : AppCompatActivity() {
                         biUpdateTime = cursor.getString(cursor.getColumnIndexOrThrow("biUpdateTime")),
                         biLocked = cursor.getInt(cursor.getColumnIndexOrThrow("biLocked")) != 0
                     )
-                    val existing =
-                        appDb.getBudgetItemDao().getBudgetItem(item.biRuleId, item.biProjectedDate)
-                    if (existing == null || existing.biUpdateTime < item.biUpdateTime) {
-                        if (existing == null) appDb.getBudgetItemDao().insertBudgetItem(item)
-                        else appDb.getBudgetItemDao().updateBudgetItem(item)
-                        count++
-                    }
-                }
-            }
+                },
+                { appDb.getBudgetItemDao().getBudgetItem(it.biRuleId, it.biProjectedDate) },
+                { it.biUpdateTime },
+                { appDb.getBudgetItemDao().insertBudgetItem(it) },
+                { appDb.getBudgetItemDao().updateBudgetItem(it) }
+            )
+            if (bi.first > 0 || bi.second > 0) report.append("- Budget Items: ${bi.first} added, ${bi.second} updated\n")
+            totalCount += bi.first + bi.second
 
             backupDb.close()
-            count
+            if (totalCount == 0) report.append("All local tables were already up to date Pull-side.\n")
+            else report.append("\nTotal records synchronized from Drive: $totalCount\n")
+
+            report.toString()
         }
     }
 
@@ -378,18 +451,10 @@ class NewActivity : AppCompatActivity() {
             try {
                 val helper = mDriveServiceHelper ?: return@launch
                 val targetFolderId = getTargetFolderId(helper)
-                val dbFile = File(applicationInfo.dataDir, "databases/bills2.db")
-
-                if (!dbFile.exists()) throw FileNotFoundException("Database not found")
-
-                val timestamp =
-                    SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-                val driveFileName = "bills2_$timestamp.db"
-
-                helper.uploadFile(dbFile, "application/vnd.sqlite3", driveFileName, targetFolderId)
+                val uploadedFile = performUpload(helper, targetFolderId)
                 Toast.makeText(
                     this@NewActivity,
-                    "Upload successful: $driveFileName",
+                    "Upload successful: $uploadedFile",
                     Toast.LENGTH_SHORT
                 ).show()
             } catch (e: Exception) {
@@ -397,6 +462,39 @@ class NewActivity : AppCompatActivity() {
             } finally {
                 hideProgress()
             }
+        }
+    }
+
+    private suspend fun performUpload(helper: DriveServiceHelper, targetFolderId: String): String {
+        return withContext(Dispatchers.IO) {
+            val dbPath = getDatabasePath("bills2.db")
+
+            val db = BillsDatabase(this@NewActivity)
+            // Ensure all data is flushed from WAL to the main DB file
+            db.openHelper.writableDatabase.query("PRAGMA checkpoint(FULL)").close()
+            // Close the database to ensure the file is not busy and fully written
+            db.close()
+            BillsDatabase.resetInstance()
+
+            if (!dbPath.exists()) throw FileNotFoundException("Database file not found: ${dbPath.absolutePath}")
+
+            // Create a temporary copy to upload ensuring consistency
+            val uploadFile = File(cacheDir, "bills2_upload.db")
+            FileInputStream(dbPath).use { input ->
+                FileOutputStream(uploadFile).use { output ->
+                    input.copyTo(output)
+                }
+            }
+
+            val timestamp =
+                SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+            val driveFileName = "bills2_$timestamp.db"
+
+            helper.uploadFile(uploadFile, "application/vnd.sqlite3", driveFileName, targetFolderId)
+
+            // Cleanup temporary file
+            uploadFile.delete()
+            driveFileName
         }
     }
 

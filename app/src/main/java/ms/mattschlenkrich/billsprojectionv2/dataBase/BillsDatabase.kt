@@ -44,6 +44,10 @@ abstract class BillsDatabase : RoomDatabase() {
         private var instance: BillsDatabase? = null
         private val LOCK = Any()
 
+        fun resetInstance() {
+            instance = null
+        }
+
 //        private val MIGRATION_1_2 = object : Migration(1, 2) {
 //            override fun migrate(db: SupportSQLiteDatabase) {
 //                db.execSQL(
