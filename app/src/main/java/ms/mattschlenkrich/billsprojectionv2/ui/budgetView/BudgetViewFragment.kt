@@ -542,15 +542,15 @@ class BudgetViewFragment : Fragment(R.layout.fragment_budget_view) {
         )
     }
 
-    override fun onStop() {
-        binding.apply {
-            mainViewModel.setReturnToAsset(spAssetNames.selectedItem.toString())
-            if (spPayDay.adapter.count > 0) {
-                mainViewModel.setReturnToPayDay(spPayDay.selectedItem.toString())
-            }
-        }
-        super.onStop()
-    }
+//    override fun onStop() {
+//        binding.apply {
+//            mainViewModel.setReturnToAsset(spAssetNames.selectedItem.toString())
+//            if (spPayDay.adapter.count > 0) {
+//                mainViewModel.setReturnToPayDay(spPayDay.selectedItem.toString())
+//            }
+//        }
+//        super.onStop()
+//    }
 
     override fun onDestroy() {
         mainScope.cancel()

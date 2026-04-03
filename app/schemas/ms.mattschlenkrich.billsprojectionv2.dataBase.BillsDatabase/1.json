@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "03cf85de5350e6371d17d43bfca81f97",
+    "identityHash": "98e0d68b81bc18ea80bdbc9279fdc053",
     "entities": [
       {
         "tableName": "accounts",
@@ -251,8 +251,7 @@
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_accountTypes_acctIsDeleted` ON `${TABLE_NAME}` (`acctIsDeleted`)"
           }
-        ],
-        "foreignKeys": []
+        ]
       },
       {
         "tableName": "budgetRules",
@@ -318,8 +317,7 @@
           {
             "fieldPath": "budEndDate",
             "columnName": "budEndDate",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "budDayOfWeekId",
@@ -459,7 +457,7 @@
       },
       {
         "tableName": "transactions",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`transId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `transDate` TEXT NOT NULL, `transName` TEXT NOT NULL, `transNote` TEXT NOT NULL, `transRuleId` INTEGER NOT NULL, `transToAccountId` INTEGER NOT NULL, `transToAccountPending` INTEGER NOT NULL DEFAULT 0.0, `transFromAccountId` INTEGER NOT NULL, `transFromAccountPending` INTEGER NOT NULL DEFAULT 0.0, `transAmount` REAL NOT NULL DEFAULT 0.0, `transIsDeleted` INTEGER NOT NULL DEFAULT 0, `transUpdateTime` TEXT NOT NULL, FOREIGN KEY(`transToAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`transFromAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`transRuleId`) REFERENCES `budgetRules`(`ruleId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`transId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `transDate` TEXT NOT NULL, `transName` TEXT NOT NULL, `transNote` TEXT NOT NULL, `transRuleId` INTEGER NOT NULL, `transToAccountId` INTEGER NOT NULL, `transToAccountPending` INTEGER NOT NULL, `transFromAccountId` INTEGER NOT NULL, `transFromAccountPending` INTEGER NOT NULL, `transAmount` REAL NOT NULL DEFAULT 0.0, `transIsDeleted` INTEGER NOT NULL DEFAULT 0, `transUpdateTime` TEXT NOT NULL, FOREIGN KEY(`transToAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`transFromAccountId`) REFERENCES `accounts`(`accountId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`transRuleId`) REFERENCES `budgetRules`(`ruleId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "transId",
@@ -501,8 +499,7 @@
             "fieldPath": "transToAccountPending",
             "columnName": "transToAccountPending",
             "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "0.0"
+            "notNull": true
           },
           {
             "fieldPath": "transFromAccountId",
@@ -514,8 +511,7 @@
             "fieldPath": "transFromAccountPending",
             "columnName": "transFromAccountPending",
             "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "0.0"
+            "notNull": true
           },
           {
             "fieldPath": "transAmount",
@@ -893,6 +889,54 @@
             ]
           }
         ]
+      },
+      {
+        "tableName": "syncHistory",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`syncId` INTEGER NOT NULL, `syncTime` TEXT NOT NULL, `syncSourceName` TEXT NOT NULL, `syncDeviceId` INTEGER NOT NULL, `syncStatus` TEXT NOT NULL, `syncRecordsProcessed` TEXT NOT NULL, PRIMARY KEY(`syncId`))",
+        "fields": [
+          {
+            "fieldPath": "syncId",
+            "columnName": "syncId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "syncTime",
+            "columnName": "syncTime",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "syncSourceName",
+            "columnName": "syncSourceName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "syncDeviceId",
+            "columnName": "syncDeviceId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "syncStatus",
+            "columnName": "syncStatus",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "syncRecordsProcessed",
+            "columnName": "syncRecordsProcessed",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "syncId"
+          ]
+        }
       }
     ],
     "views": [
@@ -903,7 +947,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '03cf85de5350e6371d17d43bfca81f97')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '98e0d68b81bc18ea80bdbc9279fdc053')"
     ]
   }
 }
