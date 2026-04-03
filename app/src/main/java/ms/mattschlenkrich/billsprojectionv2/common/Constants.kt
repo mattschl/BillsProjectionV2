@@ -4,7 +4,7 @@ package ms.mattschlenkrich.billsprojectionv2.common
 
 const val DB_NAME = "bills2.db"
 const val PAY_DB_NAME = "pay.db"
-const val DB_VERSION = 1
+const val DB_VERSION = 3
 const val PAY_DB_VERSION = 1
 const val BILLS_DATABASE = "BillsDatabase"
 

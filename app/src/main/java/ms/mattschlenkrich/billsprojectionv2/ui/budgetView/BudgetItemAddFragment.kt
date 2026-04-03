@@ -132,7 +132,7 @@ class BudgetItemAddFragment : Fragment(
                         withContext(Dispatchers.Default) {
                             budgetRuleDetailed = budgetRuleViewModel.getBudgetRuleDetailed(
                                 mBudgetRule.ruleId
-                            )
+                            )!!
                         }
                         delay(WAIT_250)
                         if (mBudgetItemDetailed.toAccount != null) {

@@ -104,7 +104,7 @@ class BudgetRuleUpdateFragment : Fragment(R.layout.fragment_budget_rule_update) 
                         withContext(Dispatchers.Default) {
                             budgetRuleDetailed = budgetRuleViewModel.getBudgetRuleDetailed(
                                 mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.ruleId
-                            )
+                            )!!
                         }
                     } else {
                         budgetRuleDetailed = mainViewModel.getBudgetRuleDetailed()!!

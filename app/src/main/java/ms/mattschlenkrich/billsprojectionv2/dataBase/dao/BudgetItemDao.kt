@@ -49,6 +49,13 @@ interface BudgetItemDao {
     suspend fun updateBudgetItem(budgetItem: BudgetItem)
 
     @Query(
+        "SELECT * FROM $TABLE_BUDGET_ITEMS " +
+                "WHERE $BI_BUDGET_RULE_ID = :ruleId " +
+                "AND $BI_PROJECTED_DATE = :projectedDate"
+    )
+    fun getBudgetItem(ruleId: Long, projectedDate: String): BudgetItem?
+
+    @Query(
         "UPDATE $TABLE_BUDGET_ITEMS " +
                 "SET $BI_IS_DELETED = 1, " +
                 "$BI_UPDATE_TIME = :updateTime " +

@@ -41,6 +41,12 @@ interface TransactionDao {
     suspend fun updateTransaction(transaction: Transactions)
 
     @Query(
+        "SELECT * FROM $TABLE_TRANSACTION " +
+                "WHERE $TRANSACTION_ID = :transId"
+    )
+    fun getTransaction(transId: Long): Transactions?
+
+    @Query(
         "UPDATE $TABLE_TRANSACTION " +
                 "SET transIsDeleted = 1, " +
                 "transUpdateTime = :updateTime " +
