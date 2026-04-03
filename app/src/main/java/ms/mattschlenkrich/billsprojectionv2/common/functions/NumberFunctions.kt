@@ -2,7 +2,7 @@ package ms.mattschlenkrich.billsprojectionv2.common.functions
 
 import java.text.NumberFormat
 import java.util.Locale
-import java.util.Random
+import java.util.UUID
 
 class NumberFunctions {
     private val currencyFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale.CANADA)
@@ -30,10 +30,12 @@ class NumberFunctions {
         return currencyFormat.format(num)
     }
 
+    /**
+     * Generates a unique 64-bit ID.
+     * Uses the most significant bits of a UUID to minimize collision risk
+     * in a distributed environment (multi-device sync).
+     */
     fun generateId(): Long {
-        var id = Random().nextInt(Int.MAX_VALUE).toLong()
-        id = if (Random().nextBoolean()) -id
-        else id
-        return id
+        return UUID.randomUUID().mostSignificantBits and Long.MAX_VALUE
     }
 }

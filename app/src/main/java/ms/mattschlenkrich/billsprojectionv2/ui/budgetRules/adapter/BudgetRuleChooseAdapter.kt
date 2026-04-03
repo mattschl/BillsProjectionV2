@@ -11,6 +11,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_SPLIT
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
+import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.databinding.ListChooseItemsBinding
@@ -124,6 +125,10 @@ class BudgetRuleChooseAdapter(
 
             mCallingFragment.contains(FRAG_BUDGET_ITEM_UPDATE) -> {
                 budgetRuleChooseFragment.gotoBudgetItemUpdateFragment()
+            }
+
+            mCallingFragment.contains(FRAG_TRANS_UPDATE) -> {
+                budgetRuleChooseFragment.gotoTransactionUpdateFragment()
             }
         }
     }

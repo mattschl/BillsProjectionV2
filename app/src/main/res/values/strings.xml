@@ -338,6 +338,12 @@
     <string name="query">Query Results</string>
     <string name="sync">Sync Data</string>
     <string name="return_button">Return</string>
+    <string name="file_title">File Title</string>
+    <string name="document_content">Document Content</string>
+    <string name="upload">Upload</string>
+    <string name="download">Download</string>
+    <string name="update">Update</string>
+    <string name="loading">Loading&#8230;</string>
     <string name="oath_client">460339349167-sam5237fckel7qjbsar8b0ekfodoij2j.apps.googleusercontent.com</string>
 
     <!--    /mnt/047353E96D6DD7F2/Projects/AndroidProject/keystore/matt__new_signing.jks-->

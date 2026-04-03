@@ -81,7 +81,7 @@ class BudgetViewFragment : Fragment(R.layout.fragment_budget_view) {
         resumeHistory()
     }
 
-    private fun populateAssets() {
+    fun populateAssets() {
         val assetAdapter = ArrayAdapter<Any>(
             requireContext(), R.layout.spinner_item_bold
         )

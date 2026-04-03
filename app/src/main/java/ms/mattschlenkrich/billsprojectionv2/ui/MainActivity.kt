@@ -39,6 +39,12 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewMod
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.TransactionViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.TransactionViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.databinding.ActivityMainBinding
+import ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountsFragment
+import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.BudgetRuleFragment
+import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetViewFragment
+import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionAddFragment
+import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionUpdateFragment
+import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionViewFragment
 import java.time.LocalDate
 
 
@@ -271,6 +277,49 @@ class MainActivity : AppCompatActivity() {
             UpdateBudgetPredictions(this)
         CoroutineScope(Dispatchers.IO).launch {
             updateBudgetPredictions.killPredictions()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "onResume called")
+        // Reset database instance and re-initialize view models to ensure fresh data after sync
+        BillsDatabase.resetInstance()
+        setupBudgetItemViewModel()
+        setupBudgetRuleViewModel()
+        setupAccountViewModel()
+        setupTransactionViewModel()
+        setupMainViewModel()
+        setupAccountUpdateViewModel()
+
+        // Trigger an update for the current fragment
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container_view)
+        navHostFragment?.childFragmentManager?.fragments?.forEach { fragment ->
+            when (fragment) {
+                is BudgetViewFragment -> {
+                    fragment.populateAssets()
+                }
+
+                is AccountsFragment -> {
+                    fragment.setUpRecyclerView()
+                }
+
+                is BudgetRuleFragment -> {
+                    fragment.setupRecyclerView()
+                }
+
+                is TransactionViewFragment -> {
+                    fragment.setupRecyclerView()
+                }
+
+                is TransactionAddFragment -> {
+                    fragment.populateValues()
+                }
+
+                is TransactionUpdateFragment -> {
+                    fragment.populateValues()
+                }
+            }
         }
     }
 

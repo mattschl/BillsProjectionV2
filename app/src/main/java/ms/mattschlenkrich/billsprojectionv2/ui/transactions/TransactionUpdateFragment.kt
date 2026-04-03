@@ -86,7 +86,7 @@ class TransactionUpdateFragment : Fragment(R.layout.fragment_transaction_update)
         setClickActions()
     }
 
-    private fun populateValues() {
+    fun populateValues() {
         binding.apply {
             if (mainViewModel.getOldTransaction() != null && mainViewModel.getTransactionDetailed() == null) {
                 populateValuesFromOldTransaction()
@@ -260,7 +260,8 @@ class TransactionUpdateFragment : Fragment(R.layout.fragment_transaction_update)
 
     private fun chooseBudgetRule() {
         mainViewModel.addCallingFragment(TAG)
-        gotoBudgetRuleFragment()
+        mainViewModel.setTransactionDetailed(getCurrentTransDetailed())
+        gotoBudgetRuleChooseFragment()
     }
 
     private fun chooseNewAccount(requestedAccount: String) {
@@ -478,9 +479,9 @@ class TransactionUpdateFragment : Fragment(R.layout.fragment_transaction_update)
         )
     }
 
-    private fun gotoBudgetRuleFragment() {
+    private fun gotoBudgetRuleChooseFragment() {
         mView.findNavController().navigate(
-            TransactionUpdateFragmentDirections.actionTransactionUpdateFragmentToBudgetRuleFragment()
+            TransactionUpdateFragmentDirections.actionTransactionUpdateFragmentToBudgetRuleChooseFragment()
         )
     }
 

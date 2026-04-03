@@ -58,7 +58,7 @@ class TransactionViewFragment : Fragment(R.layout.fragment_transaction_view),
         setClickActions()
     }
 
-    private fun setupRecyclerView() {
+    fun setupRecyclerView() {
         transactionAdapter = TransactionAdapter(
             mainActivity,
             mView,
