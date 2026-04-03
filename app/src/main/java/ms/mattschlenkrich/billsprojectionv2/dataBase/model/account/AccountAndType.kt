@@ -17,7 +17,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.TYPE_ID
             "FROM $TABLE_ACCOUNTS " +
             "LEFT JOIN $TABLE_ACCOUNT_TYPES on " +
             "$TABLE_ACCOUNTS.accountTypeId =" +
-            "$TABLE_ACCOUNT_TYPES.typeId;"
+            "$TABLE_ACCOUNT_TYPES.typeId"
 )
 @Parcelize
 data class AccountAndType(

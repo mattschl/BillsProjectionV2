@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp">
@@ -21,52 +21,62 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
             android:gravity="top"
             android:hint="Document Content"
-            app:layout_constraintBottom_toTopOf="@+id/query_btn"
+            app:layout_constraintBottom_toTopOf="@+id/button_flow"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/file_title_edittext" />
+
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/button_flow"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="query_btn,up_button,down_button,update_button,sync_button,return_button"
+            app:flow_horizontalGap="8dp"
+            app:flow_horizontalStyle="packed"
+            app:flow_verticalGap="8dp"
+            app:flow_wrapMode="aligned"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/query_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Query"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:text="Query" />
 
         <Button
             android:id="@+id/up_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Upload"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/query_btn" />
+            android:text="Upload" />
 
         <Button
             android:id="@+id/down_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Download"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/up_button" />
+            android:text="Download" />
 
         <Button
             android:id="@+id/update_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Update"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/down_button" />
+            android:text="Update" />
+
+        <Button
+            android:id="@+id/sync_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sync" />
 
         <Button
             android:id="@+id/return_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/return_button"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:text="@string/return_button" />
 
         <FrameLayout
             android:id="@+id/progress_overlay"

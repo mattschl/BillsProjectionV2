@@ -66,6 +66,12 @@ interface BudgetRuleDao {
     suspend fun getBudgetRulesActive():
             List<BudgetRule>
 
+    @Query(
+        "SELECT * FROM $TABLE_BUDGET_RULES " +
+                "WHERE $RULE_ID = :ruleId"
+    )
+    fun getBudgetRule(ruleId: Long): BudgetRule?
+
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
@@ -125,7 +131,7 @@ interface BudgetRuleDao {
                 "WHERE $TABLE_BUDGET_RULES.ruleId = :ruleId " +
                 "AND $TABLE_BUDGET_RULES.$BUD_IS_DELETED = 0;"
     )
-    fun getBudgetRuleDetailed(ruleId: Long): BudgetRuleDetailed
+    fun getBudgetRuleDetailed(ruleId: Long): BudgetRuleDetailed?
 
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
