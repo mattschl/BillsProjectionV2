@@ -10,12 +10,14 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.dao.AccountDao
 import ms.mattschlenkrich.billsprojectionv2.dataBase.dao.AccountTypeDao
 import ms.mattschlenkrich.billsprojectionv2.dataBase.dao.BudgetItemDao
 import ms.mattschlenkrich.billsprojectionv2.dataBase.dao.BudgetRuleDao
+import ms.mattschlenkrich.billsprojectionv2.dataBase.dao.SyncHistoryDao
 import ms.mattschlenkrich.billsprojectionv2.dataBase.dao.TransactionDao
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountAndType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
+import ms.mattschlenkrich.billsprojectionv2.dataBase.model.sync.SyncHistory
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 
 @Database(
@@ -25,6 +27,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transact
         BudgetRule::class,
         Transactions::class,
         BudgetItem::class,
+        SyncHistory::class,
     ], version = DB_VERSION,
     views = [AccountAndType::class]
 )
@@ -34,11 +37,30 @@ abstract class BillsDatabase : RoomDatabase() {
     abstract fun getBudgetRuleDao(): BudgetRuleDao
     abstract fun getTransactionDao(): TransactionDao
     abstract fun getBudgetItemDao(): BudgetItemDao
+    abstract fun getSyncHistoryDao(): SyncHistoryDao
 
     companion object {
         @Volatile
         private var instance: BillsDatabase? = null
         private val LOCK = Any()
+
+//        private val MIGRATION_1_2 = object : Migration(1, 2) {
+//            override fun migrate(db: SupportSQLiteDatabase) {
+//                db.execSQL(
+//                    """
+//                    CREATE TABLE IF NOT EXISTS `syncHistory` (
+//                        `syncId` INTEGER NOT NULL,
+//                        `syncTime` TEXT NOT NULL,
+//                        `syncSourceName` TEXT NOT NULL,
+//                        `syncDeviceId` INTEGER NOT NULL,
+//                        `syncStatus` TEXT NOT NULL,
+//                        `syncRecordsProcessed` TEXT NOT NULL,
+//                        PRIMARY KEY(`syncId`)
+//                    )
+//                """.trimIndent()
+//                )
+//            }
+//        }
 
         operator fun invoke(context: Context) =
             instance ?: synchronized(LOCK) {
@@ -53,8 +75,8 @@ abstract class BillsDatabase : RoomDatabase() {
                 BillsDatabase::class.java,
                 DB_NAME
             )
-                .createFromAsset("bills2.db")
-                .fallbackToDestructiveMigration(false)
+//                .addMigrations(MIGRATION_1_2)
+                .fallbackToDestructiveMigration(true)
                 .build()
         }
     }

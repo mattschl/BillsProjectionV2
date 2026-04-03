@@ -48,6 +48,14 @@ const val ADAPTER_BUDGET_VIEW = "BudgetViewAdapter"
 const val ADAPTER_PENDING = "TransactionPendingAdapter"
 const val ADAPTER_TRANSACTION_ANALYSIS = "TransactionAnalysisAdapter"
 
+const val TABLE_SYNC_HISTORY = "syncHistory"
+const val SYNC_ID = "syncId"
+const val SYNC_TIME = "syncTime"
+const val SYNC_SOURCE = "syncSourceName"
+const val SYNC_DEVICE_ID = "syncDeviceId"
+const val SYNC_STATUS = "syncStatus"
+const val SYNC_RECORDS_PROCESSED = "syncRecordsProcessed"
+
 const val TABLE_ACCOUNT_TYPES = "accountTypes"
 const val TYPE_ID = "typeId"
 const val ACCOUNT_TYPE = "accountType"
@@ -255,4 +263,3 @@ const val WAIT_250 = 250L
 const val WAIT_500 = 500L
 const val WAIT_1000 = 1000L
 const val WAIT_1500 = 1500L
-

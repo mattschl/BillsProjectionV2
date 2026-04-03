@@ -54,10 +54,8 @@ data class Transactions(
     val transNote: String,
     val transRuleId: Long,
     var transToAccountId: Long,
-    @ColumnInfo(defaultValue = "0.0")
     var transToAccountPending: Boolean,
     var transFromAccountId: Long,
-    @ColumnInfo(defaultValue = "0.0")
     var transFromAccountPending: Boolean,
     @ColumnInfo(defaultValue = "0.0")
     var transAmount: Double,
@@ -65,4 +63,3 @@ data class Transactions(
     val transIsDeleted: Boolean,
     val transUpdateTime: String,
 ) : Parcelable
-
