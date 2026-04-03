@@ -39,7 +39,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
 @Dao
 interface BudgetItemDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBudgetItem(budgetItem: BudgetItem)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

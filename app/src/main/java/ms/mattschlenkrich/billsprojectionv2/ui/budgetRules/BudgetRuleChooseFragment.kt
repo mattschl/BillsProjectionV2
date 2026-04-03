@@ -177,6 +177,12 @@ class BudgetRuleChooseFragment : Fragment(R.layout.fragment_budget_rule),
         )
     }
 
+    fun gotoTransactionUpdateFragment() {
+        mView.findNavController().navigate(
+            BudgetRuleChooseFragmentDirections.actionBudgetRuleChooseFragmentToTransactionUpdateFragment()
+        )
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         _binding = null

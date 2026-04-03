@@ -66,7 +66,7 @@ class BudgetRuleFragment : Fragment(R.layout.fragment_budget_rule), SearchView.O
         mainActivity.mainViewModel.removeCallingFragment(TAG)
     }
 
-    private fun setupRecyclerView() {
+    fun setupRecyclerView() {
         budgetRuleAdapter = BudgetRuleAdapter(
             mainActivity,
             mView,

@@ -35,6 +35,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_ITEMS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_RULES
+import ms.mattschlenkrich.billsprojectionv2.common.TABLE_SYNC_HISTORY
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_TRANSACTION
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
@@ -167,7 +168,9 @@ class NewActivity : AppCompatActivity() {
 
                 // 5. Final upload of merged database
                 showProgress("Uploading merged database...")
-                val uploadedFile = performUpload(helper, targetFolderId)
+                val uploadTimestamp =
+                    SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+                val uploadedFile = performUpload(helper, targetFolderId, uploadTimestamp)
                 syncReport += "\n- Merged database uploaded: $uploadedFile"
 
                 // Cleanup: keep only the latest local backup file
@@ -185,7 +188,25 @@ class NewActivity : AppCompatActivity() {
                 syncReport = "Error during sync: ${e.message}"
                 handleError("Sync failed", e) { sync() }
             } finally {
-                logSyncHistory(syncTime, status, syncReport)
+                val finalSyncTime = if (status == "Success") {
+                    val driveTimestamp =
+                        syncReport.substringAfter("Merged database uploaded: bills2_")
+                            .substringBefore(".db")
+                    try {
+                        val driveDate = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
+                            .parse(driveTimestamp)
+                        if (driveDate != null) {
+                            SimpleDateFormat(SQLITE_TIME, Locale.getDefault()).format(driveDate)
+                        } else {
+                            syncTime
+                        }
+                    } catch (e: Exception) {
+                        syncTime
+                    }
+                } else {
+                    syncTime
+                }
+                logSyncHistory(finalSyncTime, status, syncReport)
                 hideProgress()
             }
         }
@@ -206,7 +227,7 @@ class NewActivity : AppCompatActivity() {
             suspend fun <T> syncTable(
                 tableName: String,
                 mapCursorToItem: (android.database.Cursor) -> T,
-                getExisting: (T) -> T?,
+                getExisting: suspend (T) -> T?,
                 getUpdateTime: (T) -> String,
                 insert: suspend (T) -> Unit,
                 update: suspend (T) -> Unit
@@ -370,6 +391,27 @@ class NewActivity : AppCompatActivity() {
             if (bi.first > 0 || bi.second > 0) report.append("- Budget Items: ${bi.first} added, ${bi.second} updated\n")
             totalCount += bi.first + bi.second
 
+            // Sync Sync History
+            val sh = syncTable(
+                TABLE_SYNC_HISTORY,
+                { cursor ->
+                    SyncHistory(
+                        syncId = cursor.getLong(cursor.getColumnIndexOrThrow("syncId")),
+                        syncTime = cursor.getString(cursor.getColumnIndexOrThrow("syncTime")),
+                        syncSourceName = cursor.getString(cursor.getColumnIndexOrThrow("syncSourceName")),
+                        syncDeviceId = cursor.getLong(cursor.getColumnIndexOrThrow("syncDeviceId")),
+                        syncStatus = cursor.getString(cursor.getColumnIndexOrThrow("syncStatus")),
+                        syncRecordsProcessed = cursor.getString(cursor.getColumnIndexOrThrow("syncRecordsProcessed"))
+                    )
+                },
+                { appDb.getSyncHistoryDao().getSyncHistory(it.syncId) },
+                { it.syncTime },
+                { appDb.getSyncHistoryDao().insertSyncHistory(it) },
+                { appDb.getSyncHistoryDao().updateSyncHistory(it) }
+            )
+            if (sh.first > 0 || sh.second > 0) report.append("- Sync History: ${sh.first} added, ${sh.second} updated\n")
+            totalCount += sh.first + sh.second
+
             backupDb.close()
             if (totalCount == 0) report.append("All local tables were already up to date Pull-side.\n")
             else report.append("\nTotal records synchronized from Drive: $totalCount\n")
@@ -465,7 +507,11 @@ class NewActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun performUpload(helper: DriveServiceHelper, targetFolderId: String): String {
+    private suspend fun performUpload(
+        helper: DriveServiceHelper,
+        targetFolderId: String,
+        timestamp: String? = null
+    ): String {
         return withContext(Dispatchers.IO) {
             val dbPath = getDatabasePath("bills2.db")
 
@@ -486,9 +532,12 @@ class NewActivity : AppCompatActivity() {
                 }
             }
 
-            val timestamp =
-                SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-            val driveFileName = "bills2_$timestamp.db"
+            val driveFileName = if (timestamp != null) {
+                "bills2_$timestamp.db"
+            } else {
+                val time = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+                "bills2_$time.db"
+            }
 
             helper.uploadFile(uploadFile, "application/vnd.sqlite3", driveFileName, targetFolderId)
 

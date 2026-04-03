@@ -64,7 +64,7 @@ class AccountsFragment :
         setClickActions()
     }
 
-    private fun setUpRecyclerView() {
+    fun setUpRecyclerView() {
         accountAdapter = AccountAdapter(
             mainActivity,
             mView,

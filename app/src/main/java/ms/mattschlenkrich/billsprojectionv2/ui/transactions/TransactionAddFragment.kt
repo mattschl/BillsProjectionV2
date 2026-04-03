@@ -86,7 +86,7 @@ class TransactionAddFragment : Fragment(R.layout.fragment_transaction_add) {
         setClickActions()
     }
 
-    private fun populateValues() {
+    fun populateValues() {
         mainScope.launch {
             if (mainViewModel.getTransactionDetailed() != null) {
                 populateValuesFromTransactionDetailedInCache()

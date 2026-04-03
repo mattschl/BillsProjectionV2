@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -12,10 +13,13 @@
             android:id="@+id/file_title_edittext"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="File Title"
+            android:hint="@string/file_title"
+            android:importantForAutofill="no"
+            android:minHeight="48dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="TextFields" />
 
         <EditText
             android:id="@+id/doc_content_edittext"
@@ -24,11 +28,12 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
             android:gravity="top"
-            android:hint="Document Content"
+            android:hint="@string/document_content"
             app:layout_constraintBottom_toTopOf="@+id/button_flow"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/file_title_edittext" />
+            app:layout_constraintTop_toBottomOf="@id/file_title_edittext"
+            tools:ignore="Autofill,TextFields" />
 
         <androidx.constraintlayout.helper.widget.Flow
             android:id="@+id/button_flow"
@@ -47,31 +52,31 @@
             android:id="@+id/query_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Query" />
+            android:text="@string/query" />
 
         <Button
             android:id="@+id/up_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Upload" />
+            android:text="@string/upload" />
 
         <Button
             android:id="@+id/down_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Download" />
+            android:text="@string/download" />
 
         <Button
             android:id="@+id/update_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Update" />
+            android:text="@string/update" />
 
         <Button
             android:id="@+id/sync_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sync" />
+            android:text="@string/sync" />
 
         <Button
             android:id="@+id/return_button"
@@ -79,32 +84,26 @@
             android:layout_height="wrap_content"
             android:text="@string/return_button" />
 
-        <FrameLayout
+        <LinearLayout
             android:id="@+id/progress_overlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#80000000"
+            android:gravity="center"
+            android:orientation="vertical"
             android:visibility="gone">
 
-            <LinearLayout
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/progress_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:orientation="vertical">
-
-                <ProgressBar
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center" />
-
-                <TextView
-                    android:id="@+id/progress_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Loading..."
-                    android:textColor="@android:color/white" />
-            </LinearLayout>
-        </FrameLayout>
+                android:text="@string/loading"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

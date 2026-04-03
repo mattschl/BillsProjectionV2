@@ -24,7 +24,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithTy
 
 @Dao
 interface AccountDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAccount(account: Account)
 
     @Update

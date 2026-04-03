@@ -3,6 +3,7 @@ package ms.mattschlenkrich.billsprojectionv2.dataBase.dao
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.RoomWarnings
@@ -31,7 +32,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
 
 @Dao
 interface BudgetRuleDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBudgetRule(budgetRule: BudgetRule)
 
     @Query(
