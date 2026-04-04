@@ -30,13 +30,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.SQLITE_TIME
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_ITEMS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_SYNC_HISTORY
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_TRANSACTION
+import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 import ms.mattschlenkrich.billsprojectionv2.dataBase.BillsDatabase
@@ -51,9 +51,6 @@ import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.security.SecureRandom
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account as AccountModel
 
 private const val TAG: String = "NewActivity"
@@ -68,6 +65,7 @@ class NewActivity : AppCompatActivity() {
     private lateinit var binding: ActivityNewBinding
     private lateinit var credentialManager: CredentialManager
     private val nf = NumberFunctions()
+    private val df = DateFunctions()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -120,10 +118,12 @@ class NewActivity : AppCompatActivity() {
 
     fun sync() {
         showProgress("Synchronizing...")
+        // Reset the database instance to ensure we are working with the latest disk state
+        BillsDatabase.resetInstance()
         lifecycleScope.launch {
             var status = "Failed"
             val syncReport = StringBuilder("Sync Report:\n")
-            val startTime = SimpleDateFormat(SQLITE_TIME, Locale.getDefault()).format(Date())
+            val startTime = df.getCurrentTimeAsString()
             try {
                 val helper = mDriveServiceHelper ?: return@launch
                 val targetFolderId = getTargetFolderId(helper)
@@ -142,14 +142,9 @@ class NewActivity : AppCompatActivity() {
                     ?.filter { it.name.startsWith("bills2_") && it.name.endsWith(".db") }
                     ?.mapNotNull { file ->
                         val tsPart = file.name.substringAfter("bills2_").substringBefore(".db")
-                        val date = try {
-                            SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).parse(tsPart)
-                        } catch (e: Exception) {
-                            null
-                        }
+                        val date = df.parseFileTimestamp(tsPart)
                         if (date != null) {
-                            val sqliteTs =
-                                SimpleDateFormat(SQLITE_TIME, Locale.getDefault()).format(date)
+                            val sqliteTs = df.getDateTimeStringFromDate(date)
                             file to sqliteTs
                         } else null
                     }
@@ -160,24 +155,24 @@ class NewActivity : AppCompatActivity() {
                     syncReport.append("No new backups found on Drive.\n")
                 } else {
                     syncReport.append("Found ${driveFiles.size} backups to evaluate.\n")
-                    val backupFolder = File(filesDir, "backups")
-                    if (!backupFolder.exists()) backupFolder.mkdirs()
 
                     for ((file, _) in driveFiles) {
                         showProgress("Syncing ${file.name}...")
-                        val localBackupFile = File(backupFolder, file.name)
+                        val localBackupFile = File(cacheDir, file.name)
                         helper.downloadBinaryFile(file.name, localBackupFile, targetFolderId)
 
                         val result = processSync(localBackupFile)
                         syncReport.append("- ${file.name}: $result\n")
-                        localBackupFile.delete()
+                        // Ensure the temporary backup file is deleted immediately
+                        if (localBackupFile.exists()) {
+                            localBackupFile.delete()
+                        }
                     }
                 }
 
                 // 3. Final upload of merged database
                 showProgress("Uploading merged database...")
-                val uploadTimestamp =
-                    SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+                val uploadTimestamp = df.getCurrentFileTimestamp()
                 val uploadedFile = performUpload(helper, targetFolderId, uploadTimestamp)
                 syncReport.append("\nMerged database uploaded: $uploadedFile")
 
@@ -197,15 +192,10 @@ class NewActivity : AppCompatActivity() {
                     val driveTimestamp =
                         reportStr.substringAfter("Merged database uploaded: bills2_")
                             .substringBefore(".db")
-                    try {
-                        val driveDate = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
-                            .parse(driveTimestamp)
-                        if (driveDate != null) {
-                            SimpleDateFormat(SQLITE_TIME, Locale.getDefault()).format(driveDate)
-                        } else {
-                            startTime
-                        }
-                    } catch (e: Exception) {
+                    val driveDate = df.parseFileTimestamp(driveTimestamp)
+                    if (driveDate != null) {
+                        df.getDateTimeStringFromDate(driveDate)
+                    } else {
                         startTime
                     }
                 } else {
@@ -225,6 +215,10 @@ class NewActivity : AppCompatActivity() {
                 SQLiteDatabase.OPEN_READONLY
             )
             val appDb = BillsDatabase(this@NewActivity)
+            val dbPath =
+                this@NewActivity.getDatabasePath(ms.mattschlenkrich.billsprojectionv2.common.DB_NAME)
+            Log.d(TAG, "ProcessSync: Syncing with local database at: ${dbPath.absolutePath}")
+
             val report = StringBuilder("Sync Results:\n")
             var totalCount = 0
 
@@ -247,21 +241,38 @@ class NewActivity : AppCompatActivity() {
                         val backupTime = getUpdateTime(item)
 
                         if (existing == null) {
-                            Log.d(TAG, "Inserting new record into $tableName: $item")
+                            Log.d(
+                                TAG,
+                                "Table $tableName: Record not found locally. Inserting ID: $item"
+                            )
                             insert(item)
                             inserts++
                         } else {
                             val localTime = getUpdateTime(existing)
+                            // "Latest Wins" logic: Only update if the backup record is strictly newer.
+                            // This ensures that local changes are preserved and deletions (via isDeleted flags)
+                            // are synchronized correctly based on the most recent action.
                             if (backupTime > localTime) {
                                 Log.d(
                                     TAG,
-                                    "Updating record in $tableName: $item (Backup: $backupTime, Local: $localTime)"
+                                    "Table $tableName: Backup is newer ($backupTime > $localTime). Updating record: $item"
                                 )
                                 update(item)
                                 updates++
+                            } else {
+                                Log.d(
+                                    TAG,
+                                    "Table $tableName: Skipping record. Local version ($localTime) is same or newer than backup ($backupTime)"
+                                )
                             }
                         }
                     }
+                }
+                // Flush changes to disk after each table to ensure consistency for subsequent steps
+                try {
+                    appDb.openHelper.writableDatabase.query("PRAGMA checkpoint(FULL)").close()
+                } catch (e: Exception) {
+                    Log.e(TAG, "Checkpoint failed for $tableName", e)
                 }
                 return Pair(inserts, updates)
             }
@@ -426,8 +437,21 @@ class NewActivity : AppCompatActivity() {
                 },
                 { appDb.getSyncHistoryDao().getSyncHistory(it.syncId) },
                 { it.syncTime },
-                { withContext(Dispatchers.IO) { appDb.getSyncHistoryDao().insertSyncHistory(it) } },
-                { withContext(Dispatchers.IO) { appDb.getSyncHistoryDao().updateSyncHistory(it) } }
+                {
+                    // Avoid circular updates: don't insert our own device's sync history from other backups
+                    if (it.syncDeviceId != mDeviceId) {
+                        withContext(Dispatchers.IO) {
+                            appDb.getSyncHistoryDao().insertSyncHistory(it)
+                        }
+                    }
+                },
+                {
+                    if (it.syncDeviceId != mDeviceId) {
+                        withContext(Dispatchers.IO) {
+                            appDb.getSyncHistoryDao().updateSyncHistory(it)
+                        }
+                    }
+                }
             )
             if (sh.first > 0 || sh.second > 0) report.append("- Sync History: ${sh.first} added, ${sh.second} updated\n")
             totalCount += sh.first + sh.second
@@ -480,25 +504,21 @@ class NewActivity : AppCompatActivity() {
                     return@launch
                 }
 
-                val localFile = File(applicationInfo.dataDir, "databases/${latestFile.name}")
-                if (localFile.exists()) {
-                    Toast.makeText(
-                        this@NewActivity,
-                        "File already exists locally.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@launch
-                }
-
+                val localFile = File(cacheDir, latestFile.name)
                 localFile.parentFile?.mkdirs()
                 showProgress("Downloading ${latestFile.name}...")
                 helper.downloadBinaryFile(latestFile.name, localFile, targetFolderId)
 
                 Toast.makeText(
                     this@NewActivity,
-                    "Downloaded: ${latestFile.name}",
+                    "Downloaded to temporary cache: ${latestFile.name}",
                     Toast.LENGTH_SHORT
                 ).show()
+
+                // Do not keep backup copies on the device
+                if (localFile.exists()) {
+                    localFile.delete()
+                }
             } catch (e: Exception) {
                 handleError("Download failed", e) { testDownload() }
             } finally {
@@ -555,7 +575,7 @@ class NewActivity : AppCompatActivity() {
             val driveFileName = if (timestamp != null) {
                 "bills2_$timestamp.db"
             } else {
-                val time = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+                val time = df.getCurrentFileTimestamp()
                 "bills2_$time.db"
             }
 
