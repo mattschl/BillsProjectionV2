@@ -122,75 +122,80 @@ class NewActivity : AppCompatActivity() {
         showProgress("Synchronizing...")
         lifecycleScope.launch {
             var status = "Failed"
-            var syncReport = "No records processed"
-            val syncTime = SimpleDateFormat(SQLITE_TIME, Locale.getDefault()).format(Date())
+            val syncReport = StringBuilder("Sync Report:\n")
+            val startTime = SimpleDateFormat(SQLITE_TIME, Locale.getDefault()).format(Date())
             try {
                 val helper = mDriveServiceHelper ?: return@launch
                 val targetFolderId = getTargetFolderId(helper)
+                val appDb = BillsDatabase(this@NewActivity)
 
-//                // 1. First action: Upload current local database as a backup
-//                showProgress("Creating pre-sync backup...")
-//                val preSyncUpload = performUpload(helper, targetFolderId)
-//                syncReport = "Pre-sync backup uploaded: $preSyncUpload\n"
+                // 1. Determine start sync time
+                val myLastSync = withContext(Dispatchers.IO) {
+                    appDb.getSyncHistoryDao().getLastSyncTime(mDeviceId)
+                } ?: "1970-01-01 00:00:00"
 
-                // 2. Query for the latest backup on Drive
+                syncReport.append("My last sync: $myLastSync\n")
+
+                // 2. Query for backups on Drive
                 val fileList: FileList = helper.queryFiles(targetFolderId)
                 val driveFiles = fileList.files
                     ?.filter { it.name.startsWith("bills2_") && it.name.endsWith(".db") }
-                    ?.sortedByDescending { it.name } ?: emptyList()
+                    ?.mapNotNull { file ->
+                        val tsPart = file.name.substringAfter("bills2_").substringBefore(".db")
+                        val date = try {
+                            SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).parse(tsPart)
+                        } catch (e: Exception) {
+                            null
+                        }
+                        if (date != null) {
+                            val sqliteTs =
+                                SimpleDateFormat(SQLITE_TIME, Locale.getDefault()).format(date)
+                            file to sqliteTs
+                        } else null
+                    }
+                    ?.filter { it.second >= myLastSync }
+                    ?.sortedBy { it.second } ?: emptyList()
 
                 if (driveFiles.isEmpty()) {
-                    Toast.makeText(
-                        this@NewActivity,
-                        "No backups found on Drive",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    status = "No Backups"
-                    return@launch
+                    syncReport.append("No new backups found on Drive.\n")
+                } else {
+                    syncReport.append("Found ${driveFiles.size} backups to evaluate.\n")
+                    val backupFolder = File(filesDir, "backups")
+                    if (!backupFolder.exists()) backupFolder.mkdirs()
+
+                    for ((file, _) in driveFiles) {
+                        showProgress("Syncing ${file.name}...")
+                        val localBackupFile = File(backupFolder, file.name)
+                        helper.downloadBinaryFile(file.name, localBackupFile, targetFolderId)
+
+                        val result = processSync(localBackupFile)
+                        syncReport.append("- ${file.name}: $result\n")
+                        localBackupFile.delete()
+                    }
                 }
 
-                // We want to merge with the LATEST file that is NOT the one we just uploaded
-                // Or simply the latest one if we want to ensure we're at parity.
-                val latestFile = driveFiles[0]
-
-                // 3. Download and keep the most recent backup copy on the device
-                val backupFolder = File(filesDir, "backups")
-                if (!backupFolder.exists()) backupFolder.mkdirs()
-                val localBackupFile = File(backupFolder, latestFile.name)
-
-                showProgress("Downloading ${latestFile.name}...")
-                helper.downloadBinaryFile(latestFile.name, localBackupFile, targetFolderId)
-                syncReport += "- Latest backup saved locally: ${latestFile.name}\n"
-
-                // 4. Compare and update records (Merge)
-                showProgress("Comparing and updating records...")
-                syncReport += processSync(localBackupFile)
-
-                // 5. Final upload of merged database
+                // 3. Final upload of merged database
                 showProgress("Uploading merged database...")
                 val uploadTimestamp =
                     SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
                 val uploadedFile = performUpload(helper, targetFolderId, uploadTimestamp)
-                syncReport += "\n- Merged database uploaded: $uploadedFile"
-
-                // Cleanup: keep only the latest local backup file
-                backupFolder.listFiles()?.filter { it.name != latestFile.name }
-                    ?.forEach { it.delete() }
+                syncReport.append("\nMerged database uploaded: $uploadedFile")
 
                 status = "Success"
                 withContext(Dispatchers.Main) {
-                    binding.docContentEdittext.setText(syncReport)
+                    binding.docContentEdittext.setText(syncReport.toString())
                     Toast.makeText(this@NewActivity, "Sync complete", Toast.LENGTH_SHORT).show()
                 }
 
             } catch (e: Exception) {
                 status = "Error: ${e.message}"
-                syncReport = "Error during sync: ${e.message}"
+                syncReport.append("\nError: ${e.message}")
                 handleError("Sync failed", e) { sync() }
             } finally {
                 val finalSyncTime = if (status == "Success") {
+                    val reportStr = syncReport.toString()
                     val driveTimestamp =
-                        syncReport.substringAfter("Merged database uploaded: bills2_")
+                        reportStr.substringAfter("Merged database uploaded: bills2_")
                             .substringBefore(".db")
                     try {
                         val driveDate = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
@@ -198,15 +203,15 @@ class NewActivity : AppCompatActivity() {
                         if (driveDate != null) {
                             SimpleDateFormat(SQLITE_TIME, Locale.getDefault()).format(driveDate)
                         } else {
-                            syncTime
+                            startTime
                         }
                     } catch (e: Exception) {
-                        syncTime
+                        startTime
                     }
                 } else {
-                    syncTime
+                    startTime
                 }
-                logSyncHistory(finalSyncTime, status, syncReport)
+                logSyncHistory(finalSyncTime, status, syncReport.toString())
                 hideProgress()
             }
         }
@@ -235,15 +240,26 @@ class NewActivity : AppCompatActivity() {
                 var inserts = 0
                 var updates = 0
                 backupDb.query(tableName, null, null, null, null, null, null).use { cursor ->
+                    Log.d(TAG, "Syncing table $tableName, records in backup: ${cursor.count}")
                     while (cursor.moveToNext()) {
                         val item = mapCursorToItem(cursor)
                         val existing = getExisting(item)
+                        val backupTime = getUpdateTime(item)
+
                         if (existing == null) {
+                            Log.d(TAG, "Inserting new record into $tableName: $item")
                             insert(item)
                             inserts++
-                        } else if (getUpdateTime(item) > getUpdateTime(existing)) {
-                            update(item)
-                            updates++
+                        } else {
+                            val localTime = getUpdateTime(existing)
+                            if (backupTime > localTime) {
+                                Log.d(
+                                    TAG,
+                                    "Updating record in $tableName: $item (Backup: $backupTime, Local: $localTime)"
+                                )
+                                update(item)
+                                updates++
+                            }
                         }
                     }
                 }
@@ -269,8 +285,12 @@ class NewActivity : AppCompatActivity() {
                 },
                 { appDb.getAccountTypesDao().findAccountType(it.typeId).firstOrNull() },
                 { it.acctUpdateTime },
-                { appDb.getAccountTypesDao().insertAccountType(it) },
-                { appDb.getAccountTypesDao().updateAccountType(it) }
+                {
+                    withContext(Dispatchers.IO) {
+                        appDb.getAccountTypesDao().insertAccountType(it)
+                    }
+                },
+                { withContext(Dispatchers.IO) { appDb.getAccountTypesDao().updateAccountType(it) } }
             )
             if (at.first > 0 || at.second > 0) report.append("- Account Types: ${at.first} added, ${at.second} updated\n")
             totalCount += at.first + at.second
@@ -294,8 +314,8 @@ class NewActivity : AppCompatActivity() {
                 },
                 { appDb.getAccountDao().findAccount(it.accountId).firstOrNull() },
                 { it.accUpdateTime },
-                { appDb.getAccountDao().insertAccount(it) },
-                { appDb.getAccountDao().updateAccount(it) }
+                { withContext(Dispatchers.IO) { appDb.getAccountDao().insertAccount(it) } },
+                { withContext(Dispatchers.IO) { appDb.getAccountDao().updateAccount(it) } }
             )
             if (acc.first > 0 || acc.second > 0) report.append("- Accounts: ${acc.first} added, ${acc.second} updated\n")
             totalCount += acc.first + acc.second
@@ -325,8 +345,8 @@ class NewActivity : AppCompatActivity() {
                 },
                 { appDb.getBudgetRuleDao().getBudgetRule(it.ruleId) },
                 { it.budUpdateTime },
-                { appDb.getBudgetRuleDao().insertBudgetRule(it) },
-                { appDb.getBudgetRuleDao().updateBudgetRule(it) }
+                { withContext(Dispatchers.IO) { appDb.getBudgetRuleDao().insertBudgetRule(it) } },
+                { withContext(Dispatchers.IO) { appDb.getBudgetRuleDao().updateBudgetRule(it) } }
             )
             if (br.first > 0 || br.second > 0) report.append("- Budget Rules: ${br.first} added, ${br.second} updated\n")
             totalCount += br.first + br.second
@@ -352,8 +372,8 @@ class NewActivity : AppCompatActivity() {
                 },
                 { appDb.getTransactionDao().getTransaction(it.transId) },
                 { it.transUpdateTime },
-                { appDb.getTransactionDao().insertTransaction(it) },
-                { appDb.getTransactionDao().updateTransaction(it) }
+                { withContext(Dispatchers.IO) { appDb.getTransactionDao().insertTransaction(it) } },
+                { withContext(Dispatchers.IO) { appDb.getTransactionDao().updateTransaction(it) } }
             )
             if (trans.first > 0 || trans.second > 0) report.append("- Transactions: ${trans.first} added, ${trans.second} updated\n")
             totalCount += trans.first + trans.second
@@ -385,8 +405,8 @@ class NewActivity : AppCompatActivity() {
                 },
                 { appDb.getBudgetItemDao().getBudgetItem(it.biRuleId, it.biProjectedDate) },
                 { it.biUpdateTime },
-                { appDb.getBudgetItemDao().insertBudgetItem(it) },
-                { appDb.getBudgetItemDao().updateBudgetItem(it) }
+                { withContext(Dispatchers.IO) { appDb.getBudgetItemDao().insertBudgetItem(it) } },
+                { withContext(Dispatchers.IO) { appDb.getBudgetItemDao().updateBudgetItem(it) } }
             )
             if (bi.first > 0 || bi.second > 0) report.append("- Budget Items: ${bi.first} added, ${bi.second} updated\n")
             totalCount += bi.first + bi.second
@@ -406,8 +426,8 @@ class NewActivity : AppCompatActivity() {
                 },
                 { appDb.getSyncHistoryDao().getSyncHistory(it.syncId) },
                 { it.syncTime },
-                { appDb.getSyncHistoryDao().insertSyncHistory(it) },
-                { appDb.getSyncHistoryDao().updateSyncHistory(it) }
+                { withContext(Dispatchers.IO) { appDb.getSyncHistoryDao().insertSyncHistory(it) } },
+                { withContext(Dispatchers.IO) { appDb.getSyncHistoryDao().updateSyncHistory(it) } }
             )
             if (sh.first > 0 || sh.second > 0) report.append("- Sync History: ${sh.first} added, ${sh.second} updated\n")
             totalCount += sh.first + sh.second

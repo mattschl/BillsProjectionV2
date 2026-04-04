@@ -2,7 +2,6 @@ package ms.mattschlenkrich.billsprojectionv2.dataBase.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_SYNC_HISTORY
@@ -10,7 +9,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.sync.SyncHistory
 
 @Dao
 interface SyncHistoryDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     suspend fun insertSyncHistory(syncHistory: SyncHistory)
 
     @Update

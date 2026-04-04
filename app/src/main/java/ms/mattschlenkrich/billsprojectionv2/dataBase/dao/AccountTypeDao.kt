@@ -3,7 +3,6 @@ package ms.mattschlenkrich.billsprojectionv2.dataBase.dao
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_TYPE
@@ -15,7 +14,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType
 
 @Dao
 interface AccountTypeDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     suspend fun insertAccountType(accountType: AccountType)
 
     @Update

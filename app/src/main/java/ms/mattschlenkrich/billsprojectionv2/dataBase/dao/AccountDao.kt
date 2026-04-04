@@ -3,7 +3,6 @@ package ms.mattschlenkrich.billsprojectionv2.dataBase.dao
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
@@ -24,7 +23,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithTy
 
 @Dao
 interface AccountDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     suspend fun insertAccount(account: Account)
 
     @Update
