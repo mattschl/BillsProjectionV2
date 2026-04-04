@@ -10,27 +10,47 @@ import java.time.LocalDate
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 //private const val TAG = "DateFunctions"
 
 @Suppress("unused")
 class DateFunctions {
-    private val dateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA)
-    private val timeFormatter = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
-    private val dateChecker = SimpleDateFormat(DATE_CHECK, Locale.CANADA)
-    private val displayDateString = SimpleDateFormat(DISPLAY_DATE, Locale.CANADA)
-    private val displayDateWithYear = SimpleDateFormat(DISPLAY_DATE_WITH_YEAR, Locale.CANADA)
+    private val utcTimeZone = TimeZone.getTimeZone("UTC")
+    private val dateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA).apply {
+        timeZone = utcTimeZone
+    }
+    private val timeFormatter = SimpleDateFormat(SQLITE_TIME, Locale.CANADA).apply {
+        timeZone = utcTimeZone
+    }
+    private val dateChecker = SimpleDateFormat(DATE_CHECK, Locale.CANADA).apply {
+        timeZone = utcTimeZone
+    }
+    private val displayDateString = SimpleDateFormat(DISPLAY_DATE, Locale.CANADA).apply {
+        timeZone = utcTimeZone
+    }
+    private val displayDateWithYear =
+        SimpleDateFormat(DISPLAY_DATE_WITH_YEAR, Locale.CANADA).apply {
+            timeZone = utcTimeZone
+        }
+    private val fileTimestampFormat = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.CANADA).apply {
+        timeZone = utcTimeZone
+    }
 
     fun getCurrentTimeAsString(): String {
-        return timeFormatter.format(Calendar.getInstance().time)
+        return timeFormatter.format(Calendar.getInstance(utcTimeZone).time)
+    }
+
+    fun getDateTimeStringFromDate(date: Date): String {
+        return timeFormatter.format(date)
     }
 
     fun getCurrentDateAsString(): String {
-        return dateFormat.format(Calendar.getInstance().time)
+        return dateFormat.format(Calendar.getInstance(utcTimeZone).time)
     }
 
     fun convertDateToString(date: LocalDate): String {
-        return dateFormat.format(date)
+        return date.toString()
     }
 
     fun convertStringToDate(dateString: String): LocalDate {
@@ -82,6 +102,50 @@ class DateFunctions {
 
     fun getDateStringFromDate(date: Date): String {
         return dateFormat.format(date)
+    }
+
+    fun getCurrentFileTimestamp(): String {
+        return fileTimestampFormat.format(Calendar.getInstance(utcTimeZone).time)
+    }
+
+    fun getFileTimestampFromDate(date: Date): String {
+        return fileTimestampFormat.format(date)
+    }
+
+    fun parseFileTimestamp(timestamp: String): Date? {
+        return try {
+            fileTimestampFormat.parse(timestamp)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
+     * Legacy function to ensure that dates previously stored in local time
+     * are correctly interpreted and converted to UTC for the new sync logic.
+     */
+    fun getUtcFromLegacyLocal(localTimestamp: String): String {
+        return try {
+            val localFormatter = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
+            // Uses system default timezone for parsing
+            val date = localFormatter.parse(localTimestamp)
+            timeFormatter.format(date!!) // timeFormatter is UTC
+        } catch (e: Exception) {
+            localTimestamp
+        }
+    }
+
+    /**
+     * Converts a UTC timestamp from the database to a local time string for UI display.
+     */
+    fun getLocalDisplayTime(utcTimestamp: String): String {
+        return try {
+            val date = timeFormatter.parse(utcTimestamp)
+            val localFormatter = SimpleDateFormat(SQLITE_TIME, Locale.getDefault())
+            localFormatter.format(date!!)
+        } catch (e: Exception) {
+            utcTimestamp
+        }
     }
 
     fun getMonthsBetween(startDate: String, endDate: String): Int {
