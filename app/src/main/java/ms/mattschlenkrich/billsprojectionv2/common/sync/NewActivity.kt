@@ -49,6 +49,7 @@ import ms.mattschlenkrich.billsprojectionv2.databinding.ActivityNewBinding
 import java.io.File
 import java.io.FileNotFoundException
 import java.security.SecureRandom
+import java.time.LocalDate
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account as AccountModel
 
 private const val TAG: String = "NewActivity"
@@ -179,7 +180,15 @@ class NewActivity : AppCompatActivity() {
                     }
                 }
 
-                // 3. Final upload of merged database
+                // 4. Purge old budget items (more than 2 months old)
+                showProgress("Purging old budget items...")
+                val cutoffDate = LocalDate.now().minusMonths(2).toString()
+                withContext(Dispatchers.IO) {
+                    appDb.getBudgetItemDao().purgeOldBudgetItems(cutoffDate)
+                }
+                syncReport.append("\nOld budget items purged from database (cutoff: $cutoffDate).")
+
+                // 5. Final upload of merged database
                 showProgress("Uploading merged database...")
                 val uploadTimestamp = df.getCurrentFileTimestamp()
                 val uploadedFile = performUpload(helper, targetFolderId, uploadTimestamp)

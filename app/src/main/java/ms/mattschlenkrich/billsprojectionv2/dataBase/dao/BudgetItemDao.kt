@@ -235,8 +235,15 @@ interface BudgetItemDao {
     )
 
     @Query(
+        "DELETE FROM $TABLE_BUDGET_ITEMS " +
+                "WHERE $BI_PAY_DAY < :cutoffDate " +
+                "AND ($BI_IS_COMPLETED = 1 OR $BI_IS_CANCELLED = 1 OR $BI_IS_DELETED = 1)"
+    )
+    suspend fun purgeOldBudgetItems(cutoffDate: String)
+
+    @Query(
         "UPDATE $TABLE_BUDGET_ITEMS " +
-                "SET $BI_LOCKED = :lock," +
+                "SET $BI_LOCKED = :lock, " +
                 "$BI_UPDATE_TIME = :updateTime " +
                 "WHERE $BI_BUDGET_RULE_ID = :budgetRuleId " +
                 "AND $BI_PAY_DAY = :payDay"

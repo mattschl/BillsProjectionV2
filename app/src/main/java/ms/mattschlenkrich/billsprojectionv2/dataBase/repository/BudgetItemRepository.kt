@@ -23,6 +23,9 @@ class BudgetItemRepository(private val db: BillsDatabase) {
     suspend fun killFutureBudgetItems(currentDate: String, updateTime: String) =
         db.getBudgetItemDao().killFutureBudgetItems(currentDate, updateTime)
 
+    suspend fun purgeOldBudgetItems(cutoffDate: String) =
+        db.getBudgetItemDao().purgeOldBudgetItems(cutoffDate)
+
     fun getPayDaysActive() = db.getBudgetItemDao().getPayDaysActive()
 
     suspend fun deleteFutureBudgetItems(
