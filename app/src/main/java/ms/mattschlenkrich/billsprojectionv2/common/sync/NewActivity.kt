@@ -47,9 +47,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.sync.SyncHistory
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.databinding.ActivityNewBinding
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileNotFoundException
-import java.io.FileOutputStream
 import java.security.SecureRandom
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account as AccountModel
 
@@ -138,9 +136,10 @@ class NewActivity : AppCompatActivity() {
 
                 // 2. Query for backups on Drive
                 val fileList: FileList = helper.queryFiles(targetFolderId)
-                val driveFiles = fileList.files
-                    ?.filter { it.name.startsWith("bills2_") && it.name.endsWith(".db") }
-                    ?.mapNotNull { file ->
+                val allFiles = fileList.files ?: emptyList()
+                val driveFiles = allFiles
+                    .filter { it.name.startsWith("bills2_") && it.name.endsWith(".db") }
+                    .mapNotNull { file ->
                         val tsPart = file.name.substringAfter("bills2_").substringBefore(".db")
                         val date = df.parseFileTimestamp(tsPart)
                         if (date != null) {
@@ -148,8 +147,8 @@ class NewActivity : AppCompatActivity() {
                             file to sqliteTs
                         } else null
                     }
-                    ?.filter { it.second >= myLastSync }
-                    ?.sortedBy { it.second } ?: emptyList()
+                    .filter { it.second >= myLastSync }
+                    .sortedBy { it.second }
 
                 if (driveFiles.isEmpty()) {
                     syncReport.append("No new backups found on Drive.\n")
@@ -159,14 +158,24 @@ class NewActivity : AppCompatActivity() {
                     for ((file, _) in driveFiles) {
                         showProgress("Syncing ${file.name}...")
                         val localBackupFile = File(cacheDir, file.name)
+                        val localWalFile = File(cacheDir, "${file.name}-wal")
+                        val localShmFile = File(cacheDir, "${file.name}-shm")
+
                         helper.downloadBinaryFile(file.name, localBackupFile, targetFolderId)
+                        allFiles.find { it.name == localWalFile.name }?.let {
+                            helper.downloadBinaryFile(it.name, localWalFile, targetFolderId)
+                        }
+                        allFiles.find { it.name == localShmFile.name }?.let {
+                            helper.downloadBinaryFile(it.name, localShmFile, targetFolderId)
+                        }
 
                         val result = processSync(localBackupFile)
                         syncReport.append("- ${file.name}: $result\n")
-                        // Ensure the temporary backup file is deleted immediately
-                        if (localBackupFile.exists()) {
-                            localBackupFile.delete()
-                        }
+
+                        // Cleanup temporary backup files immediately
+                        if (localBackupFile.exists()) localBackupFile.delete()
+                        if (localWalFile.exists()) localWalFile.delete()
+                        if (localShmFile.exists()) localShmFile.delete()
                     }
                 }
 
@@ -175,6 +184,26 @@ class NewActivity : AppCompatActivity() {
                 val uploadTimestamp = df.getCurrentFileTimestamp()
                 val uploadedFile = performUpload(helper, targetFolderId, uploadTimestamp)
                 syncReport.append("\nMerged database uploaded: $uploadedFile")
+
+                // 4. Cleanup redundant backups
+                showProgress("Cleaning up old backups...")
+                val driveFileList = helper.queryFiles(targetFolderId)
+                val allDriveFiles = driveFileList.files ?: emptyList()
+                val driveBackups = allDriveFiles
+                    .filter { it.name.startsWith("bills2_") && it.name.endsWith(".db") }
+                    .sortedByDescending { it.name }
+
+                if (driveBackups.size > 6) {
+                    val backupsToDelete = driveBackups.drop(6)
+                    for (baseFile in backupsToDelete) {
+                        helper.deleteFile(baseFile.id)
+                        allDriveFiles.find { it.name == "${baseFile.name}-wal" }
+                            ?.let { helper.deleteFile(it.id) }
+                        allDriveFiles.find { it.name == "${baseFile.name}-shm" }
+                            ?.let { helper.deleteFile(it.id) }
+                    }
+                    syncReport.append("\nDeleted ${backupsToDelete.size} old backups from Drive.")
+                }
 
                 status = "Success"
                 withContext(Dispatchers.Main) {
@@ -490,10 +519,11 @@ class NewActivity : AppCompatActivity() {
                 val helper = mDriveServiceHelper ?: return@launch
                 val targetFolderId = getTargetFolderId(helper)
                 val fileList: FileList = helper.queryFiles(targetFolderId)
+                val allFiles = fileList.files ?: emptyList()
 
-                val latestFile = fileList.files
-                    ?.filter { it.name.startsWith("bills2_") && it.name.endsWith(".db") }
-                    ?.maxByOrNull { it.name }
+                val latestFile = allFiles
+                    .filter { it.name.startsWith("bills2_") && it.name.endsWith(".db") }
+                    .maxByOrNull { it.name }
 
                 if (latestFile == null) {
                     Toast.makeText(
@@ -505,9 +535,18 @@ class NewActivity : AppCompatActivity() {
                 }
 
                 val localFile = File(cacheDir, latestFile.name)
+                val localWalFile = File(cacheDir, "${latestFile.name}-wal")
+                val localShmFile = File(cacheDir, "${latestFile.name}-shm")
+
                 localFile.parentFile?.mkdirs()
                 showProgress("Downloading ${latestFile.name}...")
                 helper.downloadBinaryFile(latestFile.name, localFile, targetFolderId)
+                allFiles.find { it.name == localWalFile.name }?.let {
+                    helper.downloadBinaryFile(it.name, localWalFile, targetFolderId)
+                }
+                allFiles.find { it.name == localShmFile.name }?.let {
+                    helper.downloadBinaryFile(it.name, localShmFile, targetFolderId)
+                }
 
                 Toast.makeText(
                     this@NewActivity,
@@ -516,9 +555,9 @@ class NewActivity : AppCompatActivity() {
                 ).show()
 
                 // Do not keep backup copies on the device
-                if (localFile.exists()) {
-                    localFile.delete()
-                }
+                if (localFile.exists()) localFile.delete()
+                if (localWalFile.exists()) localWalFile.delete()
+                if (localShmFile.exists()) localShmFile.delete()
             } catch (e: Exception) {
                 handleError("Download failed", e) { testDownload() }
             } finally {
@@ -553,7 +592,10 @@ class NewActivity : AppCompatActivity() {
         timestamp: String? = null
     ): String {
         return withContext(Dispatchers.IO) {
-            val dbPath = getDatabasePath("bills2.db")
+            val dbName = "bills2.db"
+            val dbPath = getDatabasePath(dbName)
+            val walPath = File(dbPath.path + "-wal")
+            val shmPath = File(dbPath.path + "-shm")
 
             val db = BillsDatabase(this@NewActivity)
             // Ensure all data is flushed from WAL to the main DB file
@@ -564,26 +606,28 @@ class NewActivity : AppCompatActivity() {
 
             if (!dbPath.exists()) throw FileNotFoundException("Database file not found: ${dbPath.absolutePath}")
 
-            // Create a temporary copy to upload ensuring consistency
-            val uploadFile = File(cacheDir, "bills2_upload.db")
-            FileInputStream(dbPath).use { input ->
-                FileOutputStream(uploadFile).use { output ->
-                    input.copyTo(output)
+            val time = timestamp ?: df.getCurrentFileTimestamp()
+            val driveBaseName = "bills2_$time.db"
+
+            val filesToUpload = mutableListOf<Pair<File, String>>()
+            filesToUpload.add(dbPath to driveBaseName)
+            if (walPath.exists()) filesToUpload.add(walPath to "$driveBaseName-wal")
+            if (shmPath.exists()) filesToUpload.add(shmPath to "$driveBaseName-shm")
+
+            for ((localFile, driveName) in filesToUpload) {
+                val uploadFile = File(cacheDir, "upload_$driveName")
+                localFile.inputStream().use { input ->
+                    uploadFile.outputStream().use { output ->
+                        input.copyTo(output)
+                    }
                 }
+                val mimeType =
+                    if (driveName.endsWith(".db")) "application/vnd.sqlite3" else "application/octet-stream"
+                helper.uploadFile(uploadFile, mimeType, driveName, targetFolderId)
+                uploadFile.delete()
             }
 
-            val driveFileName = if (timestamp != null) {
-                "bills2_$timestamp.db"
-            } else {
-                val time = df.getCurrentFileTimestamp()
-                "bills2_$time.db"
-            }
-
-            helper.uploadFile(uploadFile, "application/vnd.sqlite3", driveFileName, targetFolderId)
-
-            // Cleanup temporary file
-            uploadFile.delete()
-            driveFileName
+            driveBaseName
         }
     }
 
@@ -595,12 +639,20 @@ class NewActivity : AppCompatActivity() {
                 val targetFolderId = getTargetFolderId(helper)
 
                 val driveFileList = helper.queryFiles(targetFolderId)
-                val driveBackups = driveFileList.files
-                    ?.filter { it.name.startsWith("bills2_") && it.name.endsWith(".db") }
-                    ?.sortedByDescending { it.name } ?: emptyList()
+                val allFiles = driveFileList.files ?: emptyList()
+                val driveBackups = allFiles
+                    .filter { it.name.startsWith("bills2_") && it.name.endsWith(".db") }
+                    .sortedByDescending { it.name }
 
-                if (driveBackups.size > 3) {
-                    driveBackups.drop(3).forEach { helper.deleteFile(it.id) }
+                if (driveBackups.size > 6) {
+                    val backupsToDelete = driveBackups.drop(6)
+                    for (baseFile in backupsToDelete) {
+                        helper.deleteFile(baseFile.id)
+                        allFiles.find { it.name == "${baseFile.name}-wal" }
+                            ?.let { helper.deleteFile(it.id) }
+                        allFiles.find { it.name == "${baseFile.name}-shm" }
+                            ?.let { helper.deleteFile(it.id) }
+                    }
                 }
 
                 hideProgress()
