@@ -28,8 +28,9 @@ class UpdateBudgetPredictions(
     }
 
     fun updatePredictions(stopDate: String) {
-        runBlocking { deleteEligibleFutureItems() }
         runBlocking {
+            purgeOldItems()
+            deleteEligibleFutureItems()
             val budgetRules = budgetRuleViewModel.getBudgetRulesActive()
             if (budgetRules.isNotEmpty()) {
                 val payDayBudgetRuleList = getBudgetRuleListThatIsPayday(budgetRules)
@@ -209,10 +210,16 @@ class UpdateBudgetPredictions(
         }
     }
 
-    private fun deleteEligibleFutureItems(): Boolean {
+    private suspend fun deleteEligibleFutureItems(): Boolean {
         budgetItemViewModel.deleteFutureBudgetItems(
             df.getCurrentDateAsString(), df.getCurrentTimeAsString()
         )
+        return true
+    }
+
+    private suspend fun purgeOldItems(): Boolean {
+        val cutoffDate = LocalDate.now().minusMonths(2).toString()
+        budgetItemViewModel.purgeOldBudgetItems(cutoffDate)
         return true
     }
 

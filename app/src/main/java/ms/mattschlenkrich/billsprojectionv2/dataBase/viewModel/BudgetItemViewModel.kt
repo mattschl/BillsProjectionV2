@@ -11,6 +11,34 @@ class BudgetItemViewModel(
     app: Application, private val budgetItemRepository: BudgetItemRepository
 ) : AndroidViewModel(app) {
 
+    suspend fun insertBudgetItemSync(budgetItem: BudgetItem) =
+        budgetItemRepository.insertBudgetItem(budgetItem)
+
+    suspend fun insertOrReplaceBudgetItemSync(budgetItem: BudgetItem) =
+        budgetItemRepository.insertOrReplaceBudgetItem(budgetItem)
+
+    suspend fun updateBudgetItemSync(budgetItem: BudgetItem) =
+        budgetItemRepository.updateBudgetItem(budgetItem)
+
+    suspend fun rewriteBudgetItemSync(
+        budgetRuleId: Long, projectedDate: String, actualDate: String, payDay: String,
+        budgetName: String, isPayDay: Boolean, toAccountId: Long, fromAccountId: Long,
+        projectedAmount: Double, isFixed: Boolean, isAutomatic: Boolean, updateTime: String
+    ) =
+        budgetItemRepository.rewriteBudgetItem(
+            budgetRuleId, projectedDate, actualDate, payDay, budgetName, isPayDay, toAccountId,
+            fromAccountId, projectedAmount, isFixed, isAutomatic, updateTime
+        )
+
+    suspend fun purgeOldBudgetItemsSync(cutoffDate: String) =
+        budgetItemRepository.purgeOldBudgetItems(cutoffDate)
+
+    suspend fun deleteFutureBudgetItemsSync(currentDate: String, updateTime: String) =
+        budgetItemRepository.deleteFutureBudgetItems(currentDate, updateTime)
+
+    suspend fun killFutureBudgetItemsSync(currentDate: String, updateTime: String) =
+        budgetItemRepository.killFutureBudgetItems(currentDate, updateTime)
+
     fun insertBudgetItem(budgetItem: BudgetItem) = viewModelScope.launch {
         budgetItemRepository.insertBudgetItem(budgetItem)
     }
@@ -44,6 +72,12 @@ class BudgetItemViewModel(
     fun deleteFutureBudgetItems(currentDate: String, updateTime: String) = viewModelScope.launch {
         budgetItemRepository.deleteFutureBudgetItems(
             currentDate, updateTime
+        )
+    }
+
+    fun purgeOldBudgetItems(cutoffDate: String) = viewModelScope.launch {
+        budgetItemRepository.purgeOldBudgetItems(
+            cutoffDate
         )
     }
 
