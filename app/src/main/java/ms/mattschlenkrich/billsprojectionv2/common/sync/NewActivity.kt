@@ -291,17 +291,17 @@ class NewActivity : AppCompatActivity() {
                             // This ensures that local changes are preserved and deletions (via isDeleted flags)
                             // are synchronized correctly based on the most recent action.
                             if (backupTime > localTime) {
-                                Log.d(
-                                    TAG,
-                                    "Table $tableName: Backup is newer ($backupTime > $localTime). Updating record: $item"
-                                )
+//                                Log.d(
+//                                    TAG,
+//                                    "Table $tableName: Backup is newer ($backupTime > $localTime). Updating record: $item"
+//                                )
                                 update(item)
                                 updates++
                             } else {
-                                Log.d(
-                                    TAG,
-                                    "Table $tableName: Skipping record. Local version ($localTime) is same or newer than backup ($backupTime)"
-                                )
+//                                Log.d(
+//                                    TAG,
+//                                    "Table $tableName: Skipping record. Local version ($localTime) is same or newer than backup ($backupTime)"
+//                                )
                             }
                         }
                     }
