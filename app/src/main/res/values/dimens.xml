@@ -23,6 +23,11 @@
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
     <dimen name="text_box_narrow">100dp</dimen>
     <dimen name="margin_small">10dp</dimen>
+    <dimen name="margin_standard">8dp</dimen>
+    <dimen name="margin_medium_large">16dp</dimen>
+    <dimen name="margin_xlarge">32dp</dimen>
+    <dimen name="padding_huge">50dp</dimen>
+    <dimen name="dimen_1dp">1dp</dimen>
     <dimen name="dimen_5dp">5dp</dimen>
     <dimen name="dimen_10dp">10dp</dimen>
 </resources>
