@@ -30,7 +30,7 @@
                     android:layout_weight="10"
                     android:text="@string/text_view"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_normal"
+                    android:textSize="?attr/text_size_normal"
                     android:textStyle="bold" />
 
                 <View

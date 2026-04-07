@@ -30,7 +30,7 @@
                 android:selectAllOnFocus="true"
                 android:textAlignment="center"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_heading_size"
+                android:textSize="?attr/text_heading_size"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/lblDate"
                 app:layout_constraintTop_toTopOf="parent"
@@ -41,7 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/budget_rule"
-                android:textSize="@dimen/text_info_size"
+                android:textSize="?attr/text_info_size"
                 app:layout_constraintBaseline_toBaselineOf="@+id/tvBudgetRule"
                 app:layout_constraintEnd_toEndOf="@+id/lblDate"
                 app:layout_constraintStart_toStartOf="@+id/lblDate" />
@@ -54,7 +54,7 @@
                 android:padding="@dimen/padding_start_end"
                 android:text="@string/choose_a_budget_rule"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_heading_size"
+                android:textSize="?attr/text_heading_size"
                 app:layout_constraintEnd_toEndOf="@+id/etTransDate"
                 app:layout_constraintStart_toStartOf="@+id/etTransDate"
                 app:layout_constraintTop_toBottomOf="@+id/etTransDate" />
@@ -65,7 +65,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/amount"
-                android:textSize="@dimen/text_info_size"
+                android:textSize="?attr/text_info_size"
                 app:layout_constraintBaseline_toBaselineOf="@+id/etAmount"
                 app:layout_constraintEnd_toEndOf="@+id/lblBudgetRule"
                 app:layout_constraintStart_toStartOf="@+id/lblBudgetRule" />
@@ -81,7 +81,7 @@
                 android:selectAllOnFocus="true"
                 android:textColor="@color/black"
                 android:textColorHint="#757575"
-                android:textSize="@dimen/title_text_size"
+                android:textSize="?attr/title_text_size"
                 app:layout_constraintEnd_toStartOf="@id/btnSplit"
                 app:layout_constraintStart_toStartOf="@+id/tvBudgetRule"
                 app:layout_constraintTop_toBottomOf="@+id/tvBudgetRule" />
@@ -101,7 +101,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/to_this_account"
-                android:textSize="@dimen/text_info_size"
+                android:textSize="?attr/text_info_size"
                 app:layout_constraintBaseline_toBaselineOf="@+id/tvToAccount"
                 app:layout_constraintEnd_toStartOf="@id/tvToAccount"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -114,7 +114,7 @@
                 android:padding="@dimen/padding_start_end"
                 android:text="@string/choose_an_account"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_heading_size"
+                android:textSize="?attr/text_heading_size"
                 app:layout_constraintEnd_toStartOf="@id/chkToAccountPending"
                 app:layout_constraintStart_toEndOf="@id/lblToAccount"
                 app:layout_constraintTop_toBottomOf="@+id/etAmount" />
@@ -135,7 +135,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/from_this_account"
-                android:textSize="@dimen/text_info_size"
+                android:textSize="?attr/text_info_size"
                 app:layout_constraintBaseline_toBaselineOf="@+id/tvFromAccount"
                 app:layout_constraintEnd_toStartOf="@id/tvFromAccount"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -148,7 +148,7 @@
                 android:padding="@dimen/padding_start_end"
                 android:text="@string/choose_an_account"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_heading_size"
+                android:textSize="?attr/text_heading_size"
                 app:layout_constraintEnd_toStartOf="@id/chkFromAccountPending"
                 app:layout_constraintStart_toEndOf="@id/lblFromAccount"
                 app:layout_constraintTop_toBottomOf="@+id/tvToAccount" />
@@ -168,7 +168,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/description"
-                android:textSize="@dimen/text_info_size"
+                android:textSize="?attr/text_info_size"
                 app:layout_constraintBaseline_toBaselineOf="@+id/etDescription"
                 app:layout_constraintEnd_toStartOf="@id/etDescription"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -184,7 +184,7 @@
                 android:selectAllOnFocus="true"
                 android:textColor="@color/black"
                 android:textColorHint="#757575"
-                android:textSize="@dimen/title_text_size"
+                android:textSize="?attr/title_text_size"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/lblDescription"
                 app:layout_constraintTop_toBottomOf="@id/tvFromAccount"
@@ -195,7 +195,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/notes"
-                android:textSize="@dimen/text_info_size"
+                android:textSize="?attr/text_info_size"
                 app:layout_constraintBaseline_toBaselineOf="@+id/etNote"
                 app:layout_constraintEnd_toStartOf="@id/etNote"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -211,7 +211,7 @@
                 android:selectAllOnFocus="true"
                 android:textColor="@color/black"
                 android:textColorHint="#757575"
-                android:textSize="@dimen/title_text_size"
+                android:textSize="?attr/title_text_size"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/lblNote"
                 app:layout_constraintTop_toBottomOf="@id/etDescription"

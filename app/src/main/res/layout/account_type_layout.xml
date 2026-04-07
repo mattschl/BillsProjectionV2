@@ -36,7 +36,7 @@
                         android:layout_weight="10"
                         android:text="@string/account_name"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/text_heading_size"
+                        android:textSize="?attr/text_heading_size"
                         android:textStyle="bold" />
 
                     <View
@@ -58,7 +58,7 @@
                     android:maxHeight="170dp"
                     android:text="@string/account_info"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_info_size" />
+                    android:textSize="?attr/text_info_size" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 

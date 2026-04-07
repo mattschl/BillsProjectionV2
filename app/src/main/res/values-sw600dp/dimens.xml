@@ -30,4 +30,31 @@
     <dimen name="dimen_1dp">2dp</dimen>
     <dimen name="dimen_5dp">8dp</dimen>
     <dimen name="dimen_10dp">15dp</dimen>
+    <dimen name="font_size_small">14sp</dimen>
+    <dimen name="font_size_medium">18sp</dimen>
+    <dimen name="font_size_large">22sp</dimen>
+
+    <dimen name="font_size_heading_small">18sp</dimen>
+    <dimen name="font_size_heading_medium">22sp</dimen>
+    <dimen name="font_size_heading_large">26sp</dimen>
+
+    <dimen name="font_size_normal_small">12sp</dimen>
+    <dimen name="font_size_normal_medium">16sp</dimen>
+    <dimen name="font_size_normal_large">20sp</dimen>
+
+    <dimen name="font_size_title_small">18sp</dimen>
+    <dimen name="font_size_title_medium">24sp</dimen>
+    <dimen name="font_size_title_large">30sp</dimen>
+
+    <dimen name="font_size_calc_small">24sp</dimen>
+    <dimen name="font_size_calc_medium">30sp</dimen>
+    <dimen name="font_size_calc_large">36sp</dimen>
+
+    <dimen name="font_size_small_xl">22sp</dimen>
+    <dimen name="font_size_medium_xl">26sp</dimen>
+    <dimen name="font_size_large_xl">30sp</dimen>
+    <dimen name="font_size_heading_xl">34sp</dimen>
+    <dimen name="font_size_normal_xl">25sp</dimen>
+    <dimen name="font_size_title_xl">40sp</dimen>
+    <dimen name="font_size_calc_xl">48sp</dimen>
 </resources>

@@ -59,7 +59,7 @@
                 android:padding="@dimen/padding_huge"
                 android:text="@string/no_account_types_to_view"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_heading_size" />
+                android:textSize="?attr/text_heading_size" />
 
         </androidx.cardview.widget.CardView>
 

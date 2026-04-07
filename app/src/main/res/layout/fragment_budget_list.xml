@@ -23,7 +23,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/margin_large"
                     android:text="@string/regular_monthly_budget"
-                    android:textSize="@dimen/title_text_size"
+                    android:textSize="?attr/title_text_size"
                     android:textStyle="bold" />
 
 
@@ -53,7 +53,7 @@
                         android:layout_height="wrap_content"
                         android:maxWidth="@dimen/text_box_narrow"
                         android:text="@string/credits"
-                        android:textSize="@dimen/text_info_size" />
+                        android:textSize="?attr/text_info_size" />
 
                     <TextView
                         android:id="@+id/tvDebitsMonthly"
@@ -62,7 +62,7 @@
                         android:layout_marginStart="@dimen/margin_small"
                         android:maxWidth="@dimen/text_box_narrow"
                         android:text="@string/debits"
-                        android:textSize="@dimen/text_info_size" />
+                        android:textSize="?attr/text_info_size" />
 
                     <TextView
                         android:id="@+id/tvFixedMonthly"
@@ -71,7 +71,7 @@
                         android:layout_marginStart="@dimen/margin_small"
                         android:maxWidth="@dimen/text_box_narrow"
                         android:text="@string/fixed"
-                        android:textSize="@dimen/text_info_size" />
+                        android:textSize="?attr/text_info_size" />
 
                     <TextView
                         android:id="@+id/tvTotalMonthly"
@@ -80,7 +80,7 @@
                         android:layout_marginStart="@dimen/margin_small"
                         android:maxWidth="@dimen/text_box_narrow"
                         android:text="@string/surplus_or_deficit"
-                        android:textSize="@dimen/text_info_size" />
+                        android:textSize="?attr/text_info_size" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -102,7 +102,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/margin_large"
                     android:text="@string/occasional_budget"
-                    android:textSize="@dimen/title_text_size"
+                    android:textSize="?attr/title_text_size"
                     android:textStyle="bold" />
 
                 <ImageButton
@@ -131,7 +131,7 @@
                         android:layout_height="wrap_content"
                         android:maxWidth="@dimen/text_box_narrow"
                         android:text="@string/credits"
-                        android:textSize="@dimen/text_info_size" />
+                        android:textSize="?attr/text_info_size" />
 
                     <TextView
                         android:id="@+id/tvDebitsOccasional"
@@ -140,7 +140,7 @@
                         android:layout_marginStart="@dimen/margin_medium"
                         android:maxWidth="@dimen/text_box_narrow"
                         android:text="@string/debits"
-                        android:textSize="@dimen/text_info_size" />
+                        android:textSize="?attr/text_info_size" />
 
                     <TextView
                         android:id="@+id/tvTotalOccasional"
@@ -149,7 +149,7 @@
                         android:layout_marginStart="@dimen/margin_medium"
                         android:maxWidth="@dimen/text_box_narrow"
                         android:text="@string/surplus_or_deficit"
-                        android:textSize="@dimen/text_info_size" />
+                        android:textSize="?attr/text_info_size" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -171,7 +171,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/margin_large"
                     android:text="@string/annual_budget"
-                    android:textSize="@dimen/title_text_size"
+                    android:textSize="?attr/title_text_size"
                     android:textStyle="bold" />
 
                 <ImageButton
@@ -200,7 +200,7 @@
                         android:layout_height="wrap_content"
                         android:maxWidth="@dimen/text_box_narrow"
                         android:text="@string/credits"
-                        android:textSize="@dimen/text_info_size" />
+                        android:textSize="?attr/text_info_size" />
 
                     <TextView
                         android:id="@+id/tvDebitsAnnual"
@@ -209,7 +209,7 @@
                         android:layout_marginStart="@dimen/margin_medium"
                         android:maxWidth="@dimen/text_box_narrow"
                         android:text="@string/debits"
-                        android:textSize="@dimen/text_info_size" />
+                        android:textSize="?attr/text_info_size" />
 
                     <TextView
                         android:id="@+id/tvTotalAnnual"
@@ -218,7 +218,7 @@
                         android:layout_marginStart="@dimen/margin_medium"
                         android:maxWidth="@dimen/text_box_narrow"
                         android:text="@string/surplus_or_deficit"
-                        android:textSize="@dimen/text_info_size" />
+                        android:textSize="?attr/text_info_size" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

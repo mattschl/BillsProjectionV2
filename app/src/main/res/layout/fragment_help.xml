@@ -18,7 +18,7 @@
                 android:text="@string/help_text"
                 android:textAlignment="center"
                 android:textColor="@color/black"
-                android:textSize="@dimen/title_text_size"
+                android:textSize="?attr/title_text_size"
                 android:textStyle="bold" />
 
             <TextView
@@ -27,7 +27,7 @@
                 android:layout_marginStart="@dimen/margin_large"
                 android:text="@string/general"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_heading_size" />
+                android:textSize="?attr/text_heading_size" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -36,7 +36,7 @@
                 android:padding="@dimen/margin_medium"
                 android:text="@string/instructions_general"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_info_size"
+                android:textSize="?attr/text_info_size"
                 tools:ignore="VisualLintLongText" />
 
             <TextView
@@ -45,7 +45,7 @@
                 android:layout_marginStart="@dimen/margin_large"
                 android:text="@string/budget_view_help"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_heading_size" />
+                android:textSize="?attr/text_heading_size" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -54,7 +54,7 @@
                 android:padding="@dimen/margin_medium"
                 android:text="@string/instructions_budget_view"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_info_size"
+                android:textSize="?attr/text_info_size"
                 tools:ignore="VisualLintLongText" />
 
             <TextView
@@ -63,7 +63,7 @@
                 android:layout_marginStart="@dimen/margin_large"
                 android:text="@string/transaction_view_help"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_heading_size" />
+                android:textSize="?attr/text_heading_size" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -72,7 +72,7 @@
                 android:padding="@dimen/margin_medium"
                 android:text="@string/instructions_transaction_view"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_info_size"
+                android:textSize="?attr/text_info_size"
                 tools:ignore="VisualLintLongText" />
 
             <TextView
@@ -81,7 +81,7 @@
                 android:layout_marginStart="@dimen/margin_large"
                 android:text="@string/analysis_view_help"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_heading_size" />
+                android:textSize="?attr/text_heading_size" />
 
 
             <TextView
@@ -91,7 +91,7 @@
                 android:padding="@dimen/margin_medium"
                 android:text="@string/instructions_transactions_analysis_view"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_info_size"
+                android:textSize="?attr/text_info_size"
                 tools:ignore="VisualLintLongText" />
 
             <TextView
@@ -100,7 +100,7 @@
                 android:layout_marginStart="@dimen/margin_large"
                 android:text="@string/accounts_help"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_heading_size" />
+                android:textSize="?attr/text_heading_size" />
 
 
             <TextView
@@ -110,7 +110,7 @@
                 android:padding="@dimen/margin_medium"
                 android:text="@string/instruction_accounts"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_info_size"
+                android:textSize="?attr/text_info_size"
                 tools:ignore="VisualLintLongText" />
 
             <TextView
@@ -119,7 +119,7 @@
                 android:layout_marginStart="@dimen/margin_large"
                 android:text="@string/budget_rule_help"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_heading_size" />
+                android:textSize="?attr/text_heading_size" />
 
 
             <TextView
@@ -129,7 +129,7 @@
                 android:padding="@dimen/margin_medium"
                 android:text="@string/instructions_budget_rules"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_info_size"
+                android:textSize="?attr/text_info_size"
                 tools:ignore="VisualLintLongText" />
 
             <TextView
@@ -138,7 +138,7 @@
                 android:layout_marginStart="@dimen/margin_large"
                 android:text="@string/current_budget_summary"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_heading_size" />
+                android:textSize="?attr/text_heading_size" />
 
 
             <TextView
@@ -148,7 +148,7 @@
                 android:padding="@dimen/margin_medium"
                 android:text="@string/instructions_budget_list"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_info_size"
+                android:textSize="?attr/text_info_size"
                 tools:ignore="VisualLintLongText" />
         </LinearLayout>
     </ScrollView>

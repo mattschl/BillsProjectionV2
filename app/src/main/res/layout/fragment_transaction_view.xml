@@ -65,7 +65,7 @@
                     android:padding="@dimen/margin_medium"
                     android:text="@string/no_transactions_to_view"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/title_text_size" />
+                    android:textSize="?attr/title_text_size" />
 
                 <TextView
                     android:id="@+id/tvNoTransInstructions"
@@ -75,7 +75,7 @@
                     android:padding="@dimen/margin_medium"
                     android:text="@string/instructions_transaction_view"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_info_size"
+                    android:textSize="?attr/text_info_size"
                     tools:ignore="VisualLintLongText" />
             </LinearLayout>
 

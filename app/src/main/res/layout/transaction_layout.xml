@@ -36,7 +36,7 @@
                         android:layout_weight="10"
                         android:text="@string/transaction_description"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/text_heading_size"
+                        android:textSize="?attr/text_heading_size"
                         android:textStyle="bold" />
 
                     <View
@@ -54,7 +54,7 @@
                     android:id="@+id/tvDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:scrollbarSize="@dimen/text_info_size"
+                    android:textSize="?attr/text_info_size"
                     android:text="@string/date"
                     android:textColor="@color/black" />
 
@@ -64,7 +64,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/to_account_name"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_info_size" />
+                    android:textSize="?attr/text_info_size" />
 
                 <TextView
                     android:id="@+id/tvFromAccount"
@@ -72,7 +72,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/from_account_name"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_info_size" />
+                    android:textSize="?attr/text_info_size" />
 
                 <TextView
                     android:id="@+id/tvTransInfo"
@@ -81,7 +81,7 @@
                     android:layout_marginTop="8dp"
                     android:text="@string/transaction_info"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_info_size" />
+                    android:textSize="?attr/text_info_size" />
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>

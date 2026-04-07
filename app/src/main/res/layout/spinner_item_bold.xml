@@ -9,6 +9,6 @@
         android:paddingStart="3dp"
         android:paddingEnd="3dp"
         android:textColor="#000000"
-        android:textSize="@dimen/text_size_normal"
+        android:textSize="?attr/text_size_normal"
         android:textStyle="bold" />
 </layout>
