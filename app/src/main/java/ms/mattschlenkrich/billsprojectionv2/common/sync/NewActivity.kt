@@ -68,10 +68,11 @@ class NewActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val settingsManager = SettingsManager(this)
-        val fontSize = settingsManager.getSettings().fontSize
+        val fontSize = settingsManager.getSettings().fontSize ?: "medium"
         when (fontSize) {
             "small" -> setTheme(R.style.Theme_BillsProjectionV2_Small)
             "large" -> setTheme(R.style.Theme_BillsProjectionV2_Large)
+            "extra_large" -> setTheme(R.style.Theme_BillsProjectionV2_ExtraLarge)
             else -> setTheme(R.style.Theme_BillsProjectionV2_Medium)
         }
         super.onCreate(savedInstanceState)

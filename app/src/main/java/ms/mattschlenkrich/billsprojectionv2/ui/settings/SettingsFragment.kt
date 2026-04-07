@@ -27,7 +27,7 @@ class SettingsFragment : Fragment() {
 
     private fun setupFontSizeSelection() {
         val settings = settingsManager.getSettings()
-        val savedFontSize = settings.fontSize
+        val savedFontSize = settings.fontSize ?: "medium"
 
         when (savedFontSize) {
             "small" -> binding.rbSmall.isChecked = true

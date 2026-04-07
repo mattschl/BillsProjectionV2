@@ -68,10 +68,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val settingsManager = SettingsManager(this)
-        val fontSize = settingsManager.getSettings().fontSize
+        val fontSize = settingsManager.getSettings().fontSize ?: "medium"
         when (fontSize) {
             "small" -> setTheme(R.style.Theme_BillsProjectionV2_Small)
             "large" -> setTheme(R.style.Theme_BillsProjectionV2_Large)
+            "extra_large" -> setTheme(R.style.Theme_BillsProjectionV2_ExtraLarge)
             else -> setTheme(R.style.Theme_BillsProjectionV2_Medium)
         }
         super.onCreate(savedInstanceState)
@@ -81,7 +82,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
             insets
         }
         mView = binding.root
