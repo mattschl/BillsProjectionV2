@@ -23,6 +23,7 @@ import ms.mattschlenkrich.billsprojectionv2.BuildConfig
 import ms.mattschlenkrich.billsprojectionv2.NavGraphDirections
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.projections.UpdateBudgetPredictions
+import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 import ms.mattschlenkrich.billsprojectionv2.common.sync.NewActivity
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModelFactory
@@ -66,6 +67,13 @@ class MainActivity : AppCompatActivity() {
     lateinit var mView: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val settingsManager = SettingsManager(this)
+        val fontSize = settingsManager.getSettings().fontSize
+        when (fontSize) {
+            "small" -> setTheme(R.style.Theme_BillsProjectionV2_Small)
+            "large" -> setTheme(R.style.Theme_BillsProjectionV2_Large)
+            else -> setTheme(R.style.Theme_BillsProjectionV2_Medium)
+        }
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
@@ -85,6 +93,7 @@ class MainActivity : AppCompatActivity() {
             add(R.string.update_budget_predictions)
             add(R.string.view_current_budget_summary)
             add(R.string.delete_future_predictions)
+            add(R.string.settings)
             add(R.string.help)
             add(R.string.privacy_policy)
             add("${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME}")
@@ -108,6 +117,11 @@ class MainActivity : AppCompatActivity() {
 
                 getString(R.string.delete_future_predictions) -> {
                     chooseDeleteFuturePredictions()
+                    true
+                }
+
+                getString(R.string.settings) -> {
+                    gotoSettings()
                     true
                 }
 
@@ -199,6 +213,12 @@ class MainActivity : AppCompatActivity() {
     private fun gotoHelp() {
         findNavController(R.id.fragment_container_view).navigate(
             NavGraphDirections.actionGlobalHelpFragment()
+        )
+    }
+
+    private fun gotoSettings() {
+        findNavController(R.id.fragment_container_view).navigate(
+            NavGraphDirections.actionGlobalSettingsFragment()
         )
     }
 

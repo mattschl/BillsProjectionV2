@@ -37,7 +37,7 @@
                         android:layout_weight="10"
                         android:text="@string/budget_rule_name"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/text_heading_size"
+                        android:textSize="?attr/text_heading_size"
                         android:textStyle="bold" />
 
                     <View
@@ -57,7 +57,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/to_account_name"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_info_size" />
+                    android:textSize="?attr/text_info_size" />
 
                 <TextView
                     android:id="@+id/tvFromAccount"
@@ -65,7 +65,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/from_account_name"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_info_size" />
+                    android:textSize="?attr/text_info_size" />
 
                 <TextView
                     android:id="@+id/tvInfo"
@@ -73,7 +73,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/budget_rule_info"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_info_size" />
+                    android:textSize="?attr/text_info_size" />
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>

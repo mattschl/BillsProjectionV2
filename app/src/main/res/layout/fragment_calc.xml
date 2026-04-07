@@ -19,7 +19,7 @@
                 android:layout_marginStart="@dimen/Large_margin"
                 android:text="@string/zero_digit"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_size_title"
+                android:textSize="?attr/text_size_title"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -32,7 +32,7 @@
                 android:layout_height="100dp"
                 android:layout_marginStart="@dimen/normal_margin"
                 android:text="@string/results"
-                android:textSize="@dimen/text_size_normal"
+                android:textSize="?attr/text_size_normal"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -57,7 +57,7 @@
                     android:minHeight="48dp"
                     android:text="@string/seven"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_calc"
+                    android:textSize="?attr/text_size_calc"
                     android:textStyle="bold" />
 
                 <Button
@@ -68,7 +68,7 @@
                     android:minHeight="48dp"
                     android:text="@string/eight"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_calc"
+                    android:textSize="?attr/text_size_calc"
                     android:textStyle="bold" />
 
                 <Button
@@ -79,7 +79,7 @@
                     android:minHeight="48dp"
                     android:text="@string/nine"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_calc"
+                    android:textSize="?attr/text_size_calc"
                     android:textStyle="bold" />
 
                 <Button
@@ -89,7 +89,7 @@
                     android:minWidth="48dp"
                     android:minHeight="48dp"
                     android:text="@string/divide"
-                    android:textSize="@dimen/text_size_calc"
+                    android:textSize="?attr/text_size_calc"
                     android:textStyle="bold" />
 
                 <Button
@@ -99,7 +99,7 @@
                     android:minWidth="48dp"
                     android:minHeight="48dp"
                     android:text="@string/backspace"
-                    android:textSize="@dimen/text_size_calc"
+                    android:textSize="?attr/text_size_calc"
                     android:textStyle="bold" />
 
                 <Button
@@ -110,7 +110,7 @@
                     android:minHeight="48dp"
                     android:text="@string/four"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_calc"
+                    android:textSize="?attr/text_size_calc"
                     android:textStyle="bold" />
 
                 <Button
@@ -121,7 +121,7 @@
                     android:minHeight="48dp"
                     android:text="@string/five"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_calc"
+                    android:textSize="?attr/text_size_calc"
                     android:textStyle="bold" />
 
                 <Button
@@ -132,7 +132,7 @@
                     android:minHeight="48dp"
                     android:text="@string/six"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_calc"
+                    android:textSize="?attr/text_size_calc"
                     android:textStyle="bold" />
 
                 <Button
@@ -142,7 +142,7 @@
                     android:minWidth="48dp"
                     android:minHeight="48dp"
                     android:text="@string/times"
-                    android:textSize="@dimen/text_size_calc"
+                    android:textSize="?attr/text_size_calc"
                     android:textStyle="bold" />
 
                 <Button
@@ -152,7 +152,7 @@
                     android:minWidth="48dp"
                     android:minHeight="48dp"
                     android:text="@string/clear_1"
-                    android:textSize="@dimen/text_size_calc"
+                    android:textSize="?attr/text_size_calc"
                     android:textStyle="bold" />
 
                 <Button
@@ -163,7 +163,7 @@
                     android:minHeight="48dp"
                     android:text="@string/one"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_calc"
+                    android:textSize="?attr/text_size_calc"
                     android:textStyle="bold" />
 
                 <Button
@@ -174,7 +174,7 @@
                     android:minHeight="48dp"
                     android:text="@string/two"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_calc"
+                    android:textSize="?attr/text_size_calc"
                     android:textStyle="bold" />
 
                 <Button
@@ -185,7 +185,7 @@
                     android:minHeight="48dp"
                     android:text="@string/three"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_calc"
+                    android:textSize="?attr/text_size_calc"
                     android:textStyle="bold" />
 
                 <Button
@@ -195,7 +195,7 @@
                     android:minWidth="48dp"
                     android:minHeight="48dp"
                     android:text="@string/minus"
-                    android:textSize="@dimen/text_size_calc"
+                    android:textSize="?attr/text_size_calc"
                     android:textStyle="bold" />
 
                 <Button
@@ -205,7 +205,7 @@
                     android:minWidth="48dp"
                     android:minHeight="48dp"
                     android:text="@string/clear_all"
-                    android:textSize="@dimen/text_size_calc"
+                    android:textSize="?attr/text_size_calc"
                     android:textStyle="bold" />
 
                 <Button
@@ -216,7 +216,7 @@
                     android:minHeight="48dp"
                     android:text="@string/period"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_calc"
+                    android:textSize="?attr/text_size_calc"
                     android:textStyle="bold" />
 
                 <Button
@@ -227,7 +227,7 @@
                     android:minHeight="48dp"
                     android:text="@string/zero_digit"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_calc"
+                    android:textSize="?attr/text_size_calc"
                     android:textStyle="bold"
                     tools:ignore="DuplicateSpeakableTextCheck" />
 
@@ -239,7 +239,7 @@
                     android:minHeight="48dp"
                     android:text="@string/negation"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_info_size"
+                    android:textSize="?attr/text_info_size"
                     android:textStyle="bold" />
 
                 <Button
@@ -249,7 +249,7 @@
                     android:minWidth="48dp"
                     android:minHeight="48dp"
                     android:text="@string/plus"
-                    android:textSize="@dimen/text_size_calc"
+                    android:textSize="?attr/text_size_calc"
                     android:textStyle="bold" />
 
                 <Button
@@ -259,7 +259,7 @@
                     android:minWidth="48dp"
                     android:minHeight="48dp"
                     android:text="@string/equals_spaced"
-                    android:textSize="@dimen/text_size_calc"
+                    android:textSize="?attr/text_size_calc"
                     android:textStyle="bold" />
 
             </GridLayout>
@@ -270,7 +270,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/top_margin"
                 android:text="@string/transfer_result"
-                android:textSize="@dimen/text_size_calc"
+                android:textSize="?attr/text_size_calc"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/grid_layout" />

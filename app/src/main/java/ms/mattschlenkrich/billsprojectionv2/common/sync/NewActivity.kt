@@ -67,6 +67,13 @@ class NewActivity : AppCompatActivity() {
     private val df = DateFunctions()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val settingsManager = SettingsManager(this)
+        val fontSize = settingsManager.getSettings().fontSize
+        when (fontSize) {
+            "small" -> setTheme(R.style.Theme_BillsProjectionV2_Small)
+            "large" -> setTheme(R.style.Theme_BillsProjectionV2_Large)
+            else -> setTheme(R.style.Theme_BillsProjectionV2_Medium)
+        }
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityNewBinding.inflate(layoutInflater)

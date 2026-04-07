@@ -17,7 +17,8 @@ class SettingsManager(private val context: Context) {
             return newSettings
         }
         return try {
-            file.readText().let { gson.fromJson(it, AppSettings::class.java) }
+            val settings = file.readText().let { gson.fromJson(it, AppSettings::class.java) }
+            settings ?: AppSettings(deviceId = NumberFunctions().generateId())
         } catch (e: Exception) {
             val newSettings = AppSettings(deviceId = NumberFunctions().generateId())
             saveSettings(newSettings)
@@ -25,7 +26,7 @@ class SettingsManager(private val context: Context) {
         }
     }
 
-    private fun saveSettings(settings: AppSettings) {
+    fun saveSettings(settings: AppSettings) {
         val file = File(context.filesDir, fileName)
         file.writeText(gson.toJson(settings))
     }

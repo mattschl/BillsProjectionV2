@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="text_info_size" format="dimension" />
+    <attr name="text_heading_size" format="dimension" />
+    <attr name="text_size_normal" format="dimension" />
+    <attr name="text_size_title" format="dimension" />
+    <attr name="title_text_size" format="dimension" />
+    <attr name="text_size_calc" format="dimension" />
+</resources>

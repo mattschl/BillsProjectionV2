@@ -21,12 +21,24 @@
         android:id="@+id/action_global_helpFragment"
         app:destination="@id/helpFragment" />
 
+    <!--    action_global_settingsFragment-->
+    <action
+        android:id="@+id/action_global_settingsFragment"
+        app:destination="@id/settingsFragment" />
+
     <!--    helpFragment-->
     <fragment
         android:id="@+id/helpFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.help.HelpFragment"
         android:label="fragment_help"
         tools:layout="@layout/fragment_help" />
+
+    <!--    settingsFragment-->
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="ms.mattschlenkrich.billsprojectionv2.ui.settings.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
 
     <!--    action_global_accountsFragment-->
     <action

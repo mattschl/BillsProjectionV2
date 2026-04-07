@@ -27,11 +27,12 @@
                 <TextView
                     android:id="@+id/lblAssetName"
                     android:layout_width="wrap_content"
-                    android:layout_height="48dp"
-                    android:maxWidth="@dimen/text_box_width"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:maxWidth="@dimen/text_box_wide"
+                    android:minHeight="48dp"
                     android:text="@string/asset_account"
-                    android:textAlignment="center"
-                    android:textSize="@dimen/text_info_size"
+                    android:textSize="?attr/text_info_size"
                     app:layout_constraintBaseline_toBaselineOf="@id/spAssetNames"
                     app:layout_constraintEnd_toStartOf="@id/spAssetNames"
                     app:layout_constraintStart_toStartOf="parent"
@@ -40,9 +41,9 @@
                 <Spinner
                     android:id="@+id/spAssetNames"
                     android:layout_width="0dp"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
-                    android:maxWidth="@dimen/text_box_width"
+                    android:minHeight="48dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/lblAssetName"
                     app:layout_constraintTop_toTopOf="parent"
@@ -52,10 +53,11 @@
                     android:id="@+id/lblPayDay"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:maxWidth="@dimen/text_box_width"
+                    android:gravity="center_vertical"
+                    android:maxWidth="@dimen/text_box_wide"
+                    android:minHeight="48dp"
                     android:text="@string/pay_day"
-                    android:textAlignment="center"
-                    android:textSize="@dimen/text_info_size"
+                    android:textSize="?attr/text_info_size"
                     app:layout_constraintBaseline_toBaselineOf="@id/spPayDay"
                     app:layout_constraintEnd_toStartOf="@id/spPayDay"
                     app:layout_constraintStart_toStartOf="parent" />
@@ -63,9 +65,9 @@
                 <Spinner
                     android:id="@+id/spPayDay"
                     android:layout_width="0dp"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
-                    android:maxWidth="@dimen/text_box_width"
+                    android:minHeight="48dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/lblPayDay"
                     app:layout_constraintTop_toBottomOf="@id/spAssetNames" />
@@ -74,11 +76,12 @@
                 <TextView
                     android:id="@+id/lblBalanceOwing"
                     android:layout_width="wrap_content"
-                    android:layout_height="48dp"
-                    android:maxWidth="@dimen/text_box_narrow"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:maxWidth="@dimen/text_box_wide"
+                    android:minHeight="48dp"
                     android:text="@string/balance_in_account"
-                    android:textAlignment="center"
-                    android:textSize="@dimen/text_size_normal"
+                    android:textSize="?attr/text_size_normal"
                     app:layout_constraintBaseline_toBaselineOf="@id/tvBalanceOwing"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/lblAssetName"
@@ -87,12 +90,13 @@
                 <TextView
                     android:id="@+id/tvBalanceOwing"
                     android:layout_width="0dp"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
+                    android:gravity="center_vertical"
+                    android:minHeight="48dp"
                     android:text="@string/zero_dollars"
-                    android:textAlignment="textStart"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_normal"
+                    android:textSize="?attr/text_size_normal"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toStartOf="@id/tvSurplusOrDeficit"
                     app:layout_constraintStart_toEndOf="@id/lblBalanceOwing"
@@ -106,7 +110,7 @@
                     android:text="@string/surplus_or_deficit"
                     android:textAlignment="center"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_normal"
+                    android:textSize="?attr/text_size_normal"
                     android:textStyle="bold"
                     app:layout_constraintBaseline_toBaselineOf="@id/tvBalanceOwing"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -130,7 +134,7 @@
                     android:maxWidth="@dimen/text_box_width"
                     android:text="@string/available_credit"
                     android:textAlignment="center"
-                    android:textSize="@dimen/text_size_normal"
+                    android:textSize="?attr/text_size_normal"
                     app:layout_constraintEnd_toStartOf="@id/tvAvailable"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/ibDivider" />
@@ -143,7 +147,7 @@
                     android:text="@string/zero_dollars"
                     android:textAlignment="center"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_heading_size"
+                    android:textSize="?attr/text_heading_size"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/lblAvailable"
                     app:layout_constraintTop_toBottomOf="@+id/ibDivider" />
@@ -157,7 +161,7 @@
                     android:text="@string/credits"
                     android:textAlignment="center"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_normal"
+                    android:textSize="?attr/text_size_normal"
                     app:layout_constraintEnd_toStartOf="@id/tvDebits"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvAvailable" />
@@ -170,7 +174,7 @@
                     android:text="@string/debits"
                     android:textAlignment="center"
                     android:textColor="@color/deep_red"
-                    android:textSize="@dimen/text_info_size"
+                    android:textSize="?attr/text_info_size"
                     app:layout_constraintBaseline_toBaselineOf="@id/tvCredits"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/tvCredits" />
@@ -183,7 +187,7 @@
                     android:text="@string/fixed_expenses"
                     android:textAlignment="center"
                     android:textColor="@color/deep_red"
-                    android:textSize="@dimen/text_size_normal"
+                    android:textSize="?attr/text_size_normal"
                     app:layout_constraintEnd_toStartOf="@id/tvDiscretionaryExpenses"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvCredits" />
@@ -196,7 +200,7 @@
                     android:text="@string/discretionary_expenses"
                     android:textAlignment="center"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_info_size"
+                    android:textSize="?attr/text_info_size"
                     app:layout_constraintBaseline_toBaselineOf="@id/tvFixedExpenses"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/tvFixedExpenses" />
@@ -212,7 +216,7 @@
             android:text="@string/pending_lined"
             android:textAlignment="center"
             android:textColor="@color/deep_red"
-            android:textSize="@dimen/text_heading_size"
+            android:textSize="?attr/text_heading_size"
             android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
@@ -221,7 +225,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvPending"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/text_box_wide"
+            android:layout_height="@dimen/recycler_height_small"
             android:layout_marginStart="@dimen/dimen_10dp"
             android:layout_marginEnd="@dimen/dimen_10dp"
             android:scrollbarSize="15dp"
@@ -238,7 +242,7 @@
             android:text="@string/budgeted_lined"
             android:textAlignment="center"
             android:textColor="@color/black"
-            android:textSize="@dimen/text_heading_size"
+            android:textSize="?attr/text_heading_size"
             android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
@@ -280,7 +284,7 @@
                     android:padding="@dimen/margin_medium"
                     android:text="@string/no_budget_items"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/title_text_size" />
+                    android:textSize="?attr/title_text_size" />
 
                 <TextView
                     android:id="@+id/tvNoBudgetItemsInstructions"
@@ -290,7 +294,7 @@
                     android:padding="@dimen/margin_medium"
                     android:text="@string/instructions_budget_view"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_info_size"
+                    android:textSize="?attr/text_info_size"
                     tools:ignore="VisualLintLongText" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
