@@ -228,7 +228,7 @@ interface BudgetItemDao {
                 "AND $BI_IS_COMPLETED = 0 " +
                 "AND $BI_LOCKED = 0;"
     )
-    fun rewriteBudgetItem(
+    suspend fun rewriteBudgetItem(
         budgetRuleId: Long, projectedDate: String, actualDate: String, payDay: String,
         budgetName: String, isPayDay: Boolean, toAccountId: Long, fromAccountId: Long,
         projectedAmount: Double, isFixed: Boolean, isAutomatic: Boolean, updateTime: String

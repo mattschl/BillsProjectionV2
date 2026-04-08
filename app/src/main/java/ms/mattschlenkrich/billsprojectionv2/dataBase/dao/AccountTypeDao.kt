@@ -38,7 +38,15 @@ interface AccountTypeDao {
         "SELECT * FROM $TABLE_ACCOUNT_TYPES " +
                 "WHERE $ACCOUNT_TYPE = :accountTypeName"
     )
-    fun findAccountTypeByName(accountTypeName: String): List<AccountType>
+    suspend fun findAccountTypeByName(accountTypeName: String): AccountType?
+
+    @Query(
+        "UPDATE $TABLE_ACCOUNT_TYPES " +
+                "SET $ACCOUNT_TYPE = :newName, " +
+                "$ACCT_UPDATE_TIME = :updateTime " +
+                "WHERE $TYPE_ID = :typeId"
+    )
+    suspend fun renameAccountType(typeId: Long, newName: String, updateTime: String)
 
     @Query(
         "SELECT * FROM $TABLE_ACCOUNT_TYPES " +

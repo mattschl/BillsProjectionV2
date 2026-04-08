@@ -37,6 +37,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -105,6 +106,8 @@ class TransactionUpdateFragment : Fragment(), MenuProvider {
 
     private var mTransactionId: Long = 0
 
+    private val refreshKey = mutableIntStateOf(0)
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -120,7 +123,9 @@ class TransactionUpdateFragment : Fragment(), MenuProvider {
         return ComposeView(requireContext()).apply {
             setContent {
                 BillsProjectionTheme {
-                    TransactionUpdateScreen()
+                    if (refreshKey.intValue >= 0) {
+                        TransactionUpdateScreen()
+                    }
                 }
             }
         }
@@ -130,6 +135,19 @@ class TransactionUpdateFragment : Fragment(), MenuProvider {
         super.onViewCreated(view, savedInstanceState)
         val menuHost: MenuHost = mainActivity.topMenuBar
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
+    fun refreshData() {
+        updateViewModels()
+        populateValues()
+        refreshKey.intValue++
+    }
+
+    private fun updateViewModels() {
+        mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        accountViewModel = mainActivity.accountViewModel
+        accountUpdateViewModel = mainActivity.accountUpdateViewModel
     }
 
     fun populateValues() {

@@ -36,6 +36,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,6 +54,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
@@ -84,23 +86,36 @@ class TransactionViewFragment : Fragment(),
     private val vf = VisualsFunctions()
 
     private val searchQueryState = mutableStateOf("")
+    private val refreshKey = mutableIntStateOf(0)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        mainActivity = (activity as MainActivity)
-        mainViewModel = mainActivity.mainViewModel
-        transactionViewModel = mainActivity.transactionViewModel
-        accountUpdateViewModel = mainActivity.accountUpdateViewModel
-        budgetRuleViewModel = mainActivity.budgetRuleViewModel
+        updateViewModels()
         mainActivity.topMenuBar.title = getString(R.string.view_transaction_history)
 
         return ComposeView(requireContext()).apply {
             setContent {
                 BillsProjectionTheme {
-                    TransactionViewScreen()
+                    TransactionViewScreen(refreshKey.intValue)
                 }
             }
+        }
+    }
+
+    private fun updateViewModels() {
+        mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        transactionViewModel = mainActivity.transactionViewModel
+        accountUpdateViewModel = mainActivity.accountUpdateViewModel
+        budgetRuleViewModel = mainActivity.budgetRuleViewModel
+    }
+
+    fun refreshData() {
+        updateViewModels()
+        lifecycleScope.launch {
+            delay(100)
+            refreshKey.intValue++
         }
     }
 
@@ -111,7 +126,7 @@ class TransactionViewFragment : Fragment(),
     }
 
     @Composable
-    fun TransactionViewScreen() {
+    fun TransactionViewScreen(refreshKey: Int) {
         val query by searchQueryState
         val transactionList by if (query.isBlank()) {
             transactionViewModel.getActiveTransactionsDetailed()

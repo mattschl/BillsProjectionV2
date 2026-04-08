@@ -108,6 +108,12 @@ class DateFunctions {
         return fileTimestampFormat.format(Calendar.getInstance(utcTimeZone).time)
     }
 
+    fun getTimeThreeWeeksAgo(): String {
+        val calendar = Calendar.getInstance(utcTimeZone)
+        calendar.add(Calendar.WEEK_OF_YEAR, -3)
+        return timeFormatter.format(calendar.time)
+    }
+
     fun getFileTimestampFromDate(date: Date): String {
         return fileTimestampFormat.format(date)
     }

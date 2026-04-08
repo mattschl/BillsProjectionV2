@@ -75,7 +75,15 @@ interface AccountDao {
         "SELECT * FROM $TABLE_ACCOUNTS " +
                 "WHERE $ACCOUNT_NAME = :accountName "
     )
-    suspend fun findAccountByName(accountName: String): Account
+    suspend fun findAccountByName(accountName: String): Account?
+
+    @Query(
+        "UPDATE $TABLE_ACCOUNTS " +
+                "SET $ACCOUNT_NAME = :newName, " +
+                "$ACCOUNT_UPDATE_TIME = :updateTime " +
+                "WHERE $ACCOUNT_ID = :accountId"
+    )
+    suspend fun renameAccount(accountId: Long, newName: String, updateTime: String)
 
     @Query(
         "SELECT * FROM $TABLE_ACCOUNTS " +

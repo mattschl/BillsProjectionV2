@@ -34,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -47,7 +48,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
@@ -74,22 +78,35 @@ class BudgetRuleFragment : Fragment() {
     private val nf = NumberFunctions()
     private val df = DateFunctions()
     private val vf = VisualsFunctions()
+    private val refreshKey = mutableIntStateOf(0)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        mainActivity = (activity as MainActivity)
-        mainViewModel = mainActivity.mainViewModel
-        budgetRuleViewModel = mainActivity.budgetRuleViewModel
+        updateViewModels()
         mainActivity.topMenuBar.title = getString(R.string.choose_a_budget_rule)
 
         return ComposeView(requireContext()).apply {
             setContent {
                 BillsProjectionTheme {
-                    BudgetRulesScreen()
+                    BudgetRulesScreen(refreshKey.intValue)
                 }
             }
+        }
+    }
+
+    private fun updateViewModels() {
+        mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        budgetRuleViewModel = mainActivity.budgetRuleViewModel
+    }
+
+    fun refreshData() {
+        updateViewModels()
+        lifecycleScope.launch {
+            delay(100)
+            refreshKey.intValue++
         }
     }
 
@@ -99,8 +116,8 @@ class BudgetRuleFragment : Fragment() {
     }
 
     @Composable
-    fun BudgetRulesScreen() {
-        var searchQuery by remember { mutableStateOf("") }
+    fun BudgetRulesScreen(refreshKey: Int) {
+        var searchQuery by remember(refreshKey) { mutableStateOf("") }
         val budgetRulesDetailed by if (searchQuery.isEmpty()) {
             budgetRuleViewModel.getActiveBudgetRulesDetailed().observeAsState(emptyList())
         } else {

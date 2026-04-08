@@ -105,10 +105,7 @@ class TransactionAddFragment : Fragment(), MenuProvider {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        mainActivity = (activity as MainActivity)
-        mainViewModel = mainActivity.mainViewModel
-        transactionViewModel = mainActivity.transactionViewModel
-        accountViewModel = mainActivity.accountViewModel
+        updateViewModels()
         mainActivity.topMenuBar.title = getString(R.string.add_a_new_transaction)
 
         populateValues()
@@ -122,7 +119,20 @@ class TransactionAddFragment : Fragment(), MenuProvider {
         }
     }
 
+    private fun updateViewModels() {
+        mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        transactionViewModel = mainActivity.transactionViewModel
+        accountViewModel = mainActivity.accountViewModel
+    }
+
+    fun refreshData() {
+        updateViewModels()
+        populateValues()
+    }
+
     fun populateValues() {
+        updateViewModels()
         val cached = mainViewModel.getTransactionDetailed()
         if (cached != null) {
             val trans = cached.transaction

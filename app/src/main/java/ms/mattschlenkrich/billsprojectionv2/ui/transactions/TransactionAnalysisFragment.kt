@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -80,6 +81,7 @@ class TransactionAnalysisFragment : Fragment() {
     private lateinit var accountUpdateViewModel: AccountUpdateViewModel
     private val nf = NumberFunctions()
     private val df = DateFunctions()
+    private val refreshKey = mutableIntStateOf(0)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -94,7 +96,9 @@ class TransactionAnalysisFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 BillsProjectionTheme {
-                    TransactionAnalysisScreen()
+                    if (refreshKey.intValue >= 0) {
+                        TransactionAnalysisScreen()
+                    }
                 }
             }
         }
@@ -130,204 +134,253 @@ class TransactionAnalysisFragment : Fragment() {
             else -> null
         }
 
-        val transactionListResult by (when (mode) {
-            AnalysisMode.BUDGET_RULE -> {
-                if (effectiveStartDate != null && effectiveEndDate != null) {
-                    transactionViewModel.getActiveTransactionsDetailed(
-                        budgetRuleDetailed!!.budgetRule!!.ruleId,
-                        effectiveStartDate,
-                        effectiveEndDate
-                    )
-                } else {
-                    transactionViewModel.getActiveTransactionsDetailed(
-                        budgetRuleDetailed!!.budgetRule!!.ruleId
-                    )
+        val transactionListResult by remember(
+            mode,
+            budgetRuleDetailed?.budgetRule?.ruleId,
+            accountWithType?.account?.accountId,
+            searchQueryActual,
+            effectiveStartDate,
+            effectiveEndDate
+        ) {
+            when (mode) {
+                AnalysisMode.BUDGET_RULE -> {
+                    if (effectiveStartDate != null && effectiveEndDate != null) {
+                        transactionViewModel.getActiveTransactionsDetailed(
+                            budgetRuleDetailed!!.budgetRule!!.ruleId,
+                            effectiveStartDate,
+                            effectiveEndDate
+                        )
+                    } else {
+                        transactionViewModel.getActiveTransactionsDetailed(
+                            budgetRuleDetailed!!.budgetRule!!.ruleId
+                        )
+                    }
                 }
-            }
 
-            AnalysisMode.ACCOUNT -> {
-                if (effectiveStartDate != null && effectiveEndDate != null) {
-                    transactionViewModel.getActiveTransactionByAccount(
-                        accountWithType!!.account.accountId,
-                        effectiveStartDate,
-                        effectiveEndDate
-                    )
-                } else {
-                    transactionViewModel.getActiveTransactionByAccount(
-                        accountWithType!!.account.accountId
-                    )
+                AnalysisMode.ACCOUNT -> {
+                    if (effectiveStartDate != null && effectiveEndDate != null) {
+                        transactionViewModel.getActiveTransactionByAccount(
+                            accountWithType!!.account.accountId,
+                            effectiveStartDate,
+                            effectiveEndDate
+                        )
+                    } else {
+                        transactionViewModel.getActiveTransactionByAccount(
+                            accountWithType!!.account.accountId
+                        )
+                    }
                 }
-            }
 
-            AnalysisMode.SEARCH -> {
-                if (effectiveStartDate != null && effectiveEndDate != null) {
-                    transactionViewModel.getActiveTransactionBySearch(
-                        "%$searchQueryActual%",
-                        effectiveStartDate,
-                        effectiveEndDate
-                    )
-                } else {
-                    transactionViewModel.getActiveTransactionBySearch("%$searchQueryActual%")
+                AnalysisMode.SEARCH -> {
+                    if (effectiveStartDate != null && effectiveEndDate != null) {
+                        transactionViewModel.getActiveTransactionBySearch(
+                            "%$searchQueryActual%",
+                            effectiveStartDate,
+                            effectiveEndDate
+                        )
+                    } else {
+                        transactionViewModel.getActiveTransactionBySearch("%$searchQueryActual%")
+                    }
                 }
-            }
 
-            else -> MutableLiveData(emptyList<TransactionDetailed>())
-        } as LiveData<List<TransactionDetailed>>).observeAsState(emptyList())
+                else -> MutableLiveData(emptyList())
+            } as LiveData<List<TransactionDetailed>>
+        }.observeAsState(emptyList())
         val transactionList = transactionListResult ?: emptyList()
 
-        val sumToAccount by (when (mode) {
-            AnalysisMode.ACCOUNT -> {
-                if (effectiveStartDate != null && effectiveEndDate != null) {
-                    transactionViewModel.getSumTransactionToAccount(
-                        accountWithType!!.account.accountId,
-                        effectiveStartDate,
-                        effectiveEndDate
-                    )
-                } else {
-                    transactionViewModel.getSumTransactionToAccount(
-                        accountWithType!!.account.accountId
-                    )
+        val sumToAccount by remember(
+            mode,
+            accountWithType?.account?.accountId,
+            effectiveStartDate,
+            effectiveEndDate
+        ) {
+            when (mode) {
+                AnalysisMode.ACCOUNT -> {
+                    if (effectiveStartDate != null && effectiveEndDate != null) {
+                        transactionViewModel.getSumTransactionToAccount(
+                            accountWithType!!.account.accountId,
+                            effectiveStartDate,
+                            effectiveEndDate
+                        )
+                    } else {
+                        transactionViewModel.getSumTransactionToAccount(
+                            accountWithType!!.account.accountId
+                        )
+                    }
                 }
-            }
 
-            else -> MutableLiveData(null)
-        } as LiveData<Double?>).observeAsState(null)
+                else -> MutableLiveData(null)
+            } as LiveData<Double?>
+        }.observeAsState(null)
 
-        val sumFromAccount by (when (mode) {
-            AnalysisMode.ACCOUNT -> {
-                if (effectiveStartDate != null && effectiveEndDate != null) {
-                    transactionViewModel.getSumTransactionFromAccount(
-                        accountWithType!!.account.accountId,
-                        effectiveStartDate,
-                        effectiveEndDate
-                    )
-                } else {
-                    transactionViewModel.getSumTransactionFromAccount(
-                        accountWithType!!.account.accountId
-                    )
+        val sumFromAccount by remember(
+            mode,
+            accountWithType?.account?.accountId,
+            effectiveStartDate,
+            effectiveEndDate
+        ) {
+            when (mode) {
+                AnalysisMode.ACCOUNT -> {
+                    if (effectiveStartDate != null && effectiveEndDate != null) {
+                        transactionViewModel.getSumTransactionFromAccount(
+                            accountWithType!!.account.accountId,
+                            effectiveStartDate,
+                            effectiveEndDate
+                        )
+                    } else {
+                        transactionViewModel.getSumTransactionFromAccount(
+                            accountWithType!!.account.accountId
+                        )
+                    }
                 }
-            }
 
-            else -> MutableLiveData(null)
-        } as LiveData<Double?>).observeAsState(null)
+                else -> MutableLiveData(null)
+            } as LiveData<Double?>
+        }.observeAsState(null)
 
-        val sumCredits by (when (mode) {
-            AnalysisMode.BUDGET_RULE -> {
-                if (effectiveStartDate != null && effectiveEndDate != null) {
-                    transactionViewModel.getSumTransactionByBudgetRule(
-                        budgetRuleDetailed!!.budgetRule!!.ruleId,
-                        effectiveStartDate,
-                        effectiveEndDate
-                    )
-                } else {
-                    transactionViewModel.getSumTransactionByBudgetRule(
-                        budgetRuleDetailed!!.budgetRule!!.ruleId
-                    )
+        val sumCredits by remember(
+            mode,
+            budgetRuleDetailed?.budgetRule?.ruleId,
+            searchQueryActual,
+            effectiveStartDate,
+            effectiveEndDate
+        ) {
+            when (mode) {
+                AnalysisMode.BUDGET_RULE -> {
+                    if (effectiveStartDate != null && effectiveEndDate != null) {
+                        transactionViewModel.getSumTransactionByBudgetRule(
+                            budgetRuleDetailed!!.budgetRule!!.ruleId,
+                            effectiveStartDate,
+                            effectiveEndDate
+                        )
+                    } else {
+                        transactionViewModel.getSumTransactionByBudgetRule(
+                            budgetRuleDetailed!!.budgetRule!!.ruleId
+                        )
+                    }
                 }
-            }
 
-            AnalysisMode.SEARCH -> {
-                if (effectiveStartDate != null && effectiveEndDate != null) {
-                    transactionViewModel.getSumTransactionBySearch(
-                        "%$searchQueryActual%",
-                        effectiveStartDate,
-                        effectiveEndDate
-                    )
-                } else {
-                    transactionViewModel.getSumTransactionBySearch("%$searchQueryActual%")
+                AnalysisMode.SEARCH -> {
+                    if (effectiveStartDate != null && effectiveEndDate != null) {
+                        transactionViewModel.getSumTransactionBySearch(
+                            "%$searchQueryActual%",
+                            effectiveStartDate,
+                            effectiveEndDate
+                        )
+                    } else {
+                        transactionViewModel.getSumTransactionBySearch("%$searchQueryActual%")
+                    }
                 }
-            }
 
-            else -> MutableLiveData(null)
-        } as LiveData<Double?>).observeAsState(null)
+                else -> MutableLiveData(null)
+            } as LiveData<Double?>
+        }.observeAsState(null)
 
-        val maxVal by (when (mode) {
-            AnalysisMode.BUDGET_RULE -> {
-                if (effectiveStartDate != null && effectiveEndDate != null) {
-                    transactionViewModel.getMaxTransactionByBudgetRule(
-                        budgetRuleDetailed!!.budgetRule!!.ruleId,
-                        effectiveStartDate,
-                        effectiveEndDate
-                    )
-                } else {
-                    transactionViewModel.getMaxTransactionByBudgetRule(
-                        budgetRuleDetailed!!.budgetRule!!.ruleId
-                    )
+        val maxVal by remember(
+            mode,
+            budgetRuleDetailed?.budgetRule?.ruleId,
+            accountWithType?.account?.accountId,
+            searchQueryActual,
+            effectiveStartDate,
+            effectiveEndDate
+        ) {
+            when (mode) {
+                AnalysisMode.BUDGET_RULE -> {
+                    if (effectiveStartDate != null && effectiveEndDate != null) {
+                        transactionViewModel.getMaxTransactionByBudgetRule(
+                            budgetRuleDetailed!!.budgetRule!!.ruleId,
+                            effectiveStartDate,
+                            effectiveEndDate
+                        )
+                    } else {
+                        transactionViewModel.getMaxTransactionByBudgetRule(
+                            budgetRuleDetailed!!.budgetRule!!.ruleId
+                        )
+                    }
                 }
-            }
 
-            AnalysisMode.ACCOUNT -> {
-                if (effectiveStartDate != null && effectiveEndDate != null) {
-                    transactionViewModel.getMaxTransactionByAccount(
-                        accountWithType!!.account.accountId,
-                        effectiveStartDate,
-                        effectiveEndDate
-                    )
-                } else {
-                    transactionViewModel.getMaxTransactionByAccount(
-                        accountWithType!!.account.accountId
-                    )
+                AnalysisMode.ACCOUNT -> {
+                    if (effectiveStartDate != null && effectiveEndDate != null) {
+                        transactionViewModel.getMaxTransactionByAccount(
+                            accountWithType!!.account.accountId,
+                            effectiveStartDate,
+                            effectiveEndDate
+                        )
+                    } else {
+                        transactionViewModel.getMaxTransactionByAccount(
+                            accountWithType!!.account.accountId
+                        )
+                    }
                 }
-            }
 
-            AnalysisMode.SEARCH -> {
-                if (effectiveStartDate != null && effectiveEndDate != null) {
-                    transactionViewModel.getMaxTransactionBySearch(
-                        "%$searchQueryActual%",
-                        effectiveStartDate,
-                        effectiveEndDate
-                    )
-                } else {
-                    transactionViewModel.getMaxTransactionBySearch("%$searchQueryActual%")
+                AnalysisMode.SEARCH -> {
+                    if (effectiveStartDate != null && effectiveEndDate != null) {
+                        transactionViewModel.getMaxTransactionBySearch(
+                            "%$searchQueryActual%",
+                            effectiveStartDate,
+                            effectiveEndDate
+                        )
+                    } else {
+                        transactionViewModel.getMaxTransactionBySearch("%$searchQueryActual%")
+                    }
                 }
-            }
 
-            else -> MutableLiveData(null)
-        } as LiveData<Double?>).observeAsState(null)
+                else -> MutableLiveData(null)
+            } as LiveData<Double?>
+        }.observeAsState(null)
 
-        val minVal by (when (mode) {
-            AnalysisMode.BUDGET_RULE -> {
-                if (effectiveStartDate != null && effectiveEndDate != null) {
-                    transactionViewModel.getMinTransactionByBudgetRule(
-                        budgetRuleDetailed!!.budgetRule!!.ruleId,
-                        effectiveStartDate,
-                        effectiveEndDate
-                    )
-                } else {
-                    transactionViewModel.getMinTransactionByBudgetRule(
-                        budgetRuleDetailed!!.budgetRule!!.ruleId
-                    )
+        val minVal by remember(
+            mode,
+            budgetRuleDetailed?.budgetRule?.ruleId,
+            accountWithType?.account?.accountId,
+            searchQueryActual,
+            effectiveStartDate,
+            effectiveEndDate
+        ) {
+            when (mode) {
+                AnalysisMode.BUDGET_RULE -> {
+                    if (effectiveStartDate != null && effectiveEndDate != null) {
+                        transactionViewModel.getMinTransactionByBudgetRule(
+                            budgetRuleDetailed!!.budgetRule!!.ruleId,
+                            effectiveStartDate,
+                            effectiveEndDate
+                        )
+                    } else {
+                        transactionViewModel.getMinTransactionByBudgetRule(
+                            budgetRuleDetailed!!.budgetRule!!.ruleId
+                        )
+                    }
                 }
-            }
 
-            AnalysisMode.ACCOUNT -> {
-                if (effectiveStartDate != null && effectiveEndDate != null) {
-                    transactionViewModel.getMinTransactionByAccount(
-                        accountWithType!!.account.accountId,
-                        effectiveStartDate,
-                        effectiveEndDate
-                    )
-                } else {
-                    transactionViewModel.getMinTransactionByAccount(
-                        accountWithType!!.account.accountId
-                    )
+                AnalysisMode.ACCOUNT -> {
+                    if (effectiveStartDate != null && effectiveEndDate != null) {
+                        transactionViewModel.getMinTransactionByAccount(
+                            accountWithType!!.account.accountId,
+                            effectiveStartDate,
+                            effectiveEndDate
+                        )
+                    } else {
+                        transactionViewModel.getMinTransactionByAccount(
+                            accountWithType!!.account.accountId
+                        )
+                    }
                 }
-            }
 
-            AnalysisMode.SEARCH -> {
-                if (effectiveStartDate != null && effectiveEndDate != null) {
-                    transactionViewModel.getMinTransactionBySearch(
-                        "%$searchQueryActual%",
-                        effectiveStartDate,
-                        effectiveEndDate
-                    )
-                } else {
-                    transactionViewModel.getMinTransactionBySearch("%$searchQueryActual%")
+                AnalysisMode.SEARCH -> {
+                    if (effectiveStartDate != null && effectiveEndDate != null) {
+                        transactionViewModel.getMinTransactionBySearch(
+                            "%$searchQueryActual%",
+                            effectiveStartDate,
+                            effectiveEndDate
+                        )
+                    } else {
+                        transactionViewModel.getMinTransactionBySearch("%$searchQueryActual%")
+                    }
                 }
-            }
 
-            else -> MutableLiveData(null)
-        } as LiveData<Double?>).observeAsState(null)
+                else -> MutableLiveData(null)
+            } as LiveData<Double?>
+        }.observeAsState(null)
 
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -352,9 +405,9 @@ class TransactionAnalysisFragment : Fragment() {
                         timeRange = timeRange,
                         onTimeRangeChange = { timeRange = it },
                         startDate = startDate,
-                        onStartDateClick = { chooseStartDate { startDate = it } },
+                        onStartDateClick = { chooseStartDate(startDate) { startDate = it } },
                         endDate = endDate,
-                        onEndDateClick = { chooseEndDate { endDate = it } },
+                        onEndDateClick = { chooseEndDate(endDate) { endDate = it } },
                         onDateRangeGo = { /* Just triggers recompose as effective dates change */ },
                         onBudgetRuleClick = { gotoBudgetRule() },
                         onAccountClick = { gotoAccount() }
@@ -379,7 +432,10 @@ class TransactionAnalysisFragment : Fragment() {
                         HelpCard()
                     }
                 } else {
-                    items(transactionList) { transaction ->
+                    items(
+                        transactionList,
+                        key = { it.transaction?.transId ?: it.hashCode() }
+                    ) { transaction ->
                         TransactionItemCompose(transaction)
                     }
                 }
@@ -675,8 +731,10 @@ class TransactionAnalysisFragment : Fragment() {
 
     @Composable
     fun TransactionItemCompose(transaction: TransactionDetailed) {
-        val vf = VisualsFunctions()
-        val randomColor = remember { Color(vf.getRandomColorInt()) }
+        val vf = remember { VisualsFunctions() }
+        val randomColor = remember(transaction.transaction?.transId) {
+            Color(vf.getRandomColorInt())
+        }
 
         Card(
             modifier = Modifier
@@ -859,8 +917,8 @@ class TransactionAnalysisFragment : Fragment() {
         }
     }
 
-    private fun chooseEndDate(onDateSelected: (String) -> Unit) {
-        val curDate = df.getCurrentDateAsString().split("-")
+    private fun chooseEndDate(currentDate: String, onDateSelected: (String) -> Unit) {
+        val dateParts = currentDate.split("-")
         val datePickerDialog = android.app.DatePickerDialog(
             requireContext(), { _, year, monthOfYear, dayOfMonth ->
                 val month = monthOfYear + 1
@@ -870,14 +928,14 @@ class TransactionAnalysisFragment : Fragment() {
                     dayOfMonth.toString().padStart(2, '0')
                 }"
                 onDateSelected(display)
-            }, curDate[0].toInt(), curDate[1].toInt() - 1, curDate[2].toInt()
+            }, dateParts[0].toInt(), dateParts[1].toInt() - 1, dateParts[2].toInt()
         )
         datePickerDialog.setTitle(getString(R.string.choose_the_end_date))
         datePickerDialog.show()
     }
 
-    private fun chooseStartDate(onDateSelected: (String) -> Unit) {
-        val curDate = df.getFirstOfMonth(df.getCurrentDateAsString()).split("-")
+    private fun chooseStartDate(currentDate: String, onDateSelected: (String) -> Unit) {
+        val dateParts = currentDate.split("-")
         val datePickerDialog = android.app.DatePickerDialog(
             requireContext(), { _, year, monthOfYear, dayOfMonth ->
                 val month = monthOfYear + 1
@@ -887,7 +945,7 @@ class TransactionAnalysisFragment : Fragment() {
                     dayOfMonth.toString().padStart(2, '0')
                 }"
                 onDateSelected(display)
-            }, curDate[0].toInt(), curDate[1].toInt() - 1, curDate[2].toInt()
+            }, dateParts[0].toInt(), dateParts[1].toInt() - 1, dateParts[2].toInt()
         )
         datePickerDialog.setTitle(getString(R.string.choose_the_start_date))
         datePickerDialog.show()
@@ -936,6 +994,20 @@ class TransactionAnalysisFragment : Fragment() {
     }
 
     // Keep this for MainActivity.onResume compatibility if needed
+    fun refreshData() {
+        updateViewModels()
+        populateValues()
+        refreshKey.intValue++
+    }
+
+    private fun updateViewModels() {
+        mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        transactionViewModel = mainActivity.transactionViewModel
+        budgetRuleViewModel = mainActivity.budgetRuleViewModel
+        accountUpdateViewModel = mainActivity.accountUpdateViewModel
+    }
+
     fun populateValues() {
         // Compose handles this through state, but we might want to trigger a refresh
         // by updating a state variable if necessary.

@@ -34,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -46,7 +47,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
@@ -69,22 +73,35 @@ class AccountsFragment : Fragment() {
     private val cf = NumberFunctions()
     private val vf = VisualsFunctions()
     private val df = DateFunctions()
+    private val refreshKey = mutableIntStateOf(0)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        mainActivity = (activity as MainActivity)
-        mainViewModel = mainActivity.mainViewModel
-        accountViewModel = mainActivity.accountViewModel
+        updateViewModels()
         mainActivity.topMenuBar.title = getString(R.string.choose_an_account)
 
         return ComposeView(requireContext()).apply {
             setContent {
                 BillsProjectionTheme {
-                    AccountsScreen()
+                    AccountsScreen(refreshKey.intValue)
                 }
             }
+        }
+    }
+
+    private fun updateViewModels() {
+        mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        accountViewModel = mainActivity.accountViewModel
+    }
+
+    fun refreshData() {
+        updateViewModels()
+        lifecycleScope.launch {
+            delay(100)
+            refreshKey.intValue++
         }
     }
 
@@ -97,8 +114,8 @@ class AccountsFragment : Fragment() {
     }
 
     @Composable
-    fun AccountsScreen() {
-        var searchQuery by remember { mutableStateOf("") }
+    fun AccountsScreen(refreshKey: Int) {
+        var searchQuery by remember(refreshKey) { mutableStateOf("") }
         val accountsWithType by if (searchQuery.isEmpty()) {
             accountViewModel.getAccountsWithType().observeAsState(emptyList())
         } else {

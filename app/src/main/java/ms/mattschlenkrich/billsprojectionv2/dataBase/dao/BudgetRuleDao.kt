@@ -38,7 +38,15 @@ interface BudgetRuleDao {
         "SELECT * FROM $TABLE_BUDGET_RULES " +
                 "WHERE $BUDGET_RULE_NAME = :query"
     )
-    fun findBudgetRuleByName(query: String?): List<BudgetRule>
+    suspend fun findBudgetRuleByName(query: String?): BudgetRule?
+
+    @Query(
+        "UPDATE $TABLE_BUDGET_RULES " +
+                "SET $BUDGET_RULE_NAME = :newName, " +
+                "$BUD_UPDATE_TIME = :updateTime " +
+                "WHERE $RULE_ID = :ruleId"
+    )
+    suspend fun renameBudgetRule(ruleId: Long, newName: String, updateTime: String)
 
     @Query(
         "SELECT $BUDGET_RULE_NAME FROM $TABLE_BUDGET_RULES"
