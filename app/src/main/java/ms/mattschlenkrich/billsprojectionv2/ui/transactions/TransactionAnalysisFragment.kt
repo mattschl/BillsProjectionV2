@@ -419,7 +419,7 @@ class TransactionAnalysisFragment : Fragment() {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = stringResource(R.string.budget_rule),
+                        text = stringResource(R.string.rules),
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.width(100.dp)
                     )
