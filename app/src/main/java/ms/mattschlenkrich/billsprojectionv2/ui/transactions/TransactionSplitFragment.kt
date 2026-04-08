@@ -1,26 +1,56 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.transactions
 
 import android.app.AlertDialog
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Calculate
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
-import androidx.navigation.findNavController
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_SPLIT
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_PERFORM
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
+import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
@@ -33,37 +63,45 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountUpdateView
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.TransactionViewModel
-import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentTransactionSplitBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 
 private const val TAG = FRAG_TRANSACTION_SPLIT
 
-class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
+class TransactionSplitFragment : Fragment() {
 
-    private var _binding: FragmentTransactionSplitBinding? = null
-    private val binding get() = _binding!!
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var accountViewModel: AccountViewModel
     private lateinit var budgetRuleViewModel: BudgetRuleViewModel
     private lateinit var accountUpdateViewModel: AccountUpdateViewModel
     private lateinit var transactionViewModel: TransactionViewModel
-    private lateinit var mView: View
     private val nf = NumberFunctions()
     private val df = DateFunctions()
 
-    private var mBudgetRule: BudgetRule? = null
-    private var mToAccount: Account? = null
-    private lateinit var mFromAccount: Account
-    private var mToAccountWithType: AccountWithType? = null
-    private lateinit var mFromAccountWithType: AccountWithType
+    private var dateState = mutableStateOf("")
+    private var descriptionState = mutableStateOf("")
+    private var descriptionTextFieldValue = mutableStateOf(TextFieldValue(""))
+    private var noteState = mutableStateOf("")
+    private var noteTextFieldValue = mutableStateOf(TextFieldValue(""))
+    private var amountState = mutableStateOf("")
+    private var amountTextFieldValue = mutableStateOf(TextFieldValue(""))
+    private var originalAmountState = mutableStateOf(0.0)
+    private var remainderState = mutableStateOf(0.0)
+
+    private var budgetRuleState = mutableStateOf<BudgetRule?>(null)
+    private var toAccountState = mutableStateOf<Account?>(null)
+    private var fromAccountState = mutableStateOf<Account?>(null)
+
+    private var toPendingState = mutableStateOf(false)
+    private var fromPendingState = mutableStateOf(false)
+
+    private var toAccountWithTypeState = mutableStateOf<AccountWithType?>(null)
+    private var fromAccountWithTypeState = mutableStateOf<AccountWithType?>(null)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentTransactionSplitBinding.inflate(
-            inflater, container, false
-        )
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         accountViewModel = mainActivity.accountViewModel
@@ -71,159 +109,404 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
         accountUpdateViewModel = mainActivity.accountUpdateViewModel
         transactionViewModel = mainActivity.transactionViewModel
         mainActivity.topMenuBar.title = getString(R.string.splitting_transaction)
-        mView = binding.root
-        return binding.root
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         populateValues()
-        setClickActions()
+
+        return ComposeView(requireContext()).apply {
+            setContent {
+                BillsProjectionTheme {
+                    TransactionSplitScreen()
+                }
+            }
+        }
     }
 
-    private fun populateValues() {
-        binding.apply {
-            if (mainViewModel.getTransactionDetailed() != null) {
-                populateValuesFromOriginalTransaction()
-            }
-            if (mainViewModel.getSplitTransactionDetailed() != null) {
-                populateValuesFromSplitTransaction()
-            }
+    fun populateValues() {
+        if (mainViewModel.getTransactionDetailed() != null) {
+            populateValuesFromOriginalTransaction()
+        }
+        if (mainViewModel.getSplitTransactionDetailed() != null) {
+            populateValuesFromSplitTransaction()
         }
     }
 
     private fun populateValuesFromOriginalTransaction() {
         val mTransactionDetailed = mainViewModel.getTransactionDetailed()!!
-        val transaction = mainViewModel.getTransactionDetailed()!!.transaction!!
-        binding.apply {
-            tvOriginalAmount.text = nf.displayDollars(
-                transaction.transAmount
-            )
-            etTransDate.setText(
-                transaction.transDate
-            )
-            etTransDate.isEnabled = false
-            mFromAccount = mTransactionDetailed.fromAccount!!
-            tvFromAccount.text = mFromAccount.accountName
-            accountViewModel.getAccountDetailed(mFromAccount.accountId).observe(
-                viewLifecycleOwner
-            ) {
-                mFromAccountWithType = it
-                if (mFromAccountWithType.accountType!!.allowPending) {
-                    chkFromAccPending.visibility = View.VISIBLE
-                } else {
-                    chkFromAccPending.visibility = View.GONE
-                }
-            }
-            chkFromAccPending.isChecked = transaction.transFromAccountPending
+        val transaction = mTransactionDetailed.transaction!!
+        originalAmountState.value = transaction.transAmount
+        dateState.value = transaction.transDate
+        fromAccountState.value = mTransactionDetailed.fromAccount!!
+        fromPendingState.value = transaction.transFromAccountPending
+
+        lifecycleScope.launch {
+            val accountWithType =
+                accountViewModel.getAccountWithType(fromAccountState.value!!.accountId)
+            fromAccountWithTypeState.value = accountWithType
         }
+        updateAmountsDisplay()
     }
 
     private fun populateValuesFromBudgetRule() {
         val mTransactionDetailed = mainViewModel.getSplitTransactionDetailed()!!
-        binding.apply {
-            mBudgetRule = mTransactionDetailed.budgetRule!!
-            tvBudgetRule.text = mBudgetRule!!.budgetRuleName
-            if (mTransactionDetailed.transaction!!.transName.isBlank()) {
-                etDescription.setText(mBudgetRule!!.budgetRuleName)
-            }
-            if (mTransactionDetailed.toAccount == null) {
-                populateToAccountFromBudgetRule()
-            }
+        budgetRuleState.value = mTransactionDetailed.budgetRule!!
+        if (descriptionState.value.isBlank()) {
+            descriptionState.value = budgetRuleState.value!!.budgetRuleName
+            descriptionTextFieldValue.value = TextFieldValue(descriptionState.value)
+        }
+        if (toAccountState.value == null) {
+            populateToAccountFromBudgetRule()
         }
     }
 
     private fun populateValuesFromSplitTransaction() {
-        val transaction = mainViewModel.getSplitTransactionDetailed()!!.transaction!!
-        binding.apply {
-            etDescription.setText(
-                transaction.transName
-            )
-            etNote.setText(
-                transaction.transNote
-            )
-            chkFromAccPending.isChecked = transaction.transFromAccountPending
-            if (mainActivity.mainViewModel.getTransferNum() != null && mainActivity.mainViewModel.getTransferNum() != 0.0) {
-                etAmount.setText(
-                    nf.displayDollars(
-                        mainActivity.mainViewModel.getTransferNum()!!
-                    )
-                )
-            } else if (transaction.transAmount != 0.0) {
-                etAmount.setText(
-                    nf.displayDollars(
-                        transaction.transAmount
-                    )
-                )
-            } else {
-                etAmount.setText(
-                    nf.displayDollars(0.0)
-                )
-            }
-            updateAmountsDisplay()
-            if (mainViewModel.getSplitTransactionDetailed()!!.toAccount != null) {
-                populateToAccountFromTransaction()
-            }
-            if (mainViewModel.getSplitTransactionDetailed()!!.budgetRule != null) {
-                populateValuesFromBudgetRule()
-            }
+        val splitDetailed = mainViewModel.getSplitTransactionDetailed()!!
+        val transaction = splitDetailed.transaction!!
+        descriptionState.value = transaction.transName
+        descriptionTextFieldValue.value = TextFieldValue(transaction.transName)
+        noteState.value = transaction.transNote
+        noteTextFieldValue.value = TextFieldValue(transaction.transNote)
+        fromPendingState.value = transaction.transFromAccountPending
+
+        if (mainViewModel.getTransferNum() != null && mainViewModel.getTransferNum() != 0.0) {
+            amountState.value = nf.displayDollars(mainViewModel.getTransferNum()!!)
+        } else if (transaction.transAmount != 0.0) {
+            amountState.value = nf.displayDollars(transaction.transAmount)
+        } else {
+            amountState.value = nf.displayDollars(0.0)
+        }
+        amountTextFieldValue.value = TextFieldValue(amountState.value)
+        updateAmountsDisplay()
+
+        if (splitDetailed.toAccount != null) {
+            populateToAccountFromTransaction()
+        }
+        if (splitDetailed.budgetRule != null) {
+            populateValuesFromBudgetRule()
         }
     }
 
     private fun populateToAccountFromTransaction() {
-        binding.apply {
-            mToAccount = mainViewModel.getSplitTransactionDetailed()!!.toAccount
-            tvToAccount.text = mToAccount!!.accountName
-            accountViewModel.getAccountDetailed(mToAccount!!.accountId).observe(
-                viewLifecycleOwner
-            ) {
-                mToAccountWithType = it
-                if (it.accountType!!.allowPending) {
-                    chkToAccPending.visibility = View.VISIBLE
-                    chkToAccPending.isChecked =
-                        mainActivity.mainViewModel.getSplitTransactionDetailed()!!.transaction!!.transToAccountPending
-                } else {
-                    chkToAccPending.visibility = View.GONE
-                }
+        toAccountState.value = mainViewModel.getSplitTransactionDetailed()!!.toAccount
+        lifecycleScope.launch {
+            val accountWithType =
+                accountViewModel.getAccountWithType(toAccountState.value!!.accountId)
+            toAccountWithTypeState.value = accountWithType
+            if (accountWithType.accountType!!.allowPending) {
+                toPendingState.value =
+                    mainViewModel.getSplitTransactionDetailed()!!.transaction!!.transToAccountPending
             }
         }
     }
 
     private fun populateToAccountFromBudgetRule() {
-        binding.apply {
-            budgetRuleViewModel.getBudgetRuleFullLive(mBudgetRule!!.ruleId).observe(
-                viewLifecycleOwner
-            ) { it ->
-                mToAccount = it.toAccount
-                tvToAccount.text = it.toAccount!!.accountName
-                mainActivity.accountViewModel.getAccountDetailed(mToAccount!!.accountId).observe(
-                    viewLifecycleOwner
+        lifecycleScope.launch {
+            val ruleFull = budgetRuleViewModel.getBudgetRuleDetailed(budgetRuleState.value!!.ruleId)
+            if (ruleFull != null) {
+                toAccountState.value = ruleFull.toAccount
+                val accountWithType =
+                    accountViewModel.getAccountWithType(toAccountState.value!!.accountId)
+                toAccountWithTypeState.value = accountWithType
+                if (accountWithType.accountType!!.allowPending) {
+                    toPendingState.value =
+                        mainViewModel.getSplitTransactionDetailed()!!.transaction!!.transToAccountPending
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun TransactionSplitScreen() {
+        val date by dateState
+        val budgetRule by budgetRuleState
+        val toAccount by toAccountState
+        val fromAccount by fromAccountState
+        var toPending by toPendingState
+        var fromPending by fromPendingState
+        val originalAmount by originalAmountState
+        val remainder by remainderState
+
+        val toAccountWithType = toAccountWithTypeState.value
+        val fromAccountWithType = fromAccountWithTypeState.value
+
+        Scaffold(
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = { saveTransactionIfValid() },
+                    modifier = Modifier
+                        .padding(16.dp),
+                    containerColor = Color(0xFFB00020) // Deep Red
                 ) {
-                    mToAccountWithType = it
-                    if (mToAccountWithType!!.accountType!!.allowPending) {
-                        chkToAccPending.visibility = View.VISIBLE
-                        chkToAccPending.isChecked =
-                            mainActivity.mainViewModel.getSplitTransactionDetailed()!!.transaction!!.transToAccountPending
-                    } else {
-                        chkToAccPending.visibility = View.GONE
+                    Icon(
+                        Icons.Default.Done,
+                        contentDescription = stringResource(R.string.save),
+                        tint = Color.White
+                    )
+                }
+            }
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                ProjectTextField(
+                    value = date,
+                    onValueChange = { },
+                    label = { Text(stringResource(R.string.date)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { chooseDate() },
+                    readOnly = true,
+                    enabled = false,
+                )
+
+                SelectorCard(
+                    label = stringResource(R.string.budget_rule),
+                    value = budgetRule?.budgetRuleName
+                        ?: stringResource(R.string.choose_a_budget_rule),
+                    onClick = { chooseBudgetRule() }
+                )
+
+                BalanceField(
+                    label = stringResource(R.string.transaction_amount),
+                    value = amountTextFieldValue.value,
+                    onValueChange = {
+                        amountTextFieldValue.value = it
+                        amountState.value = it.text
+                        updateAmountsDisplay()
+                    },
+                    onLongClick = { gotoCalculator() }
+                )
+
+                OutlinedCard(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = stringResource(R.string.original_amount),
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            Text(
+                                text = nf.displayDollars(originalAmount),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = stringResource(R.string.remainder),
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            Text(
+                                text = nf.displayDollars(remainder),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                    }
+                }
+
+                AccountSelectorCard(
+                    label = stringResource(R.string.to_this_account),
+                    account = toAccount,
+                    isPending = toPending,
+                    onPendingChange = { toPending = it },
+                    allowPending = toAccountWithType?.accountType?.allowPending == true,
+                    onClick = { chooseToAccount() }
+                )
+
+                AccountDisplayCard(
+                    label = stringResource(R.string.from_this_account),
+                    account = fromAccount,
+                    isPending = fromPending,
+                    onPendingChange = { fromPending = it },
+                    allowPending = fromAccountWithType?.accountType?.allowPending == true
+                )
+
+                ProjectTextField(
+                    value = descriptionTextFieldValue.value,
+                    onValueChange = {
+                        descriptionTextFieldValue.value = it
+                        descriptionState.value = it.text
+                    },
+                    label = { Text(stringResource(R.string.description)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+
+                ProjectTextField(
+                    value = noteTextFieldValue.value,
+                    onValueChange = {
+                        noteTextFieldValue.value = it
+                        noteState.value = it.text
+                    },
+                    label = { Text(stringResource(R.string.notes)) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+    }
+
+    @Composable
+    fun SelectorCard(label: String, value: String, onClick: () -> Unit) {
+        OutlinedCard(
+            onClick = onClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier
+                    .padding(12.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "$label:",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = value,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+        }
+    }
+
+    @Composable
+    fun AccountSelectorCard(
+        label: String,
+        account: Account?,
+        isPending: Boolean,
+        onPendingChange: (Boolean) -> Unit,
+        allowPending: Boolean,
+        onClick: () -> Unit
+    ) {
+        OutlinedCard(
+            onClick = onClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "$label:",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        text = account?.accountName ?: stringResource(R.string.choose_an_account),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+                if (allowPending) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.clickable { onPendingChange(!isPending) }
+                    ) {
+                        Checkbox(checked = isPending, onCheckedChange = onPendingChange)
+                        Text(
+                            text = stringResource(R.string.pending),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                     }
                 }
             }
         }
     }
 
-    private fun setClickActions() {
-        setMenuActions()
-        binding.apply {
-            tvBudgetRule.setOnClickListener { chooseBudgetRule() }
-            tvToAccount.setOnClickListener { chooseToAccount() }
-            etAmount.setOnLongClickListener {
-                gotoCalculator()
-                false
+    @Composable
+    fun AccountDisplayCard(
+        label: String,
+        account: Account?,
+        isPending: Boolean,
+        onPendingChange: (Boolean) -> Unit,
+        allowPending: Boolean
+    ) {
+        OutlinedCard(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "$label:",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        text = account?.accountName ?: "",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+                if (allowPending) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.clickable { onPendingChange(!isPending) }
+                    ) {
+                        Checkbox(checked = isPending, onCheckedChange = onPendingChange)
+                        Text(
+                            text = stringResource(R.string.pending),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
             }
-            etAmount.setOnFocusChangeListener { _, b -> if (!b) updateAmountsDisplay() }
-            etDescription.setOnFocusChangeListener { _, _ -> updateAmountsDisplay() }
-            etNote.setOnFocusChangeListener { _, _ -> updateAmountsDisplay() }
+        }
+    }
+
+    @Composable
+    fun BalanceField(
+        label: String,
+        value: TextFieldValue,
+        onValueChange: (TextFieldValue) -> Unit,
+        onLongClick: () -> Unit
+    ) {
+        ProjectTextField(
+            value = value,
+            onValueChange = { onValueChange(it) },
+            label = { Text(label) },
+            modifier = Modifier.fillMaxWidth(),
+            textStyle = MaterialTheme.typography.titleLarge.copy(
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold
+            ),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+            singleLine = true,
+            trailingIcon = {
+                IconButton(onClick = onLongClick) {
+                    Icon(
+                        imageVector = Icons.Default.Calculate,
+                        contentDescription = stringResource(R.string.calculator)
+                    )
+                }
+            }
+        )
+    }
+
+    private fun chooseDate() {
+        val curDateAll = dateState.value.split("-")
+        DatePickerDialog(
+            requireContext(), { _, year, monthOfYear, dayOfMonth ->
+                val month = monthOfYear + 1
+                dateState.value = "$year-${month.toString().padStart(2, '0')}-${
+                    dayOfMonth.toString().padStart(2, '0')
+                }"
+            }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
+        ).apply {
+            setTitle(getString(R.string.choose_transaction_date))
+            show()
         }
     }
 
@@ -235,30 +518,6 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
         gotoBudgetRuleChooseFragment()
     }
 
-    private fun setMenuActions() {
-        val menuHost: MenuHost = mainActivity.topMenuBar
-        menuHost.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                // Add menu items here
-                menuInflater.inflate(R.menu.save_menu, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                // Handle the menu selection
-                return when (menuItem.itemId) {
-                    R.id.menu_save -> {
-                        menuItem.isEnabled = false
-                        saveTransactionIfValid()
-                        menuItem.isEnabled = true
-                        true
-                    }
-
-                    else -> false
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
-    }
-
     private fun chooseToAccount() {
         mainViewModel.addCallingFragment(TAG)
         mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
@@ -267,57 +526,42 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
     }
 
     private fun getCurrentTransactionForSave(): Transactions {
-        binding.apply {
-            return Transactions(
-                nf.generateId(),
-                etTransDate.text.toString(),
-                etDescription.text.toString(),
-                etNote.text.toString(),
-                mainViewModel.getTransactionDetailed()?.budgetRule?.ruleId ?: 0L,
-                mToAccount?.accountId ?: 0L,
-                chkToAccPending.isChecked,
-                mFromAccount.accountId,
-                chkFromAccPending.isChecked,
-                if (!etAmount.text.isNullOrBlank()) {
-                    nf.getDoubleFromDollars(etAmount.text.toString())
-                } else {
-                    0.0
-                },
-                transIsDeleted = false,
-                transUpdateTime = df.getCurrentTimeAsString()
-            )
-        }
+        return Transactions(
+            nf.generateId(),
+            dateState.value,
+            descriptionState.value,
+            noteState.value,
+            budgetRuleState.value?.ruleId ?: 0L,
+            toAccountState.value?.accountId ?: 0L,
+            toPendingState.value,
+            fromAccountState.value!!.accountId,
+            fromPendingState.value,
+            nf.getDoubleFromDollars(amountState.value),
+            transIsDeleted = false,
+            transUpdateTime = df.getCurrentTimeAsString()
+        )
     }
 
     private fun getSplitTransDetailed(): TransactionDetailed {
         return TransactionDetailed(
             getCurrentTransactionForSave(),
-            mBudgetRule,
-            mToAccount,
-            mFromAccount,
+            budgetRuleState.value,
+            toAccountState.value,
+            fromAccountState.value,
         )
     }
 
     private fun updateAmountsDisplay() {
-        binding.apply {
-            etAmount.setText(
-                nf.displayDollars(
-                    nf.getDoubleFromDollars(
-                        etAmount.text.toString()
-                    )
-                )
+        val amount = nf.getDoubleFromDollars(amountState.value)
+        val original = originalAmountState.value
+        if (original < amount) {
+            showMessage(
+                getString(R.string.error) + getString(R.string.new_amount_cannot_be_more_than_the_original_amount)
             )
-            val amount = nf.getDoubleFromDollars(etAmount.text.toString())
-            val original = nf.getDoubleFromDollars(tvOriginalAmount.text.toString())
-            if (original <= amount) {
-                showMessage(
-                    getString(R.string.error) + getString(R.string.new_amount_cannot_be_more_than_the_original_amount)
-                )
-                etAmount.setText(nf.displayDollars(0.0))
-            } else {
-                tvRemainder.text = nf.displayDollars(original - amount)
-            }
-
+            amountState.value = nf.displayDollars(0.0)
+            remainderState.value = original
+        } else {
+            remainderState.value = original - amount
         }
     }
 
@@ -332,65 +576,61 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
     }
 
     private fun showMessage(message: String) {
-        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
     }
 
     private fun confirmPerformTransaction() {
-        binding.apply {
-            var display =
-                getString(R.string.this_will_perform) + etDescription.text + getString(R.string._for_) + nf.getDollarsFromDouble(
-                    nf.getDoubleFromDollars(etAmount.text.toString())
-                ) + getString(R.string.__from) + mFromAccount.accountName
-            display += if (chkFromAccPending.isChecked) getString(R.string._pending) else ""
-            display += getString(R.string._to) + mToAccount!!.accountName
-            display += if (chkToAccPending.isChecked) getString(R.string._pending) else ""
-            AlertDialog.Builder(mView.context)
-                .setTitle(getString(R.string.confirm_performing_transaction)).setMessage(
-                    display
-                ).setPositiveButton(getString(R.string.confirm)) { _, _ ->
-                    saveTransaction()
-                }.setNegativeButton(getString(R.string.go_back), null).show()
-        }
+        var display =
+            getString(R.string.this_will_perform) + descriptionState.value + getString(R.string._for_) + nf.getDollarsFromDouble(
+                nf.getDoubleFromDollars(amountState.value)
+            ) + getString(R.string.__from) + fromAccountState.value!!.accountName
+        display += if (fromPendingState.value) getString(R.string._pending) else ""
+        display += getString(R.string._to) + toAccountState.value!!.accountName
+        display += if (toPendingState.value) getString(R.string._pending) else ""
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.confirm_performing_transaction)).setMessage(
+                display
+            ).setPositiveButton(getString(R.string.confirm)) { _, _ ->
+                saveTransaction()
+            }.setNegativeButton(getString(R.string.go_back), null).show()
     }
 
     private fun saveTransaction() {
         val mTransaction = getCurrentTransactionForSave()
-        accountUpdateViewModel.performTransaction(
-            mTransaction
-        )
-        gotoCallingFragment()
-    }
-
-    private fun validateTransaction(): String {
-        binding.apply {
-            if (etAmount.text.isNullOrBlank()) {
-                return getString(R.string.please_enter_an_amount_for_this_transaction)
-            }
-            if (nf.getDoubleFromDollars(etAmount.text.toString()) >= nf.getDoubleFromDollars(
-                    tvOriginalAmount.text.toString()
-                )
-            ) {
-                return getString(R.string.the_amount_of_a_split_transaction_must_be_less_than_the_original)
-            }
-            if (etDescription.text.isNullOrBlank()) {
-                return getString(R.string.please_enter_a_name_or_description)
-            }
-            if (mToAccount == null) {
-                return getString(R.string.there_needs_to_be_an_account_money_will_go_to)
-            }
-            if (mainViewModel.getSplitTransactionDetailed()!!.budgetRule == null) {
-                return if (!saveWithoutBudget()) {
-                    getString(R.string.choose_a_budget_rule)
-                } else {
-                    getString(R.string.choose_a_budget_rule)
-                }
-            }
-            return ANSWER_OK
+        lifecycleScope.launch {
+            accountUpdateViewModel.performTransaction(
+                mTransaction
+            )
+            gotoCallingFragment()
         }
     }
 
+    private fun validateTransaction(): String {
+        if (amountState.value.isBlank()) {
+            return getString(R.string.please_enter_an_amount_for_this_transaction)
+        }
+        if (nf.getDoubleFromDollars(amountState.value) >= originalAmountState.value
+        ) {
+            return getString(R.string.the_amount_of_a_split_transaction_must_be_less_than_the_original)
+        }
+        if (descriptionState.value.isBlank()) {
+            return getString(R.string.please_enter_a_name_or_description)
+        }
+        if (toAccountState.value == null) {
+            return getString(R.string.there_needs_to_be_an_account_money_will_go_to)
+        }
+        if (budgetRuleState.value == null) {
+            return if (!saveWithoutBudget()) {
+                getString(R.string.choose_a_budget_rule)
+            } else {
+                getString(R.string.choose_a_budget_rule)
+            }
+        }
+        return ANSWER_OK
+    }
+
     private fun saveWithoutBudget(): Boolean {
-        AlertDialog.Builder(activity).apply {
+        AlertDialog.Builder(requireActivity()).apply {
             setMessage(
                 getString(R.string.there_is_no_budget_rule) + getString(R.string.budget_rules_are_used_to_update_the_budget)
             )
@@ -399,26 +639,13 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
         return false
     }
 
-    private fun goBackToTransactionPerformFragment() {
-        mView.findNavController().navigate(
-            TransactionSplitFragmentDirections.actionTransactionSplitFragmentToTransactionPerformFragment()
-        )
-    }
-
-    private fun goBackToTransactionsAddFragment() {
-        mView.findNavController().navigate(
-            TransactionSplitFragmentDirections.actionTransactionSplitFragmentToTransactionAddFragment()
-        )
-    }
-
     private fun gotoCallingFragment() {
         val transactionDetailed = mainViewModel.getTransactionDetailed()!!
         val oldTransaction = transactionDetailed.transaction!!
-        oldTransaction.transAmount = nf.getDoubleFromDollars(binding.tvRemainder.text.toString())
+        oldTransaction.transAmount = remainderState.value
         if (mainViewModel.getUpdatingTransaction()) {
             transactionViewModel.updateTransaction(oldTransaction)
         }
-        mainViewModel.setUpdatingTransaction(false)
         mainViewModel.setTransactionDetailed(
             TransactionDetailed(
                 oldTransaction,
@@ -428,57 +655,36 @@ class TransactionSplitFragment : Fragment(R.layout.fragment_transaction_split) {
             )
         )
         mainViewModel.setSplitTransactionDetailed(null)
-        val callingFragments = mainViewModel.getCallingFragments()!!
-        if (callingFragments.contains(FRAG_TRANS_ADD)) {
-            mainViewModel.setUpdatingTransaction(false)
-            goBackToTransactionsAddFragment()
-        } else if (callingFragments.contains(FRAG_TRANS_PERFORM)) {
-            mainViewModel.setUpdatingTransaction(false)
-            goBackToTransactionPerformFragment()
-        } else if (callingFragments.contains(FRAG_TRANS_UPDATE)) {
-            mainViewModel.setUpdatingTransaction(true)
-            gotoTransactionViewFragment()
-        }
+        mainViewModel.removeCallingFragment(TAG)
+        findNavController().popBackStack()
     }
 
     private fun gotoCalculator() {
         mainViewModel.setTransferNum(
             nf.getDoubleFromDollars(
-                binding.etAmount.text.toString().ifBlank {
+                amountState.value.ifBlank {
                     getString(R.string.zero_double)
                 })
         )
-        mainViewModel.setReturnTo(TAG)
         mainViewModel.setSplitTransactionDetailed(getSplitTransDetailed())
         gotoCalculatorFragment()
     }
 
     private fun gotoAccountChooseFragment() {
-        mView.findNavController().navigate(
+        findNavController().navigate(
             TransactionSplitFragmentDirections.actionTransactionSplitFragmentToAccountChooseFragment()
         )
     }
 
     private fun gotoCalculatorFragment() {
-        mView.findNavController().navigate(
+        findNavController().navigate(
             TransactionSplitFragmentDirections.actionTransactionSplitFragmentToCalcFragment()
         )
     }
 
     private fun gotoBudgetRuleChooseFragment() {
-        mView.findNavController().navigate(
+        findNavController().navigate(
             TransactionSplitFragmentDirections.actionTransactionSplitFragmentToBudgetRuleChooseFragment()
         )
-    }
-
-    private fun gotoTransactionViewFragment() {
-        mView.findNavController().navigate(
-            TransactionSplitFragmentDirections.actionTransactionSplitFragmentToTransactionViewFragment()
-        )
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
     }
 }

@@ -10,11 +10,8 @@ class NumberFunctions {
     private val numberDisplay: NumberFormat = NumberFormat.getNumberInstance(Locale.CANADA)
 
     fun getDoubleFromDollars(dollars: String): Double {
-        return if (dollars != "") {
-            dollars.trim().replace("$", "").replace(",", "").toDouble()
-        } else {
-            0.0
-        }
+        val cleanString = dollars.trim().replace("$", "").replace(",", "")
+        return cleanString.toDoubleOrNull() ?: 0.0
     }
 
     fun displayDollars(num: Double): String {

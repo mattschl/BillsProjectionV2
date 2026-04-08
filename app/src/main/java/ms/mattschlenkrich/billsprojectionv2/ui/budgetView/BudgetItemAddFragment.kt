@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.budgetView
 
-import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -8,412 +7,474 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.Toast
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Calculate
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.dp
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import androidx.navigation.findNavController
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import androidx.navigation.fragment.findNavController
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_ADD
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
-import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
+import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
-import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
-import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetItemViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewModel
-import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetItemAddBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 
 private const val TAG = FRAG_BUDGET_ITEM_ADD
 
-class BudgetItemAddFragment : Fragment(
-    R.layout.fragment_budget_item_add
-) {
+class BudgetItemAddFragment : Fragment(), MenuProvider {
 
-    private var _binding: FragmentBudgetItemAddBinding? = null
-    private val binding get() = _binding!!
-    private lateinit var mView: View
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var budgetItemViewModel: BudgetItemViewModel
     private lateinit var budgetRuleViewModel: BudgetRuleViewModel
-    private lateinit var budgetRuleDetailed: BudgetRuleDetailed
-    private var mTopAccount: Account? = null
-    private var mTFromAccount: Account? = null
 
     private val nf = NumberFunctions()
     private val df = DateFunctions()
 
+    private var dateState = mutableStateOf("")
+    private var nameState = mutableStateOf("")
+    private var nameTextFieldValue = mutableStateOf(TextFieldValue(""))
+    private var payDayState = mutableStateOf("")
+    private var amountState = mutableStateOf("")
+    private var amountTextFieldValue = mutableStateOf(TextFieldValue(""))
+    private var isFixedState = mutableStateOf(false)
+    private var isPayDayItemState = mutableStateOf(false)
+    private var isAutoState = mutableStateOf(false)
+    private var isLockedState = mutableStateOf(true)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentBudgetItemAddBinding.inflate(
-            inflater, container, false
-        )
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         budgetItemViewModel = mainActivity.budgetItemViewModel
         budgetRuleViewModel = mainActivity.budgetRuleViewModel
         mainActivity.topMenuBar.title = getString(R.string.add_a_new_budget_item)
-        mView = binding.root
-        return binding.root
+
+        initializeValues()
+
+        return ComposeView(requireContext()).apply {
+            setContent {
+                BillsProjectionTheme {
+                    BudgetItemAddScreen()
+                }
+            }
+        }
+    }
+
+    private fun initializeValues() {
+        val cached = mainViewModel.getBudgetItemDetailed()
+        if (cached != null) {
+            dateState.value = cached.budgetItem?.biProjectedDate ?: df.getCurrentDateAsString()
+            nameState.value = cached.budgetItem?.biBudgetName ?: ""
+            payDayState.value = cached.budgetItem?.biPayDay ?: ""
+            amountState.value = nf.displayDollars(
+                if (mainViewModel.getTransferNum() != 0.0) {
+                    mainViewModel.getTransferNum()!!
+                } else {
+                    cached.budgetItem?.biProjectedAmount ?: 0.0
+                }
+            )
+            isFixedState.value = cached.budgetItem?.biIsFixed ?: false
+            isPayDayItemState.value = cached.budgetItem?.biIsPayDayItem ?: false
+            isAutoState.value = cached.budgetItem?.biIsAutomatic ?: false
+            isLockedState.value = cached.budgetItem?.biLocked ?: true
+            mainViewModel.setTransferNum(0.0)
+
+            // Update TextFieldValues
+            nameTextFieldValue.value = TextFieldValue(nameState.value)
+            amountTextFieldValue.value = TextFieldValue(amountState.value)
+        } else {
+            dateState.value = df.getCurrentDateAsString()
+            amountState.value = nf.displayDollars(0.0)
+            nameTextFieldValue.value = TextFieldValue("")
+            amountTextFieldValue.value = TextFieldValue(amountState.value)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        populateValues()
-        setClickActions()
-    }
-
-    private fun populateValues() {
-        populatePayDays()
-        initializeBudgetItemDetailed()
-        if (mainViewModel.getBudgetItemDetailed() != null) {
-            populateFromCache()
-        } else {
-            populateDateToCurrent()
-        }
-    }
-
-    private fun initializeBudgetItemDetailed() {
-        budgetRuleDetailed = BudgetRuleDetailed(
-            null,
-            null,
-            null,
-        )
-    }
-
-    private fun populatePayDays() {
-        val payDayAdapter = ArrayAdapter<Any>(
-            requireContext(), R.layout.spinner_item_bold
-        )
-        payDayAdapter.setDropDownViewResource(
-            R.layout.spinner_item_bold
-        )
-        budgetItemViewModel.getPayDays().observe(
-            viewLifecycleOwner
-        ) { payDayList ->
-            payDayList?.forEach {
-                payDayAdapter.add(it)
-            }
-        }
-        binding.spPayDays.adapter = payDayAdapter
-    }
-
-    private fun populateFromCache() {
-        if (mainViewModel.getBudgetItemDetailed() != null) {
-            val mBudgetItemDetailed = mainViewModel.getBudgetItemDetailed()!!
-            binding.apply {
-                etProjectedDate.setText(
-                    mBudgetItemDetailed.budgetItem?.biProjectedDate
-                )
-                mainViewModel.setTransferNum(0.0)
-                if (mBudgetItemDetailed.budgetRule != null) {
-                    val mBudgetRule = mBudgetItemDetailed.budgetRule!!
-                    tvBudgetRule.text = mBudgetRule.budgetRuleName
-                    CoroutineScope(Dispatchers.Main).launch {
-                        withContext(Dispatchers.Default) {
-                            budgetRuleDetailed = budgetRuleViewModel.getBudgetRuleDetailed(
-                                mBudgetRule.ruleId
-                            )!!
-                        }
-                        delay(WAIT_250)
-                        if (mBudgetItemDetailed.toAccount != null) {
-                            tvToAccount.text = mBudgetItemDetailed.toAccount!!.accountName
-                            budgetRuleDetailed.toAccount = mBudgetItemDetailed.toAccount
-                        } else {
-                            tvToAccount.text = budgetRuleDetailed.toAccount?.accountName
-                        }
-                        if (mBudgetItemDetailed.fromAccount != null) {
-                            tvFromAccount.text = mBudgetItemDetailed.fromAccount!!.accountName
-                            budgetRuleDetailed.fromAccount = mBudgetItemDetailed.fromAccount
-                        } else {
-                            tvFromAccount.text = budgetRuleDetailed.fromAccount?.accountName
-                        }
-                        delay(WAIT_250)
-                        if (mBudgetItemDetailed.budgetItem!!.biBudgetName.isEmpty()) {
-                            etBudgetItemName.setText(
-                                mBudgetRule.budgetRuleName
-                            )
-                        } else {
-                            etBudgetItemName.setText(
-                                mBudgetItemDetailed.budgetItem!!.biBudgetName
-                            )
-                        }
-
-                        if (mBudgetItemDetailed.budgetItem!!.biProjectedAmount == 0.0) {
-                            etProjectedAmount.setText(
-                                nf.displayDollars(
-                                    if (mainViewModel.getTransferNum()!! != 0.0) {
-                                        mainViewModel.getTransferNum()!!
-                                    } else {
-                                        budgetRuleDetailed.budgetRule?.budgetAmount ?: 0.0
-                                    }
-                                )
-                            )
-                        } else {
-                            etProjectedAmount.setText(
-                                nf.displayDollars(
-                                    if (mainViewModel.getTransferNum()!! != 0.0) {
-                                        mainViewModel.getTransferNum()!!
-                                    } else {
-                                        mBudgetItemDetailed.budgetItem!!.biProjectedAmount
-                                    }
-                                )
-                            )
-                        }
-                    }
-                }
-                if (mBudgetItemDetailed.toAccount != null && mBudgetItemDetailed.budgetRule == null) {
-                    tvToAccount.text = mBudgetItemDetailed.toAccount!!.accountName
-                    budgetRuleDetailed.toAccount = mBudgetItemDetailed.toAccount
-                }
-                if (mBudgetItemDetailed.fromAccount != null && mBudgetItemDetailed.budgetRule == null) {
-                    tvFromAccount.text = mBudgetItemDetailed.fromAccount!!.accountName
-                    budgetRuleDetailed.fromAccount = mBudgetItemDetailed.fromAccount
-                }
-                chkFixedAmount.isChecked = mBudgetItemDetailed.budgetItem!!.biIsFixed
-                chkIsAutoPayment.isChecked = mBudgetItemDetailed.budgetItem!!.biIsAutomatic
-                chkIsPayDay.isChecked = mBudgetItemDetailed.budgetItem!!.biIsPayDayItem
-                chkIsLocked.isChecked = mBudgetItemDetailed.budgetItem!!.biLocked
-                for (i in 0 until spPayDays.adapter.count) {
-                    if (spPayDays.getItemAtPosition(i) == mBudgetItemDetailed.budgetItem!!.biPayDay) {
-                        spPayDays.setSelection(i)
-                        break
-                    }
-                }
-            }
-        }
-    }
-
-    private fun populateDateToCurrent() {
-        binding.apply {
-            etProjectedDate.setText(df.getCurrentDateAsString())
-        }
-    }
-
-    private fun setClickActions() {
-        setMenuActions()
-        binding.apply {
-            tvBudgetRule.setOnClickListener {
-                chooseBudgetRule()
-            }
-            tvToAccount.setOnClickListener {
-                chooseAccount(REQUEST_TO_ACCOUNT)
-            }
-            tvFromAccount.setOnClickListener {
-                chooseAccount(REQUEST_FROM_ACCOUNT)
-            }
-            etProjectedDate.setOnLongClickListener {
-                chooseDate()
-                false
-            }
-            etProjectedAmount.setOnLongClickListener {
-                gotoCalculator()
-                false
-            }
-        }
-    }
-
-    private fun setMenuActions() {
         val menuHost: MenuHost = mainActivity.topMenuBar
-        menuHost.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.save_menu, menu)
-            }
+        menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
 
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.menu_save -> {
-                        saveBudgetItemIfValid()
-                        true
-                    }
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun BudgetItemAddScreen() {
+        var date by dateState
+        var name by nameState
+        var payDay by payDayState
+        var amount by amountState
+        var isFixed by isFixedState
+        var isPayDayItem by isPayDayItemState
+        var isAuto by isAutoState
+        var isLocked by isLockedState
 
-                    else -> false
+        val cached = mainViewModel.getBudgetItemDetailed()
+        val toAccount = cached?.toAccount
+        val fromAccount = cached?.fromAccount
+        val budgetRule = cached?.budgetRule
+
+        val payDays by budgetItemViewModel.getPayDays().observeAsState(emptyList())
+
+        Scaffold(
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = { saveBudgetItemIfValid() },
+                    containerColor = Color(0xFFB00020)
+                ) {
+                    Icon(Icons.Default.Done, contentDescription = "Done", tint = Color.White)
                 }
             }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    ProjectTextField(
+                        value = date,
+                        onValueChange = { },
+                        label = { Text(stringResource(R.string.projected_date)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        readOnly = true,
+                        enabled = true,
+                        textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .clickable { chooseDate() }
+                    )
+                }
+
+                ProjectTextField(
+                    value = name,
+                    onValueChange = {
+                        name = it
+                    },
+                    label = { Text(stringResource(R.string.description)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+
+                var expanded by remember { mutableStateOf(false) }
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    ProjectTextField(
+                        value = payDay,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text(stringResource(R.string.pay_day)) },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        modifier = Modifier
+                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                            .fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        payDays.forEach { selectionOption ->
+                            DropdownMenuItem(
+                                text = { Text(selectionOption) },
+                                onClick = {
+                                    payDay = selectionOption
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                ClickableSelectionCard(
+                    label = stringResource(R.string.budget_rule),
+                    value = budgetRule?.budgetRuleName
+                        ?: stringResource(R.string.choose_a_budget_rule),
+                    onClick = { chooseBudgetRule() }
+                )
+
+                ClickableSelectionCard(
+                    label = stringResource(R.string.to_this_account),
+                    value = toAccount?.accountName ?: stringResource(R.string.choose_an_account),
+                    onClick = { chooseAccount(REQUEST_TO_ACCOUNT) }
+                )
+
+                ClickableSelectionCard(
+                    label = stringResource(R.string.from_this_account),
+                    value = fromAccount?.accountName ?: stringResource(R.string.choose_an_account),
+                    onClick = { chooseAccount(REQUEST_FROM_ACCOUNT) }
+                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    ProjectTextField(
+                        value = amount,
+                        onValueChange = {
+                            amount = it
+                        },
+                        label = { Text(stringResource(R.string.projected_amount)) },
+                        modifier = Modifier
+                            .weight(1f),
+                        trailingIcon = {
+                            IconButton(onClick = { gotoCalculator() }) {
+                                Icon(
+                                    imageVector = Icons.Default.Calculate,
+                                    contentDescription = stringResource(R.string.calculator)
+                                )
+                            }
+                        },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(start = 8.dp)
+                    ) {
+                        Checkbox(checked = isFixed, onCheckedChange = { isFixed = it })
+                        Text(
+                            stringResource(R.string.fixed),
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    }
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    LabeledCheckbox(
+                        label = stringResource(R.string.pay_day),
+                        checked = isPayDayItem,
+                        onCheckedChange = { isPayDayItem = it }
+                    )
+                    LabeledCheckbox(
+                        label = stringResource(R.string.automatic),
+                        checked = isAuto,
+                        onCheckedChange = { isAuto = it }
+                    )
+                    LabeledCheckbox(
+                        label = stringResource(R.string.lock),
+                        checked = isLocked,
+                        onCheckedChange = { isLocked = it }
+                    )
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun ClickableSelectionCard(label: String, value: String, onClick: () -> Unit) {
+        OutlinedCard(
+            onClick = onClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                Text(text = label, style = MaterialTheme.typography.labelMedium)
+                Text(
+                    text = value,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
+
+    @Composable
+    private fun LabeledCheckbox(
+        label: String,
+        checked: Boolean,
+        onCheckedChange: (Boolean) -> Unit
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Checkbox(checked = checked, onCheckedChange = onCheckedChange)
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall
+            )
+        }
     }
 
     private fun chooseBudgetRule() {
         mainViewModel.addCallingFragment(TAG)
         mainViewModel.setBudgetItemDetailed(getCurrentBudgetItemDetailed())
-        gotoBudgetRulesChooseFragment()
-    }
-
-    private fun chooseAccount(requestedAccount: String) {
-        mainActivity.mainViewModel.addCallingFragment(TAG)
-        mainActivity.mainViewModel.setRequestedAccount(requestedAccount)
-        mainActivity.mainViewModel.setBudgetItemDetailed(getCurrentBudgetItemDetailed())
-        gotoAccountChooseFragment()
-    }
-
-    private fun chooseDate() {
-        binding.apply {
-            val curDateAll = etProjectedDate.text.toString().split("-")
-            val datePickerDialog = DatePickerDialog(
-                mView.context, { _, year, monthOfYear, dayOfMonth ->
-                    val month = monthOfYear + 1
-                    val display = "$year-${
-                        month.toString().padStart(2, '0')
-                    }-${
-                        dayOfMonth.toString().padStart(2, '0')
-                    }"
-                    etProjectedDate.setText(display)
-                }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
-            )
-            datePickerDialog.setTitle(getString(R.string.choose_the_projected_date))
-            datePickerDialog.show()
-        }
-    }
-
-    private fun saveBudgetItemIfValid() {
-        val message = validateBudgetItem()
-        if (message == ANSWER_OK) {
-            saveBudgetItem()
-            gotoCallingFragment()
-        } else {
-            showMessage(getString(R.string.error) + message)
-        }
-    }
-
-    private fun showMessage(message: String) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
-    }
-
-    private fun validateBudgetItem(): String {
-        binding.apply {
-            if (etBudgetItemName.text.isNullOrBlank()) {
-                return getString(R.string.please_enter_a_name_or_description)
-            }
-            if (budgetRuleDetailed.toAccount == null) {
-                return getString(R.string.there_needs_to_be_an_account_money_will_go_to)
-            }
-            if (budgetRuleDetailed.fromAccount == null) {
-                return getString(R.string.there_needs_to_be_an_account_money_will_come_from)
-            }
-            if (etProjectedAmount.text.isNullOrEmpty()) {
-                return getString(R.string.please_enter_a_budgeted_amount_including_zero)
-            }
-            return ANSWER_OK
-        }
-    }
-
-    private fun saveBudgetItem() {
-        budgetItemViewModel.insertBudgetItem(
-            getCurrentBudgetItemForSaving()
+        findNavController().navigate(
+            BudgetItemAddFragmentDirections.actionBudgetItemAddFragmentToBudgetRuleChooseFragment()
         )
     }
 
+    private fun chooseAccount(requestedAccount: String) {
+        mainViewModel.addCallingFragment(TAG)
+        mainViewModel.setRequestedAccount(requestedAccount)
+        mainViewModel.setBudgetItemDetailed(getCurrentBudgetItemDetailed())
+        findNavController().navigate(
+            BudgetItemAddFragmentDirections.actionBudgetItemAddFragmentToAccountChooseFragment()
+        )
+    }
+
+    private fun chooseDate() {
+        val curDateAll = dateState.value.split("-")
+        val datePickerDialog = android.app.DatePickerDialog(
+            requireContext(), { _, year, monthOfYear, dayOfMonth ->
+                val month = monthOfYear + 1
+                dateState.value = "$year-${
+                    month.toString().padStart(2, '0')
+                }-${
+                    dayOfMonth.toString().padStart(2, '0')
+                }"
+            }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
+        )
+        datePickerDialog.setTitle(getString(R.string.choose_the_projected_date))
+        datePickerDialog.show()
+    }
+
+    private fun saveBudgetItemIfValid() {
+        val error = validateBudgetItem()
+        if (error == ANSWER_OK) {
+            budgetItemViewModel.insertBudgetItem(getCurrentBudgetItemForSaving())
+            gotoCallingFragment()
+        } else {
+            showMessage(getString(R.string.error) + error)
+        }
+    }
+
+    private fun validateBudgetItem(): String {
+        if (nameState.value.isBlank()) return getString(R.string.please_enter_a_name_or_description)
+        val cached = mainViewModel.getBudgetItemDetailed()
+        if (cached?.toAccount == null) return getString(R.string.there_needs_to_be_an_account_money_will_go_to)
+        if (cached.fromAccount == null) return getString(R.string.there_needs_to_be_an_account_money_will_come_from)
+        if (amountState.value.isEmpty()) return getString(R.string.please_enter_a_budgeted_amount_including_zero)
+        return ANSWER_OK
+    }
+
     private fun getCurrentBudgetItemDetailed(): BudgetItemDetailed {
+        val cached = mainViewModel.getBudgetItemDetailed()
         return BudgetItemDetailed(
             getCurrentBudgetItemForSaving(),
-            mainViewModel.getBudgetItemDetailed()?.budgetRule,
-            mainViewModel.getBudgetItemDetailed()?.toAccount,
-            mainViewModel.getBudgetItemDetailed()?.fromAccount
+            cached?.budgetRule,
+            cached?.toAccount,
+            cached?.fromAccount
         )
     }
 
     private fun getCurrentBudgetItemForSaving(): BudgetItem {
-        binding.apply {
-            return BudgetItem(
-                budgetRuleDetailed.budgetRule?.ruleId ?: nf.generateId(),
-                etProjectedDate.text.toString(),
-                etProjectedDate.text.toString(),
-                spPayDays.selectedItem.toString(),
-                etBudgetItemName.text.toString(),
-                chkIsPayDay.isChecked,
-                budgetRuleDetailed.toAccount?.accountId ?: 0L,
-                budgetRuleDetailed.fromAccount?.accountId ?: 0L,
-                if (etProjectedAmount.text.isNotEmpty()) {
-                    nf.getDoubleFromDollars(
-                        etProjectedAmount.text.toString()
-                    )
-                } else {
-                    0.0
-                },
-                biIsPending = false,
-                chkFixedAmount.isChecked,
-                chkIsAutoPayment.isChecked,
-                biManuallyEntered = true,
-                biLocked = true,
-                biIsCompleted = false,
-                biIsCancelled = false,
-                biIsDeleted = false,
-                biUpdateTime = df.getCurrentTimeAsString()
-            )
-        }
+        val cached = mainViewModel.getBudgetItemDetailed()
+        return BudgetItem(
+            cached?.budgetRule?.ruleId ?: nf.generateId(),
+            dateState.value,
+            dateState.value,
+            payDayState.value,
+            nameState.value,
+            isPayDayItemState.value,
+            cached?.toAccount?.accountId ?: 0L,
+            cached?.fromAccount?.accountId ?: 0L,
+            nf.getDoubleFromDollars(amountState.value),
+            biIsPending = false,
+            isFixedState.value,
+            isAutoState.value,
+            biManuallyEntered = true,
+            biIsCompleted = false,
+            biIsCancelled = false,
+            biIsDeleted = false,
+            biUpdateTime = df.getCurrentTimeAsString(),
+            biLocked = isLockedState.value,
+        )
     }
 
     private fun gotoCallingFragment() {
         mainViewModel.setBudgetItemDetailed(null)
         mainViewModel.removeCallingFragment(TAG)
-        if (mainViewModel.getCallingFragments() != null) {
-            val mCallingFragment = mainViewModel.getCallingFragments()!!
-            if (mCallingFragment.contains(FRAG_BUDGET_VIEW)) {
-                gotoBudgetViewFragment()
-            }
-            if (mCallingFragment.contains(FRAG_BUDGET_RULES)) {
-                gotoBudgetRulesChooseFragment()
-            }
-        }
+        findNavController().popBackStack()
     }
 
     private fun gotoCalculator() {
-        mainViewModel.setTransferNum(
-            nf.getDoubleFromDollars(
-                binding.etProjectedAmount.text.toString().ifBlank {
-                    getString(R.string.zero_double)
-                })
-        )
-        mainViewModel.setReturnTo(TAG)
+        mainViewModel.setTransferNum(nf.getDoubleFromDollars(amountState.value))
         mainViewModel.setBudgetItemDetailed(getCurrentBudgetItemDetailed())
-        gotoCalculatorFragment()
-    }
-
-    private fun gotoAccountChooseFragment() {
-        mView.findNavController().navigate(
-            BudgetItemAddFragmentDirections.actionBudgetItemAddFragmentToAccountChooseFragment()
-        )
-    }
-
-    private fun gotoCalculatorFragment() {
-        mView.findNavController().navigate(
+        findNavController().navigate(
             BudgetItemAddFragmentDirections.actionBudgetItemAddFragmentToCalcFragment()
         )
     }
 
-    private fun gotoBudgetRulesChooseFragment() {
-        mView.findNavController().navigate(
-            BudgetItemAddFragmentDirections.actionBudgetItemAddFragmentToBudgetRuleChooseFragment()
-        )
+    private fun showMessage(message: String) {
+        android.widget.Toast.makeText(requireContext(), message, android.widget.Toast.LENGTH_LONG)
+            .show()
     }
 
-    private fun gotoBudgetViewFragment() {
-        mView.findNavController().navigate(
-            BudgetItemAddFragmentDirections.actionBudgetItemAddFragmentToBudgetViewFragment()
-        )
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menu.add(Menu.NONE, R.id.action_save, Menu.NONE, R.string.save).apply {
+            setIcon(android.R.drawable.ic_menu_save)
+            setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+        }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        return when (menuItem.itemId) {
+            R.id.action_save -> {
+                saveBudgetItemIfValid()
+                true
+            }
+
+            else -> false
+        }
     }
 }

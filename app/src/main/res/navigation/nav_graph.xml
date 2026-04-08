@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/startFragment">
 
@@ -9,8 +8,7 @@
     <fragment
         android:id="@+id/startFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.start.StartFragment"
-        android:label="fragment_start"
-        tools:layout="@layout/fragment_start">
+        android:label="fragment_start">
         <action
             android:id="@+id/action_startFragment_to_budgetViewFragment"
             app:destination="@id/budgetViewFragment" />
@@ -30,15 +28,13 @@
     <fragment
         android:id="@+id/helpFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.help.HelpFragment"
-        android:label="fragment_help"
-        tools:layout="@layout/fragment_help" />
+        android:label="fragment_help" />
 
     <!--    settingsFragment-->
     <fragment
         android:id="@+id/settingsFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.settings.SettingsFragment"
-        android:label="fragment_settings"
-        tools:layout="@layout/fragment_settings" />
+        android:label="fragment_settings" />
 
     <!--    action_global_accountsFragment-->
     <action
@@ -51,8 +47,7 @@
     <fragment
         android:id="@+id/accountsFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountsFragment"
-        android:label="AccountsFragment"
-        tools:layout="@layout/fragment_accounts">
+        android:label="AccountsFragment">
         <action
             android:id="@+id/action_accountsFragment_to_accountUpdateFragment"
             app:destination="@id/accountUpdateFragment" />
@@ -101,8 +96,7 @@
     <fragment
         android:id="@+id/accountAddFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountAddFragment"
-        android:label="AccountAddFragment"
-        tools:layout="@layout/fragment_account_add">
+        android:label="AccountAddFragment">
         <action
             android:id="@+id/action_accountAddFragment_to_accountsFragment"
             app:destination="@id/accountsFragment"
@@ -126,8 +120,7 @@
     <fragment
         android:id="@+id/accountUpdateFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountUpdateFragment"
-        android:label="AccountUpdateFragment"
-        tools:layout="@layout/fragment_account_update">
+        android:label="AccountUpdateFragment">
         <action
             android:id="@+id/action_accountUpdateFragment_to_accountsFragment"
             app:destination="@id/accountsFragment"
@@ -154,8 +147,7 @@
     <fragment
         android:id="@+id/accountChooseFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountChooseFragment"
-        android:label="AccountChooseFragment"
-        tools:layout="@layout/account_layout">
+        android:label="AccountChooseFragment">
         <action
             android:id="@+id/action_accountChooseFragment_to_budgetRuleAddFragment"
             app:destination="@id/budgetRuleAddFragment"
@@ -192,7 +184,7 @@
             app:popUpTo="@id/transactionSplitFragment"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_accountChooseFragment_to_transactionUpdateFragment"
+            android:id="@+id/accountChooseFragment_to_transactionUpdateFragment"
             app:destination="@id/transactionUpdateFragment"
             app:popUpTo="@id/transactionUpdateFragment"
             app:popUpToInclusive="true" />
@@ -205,8 +197,7 @@
     <fragment
         android:id="@+id/accountTypesFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountTypesFragment"
-        android:label="AccountTypesFragment"
-        tools:layout="@layout/fragment_account_types">
+        android:label="AccountTypesFragment">
         <action
             android:id="@+id/action_accountTypesFragment_to_accountTypeAddFragment"
             app:destination="@id/accountTypeAddFragment" />
@@ -228,8 +219,7 @@
     <fragment
         android:id="@+id/accountTypeAddFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountTypeAddFragment"
-        android:label="AccountTypeAddFragment"
-        tools:layout="@layout/fragment_account_type_add">
+        android:label="AccountTypeAddFragment">
         <action
             android:id="@+id/action_accountTypeAddFragment_to_accountTypesFragment"
             app:destination="@id/accountTypesFragment"
@@ -241,14 +231,12 @@
     <fragment
         android:id="@+id/accountTypeUpdateFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountTypeUpdateFragment"
-        android:label="AccountTypeUpdateFragment"
-        tools:layout="@layout/fragment_account_type_update">
+        android:label="AccountTypeUpdateFragment">
         <action
             android:id="@+id/action_accountTypeUpdateFragment_to_accountTypesFragment"
             app:destination="@id/accountTypesFragment"
             app:popUpTo="@id/accountTypesFragment"
             app:popUpToInclusive="true" />
-
     </fragment>
 
     <!--    action_global_budgetRuleFragment-->
@@ -262,8 +250,7 @@
     <fragment
         android:id="@+id/budgetRuleFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.BudgetRuleFragment"
-        android:label="BudgetRuleFragment"
-        tools:layout="@layout/fragment_budget_rule">
+        android:label="BudgetRuleFragment">
         <action
             android:id="@+id/action_budgetRuleFragment_to_budgetRuleAddFragment"
             app:destination="@id/budgetRuleAddFragment" />
@@ -304,8 +291,7 @@
     <fragment
         android:id="@+id/budgetRuleChooseFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.BudgetRuleChooseFragment"
-        android:label="BudgetRuleChooseFragment"
-        tools:layout="@layout/fragment_budget_rule">
+        android:label="BudgetRuleChooseFragment">
         <action
             android:id="@+id/action_budgetRuleChooseFragment_to_transactionSplitFragment"
             app:destination="@id/transactionSplitFragment"
@@ -340,8 +326,7 @@
     <fragment
         android:id="@+id/budgetRuleAddFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.BudgetRuleAddFragment"
-        android:label="fragment_budget_rule_add"
-        tools:layout="@layout/fragment_budget_rule_add">
+        android:label="fragment_budget_rule_add">
         <action
             android:id="@+id/action_budgetRuleAddFragment_to_budgetRuleFragment"
             app:destination="@id/budgetRuleFragment"
@@ -367,8 +352,7 @@
     <fragment
         android:id="@+id/budgetRuleUpdateFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.BudgetRuleUpdateFragment"
-        android:label="fragment_budget_rule_update"
-        tools:layout="@layout/fragment_budget_rule_update">
+        android:label="fragment_budget_rule_update">
         <action
             android:id="@+id/action_budgetRuleUpdateFragment_to_budgetRuleFragment"
             app:destination="@id/budgetRuleFragment"
@@ -426,8 +410,7 @@
     <fragment
         android:id="@+id/budgetViewFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetViewFragment"
-        android:label="fragment_budget_view"
-        tools:layout="@layout/fragment_budget_view">
+        android:label="fragment_budget_view">
         <action
             android:id="@+id/action_budgetViewFragment_to_budgetItemAddFragment"
             app:destination="@id/budgetItemAddFragment" />
@@ -455,8 +438,7 @@
     <fragment
         android:id="@+id/budgetListFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetListFragment"
-        android:label="fragment_budget_list"
-        tools:layout="@layout/fragment_budget_list">
+        android:label="fragment_budget_list">
         <action
             android:id="@+id/action_budgetListFragment_to_budgetRuleUpdateFragment"
             app:destination="@id/budgetRuleUpdateFragment" />
@@ -469,8 +451,7 @@
     <fragment
         android:id="@+id/budgetItemAddFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetItemAddFragment"
-        android:label="fragment_budget_item_add"
-        tools:layout="@layout/fragment_budget_item_add">
+        android:label="fragment_budget_item_add">
         <action
             android:id="@+id/action_budgetItemAddFragment_to_budgetViewFragment"
             app:destination="@id/budgetViewFragment"
@@ -502,8 +483,7 @@
     <fragment
         android:id="@+id/budgetItemUpdateFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetItemUpdateFragment"
-        android:label="fragment_budget_item_update"
-        tools:layout="@layout/fragment_budget_item_update">
+        android:label="fragment_budget_item_update">
         <action
             android:id="@+id/action_budgetItemUpdateFragment_to_budgetViewFragment"
             app:destination="@id/budgetViewFragment"
@@ -548,8 +528,7 @@
     <fragment
         android:id="@+id/transactionViewFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionViewFragment"
-        android:label="fragment_transaction_view"
-        tools:layout="@layout/fragment_transaction_view">
+        android:label="fragment_transaction_view">
         <action
             android:id="@+id/action_transactionViewFragment_to_transactionUpdateFragment"
             app:destination="@id/transactionUpdateFragment" />
@@ -571,8 +550,7 @@
     <fragment
         android:id="@+id/transactionAddFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionAddFragment"
-        android:label="fragment_transaction_add"
-        tools:layout="@layout/fragment_transaction_add">
+        android:label="fragment_transaction_add">
         <action
             android:id="@+id/action_transactionAddFragment_to_transactionViewFragment"
             app:destination="@id/transactionViewFragment"
@@ -610,8 +588,7 @@
     <fragment
         android:id="@+id/transactionUpdateFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionUpdateFragment"
-        android:label="fragment_transaction_update"
-        tools:layout="@layout/fragment_transaction_update">
+        android:label="fragment_transaction_update">
         <action
             android:id="@+id/action_transactionUpdateFragment_to_transactionViewFragment"
             app:destination="@id/transactionViewFragment"
@@ -649,8 +626,7 @@
     <fragment
         android:id="@+id/transactionPerformFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionPerformFragment"
-        android:label="fragment_transaction_perform"
-        tools:layout="@layout/fragment_transaction_perform">
+        android:label="fragment_transaction_perform">
         <action
             android:id="@+id/action_transactionPerformFragment_to_budgetViewFragment"
             app:destination="@id/budgetViewFragment"
@@ -677,8 +653,7 @@
     <fragment
         android:id="@+id/transactionSplitFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionSplitFragment"
-        android:label="fragment_transaction_split"
-        tools:layout="@layout/fragment_transaction_split">
+        android:label="fragment_transaction_split">
         <action
             android:id="@+id/action_transactionSplitFragment_to_calcFragment"
             app:destination="@id/calcFragment"
@@ -724,8 +699,7 @@
     <fragment
         android:id="@+id/transactionAnalysisFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionAnalysisFragment"
-        android:label="fragment_transaction_analysis"
-        tools:layout="@layout/fragment_transaction_analysis">
+        android:label="fragment_transaction_analysis">
         <action
             android:id="@+id/action_transactionAnalysisFragment_to_budgetRuleFragment"
             app:destination="@id/budgetRuleFragment" />
@@ -750,8 +724,7 @@
     <fragment
         android:id="@+id/calcFragment"
         android:name="ms.mattschlenkrich.billsprojectionv2.ui.calculator.CalculatorFragment"
-        android:label="fragment_calc"
-        tools:layout="@layout/fragment_calc">
+        android:label="fragment_calc">
         <action
             android:id="@+id/action_calcFragment_to_transactionPerformFragment"
             app:destination="@id/transactionPerformFragment"

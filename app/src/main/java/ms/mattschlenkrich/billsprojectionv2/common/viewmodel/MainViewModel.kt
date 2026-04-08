@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.billsprojectionv2.common.viewmodel
 
 import android.app.Application
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
@@ -13,154 +14,156 @@ class MainViewModel(
     app: Application,
 ) : AndroidViewModel(app) {
 
-    private var budgetItemDetailed: BudgetItemDetailed? = null
-    private var oldTransactionFull: TransactionFull? = null
-    private var transactionDetailed: TransactionDetailed? = null
-    private var splitTransactionDetailed: TransactionDetailed? = null
-    private var budgetRuleDetailed: BudgetRuleDetailed? = null
-    private var account: AccountWithType? = null
-    private var accountType: AccountType? = null
-    private var requestedAccount: String? = ""
-    private var callingFragments: String? = ""
-    private var returnTo: String? = ""
-    private var returnToAsset: String? = ""
-    private var returnToPayDay: String? = null
-    private var transferNum: Double? = 0.0
-    private var updatingTransaction: Boolean = false
+    private val _budgetItemDetailed = mutableStateOf<BudgetItemDetailed?>(null)
+    private val _oldTransactionFull = mutableStateOf<TransactionFull?>(null)
+    private val _transactionDetailed = mutableStateOf<TransactionDetailed?>(null)
+    private val _splitTransactionDetailed = mutableStateOf<TransactionDetailed?>(null)
+    private val _budgetRuleDetailed = mutableStateOf<BudgetRuleDetailed?>(null)
+    private val _account = mutableStateOf<AccountWithType?>(null)
+    private val _accountType = mutableStateOf<AccountType?>(null)
+    private val _requestedAccount = mutableStateOf<String?>("")
+    private val _callingFragments = mutableStateOf<String?>("")
+    private val _returnTo = mutableStateOf<String?>("")
+    private val _returnToAsset = mutableStateOf<String?>("")
+    private val _returnToPayDay = mutableStateOf<String?>(null)
+    private val _transferNum = mutableStateOf<Double?>(0.0)
+    private val _updatingTransaction = mutableStateOf(false)
 
     fun setReturnToAsset(newAsset: String?) {
-        returnToAsset = newAsset
+        _returnToAsset.value = newAsset
     }
 
     fun getReturnToAsset(): String? {
-        return returnToAsset
+        return _returnToAsset.value
     }
 
     fun setReturnToPayDay(newPayDay: String?) {
-        returnToPayDay = newPayDay
+        _returnToPayDay.value = newPayDay
     }
 
     fun getReturnToPayDay(): String? {
-        return returnToPayDay
+        return _returnToPayDay.value
     }
 
     fun eraseAll() {
-        budgetItemDetailed = null
-        oldTransactionFull = null
-        transactionDetailed = null
-        splitTransactionDetailed = null
-        budgetRuleDetailed = null
-        account = null
-        accountType = null
-        requestedAccount = null
-        callingFragments = null
-        returnTo = null
-        transferNum = 0.0
+        _budgetItemDetailed.value = null
+        _oldTransactionFull.value = null
+        _transactionDetailed.value = null
+        _splitTransactionDetailed.value = null
+        _budgetRuleDetailed.value = null
+        _account.value = null
+        _accountType.value = null
+        _requestedAccount.value = null
+        _callingFragments.value = null
+        _returnTo.value = null
+        _returnToAsset.value = null
+        _returnToPayDay.value = null
+        _transferNum.value = 0.0
     }
 
     fun setOldTransaction(newTransactionFull: TransactionFull?) {
-        oldTransactionFull = newTransactionFull
+        _oldTransactionFull.value = newTransactionFull
     }
 
     fun getOldTransaction(): TransactionFull? {
-        return oldTransactionFull
+        return _oldTransactionFull.value
     }
 
     fun setUpdatingTransaction(update: Boolean) {
-        updatingTransaction = update
+        _updatingTransaction.value = update
     }
 
     fun getUpdatingTransaction(): Boolean {
-        return updatingTransaction
+        return _updatingTransaction.value
     }
 
     fun setSplitTransactionDetailed(newTransaction: TransactionDetailed?) {
-        splitTransactionDetailed = newTransaction
+        _splitTransactionDetailed.value = newTransaction
     }
 
     fun getSplitTransactionDetailed(): TransactionDetailed? {
-        return splitTransactionDetailed
+        return _splitTransactionDetailed.value
     }
 
     fun setReturnTo(newReturnTo: String?) {
-        returnTo = newReturnTo
+        _returnTo.value = newReturnTo
     }
 
     fun getReturnTo(): String? {
-        return returnTo
+        return _returnTo.value
     }
 
     fun setTransferNum(newNum: Double?) {
-        transferNum = newNum
+        _transferNum.value = newNum
     }
 
     fun getTransferNum(): Double? {
-        return transferNum
+        return _transferNum.value
     }
 
     fun setCallingFragments(newCallingFragments: String?) {
-        callingFragments = newCallingFragments
+        _callingFragments.value = newCallingFragments
     }
 
     fun getCallingFragments(): String? {
-        return callingFragments
+        return _callingFragments.value
     }
 
     fun addCallingFragment(newFragment: String) {
-        callingFragments = "$callingFragments, $newFragment"
+        _callingFragments.value = "${_callingFragments.value}, $newFragment"
     }
 
     fun removeCallingFragment(oldFragment: String) {
-        callingFragments = callingFragments?.replace(", $oldFragment", "")
-        callingFragments = callingFragments?.replace(oldFragment, "")
+        _callingFragments.value = _callingFragments.value?.replace(", $oldFragment", "")
+        _callingFragments.value = _callingFragments.value?.replace(oldFragment, "")
     }
 
     fun setRequestedAccount(newRequestedAccount: String?) {
-        requestedAccount = newRequestedAccount
+        _requestedAccount.value = newRequestedAccount
     }
 
     fun getRequestedAccount(): String? {
-        return requestedAccount
+        return _requestedAccount.value
     }
 
     fun setAccountType(newAccountType: AccountType?) {
-        accountType = newAccountType
+        _accountType.value = newAccountType
     }
 
     fun getAccountType(): AccountType? {
-        return accountType
+        return _accountType.value
     }
 
     fun setAccountWithType(newAccount: AccountWithType?) {
-        account = newAccount
+        _account.value = newAccount
     }
 
     fun getAccountWithType(): AccountWithType? {
-        return account
+        return _account.value
     }
 
     fun setBudgetRuleDetailed(newBudgetRule: BudgetRuleDetailed?) {
-        budgetRuleDetailed = newBudgetRule
+        _budgetRuleDetailed.value = newBudgetRule
     }
 
     fun getBudgetRuleDetailed(): BudgetRuleDetailed? {
-        return budgetRuleDetailed
+        return _budgetRuleDetailed.value
     }
 
     fun setTransactionDetailed(newTransaction: TransactionDetailed?) {
-        transactionDetailed = newTransaction
+        _transactionDetailed.value = newTransaction
     }
 
     fun getTransactionDetailed(): TransactionDetailed? {
-        return transactionDetailed
+        return _transactionDetailed.value
     }
 
     fun setBudgetItemDetailed(newBudgetDetailed: BudgetItemDetailed?) {
-        budgetItemDetailed = newBudgetDetailed
+        _budgetItemDetailed.value = newBudgetDetailed
     }
 
     fun getBudgetItemDetailed(): BudgetItemDetailed? {
-        return budgetItemDetailed
+        return _budgetItemDetailed.value
     }
 
 }

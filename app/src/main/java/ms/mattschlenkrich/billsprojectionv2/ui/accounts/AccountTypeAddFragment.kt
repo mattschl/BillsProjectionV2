@@ -2,167 +2,212 @@ package ms.mattschlenkrich.billsprojectionv2.ui.accounts
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Save
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
-import androidx.navigation.findNavController
-import kotlinx.coroutines.CoroutineScope
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_TYPE_ADD
+import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModel
-import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountTypeAddBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 
 private const val TAG = FRAG_ACCOUNT_TYPE_ADD
 
-class AccountTypeAddFragment :
-    Fragment(R.layout.fragment_account_type_add) {
+class AccountTypeAddFragment : Fragment() {
 
-    private var _binding: FragmentAccountTypeAddBinding? = null
-    private val binding get() = _binding!!
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var accountViewModel: AccountViewModel
-    private lateinit var mView: View
-    private lateinit var accountTypeList: List<String>
     private val df = DateFunctions()
     private val nf = NumberFunctions()
+
+    private var nameState = mutableStateOf("")
+    private var keepTotalsState = mutableStateOf(false)
+    private var isAssetState = mutableStateOf(false)
+    private var keepOwingState = mutableStateOf(false)
+    private var displayAsAssetState = mutableStateOf(false)
+    private var allowPendingState = mutableStateOf(false)
+
+    private var accountTypeList = listOf<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
-        _binding = FragmentAccountTypeAddBinding.inflate(
-            inflater, container, false
-        )
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         accountViewModel = mainActivity.accountViewModel
         mainActivity.topMenuBar.title = getString(R.string.add_a_new_account_type)
-        mView = binding.root
-        return mView
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        getAccountTypeListForValidation()
-        setMenuActions()
-    }
+        lifecycleScope.launch(Dispatchers.IO) {
+            accountTypeList = accountViewModel.getAccountTypeNames()
+        }
 
-    private fun getAccountTypeListForValidation() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val typeList =
-                async {
-                    accountViewModel.getAccountTypeNames()
+        return ComposeView(requireContext()).apply {
+            setContent {
+                BillsProjectionTheme {
+                    AccountTypeAddScreen()
                 }
-            accountTypeList = typeList.await()
+            }
         }
     }
 
-    private fun setMenuActions() {
-        val menuHost: MenuHost = mainActivity.topMenuBar
-        menuHost.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                // Add menu items here
-                menuInflater.inflate(R.menu.save_menu, menu)
-            }
+    @Composable
+    fun AccountTypeAddScreen() {
+        var name by nameState
+        var keepTotals by keepTotalsState
+        var isAsset by isAssetState
+        var keepOwing by keepOwingState
+        var displayAsAsset by displayAsAssetState
+        var allowPending by allowPendingState
 
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                // Handle the menu selection
-                return when (menuItem.itemId) {
-                    R.id.menu_save -> {
-                        saveAccountIfValid()
-                        true
-                    }
-
-                    else -> false
+        Scaffold(
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = { saveAccountIfValid() },
+                    containerColor = Color(0xFFB00020)
+                ) {
+                    Icon(
+                        Icons.Default.Save,
+                        contentDescription = stringResource(R.string.save),
+                        tint = Color.White
+                    )
                 }
             }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ProjectTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text(stringResource(R.string.account_type)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+
+                CheckboxRow(
+                    text = stringResource(R.string.this_account_does_not_keep_a_balance_owing_amount),
+                    checked = keepTotals,
+                    onCheckedChange = { keepTotals = it }
+                )
+                CheckboxRow(
+                    text = stringResource(R.string.this_is_an_asset),
+                    checked = isAsset,
+                    onCheckedChange = { isAsset = it }
+                )
+                CheckboxRow(
+                    text = stringResource(R.string.balance_owing_will_be_calculated),
+                    checked = keepOwing,
+                    onCheckedChange = { keepOwing = it }
+                )
+                CheckboxRow(
+                    text = stringResource(R.string.this_will_be_used_for_the_budget),
+                    checked = displayAsAsset,
+                    onCheckedChange = { displayAsAsset = it }
+                )
+                CheckboxRow(
+                    text = stringResource(R.string.transactions_may_be_postponed),
+                    checked = allowPending,
+                    onCheckedChange = { allowPending = it }
+                )
+            }
+        }
+    }
+
+    @Composable
+    fun CheckboxRow(text: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Checkbox(checked = checked, onCheckedChange = onCheckedChange)
+            Text(text = text, modifier = Modifier.padding(start = 8.dp))
+        }
     }
 
     private fun saveAccountIfValid() {
-        val answer = validateAccountType()
-        if (answer == ANSWER_OK) {
-            saveAccountType()
-
-        } else {
-            showMessage("${getString(R.string.error)}: $answer")
+        val name = nameState.value.trim()
+        if (name.isEmpty()) {
+            showMessage(getString(R.string.enter_a_name_for_this_account_type))
+            return
         }
+        if (accountTypeList.contains(name)) {
+            showMessage(getString(R.string.enter_a_unique_name_for_this_account_type))
+            return
+        }
+
+        val accountType = AccountType(
+            nf.generateId(),
+            name,
+            keepTotalsState.value,
+            isAssetState.value,
+            keepOwingState.value,
+            false,
+            displayAsAssetState.value,
+            allowPendingState.value,
+            false,
+            df.getCurrentTimeAsString()
+        )
+        accountViewModel.addAccountType(accountType)
+        val accountWithType = mainViewModel.getAccountWithType()
+        if (accountWithType != null) {
+            mainViewModel.setAccountWithType(
+                AccountWithType(accountWithType.account, accountType)
+            )
+        }
+        gotoCallingFragment()
     }
 
     private fun showMessage(message: String) {
-        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
     }
 
-    private fun validateAccountType(): String {
-        if (binding.etAccTypeAdd.text.isNullOrBlank()) {
-            return getString(R.string.enter_a_name_for_this_account_type)
-        }
-        for (accType in accountTypeList) {
-            if (accType == binding.etAccTypeAdd.text.toString()) {
-                return getString(R.string.enter_a_unique_name_for_this_account_type)
-            }
-        }
-        return ANSWER_OK
-    }
-
-    private fun getCurrentAccountType() = AccountType(
-        nf.generateId(),
-        binding.etAccTypeAdd.text.toString().trim(),
-        binding.chkAccTypeAddKeepTotals.isChecked,
-        binding.chkAccTypeAddIsAsset.isChecked,
-        binding.chkAccTypeAddKeepOwing.isChecked,
-        false,
-        binding.chkAccTypeAddDisplayAsset.isChecked,
-        binding.chkAccTypeAddAllowPending.isChecked,
-        false,
-        df.getCurrentTimeAsString()
-    )
-
-    private fun saveAccountType() {
-        val accountType = getCurrentAccountType()
-        accountViewModel.addAccountType(accountType)
-        mainViewModel.setAccountWithType(
-            AccountWithType(
-                mainViewModel.getAccountWithType()!!.account,
-                accountType
-            )
-        )
-        gotoAccountTypes()
-    }
-
-    private fun gotoAccountTypes() {
+    private fun gotoCallingFragment() {
         mainViewModel.removeCallingFragment(TAG)
-        gotoAccountTypesFragment()
-    }
-
-    private fun gotoAccountTypesFragment() {
-        mView.findNavController().navigate(
-            AccountTypeAddFragmentDirections
-                .actionAccountTypeAddFragmentToAccountTypesFragment()
-        )
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
+        findNavController().popBackStack()
     }
 }

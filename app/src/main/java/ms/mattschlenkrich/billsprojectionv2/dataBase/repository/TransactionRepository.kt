@@ -26,13 +26,13 @@ class TransactionRepository(private val db: BillsDatabase) {
         budgetRuleId, startDate, endDate
     )
 
-    fun getTransactionDetailed(transId: Long) =
+    suspend fun getTransactionDetailed(transId: Long) =
         db.getTransactionDao().getTransactionDetailed(transId)
 
     fun searchActiveTransactionsDetailed(query: String?) =
         db.getTransactionDao().searchActiveTransactionsDetailed(query)
 
-    fun getTransactionFull(
+    suspend fun getTransactionFull(
         transId: Long,
         toAccountID: Long,
         fromAccountID: Long,

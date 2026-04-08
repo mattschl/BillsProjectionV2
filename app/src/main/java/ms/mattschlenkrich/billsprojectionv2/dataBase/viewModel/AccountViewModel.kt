@@ -34,7 +34,7 @@ class AccountViewModel(
     fun getAccountsWithType() =
         accountRepository.getAccountsWithType()
 
-    fun getAccountAndType(accountId: Long) =
+    suspend fun getAccountAndType(accountId: Long) =
         accountRepository.getAccountAndType(accountId)
 
     fun getAccountWithTypeLive(accountId: Long) =
@@ -64,10 +64,10 @@ class AccountViewModel(
     fun searchAccountsWithType(query: String) =
         accountRepository.searchAccountsWithType(query)
 
-    fun getAccountWithType(accountId: Long) =
+    suspend fun getAccountWithType(accountId: Long) =
         accountRepository.getAccountWithType(accountId)
 
-    fun getAccountWithType(accountName: String) =
+    suspend fun getAccountWithType(accountName: String) =
         accountRepository.getAccountWithType(accountName)
 
     fun getAccountDetailed(accountId: Long) =
@@ -76,7 +76,7 @@ class AccountViewModel(
     fun getAccountDetailed(accountName: String) =
         accountRepository.getAccountDetailed(accountName)
 
-    fun getAccount(accountId: Long) =
+    suspend fun getAccount(accountId: Long) =
         accountRepository.getAccount(accountId)
 
     fun getAccountTypeNames() =
