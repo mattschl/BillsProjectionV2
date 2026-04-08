@@ -1,9 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.common.projections
 
 import android.database.sqlite.SQLiteConstraintException
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
@@ -39,22 +36,20 @@ class UpdateBudgetPredictions(
                 }
                 val rulesOnPayDay = getBudgetRulesFallingOnPayDay(budgetRules)
                 if (rulesOnPayDay.isNotEmpty()) {
-                    delay(10000)
-                    val payDayList = async { budgetItemViewModel.getPayDaysActive() }
-                    val payDays = payDayList.await()
-                    if (payDayList.await().isNotEmpty()) {
+                    val payDays = budgetItemViewModel.getPayDaysActive()
+                    if (payDays.isNotEmpty()) {
                         updateBudgetItemsFallingOnPaydays(rulesOnPayDay, stopDate, payDays)
                     }
                 }
                 val rulesOther = getBudgetRulesOther(budgetRules)
                 if (rulesOther.isNotEmpty()) {
-                    updateAllOtherBudgetItems(rulesOther, stopDate, 200L)
+                    updateAllOtherBudgetItems(rulesOther, stopDate)
                 }
             }
         }
     }
 
-    private fun updatePayDayBudgetItemPredictions(
+    private suspend fun updatePayDayBudgetItemPredictions(
         payDayBudgetRuleList: List<BudgetRule>,
         stopDate: String,
     ) {
@@ -73,33 +68,28 @@ class UpdateBudgetPredictions(
                 rule.budLeadDays.toLong()
             )
             for (date in payDates) {
-                runBlocking {
-                    insertOrOverwriteBudgetItemFromBudgetRule(
-                        rule, date.toString()
-                    )
-                }
-                runBlocking { delay(200L) }
-                runBlocking {
-                    budgetItemViewModel.rewriteBudgetItem(
-                        rule.ruleId,
-                        date.toString(),
-                        date.toString(),
-                        date.toString(),
-                        rule.budgetRuleName,
-                        rule.budIsPayDay,
-                        rule.budToAccountId,
-                        rule.budFromAccountId,
-                        rule.budgetAmount,
-                        rule.budFixedAmount,
-                        rule.budIsAutoPay,
-                        df.getCurrentTimeAsString()
-                    )
-                }
+                insertOrOverwriteBudgetItemFromBudgetRule(
+                    rule, date.toString()
+                )
+                budgetItemViewModel.rewriteBudgetItem(
+                    rule.ruleId,
+                    date.toString(),
+                    date.toString(),
+                    date.toString(),
+                    rule.budgetRuleName,
+                    rule.budIsPayDay,
+                    rule.budToAccountId,
+                    rule.budFromAccountId,
+                    rule.budgetAmount,
+                    rule.budFixedAmount,
+                    rule.budIsAutoPay,
+                    df.getCurrentTimeAsString()
+                )
             }
         }
     }
 
-    private fun updateBudgetItemsFallingOnPaydays(
+    private suspend fun updateBudgetItemsFallingOnPaydays(
         rulesOnPayDay: ArrayList<BudgetRule>, stopDate: String, payDays: List<String>
     ) {
         for (rule in rulesOnPayDay) {
@@ -112,65 +102,55 @@ class UpdateBudgetPredictions(
                 rule.budStartDate, rule.budFrequencyCount.toLong(), payDays, endDate
             )
             for (date in payDates) {
-                runBlocking {
-                    insertOrOverwriteBudgetItemFromBudgetRule(
-                        rule, date.toString()
-                    )
-                }
+                insertOrOverwriteBudgetItemFromBudgetRule(
+                    rule, date.toString()
+                )
             }
         }
     }
 
     private suspend fun updateAllOtherBudgetItems(
-        rulesOther: ArrayList<BudgetRule>, stopDate: String, waitTime: Long
+        rulesOther: ArrayList<BudgetRule>, stopDate: String
     ) {
-        coroutineScope {
-            for (rule in rulesOther) {
-                val endDate = if (rule.budEndDate!! > stopDate) {
-                    stopDate
-                } else {
-                    rule.budEndDate
-                }
-                val payDates = projectBudgetDates.projectDates(
-                    rule.budStartDate,
-                    endDate,
-                    rule.budFrequencyCount.toLong(),
-                    rule.budFrequencyTypeId,
-                    rule.budDayOfWeekId,
-                    rule.budLeadDays.toLong()
-                )
-                val payDayList = async { budgetItemViewModel.getPayDaysActive() }
-                val payDays = payDayList.await()
-                if (payDays.isNotEmpty()) {
-                    for (date in payDates) {
-                        for (d in 0 until payDays.size - 1) {
-                            if (date >= LocalDate.parse(payDays[d]) && date < LocalDate.parse(
-                                    payDays[d + 1]
-                                )
-                            ) {
-                                runBlocking {
-                                    insertBudgetItemWithPayDay(
-                                        rule, date.toString(), payDays[d]
-                                    )
-                                }
-                                runBlocking { delay(waitTime) }
-                                runBlocking {
-                                    budgetItemViewModel.rewriteBudgetItem(
-                                        rule.ruleId,
-                                        date.toString(),
-                                        date.toString(),
-                                        payDays[d],
-                                        rule.budgetRuleName,
-                                        rule.budIsPayDay,
-                                        rule.budToAccountId,
-                                        rule.budFromAccountId,
-                                        rule.budgetAmount,
-                                        rule.budFixedAmount,
-                                        rule.budIsAutoPay,
-                                        df.getCurrentTimeAsString()
-                                    )
-                                }
-                            }
+        for (rule in rulesOther) {
+            val endDate = if (rule.budEndDate!! > stopDate) {
+                stopDate
+            } else {
+                rule.budEndDate
+            }
+            val payDates = projectBudgetDates.projectDates(
+                rule.budStartDate,
+                endDate,
+                rule.budFrequencyCount.toLong(),
+                rule.budFrequencyTypeId,
+                rule.budDayOfWeekId,
+                rule.budLeadDays.toLong()
+            )
+            val payDays = budgetItemViewModel.getPayDaysActive()
+            if (payDays.isNotEmpty()) {
+                for (date in payDates) {
+                    for (d in 0 until payDays.size - 1) {
+                        if (date >= LocalDate.parse(payDays[d]) && date < LocalDate.parse(
+                                payDays[d + 1]
+                            )
+                        ) {
+                            insertBudgetItemWithPayDay(
+                                rule, date.toString(), payDays[d]
+                            )
+                            budgetItemViewModel.rewriteBudgetItem(
+                                rule.ruleId,
+                                date.toString(),
+                                date.toString(),
+                                payDays[d],
+                                rule.budgetRuleName,
+                                rule.budIsPayDay,
+                                rule.budToAccountId,
+                                rule.budFromAccountId,
+                                rule.budgetAmount,
+                                rule.budFixedAmount,
+                                rule.budIsAutoPay,
+                                df.getCurrentTimeAsString()
+                            )
                         }
                     }
                 }
@@ -223,7 +203,7 @@ class UpdateBudgetPredictions(
         return true
     }
 
-    private fun insertOrOverwriteBudgetItemFromBudgetRule(
+    private suspend fun insertOrOverwriteBudgetItemFromBudgetRule(
         budgetRule: BudgetRule, projectedDate: String
     ): Boolean {
         val newBudgetItem = BudgetItem(
@@ -246,24 +226,24 @@ class UpdateBudgetPredictions(
             biIsDeleted = false,
             biUpdateTime = df.getCurrentTimeAsString()
         )
-        try {
-            budgetItemViewModel.insertBudgetItem(
+        return try {
+            budgetItemViewModel.insertBudgetItemSync(
                 newBudgetItem
             )
-            return true
+            true
         } catch (e: SQLiteConstraintException) {
-            budgetItemViewModel.insertOrReplaceBudgetItem(
+            budgetItemViewModel.insertOrReplaceBudgetItemSync(
                 newBudgetItem
             )
-            return false
+            false
         }
     }
 
-    private fun insertBudgetItemWithPayDay(
+    private suspend fun insertBudgetItemWithPayDay(
         budgetRule: BudgetRule, projectedDate: String, payDay: String
     ): Boolean {
-        try {
-            budgetItemViewModel.insertBudgetItem(
+        return try {
+            budgetItemViewModel.insertBudgetItemSync(
                 BudgetItem(
                     budgetRule.ruleId,
                     projectedDate,
@@ -285,9 +265,9 @@ class UpdateBudgetPredictions(
                     biUpdateTime = df.getCurrentTimeAsString()
                 )
             )
+            true
         } catch (e: SQLiteConstraintException) {
-            return false
+            false
         }
-        return true
     }
 }

@@ -40,6 +40,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -104,16 +105,14 @@ class BudgetViewFragment : Fragment() {
     private val pendingList = mutableStateListOf<TransactionDetailed>()
     private var pendingAmount = mutableDoubleStateOf(0.0)
 
+    private var refreshKey = mutableIntStateOf(0)
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         mainActivity = (activity as MainActivity)
         mainActivity.topMenuBar.title = getString(R.string.view_the_budget)
-        mainViewModel = mainActivity.mainViewModel
-        accountViewModel = mainActivity.accountViewModel
-        accountUpdateViewModel = mainActivity.accountUpdateViewModel
-        budgetItemViewModel = mainActivity.budgetItemViewModel
-        transactionViewModel = mainActivity.transactionViewModel
+        updateViewModels()
 
         return ComposeView(requireContext()).apply {
             setContent {
@@ -124,13 +123,23 @@ class BudgetViewFragment : Fragment() {
         }
     }
 
+    private fun updateViewModels() {
+        mainViewModel = mainActivity.mainViewModel
+        accountViewModel = mainActivity.accountViewModel
+        accountUpdateViewModel = mainActivity.accountUpdateViewModel
+        budgetItemViewModel = mainActivity.budgetItemViewModel
+        transactionViewModel = mainActivity.transactionViewModel
+    }
+
     @Preview
     @Composable
     fun BudgetViewScreen() {
         val configuration = LocalConfiguration.current
         val isTablet = configuration.screenWidthDp >= 600
 
-        val assetList by remember {
+        val currentRefreshKey = refreshKey.intValue
+
+        val assetList by remember(currentRefreshKey) {
             if (::budgetItemViewModel.isInitialized) {
                 budgetItemViewModel.getAssetsForBudget()
             } else {
@@ -138,7 +147,7 @@ class BudgetViewFragment : Fragment() {
             }
         }.observeAsState(emptyList())
 
-        LaunchedEffect(assetList) {
+        LaunchedEffect(assetList, currentRefreshKey) {
             if (::mainViewModel.isInitialized &&
                 selectedAsset.value.isEmpty() && assetList.isNotEmpty()
             ) {
@@ -151,7 +160,7 @@ class BudgetViewFragment : Fragment() {
             }
         }
 
-        val curAssetDetail by remember(selectedAsset.value) {
+        val curAssetDetail by remember(selectedAsset.value, currentRefreshKey) {
             if (::accountViewModel.isInitialized && selectedAsset.value.isNotEmpty()) {
                 accountViewModel.getAccountDetailed(selectedAsset.value)
             } else {
@@ -159,11 +168,11 @@ class BudgetViewFragment : Fragment() {
             }
         }.observeAsState()
 
-        LaunchedEffect(curAssetDetail) {
+        LaunchedEffect(curAssetDetail, currentRefreshKey) {
             curAsset.value = curAssetDetail
         }
 
-        LaunchedEffect(selectedAsset.value) {
+        LaunchedEffect(selectedAsset.value, currentRefreshKey) {
             if (::mainViewModel.isInitialized && selectedAsset.value.isNotEmpty()) {
                 mainViewModel.setReturnToAsset(selectedAsset.value)
             }
@@ -189,7 +198,7 @@ class BudgetViewFragment : Fragment() {
                     .padding(paddingValues)
                     .padding(if (isTablet) 8.dp else 4.dp)
             ) {
-                SummaryCard(assetList)
+                SummaryCard(assetList, currentRefreshKey)
 
                 if (pendingList.isNotEmpty()) {
                     Text(
@@ -244,6 +253,7 @@ class BudgetViewFragment : Fragment() {
     @Composable
     fun SummaryCard(
         assetList: List<String>,
+        currentRefreshKey: Int,
     ) {
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -259,7 +269,7 @@ class BudgetViewFragment : Fragment() {
                     },
                 )
 
-                val payDayList by remember(selectedAsset.value) {
+                val payDayList by remember(selectedAsset.value, currentRefreshKey) {
                     if (::budgetItemViewModel.isInitialized) {
                         budgetItemViewModel.getPayDays(selectedAsset.value)
                     } else {
@@ -267,7 +277,7 @@ class BudgetViewFragment : Fragment() {
                     }
                 }.observeAsState(emptyList())
 
-                LaunchedEffect(payDayList) {
+                LaunchedEffect(payDayList, currentRefreshKey) {
                     if (payDayList.isNotEmpty()) {
                         val returnPayDay = if (::mainViewModel.isInitialized) {
                             mainViewModel.getReturnToPayDay()
@@ -312,7 +322,7 @@ class BudgetViewFragment : Fragment() {
                     )
                 }
 
-                val pendingTransactions by remember(selectedAsset.value) {
+                val pendingTransactions by remember(selectedAsset.value, currentRefreshKey) {
                     if (::transactionViewModel.isInitialized && selectedAsset.value.isNotEmpty()) {
                         transactionViewModel.getPendingTransactionsDetailed(selectedAsset.value)
                     } else {
@@ -320,7 +330,11 @@ class BudgetViewFragment : Fragment() {
                     }
                 }.observeAsState(emptyList())
 
-                val currentBudgetItems by remember(selectedAsset.value, selectedPayDay.value) {
+                val currentBudgetItems by remember(
+                    selectedAsset.value,
+                    selectedPayDay.value,
+                    currentRefreshKey
+                ) {
                     if (::budgetItemViewModel.isInitialized && selectedAsset.value.isNotEmpty()) {
                         budgetItemViewModel.getBudgetItems(
                             selectedAsset.value,
@@ -331,13 +345,13 @@ class BudgetViewFragment : Fragment() {
                     }
                 }.observeAsState(emptyList())
 
-                LaunchedEffect(pendingTransactions) {
+                LaunchedEffect(pendingTransactions, currentRefreshKey) {
                     pendingList.clear()
                     pendingList.addAll(pendingTransactions)
                     updatePendingTotal(pendingTransactions)
                 }
 
-                LaunchedEffect(currentBudgetItems) {
+                LaunchedEffect(currentBudgetItems, currentRefreshKey) {
                     budgetList.clear()
                     budgetList.addAll(currentBudgetItems)
                 }
@@ -1065,7 +1079,8 @@ class BudgetViewFragment : Fragment() {
         findNavController().navigate(BudgetViewFragmentDirections.actionBudgetViewFragmentToTransactionUpdateFragment())
     }
 
-    fun populateAssets() {
-        // This is called by MainActivity.onResume. Compose will automatically refresh when assetList changes.
+    fun refreshData() {
+        updateViewModels()
+        refreshKey.intValue++
     }
 }

@@ -67,7 +67,12 @@
     <string name="budget_rule_name">Budget Rule Name</string>
     <string name="budget_rules">Budget Rules</string>
     <string name="budget_rules_are_used_to_update_the_budget">Budget Rules are used to update the budget.</string>
-    <string name="budget_summary">Budget Summary</string>
+    <string name="budget_updated">Budget updated</string>
+    <string name="update_results">Update Results</string>
+    <string name="ok">OK</string>
+    <string name="sync_with_cloud">Sync with Cloud</string>
+    <string name="more_options">More Options</string>
+    <string name="view_budget_summary">View Budget Summary</string>
     <string name="budget_view">Budget</string>
     <string name="budget_view_help">Budget View Help</string>
     <string name="budgeted">Budgeted </string>
@@ -226,7 +231,7 @@
     <string name="pay_check">Pay Check</string>
     <string name="pay_day">Pay Day</string>
     <string name="pending">Pending</string>
-    <string name="pending_lined">-------------- Pending --------------</string>
+    <string name="pending_lined">------- Pending -------</string>
     <string name="perform_a_new_transaction_based_on_this_budget_rule">Perform a new Transaction based on this Budget Rule</string>
     <string name="perform_a_transaction">Perform a Transaction</string>
     <string name="perform_a_transaction_on_">Perform a TRANSACTION with a custom amount on </string>
@@ -275,6 +280,7 @@
     <string name="surplus_of">"Surplus of "</string>
     <string name="surplus_or_deficit">Surplus or Deficit</string>
     <string name="sync">Sync Data</string>
+    <string name="connect_to_drive">Connect to Drive</string>
     <string name="text_view">Text View</string>
     <string name="the_amount_of_a_split_transaction_must_be_less_than_the_original">The amount of a split transaction must be less than the original!</string>
     <string name="there_is_no_budget_rule">There is no Budget Rule!</string>
@@ -351,4 +357,5 @@
     <string name="zero_dollars">$0.00</string>
     <string name="zero_double">0.0</string>
     <string name="zero_int">0</string>
+    <string name="sync_conflict_message">Table: %1$s\nName: %2$s\n\nLocal:\nID: %3$d\nUpdated: %4$s\n\nDrive:\nID: %5$d\nUpdated: %6$s\n\nThere is a name conflict but IDs are different. Which version would you like to keep as the primary for this name? The other will be renamed.</string>
 </resources>

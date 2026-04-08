@@ -1,13 +1,14 @@
 package ms.mattschlenkrich.billsprojectionv2.ui
 
 import android.app.AlertDialog
-import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -47,15 +48,13 @@ import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ms.mattschlenkrich.billsprojectionv2.BuildConfig
-import ms.mattschlenkrich.billsprojectionv2.NavGraphDirections
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.projections.UpdateBudgetPredictions
-import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 import ms.mattschlenkrich.billsprojectionv2.common.sync.NewActivity
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModelFactory
@@ -79,11 +78,10 @@ import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.BudgetRuleFragment
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetViewFragment
 import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionAddFragment
+import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionAnalysisFragment
 import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionSplitFragment
 import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionUpdateFragment
 import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionViewFragment
-import java.time.LocalDate
-
 
 private const val TAG = "MainActivity"
 
@@ -103,7 +101,7 @@ class MainActivity : AppCompatActivity() {
         fun setTitle(titleResId: Int)
     }
 
-    private inner class TopMenuBarProxy : MenuHostProxy {
+    inner class TopMenuBarProxy : MenuHostProxy {
         override var title: String
             get() = topMenuBarState.value.title
             set(value) {
@@ -115,11 +113,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun addMenuProvider(provider: MenuProvider) {
-            (this@MainActivity as MenuHost).addMenuProvider(provider)
+            this@MainActivity.addMenuProvider(provider)
         }
 
         override fun addMenuProvider(provider: MenuProvider, owner: LifecycleOwner) {
-            (this@MainActivity as MenuHost).addMenuProvider(provider, owner)
+            this@MainActivity.addMenuProvider(provider, owner)
         }
 
         override fun addMenuProvider(
@@ -127,33 +125,25 @@ class MainActivity : AppCompatActivity() {
             owner: LifecycleOwner,
             state: Lifecycle.State
         ) {
-            (this@MainActivity as MenuHost).addMenuProvider(provider, owner, state)
+            this@MainActivity.addMenuProvider(provider, owner, state)
         }
 
         override fun removeMenuProvider(provider: MenuProvider) {
-            (this@MainActivity as MenuHost).removeMenuProvider(provider)
+            this@MainActivity.removeMenuProvider(provider)
         }
 
         override fun invalidateMenu() {
-            (this@MainActivity as MenuHost).invalidateMenu()
+            this@MainActivity.invalidateMenu()
         }
     }
 
     val topMenuBar: MenuHostProxy by lazy { TopMenuBarProxy() }
 
-    data class TopBarState(
-        var title: String = ""
-    )
+    data class TopBarState(val title: String = "")
+
+    private val df = DateFunctions()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val settingsManager = SettingsManager(this)
-        val fontSize = settingsManager.getSettings().fontSize ?: "medium"
-        when (fontSize) {
-            "small" -> setTheme(R.style.Theme_BillsProjectionV2_Small)
-            "large" -> setTheme(R.style.Theme_BillsProjectionV2_Large)
-            "extra_large" -> setTheme(R.style.Theme_BillsProjectionV2_ExtraLarge)
-            else -> setTheme(R.style.Theme_BillsProjectionV2_Medium)
-        }
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
@@ -166,7 +156,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupViewModels() {
+    private fun setupViewModels(clearExisting: Boolean = false) {
+        if (clearExisting) {
+            BillsDatabase.resetInstance()
+        }
         setupMainViewModel()
         setupAccountViewModel()
         setupBudgetRuleViewModel()
@@ -180,11 +173,23 @@ class MainActivity : AppCompatActivity() {
     fun MainScreen() {
         var selectedItem by remember { mutableIntStateOf(0) }
 
+        val syncLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == RESULT_OK) {
+                // Trigger refresh by resetting database instance and reloading view models
+                setupViewModels(clearExisting = true)
+                // Force a return to Budget View after sync
+                selectedItem = 0
+                gotoBudgetView()
+            }
+        }
+
         Scaffold(
             topBar = {
                 MainTopBar(
                     title = topMenuBarState.value.title.ifEmpty { stringResource(R.string.app_name) },
-                    onSyncClick = { startActivity(Intent(this, NewActivity::class.java)) },
+                    onSyncClick = { syncLauncher.launch(Intent(this, NewActivity::class.java)) },
                     onMenuItemClick = { actionId ->
                         handleMenuAction(actionId)
                     }
@@ -210,7 +215,7 @@ class MainActivity : AppCompatActivity() {
                         FragmentContainerView(ctx).apply {
                             id = R.id.fragment_container_view
                             val navHostFragment =
-                                androidx.navigation.fragment.NavHostFragment.create(R.navigation.nav_graph)
+                                NavHostFragment.create(R.navigation.nav_graph)
                             supportFragmentManager.beginTransaction()
                                 .replace(id, navHostFragment)
                                 .setPrimaryNavigationFragment(navHostFragment)
@@ -236,10 +241,16 @@ class MainActivity : AppCompatActivity() {
             title = { Text(title) },
             actions = {
                 IconButton(onClick = onSyncClick) {
-                    Icon(Icons.Default.Sync, contentDescription = stringResource(R.string.sync))
+                    Icon(
+                        imageVector = Icons.Default.Sync,
+                        contentDescription = stringResource(R.string.sync_with_cloud)
+                    )
                 }
-                IconButton(onClick = { showMenu = !showMenu }) {
-                    Icon(Icons.Default.MoreVert, contentDescription = "More")
+                IconButton(onClick = { showMenu = true }) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = stringResource(R.string.more_options)
+                    )
                 }
                 DropdownMenu(
                     expanded = showMenu,
@@ -248,34 +259,44 @@ class MainActivity : AppCompatActivity() {
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.update_budget_predictions)) },
                         onClick = {
-                            onMenuItemClick(R.id.action_update_predictions); showMenu = false
+                            onMenuItemClick(R.id.action_update_predictions)
+                            showMenu = false
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text(stringResource(R.string.view_current_budget_summary)) },
-                        onClick = { onMenuItemClick(R.id.action_view_summary); showMenu = false }
+                        text = { Text(stringResource(R.string.view_budget_summary)) },
+                        onClick = {
+                            onMenuItemClick(R.id.action_view_summary)
+                            showMenu = false
+                        }
                     )
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.delete_future_predictions)) },
                         onClick = {
-                            onMenuItemClick(R.id.action_delete_predictions); showMenu = false
+                            onMenuItemClick(R.id.action_delete_predictions)
+                            showMenu = false
                         }
                     )
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.settings)) },
-                        onClick = { onMenuItemClick(R.id.action_settings); showMenu = false }
+                        onClick = {
+                            onMenuItemClick(R.id.action_settings)
+                            showMenu = false
+                        }
                     )
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.help)) },
-                        onClick = { onMenuItemClick(R.id.action_help); showMenu = false }
+                        onClick = {
+                            onMenuItemClick(R.id.action_help)
+                            showMenu = false
+                        }
                     )
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.privacy_policy)) },
-                        onClick = { onMenuItemClick(R.id.action_privacy_policy); showMenu = false }
-                    )
-                    DropdownMenuItem(
-                        text = { Text("${stringResource(R.string.app_name)} ${BuildConfig.VERSION_NAME}") },
-                        onClick = { showMenu = false }
+                        onClick = {
+                            onMenuItemClick(R.id.action_privacy_policy)
+                            showMenu = false
+                        }
                     )
                 }
             },
@@ -377,103 +398,90 @@ class MainActivity : AppCompatActivity() {
             setPositiveButton(getString(R.string._continue)) { _, _ ->
                 deleteFuturePredictions()
             }
-            setNegativeButton(getString(R.string.cancel), null)
-            create()
-        }.show()
+            setNegativeButton(getString(R.string.cancel)) { _, _ -> }
+            show()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        return true
+        return super.onCreateOptionsMenu(menu)
     }
 
     private fun gotoHelp() {
-        findNavController(R.id.fragment_container_view).navigate(
-            NavGraphDirections.actionGlobalHelpFragment()
-        )
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container_view) as NavHostFragment
+        val navController = navHostFragment.navController
+        navController.navigate(R.id.helpFragment)
     }
 
     private fun gotoSettings() {
-        findNavController(R.id.fragment_container_view).navigate(
-            NavGraphDirections.actionGlobalSettingsFragment()
-        )
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container_view) as NavHostFragment
+        val navController = navHostFragment.navController
+        navController.navigate(R.id.settingsFragment)
     }
 
     private fun gotoBudgetList() {
-        findNavController(R.id.fragment_container_view).navigate(
-            NavGraphDirections
-                .actionGlobalBudgetListFragment()
-        )
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container_view) as NavHostFragment
+        val navController = navHostFragment.navController
+        navController.navigate(R.id.budgetListFragment)
     }
 
     private fun gotoAnalysis() {
-        mainViewModel.eraseAll()
-        findNavController(R.id.fragment_container_view).navigate(
-            NavGraphDirections
-                .actionGlobalTransactionAnalysisFragment()
-        )
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container_view) as NavHostFragment
+        val navController = navHostFragment.navController
+        navController.navigate(R.id.transactionAnalysisFragment)
     }
 
     private fun gotoBudgetView() {
-        mainViewModel.eraseAll()
-        findNavController(R.id.fragment_container_view).navigate(
-            NavGraphDirections
-                .actionGlobalBudgetViewFragment()
-        )
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container_view) as NavHostFragment
+        val navController = navHostFragment.navController
+        navController.navigate(R.id.budgetViewFragment)
     }
 
     private fun gotoBudgetRules() {
-        mainViewModel.eraseAll()
-        findNavController(R.id.fragment_container_view)
-            .navigate(
-                NavGraphDirections
-                    .actionGlobalBudgetRuleFragment()
-            )
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container_view) as NavHostFragment
+        val navController = navHostFragment.navController
+        navController.navigate(R.id.budgetRuleFragment)
     }
 
     private fun gotoAccounts() {
-        mainViewModel.eraseAll()
-        findNavController(R.id.fragment_container_view).navigate(
-            NavGraphDirections
-                .actionGlobalAccountsFragment()
-        )
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container_view) as NavHostFragment
+        val navController = navHostFragment.navController
+        navController.navigate(R.id.accountsFragment)
     }
 
     private fun gotoTransactions() {
-        mainViewModel.eraseAll()
-        findNavController(R.id.fragment_container_view).navigate(
-            NavGraphDirections
-                .actionGlobalTransactionViewFragment()
-        )
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container_view) as NavHostFragment
+        val navController = navHostFragment.navController
+        navController.navigate(R.id.transactionViewFragment)
     }
 
     private fun updateBudget() {
-        val stopDateAll = LocalDate.now()
-            .plusMonths(4).toString()
-            .split("-")
-        val datePickerDialog = DatePickerDialog(
-            this,
-            { _, year, monthOfYear, dayOfMonth ->
-                val month = monthOfYear + 1
-                val display = "$year-${month.toString().padStart(2, '0')}-${
-                    dayOfMonth.toString().padStart(2, '0')
-                }"
-                doTheUpdate(display)
-            },
-            stopDateAll[0].toInt(),
-            stopDateAll[1].toInt() - 1,
-            stopDateAll[2].toInt()
-        )
-        datePickerDialog.setTitle(getString(R.string.pick_a_date_to_project_forward_to))
-        datePickerDialog.show()
-    }
-
-    private fun doTheUpdate(
-        display: String
-    ) {
         val updateBudgetPredictions =
             UpdateBudgetPredictions(this)
         CoroutineScope(Dispatchers.IO).launch {
-            updateBudgetPredictions.updatePredictions(display)
+            updateBudgetPredictions.updatePredictions(
+                df.getCurrentDateAsString()
+            )
+            doTheUpdate(getString(R.string.budget_updated))
+        }
+    }
+
+    private fun doTheUpdate(msg: String) {
+        runOnUiThread {
+            AlertDialog.Builder(this).apply {
+                setTitle(getString(R.string.update_results))
+                setMessage(msg)
+                setPositiveButton(getString(android.R.string.ok)) { _, _ -> }
+                show()
+            }
         }
     }
 
@@ -489,45 +497,43 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         Log.d(TAG, "onResume called")
         // Reset database instance and re-initialize view models to ensure fresh data after sync
-        BillsDatabase.resetInstance()
-        setupBudgetItemViewModel()
-        setupBudgetRuleViewModel()
-        setupAccountViewModel()
-        setupTransactionViewModel()
-        setupMainViewModel()
-        setupAccountUpdateViewModel()
+        setupViewModels(clearExisting = true)
 
         // Trigger an update for the current fragment
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container_view)
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container_view) as? NavHostFragment
         navHostFragment?.childFragmentManager?.fragments?.forEach { fragment ->
             when (fragment) {
                 is BudgetViewFragment -> {
-                    fragment.populateAssets()
+                    fragment.refreshData()
                 }
 
                 is AccountsFragment -> {
-                    // Compose refresh happens automatically if needed
+                    fragment.refreshData()
                 }
 
                 is BudgetRuleFragment -> {
-                    // Compose refresh happens automatically if needed
+                    fragment.refreshData()
                 }
 
                 is TransactionViewFragment -> {
-                    // Compose refresh happens automatically if needed, 
-                    // but we can add a manual trigger if state is not in ViewModel
+                    fragment.refreshData()
                 }
 
                 is TransactionAddFragment -> {
-                    fragment.populateValues()
+                    fragment.refreshData()
+                }
+
+                is TransactionAnalysisFragment -> {
+                    fragment.refreshData()
                 }
 
                 is TransactionUpdateFragment -> {
-                    fragment.populateValues()
+                    fragment.refreshData()
                 }
 
                 is TransactionSplitFragment -> {
-                    fragment.populateValues()
+                    fragment.refreshData()
                 }
             }
         }
@@ -538,9 +544,7 @@ class MainActivity : AppCompatActivity() {
             BillsDatabase(this)
         )
         val budgetItemViewModelFactory =
-            BudgetItemViewModelFactory(
-                application, budgetItemRepository
-            )
+            BudgetItemViewModelFactory(application, budgetItemRepository)
         budgetItemViewModel = ViewModelProvider(
             this,
             budgetItemViewModelFactory
@@ -552,9 +556,7 @@ class MainActivity : AppCompatActivity() {
             BillsDatabase(this)
         )
         val budgetRuleViewModelFactory =
-            BudgetRuleViewModelFactory(
-                application, budgetRuleRepository
-            )
+            BudgetRuleViewModelFactory(application, budgetRuleRepository)
         budgetRuleViewModel = ViewModelProvider(
             this,
             budgetRuleViewModelFactory
@@ -563,12 +565,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupAccountViewModel() {
         val accountRepository = AccountRepository(
-            BillsDatabase(this.applicationContext)
+            BillsDatabase(this)
         )
         val accountViewModelFactory =
-            AccountViewModelFactory(
-                application, accountRepository
-            )
+            AccountViewModelFactory(application, accountRepository)
         accountViewModel = ViewModelProvider(
             this,
             accountViewModelFactory
@@ -580,9 +580,7 @@ class MainActivity : AppCompatActivity() {
             BillsDatabase(this)
         )
         val transactionViewModelFactory =
-            TransactionViewModelFactory(
-                application, transactionRepository
-            )
+            TransactionViewModelFactory(application, transactionRepository)
         transactionViewModel = ViewModelProvider(
             this,
             transactionViewModelFactory
@@ -590,8 +588,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupMainViewModel() {
-        val mainViewModelFactory =
-            MainViewModelFactory(application)
+        val mainViewModelFactory = MainViewModelFactory(application)
         mainViewModel = ViewModelProvider(
             this,
             mainViewModelFactory

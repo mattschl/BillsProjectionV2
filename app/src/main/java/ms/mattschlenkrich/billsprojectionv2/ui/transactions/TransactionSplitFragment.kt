@@ -30,6 +30,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -98,6 +99,7 @@ class TransactionSplitFragment : Fragment() {
 
     private var toAccountWithTypeState = mutableStateOf<AccountWithType?>(null)
     private var fromAccountWithTypeState = mutableStateOf<AccountWithType?>(null)
+    private val refreshKey = mutableIntStateOf(0)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -115,10 +117,27 @@ class TransactionSplitFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 BillsProjectionTheme {
-                    TransactionSplitScreen()
+                    if (refreshKey.intValue >= 0) {
+                        TransactionSplitScreen()
+                    }
                 }
             }
         }
+    }
+
+    fun refreshData() {
+        updateViewModels()
+        populateValues()
+        refreshKey.intValue++
+    }
+
+    private fun updateViewModels() {
+        mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        accountViewModel = mainActivity.accountViewModel
+        budgetRuleViewModel = mainActivity.budgetRuleViewModel
+        accountUpdateViewModel = mainActivity.accountUpdateViewModel
+        transactionViewModel = mainActivity.transactionViewModel
     }
 
     fun populateValues() {

@@ -342,7 +342,7 @@ interface TransactionDao {
         "SELECT MIN($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
                 "WHERE $TRANS_BUDGET_RULE_ID = :budgetRuleId " +
                 "AND $TRANSACTION_DATE >= :startDate " +
-                "AND $TRANS_UPDATE_TIME <= :endDate " +
+                "AND $TRANSACTION_DATE <= :endDate " +
                 "AND $TRANS_IS_DELETED = 0"
     )
     fun getMinTransactionByBudgetRule(

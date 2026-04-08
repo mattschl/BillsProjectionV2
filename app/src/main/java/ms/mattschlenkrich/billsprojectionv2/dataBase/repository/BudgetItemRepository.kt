@@ -51,7 +51,7 @@ class BudgetItemRepository(private val db: BillsDatabase) {
         budgetRuleId, projectedDate, updateTime
     )
 
-    fun rewriteBudgetItem(
+    suspend fun rewriteBudgetItem(
         budgetRuleId: Long,
         projectedDate: String,
         actualDate: String,

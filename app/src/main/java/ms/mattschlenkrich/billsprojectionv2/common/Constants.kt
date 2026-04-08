@@ -3,9 +3,7 @@
 package ms.mattschlenkrich.billsprojectionv2.common
 
 const val DB_NAME = "bills2.db"
-const val PAY_DB_NAME = "pay.db"
 const val DB_VERSION = 3
-const val PAY_DB_VERSION = 1
 const val BILLS_DATABASE = "BillsDatabase"
 
 const val SQLITE_DATE = "yyyy-LL-dd"
@@ -38,15 +36,6 @@ const val FRAG_BUDGET_ITEM_UPDATE = "BudgetItemUpdate"
 const val FRAG_BUDGET_LIST = "BudgetList"
 const val FRAG_TRANSACTION_ANALYSIS = "TransactionAnalysis"
 const val FRAG_TRANSACTION_SPLIT = "TransactionSplit"
-
-const val ADAPTER_BUDGET_RULE = "BudgetRuleAdapter"
-const val ADAPTER_BUDGET_LIST = "BudgetListMonthlyAdapter"
-const val ADAPTER_ACCOUNT = "AccountAdapter"
-const val ADAPTER_ACCOUNT_TYPE = "AccountTypeAdapter"
-const val ADAPTER_TRANSACTION = "TransactionAdapter"
-const val ADAPTER_BUDGET_VIEW = "BudgetViewAdapter"
-const val ADAPTER_PENDING = "TransactionPendingAdapter"
-const val ADAPTER_TRANSACTION_ANALYSIS = "TransactionAnalysisAdapter"
 
 const val TABLE_SYNC_HISTORY = "syncHistory"
 const val SYNC_ID = "syncId"

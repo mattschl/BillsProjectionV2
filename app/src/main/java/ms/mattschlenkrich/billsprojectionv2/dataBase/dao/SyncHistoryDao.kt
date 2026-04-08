@@ -26,4 +26,7 @@ interface SyncHistoryDao {
 
     @Query("SELECT * FROM $TABLE_SYNC_HISTORY ORDER BY syncTime DESC")
     suspend fun getAllSyncHistory(): List<SyncHistory>
+
+    @Query("DELETE FROM $TABLE_SYNC_HISTORY WHERE syncTime < :cutoffTime")
+    suspend fun purgeOldSyncHistory(cutoffTime: String)
 }
