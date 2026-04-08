@@ -294,10 +294,10 @@ class MainActivity : AppCompatActivity() {
     ) {
         val items = listOf(
             Triple(R.string.budget_view, R.drawable.ic_budget_view, R.id.navigation_budget_view),
-            Triple(R.string.accounts, R.drawable.ic_accounts, R.id.navigation_accounts),
             Triple(R.string.transactions, R.drawable.ic_transactions, R.id.navigation_transactions),
+            Triple(R.string.accounts, R.drawable.ic_accounts, R.id.navigation_accounts),
+            Triple(R.string.analysis, R.drawable.ic_analysis, R.id.navigation_analysis),
             Triple(R.string.budget_rules, R.drawable.ic_budget_rules, R.id.navigation_budget_rules),
-            Triple(R.string.analysis, R.drawable.ic_analysis, R.id.navigation_analysis)
         )
 
         NavigationBar(

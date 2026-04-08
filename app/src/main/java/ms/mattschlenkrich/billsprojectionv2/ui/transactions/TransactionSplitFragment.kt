@@ -264,7 +264,7 @@ class TransactionSplitFragment : Fragment() {
                 )
 
                 SelectorCard(
-                    label = stringResource(R.string.budget_rule),
+                    label = stringResource(R.string.rules),
                     value = budgetRule?.budgetRuleName
                         ?: stringResource(R.string.choose_a_budget_rule),
                     onClick = { chooseBudgetRule() }

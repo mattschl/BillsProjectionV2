@@ -166,7 +166,7 @@ class TransactionPerformFragment : Fragment() {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = stringResource(R.string.budget_rule),
+                        text = stringResource(R.string.rules),
                         modifier = Modifier.weight(1f)
                     )
                     Text(

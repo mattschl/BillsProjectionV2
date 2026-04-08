@@ -61,14 +61,14 @@
     <string name="berstyle">berStyle</string>
     <string name="blank" />
     <string name="budget_description">Budget Description</string>
-    <string name="budget_rule">Budget Rule</string>
+    <string name="rules">Rule</string>
     <string name="budget_rule_help">Budget Rule Help</string>
     <string name="budget_rule_info">Budget Rule Info</string>
     <string name="budget_rule_name">Budget Rule Name</string>
     <string name="budget_rules">Budget Rules</string>
     <string name="budget_rules_are_used_to_update_the_budget">Budget Rules are used to update the budget.</string>
     <string name="budget_summary">Budget Summary</string>
-    <string name="budget_view">Budget View</string>
+    <string name="budget_view">Budget</string>
     <string name="budget_view_help">Budget View Help</string>
     <string name="budgeted">Budgeted </string>
     <string name="budgeted_">"Budgeted: "</string>
