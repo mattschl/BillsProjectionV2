@@ -8,364 +8,409 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Calculate
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.BALANCE
 import ms.mattschlenkrich.billsprojectionv2.common.BUDGETED
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_ADD
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_CHOOSE
 import ms.mattschlenkrich.billsprojectionv2.common.OWING
+import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModel
-import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentAccountAddBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 
 private const val TAG = FRAG_ACCOUNT_ADD
 
-class AccountAddFragment :
-    Fragment(R.layout.fragment_account_add) {
+class AccountAddFragment : Fragment(), MenuProvider {
 
-    private var _binding: FragmentAccountAddBinding? = null
-    private val binding get() = _binding!!
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var accountViewModel: AccountViewModel
-    private lateinit var mView: View
-    private var accountNameList = ArrayList<String>()
     private val nf = NumberFunctions()
     private val df = DateFunctions()
+
+    private var nameState = mutableStateOf("")
+    private var handleState = mutableStateOf("")
+    private var balanceState = mutableStateOf("")
+    private var owingState = mutableStateOf("")
+    private var budgetedState = mutableStateOf("")
+    private var limitState = mutableStateOf("")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentAccountAddBinding.inflate(
-            inflater, container, false
-        )
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         accountViewModel = mainActivity.accountViewModel
         mainActivity.topMenuBar.title = getString(R.string.add_a_new_account)
-        mView = binding.root
-        return mView
+
+        // Initialize values from cache if they exist
+        val cached = mainViewModel.getAccountWithType()
+        if (cached != null) {
+            nameState.value = cached.account.accountName
+            handleState.value = cached.account.accountNumber
+            balanceState.value = nf.displayDollars(
+                if (mainViewModel.getTransferNum() != 0.0 &&
+                    mainViewModel.getReturnTo()?.contains(BALANCE) == true
+                ) {
+                    mainViewModel.getTransferNum()!!
+                } else {
+                    cached.account.accountBalance
+                }
+            )
+            owingState.value = nf.displayDollars(
+                if (mainViewModel.getTransferNum() != 0.0 &&
+                    mainViewModel.getReturnTo()?.contains(OWING) == true
+                ) {
+                    mainViewModel.getTransferNum()!!
+                } else {
+                    cached.account.accountOwing
+                }
+            )
+            budgetedState.value = nf.displayDollars(
+                if (mainViewModel.getTransferNum() != 0.0 &&
+                    mainViewModel.getReturnTo()?.contains(BUDGETED) == true
+                ) {
+                    mainViewModel.getTransferNum()!!
+                } else {
+                    cached.account.accBudgetedAmount
+                }
+            )
+            limitState.value = nf.displayDollars(cached.account.accountCreditLimit)
+            mainViewModel.setTransferNum(0.0)
+        } else {
+            balanceState.value = nf.displayDollars(0.0)
+            owingState.value = nf.displayDollars(0.0)
+            budgetedState.value = nf.displayDollars(0.0)
+            limitState.value = nf.displayDollars(0.0)
+        }
+
+        return ComposeView(requireContext()).apply {
+            setContent {
+                BillsProjectionTheme {
+                    AccountAddScreen()
+                }
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        populateValues()
-        setClickActions()
-    }
-
-    private fun populateValues() {
-        getAccountNameListForValidation()
-        binding.apply {
-            if (mainViewModel.getAccountWithType() != null) {
-                populateAccountFromCache()
-            }
-            if (mainViewModel.getAccountWithType()?.accountType != null) {
-                populateAccountTypeFromCache()
-            }
-        }
-    }
-
-    private fun populateAccountFromCache() {
-        val accountWithType = mainViewModel.getAccountWithType()!!
-        binding.apply {
-            etAccAddName.setText(accountWithType.account.accountName)
-            etAccAddHandle.setText(accountWithType.account.accountNumber)
-            etAccAddBalance.setText(
-                nf.displayDollars(
-                    if (mainViewModel.getTransferNum()!! != 0.0 &&
-                        mainViewModel.getReturnTo()!!.contains(BALANCE)
-                    ) {
-                        mainViewModel.getTransferNum()!!
-                    } else {
-                        mainViewModel.getAccountWithType()!!.account.accountBalance
-                    }
-                )
-            )
-            etAccAddOwing.setText(
-                nf.displayDollars(
-                    if (mainViewModel.getTransferNum()!! != 0.0 &&
-                        mainViewModel.getReturnTo()!!.contains(OWING)
-
-                    ) {
-                        mainViewModel.getTransferNum()!!
-                    } else {
-                        accountWithType.account.accountOwing
-                    }
-                )
-            )
-            etAccAddBudgeted.setText(
-                nf.displayDollars(
-                    if (mainViewModel.getTransferNum()!! != 0.0 &&
-                        mainViewModel.getReturnTo()!!.contains(BUDGETED)
-                    ) {
-                        mainViewModel.getTransferNum()!!
-                    } else {
-                        accountWithType.account.accBudgetedAmount
-                    }
-                )
-            )
-            mainViewModel.setTransferNum(0.0)
-            etAccAddLimit.setText(
-                nf.displayDollars(
-                    accountWithType.account.accountCreditLimit
-                )
-            )
-        }
-    }
-
-    private fun populateAccountTypeFromCache() {
-        val accountWithType = mainViewModel.getAccountWithType()!!
-        binding.apply {
-            tvAccAddType.text = accountWithType.accountType!!.accountType
-            var display =
-                if (
-                    accountWithType.accountType.keepTotals
-                ) getString(R.string.this_account_does_not_keep_a_balance_owing_amount) else ""
-            display += if (
-                accountWithType.accountType.isAsset
-            ) getString(R.string.this_is_an_asset) else ""
-            display += if (
-                accountWithType.accountType.displayAsAsset
-            ) getString(R.string.this_will_be_used_for_the_budget) else ""
-            display += if (
-                accountWithType.accountType.tallyOwing)
-                getString(R.string.balance_owing_will_be_calculated) else ""
-            display += if (
-                accountWithType.accountType.allowPending)
-                getString(R.string.transactions_may_be_postponed) else ""
-            if (display.isEmpty()) {
-                display =
-                    getString(R.string.this_account_does_not_keep_a_balance_owing_amount)
-            }
-            tvTypeDetails.text = display
-        }
-    }
-
-    private fun getAccountNameListForValidation() {
-        accountViewModel.getAccountNameList().observe(viewLifecycleOwner) { accounts ->
-            accountNameList.clear()
-            accounts.listIterator().forEach {
-                accountNameList.add(it)
-            }
-        }
-    }
-
-    private fun setClickActions() {
-        setMenuActions()
-        binding.apply {
-            tvAccAddType.setOnClickListener { gotoAccountTypes() }
-            etAccAddBalance.setOnLongClickListener {
-                gotoCalculator(BALANCE)
-                false
-            }
-            etAccAddOwing.setOnLongClickListener {
-                gotoCalculator(OWING)
-                false
-            }
-            etAccAddBudgeted.setOnLongClickListener {
-                gotoCalculator(BUDGETED)
-                false
-            }
-        }
-    }
-
-    private fun setMenuActions() {
         val menuHost: MenuHost = mainActivity.topMenuBar
-        menuHost.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                // Add menu items here
-                menuInflater.inflate(R.menu.save_menu, menu)
+        menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
+    @Composable
+    fun AccountAddScreen() {
+        var name by nameState
+        var handle by handleState
+        var balance by balanceState
+        var owing by owingState
+        var budgeted by budgetedState
+        var limit by limitState
+
+        val accountWithType = mainViewModel.getAccountWithType()
+        val accountType = accountWithType?.accountType
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                ProjectTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = {
+                        Text(
+                            stringResource(R.string.account_name),
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    },
+                    modifier = Modifier
+                        .weight(1.5f)
+                        .height(56.dp),
+                    textStyle = MaterialTheme.typography.bodyMedium,
+                    singleLine = true
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                ProjectTextField(
+                    value = handle,
+                    onValueChange = { handle = it },
+                    label = {
+                        Text(
+                            stringResource(R.string.number),
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(56.dp),
+                    textStyle = MaterialTheme.typography.bodyMedium,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                    singleLine = true
+                )
             }
 
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                // Handle the menu selection
-                return when (menuItem.itemId) {
-                    R.id.menu_save -> {
-                        isAccountReadyToSave()
-                        true
+            OutlinedCard(
+                onClick = { gotoAccountTypes() },
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.small
+            ) {
+                Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(R.string.account_type) + ":",
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                        Text(
+                            text = accountType?.accountType
+                                ?: stringResource(R.string.choose_an_account_type),
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = if (accountType == null) MaterialTheme.colorScheme.error else Color.Unspecified
+                        )
                     }
-
-                    else -> false
+                    if (accountType != null) {
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = getAccountTypeDetails(accountType),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.Gray,
+                        )
+                    }
                 }
             }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                BalanceField(
+                    label = stringResource(R.string.balance),
+                    value = balance,
+                    onValueChange = { balance = it },
+                    onLongClick = { gotoCalculator(BALANCE) },
+                    modifier = Modifier.weight(1f)
+                )
+                BalanceField(
+                    label = stringResource(R.string.owing),
+                    value = owing,
+                    onValueChange = { owing = it },
+                    onLongClick = { gotoCalculator(OWING) },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                BalanceField(
+                    label = stringResource(R.string.budgeted),
+                    value = budgeted,
+                    onValueChange = { budgeted = it },
+                    onLongClick = { gotoCalculator(BUDGETED) },
+                    modifier = Modifier.weight(1f)
+                )
+                ProjectTextField(
+                    value = limit,
+                    onValueChange = { limit = it },
+                    label = {
+                        Text(
+                            stringResource(R.string.credit_limit),
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(56.dp)
+                        .padding(horizontal = 2.dp),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    singleLine = true
+                )
+            }
+        }
+    }
+
+    @Composable
+    fun BalanceField(
+        label: String,
+        value: String,
+        onValueChange: (String) -> Unit,
+        onLongClick: () -> Unit,
+        modifier: Modifier = Modifier
+    ) {
+        ProjectTextField(
+            value = value,
+            onValueChange = onValueChange,
+            label = { Text(label, style = MaterialTheme.typography.labelSmall) },
+            modifier = modifier
+                .padding(horizontal = 2.dp)
+                .height(56.dp),
+            textStyle = MaterialTheme.typography.bodyMedium.copy(
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+            ),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            singleLine = true,
+            trailingIcon = {
+                IconButton(onClick = onLongClick) {
+                    Icon(
+                        imageVector = Icons.Default.Calculate,
+                        contentDescription = stringResource(R.string.calculator)
+                    )
+                }
+            }
+        )
+    }
+
+    private fun getAccountTypeDetails(accountType: ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType): String {
+        val details = mutableListOf<String>()
+        if (accountType.keepTotals) details.add(getString(R.string.this_account_does_not_keep_a_balance_owing_amount))
+        if (accountType.isAsset) details.add(getString(R.string.this_is_an_asset))
+        if (accountType.displayAsAsset) details.add(getString(R.string.this_will_be_used_for_the_budget))
+        if (accountType.tallyOwing) details.add(getString(R.string.balance_owing_will_be_calculated))
+        if (accountType.allowPending) details.add(getString(R.string.transactions_may_be_postponed))
+        return if (details.isEmpty()) getString(R.string.this_account_does_not_keep_a_balance_owing_amount)
+        else details.joinToString("\n")
     }
 
     private fun getCurrentAccount(): Account {
-        binding.apply {
-            return Account(
-                nf.generateId(),
-                etAccAddName.text.toString().trim(),
-                etAccAddHandle.text.toString().trim(),
-                mainViewModel.getAccountWithType()?.accountType?.typeId ?: 0L,
-                nf.getDoubleFromDollars(etAccAddBudgeted.text.toString()),
-                nf.getDoubleFromDollars(etAccAddBalance.text.toString()),
-                nf.getDoubleFromDollars(etAccAddOwing.text.toString()),
-                nf.getDoubleFromDollars(etAccAddLimit.text.toString()),
-                false,
-                df.getCurrentTimeAsString()
-            )
+        return Account(
+            nf.generateId(),
+            nameState.value.trim(),
+            handleState.value.trim(),
+            mainViewModel.getAccountWithType()?.accountType?.typeId ?: 0L,
+            nf.getDoubleFromDollars(budgetedState.value),
+            nf.getDoubleFromDollars(balanceState.value),
+            nf.getDoubleFromDollars(owingState.value),
+            nf.getDoubleFromDollars(limitState.value),
+            false,
+            df.getCurrentTimeAsString()
+        )
+    }
+
+    private fun saveAccountIfValid() {
+        val accountNames = accountViewModel.getAccountNameList().value ?: emptyList()
+        val name = nameState.value.trim()
+
+        if (name.isEmpty()) {
+            showMessage(getString(R.string.please_enter_a_name_for_this_account))
+            return
         }
-    }
-
-    private fun isAccountReadyToSave() {
-        val message = validateAccount()
-        if (message == ANSWER_OK) {
-            saveAccount()
-        } else {
-            showMessage("${getString(R.string.error)}: $message   ")
+        if (accountNames.contains(name)) {
+            showMessage(getString(R.string.this_account_already_exists))
+            return
         }
-    }
+        val accountType = mainViewModel.getAccountWithType()?.accountType
+        if (accountType == null) {
+            showMessage(getString(R.string.this_account_must_have_an_account_type))
+            return
+        }
 
-    private fun showMessage(message: String) {
-        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
-    }
-
-    private fun saveAccount() {
-        mainViewModel.removeCallingFragment(TAG)
         val curAccount = getCurrentAccount()
         accountViewModel.addAccount(curAccount)
-        mainViewModel.setAccountWithType(
-            AccountWithType(
-                curAccount,
-                mainViewModel.getAccountWithType()?.accountType!!
-            )
-        )
+        mainViewModel.setAccountWithType(AccountWithType(curAccount, accountType))
         gotoCallingFragment()
     }
 
-    private fun validateAccount(): String {
-        binding.apply {
-            if (etAccAddName.text.isNullOrEmpty()) {
-                return getString(R.string.please_enter_a_name_for_this_account)
-            }
-            for (i in 0 until accountNameList.size) {
-                if (accountNameList[i] == etAccAddName.text.toString().trim()
-                ) {
-                    return getString(R.string.this_account_already_exists)
-                }
-            }
-            if (mainViewModel.getAccountWithType()?.accountType == null
-            ) {
-                return getString(R.string.this_account_must_have_an_account_type)
-            }
-            return ANSWER_OK
-        }
+    private fun showMessage(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
     }
 
     private fun gotoAccountTypes() {
         mainViewModel.addCallingFragment(TAG)
         mainViewModel.setAccountWithType(
-            AccountWithType(getCurrentAccount(), null)
+            AccountWithType(getCurrentAccount(), mainViewModel.getAccountWithType()?.accountType)
         )
-        gotoAccountTypesFragment()
-
-    }
-
-    private fun gotoCallingFragment() {
-        if (mainViewModel.getCallingFragments() != null) {
-            val callingFragments = mainViewModel.getCallingFragments()!!
-            if (callingFragments.contains(FRAG_ACCOUNT_CHOOSE)) {
-                gotoAccountChoose()
-            } else if (callingFragments.contains(FRAG_ACCOUNTS)) {
-                gotoAccounts()
-            }
-        }
-    }
-
-    private fun gotoAccounts() {
-        mainViewModel.removeCallingFragment(TAG)
-        mainViewModel.setAccountWithType(null)
-        gotoAccountsFragment()
-    }
-
-    private fun gotoAccountChoose() {
-        mainViewModel.removeCallingFragment(TAG)
-        mainViewModel.setAccountWithType(null)
-        gotoAccountChooseFragment()
-    }
-
-    private fun gotoCalculator(type: String) {
-        when (type) {
-            BALANCE -> {
-                mainViewModel.setTransferNum(
-                    nf.getDoubleFromDollars(
-                        binding.etAccAddBalance.text.toString().ifBlank {
-                            getString(R.string.zero_double)
-                        }
-                    )
-                )
-            }
-
-            OWING -> {
-                mainViewModel.setTransferNum(
-                    nf.getDoubleFromDollars(
-                        binding.etAccAddOwing.text.toString().ifBlank {
-                            getString(R.string.zero_double)
-                        }
-                    )
-                )
-            }
-
-            BUDGETED -> {
-                mainViewModel.setTransferNum(
-                    nf.getDoubleFromDollars(
-                        binding.etAccAddBudgeted.text.toString().ifBlank {
-                            getString(R.string.zero_double)
-                        }
-                    )
-                )
-            }
-        }
-        mainViewModel.setReturnTo("$TAG, $type")
-        mainViewModel.setAccountWithType(
-            AccountWithType(
-                getCurrentAccount(),
-                mainViewModel.getAccountWithType()?.accountType
-            )
-        )
-        gotoCalculatorFragment()
-    }
-
-    private fun gotoAccountChooseFragment() {
-        mView.findNavController().navigate(
-            AccountAddFragmentDirections.actionAccountAddFragmentToAccountChooseFragment()
-        )
-    }
-
-    private fun gotoAccountsFragment() {
-        mView.findNavController().navigate(
-            AccountAddFragmentDirections.actionAccountAddFragmentToAccountsFragment()
-        )
-    }
-
-    private fun gotoAccountTypesFragment() {
-        mView.findNavController().navigate(
+        findNavController().navigate(
             AccountAddFragmentDirections.actionAccountAddFragmentToAccountTypesFragment()
         )
     }
 
-    private fun gotoCalculatorFragment() {
-        mView.findNavController().navigate(
+    private fun gotoCalculator(type: String) {
+        val currentValue = when (type) {
+            BALANCE -> balanceState.value
+            OWING -> owingState.value
+            BUDGETED -> budgetedState.value
+            else -> "0.00"
+        }
+        mainViewModel.setTransferNum(nf.getDoubleFromDollars(currentValue.ifBlank { getString(R.string.zero_double) }))
+        mainViewModel.setAccountWithType(
+            AccountWithType(getCurrentAccount(), mainViewModel.getAccountWithType()?.accountType)
+        )
+        findNavController().navigate(
             AccountAddFragmentDirections.actionAccountAddFragmentToCalcFragment()
         )
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
+    private fun gotoCallingFragment() {
+        mainViewModel.removeCallingFragment(TAG)
+        mainViewModel.setAccountWithType(null)
+        findNavController().popBackStack()
+    }
+
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menu.apply {
+            add(Menu.NONE, R.id.action_save, Menu.NONE, R.string.save).apply {
+                setIcon(android.R.drawable.ic_menu_save)
+                setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+            }
+        }
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        return when (menuItem.itemId) {
+            R.id.action_save -> {
+                saveAccountIfValid()
+                true
+            }
+
+            else -> false
+        }
     }
 }

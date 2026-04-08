@@ -18,7 +18,6 @@
             app:layout_constraintBottom_toTopOf="@id/content_container"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:menu="@menu/main_menu"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -39,8 +38,7 @@
                 app:itemTextColor="@color/blue"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:menu="@menu/bottom_nav_menu" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/fragment_container_view"

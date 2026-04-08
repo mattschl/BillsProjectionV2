@@ -9,34 +9,70 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Calculate
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import androidx.navigation.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.coroutines.CoroutineScope
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_CHOOSE
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_LIST
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_UPDATE
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
-import ms.mattschlenkrich.billsprojectionv2.common.WAIT_1000
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
-import ms.mattschlenkrich.billsprojectionv2.common.WAIT_500
+import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
@@ -48,195 +84,456 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transact
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetItemViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewModel
-import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentBudgetRuleUpdateBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
-import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.adapter.BudgetRuleDatesAdapter
+import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 
 private const val TAG = FRAG_BUDGET_RULE_UPDATE
 
-class BudgetRuleUpdateFragment : Fragment(R.layout.fragment_budget_rule_update) {
+class BudgetRuleUpdateFragment : Fragment(), MenuProvider {
 
-    private var _binding: FragmentBudgetRuleUpdateBinding? = null
-    private val binding get() = _binding!!
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var budgetRuleViewModel: BudgetRuleViewModel
     private lateinit var budgetItemViewModel: BudgetItemViewModel
-    private lateinit var mView: View
-    private lateinit var budgetRuleDetailed: BudgetRuleDetailed
-    private var budgetNameList: List<String>? = null
 
     private val nf = NumberFunctions()
     private val df = DateFunctions()
 
+    private val nameState = mutableStateOf("")
+    private val amountState = mutableStateOf("")
+    private val isFixedState = mutableStateOf(false)
+    private val isPayDayState = mutableStateOf(false)
+    private val isAutoState = mutableStateOf(false)
+    private val startDateState = mutableStateOf("")
+    private val endDateState = mutableStateOf("")
+    private val frequencyTypeState = mutableStateOf(0)
+    private val frequencyCountState = mutableStateOf("1")
+    private val dayOfWeekState = mutableStateOf(0)
+    private val leadDaysState = mutableStateOf("0")
+
+    private var budgetNameList: List<String>? = null
+    private var ruleId: Long = 0L
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
-        _binding = FragmentBudgetRuleUpdateBinding.inflate(
-            inflater, container, false
-        )
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         budgetRuleViewModel = mainActivity.budgetRuleViewModel
         budgetItemViewModel = mainActivity.budgetItemViewModel
         mainActivity.topMenuBar.title = getString(R.string.update_budget_rule)
-        mView = binding.root
-        return binding.root
+
+        loadBudgetRule()
+        getBudgetRuleNameForValidation()
+
+        return ComposeView(requireContext()).apply {
+            setContent {
+                BillsProjectionTheme {
+                    BudgetRuleUpdateScreen()
+                }
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        populateValues()
-        setClickActions()
+        val menuHost: MenuHost = mainActivity.topMenuBar
+        menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    private fun populateValues() {
-        getBudgetRuleNameForValidation()
-        populateSpinners()
-        CoroutineScope(Dispatchers.Main).launch {
+    private fun loadBudgetRule() {
+        lifecycleScope.launch {
             if (mainViewModel.getCallingFragments() != null) {
                 if (mainViewModel.getBudgetRuleDetailed() != null) {
                     val mCallingFragment = mainViewModel.getCallingFragments()!!
-                    if (mCallingFragment.contains(FRAG_TRANSACTION_VIEW) &&
-                        !mCallingFragment.contains(FRAG_ACCOUNT_CHOOSE)
+                    val detailed = if (mCallingFragment.contains(FRAG_TRANSACTION_VIEW) &&
+                        !mCallingFragment.contains(ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_CHOOSE)
                     ) {
-                        withContext(Dispatchers.Default) {
-                            budgetRuleDetailed = budgetRuleViewModel.getBudgetRuleDetailed(
+                        withContext(Dispatchers.IO) {
+                            budgetRuleViewModel.getBudgetRuleDetailed(
                                 mainViewModel.getBudgetRuleDetailed()!!.budgetRule!!.ruleId
-                            )!!
+                            )
                         }
                     } else {
-                        budgetRuleDetailed = mainViewModel.getBudgetRuleDetailed()!!
+                        mainViewModel.getBudgetRuleDetailed()
                     }
                     delay(WAIT_250)
-                    populateFromBudgetRuleDetailed()
+                    detailed?.let { populateFromBudgetRuleDetailed(it) }
                 }
             } else {
-                populateDatesOnly()
-            }
-            delay(WAIT_500)
-            populateDateRecycler(budgetRuleDetailed.budgetRule!!.ruleId)
-        }
-
-    }
-
-    private fun populateDatesOnly() {
-        binding.apply {
-            etStartDate.setText(df.getCurrentDateAsString())
-            etEndDate.setText(df.getCurrentDateAsString())
-        }
-    }
-
-    private fun populateFromBudgetRuleDetailed() {
-        binding.apply {
-            if (budgetRuleDetailed.budgetRule != null) {
-                etBudgetName.setText(budgetRuleDetailed.budgetRule!!.budgetRuleName)
-                etAmount.setText(
-                    nf.displayDollars(
-                        if (mainViewModel.getTransferNum()!! != 0.0) {
-                            mainViewModel.getTransferNum()!!
-                        } else {
-                            budgetRuleDetailed.budgetRule!!.budgetAmount
-                        }
-                    )
-                )
-                mainViewModel.setTransferNum(0.0)
-                if (budgetRuleDetailed.toAccount != null) {
-                    tvToAccount.text = budgetRuleDetailed.toAccount!!.accountName
-                }
-                if (budgetRuleDetailed.fromAccount != null) {
-                    tvFromAccount.text = budgetRuleDetailed.fromAccount!!.accountName
-                }
-                chkFixedAmount.isChecked = budgetRuleDetailed.budgetRule!!.budFixedAmount
-                chkMakePayDay.isChecked = budgetRuleDetailed.budgetRule!!.budIsPayDay
-                chkAutoPayment.isChecked = budgetRuleDetailed.budgetRule!!.budIsAutoPay
-                etStartDate.setText(budgetRuleDetailed.budgetRule!!.budStartDate)
-                etEndDate.setText(budgetRuleDetailed.budgetRule!!.budEndDate)
-                spFrequencyType.setSelection(budgetRuleDetailed.budgetRule!!.budFrequencyTypeId)
-                etFrequencyCount.setText(
-                    String.format(budgetRuleDetailed.budgetRule!!.budFrequencyCount.toString())
-                )
-                spDayOfWeek.setSelection(budgetRuleDetailed.budgetRule!!.budDayOfWeekId)
-                etLeadDays.setText(
-                    String.format(budgetRuleDetailed.budgetRule!!.budLeadDays.toString())
-                )
+                startDateState.value = df.getCurrentDateAsString()
+                endDateState.value = df.getCurrentDateAsString()
             }
         }
     }
 
-    private fun populateDateRecycler(budgetRuleId: Long) {
-        val budgetRuleDatesAdapter = BudgetRuleDatesAdapter(
-            mainActivity,
-            mView,
-            TAG,
-            this@BudgetRuleUpdateFragment,
-        )
-        binding.rvProjectedDates.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = budgetRuleDatesAdapter
+    private fun populateFromBudgetRuleDetailed(detailed: BudgetRuleDetailed) {
+        detailed.budgetRule?.let { rule ->
+            ruleId = rule.ruleId
+            nameState.value = rule.budgetRuleName
+            amountState.value = nf.displayDollars(
+                if (mainViewModel.getTransferNum() != 0.0) {
+                    mainViewModel.getTransferNum()!!
+                } else {
+                    rule.budgetAmount
+                }
+            )
+            mainViewModel.setTransferNum(0.0)
+            isFixedState.value = rule.budFixedAmount
+            isPayDayState.value = rule.budIsPayDay
+            isAutoState.value = rule.budIsAutoPay
+            startDateState.value = rule.budStartDate
+            endDateState.value = rule.budEndDate ?: ""
+            frequencyTypeState.value = rule.budFrequencyTypeId
+            frequencyCountState.value = rule.budFrequencyCount.toString()
+            dayOfWeekState.value = rule.budDayOfWeekId
+            leadDaysState.value = rule.budLeadDays.toString()
         }
-        budgetItemViewModel.getBudgetItems(budgetRuleId).observe(
-            viewLifecycleOwner
-        ) { budgetItems ->
-            budgetRuleDatesAdapter.differ.submitList(budgetItems)
-        }
-    }
-
-    private fun populateSpinners() {
-        val adapterFrequencyType = ArrayAdapter(
-            mView.context,
-            R.layout.spinner_item_normal,
-            resources.getStringArray(R.array.frequency_types)
-        )
-        adapterFrequencyType.setDropDownViewResource(
-            R.layout.spinner_item_normal
-        )
-        binding.spFrequencyType.adapter = adapterFrequencyType
-
-        val adapterDayOfWeek = ArrayAdapter(
-            mView.context,
-            R.layout.spinner_item_normal,
-            resources.getStringArray(R.array.days_of_week)
-        )
-        adapterDayOfWeek.setDropDownViewResource(
-            R.layout.spinner_item_normal
-        )
-        binding.spDayOfWeek.adapter = adapterDayOfWeek
     }
 
     private fun getBudgetRuleNameForValidation() {
-        CoroutineScope(Dispatchers.IO).launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             budgetNameList = budgetRuleViewModel.getBudgetRuleNameList()
         }
     }
 
-    private fun setClickActions() {
-        setMenuActions()
-        binding.apply {
-            tvToAccount.setOnClickListener { chooseToAccount() }
-            tvFromAccount.setOnClickListener { chooseFromAccount() }
-            etStartDate.setOnLongClickListener {
-                chooseStartDate()
-                false
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun BudgetRuleUpdateScreen() {
+        var name by nameState
+        var amount by amountState
+        var isFixed by isFixedState
+        var isPayDay by isPayDayState
+        var isAuto by isAutoState
+        var startDate by startDateState
+        var endDate by endDateState
+        var frequencyType by frequencyTypeState
+        var frequencyCount by frequencyCountState
+        var dayOfWeek by dayOfWeekState
+        var leadDays by leadDaysState
+
+        val detailed = mainViewModel.getBudgetRuleDetailed()
+        val toAccount = detailed?.toAccount
+        val fromAccount = detailed?.fromAccount
+
+        val budgetItems by budgetItemViewModel.getBudgetItems(ruleId).observeAsState(emptyList())
+
+        val frequencyTypes = stringArrayResource(R.array.frequency_types)
+        val daysOfWeek = stringArrayResource(R.array.days_of_week)
+
+        Scaffold(
+            floatingActionButton = {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    FloatingActionButton(
+                        onClick = { chooseAddOptionsOrUpdateBudgetRuleToContinue() },
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = "Add Options")
+                    }
+
+                    FloatingActionButton(
+                        onClick = { updateBudgetRuleIfValid() },
+                        containerColor = Color(0xFFB00020)
+                    ) {
+                        Icon(Icons.Default.Done, contentDescription = "Update", tint = Color.White)
+                    }
+                }
             }
-            etEndDate.setOnLongClickListener {
-                chooseEndDate()
-                false
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                ProjectTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text(stringResource(R.string.budget_rule_name)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                )
+
+                ClickableSelectionCard(
+                    label = stringResource(R.string.to_this_account),
+                    value = toAccount?.accountName ?: stringResource(R.string.choose_an_account),
+                    onClick = { chooseToAccount() }
+                )
+
+                ClickableSelectionCard(
+                    label = stringResource(R.string.from_this_account),
+                    value = fromAccount?.accountName ?: stringResource(R.string.choose_an_account),
+                    onClick = { chooseFromAccount() }
+                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    ProjectTextField(
+                        value = amount,
+                        onValueChange = { amount = it },
+                        label = { Text(stringResource(R.string.amount)) },
+                        modifier = Modifier.weight(1f),
+                        trailingIcon = {
+                            IconButton(onClick = { gotoCalculator() }) {
+                                Icon(
+                                    imageVector = Icons.Default.Calculate,
+                                    contentDescription = stringResource(R.string.calculator)
+                                )
+                            }
+                        },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(start = 8.dp)
+                    ) {
+                        Checkbox(checked = isFixed, onCheckedChange = { isFixed = it })
+                        Text(
+                            stringResource(R.string.fixed),
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
+                }
+
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    LabeledCheckbox(
+                        label = stringResource(R.string.make_a_pay_day),
+                        checked = isPayDay,
+                        onCheckedChange = { isPayDay = it },
+                        modifier = Modifier.weight(1f)
+                    )
+                    LabeledCheckbox(
+                        label = stringResource(R.string.automatic_payment),
+                        checked = isAuto,
+                        onCheckedChange = { isAuto = it },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    ProjectTextField(
+                        value = startDate,
+                        onValueChange = {},
+                        label = { Text(stringResource(R.string.start_date)) },
+                        modifier = Modifier
+                            .weight(1f)
+                            .combinedClickable(
+                                onClick = {},
+                                onLongClick = { chooseStartDate() }
+                            ),
+                        readOnly = true,
+                        enabled = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            disabledBorderColor = MaterialTheme.colorScheme.outline
+                        )
+                    )
+                    ProjectTextField(
+                        value = endDate,
+                        onValueChange = {},
+                        label = { Text(stringResource(R.string.end_date)) },
+                        modifier = Modifier
+                            .weight(1f)
+                            .combinedClickable(
+                                onClick = {},
+                                onLongClick = { chooseEndDate() }
+                            ),
+                        readOnly = true,
+                        enabled = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            disabledBorderColor = MaterialTheme.colorScheme.outline
+                        )
+                    )
+                }
+
+                Text(
+                    text = stringResource(R.string.scheduling_rules),
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    ExposedDropdown(
+                        label = stringResource(R.string.budget_rules),
+                        options = frequencyTypes.toList(),
+                        selectedIndex = frequencyType,
+                        onItemSelected = { frequencyType = it },
+                        modifier = Modifier.weight(1.5f)
+                    )
+
+                    ProjectTextField(
+                        value = frequencyCount,
+                        onValueChange = { frequencyCount = it },
+                        label = { Text(stringResource(R.string.times)) },
+                        modifier = Modifier.weight(1f),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    ExposedDropdown(
+                        label = stringResource(R.string.on_day),
+                        options = daysOfWeek.toList(),
+                        selectedIndex = dayOfWeek,
+                        onItemSelected = { dayOfWeek = it },
+                        modifier = Modifier.weight(1.5f)
+                    )
+
+                    ProjectTextField(
+                        value = leadDays,
+                        onValueChange = { leadDays = it },
+                        label = { Text(stringResource(R.string.lead_days)) },
+                        modifier = Modifier.weight(1f),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                    )
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+                Text(
+                    text = stringResource(R.string.projected_date),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
+                budgetItems.forEach { item ->
+                    ProjectedDateItem(item)
+                }
             }
-            fabUpdateDone.setOnClickListener { updateBudgetRuleIfValid() }
-            fabAddOptions.setOnClickListener { chooseAddOptionsOrUpdateBudgetRuleToContinue() }
-            etAmount.setOnLongClickListener {
-                gotoCalculator()
-                false
+        }
+    }
+
+    @Composable
+    fun ProjectedDateItem(item: BudgetItemDetailed) {
+        val actualDate = df.getDisplayDate(item.budgetItem!!.biActualDate)
+        val payDay = df.getDisplayDate(item.budgetItem!!.biPayDay)
+        val amount = nf.displayDollars(item.budgetItem!!.biProjectedAmount)
+
+        OutlinedCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp)
+                .clickable { confirmGotoBudgetItem(item) }
+        ) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                Text(
+                    text = actualDate,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = " (pay day $payDay)",
+                    style = MaterialTheme.typography.labelSmall
+                )
+                Text(
+                    text = " for $amount",
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
+        }
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun ExposedDropdown(
+        label: String,
+        options: List<String>,
+        selectedIndex: Int,
+        onItemSelected: (Int) -> Unit,
+        modifier: Modifier = Modifier
+    ) {
+        var expanded by remember { mutableStateOf(false) }
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded },
+            modifier = modifier
+        ) {
+            ProjectTextField(
+                value = options.getOrElse(selectedIndex) { "" },
+                onValueChange = {},
+                readOnly = true,
+                label = { Text(label) },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                modifier = Modifier
+                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                    .fillMaxWidth()
+            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                options.forEachIndexed { index, selectionOption ->
+                    DropdownMenuItem(
+                        text = { Text(selectionOption) },
+                        onClick = {
+                            onItemSelected(index)
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun ClickableSelectionCard(label: String, value: String, onClick: () -> Unit) {
+        OutlinedCard(
+            onClick = onClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                Text(text = label, style = MaterialTheme.typography.labelMedium)
+                Text(
+                    text = value,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
+
+    @Composable
+    fun LabeledCheckbox(
+        label: String,
+        checked: Boolean,
+        onCheckedChange: (Boolean) -> Unit,
+        modifier: Modifier = Modifier
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
+            Checkbox(checked = checked, onCheckedChange = onCheckedChange)
+            Text(text = label, style = MaterialTheme.typography.labelMedium)
         }
     }
 
     private fun chooseAddOptionsOrUpdateBudgetRuleToContinue() {
         val curBudgetRule = getCurrentBudgetRuleForSaving()
-        val cachedBudgetRule = budgetRuleDetailed.budgetRule!!
-        if (
+        val detailed = mainViewModel.getBudgetRuleDetailed()
+        val cachedBudgetRule = detailed?.budgetRule
+
+        if (cachedBudgetRule != null &&
             curBudgetRule.budgetRuleName == cachedBudgetRule.budgetRuleName &&
             curBudgetRule.budToAccountId == cachedBudgetRule.budToAccountId &&
             curBudgetRule.budFromAccountId == cachedBudgetRule.budFromAccountId &&
@@ -253,7 +550,7 @@ class BudgetRuleUpdateFragment : Fragment(R.layout.fragment_budget_rule_update) 
         ) {
             chooseOptions()
         } else {
-            AlertDialog.Builder(mView.context)
+            AlertDialog.Builder(requireContext())
                 .setTitle(getString(R.string.this_budget_rule_has_not_been_saved))
                 .setMessage(getString(R.string.would_you_like_to_save_this_budget_rule_and_continue))
                 .setPositiveButton(getString(R.string.yes)) { _, _ ->
@@ -275,16 +572,17 @@ class BudgetRuleUpdateFragment : Fragment(R.layout.fragment_budget_rule_update) 
     }
 
     private fun chooseOptions() {
-        AlertDialog.Builder(mView.context)
+        val detailed = mainViewModel.getBudgetRuleDetailed()!!
+        AlertDialog.Builder(requireContext())
             .setTitle(
                 getString(R.string.choose_an_action_for) + " " +
-                        budgetRuleDetailed.budgetRule!!.budgetRuleName
+                        detailed.budgetRule!!.budgetRuleName
             )
             .setItems(
                 arrayOf(
                     getString(R.string.add_a_new_transaction_based_on_the_budget_rule),
                     getString(R.string.create_a_scheduled_item_with_this_budget_rule),
-                    mView.context.getString(R.string.view_a_summary_of_transactions_for_this_budget_rule)
+                    getString(R.string.view_a_summary_of_transactions_for_this_budget_rule)
                 )
             ) { _, pos ->
                 when (pos) {
@@ -298,81 +596,77 @@ class BudgetRuleUpdateFragment : Fragment(R.layout.fragment_budget_rule_update) 
     }
 
     private fun addNewTransaction() {
-        mainViewModel.setTransactionDetailed(createTransactionDetailed())
+        val detailed = mainViewModel.getBudgetRuleDetailed()!!
+        mainViewModel.setTransactionDetailed(createTransactionDetailed(detailed))
         mainViewModel.addCallingFragment(TAG)
         gotoTransactionAddFragment()
     }
 
-    private fun createTransactionDetailed(): TransactionDetailed {
+    private fun createTransactionDetailed(detailed: BudgetRuleDetailed): TransactionDetailed {
         val tempTransaction = Transactions(
             nf.generateId(),
             df.getCurrentDateAsString(),
-            budgetRuleDetailed.budgetRule!!.budgetRuleName,
+            detailed.budgetRule!!.budgetRuleName,
             "",
-            budgetRuleDetailed.budgetRule!!.ruleId,
-            budgetRuleDetailed.budgetRule!!.budToAccountId,
+            detailed.budgetRule!!.ruleId,
+            detailed.budgetRule!!.budToAccountId,
             false,
-            budgetRuleDetailed.budgetRule!!.budFromAccountId,
+            detailed.budgetRule!!.budFromAccountId,
             false,
-            budgetRuleDetailed.budgetRule!!.budgetAmount,
+            detailed.budgetRule!!.budgetAmount,
             false,
             df.getCurrentTimeAsString()
         )
         return TransactionDetailed(
             tempTransaction,
-            budgetRuleDetailed.budgetRule!!,
-            toAccount = budgetRuleDetailed.toAccount!!,
-            fromAccount = budgetRuleDetailed.fromAccount!!,
+            detailed.budgetRule!!,
+            toAccount = detailed.toAccount!!,
+            fromAccount = detailed.fromAccount!!,
         )
     }
 
     private fun createNewBudgetItem() {
-        CoroutineScope(Dispatchers.Main).launch {
-            mainViewModel.setBudgetItemDetailed(createBudgetItemDetailed())
+        lifecycleScope.launch {
+            val detailed = mainViewModel.getBudgetRuleDetailed()!!
+            mainViewModel.setBudgetItemDetailed(createBudgetItemDetailed(detailed))
             mainViewModel.addCallingFragment(TAG)
-            delay(WAIT_1000)
+            delay(1000L)
             gotoBudgetItemAddFragment()
         }
     }
 
-    private suspend fun createBudgetItemDetailed(): BudgetItemDetailed {
-        var tempBudgetItemDetailed = BudgetItemDetailed(null, null, null, null)
+    private suspend fun createBudgetItemDetailed(detailed: BudgetRuleDetailed): BudgetItemDetailed {
         var curPayday: String
-        withContext(Dispatchers.Default) {
+        withContext(Dispatchers.IO) {
             curPayday = budgetItemViewModel.getPayDaysActive().first()
         }
         delay(WAIT_250)
-        binding.apply {
-            val tempBudgetItem =
-                BudgetItem(
-                    budgetRuleDetailed.budgetRule!!.ruleId,
-                    biProjectedDate = df.getCurrentDateAsString(),
-                    biActualDate = df.getCurrentDateAsString(),
-                    biPayDay = curPayday,
-                    biBudgetName = etBudgetName.text.toString(),
-                    biIsPayDayItem = false,
-                    biToAccountId = budgetRuleDetailed.toAccount!!.accountId,
-                    biFromAccountId = budgetRuleDetailed.fromAccount!!.accountId,
-                    biProjectedAmount = budgetRuleDetailed.budgetRule!!.budgetAmount,
-                    biIsPending = true,
-                    biIsFixed = chkFixedAmount.isChecked,
-                    biIsAutomatic = chkAutoPayment.isChecked,
-                    biManuallyEntered = true,
-                    biIsCompleted = false,
-                    biIsCancelled = false,
-                    biIsDeleted = false,
-                    biUpdateTime = df.getCurrentTimeAsString(),
-                    biLocked = true,
-                )
-            tempBudgetItemDetailed = BudgetItemDetailed(
-                tempBudgetItem,
-                budgetRuleDetailed.budgetRule!!,
-                budgetRuleDetailed.toAccount!!,
-                budgetRuleDetailed.fromAccount!!
-            )
-        }
-        delay(WAIT_500)
-        return tempBudgetItemDetailed
+        val tempBudgetItem = BudgetItem(
+            detailed.budgetRule!!.ruleId,
+            biProjectedDate = df.getCurrentDateAsString(),
+            biActualDate = df.getCurrentDateAsString(),
+            biPayDay = curPayday,
+            biBudgetName = nameState.value,
+            biIsPayDayItem = false,
+            biToAccountId = detailed.toAccount!!.accountId,
+            biFromAccountId = detailed.fromAccount!!.accountId,
+            biProjectedAmount = detailed.budgetRule!!.budgetAmount,
+            biIsPending = true,
+            biIsFixed = isFixedState.value,
+            biIsAutomatic = isAutoState.value,
+            biManuallyEntered = true,
+            biIsCompleted = false,
+            biIsCancelled = false,
+            biIsDeleted = false,
+            biUpdateTime = df.getCurrentTimeAsString(),
+            biLocked = true,
+        )
+        return BudgetItemDetailed(
+            tempBudgetItem,
+            detailed.budgetRule!!,
+            detailed.toAccount!!,
+            detailed.fromAccount!!
+        )
     }
 
     private fun gotoAnalysis() {
@@ -381,119 +675,83 @@ class BudgetRuleUpdateFragment : Fragment(R.layout.fragment_budget_rule_update) 
         gotoTransactionAnalysisFragment()
     }
 
-    private fun setMenuActions() {
-        val menuHost: MenuHost = mainActivity.topMenuBar
-        menuHost.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                // Add menu items here
-                menuInflater.inflate(R.menu.delete_menu, menu)
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menu.add(Menu.NONE, R.id.action_delete, Menu.NONE, R.string.delete).apply {
+            setIcon(android.R.drawable.ic_menu_delete)
+            setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+        }
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        return when (menuItem.itemId) {
+            R.id.action_delete -> {
+                confirmDeleteBudgetRule()
+                true
             }
 
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                // Handle the menu selection
-                return when (menuItem.itemId) {
-                    R.id.menu_delete -> {
-                        confirmDeleteBudgetRule()
-                        true
-                    }
-
-                    else -> false
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+            else -> false
+        }
     }
 
     private fun chooseEndDate() {
-        binding.apply {
-            val curDateAll = etEndDate.text.toString().split("-")
-            val datePickerDialog = DatePickerDialog(
-                requireContext(), { _, year, monthOfYear, dayOfMonth ->
-                    val month = monthOfYear + 1
-                    val display = "$year-${month.toString().padStart(2, '0')}-${
-                        dayOfMonth.toString().padStart(2, '0')
-                    }"
-                    etEndDate.setText(display)
-                }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
-            )
-            datePickerDialog.setTitle(getString(R.string.choose_the_final_date))
-            datePickerDialog.show()
-        }
+        val curDate = endDateState.value.ifBlank { df.getCurrentDateAsString() }
+        val curDateAll = curDate.split("-")
+        val datePickerDialog = DatePickerDialog(
+            requireContext(), { _, year, monthOfYear, dayOfMonth ->
+                val month = monthOfYear + 1
+                endDateState.value = "$year-${month.toString().padStart(2, '0')}-${
+                    dayOfMonth.toString().padStart(2, '0')
+                }"
+            }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
+        )
+        datePickerDialog.setTitle(getString(R.string.choose_the_final_date))
+        datePickerDialog.show()
     }
 
     private fun chooseStartDate() {
-        binding.apply {
-            val curDateAll = etStartDate.text.toString().split("-")
-            val datePickerDialog = DatePickerDialog(
-                requireContext(), { _, year, monthOfYear, dayOfMonth ->
-                    val month = monthOfYear + 1
-                    val display = "$year-${month.toString().padStart(2, '0')}-${
-                        dayOfMonth.toString().padStart(2, '0')
-                    }"
-                    etStartDate.setText(display)
-                }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
-            )
-            datePickerDialog.setTitle(getString(R.string.choose_the_first_date))
-            datePickerDialog.show()
-        }
+        val curDate = startDateState.value.ifBlank { df.getCurrentDateAsString() }
+        val curDateAll = curDate.split("-")
+        val datePickerDialog = DatePickerDialog(
+            requireContext(), { _, year, monthOfYear, dayOfMonth ->
+                val month = monthOfYear + 1
+                startDateState.value = "$year-${month.toString().padStart(2, '0')}-${
+                    dayOfMonth.toString().padStart(2, '0')
+                }"
+            }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
+        )
+        datePickerDialog.setTitle(getString(R.string.choose_the_first_date))
+        datePickerDialog.show()
     }
 
     private fun getCurrentBudgetRuleForSaving(): BudgetRule {
-        val toAccId = if (budgetRuleDetailed.toAccount == null) {
-            0L
-        } else {
-            budgetRuleDetailed.toAccount!!.accountId
-        }
-        val fromAccId = if (budgetRuleDetailed.fromAccount == null) {
-            0L
-        } else {
-            budgetRuleDetailed.fromAccount!!.accountId
-        }
-        binding.apply {
-            return BudgetRule(
-                budgetRuleDetailed.budgetRule!!.ruleId,
-                etBudgetName.text.toString().trim(),
-                toAccId,
-                fromAccId,
-                nf.getDoubleFromDollars(
-                    etAmount.text.toString()
-                ),
-                chkFixedAmount.isChecked,
-                chkMakePayDay.isChecked,
-                chkAutoPayment.isChecked,
-                etStartDate.text.toString(),
-                etEndDate.text.toString(),
-                spDayOfWeek.selectedItemId.toInt(),
-                spFrequencyType.selectedItemId.toInt(),
-                etFrequencyCount.text.toString().toInt(),
-                etLeadDays.text.toString().toInt(),
-                false,
-                df.getCurrentTimeAsString()
-            )
-        }
+        val detailed = mainViewModel.getBudgetRuleDetailed()
+        return BudgetRule(
+            detailed?.budgetRule?.ruleId ?: ruleId,
+            nameState.value.trim(),
+            detailed?.toAccount?.accountId ?: 0L,
+            detailed?.fromAccount?.accountId ?: 0L,
+            nf.getDoubleFromDollars(amountState.value),
+            isFixedState.value,
+            isPayDayState.value,
+            isAutoState.value,
+            startDateState.value,
+            endDateState.value,
+            dayOfWeekState.value,
+            frequencyTypeState.value,
+            frequencyCountState.value.toIntOrNull() ?: 1,
+            leadDaysState.value.toIntOrNull() ?: 0,
+            false,
+            df.getCurrentTimeAsString()
+        )
     }
 
     private fun getBudgetRuleDetailed(): BudgetRuleDetailed {
-        binding.apply {
-            val toAccount = if (mainViewModel.getBudgetRuleDetailed() != null) {
-                if (budgetRuleDetailed.toAccount != null) {
-                    budgetRuleDetailed.toAccount
-                } else {
-                    null
-                }
-            } else {
-                null
-            }
-            val fromAccount = if (mainViewModel.getBudgetRuleDetailed() != null) {
-                if (budgetRuleDetailed.fromAccount != null) {
-                    budgetRuleDetailed.fromAccount
-                } else {
-                    null
-                }
-            } else {
-                null
-            }
-            return BudgetRuleDetailed(getCurrentBudgetRuleForSaving(), toAccount, fromAccount)
-        }
+        val detailed = mainViewModel.getBudgetRuleDetailed()
+        return BudgetRuleDetailed(
+            getCurrentBudgetRuleForSaving(),
+            detailed?.toAccount,
+            detailed?.fromAccount
+        )
     }
 
     private fun chooseFromAccount() {
@@ -511,7 +769,7 @@ class BudgetRuleUpdateFragment : Fragment(R.layout.fragment_budget_rule_update) 
     }
 
     private fun confirmDeleteBudgetRule() {
-        AlertDialog.Builder(activity).apply {
+        AlertDialog.Builder(requireContext()).apply {
             setTitle(getString(R.string.delete_budget_rule))
             setMessage(getString(R.string.are_you_sure_you_want_to_delete_this_budget_rule))
             setPositiveButton(getString(R.string.delete)) { _, _ ->
@@ -523,9 +781,11 @@ class BudgetRuleUpdateFragment : Fragment(R.layout.fragment_budget_rule_update) 
     }
 
     private fun deleteBudgeRule() {
-        budgetRuleViewModel.deleteBudgetRule(
-            budgetRuleDetailed.budgetRule!!.ruleId, df.getCurrentTimeAsString()
-        )
+        val detailed = mainViewModel.getBudgetRuleDetailed()
+        val rId = detailed?.budgetRule?.ruleId ?: ruleId
+        if (rId != 0L) {
+            budgetRuleViewModel.deleteBudgetRule(rId, df.getCurrentTimeAsString())
+        }
     }
 
     private fun updateBudgetRuleIfValid() {
@@ -539,140 +799,106 @@ class BudgetRuleUpdateFragment : Fragment(R.layout.fragment_budget_rule_update) 
     }
 
     private fun showMessage(message: String) {
-        Toast.makeText(mView.context, message, Toast.LENGTH_LONG).show()
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
     }
 
     private fun updateBudgetRule() {
-        budgetRuleDetailed = BudgetRuleDetailed(
-            getCurrentBudgetRuleForSaving(),
-            budgetRuleDetailed.toAccount!!,
-            budgetRuleDetailed.fromAccount
-        )
-        mainActivity.budgetRuleViewModel.updateBudgetRule(budgetRuleDetailed.budgetRule!!)
+        val newRule = getCurrentBudgetRuleForSaving()
+        budgetRuleViewModel.updateBudgetRule(newRule)
+        mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
     }
 
     private fun validateBudgetRule(): String {
-        binding.apply {
-            if (etBudgetName.text.isNullOrBlank()) {
-                return getString(R.string.please_enter_a_name)
-            }
-            for (i in 0 until budgetNameList!!.size) {
-                if (budgetNameList!![i] == etBudgetName.text.toString() && mainViewModel.getBudgetRuleDetailed() != null && budgetNameList!![i] != budgetRuleDetailed.budgetRule!!.budgetRuleName) {
+        if (nameState.value.isBlank()) {
+            return getString(R.string.please_enter_a_name)
+        }
+        val detailed = mainViewModel.getBudgetRuleDetailed()
+        budgetNameList?.let { list ->
+            for (name in list) {
+                if (name == nameState.value.trim() &&
+                    detailed?.budgetRule != null &&
+                    name != detailed.budgetRule!!.budgetRuleName
+                ) {
                     return getString(R.string.this_budget_rule_already_exists)
                 }
             }
-            if (budgetRuleDetailed.toAccount == null) {
-                return getString(R.string.there_needs_to_be_an_account_money_will_go_to)
-            }
-            if (budgetRuleDetailed.fromAccount == null) {
-                return getString(R.string.there_needs_to_be_an_account_money_will_come_from)
-            }
-            if (etAmount.text.isNullOrEmpty()) {
-                return getString(R.string.please_enter_a_budgeted_amount_including_zero)
-            }
-            return ANSWER_OK
         }
+        if (detailed?.toAccount == null) {
+            return getString(R.string.there_needs_to_be_an_account_money_will_go_to)
+        }
+        if (detailed.fromAccount == null) {
+            return getString(R.string.there_needs_to_be_an_account_money_will_come_from)
+        }
+        if (amountState.value.isEmpty()) {
+            return getString(R.string.please_enter_a_budgeted_amount_including_zero)
+        }
+        return ANSWER_OK
+    }
+
+    private fun confirmGotoBudgetItem(item: BudgetItemDetailed) {
+        AlertDialog.Builder(requireContext()).setTitle(
+            getString(R.string.would_you_like_to_go_to_this_budget_item_on) + " ${
+                df.getDisplayDate(item.budgetItem!!.biActualDate)
+            }?"
+        ).setPositiveButton(getString(R.string.yes)) { _, _ ->
+            gotoBudgetItem(item)
+        }.setNegativeButton(getString(R.string.cancel), null).show()
+    }
+
+    private fun gotoBudgetItem(item: BudgetItemDetailed) {
+        mainViewModel.addCallingFragment(TAG)
+        mainViewModel.setBudgetItemDetailed(item)
+        gotoBudgetItemUpdateFragment()
     }
 
     private fun gotoCallingFragment() {
         mainViewModel.removeCallingFragment(TAG)
         mainViewModel.setBudgetRuleDetailed(null)
-        val mCallingFragments = mainViewModel.getCallingFragments()!!
-        if (mCallingFragments.contains(FRAG_BUDGET_RULES)) {
-            gotoBudgetRuleFragment()
-        } else if (mCallingFragments.contains(FRAG_BUDGET_VIEW)) {
-            gotoBudgetViewFragment()
-        } else if (mCallingFragments.contains(FRAG_BUDGET_LIST)) {
-            gotoBudgetListFragment()
-        } else if (mCallingFragments.contains(FRAG_TRANSACTION_VIEW)) {
-            gotoTransactionViewFragment()
-        } else if (mCallingFragments.contains(FRAG_TRANSACTION_ANALYSIS)) {
-            gotoTransactionAnalysisFragment()
-        } else if (mCallingFragments.contains(FRAG_ACCOUNT_UPDATE)) {
-            gotoAccountUpdateFragment()
-        }
+        findNavController().popBackStack()
     }
 
     private fun gotoCalculator() {
         mainViewModel.setTransferNum(
             nf.getDoubleFromDollars(
-                binding.etAmount.text.toString().ifBlank {
-                    getString(R.string.zero_double)
-                })
+                amountState.value.ifBlank { getString(R.string.zero_double) })
         )
-        mainViewModel.setReturnTo(TAG)
         mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
         gotoCalculatorFragment()
     }
 
     private fun gotoCalculatorFragment() {
-        mView.findNavController().navigate(
+        findNavController().navigate(
             BudgetRuleUpdateFragmentDirections.actionBudgetRuleUpdateFragmentToCalcFragment()
         )
     }
 
-    private fun gotoBudgetListFragment() {
-        mView.findNavController().navigate(
-            BudgetRuleUpdateFragmentDirections.actionBudgetRuleUpdateFragmentToBudgetListFragment()
-        )
-    }
-
-    private fun gotoBudgetViewFragment() {
-        mView.findNavController().navigate(
-            BudgetRuleUpdateFragmentDirections.actionBudgetRuleUpdateFragmentToBudgetViewFragment()
-        )
-    }
-
-    private fun gotoBudgetRuleFragment() {
-        mView.findNavController().navigate(
-            BudgetRuleUpdateFragmentDirections.actionBudgetRuleUpdateFragmentToBudgetRuleFragment()
-        )
-    }
-
     private fun gotoBudgetItemAddFragment() {
-        mView.findNavController().navigate(
+        findNavController().navigate(
             BudgetRuleUpdateFragmentDirections.actionBudgetRuleUpdateFragmentToBudgetItemAddFragment()
         )
     }
 
     fun gotoBudgetItemUpdateFragment() {
-        mView.findNavController().navigate(
+        findNavController().navigate(
             BudgetRuleUpdateFragmentDirections.actionBudgetRuleUpdateFragmentToBudgetItemUpdateFragment()
         )
     }
 
     private fun gotoTransactionAddFragment() {
-        mView.findNavController().navigate(
+        findNavController().navigate(
             BudgetRuleUpdateFragmentDirections.actionBudgetRuleUpdateFragmentToTransactionAddFragment()
         )
     }
 
-    private fun gotoAccountUpdateFragment() {
-        mView.findNavController().navigate(
-            BudgetRuleUpdateFragmentDirections.actionBudgetRuleUpdateFragmentToAccountUpdateFragment()
-        )
-    }
-
     private fun gotoTransactionAnalysisFragment() {
-        mView.findNavController().navigate(
+        findNavController().navigate(
             BudgetRuleUpdateFragmentDirections.actionBudgetRuleUpdateFragmentToTransactionAnalysisFragment()
         )
     }
 
-    private fun gotoTransactionViewFragment() {
-        mView.findNavController().navigate(
-            BudgetRuleUpdateFragmentDirections.actionBudgetRuleUpdateFragmentToTransactionViewFragment()
-        )
-    }
-
     private fun gotoAccountChooseFragment() {
-        mView.findNavController().navigate(
+        findNavController().navigate(
             BudgetRuleUpdateFragmentDirections.actionBudgetRuleUpdateFragmentToAccountChooseFragment()
         )
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
     }
 }

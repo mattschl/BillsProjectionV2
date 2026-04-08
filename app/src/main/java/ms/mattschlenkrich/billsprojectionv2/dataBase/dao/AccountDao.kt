@@ -69,13 +69,13 @@ interface AccountDao {
         "SELECT * FROM $TABLE_ACCOUNTS " +
                 "WHERE $ACCOUNT_ID = :accountId "
     )
-    fun findAccount(accountId: Long): List<Account>
+    suspend fun findAccount(accountId: Long): List<Account>
 
     @Query(
         "SELECT * FROM $TABLE_ACCOUNTS " +
                 "WHERE $ACCOUNT_NAME = :accountName "
     )
-    fun findAccountByName(accountName: String): Account
+    suspend fun findAccountByName(accountName: String): Account
 
     @Query(
         "SELECT * FROM $TABLE_ACCOUNTS " +
@@ -125,7 +125,7 @@ interface AccountDao {
                 "$TABLE_ACCOUNTS.$ACCOUNT_TYPE_ID " +
                 "WHERE $TABLE_ACCOUNTS.$ACCOUNT_ID = :accountId  "
     )
-    fun getAccountWithType(accountId: Long): AccountWithType
+    suspend fun getAccountWithType(accountId: Long): AccountWithType
 
     @RewriteQueriesToDropUnusedColumns
     @Transaction
@@ -150,7 +150,7 @@ interface AccountDao {
                 "$TABLE_ACCOUNTS.$ACCOUNT_TYPE_ID " +
                 "WHERE $TABLE_ACCOUNTS.$ACCOUNT_ID = :accountId  "
     )
-    fun getAccountAndType(accountId: Long): AccountAndType
+    suspend fun getAccountAndType(accountId: Long): AccountAndType
 
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
@@ -165,7 +165,7 @@ interface AccountDao {
                 "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
                 "WHERE $ACCOUNT_NAME = :accountName)"
     )
-    fun getAccountWithType(accountName: String): AccountWithType
+    suspend fun getAccountWithType(accountName: String): AccountWithType
 
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
@@ -199,7 +199,7 @@ interface AccountDao {
         "SELECT * FROM $TABLE_ACCOUNTS " +
                 "WHERE $ACCOUNT_ID = :accountId"
     )
-    fun getAccount(accountId: Long): Account
+    suspend fun getAccount(accountId: Long): Account
 
 
 }

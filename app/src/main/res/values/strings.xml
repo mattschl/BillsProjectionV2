@@ -19,6 +19,7 @@
     <string name="account_type">Account Type </string>
     <string name="account_type_details">account type details</string>
     <string name="accounts">Accounts</string>
+    <string name="add">Add</string>
     <string name="accounts_help">Accounts Help</string>
     <string name="add_a_new_account">Add a new Account</string>
     <string name="add_a_new_account_type">Add a new Account Type</string>
@@ -197,6 +198,7 @@
     <string name="new_amount_cannot_be_more_than_the_original_amount">New amount cannot be more than the original amount</string>
     <string name="nine">9</string>
     <string name="no_account_selected">No Account Selected</string>
+    <string name="no_account_types_found">No Account Types found</string>
     <string name="no_account_types_to_view">No Account Types to view</string>
     <string name="no_accounts_to_view">No Accounts to view</string>
     <string name="no_budget_items">No Budget Items to View</string>

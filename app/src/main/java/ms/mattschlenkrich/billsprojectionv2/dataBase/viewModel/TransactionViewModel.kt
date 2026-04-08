@@ -16,7 +16,7 @@ class TransactionViewModel(
             transactionRepository.insertTransaction(transaction)
         }
 
-    fun getTransactionFull(
+    suspend fun getTransactionFull(
         transId: Long,
         toAccountID: Long,
         fromAccountID: Long,
@@ -25,7 +25,7 @@ class TransactionViewModel(
             transId, toAccountID, fromAccountID
         )
 
-    fun getTransactionDetailed(transId: Long) =
+    suspend fun getTransactionDetailed(transId: Long) =
         transactionRepository.getTransactionDetailed(transId)
 
     fun updateTransaction(transaction: Transactions) =

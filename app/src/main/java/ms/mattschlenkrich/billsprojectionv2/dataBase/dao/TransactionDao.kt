@@ -44,7 +44,7 @@ interface TransactionDao {
         "SELECT * FROM $TABLE_TRANSACTION " +
                 "WHERE $TRANSACTION_ID = :transId"
     )
-    fun getTransaction(transId: Long): Transactions?
+    suspend fun getTransaction(transId: Long): Transactions?
 
     @Query(
         "UPDATE $TABLE_TRANSACTION " +
@@ -178,7 +178,7 @@ interface TransactionDao {
                 "fromAccount.$ACCOUNT_ID " +
                 "WHERE $TABLE_TRANSACTION.transId = :transId;"
     )
-    fun getTransactionDetailed(transId: Long):
+    suspend fun getTransactionDetailed(transId: Long):
             TransactionDetailed
 
     @RewriteQueriesToDropUnusedColumns
@@ -200,7 +200,7 @@ interface TransactionDao {
                 ":fromAccountID " +
                 "WHERE $TABLE_TRANSACTION.$TRANSACTION_ID = :transId;"
     )
-    fun getTransactionFull(
+    suspend fun getTransactionFull(
         transId: Long,
         toAccountID: Long,
         fromAccountID: Long,

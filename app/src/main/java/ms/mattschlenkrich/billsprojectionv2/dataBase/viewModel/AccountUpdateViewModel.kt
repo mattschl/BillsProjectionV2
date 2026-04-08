@@ -2,10 +2,8 @@ package ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_1000
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_500
@@ -20,33 +18,32 @@ class AccountUpdateViewModel(
 
     val df = DateFunctions()
 
-    private fun doAccountUpdates(
+    private suspend fun doAccountUpdates(
         mTransaction: Transactions,
         reverse: Boolean,
     ): Boolean {
-        CoroutineScope(Dispatchers.Default).launch {
+        withContext(Dispatchers.Default) {
+            val toAcc = accountViewModel.getAccountAndType(mTransaction.transToAccountId)
             if (!mTransaction.transToAccountPending) {
-                if (accountViewModel.getAccountAndType(
-                        mTransaction.transToAccountId
-                    ).accountType!!.keepTotals
-                ) {
+                if (toAcc.accountType!!.keepTotals) {
                     updateAccountBalance(
                         mTransaction.transAmount, mTransaction.transToAccountId, !reverse
                     )
                 }
-                if (accountViewModel.getAccountAndType(mTransaction.transToAccountId).accountType!!.tallyOwing) {
+                if (toAcc.accountType!!.tallyOwing) {
                     updateAccountOwing(
                         mTransaction.transAmount, mTransaction.transToAccountId, reverse
                     )
                 }
             }
+            val fromAcc = accountViewModel.getAccountAndType(mTransaction.transFromAccountId)
             if (!mTransaction.transFromAccountPending) {
-                if (accountViewModel.getAccountAndType(mTransaction.transFromAccountId).accountType!!.keepTotals) {
+                if (fromAcc.accountType!!.keepTotals) {
                     updateAccountBalance(
                         mTransaction.transAmount, mTransaction.transFromAccountId, reverse
                     )
                 }
-                if (accountViewModel.getAccountAndType(mTransaction.transFromAccountId).accountType!!.tallyOwing) {
+                if (fromAcc.accountType!!.tallyOwing) {
                     updateAccountOwing(
                         mTransaction.transAmount, mTransaction.transFromAccountId, !reverse
                     )
@@ -56,41 +53,37 @@ class AccountUpdateViewModel(
         return true
     }
 
-    fun isTransactionPending(accountId: Long): Boolean {
+    suspend fun isTransactionPending(accountId: Long): Boolean {
         val accType = accountViewModel.getAccountAndType(accountId).accountType!!
         return accType.allowPending && accType.tallyOwing
     }
 
 
-    fun deleteTransaction(mTransaction: Transactions) {
-        CoroutineScope(Dispatchers.Main).launch {
-            doAccountUpdates(mTransaction, true)
-            delay(WAIT_500)
-            transactionViewModel.deleteTransaction(
-                mTransaction.transId, df.getCurrentTimeAsString()
-            )
-        }
+    suspend fun deleteTransaction(mTransaction: Transactions) {
+        doAccountUpdates(mTransaction, true)
+        delay(WAIT_500)
+        transactionViewModel.deleteTransaction(
+            mTransaction.transId, df.getCurrentTimeAsString()
+        )
     }
 
-    fun performTransaction(
+    suspend fun performTransaction(
         mTransaction: Transactions
     ) {
         doAccountUpdates(mTransaction, false)
         transactionViewModel.insertTransaction(mTransaction)
     }
 
-    fun updateTransaction(
+    suspend fun updateTransaction(
         oldTransaction: Transactions, newTransaction: Transactions
     ) {
-        CoroutineScope(Dispatchers.Main).launch {
-            doAccountUpdates(oldTransaction, true)
-            delay(WAIT_1000)
-            doAccountUpdates(newTransaction, false)
-            withContext(Dispatchers.Default) { transactionViewModel.updateTransaction(newTransaction) }
-        }
+        doAccountUpdates(oldTransaction, true)
+        delay(WAIT_1000)
+        doAccountUpdates(newTransaction, false)
+        transactionViewModel.updateTransaction(newTransaction)
     }
 
-    private fun updateAccountBalance(
+    private suspend fun updateAccountBalance(
         amount: Double, accountId: Long, creditAccount: Boolean
     ) {
         val newBalance =
@@ -100,7 +93,7 @@ class AccountUpdateViewModel(
         )
     }
 
-    private fun updateAccountOwing(
+    private suspend fun updateAccountOwing(
         amount: Double, accountId: Long, creditAccount: Boolean
     ) {
         val newOwing =

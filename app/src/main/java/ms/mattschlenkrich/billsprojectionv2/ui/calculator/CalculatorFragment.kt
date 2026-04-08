@@ -1,390 +1,342 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.calculator
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAGMENT_CALC
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_ADD
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_ADD
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_UPDATE
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_ADD
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_UPDATE
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_SPLIT
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_PERFORM
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
-import ms.mattschlenkrich.billsprojectionv2.databinding.FragmentCalcBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 
 private const val TAG = FRAGMENT_CALC
 
-class CalculatorFragment : Fragment(R.layout.fragment_calc) {
+class CalculatorFragment : Fragment() {
 
-    private lateinit var formula: ArrayList<String>
-    private lateinit var operator: ArrayList<String>
-    private lateinit var curNumber: ArrayList<Double>
-    private lateinit var prevNumber: ArrayList<Double>
-    private lateinit var result: ArrayList<Double>
-    private var counter = 0
     private val nf = NumberFunctions()
-
-    private var _binding: FragmentCalcBinding? = null
-    private val binding get() = _binding!!
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
-    private lateinit var mView: View
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentCalcBinding.inflate(
-            inflater, container, false
-        )
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
-        mView = binding.root
-        Log.d(TAG, "creating $TAG")
         mainActivity.topMenuBar.setTitle(R.string.calculator)
-        return binding.root
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initializeVariables()
-        createDigitActions()
-        createOperatorActions()
-        initializeStartValue()
-        performMath()
-        createTransferAction()
-    }
-
-    private fun initializeStartValue() {
-        if (!mainViewModel.getTransferNum()!!.isNaN()) {
-            binding.tvDisplay.text =
-                nf.getNumberFromDouble(mainViewModel.getTransferNum()!!.toDouble())
-        }
-    }
-
-    private fun initializeVariables() {
-        formula = ArrayList()
-        formula.add("")
-        operator = ArrayList()
-        operator.add("")
-        curNumber = ArrayList()
-        curNumber.add(0.0)
-        prevNumber = ArrayList()
-        prevNumber.add(0.0)
-        result = ArrayList()
-        result.add(0.0)
-    }
-
-    private fun createTransferAction() {
-        binding.btnTransfer.setOnClickListener {
-            returnValueToCallingFragment()
-        }
-    }
-
-    private fun returnValueToCallingFragment() {
-        mainViewModel.setTransferNum(result[counter])
-        when (mainViewModel.getReturnTo()) {
-
-            FRAG_TRANSACTION_SPLIT -> {
-                gotoTransactionSplitFragment()
-            }
-
-            FRAG_TRANS_ADD -> {
-                gotoTransactionAddFragment()
-            }
-
-            FRAG_TRANS_PERFORM -> {
-                gotoTransactionPerformFragment()
-            }
-
-            FRAG_BUDGET_RULE_ADD -> {
-                gotoBudgetRuleAddFragment()
-            }
-
-            FRAG_BUDGET_ITEM_ADD -> {
-                gotoBudgetItemAddFragment()
-            }
-
-            FRAG_TRANS_UPDATE -> {
-                gotoTransactionUpdateFragment()
-            }
-
-            FRAG_BUDGET_ITEM_UPDATE -> {
-                gotoBudgetItemUpdateFragment()
-            }
-
-            FRAG_BUDGET_RULE_UPDATE -> {
-                gotoBudgetRuleUpdateFragment()
-            }
-
-            else -> {
-                if (mainViewModel.getReturnTo()!!.contains(FRAG_ACCOUNT_UPDATE)) {
-                    gotoAccountUpdateFragment()
-                } else if (mainViewModel.getReturnTo()!!.contains(FRAG_ACCOUNT_ADD)) {
-                    gotoAccountAddFragment()
+        return ComposeView(requireContext()).apply {
+            setContent {
+                BillsProjectionTheme {
+                    CalculatorScreen()
                 }
             }
         }
     }
 
-    private fun gotoTransactionSplitFragment() {
-        mView.findNavController().navigate(
-            CalculatorFragmentDirections.actionCalcFragmentToTransactionSplitFragment()
-        )
-    }
+    @Composable
+    fun CalculatorScreen() {
+        var displayValue by remember { mutableStateOf("0") }
+        val formulaList = remember { mutableStateListOf("") }
+        val operatorList = remember { mutableStateListOf("") }
+        val prevNumberList = remember { mutableStateListOf(0.0) }
+        val resultList = remember { mutableStateListOf(0.0) }
+        var currentCounter by remember { mutableIntStateOf(0) }
+        var transferResult by remember { mutableDoubleStateOf(0.0) }
 
-    private fun gotoTransactionAddFragment() {
-        mView.findNavController().navigate(
-            CalculatorFragmentDirections.actionCalcFragmentToTransactionAddFragment()
-        )
-    }
-
-    private fun gotoTransactionPerformFragment() {
-        mView.findNavController().navigate(
-            CalculatorFragmentDirections.actionCalcFragmentToTransactionPerformFragment()
-        )
-    }
-
-    private fun gotoBudgetRuleAddFragment() {
-        mView.findNavController().navigate(
-            CalculatorFragmentDirections.actionCalcFragmentToBudgetRuleAddFragment()
-        )
-    }
-
-    private fun gotoBudgetItemAddFragment() {
-        mView.findNavController().navigate(
-            CalculatorFragmentDirections.actionCalcFragmentToBudgetItemAddFragment()
-        )
-    }
-
-    private fun gotoTransactionUpdateFragment() {
-        mView.findNavController().navigate(
-            CalculatorFragmentDirections.actionCalcFragmentToTransactionUpdateFragment()
-        )
-    }
-
-    private fun gotoBudgetItemUpdateFragment() {
-        mView.findNavController().navigate(
-            CalculatorFragmentDirections.actionCalcFragmentToBudgetItemUpdateFragment()
-        )
-    }
-
-    private fun gotoBudgetRuleUpdateFragment() {
-        mView.findNavController().navigate(
-            CalculatorFragmentDirections.actionCalcFragmentToBudgetRuleUpdateFragment()
-        )
-    }
-
-    private fun gotoAccountUpdateFragment() {
-        mView.findNavController().navigate(
-            CalculatorFragmentDirections.actionCalcFragmentToAccountUpdateFragment()
-        )
-    }
-
-    private fun gotoAccountAddFragment() {
-        mView.findNavController().navigate(
-            CalculatorFragmentDirections.actionCalcFragmentToAccountAddFragment()
-        )
-    }
-
-    private fun createOperatorActions() {
-        binding.apply {
-            btnPlus.setOnClickListener { performOperatorAction("+") }
-            btnMinus.setOnClickListener { performOperatorAction("-") }
-            btnTimes.setOnClickListener { performOperatorAction("X") }
-            btnDivide.setOnClickListener { performOperatorAction("/") }
-            btnBackspace.setOnClickListener { performBackspace() }
-            btnClear.setOnClickListener { clear() }
-            btnClearAll.setOnClickListener { clearAll() }
-            btnEqual.setOnClickListener { performEqualAction() }
-        }
-    }
-
-    private fun performEqualAction() {
-        counter += 1
-        binding.tvDisplay.text = nf.getNumberFromDouble(result[counter - 1])
-        prevNumber.add(counter, 0.0)
-        curNumber.add(counter, 0.0)
-        operator.add(counter, "")
-        formula.add(counter, "")
-        result.add(counter, 0.0)
-        performMath()
-    }
-
-    private fun clearAll() {
-        prevNumber[counter] = 0.0
-        operator[counter] = ""
-        binding.tvDisplay.text = "0"
-        performMath()
-    }
-
-    private fun clear() {
-        binding.tvDisplay.text = "0"
-        performMath()
-    }
-
-    private fun performBackspace() {
-        binding.apply {
-            var prefix = ""
-            if (tvDisplay.text.contains("-")) {
-                prefix = "-"
+        LaunchedEffect(Unit) {
+            if (!mainViewModel.getTransferNum()!!.isNaN()) {
+                displayValue = nf.getNumberFromDouble(mainViewModel.getTransferNum()!!.toDouble())
             }
-            var num = tvDisplay.text.toString().replace("-", "")
+        }
+
+        fun performMath() {
+            val curNumber = if (displayValue == "0" || displayValue == "-0") {
+                0.0
+            } else {
+                nf.getDoubleFromDollars(displayValue)
+            }
+
+            if (operatorList[currentCounter] == "") {
+                formulaList[currentCounter] = displayValue
+                resultList[currentCounter] = curNumber
+            } else {
+                val prev = prevNumberList[currentCounter]
+                val result = when (operatorList[currentCounter]) {
+                    "+" -> prev + curNumber
+                    "-" -> prev - curNumber
+                    "X" -> prev * curNumber
+                    "/" -> prev / curNumber
+                    else -> curNumber
+                }
+                resultList[currentCounter] = result
+                formulaList[currentCounter] =
+                    "${nf.getNumberFromDouble(prev)} ${operatorList[currentCounter]} " +
+                            "${nf.getNumberFromDouble(curNumber)} = ${nf.getDollarsFromDouble(result)}"
+            }
+            transferResult = resultList[currentCounter]
+        }
+
+        fun addDigit(digit: String) {
+            var prefix = if (displayValue.contains("-")) "-" else ""
+            var number = displayValue.replace("-", "")
+
+            when {
+                digit == "0" && number != "0" -> number += "0"
+                number == "0" -> number = digit
+                digit != "0" && digit != "." && digit != "-" -> number += digit
+                digit == "." && !number.contains(".") -> number += "."
+                digit == "-" -> prefix = if (prefix == "-") "" else "-"
+            }
+            displayValue = prefix + number
+            performMath()
+        }
+
+        fun performOperatorAction(operation: String) {
+            if (operatorList[currentCounter] == "") {
+                operatorList[currentCounter] = operation
+                prevNumberList[currentCounter] = if (displayValue == "0" || displayValue == "-0") {
+                    0.0
+                } else {
+                    nf.getDoubleFromDollars(displayValue)
+                }
+                displayValue = "0"
+            } else {
+                operatorList[currentCounter] = operation
+            }
+            performMath()
+        }
+
+        fun performEqualAction() {
+            currentCounter += 1
+            displayValue = nf.getNumberFromDouble(resultList[currentCounter - 1])
+            prevNumberList.add(0.0)
+            operatorList.add("")
+            formulaList.add("")
+            resultList.add(0.0)
+            performMath()
+        }
+
+        fun clearAll() {
+            prevNumberList[currentCounter] = 0.0
+            operatorList[currentCounter] = ""
+            displayValue = "0"
+            performMath()
+        }
+
+        fun clear() {
+            displayValue = "0"
+            performMath()
+        }
+
+        fun performBackspace() {
+            var prefix = if (displayValue.contains("-")) "-" else ""
+            var num = displayValue.replace("-", "")
             num = if (num.length > 1) {
                 num.substring(0, num.length - 1)
             } else {
                 "0"
             }
-            val display = prefix + num
-            tvDisplay.text = display
-        }
-        performMath()
-    }
-
-    private fun createDigitActions() {
-        binding.apply {
-            btn0.setOnClickListener { addDigit("0") }
-            btn1.setOnClickListener { addDigit("1") }
-            btn2.setOnClickListener { addDigit("2") }
-            btn3.setOnClickListener { addDigit("3") }
-            btn4.setOnClickListener { addDigit("4") }
-            btn5.setOnClickListener { addDigit("5") }
-            btn6.setOnClickListener { addDigit("6") }
-            btn7.setOnClickListener { addDigit("7") }
-            btn8.setOnClickListener { addDigit("8") }
-            btn9.setOnClickListener { addDigit("9") }
-            btnPeriod.setOnClickListener { addDigit(".") }
-            btnNegative.setOnClickListener { addDigit("-") }
-        }
-    }
-
-    private fun performOperatorAction(operation: String) {
-        binding.apply {
-            if (operator[counter] == "") {
-                operator[counter] = operation
-                prevNumber[counter] = curNumber[counter]
-                tvDisplay.text = "0"
-            } else {
-                operator[counter] = operation
-            }
+            displayValue = prefix + num
             performMath()
         }
-    }
 
-    private fun addDigit(digit: String) {
-        binding.apply {
-            var prefix = ""
-            if (tvDisplay.text.contains("-")) {
-                prefix = "-"
-            }
-            var number = tvDisplay.text.toString().replace("-", "")
-            @Suppress("KotlinConstantConditions") if (digit == "0" && number != "0") {
-                number += "0"
-            } else if (number == "0") {
-                number = digit
-            } else if (digit != "0" && digit != "." && digit != "-") {
-                number += digit
-            }
-            if ((digit == ".") && !number.contains(".")) {
-                number += "."
-            }
-            @Suppress("KotlinConstantConditions") if ((digit == "-") && prefix != "-") {
-                prefix = "-"
-            } else if (digit == "-" && prefix == "-") {
-                prefix = ""
-            }
-            val display = prefix + number
-            tvDisplay.text = display
-        }
-        performMath()
-    }
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .padding(16.dp)
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = displayValue,
+                    style = MaterialTheme.typography.displayMedium,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                    color = Color.Black
+                )
 
-    private fun performMath() {
-        binding.apply {
-            curNumber[counter] =
-                if (tvDisplay.text.toString() == "0" || tvDisplay.text.toString() == "-0") {
-                    0.0
-                } else {
-                    nf.getDoubleFromDollars(tvDisplay.text.toString())
+                Spacer(modifier = Modifier.height(8.dp))
+
+                val listState = rememberLazyListState()
+                LaunchedEffect(formulaList.size) {
+                    if (formulaList.isNotEmpty()) {
+                        listState.animateScrollToItem(formulaList.size - 1)
+                    }
                 }
-            determineOperatorAction()
-            var display = ""
-            for (i in 0..counter) {
-                display += formula[i]
-                if (i < counter) display += "\n"
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp)
+                        .background(Color.LightGray.copy(alpha = 0.2f), RoundedCornerShape(8.dp))
+                        .padding(8.dp),
+                    state = listState
+                ) {
+                    items(formulaList) { formula ->
+                        Text(
+                            text = formula,
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    val buttonModifier = Modifier
+                        .size(64.dp)
+                    val redButtonColors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFB00020)
+                    )
+                    val whiteButtonColors = ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        contentColor = Color.Black
+                    )
+
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        CalcButton("7", whiteButtonColors, buttonModifier) { addDigit("7") }
+                        CalcButton("8", whiteButtonColors, buttonModifier) { addDigit("8") }
+                        CalcButton("9", whiteButtonColors, buttonModifier) { addDigit("9") }
+                        CalcButton(
+                            "/",
+                            redButtonColors,
+                            buttonModifier
+                        ) { performOperatorAction("/") }
+                        CalcButton("<-", redButtonColors, buttonModifier) { performBackspace() }
+                    }
+
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        CalcButton("4", whiteButtonColors, buttonModifier) { addDigit("4") }
+                        CalcButton("5", whiteButtonColors, buttonModifier) { addDigit("5") }
+                        CalcButton("6", whiteButtonColors, buttonModifier) { addDigit("6") }
+                        CalcButton(
+                            "X",
+                            redButtonColors,
+                            buttonModifier
+                        ) { performOperatorAction("X") }
+                        CalcButton("C", redButtonColors, buttonModifier) { clear() }
+                    }
+
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        CalcButton("1", whiteButtonColors, buttonModifier) { addDigit("1") }
+                        CalcButton("2", whiteButtonColors, buttonModifier) { addDigit("2") }
+                        CalcButton("3", whiteButtonColors, buttonModifier) { addDigit("3") }
+                        CalcButton(
+                            "-",
+                            redButtonColors,
+                            buttonModifier
+                        ) { performOperatorAction("-") }
+                        CalcButton("CA", redButtonColors, buttonModifier) { clearAll() }
+                    }
+
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        CalcButton(".", whiteButtonColors, buttonModifier) { addDigit(".") }
+                        CalcButton("0", whiteButtonColors, buttonModifier) { addDigit("0") }
+                        CalcButton("+/-", whiteButtonColors, buttonModifier) { addDigit("-") }
+                        CalcButton(
+                            "+",
+                            redButtonColors,
+                            buttonModifier
+                        ) { performOperatorAction("+") }
+                        CalcButton("=", redButtonColors, buttonModifier) { performEqualAction() }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Button(
+                    onClick = {
+                        mainViewModel.setTransferNum(transferResult)
+                        returnValueToCallingFragment()
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFB00020)
+                    )
+                ) {
+                    Text(
+                        text = "TRANSFER ${nf.getDollarsFromDouble(transferResult)}",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
-            tvResults.text = display
-            display = "TRANSFER ${nf.getDollarsFromDouble(result[counter])}"
-            btnTransfer.text = display
         }
     }
 
-    private fun determineOperatorAction() {
-        binding.apply {
-            if (operator[counter] == "") {
-                performEmptyOperation()
-            } else if (operator[counter] == "+") {
-                performAddition()
-            } else if (operator[counter] == "-") {
-                performSubtraction()
-            } else if (operator[counter] == "X") {
-                performMultiplication()
-            } else if (operator[counter] == "/") {
-                performDivision()
-            }
+    @Composable
+    fun CalcButton(
+        text: String,
+        colors: androidx.compose.material3.ButtonColors,
+        modifier: Modifier,
+        onClick: () -> Unit
+    ) {
+        Button(
+            onClick = onClick,
+            modifier = modifier,
+            colors = colors,
+            shape = RoundedCornerShape(8.dp),
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
+        ) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 
-    private fun FragmentCalcBinding.performEmptyOperation() {
-        formula[counter] = tvDisplay.text.toString()
-        result[counter] = curNumber[counter]
+    private fun returnValueToCallingFragment() {
+        findNavController().popBackStack()
     }
 
-    private fun performAddition() {
-        result[counter] = prevNumber[counter] + curNumber[counter]
-        formula[counter] =
-            "${nf.getNumberFromDouble(prevNumber[counter])} " + "${operator[counter]} " + "${
-                nf.getNumberFromDouble(curNumber[counter])
-            } " + "= ${nf.getDollarsFromDouble(result[counter])}"
-    }
-
-    private fun performSubtraction() {
-        result[counter] = prevNumber[counter] - curNumber[counter]
-        formula[counter] =
-            "${nf.getNumberFromDouble(prevNumber[counter])} " + "${operator[counter]} " + "${
-                nf.getNumberFromDouble(curNumber[counter])
-            } " + "= ${nf.getDollarsFromDouble(result[counter])}"
-    }
-
-    private fun performMultiplication() {
-        result[counter] = prevNumber[counter] * curNumber[counter]
-        formula[counter] =
-            "${nf.getNumberFromDouble(prevNumber[counter])} " + "${operator[counter]} " + "${
-                nf.getNumberFromDouble(curNumber[counter])
-            } " + "= ${nf.getDollarsFromDouble(result[counter])}"
-    }
-
-    private fun performDivision() {
-        result[counter] = prevNumber[counter] / curNumber[counter]
-        formula[counter] =
-            "${nf.getNumberFromDouble(prevNumber[counter])} " + "${operator[counter]} " + "${
-                nf.getNumberFromDouble(curNumber[counter])
-            } " + "= ${nf.getDollarsFromDouble(result[counter])}"
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
 }

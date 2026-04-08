@@ -6,16 +6,48 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
-import android.view.View
+import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Sync
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
+import androidx.fragment.app.FragmentContainerView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
-import com.google.android.material.navigation.NavigationBarView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -42,11 +74,12 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewMod
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.TransactionViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.TransactionViewModelFactory
-import ms.mattschlenkrich.billsprojectionv2.databinding.ActivityMainBinding
 import ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountsFragment
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.BudgetRuleFragment
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetViewFragment
+import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionAddFragment
+import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionSplitFragment
 import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionUpdateFragment
 import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionViewFragment
 import java.time.LocalDate
@@ -56,15 +89,61 @@ private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var binding: ActivityMainBinding
-    lateinit var topMenuBar: Toolbar
     lateinit var mainViewModel: MainViewModel
     lateinit var accountViewModel: AccountViewModel
     lateinit var budgetRuleViewModel: BudgetRuleViewModel
     lateinit var transactionViewModel: TransactionViewModel
     lateinit var budgetItemViewModel: BudgetItemViewModel
     lateinit var accountUpdateViewModel: AccountUpdateViewModel
-    lateinit var mView: View
+
+    private val topMenuBarState = mutableStateOf(TopBarState())
+
+    interface MenuHostProxy : MenuHost {
+        var title: String
+        fun setTitle(titleResId: Int)
+    }
+
+    private inner class TopMenuBarProxy : MenuHostProxy {
+        override var title: String
+            get() = topMenuBarState.value.title
+            set(value) {
+                topMenuBarState.value = topMenuBarState.value.copy(title = value)
+            }
+
+        override fun setTitle(titleResId: Int) {
+            title = getString(titleResId)
+        }
+
+        override fun addMenuProvider(provider: MenuProvider) {
+            (this@MainActivity as MenuHost).addMenuProvider(provider)
+        }
+
+        override fun addMenuProvider(provider: MenuProvider, owner: LifecycleOwner) {
+            (this@MainActivity as MenuHost).addMenuProvider(provider, owner)
+        }
+
+        override fun addMenuProvider(
+            provider: MenuProvider,
+            owner: LifecycleOwner,
+            state: Lifecycle.State
+        ) {
+            (this@MainActivity as MenuHost).addMenuProvider(provider, owner, state)
+        }
+
+        override fun removeMenuProvider(provider: MenuProvider) {
+            (this@MainActivity as MenuHost).removeMenuProvider(provider)
+        }
+
+        override fun invalidateMenu() {
+            (this@MainActivity as MenuHost).invalidateMenu()
+        }
+    }
+
+    val topMenuBar: MenuHostProxy by lazy { TopMenuBarProxy() }
+
+    data class TopBarState(
+        var title: String = ""
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val settingsManager = SettingsManager(this)
@@ -78,118 +157,215 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
-            insets
-        }
-        mView = binding.root
-        Log.d(TAG, "MainActivity is started")
-        topMenuBar = binding.topMenu
+        setupViewModels()
 
-        topMenuBar.menu.apply {
-            add(Menu.NONE, 1, Menu.NONE, R.string.sync)
-            add(R.string.update_budget_predictions)
-            add(R.string.view_current_budget_summary)
-            add(R.string.delete_future_predictions)
-            add(R.string.settings)
-            add(R.string.help)
-            add(R.string.privacy_policy)
-            add("${getString(R.string.app_name)} ${BuildConfig.VERSION_NAME}")
-        }
-        topMenuBar.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.title) {
-                getString(R.string.sync) -> {
-                    startActivity(Intent(this, NewActivity::class.java))
-                    true
-                }
-
-                getString(R.string.update_budget_predictions) -> {
-                    updateBudget()
-                    true
-                }
-
-                getString(R.string.view_current_budget_summary) -> {
-                    gotoBudgetList()
-                    true
-                }
-
-                getString(R.string.delete_future_predictions) -> {
-                    chooseDeleteFuturePredictions()
-                    true
-                }
-
-                getString(R.string.settings) -> {
-                    gotoSettings()
-                    true
-                }
-
-                getString(R.string.help) -> {
-                    gotoHelp()
-                    true
-                }
-
-                getString(R.string.privacy_policy) -> {
-                    val defaultBrowser = Intent.makeMainSelectorActivity(
-                        Intent.ACTION_MAIN,
-                        Intent.CATEGORY_APP_BROWSER
-                    )
-                    defaultBrowser.data =
-                        getString(R.string.https_www_mschlenkrich_ca_privacy_policy).toUri()
-                    startActivity(defaultBrowser)
-                    true
-                }
-
-                else -> {
-                    Log.d(TAG, "other was called")
-                    false
-                }
+        setContent {
+            BillsProjectionTheme {
+                MainScreen()
             }
         }
+    }
 
-
-        val bottomNav =
-            findViewById<NavigationBarView>(R.id.bottom_nav_view)
-        bottomNav.setOnItemSelectedListener {
-            when (it.itemId) {
-                R.id.navigation_budget_view -> {
-                    gotoBudgetView()
-                    true
-                }
-
-                R.id.navigation_accounts -> {
-                    gotoAccounts()
-                    true
-                }
-
-                R.id.navigation_transactions -> {
-                    gotoTransactions()
-                    true
-                }
-
-                R.id.navigation_budget_rules -> {
-                    gotoBudgetRules()
-                    true
-                }
-
-                R.id.navigation_analysis -> {
-                    gotoAnalysis()
-                    true
-                }
-
-                else -> {
-                    false
-                }
-            }
-        }
+    private fun setupViewModels() {
         setupMainViewModel()
         setupAccountViewModel()
         setupBudgetRuleViewModel()
         setupTransactionViewModel()
         setupBudgetItemViewModel()
         setupAccountUpdateViewModel()
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun MainScreen() {
+        var selectedItem by remember { mutableIntStateOf(0) }
+
+        Scaffold(
+            topBar = {
+                MainTopBar(
+                    title = topMenuBarState.value.title.ifEmpty { stringResource(R.string.app_name) },
+                    onSyncClick = { startActivity(Intent(this, NewActivity::class.java)) },
+                    onMenuItemClick = { actionId ->
+                        handleMenuAction(actionId)
+                    }
+                )
+            },
+            bottomBar = {
+                MainBottomBar(
+                    selectedItem = selectedItem,
+                    onItemSelected = { index, actionId ->
+                        selectedItem = index
+                        handleNavigation(actionId)
+                    }
+                )
+            }
+        ) { paddingValues ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                AndroidView(
+                    factory = { ctx ->
+                        FragmentContainerView(ctx).apply {
+                            id = R.id.fragment_container_view
+                            val navHostFragment =
+                                androidx.navigation.fragment.NavHostFragment.create(R.navigation.nav_graph)
+                            supportFragmentManager.beginTransaction()
+                                .replace(id, navHostFragment)
+                                .setPrimaryNavigationFragment(navHostFragment)
+                                .commit()
+                        }
+                    },
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+        }
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun MainTopBar(
+        title: String,
+        onSyncClick: () -> Unit,
+        onMenuItemClick: (Int) -> Unit
+    ) {
+        var showMenu by remember { mutableStateOf(false) }
+
+        TopAppBar(
+            title = { Text(title) },
+            actions = {
+                IconButton(onClick = onSyncClick) {
+                    Icon(Icons.Default.Sync, contentDescription = stringResource(R.string.sync))
+                }
+                IconButton(onClick = { showMenu = !showMenu }) {
+                    Icon(Icons.Default.MoreVert, contentDescription = "More")
+                }
+                DropdownMenu(
+                    expanded = showMenu,
+                    onDismissRequest = { showMenu = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.update_budget_predictions)) },
+                        onClick = {
+                            onMenuItemClick(R.id.action_update_predictions); showMenu = false
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.view_current_budget_summary)) },
+                        onClick = { onMenuItemClick(R.id.action_view_summary); showMenu = false }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.delete_future_predictions)) },
+                        onClick = {
+                            onMenuItemClick(R.id.action_delete_predictions); showMenu = false
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.settings)) },
+                        onClick = { onMenuItemClick(R.id.action_settings); showMenu = false }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.help)) },
+                        onClick = { onMenuItemClick(R.id.action_help); showMenu = false }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.privacy_policy)) },
+                        onClick = { onMenuItemClick(R.id.action_privacy_policy); showMenu = false }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("${stringResource(R.string.app_name)} ${BuildConfig.VERSION_NAME}") },
+                        onClick = { showMenu = false }
+                    )
+                }
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = colorResource(id = R.color.ic_bills_projection_background),
+                titleContentColor = Color.White,
+                actionIconContentColor = Color.White
+            )
+        )
+    }
+
+    @Composable
+    fun MainBottomBar(
+        selectedItem: Int,
+        onItemSelected: (Int, Int) -> Unit
+    ) {
+        val items = listOf(
+            Triple(R.string.budget_view, R.drawable.ic_budget_view, R.id.navigation_budget_view),
+            Triple(R.string.accounts, R.drawable.ic_accounts, R.id.navigation_accounts),
+            Triple(R.string.transactions, R.drawable.ic_transactions, R.id.navigation_transactions),
+            Triple(R.string.budget_rules, R.drawable.ic_budget_rules, R.id.navigation_budget_rules),
+            Triple(R.string.analysis, R.drawable.ic_analysis, R.id.navigation_analysis)
+        )
+
+        NavigationBar(
+            containerColor = Color.White
+        ) {
+            items.forEachIndexed { index, (labelRes, iconRes, actionId) ->
+                NavigationBarItem(
+                    icon = {
+                        Icon(
+                            painterResource(iconRes),
+                            contentDescription = stringResource(labelRes)
+                        )
+                    },
+                    label = { Text(stringResource(labelRes), softWrap = false) },
+                    selected = selectedItem == index,
+                    onClick = { onItemSelected(index, actionId) }
+                )
+            }
+        }
+    }
+
+    private fun handleMenuAction(actionId: Int) {
+        when (actionId) {
+            R.id.action_update_predictions -> updateBudget()
+            R.id.action_view_summary -> gotoBudgetList()
+            R.id.action_delete_predictions -> chooseDeleteFuturePredictions()
+            R.id.action_settings -> gotoSettings()
+            R.id.action_help -> gotoHelp()
+            R.id.action_privacy_policy -> {
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    data = getString(R.string.https_www_mschlenkrich_ca_privacy_policy).toUri()
+                }
+                startActivity(intent)
+            }
+        }
+    }
+
+    private fun handleNavigation(actionId: Int) {
+        when (actionId) {
+            R.id.navigation_budget_view -> gotoBudgetView()
+            R.id.navigation_accounts -> gotoAccounts()
+            R.id.navigation_transactions -> gotoTransactions()
+            R.id.navigation_budget_rules -> gotoBudgetRules()
+            R.id.navigation_analysis -> gotoAnalysis()
+        }
+    }
+
+    @Preview(showBackground = true)
+    @Composable
+    fun MainScreenPreview() {
+        BillsProjectionTheme {
+            Scaffold(
+                topBar = {
+                    MainTopBar(
+                        title = "Bills Projection V2",
+                        onSyncClick = {},
+                        onMenuItemClick = {}
+                    )
+                },
+                bottomBar = {
+                    MainBottomBar(selectedItem = 0, onItemSelected = { _, _ -> })
+                }
+            ) { paddingValues ->
+                Box(modifier = Modifier.padding(paddingValues)) {
+                    Text("Content Area", modifier = Modifier.padding(16.dp))
+                }
+            }
+        }
     }
 
     private fun chooseDeleteFuturePredictions() {
@@ -207,7 +383,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main_menu, menu)
         return true
     }
 
@@ -331,15 +506,16 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 is AccountsFragment -> {
-                    fragment.setUpRecyclerView()
+                    // Compose refresh happens automatically if needed
                 }
 
                 is BudgetRuleFragment -> {
-                    fragment.setupRecyclerView()
+                    // Compose refresh happens automatically if needed
                 }
 
                 is TransactionViewFragment -> {
-                    fragment.setupRecyclerView()
+                    // Compose refresh happens automatically if needed, 
+                    // but we can add a manual trigger if state is not in ViewModel
                 }
 
                 is TransactionAddFragment -> {
@@ -347,6 +523,10 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 is TransactionUpdateFragment -> {
+                    fragment.populateValues()
+                }
+
+                is TransactionSplitFragment -> {
                     fragment.populateValues()
                 }
             }
