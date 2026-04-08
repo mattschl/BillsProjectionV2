@@ -191,6 +191,11 @@
         <action
             android:id="@+id/action_accountChooseFragment_to_accountAddFragment"
             app:destination="@id/accountAddFragment" />
+        <action
+            android:id="@+id/action_accountChooseFragment_to_transactionAnalysisFragment"
+            app:destination="@id/transactionAnalysisFragment"
+            app:popUpTo="@id/transactionAnalysisFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <!--    accountTypesFragment-->
@@ -319,6 +324,11 @@
             android:id="@+id/action_budgetRuleChooseFragment_to_transactionUpdateFragment"
             app:destination="@id/transactionUpdateFragment"
             app:popUpTo="@id/transactionUpdateFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_budgetRuleChooseFragment_to_transactionAnalysisFragment"
+            app:destination="@id/transactionAnalysisFragment"
+            app:popUpTo="@id/transactionAnalysisFragment"
             app:popUpToInclusive="true" />
     </fragment>
 
@@ -718,6 +728,12 @@
         <action
             android:id="@+id/action_transactionAnalysisFragment_to_budgetRuleUpdateFragment"
             app:destination="@id/budgetRuleUpdateFragment" />
+        <action
+            android:id="@+id/action_transactionAnalysisFragment_to_accountChooseFragment"
+            app:destination="@id/accountChooseFragment" />
+        <action
+            android:id="@+id/action_transactionAnalysisFragment_to_budgetRuleChooseFragment"
+            app:destination="@id/budgetRuleChooseFragment" />
     </fragment>
 
     <!--    calcFragment-->

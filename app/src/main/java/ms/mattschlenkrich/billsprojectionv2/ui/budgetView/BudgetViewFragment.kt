@@ -46,6 +46,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
@@ -172,10 +173,13 @@ class BudgetViewFragment : Fragment() {
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = { onAddButtonPress() },
-                    containerColor = androidx.compose.ui.graphics.Color(0xFFB00020),
-                    contentColor = androidx.compose.ui.graphics.Color.White
+                    containerColor = MaterialTheme.colorScheme.primary
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add))
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = stringResource(R.string.add),
+                        tint = Color.White
+                    )
                 }
             }
         ) { paddingValues ->

@@ -8,7 +8,10 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 
 @Composable
@@ -37,9 +40,17 @@ fun BillsProjectionTheme(
         else -> lightColorScheme()
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = getTypography(actualFontScale),
-        content = content
+    val currentDensity = LocalDensity.current
+    val scaledDensity = Density(
+        density = currentDensity.density * actualFontScale,
+        fontScale = currentDensity.fontScale
     )
+
+    CompositionLocalProvider(LocalDensity provides scaledDensity) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = getTypography(1.0f),
+            content = content
+        )
+    }
 }

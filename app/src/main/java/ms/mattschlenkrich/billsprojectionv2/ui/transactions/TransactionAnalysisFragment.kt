@@ -907,40 +907,31 @@ class TransactionAnalysisFragment : Fragment() {
     }
 
     private fun gotoAccount() {
+        mainViewModel.eraseAll()
         mainViewModel.setCallingFragments(TAG)
-        mainViewModel.setAccountWithType(null)
-        mainViewModel.setBudgetRuleDetailed(null)
-        gotoAccountsFragment()
-    }
 
-    private fun gotoBudgetRule() {
-        mainViewModel.setCallingFragments(TAG)
-        mainViewModel.setAccountWithType(null)
-        mainViewModel.setBudgetRuleDetailed(null)
-        gotoBudgetRuleFragment()
-    }
-
-    private fun gotoBudgetRuleFragment() {
         findNavController().navigate(
-            TransactionAnalysisFragmentDirections.actionTransactionAnalysisFragmentToBudgetRuleFragment()
+            R.id.action_transactionAnalysisFragment_to_accountChooseFragment
         )
     }
 
-    private fun gotoAccountsFragment() {
+    private fun gotoBudgetRule() {
+        mainViewModel.eraseAll()
+        mainViewModel.setCallingFragments(TAG)
         findNavController().navigate(
-            TransactionAnalysisFragmentDirections.actionTransactionAnalysisFragmentToAccountsFragment()
+            R.id.action_transactionAnalysisFragment_to_budgetRuleChooseFragment
         )
     }
 
     fun gotoTransactionUpdateFragment() {
         findNavController().navigate(
-            TransactionAnalysisFragmentDirections.actionTransactionAnalysisFragmentToTransactionUpdateFragment()
+            R.id.action_transactionAnalysisFragment_to_transactionUpdateFragment
         )
     }
 
     fun gotoBudgetRuleUpdateFragment() {
         findNavController().navigate(
-            TransactionAnalysisFragmentDirections.actionTransactionAnalysisFragmentToBudgetRuleUpdateFragment()
+            R.id.action_transactionAnalysisFragment_to_budgetRuleUpdateFragment
         )
     }
 

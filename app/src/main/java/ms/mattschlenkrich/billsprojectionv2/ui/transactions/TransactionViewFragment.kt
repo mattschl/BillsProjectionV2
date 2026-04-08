@@ -20,8 +20,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
@@ -42,6 +44,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -189,75 +192,84 @@ class TransactionViewFragment : Fragment(),
     @Composable
     fun TransactionItemView(transactionDetailed: TransactionDetailed) {
         val trans = transactionDetailed.transaction!!
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { chooseOptions(transactionDetailed) }
-                .padding(vertical = 8.dp)
+                .padding(horizontal = 16.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(4.dp)
-                    .padding(horizontal = 16.dp)
-                    .background(Color(vf.getRandomColorInt()))
+                    .width(4.dp)
+                    .height(32.dp)
+                    .background(
+                        Color(vf.getRandomColorInt()),
+                        shape = RoundedCornerShape(2.dp)
+                    )
             )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(
+                modifier = Modifier.weight(1f)
             ) {
-                Text(
-                    text = df.getDisplayDate(trans.transDate),
-                    style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = trans.transName,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.weight(2f),
-                    maxLines = 3
-                )
-                Text(
-                    text = nf.displayDollars(trans.transAmount),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.End
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(R.string.to_) + transactionDetailed.toAccount!!.accountName +
-                            if (trans.transToAccountPending) " " + stringResource(R.string.pending) else "",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = if (trans.transToAccountPending) Color.Red else Color.Unspecified,
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.Center
-                )
-                Text(
-                    text = stringResource(R.string.from_) + transactionDetailed.fromAccount!!.accountName +
-                            if (trans.transFromAccountPending) " " + stringResource(R.string.pending) else "",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = if (trans.transFromAccountPending) Color.Red else Color.Unspecified,
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.Center
-                )
-            }
-            if (trans.transNote.isNotEmpty()) {
-                Text(
-                    text = stringResource(R.string.note_) + trans.transNote,
-                    style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = trans.transName,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = nf.displayDollars(trans.transAmount),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.End,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "${transactionDetailed.fromAccount?.accountName} → ${transactionDetailed.toAccount?.accountName}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = df.getDisplayDate(trans.transDate),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.outline,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+                if (trans.transToAccountPending || trans.transFromAccountPending) {
+                    Text(
+                        text = stringResource(R.string.pending),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.Red,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                if (trans.transNote.isNotEmpty()) {
+                    Text(
+                        text = trans.transNote,
+                        style = MaterialTheme.typography.labelSmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = MaterialTheme.colorScheme.outline
+                    )
+                }
             }
         }
     }
