@@ -80,6 +80,7 @@ abstract class BillsDatabase : RoomDatabase() {
                 DB_NAME
             )
 //                .addMigrations(MIGRATION_1_2)
+                .createFromAsset(DB_NAME)
                 .fallbackToDestructiveMigration(true)
                 .build()
         }
