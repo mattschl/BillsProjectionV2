@@ -24,6 +24,7 @@ import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
@@ -185,9 +186,9 @@ class BudgetRuleAddFragment : Fragment(), RefreshableFragment {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .padding(16.dp)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 ProjectTextField(
                     value = name,
@@ -284,6 +285,8 @@ class BudgetRuleAddFragment : Fragment(), RefreshableFragment {
                         modifier = Modifier.weight(1f)
                     )
                 }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
 
                 Text(
                     text = stringResource(R.string.scheduling_rules),
