@@ -58,6 +58,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
@@ -67,7 +68,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 
 private const val TAG = FRAG_BUDGET_RULE_ADD
 
-class BudgetRuleAddFragment : Fragment() {
+class BudgetRuleAddFragment : Fragment(), RefreshableFragment {
 
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
@@ -94,6 +95,18 @@ class BudgetRuleAddFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        refreshData()
+
+        return ComposeView(requireContext()).apply {
+            setContent {
+                BillsProjectionTheme {
+                    BudgetRuleAddScreen()
+                }
+            }
+        }
+    }
+
+    override fun refreshData() {
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         budgetRuleViewModel = mainActivity.budgetRuleViewModel
@@ -103,14 +116,6 @@ class BudgetRuleAddFragment : Fragment() {
 
         lifecycleScope.launch(Dispatchers.IO) {
             budgetNameList = budgetRuleViewModel.getBudgetRuleNameList()
-        }
-
-        return ComposeView(requireContext()).apply {
-            setContent {
-                BillsProjectionTheme {
-                    BudgetRuleAddScreen()
-                }
-            }
         }
     }
 

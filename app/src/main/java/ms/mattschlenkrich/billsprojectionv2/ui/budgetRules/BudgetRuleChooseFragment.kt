@@ -54,6 +54,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_SPLIT
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewModel
@@ -62,7 +63,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 
 private const val TAG = FRAG_BUDGET_RULE_CHOOSE
 
-class BudgetRuleChooseFragment : Fragment() {
+class BudgetRuleChooseFragment : Fragment(), RefreshableFragment {
 
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
@@ -72,10 +73,7 @@ class BudgetRuleChooseFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        mainActivity = (activity as MainActivity)
-        mainViewModel = mainActivity.mainViewModel
-        budgetRuleViewModel = mainActivity.budgetRuleViewModel
-        mainActivity.topMenuBar.title = getString(R.string.choose_a_budget_rule)
+        refreshData()
 
         return ComposeView(requireContext()).apply {
             setContent {
@@ -84,6 +82,13 @@ class BudgetRuleChooseFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun refreshData() {
+        mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        budgetRuleViewModel = mainActivity.budgetRuleViewModel
+        mainActivity.topMenuBar.title = getString(R.string.choose_a_budget_rule)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

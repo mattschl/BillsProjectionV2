@@ -11,10 +11,8 @@ class SettingsManager(private val context: Context) {
 
     fun getSettings(): AppSettings {
         val file = File(context.filesDir, fileName)
-        if (!file.exists()) {
-            val newSettings = AppSettings(deviceId = NumberFunctions().generateId())
-            saveSettings(newSettings)
-            return newSettings
+        if (context.javaClass.name.contains("BridgeContext") || !file.exists()) {
+            return AppSettings(deviceId = NumberFunctions().generateId())
         }
         return try {
             val settings = file.readText().let { gson.fromJson(it, AppSettings::class.java) }
@@ -27,6 +25,9 @@ class SettingsManager(private val context: Context) {
     }
 
     fun saveSettings(settings: AppSettings) {
+        if (context.javaClass.name.contains("BridgeContext")) {
+            return
+        }
         val file = File(context.filesDir, fileName)
         file.writeText(gson.toJson(settings))
     }

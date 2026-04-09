@@ -47,6 +47,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_TYPE_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModel
@@ -55,7 +56,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 
 private const val TAG = FRAG_ACCOUNT_TYPE_UPDATE
 
-class AccountTypeUpdateFragment : Fragment(), MenuProvider {
+class AccountTypeUpdateFragment : Fragment(), MenuProvider, RefreshableFragment {
 
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
@@ -76,6 +77,18 @@ class AccountTypeUpdateFragment : Fragment(), MenuProvider {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        refreshData()
+
+        return ComposeView(requireContext()).apply {
+            setContent {
+                BillsProjectionTheme {
+                    AccountTypeUpdateScreen()
+                }
+            }
+        }
+    }
+
+    override fun refreshData() {
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
         accountViewModel = mainActivity.accountViewModel
@@ -91,14 +104,6 @@ class AccountTypeUpdateFragment : Fragment(), MenuProvider {
 
         lifecycleScope.launch(Dispatchers.IO) {
             accountTypeList = accountViewModel.getAccountTypeNames()
-        }
-
-        return ComposeView(requireContext()).apply {
-            setContent {
-                BillsProjectionTheme {
-                    AccountTypeUpdateScreen()
-                }
-            }
         }
     }
 

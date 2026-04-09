@@ -75,6 +75,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
@@ -89,7 +90,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 
 private const val TAG = FRAG_BUDGET_RULE_UPDATE
 
-class BudgetRuleUpdateFragment : Fragment(), MenuProvider {
+class BudgetRuleUpdateFragment : Fragment(), MenuProvider, RefreshableFragment {
 
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
@@ -117,14 +118,7 @@ class BudgetRuleUpdateFragment : Fragment(), MenuProvider {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        mainActivity = (activity as MainActivity)
-        mainViewModel = mainActivity.mainViewModel
-        budgetRuleViewModel = mainActivity.budgetRuleViewModel
-        budgetItemViewModel = mainActivity.budgetItemViewModel
-        mainActivity.topMenuBar.title = getString(R.string.update_budget_rule)
-
-        loadBudgetRule()
-        getBudgetRuleNameForValidation()
+        refreshData()
 
         return ComposeView(requireContext()).apply {
             setContent {
@@ -133,6 +127,17 @@ class BudgetRuleUpdateFragment : Fragment(), MenuProvider {
                 }
             }
         }
+    }
+
+    override fun refreshData() {
+        mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        budgetRuleViewModel = mainActivity.budgetRuleViewModel
+        budgetItemViewModel = mainActivity.budgetItemViewModel
+        mainActivity.topMenuBar.title = getString(R.string.update_budget_rule)
+
+        loadBudgetRule()
+        getBudgetRuleNameForValidation()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

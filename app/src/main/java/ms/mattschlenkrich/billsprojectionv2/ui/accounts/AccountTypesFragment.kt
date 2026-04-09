@@ -53,6 +53,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
@@ -62,7 +63,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 
 private const val TAG = FRAG_ACCOUNT_TYPES
 
-class AccountTypesFragment : Fragment(), MenuProvider {
+class AccountTypesFragment : Fragment(), MenuProvider, RefreshableFragment {
 
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
@@ -75,10 +76,7 @@ class AccountTypesFragment : Fragment(), MenuProvider {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        mainActivity = (activity as MainActivity)
-        mainViewModel = mainActivity.mainViewModel
-        accountViewModel = mainActivity.accountViewModel
-        mainActivity.topMenuBar.title = getString(R.string.choose_an_account_type)
+        refreshData()
 
         return ComposeView(requireContext()).apply {
             setContent {
@@ -87,6 +85,13 @@ class AccountTypesFragment : Fragment(), MenuProvider {
                 }
             }
         }
+    }
+
+    override fun refreshData() {
+        mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        accountViewModel = mainActivity.accountViewModel
+        mainActivity.topMenuBar.title = getString(R.string.choose_an_account_type)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

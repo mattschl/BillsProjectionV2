@@ -54,6 +54,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
@@ -69,7 +70,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 
 private const val TAG = FRAG_TRANSACTION_SPLIT
 
-class TransactionSplitFragment : Fragment() {
+class TransactionSplitFragment : Fragment(), RefreshableFragment {
 
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
@@ -125,8 +126,9 @@ class TransactionSplitFragment : Fragment() {
         }
     }
 
-    fun refreshData() {
+    override fun refreshData() {
         updateViewModels()
+        mainActivity.topMenuBar.title = getString(R.string.split_transaction)
         populateValues()
         refreshKey.intValue++
     }

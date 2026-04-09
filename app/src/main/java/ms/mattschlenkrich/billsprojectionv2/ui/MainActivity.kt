@@ -54,6 +54,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
 import ms.mattschlenkrich.billsprojectionv2.common.projections.UpdateBudgetPredictions
 import ms.mattschlenkrich.billsprojectionv2.common.sync.NewActivity
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
@@ -73,15 +74,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewMod
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.TransactionViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.TransactionViewModelFactory
-import ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountsFragment
-import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.BudgetRuleFragment
-import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetViewFragment
 import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
-import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionAddFragment
-import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionAnalysisFragment
-import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionSplitFragment
-import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionUpdateFragment
-import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionViewFragment
 
 private const val TAG = "MainActivity"
 
@@ -503,38 +496,8 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.fragment_container_view) as? NavHostFragment
         navHostFragment?.childFragmentManager?.fragments?.forEach { fragment ->
-            when (fragment) {
-                is BudgetViewFragment -> {
-                    fragment.refreshData()
-                }
-
-                is AccountsFragment -> {
-                    fragment.refreshData()
-                }
-
-                is BudgetRuleFragment -> {
-                    fragment.refreshData()
-                }
-
-                is TransactionViewFragment -> {
-                    fragment.refreshData()
-                }
-
-                is TransactionAddFragment -> {
-                    fragment.refreshData()
-                }
-
-                is TransactionAnalysisFragment -> {
-                    fragment.refreshData()
-                }
-
-                is TransactionUpdateFragment -> {
-                    fragment.refreshData()
-                }
-
-                is TransactionSplitFragment -> {
-                    fragment.refreshData()
-                }
+            if (fragment is RefreshableFragment) {
+                fragment.refreshData()
             }
         }
     }

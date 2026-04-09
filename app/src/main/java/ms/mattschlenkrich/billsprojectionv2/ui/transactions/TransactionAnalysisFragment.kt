@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -45,6 +44,9 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
@@ -61,6 +63,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
@@ -72,7 +75,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 
 private const val TAG = FRAG_TRANSACTION_ANALYSIS
 
-class TransactionAnalysisFragment : Fragment() {
+class TransactionAnalysisFragment : Fragment(), RefreshableFragment {
 
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
@@ -101,6 +104,14 @@ class TransactionAnalysisFragment : Fragment() {
                     }
                 }
             }
+        }
+    }
+
+    @Preview(showBackground = true)
+    @Composable
+    fun TransactionAnalysisScreenPreview() {
+        BillsProjectionTheme {
+            TransactionAnalysisScreen()
         }
     }
 
@@ -477,14 +488,16 @@ class TransactionAnalysisFragment : Fragment() {
                     Text(
                         text = stringResource(R.string.rules),
                         style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.width(100.dp)
+                        modifier = Modifier.width(80.dp)
                     )
                     Text(
                         text = budgetRuleName,
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                         modifier = Modifier
                             .weight(1f)
-                            .clickable { onBudgetRuleClick() }
+                            .clickable { onBudgetRuleClick() },
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
@@ -495,14 +508,16 @@ class TransactionAnalysisFragment : Fragment() {
                     Text(
                         text = stringResource(R.string.account_name),
                         style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.width(100.dp)
+                        modifier = Modifier.width(80.dp)
                     )
                     Text(
                         text = accountName,
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                         modifier = Modifier
                             .weight(1f)
-                            .clickable { onAccountClick() }
+                            .clickable { onAccountClick() },
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
@@ -511,21 +526,28 @@ class TransactionAnalysisFragment : Fragment() {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1.2f),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Checkbox(checked = isSearchEnabled, onCheckedChange = onSearchToggle)
                         Text(
                             text = stringResource(R.string.use_search_criteria),
-                            style = MaterialTheme.typography.bodySmall
+                            style = MaterialTheme.typography.bodySmall,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                     if (isSearchEnabled) {
                         ProjectTextField(
                             value = searchQueryInput,
                             onValueChange = onSearchQueryChange,
-                            modifier = Modifier.width(150.dp),
-                            placeholder = { Text(stringResource(R.string.enter_criteria)) },
+                            modifier = Modifier.weight(1f),
+                            placeholder = {
+                                Text(
+                                    stringResource(R.string.enter_criteria),
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            },
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
                         )
@@ -534,7 +556,11 @@ class TransactionAnalysisFragment : Fragment() {
                             modifier = Modifier.padding(start = 4.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.deep_red))
                         ) {
-                            Text(stringResource(R.string.go), color = Color.White)
+                            Text(
+                                stringResource(R.string.go),
+                                color = Color.White,
+                                style = MaterialTheme.typography.bodySmall
+                            )
                         }
                     }
                 }
@@ -546,17 +572,20 @@ class TransactionAnalysisFragment : Fragment() {
                     TimeRangeOption(
                         text = stringResource(R.string.show_all),
                         selected = timeRange == TimeRange.SHOW_ALL,
-                        onSelect = { onTimeRangeChange(TimeRange.SHOW_ALL) }
+                        onSelect = { onTimeRangeChange(TimeRange.SHOW_ALL) },
+                        modifier = Modifier.weight(1f)
                     )
                     TimeRangeOption(
                         text = stringResource(R.string.previous_month),
                         selected = timeRange == TimeRange.LAST_MONTH,
-                        onSelect = { onTimeRangeChange(TimeRange.LAST_MONTH) }
+                        onSelect = { onTimeRangeChange(TimeRange.LAST_MONTH) },
+                        modifier = Modifier.weight(1f)
                     )
                     TimeRangeOption(
                         text = stringResource(R.string.date_range),
                         selected = timeRange == TimeRange.DATE_RANGE,
-                        onSelect = { onTimeRangeChange(TimeRange.DATE_RANGE) }
+                        onSelect = { onTimeRangeChange(TimeRange.DATE_RANGE) },
+                        modifier = Modifier.weight(1f)
                     )
                 }
 
@@ -597,10 +626,23 @@ class TransactionAnalysisFragment : Fragment() {
     }
 
     @Composable
-    fun TimeRangeOption(text: String, selected: Boolean, onSelect: () -> Unit) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+    fun TimeRangeOption(
+        text: String,
+        selected: Boolean,
+        onSelect: () -> Unit,
+        modifier: Modifier = Modifier
+    ) {
+        Row(
+            modifier = modifier.clickable { onSelect() },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             RadioButton(selected = selected, onClick = onSelect)
-            Text(text = text, style = MaterialTheme.typography.bodySmall)
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodySmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 
@@ -686,21 +728,43 @@ class TransactionAnalysisFragment : Fragment() {
         value1Color: Color = Color.Black,
         value2Color: Color = Color.Black
     ) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(text = label1, style = MaterialTheme.typography.bodySmall)
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 4.dp)
+            ) {
+                Text(
+                    text = label1,
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
                 Text(
                     text = value1,
                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                    color = value1Color
+                    color = value1Color,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
-            Column(modifier = Modifier.weight(1f)) {
-                Text(text = label2, style = MaterialTheme.typography.bodySmall)
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 4.dp)
+            ) {
+                Text(
+                    text = label2,
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
                 Text(
                     text = value2,
                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                    color = value2Color
+                    color = value2Color,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }
@@ -730,68 +794,85 @@ class TransactionAnalysisFragment : Fragment() {
     }
 
     @Composable
-    fun TransactionItemCompose(transaction: TransactionDetailed) {
+    fun TransactionItemCompose(transactionDetailed: TransactionDetailed) {
         val vf = remember { VisualsFunctions() }
-        val randomColor = remember(transaction.transaction?.transId) {
-            Color(vf.getRandomColorInt())
-        }
-
-        Card(
+        val trans = transactionDetailed.transaction!!
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 4.dp)
-                .clickable { chooseOptions(transaction) },
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                .clickable { chooseOptions(transactionDetailed) }
+                .padding(horizontal = 16.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .width(4.dp)
+                    .height(32.dp)
+                    .background(
+                        Color(vf.getRandomColorInt()),
+                        shape = RoundedCornerShape(2.dp)
+                    )
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(
+                modifier = Modifier.weight(1f)
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(randomColor, shape = RoundedCornerShape(4.dp))
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Column(modifier = Modifier.weight(1f)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     Text(
-                        text = df.getDisplayDateWithYear(transaction.transaction!!.transDate),
-                        style = MaterialTheme.typography.bodySmall
+                        text = trans.transName,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
                     )
-                    Text(
-                        text = transaction.transaction.transName,
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
-                    )
-                    transaction.transaction?.let { trans ->
-                        Text(
-                            text = stringResource(R.string._to_) + (transaction.toAccount?.accountName
-                                ?: "") +
-                                    if (trans.transToAccountPending) " " + stringResource(R.string._pending) else "",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = if (trans.transToAccountPending) Color.Red else Color.Unspecified
-                        )
-                        Text(
-                            text = stringResource(R.string.from_) + (transaction.fromAccount?.accountName
-                                ?: "") +
-                                    if (trans.transFromAccountPending) " " + stringResource(R.string._pending) else "",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = if (trans.transFromAccountPending) Color.Red else Color.Unspecified
-                        )
-                        if (trans.transNote.isNotEmpty()) {
-                            Text(
-                                text = stringResource(R.string.note_) + trans.transNote,
-                                style = MaterialTheme.typography.bodySmall,
-                                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
-                            )
-                        }
-                    }
-                }
-                transaction.transaction?.let { trans ->
                     Text(
                         text = nf.displayDollars(trans.transAmount),
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.End,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "${transactionDetailed.fromAccount?.accountName} → ${transactionDetailed.toAccount?.accountName}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = df.getDisplayDate(trans.transDate),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.outline,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+                if (trans.transToAccountPending || trans.transFromAccountPending) {
+                    Text(
+                        text = stringResource(R.string.pending),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.Red,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                if (trans.transNote.isNotEmpty()) {
+                    Text(
+                        text = trans.transNote,
+                        style = MaterialTheme.typography.labelSmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = MaterialTheme.colorScheme.outline
                     )
                 }
             }
@@ -994,8 +1075,9 @@ class TransactionAnalysisFragment : Fragment() {
     }
 
     // Keep this for MainActivity.onResume compatibility if needed
-    fun refreshData() {
+    override fun refreshData() {
         updateViewModels()
+        mainActivity.topMenuBar.title = getString(R.string.transaction_analysis)
         populateValues()
         refreshKey.intValue++
     }

@@ -57,6 +57,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModel
@@ -65,8 +66,8 @@ import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 
 private const val TAG = FRAG_ACCOUNTS
 
-class AccountsFragment : Fragment() {
-
+class AccountsFragment : Fragment(), RefreshableFragment {
+    
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
     private lateinit var accountViewModel: AccountViewModel
@@ -97,8 +98,9 @@ class AccountsFragment : Fragment() {
         accountViewModel = mainActivity.accountViewModel
     }
 
-    fun refreshData() {
+    override fun refreshData() {
         updateViewModels()
+        mainActivity.topMenuBar.title = getString(R.string.accounts)
         lifecycleScope.launch {
             delay(100)
             refreshKey.intValue++

@@ -40,6 +40,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_TYPE_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
@@ -49,7 +50,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 
 private const val TAG = FRAG_ACCOUNT_TYPE_ADD
 
-class AccountTypeAddFragment : Fragment() {
+class AccountTypeAddFragment : Fragment(), RefreshableFragment {
 
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
@@ -70,14 +71,7 @@ class AccountTypeAddFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        mainActivity = (activity as MainActivity)
-        mainViewModel = mainActivity.mainViewModel
-        accountViewModel = mainActivity.accountViewModel
-        mainActivity.topMenuBar.title = getString(R.string.add_a_new_account_type)
-
-        lifecycleScope.launch(Dispatchers.IO) {
-            accountTypeList = accountViewModel.getAccountTypeNames()
-        }
+        refreshData()
 
         return ComposeView(requireContext()).apply {
             setContent {
@@ -85,6 +79,17 @@ class AccountTypeAddFragment : Fragment() {
                     AccountTypeAddScreen()
                 }
             }
+        }
+    }
+
+    override fun refreshData() {
+        mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        accountViewModel = mainActivity.accountViewModel
+        mainActivity.topMenuBar.title = getString(R.string.add_a_new_account_type)
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            accountTypeList = accountViewModel.getAccountTypeNames()
         }
     }
 
