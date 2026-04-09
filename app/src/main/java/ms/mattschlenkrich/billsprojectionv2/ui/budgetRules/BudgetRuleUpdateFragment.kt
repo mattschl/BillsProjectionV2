@@ -9,7 +9,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -71,6 +70,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
+import ms.mattschlenkrich.billsprojectionv2.common.components.BudgetItemDisplay
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
@@ -259,9 +259,9 @@ class BudgetRuleUpdateFragment : Fragment(), MenuProvider, RefreshableFragment {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .padding(16.dp)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 ProjectTextField(
                     value = name,
@@ -367,6 +367,8 @@ class BudgetRuleUpdateFragment : Fragment(), MenuProvider, RefreshableFragment {
                     )
                 }
 
+                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+
                 Text(
                     text = stringResource(R.string.scheduling_rules),
                     style = MaterialTheme.typography.labelLarge,
@@ -463,38 +465,12 @@ class BudgetRuleUpdateFragment : Fragment(), MenuProvider, RefreshableFragment {
                 )
 
                 budgetItems.forEach { item ->
-                    ProjectedDateItem(item)
+                    BudgetItemDisplay(
+                        budgetItemDetailed = item,
+                        isCredit = item.toAccount?.accountId == detailed?.toAccount?.accountId,
+                        onClick = { confirmGotoBudgetItem(item) }
+                    )
                 }
-            }
-        }
-    }
-
-    @Composable
-    fun ProjectedDateItem(item: BudgetItemDetailed) {
-        val actualDate = df.getDisplayDate(item.budgetItem!!.biActualDate)
-        val payDay = df.getDisplayDate(item.budgetItem!!.biPayDay)
-        val amount = nf.displayDollars(item.budgetItem!!.biProjectedAmount)
-
-        OutlinedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp)
-                .clickable { confirmGotoBudgetItem(item) }
-        ) {
-            Column(modifier = Modifier.padding(12.dp)) {
-                Text(
-                    text = actualDate,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = " (pay day $payDay)",
-                    style = MaterialTheme.typography.labelSmall
-                )
-                Text(
-                    text = " for $amount",
-                    style = MaterialTheme.typography.bodyMedium
-                )
             }
         }
     }

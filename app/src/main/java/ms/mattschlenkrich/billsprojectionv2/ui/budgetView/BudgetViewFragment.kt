@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -50,7 +49,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -67,6 +65,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_100
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_500
+import ms.mattschlenkrich.billsprojectionv2.common.components.BudgetItemDisplay
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
@@ -241,7 +240,12 @@ class BudgetViewFragment : Fragment(), RefreshableFragment {
                             .weight(1f)
                     ) {
                         items(budgetList) { budgetItem ->
-                            BudgetItemRow(budgetItem)
+                            BudgetItemDisplay(
+                                budgetItemDetailed = budgetItem,
+                                isCredit = budgetItem.toAccount?.accountName == selectedAsset.value,
+                                onClick = { chooseOptionsForBudget(budgetItem) },
+                                onLockClick = { chooseLockUnlock(budgetItem) }
+                            )
                         }
                     }
                 } else {
@@ -608,82 +612,6 @@ class BudgetViewFragment : Fragment(), RefreshableFragment {
         }
     }
 
-    @Composable
-    fun BudgetItemRow(
-        budgetItem: BudgetItemDetailed,
-    ) {
-        val color = remember { androidx.compose.ui.graphics.Color(vf.getRandomColorInt()) }
-        val isCredit = budgetItem.toAccount!!.accountName == selectedAsset.value
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { chooseOptionsForBudget(budgetItem) }
-                .padding(vertical = 1.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = df.getDisplayDate(budgetItem.budgetItem!!.biActualDate),
-                    modifier = Modifier.width(100.dp),
-                    style = MaterialTheme.typography.bodySmall
-                )
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = budgetItem.budgetItem!!.biBudgetName + if (budgetItem.budgetItem!!.biIsFixed) getString(
-                            R.string._fixed_
-                        ) else "",
-                        fontWeight = FontWeight.Bold,
-                        color = if (budgetItem.budgetItem!!.biIsFixed) androidx.compose.ui.graphics.Color.Red else androidx.compose.ui.graphics.Color.Black,
-                        style = MaterialTheme.typography.bodyMedium,
-                        maxLines = 1
-                    )
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = stringResource(R.string.to_) + budgetItem.toAccount!!.accountName,
-                            modifier = Modifier.weight(1f),
-                            color = androidx.compose.ui.graphics.Color.Blue,
-                            style = MaterialTheme.typography.labelSmall,
-                            maxLines = 1
-                        )
-                        Text(
-                            text = stringResource(R.string.from_) + budgetItem.fromAccount!!.accountName,
-                            modifier = Modifier.weight(1f),
-                            color = androidx.compose.ui.graphics.Color.Red,
-                            style = MaterialTheme.typography.labelSmall,
-                            maxLines = 1,
-                            textAlign = TextAlign.End
-                        )
-                    }
-                }
-                Text(
-                    text = nf.displayDollars(budgetItem.budgetItem!!.biProjectedAmount),
-                    modifier = Modifier.width(85.dp),
-                    fontWeight = FontWeight.Bold,
-                    color = if (isCredit) androidx.compose.ui.graphics.Color.Black else androidx.compose.ui.graphics.Color.Red,
-                    textAlign = TextAlign.End,
-                    style = MaterialTheme.typography.bodySmall
-                )
-                Image(
-                    painter = painterResource(id = if (budgetItem.budgetItem!!.biLocked) R.drawable.ic_liocked_foreground else R.drawable.ic_unlocked_foreground),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(start = 4.dp)
-                        .size(24.dp)
-                        .clickable { chooseLockUnlock(budgetItem) }
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(color)
-                    .padding(horizontal = 8.dp)
-            )
-        }
-    }
 
     @Preview(showBackground = true)
     @Composable
