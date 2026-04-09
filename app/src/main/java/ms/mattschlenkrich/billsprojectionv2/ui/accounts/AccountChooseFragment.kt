@@ -57,6 +57,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
+import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModel
@@ -65,7 +66,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 
 private const val TAG = FRAG_ACCOUNT_CHOOSE
 
-class AccountChooseFragment : Fragment() {
+class AccountChooseFragment : Fragment(), RefreshableFragment {
 
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
@@ -75,10 +76,7 @@ class AccountChooseFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        mainActivity = (activity as MainActivity)
-        mainViewModel = mainActivity.mainViewModel
-        accountViewModel = mainActivity.accountViewModel
-        mainActivity.topMenuBar.title = getString(R.string.choose_an_account)
+        refreshData()
 
         return ComposeView(requireContext()).apply {
             setContent {
@@ -87,6 +85,13 @@ class AccountChooseFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun refreshData() {
+        mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        accountViewModel = mainActivity.accountViewModel
+        mainActivity.topMenuBar.title = getString(R.string.choose_an_account)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

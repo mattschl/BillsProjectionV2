@@ -9,6 +9,7 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
@@ -22,12 +23,22 @@ fun BillsProjectionTheme(
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
-    val settingsManager = SettingsManager(context)
-    val actualFontScale = fontScale ?: when (settingsManager.getSettings().fontSize) {
-        "small" -> 0.8f
-        "large" -> 1.2f
-        "extra_large" -> 1.5f
-        else -> 1.0f
+    val isPreview = androidx.compose.ui.platform.LocalInspectionMode.current
+    val actualFontScale = fontScale ?: if (isPreview) {
+        1.0f
+    } else {
+        val settingsManager = remember { SettingsManager(context) }
+        val fontSize = try {
+            settingsManager.getSettings().fontSize
+        } catch (e: Exception) {
+            "normal"
+        }
+        when (fontSize) {
+            "small" -> 0.8f
+            "large" -> 1.2f
+            "extra_large" -> 1.5f
+            else -> 1.0f
+        }
     }
 
     val colorScheme = when {

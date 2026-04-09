@@ -75,6 +75,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
@@ -88,7 +89,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 
 private const val TAG = FRAG_ACCOUNT_UPDATE
 
-class AccountUpdateFragment : Fragment(), MenuProvider {
+class AccountUpdateFragment : Fragment(), MenuProvider, RefreshableFragment {
 
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
@@ -104,13 +105,7 @@ class AccountUpdateFragment : Fragment(), MenuProvider {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        mainActivity = (activity as MainActivity)
-        mainViewModel = mainActivity.mainViewModel
-        accountViewModel = mainActivity.accountViewModel
-        transactionViewModel = mainActivity.transactionViewModel
-        budgetRuleViewModel = mainActivity.budgetRuleViewModel
-
-        mainActivity.topMenuBar.title = getString(R.string.update_account)
+        refreshData()
 
         return ComposeView(requireContext()).apply {
             setContent {
@@ -119,6 +114,16 @@ class AccountUpdateFragment : Fragment(), MenuProvider {
                 }
             }
         }
+    }
+
+    override fun refreshData() {
+        mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        accountViewModel = mainActivity.accountViewModel
+        transactionViewModel = mainActivity.transactionViewModel
+        budgetRuleViewModel = mainActivity.budgetRuleViewModel
+
+        mainActivity.topMenuBar.title = getString(R.string.update_account)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

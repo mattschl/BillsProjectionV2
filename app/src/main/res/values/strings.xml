@@ -24,6 +24,7 @@
     <string name="add_a_new_account">Add a new Account</string>
     <string name="add_a_new_account_type">Add a new Account Type</string>
     <string name="add_a_new_budget_item">Add a new Budget Item</string>
+    <string name="add_account">Add account</string>
     <string name="add_a_new_transaction">Add a new Transaction</string>
     <string name="add_a_new_transaction_based_on_the_budget_rule">Add a new Transaction based on the Budget Rule</string>
     <string name="add_account_type">Add Account Type</string>
@@ -327,6 +328,9 @@
     <string name="update">Update</string>
     <string name="update_account">Update Account</string>
     <string name="update_account_type">Update Account Type</string>
+    <string name="perform_transaction">Perform transaction</string>
+    <string name="split_transaction">Split transaction</string>
+    <string name="update_transaction">Update transaction</string>
     <string name="update_budget_predictions">Update Budget Predictions</string>
     <string name="update_budget_rule">Update Budget Rule</string>
     <string name="update_this_budget_item">Update this Budget Item</string>

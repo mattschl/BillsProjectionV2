@@ -51,6 +51,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.OWING
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
@@ -60,7 +61,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 
 private const val TAG = FRAG_ACCOUNT_ADD
 
-class AccountAddFragment : Fragment(), MenuProvider {
+class AccountAddFragment : Fragment(), MenuProvider, RefreshableFragment {
 
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
@@ -79,10 +80,23 @@ class AccountAddFragment : Fragment(), MenuProvider {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        refreshData()
+        mainActivity.topMenuBar.title = getString(R.string.add_a_new_account)
+
+        return ComposeView(requireContext()).apply {
+            setContent {
+                BillsProjectionTheme {
+                    AccountAddScreen()
+                }
+            }
+        }
+    }
+
+    override fun refreshData() {
         mainActivity = (activity as MainActivity)
+        mainActivity.topMenuBar.title = getString(R.string.add_account)
         mainViewModel = mainActivity.mainViewModel
         accountViewModel = mainActivity.accountViewModel
-        mainActivity.topMenuBar.title = getString(R.string.add_a_new_account)
 
         // Initialize values from cache if they exist
         val cached = mainViewModel.getAccountWithType()
@@ -123,14 +137,6 @@ class AccountAddFragment : Fragment(), MenuProvider {
             owingState.value = nf.displayDollars(0.0)
             budgetedState.value = nf.displayDollars(0.0)
             limitState.value = nf.displayDollars(0.0)
-        }
-
-        return ComposeView(requireContext()).apply {
-            setContent {
-                BillsProjectionTheme {
-                    AccountAddScreen()
-                }
-            }
         }
     }
 

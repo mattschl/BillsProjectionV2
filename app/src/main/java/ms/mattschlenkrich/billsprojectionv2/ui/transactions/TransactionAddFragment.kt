@@ -36,6 +36,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -62,6 +63,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
@@ -75,7 +77,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 
 private const val TAG = FRAG_TRANS_ADD
 
-class TransactionAddFragment : Fragment(), MenuProvider {
+class TransactionAddFragment : Fragment(), MenuProvider, RefreshableFragment {
 
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
@@ -100,20 +102,20 @@ class TransactionAddFragment : Fragment(), MenuProvider {
 
     private var toAccountWithTypeState = mutableStateOf<AccountWithType?>(null)
     private var fromAccountWithTypeState = mutableStateOf<AccountWithType?>(null)
+    private val refreshKey = mutableIntStateOf(0)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         updateViewModels()
-        mainActivity.topMenuBar.title = getString(R.string.add_a_new_transaction)
-
-        populateValues()
 
         return ComposeView(requireContext()).apply {
             setContent {
                 BillsProjectionTheme {
-                    TransactionAddScreen()
+                    if (refreshKey.intValue >= 0) {
+                        TransactionAddScreen()
+                    }
                 }
             }
         }
@@ -126,9 +128,11 @@ class TransactionAddFragment : Fragment(), MenuProvider {
         accountViewModel = mainActivity.accountViewModel
     }
 
-    fun refreshData() {
+    override fun refreshData() {
+        mainActivity.topMenuBar.title = getString(R.string.add_a_new_transaction)
         updateViewModels()
         populateValues()
+        refreshKey.intValue++
     }
 
     fun populateValues() {
@@ -225,6 +229,7 @@ class TransactionAddFragment : Fragment(), MenuProvider {
         super.onViewCreated(view, savedInstanceState)
         val menuHost: MenuHost = mainActivity.topMenuBar
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        refreshData()
     }
 
     @Composable

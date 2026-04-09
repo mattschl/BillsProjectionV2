@@ -58,6 +58,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
@@ -70,7 +71,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 
 private const val TAG = FRAG_BUDGET_RULES
 
-class BudgetRuleFragment : Fragment() {
+class BudgetRuleFragment : Fragment(), RefreshableFragment {
 
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
@@ -102,8 +103,9 @@ class BudgetRuleFragment : Fragment() {
         budgetRuleViewModel = mainActivity.budgetRuleViewModel
     }
 
-    fun refreshData() {
+    override fun refreshData() {
         updateViewModels()
+        mainActivity.topMenuBar.title = getString(R.string.budget_rules)
         lifecycleScope.launch {
             delay(100)
             refreshKey.intValue++

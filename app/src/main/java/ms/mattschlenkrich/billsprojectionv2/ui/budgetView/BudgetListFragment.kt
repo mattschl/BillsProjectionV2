@@ -49,6 +49,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FREQ_WEEKLY
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleComplete
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
@@ -58,7 +59,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 
 private const val TAG = FRAG_BUDGET_LIST
 
-class BudgetListFragment : Fragment() {
+class BudgetListFragment : Fragment(), RefreshableFragment {
 
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
@@ -71,10 +72,7 @@ class BudgetListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        mainActivity = (activity as MainActivity)
-        mainViewModel = mainActivity.mainViewModel
-        budgetRuleViewModel = mainActivity.budgetRuleViewModel
-        mainActivity.topMenuBar.title = getString(R.string.view_the_complete_budget)
+        refreshData()
 
         return ComposeView(requireContext()).apply {
             setContent {
@@ -83,6 +81,13 @@ class BudgetListFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun refreshData() {
+        mainActivity = (activity as MainActivity)
+        mainViewModel = mainActivity.mainViewModel
+        budgetRuleViewModel = mainActivity.budgetRuleViewModel
+        mainActivity.topMenuBar.title = getString(R.string.view_the_complete_budget)
     }
 
     @Composable

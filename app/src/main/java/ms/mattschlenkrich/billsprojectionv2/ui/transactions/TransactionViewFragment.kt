@@ -61,6 +61,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
@@ -73,7 +74,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 private const val TAG = FRAG_TRANSACTION_VIEW
 
 class TransactionViewFragment : Fragment(),
-    SearchView.OnQueryTextListener, MenuProvider {
+    SearchView.OnQueryTextListener, MenuProvider, RefreshableFragment {
 
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
@@ -91,8 +92,7 @@ class TransactionViewFragment : Fragment(),
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        updateViewModels()
-        mainActivity.topMenuBar.title = getString(R.string.view_transaction_history)
+        refreshData()
 
         return ComposeView(requireContext()).apply {
             setContent {
@@ -111,8 +111,9 @@ class TransactionViewFragment : Fragment(),
         budgetRuleViewModel = mainActivity.budgetRuleViewModel
     }
 
-    fun refreshData() {
+    override fun refreshData() {
         updateViewModels()
+        mainActivity.topMenuBar.title = getString(R.string.view_transaction_history)
         lifecycleScope.launch {
             delay(100)
             refreshKey.intValue++

@@ -24,17 +24,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
 import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
+import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 
-class SettingsFragment : Fragment() {
+class SettingsFragment : Fragment(), RefreshableFragment {
 
     private lateinit var settingsManager: SettingsManager
+    private lateinit var mainActivity: MainActivity
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        mainActivity = activity as MainActivity
         settingsManager = SettingsManager(requireContext())
 
         return ComposeView(requireContext()).apply {
@@ -44,6 +48,15 @@ class SettingsFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        refreshData()
+    }
+
+    override fun refreshData() {
+        mainActivity.topMenuBar.setTitle(R.string.settings)
     }
 
     @Composable

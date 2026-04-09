@@ -27,11 +27,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
@@ -196,9 +201,22 @@ fun SyncScreen(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                var textFieldValue by remember {
+                    mutableStateOf(TextFieldValue(viewModel.docContent))
+                }
+                LaunchedEffect(viewModel.docContent) {
+                    if (textFieldValue.text != viewModel.docContent) {
+                        textFieldValue = textFieldValue.copy(text = viewModel.docContent)
+                    }
+                }
                 OutlinedTextField(
-                    value = viewModel.docContent,
-                    onValueChange = { viewModel.docContent = it },
+                    value = textFieldValue,
+                    onValueChange = {
+                        textFieldValue = it
+                        if (viewModel.docContent != it.text) {
+                            viewModel.docContent = it.text
+                        }
+                    },
                     label = { Text(stringResource(R.string.document_content)) },
                     modifier = Modifier
                         .fillMaxWidth()

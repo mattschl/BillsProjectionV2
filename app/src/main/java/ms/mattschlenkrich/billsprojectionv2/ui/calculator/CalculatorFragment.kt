@@ -43,32 +43,46 @@ import androidx.navigation.fragment.findNavController
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAGMENT_CALC
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 
 private const val TAG = FRAGMENT_CALC
 
-class CalculatorFragment : Fragment() {
+class CalculatorFragment : Fragment(), RefreshableFragment {
 
     private val nf = NumberFunctions()
     private lateinit var mainActivity: MainActivity
     private lateinit var mainViewModel: MainViewModel
+
+    private val refreshKey = mutableStateOf(0)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         mainActivity = (activity as MainActivity)
         mainViewModel = mainActivity.mainViewModel
-        mainActivity.topMenuBar.setTitle(R.string.calculator)
 
         return ComposeView(requireContext()).apply {
             setContent {
                 BillsProjectionTheme {
-                    CalculatorScreen()
+                    if (refreshKey.value >= 0) {
+                        CalculatorScreen()
+                    }
                 }
             }
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        refreshData()
+    }
+
+    override fun refreshData() {
+        mainActivity.topMenuBar.setTitle(R.string.calculator)
+        refreshKey.value++
     }
 
     @Composable
