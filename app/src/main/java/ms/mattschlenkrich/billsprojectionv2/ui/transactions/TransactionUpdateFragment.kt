@@ -1,7 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.transactions
 
 import android.app.AlertDialog
-import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -12,7 +11,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -62,6 +60,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
+import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
@@ -274,21 +273,12 @@ class TransactionUpdateFragment : Fragment(), MenuProvider, RefreshableFragment 
                 )
 
                 Row(modifier = Modifier.fillMaxWidth()) {
-                    Box(modifier = Modifier.weight(1f)) {
-                        ProjectTextField(
-                            value = date,
-                            onValueChange = { },
-                            label = { Text(stringResource(R.string.date)) },
-                            modifier = Modifier.fillMaxWidth(),
-                            readOnly = true,
-                            enabled = false,
-                        )
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .clickable { chooseDate() }
-                        )
-                    }
+                    ProjectDateField(
+                        value = date,
+                        onValueChange = { date = it },
+                        label = stringResource(R.string.date),
+                        modifier = Modifier.weight(1f),
+                    )
                     Spacer(modifier = Modifier.width(8.dp))
                     var amountValue by amountTextFieldValue
                     BalanceField(
@@ -447,21 +437,6 @@ class TransactionUpdateFragment : Fragment(), MenuProvider, RefreshableFragment 
                 }
             }
         )
-    }
-
-    private fun chooseDate() {
-        val curDateAll = dateState.value.split("-")
-        DatePickerDialog(
-            requireContext(), { _, year, monthOfYear, dayOfMonth ->
-                val month = monthOfYear + 1
-                dateState.value = "$year-${month.toString().padStart(2, '0')}-${
-                    dayOfMonth.toString().padStart(2, '0')
-                }"
-            }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
-        ).apply {
-            setTitle(getString(R.string.choose_transaction_date))
-            show()
-        }
     }
 
     private fun chooseBudgetRule() {

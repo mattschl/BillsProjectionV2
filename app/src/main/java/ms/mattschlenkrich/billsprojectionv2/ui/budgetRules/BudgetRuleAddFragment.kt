@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.budgetRules
 
-import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -28,7 +27,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -55,6 +53,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
+import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
@@ -194,24 +193,35 @@ class BudgetRuleAddFragment : Fragment(), RefreshableFragment {
                     value = name,
                     onValueChange = { name = it },
                     label = { Text(stringResource(R.string.budget_rule_name)) },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                ClickableSelectionCard(
-                    label = stringResource(R.string.to_this_account),
-                    value = toAccount?.accountName ?: stringResource(R.string.choose_an_account),
-                    onClick = { chooseAccount(REQUEST_TO_ACCOUNT) }
-                )
-
-                ClickableSelectionCard(
-                    label = stringResource(R.string.from_this_account),
-                    value = fromAccount?.accountName ?: stringResource(R.string.choose_an_account),
-                    onClick = { chooseAccount(REQUEST_FROM_ACCOUNT) }
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
                 )
 
                 Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    ClickableSelectionCard(
+                        label = stringResource(R.string.to_this_account),
+                        value = toAccount?.accountName
+                            ?: stringResource(R.string.choose_an_account),
+                        onClick = { chooseAccount(REQUEST_TO_ACCOUNT) },
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    ClickableSelectionCard(
+                        label = stringResource(R.string.from_this_account),
+                        value = fromAccount?.accountName
+                            ?: stringResource(R.string.choose_an_account),
+                        onClick = { chooseAccount(REQUEST_FROM_ACCOUNT) },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     ProjectTextField(
                         value = amount,
@@ -226,14 +236,18 @@ class BudgetRuleAddFragment : Fragment(), RefreshableFragment {
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
                     )
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(start = 8.dp)
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(start = 4.dp)
                     ) {
-                        Checkbox(checked = isFixed, onCheckedChange = { isFixed = it })
+                        Checkbox(
+                            checked = isFixed,
+                            onCheckedChange = { isFixed = it },
+                            modifier = Modifier.padding(0.dp)
+                        )
                         Text(
                             stringResource(R.string.fixed),
-                            style = MaterialTheme.typography.labelMedium
+                            style = MaterialTheme.typography.labelSmall
                         )
                     }
                 }
@@ -257,41 +271,17 @@ class BudgetRuleAddFragment : Fragment(), RefreshableFragment {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    ProjectTextField(
+                    ProjectDateField(
                         value = startDate,
-                        onValueChange = {},
-                        label = { Text(stringResource(R.string.start_date)) },
-                        modifier = Modifier
-                            .weight(1f)
-                            .combinedClickable(
-                                onClick = {},
-                                onLongClick = { chooseDate(true) }
-                            ),
-                        readOnly = true,
-                        enabled = true,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            disabledBorderColor = MaterialTheme.colorScheme.outline
-                        )
+                        onValueChange = { startDate = it },
+                        label = stringResource(R.string.start_date),
+                        modifier = Modifier.weight(1f)
                     )
-                    ProjectTextField(
+                    ProjectDateField(
                         value = endDate,
-                        onValueChange = {},
-                        label = { Text(stringResource(R.string.end_date)) },
-                        modifier = Modifier
-                            .weight(1f)
-                            .combinedClickable(
-                                onClick = {},
-                                onLongClick = { chooseDate(false) }
-                            ),
-                        readOnly = true,
-                        enabled = true,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            disabledBorderColor = MaterialTheme.colorScheme.outline
-                        )
+                        onValueChange = { endDate = it },
+                        label = stringResource(R.string.end_date),
+                        modifier = Modifier.weight(1f)
                     )
                 }
 
@@ -391,17 +381,23 @@ class BudgetRuleAddFragment : Fragment(), RefreshableFragment {
     }
 
     @Composable
-    fun ClickableSelectionCard(label: String, value: String, onClick: () -> Unit) {
+    fun ClickableSelectionCard(
+        label: String,
+        value: String,
+        onClick: () -> Unit,
+        modifier: Modifier = Modifier
+    ) {
         OutlinedCard(
             onClick = onClick,
-            modifier = Modifier.fillMaxWidth()
+            modifier = modifier
         ) {
-            Column(modifier = Modifier.padding(12.dp)) {
-                Text(text = label, style = MaterialTheme.typography.labelMedium)
+            Column(modifier = Modifier.padding(8.dp)) {
+                Text(text = label, style = MaterialTheme.typography.labelSmall)
                 Text(
                     text = value,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1
                 )
             }
         }
@@ -427,25 +423,6 @@ class BudgetRuleAddFragment : Fragment(), RefreshableFragment {
         findNavController().navigate(
             BudgetRuleAddFragmentDirections.actionBudgetRuleAddFragmentToAccountChooseFragment()
         )
-    }
-
-    private fun chooseDate(isStartDate: Boolean) {
-        val dateValue = if (isStartDate) startDateState.value else endDateState.value
-        val curDateAll = dateValue.split("-")
-        val datePickerDialog = DatePickerDialog(
-            requireContext(), { _, year, monthOfYear, dayOfMonth ->
-                val month = monthOfYear + 1
-                val display = "$year-${month.toString().padStart(2, '0')}-${
-                    dayOfMonth.toString().padStart(2, '0')
-                }"
-                if (isStartDate) startDateState.value = display else endDateState.value = display
-            }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
-        )
-        datePickerDialog.setTitle(
-            if (isStartDate) getString(R.string.choose_the_first_date)
-            else getString(R.string.choose_the_final_date)
-        )
-        datePickerDialog.show()
     }
 
     private fun saveBudgetRuleIfValid() {

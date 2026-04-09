@@ -1,7 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.transactions
 
 import android.app.AlertDialog
-import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -60,6 +59,7 @@ import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
+import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
@@ -286,15 +286,11 @@ class TransactionAddFragment : Fragment(), MenuProvider, RefreshableFragment {
                 )
 
                 Row(modifier = Modifier.fillMaxWidth()) {
-                    ProjectTextField(
+                    ProjectDateField(
                         value = date,
-                        onValueChange = { },
-                        label = { Text(stringResource(R.string.date)) },
-                        modifier = Modifier
-                            .weight(1f)
-                            .clickable { chooseDate() },
-                        readOnly = true,
-                        enabled = false,
+                        onValueChange = { date = it },
+                        label = stringResource(R.string.date),
+                        modifier = Modifier.weight(1f)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     BalanceField(
@@ -453,21 +449,6 @@ class TransactionAddFragment : Fragment(), MenuProvider, RefreshableFragment {
                 }
             }
         )
-    }
-
-    private fun chooseDate() {
-        val curDateAll = dateState.value.split("-")
-        DatePickerDialog(
-            requireContext(), { _, year, monthOfYear, dayOfMonth ->
-                val month = monthOfYear + 1
-                dateState.value = "$year-${month.toString().padStart(2, '0')}-${
-                    dayOfMonth.toString().padStart(2, '0')
-                }"
-            }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
-        ).apply {
-            setTitle(getString(R.string.choose_transaction_date))
-            show()
-        }
     }
 
     private fun chooseBudgetRule() {
