@@ -1,7 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.budgetRules
 
 import android.app.AlertDialog
-import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -25,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,7 +37,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -72,6 +71,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
+import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
@@ -113,7 +113,12 @@ class BudgetRuleUpdateFragment : Fragment(), MenuProvider, RefreshableFragment {
     private val leadDaysState = mutableStateOf("0")
 
     private var budgetNameList: List<String>? = null
-    private var ruleId: Long = 0L
+    private val ruleIdState = mutableStateOf(0L)
+    private var ruleId: Long
+        get() = ruleIdState.value
+        set(value) {
+            ruleIdState.value = value
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -221,7 +226,10 @@ class BudgetRuleUpdateFragment : Fragment(), MenuProvider, RefreshableFragment {
         val toAccount = detailed?.toAccount
         val fromAccount = detailed?.fromAccount
 
-        val budgetItems by budgetItemViewModel.getBudgetItems(ruleId).observeAsState(emptyList())
+        val ruleIdForObserve = ruleId
+        val budgetItems by remember(ruleIdForObserve) {
+            budgetItemViewModel.getBudgetItems(ruleIdForObserve)
+        }.observeAsState(emptyList())
 
         val frequencyTypes = stringArrayResource(R.array.frequency_types)
         val daysOfWeek = stringArrayResource(R.array.days_of_week)
@@ -263,27 +271,42 @@ class BudgetRuleUpdateFragment : Fragment(), MenuProvider, RefreshableFragment {
                     singleLine = true,
                 )
 
-                ClickableSelectionCard(
-                    label = stringResource(R.string.to_this_account),
-                    value = toAccount?.accountName ?: stringResource(R.string.choose_an_account),
-                    onClick = { chooseToAccount() }
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    ClickableSelectionCard(
+                        label = stringResource(R.string.to_this_account),
+                        value = toAccount?.accountName
+                            ?: stringResource(R.string.choose_an_account),
+                        onClick = { chooseToAccount() },
+                        modifier = Modifier.weight(1f)
+                    )
 
-                ClickableSelectionCard(
-                    label = stringResource(R.string.from_this_account),
-                    value = fromAccount?.accountName ?: stringResource(R.string.choose_an_account),
-                    onClick = { chooseFromAccount() }
-                )
+                    ClickableSelectionCard(
+                        label = stringResource(R.string.from_this_account),
+                        value = fromAccount?.accountName
+                            ?: stringResource(R.string.choose_an_account),
+                        onClick = { chooseFromAccount() },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     ProjectTextField(
                         value = amount,
                         onValueChange = { amount = it },
                         label = { Text(stringResource(R.string.amount)) },
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .combinedClickable(
+                                onClick = {},
+                                onLongClick = { gotoCalculator() }
+                            ),
                         trailingIcon = {
                             IconButton(onClick = { gotoCalculator() }) {
                                 Icon(
@@ -295,14 +318,18 @@ class BudgetRuleUpdateFragment : Fragment(), MenuProvider, RefreshableFragment {
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
                     )
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(start = 8.dp)
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(start = 4.dp)
                     ) {
-                        Checkbox(checked = isFixed, onCheckedChange = { isFixed = it })
+                        Checkbox(
+                            checked = isFixed,
+                            onCheckedChange = { isFixed = it },
+                            modifier = Modifier.padding(0.dp)
+                        )
                         Text(
                             stringResource(R.string.fixed),
-                            style = MaterialTheme.typography.labelMedium
+                            style = MaterialTheme.typography.labelSmall
                         )
                     }
                 }
@@ -326,41 +353,17 @@ class BudgetRuleUpdateFragment : Fragment(), MenuProvider, RefreshableFragment {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    ProjectTextField(
+                    ProjectDateField(
                         value = startDate,
-                        onValueChange = {},
-                        label = { Text(stringResource(R.string.start_date)) },
-                        modifier = Modifier
-                            .weight(1f)
-                            .combinedClickable(
-                                onClick = {},
-                                onLongClick = { chooseStartDate() }
-                            ),
-                        readOnly = true,
-                        enabled = true,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            disabledBorderColor = MaterialTheme.colorScheme.outline
-                        )
+                        onValueChange = { startDate = it },
+                        label = stringResource(R.string.start_date),
+                        modifier = Modifier.weight(1f)
                     )
-                    ProjectTextField(
+                    ProjectDateField(
                         value = endDate,
-                        onValueChange = {},
-                        label = { Text(stringResource(R.string.end_date)) },
-                        modifier = Modifier
-                            .weight(1f)
-                            .combinedClickable(
-                                onClick = {},
-                                onLongClick = { chooseEndDate() }
-                            ),
-                        readOnly = true,
-                        enabled = true,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            disabledBorderColor = MaterialTheme.colorScheme.outline
-                        )
+                        onValueChange = { endDate = it },
+                        label = stringResource(R.string.end_date),
+                        modifier = Modifier.weight(1f)
                     )
                 }
 
@@ -417,6 +420,41 @@ class BudgetRuleUpdateFragment : Fragment(), MenuProvider, RefreshableFragment {
                 }
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+                val pendingItems = budgetItems.filter { it.budgetItem?.biIsPending == true }
+                if (pendingItems.isNotEmpty()) {
+                    val pendingTotal =
+                        pendingItems.sumOf { it.budgetItem?.biProjectedAmount ?: 0.0 }
+                    OutlinedCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        colors = CardDefaults.outlinedCardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                        )
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .padding(12.dp)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(R.string.pending),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Text(
+                                text = nf.displayDollars(pendingTotal) + " (${pendingItems.size})",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                }
 
                 Text(
                     text = stringResource(R.string.projected_date),
@@ -504,17 +542,23 @@ class BudgetRuleUpdateFragment : Fragment(), MenuProvider, RefreshableFragment {
     }
 
     @Composable
-    fun ClickableSelectionCard(label: String, value: String, onClick: () -> Unit) {
+    fun ClickableSelectionCard(
+        label: String,
+        value: String,
+        onClick: () -> Unit,
+        modifier: Modifier = Modifier
+    ) {
         OutlinedCard(
             onClick = onClick,
-            modifier = Modifier.fillMaxWidth()
+            modifier = modifier
         ) {
-            Column(modifier = Modifier.padding(12.dp)) {
-                Text(text = label, style = MaterialTheme.typography.labelMedium)
+            Column(modifier = Modifier.padding(8.dp)) {
+                Text(text = label, style = MaterialTheme.typography.labelSmall)
                 Text(
                     text = value,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1
                 )
             }
         }
@@ -696,36 +740,6 @@ class BudgetRuleUpdateFragment : Fragment(), MenuProvider, RefreshableFragment {
 
             else -> false
         }
-    }
-
-    private fun chooseEndDate() {
-        val curDate = endDateState.value.ifBlank { df.getCurrentDateAsString() }
-        val curDateAll = curDate.split("-")
-        val datePickerDialog = DatePickerDialog(
-            requireContext(), { _, year, monthOfYear, dayOfMonth ->
-                val month = monthOfYear + 1
-                endDateState.value = "$year-${month.toString().padStart(2, '0')}-${
-                    dayOfMonth.toString().padStart(2, '0')
-                }"
-            }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
-        )
-        datePickerDialog.setTitle(getString(R.string.choose_the_final_date))
-        datePickerDialog.show()
-    }
-
-    private fun chooseStartDate() {
-        val curDate = startDateState.value.ifBlank { df.getCurrentDateAsString() }
-        val curDateAll = curDate.split("-")
-        val datePickerDialog = DatePickerDialog(
-            requireContext(), { _, year, monthOfYear, dayOfMonth ->
-                val month = monthOfYear + 1
-                startDateState.value = "$year-${month.toString().padStart(2, '0')}-${
-                    dayOfMonth.toString().padStart(2, '0')
-                }"
-            }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
-        )
-        datePickerDialog.setTitle(getString(R.string.choose_the_first_date))
-        datePickerDialog.show()
     }
 
     private fun getCurrentBudgetRuleForSaving(): BudgetRule {

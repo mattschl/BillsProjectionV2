@@ -7,9 +7,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,7 +43,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
@@ -60,6 +57,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
+import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
@@ -192,22 +190,12 @@ class BudgetItemAddFragment : Fragment(), MenuProvider, RefreshableFragment {
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    ProjectTextField(
-                        value = date,
-                        onValueChange = { },
-                        label = { Text(stringResource(R.string.projected_date)) },
-                        modifier = Modifier.fillMaxWidth(),
-                        readOnly = true,
-                        enabled = true,
-                        textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .clickable { chooseDate() }
-                    )
-                }
+                ProjectDateField(
+                    value = date,
+                    onValueChange = { date = it },
+                    label = stringResource(R.string.projected_date),
+                    modifier = Modifier.fillMaxWidth(),
+                )
 
                 ProjectTextField(
                     value = name,
@@ -375,22 +363,6 @@ class BudgetItemAddFragment : Fragment(), MenuProvider, RefreshableFragment {
         findNavController().navigate(
             BudgetItemAddFragmentDirections.actionBudgetItemAddFragmentToAccountChooseFragment()
         )
-    }
-
-    private fun chooseDate() {
-        val curDateAll = dateState.value.split("-")
-        val datePickerDialog = android.app.DatePickerDialog(
-            requireContext(), { _, year, monthOfYear, dayOfMonth ->
-                val month = monthOfYear + 1
-                dateState.value = "$year-${
-                    month.toString().padStart(2, '0')
-                }-${
-                    dayOfMonth.toString().padStart(2, '0')
-                }"
-            }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
-        )
-        datePickerDialog.setTitle(getString(R.string.choose_the_projected_date))
-        datePickerDialog.show()
     }
 
     private fun saveBudgetItemIfValid() {

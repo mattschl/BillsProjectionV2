@@ -59,6 +59,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
+import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
@@ -416,9 +417,9 @@ class TransactionAnalysisFragment : Fragment(), RefreshableFragment {
                         timeRange = timeRange,
                         onTimeRangeChange = { timeRange = it },
                         startDate = startDate,
-                        onStartDateClick = { chooseStartDate(startDate) { startDate = it } },
+                        onStartDateChange = { startDate = it },
                         endDate = endDate,
-                        onEndDateClick = { chooseEndDate(endDate) { endDate = it } },
+                        onEndDateChange = { endDate = it },
                         onDateRangeGo = { /* Just triggers recompose as effective dates change */ },
                         onBudgetRuleClick = { gotoBudgetRule() },
                         onAccountClick = { gotoAccount() }
@@ -466,9 +467,9 @@ class TransactionAnalysisFragment : Fragment(), RefreshableFragment {
         timeRange: TimeRange,
         onTimeRangeChange: (TimeRange) -> Unit,
         startDate: String,
-        onStartDateClick: () -> Unit,
+        onStartDateChange: (String) -> Unit,
         endDate: String,
-        onEndDateClick: () -> Unit,
+        onEndDateChange: (String) -> Unit,
         onDateRangeGo: () -> Unit,
         onBudgetRuleClick: () -> Unit,
         onAccountClick: () -> Unit
@@ -592,30 +593,21 @@ class TransactionAnalysisFragment : Fragment(), RefreshableFragment {
                 if (timeRange == TimeRange.DATE_RANGE) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = stringResource(R.string.start_date),
-                                style = MaterialTheme.typography.labelSmall
-                            )
-                            Text(
-                                text = startDate,
-                                modifier = Modifier.clickable { onStartDateClick() },
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = stringResource(R.string.end_date),
-                                style = MaterialTheme.typography.labelSmall
-                            )
-                            Text(
-                                text = endDate,
-                                modifier = Modifier.clickable { onEndDateClick() },
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
+                        ProjectDateField(
+                            value = startDate,
+                            label = stringResource(R.string.start_date),
+                            onValueChange = onStartDateChange,
+                            modifier = Modifier.weight(1f)
+                        )
+                        ProjectDateField(
+                            value = endDate,
+                            label = stringResource(R.string.end_date),
+                            onValueChange = onEndDateChange,
+                            modifier = Modifier.weight(1f)
+                        )
                         Button(onClick = onDateRangeGo) {
                             Text(stringResource(R.string.go))
                         }
@@ -996,40 +988,6 @@ class TransactionAnalysisFragment : Fragment(), RefreshableFragment {
                 gotoTransactionUpdateFragment()
             }
         }
-    }
-
-    private fun chooseEndDate(currentDate: String, onDateSelected: (String) -> Unit) {
-        val dateParts = currentDate.split("-")
-        val datePickerDialog = android.app.DatePickerDialog(
-            requireContext(), { _, year, monthOfYear, dayOfMonth ->
-                val month = monthOfYear + 1
-                val display = "$year-${
-                    month.toString().padStart(2, '0')
-                }-${
-                    dayOfMonth.toString().padStart(2, '0')
-                }"
-                onDateSelected(display)
-            }, dateParts[0].toInt(), dateParts[1].toInt() - 1, dateParts[2].toInt()
-        )
-        datePickerDialog.setTitle(getString(R.string.choose_the_end_date))
-        datePickerDialog.show()
-    }
-
-    private fun chooseStartDate(currentDate: String, onDateSelected: (String) -> Unit) {
-        val dateParts = currentDate.split("-")
-        val datePickerDialog = android.app.DatePickerDialog(
-            requireContext(), { _, year, monthOfYear, dayOfMonth ->
-                val month = monthOfYear + 1
-                val display = "$year-${
-                    month.toString().padStart(2, '0')
-                }-${
-                    dayOfMonth.toString().padStart(2, '0')
-                }"
-                onDateSelected(display)
-            }, dateParts[0].toInt(), dateParts[1].toInt() - 1, dateParts[2].toInt()
-        )
-        datePickerDialog.setTitle(getString(R.string.choose_the_start_date))
-        datePickerDialog.show()
     }
 
     enum class TimeRange {

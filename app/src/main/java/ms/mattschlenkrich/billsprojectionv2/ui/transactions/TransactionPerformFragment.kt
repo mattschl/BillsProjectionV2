@@ -1,7 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.transactions
 
 import android.app.AlertDialog
-import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -49,6 +48,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_PERFORM
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
+import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
@@ -154,19 +154,11 @@ class TransactionPerformFragment : Fragment(), RefreshableFragment {
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 // Date
-                ProjectTextField(
+                ProjectDateField(
                     value = dateState.value,
-                    onValueChange = { },
-                    label = { Text(stringResource(R.string.date)) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { chooseDate() },
-                    readOnly = true,
-                    enabled = false,
-                    textStyle = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
-                    )
+                    onValueChange = { dateState.value = it },
+                    label = stringResource(R.string.date),
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 // Budget Rule
@@ -462,21 +454,6 @@ class TransactionPerformFragment : Fragment(), RefreshableFragment {
         val amt = nf.getDoubleFromDollars(amountState.value)
         val budgeted = nf.getDoubleFromDollars(budgetedAmountState.value)
         remainderState.doubleValue = budgeted - amt
-    }
-
-    private fun chooseDate() {
-        val curDateAll = dateState.value.split("-")
-        DatePickerDialog(
-            requireContext(), { _, year, monthOfYear, dayOfMonth ->
-                val month = monthOfYear + 1
-                dateState.value = "$year-${month.toString().padStart(2, '0')}-${
-                    dayOfMonth.toString().padStart(2, '0')
-                }"
-            }, curDateAll[0].toInt(), curDateAll[1].toInt() - 1, curDateAll[2].toInt()
-        ).apply {
-            setTitle(getString(R.string.choose_transaction_date))
-            show()
-        }
     }
 
     private fun chooseFromAccount() {
