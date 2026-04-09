@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -178,6 +179,7 @@ class AccountAddFragment : Fragment(), MenuProvider, RefreshableFragment {
                         .weight(1.5f)
                         .height(56.dp),
                     textStyle = MaterialTheme.typography.bodyMedium,
+                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
                     singleLine = true
                 )
                 Spacer(modifier = Modifier.width(4.dp))

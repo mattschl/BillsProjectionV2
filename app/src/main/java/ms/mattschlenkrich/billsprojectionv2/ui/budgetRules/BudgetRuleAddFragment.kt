@@ -42,6 +42,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
@@ -195,6 +196,7 @@ class BudgetRuleAddFragment : Fragment(), RefreshableFragment {
                     onValueChange = { name = it },
                     label = { Text(stringResource(R.string.budget_rule_name)) },
                     modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
                     singleLine = true,
                 )
 
