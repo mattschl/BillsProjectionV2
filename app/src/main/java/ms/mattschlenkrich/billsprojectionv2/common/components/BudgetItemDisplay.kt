@@ -7,7 +7,6 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -46,6 +45,19 @@ fun BudgetItemDisplay(
 
     Row(
         modifier = Modifier
+            .fillMaxWidth(),
+        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.Center
+
+    ) {
+        Box(
+            modifier = Modifier
+                .size(width = 250.dp, height = 2.dp)
+                .background(color)
+                .padding(vertical = 1.dp),
+        )
+    }
+    Row(
+        modifier = Modifier
             .fillMaxWidth()
             .combinedClickable(
                 onClick = onClick,
@@ -54,12 +66,7 @@ fun BudgetItemDisplay(
             .padding(vertical = 1.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .size(width = 10.dp, height = 5.dp)
-                .background(color)
-        )
-        Spacer(modifier = Modifier.width(8.dp))
+
         Text(
             text = df.getDisplayDate(budgetItem.biProjectedDate),
             modifier = Modifier.width(100.dp),
@@ -73,7 +80,7 @@ fun BudgetItemDisplay(
             style = MaterialTheme.typography.bodySmall
         )
         Column(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(2f)
         ) {
             Text(
                 text = budgetItem.biBudgetName,
@@ -88,6 +95,16 @@ fun BudgetItemDisplay(
                 color = Color.Gray,
                 maxLines = 1
             )
+            if (budgetItem.biIsFixed || budgetItem.biIsAutomatic) {
+                Text(
+                    text = (if (budgetItem.biIsFixed) "Fixed" else "Variable") +
+                            (if (budgetItem.biIsAutomatic) ", Automatic" else ""),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = Color.Red,
+                    maxLines = 1
+                )
+            }
+
         }
         if (onLockClick != null) {
             Icon(

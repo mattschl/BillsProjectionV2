@@ -362,4 +362,5 @@
     <string name="zero_double">0.0</string>
     <string name="zero_int">0</string>
     <string name="sync_conflict_message">Table: %1$s\nName: %2$s\n\nLocal:\nID: %3$d\nUpdated: %4$s\n\nDrive:\nID: %5$d\nUpdated: %6$s\n\nThere is a name conflict but IDs are different. Which version would you like to keep as the primary for this name? The other will be renamed.</string>
+    <string name="choose_a_date_to_project_bills_to">Choose a date to project bills to.</string>
 </resources>
