@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.billsprojectionv2.ui
 
 import android.app.AlertDialog
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -75,6 +76,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewMod
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.TransactionViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.TransactionViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
+import java.time.LocalDate
 
 private const val TAG = "MainActivity"
 
@@ -457,12 +459,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateBudget() {
-        val updateBudgetPredictions =
-            UpdateBudgetPredictions(this)
+        val defaultDate = LocalDate.now().plusMonths(3)
+        val picker = DatePickerDialog(
+            this,
+            { _, year, month, dayOfMonth ->
+                val selectedDate = LocalDate.of(year, month + 1, dayOfMonth).toString()
+                performBudgetUpdate(selectedDate)
+            },
+            defaultDate.year,
+            defaultDate.monthValue - 1,
+            defaultDate.dayOfMonth
+        )
+        picker.setTitle(getString(R.string.choose_a_date_to_project_bills_to))
+        picker.show()
+    }
+
+    private fun performBudgetUpdate(stopDate: String) {
+        val updateBudgetPredictions = UpdateBudgetPredictions(this)
         CoroutineScope(Dispatchers.IO).launch {
-            updateBudgetPredictions.updatePredictions(
-                df.getCurrentDateAsString()
-            )
+            updateBudgetPredictions.updatePredictions(stopDate)
             doTheUpdate(getString(R.string.budget_updated))
         }
     }
