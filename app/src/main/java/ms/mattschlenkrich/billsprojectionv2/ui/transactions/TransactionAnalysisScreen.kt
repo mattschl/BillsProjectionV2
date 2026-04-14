@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
+import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextBox
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
@@ -187,45 +188,17 @@ fun CriteriaCard(
         shape = RoundedCornerShape(10.dp)
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(R.string.rules),
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.width(80.dp)
-                )
-                Text(
-                    text = budgetRuleName,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    modifier = Modifier
-                        .weight(1f)
-                        .clickable { onBudgetRuleClick() },
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
+            ProjectTextBox(
+                label = stringResource(R.string.rules),
+                value = budgetRuleName,
+                onClick = onBudgetRuleClick
+            )
             Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(R.string.account_name),
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.width(80.dp)
-                )
-                Text(
-                    text = accountName,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    modifier = Modifier
-                        .weight(1f)
-                        .clickable { onAccountClick() },
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
+            ProjectTextBox(
+                label = stringResource(R.string.account_name),
+                value = accountName,
+                onClick = onAccountClick
+            )
             Spacer(modifier = Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),

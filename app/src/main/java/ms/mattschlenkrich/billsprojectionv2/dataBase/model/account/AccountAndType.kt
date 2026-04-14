@@ -41,4 +41,5 @@ data class AccountWithType(
         entityColumn = TYPE_ID,
     )
     val accountType: AccountType?,
+    val usedInBudget: Int? = 0,
 ) : Parcelable

@@ -51,12 +51,12 @@ class BudgetRuleChooseFragment : Fragment(), RefreshableFragment {
                         budgetRuleViewModel.searchBudgetRules("%$searchQuery%")
                             .observeAsState(emptyList())
                     }
-                    BudgetRulesListScreen(
+                    BudgetRuleChooseScreen(
                         searchQuery = searchQuery,
                         onSearchQueryChange = { searchQuery = it },
                         budgetRulesDetailed = budgetRulesDetailed,
-                        onAddClick = { gotoBudgetRuleAdd() },
-                        onItemClick = { chooseBudgetRule(it) }
+                        onAddBudgetRule = { gotoBudgetRuleAdd() },
+                        onBudgetRuleClick = { chooseBudgetRule(it) }
                     )
                 }
             }

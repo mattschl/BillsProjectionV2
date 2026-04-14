@@ -27,11 +27,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectBalanceField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
+import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextBox
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
@@ -112,14 +112,13 @@ fun TransactionEditScreen(
                 )
             }
 
-            TransactionSelectorCard(
+            ProjectTextBox(
                 label = stringResource(R.string.rules),
-                value = budgetRule?.budgetRuleName
-                    ?: stringResource(R.string.choose_a_budget_rule),
+                value = budgetRule?.budgetRuleName ?: "",
                 onClick = onChooseBudgetRule
             )
 
-            TransactionAccountCard(
+            TransactionAccountField(
                 label = stringResource(R.string.from_account_name),
                 account = fromAccount,
                 isPending = fromPending,
@@ -128,7 +127,7 @@ fun TransactionEditScreen(
                 onClick = onChooseFromAccount
             )
 
-            TransactionAccountCard(
+            TransactionAccountField(
                 label = stringResource(R.string.to_account_name),
                 account = toAccount,
                 isPending = toPending,
@@ -175,6 +174,7 @@ fun TransactionPerformScreen(
     onFromPendingChange: (Boolean) -> Unit,
     allowFromPending: Boolean,
     onFromAccountClick: () -> Unit,
+    onChooseBudgetRule: () -> Unit,
     description: String,
     onDescriptionChange: (String) -> Unit,
     note: String,
@@ -217,17 +217,11 @@ fun TransactionPerformScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    text = stringResource(R.string.rules),
+                ProjectTextBox(
+                    label = stringResource(R.string.rules),
+                    value = budgetRule?.budgetRuleName ?: "",
+                    onClick = onChooseBudgetRule,
                     modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = budgetRule?.budgetRuleName
-                        ?: stringResource(R.string.choose_a_budget_rule),
-                    modifier = Modifier.weight(2f),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
                 )
             }
 
@@ -285,7 +279,7 @@ fun TransactionPerformScreen(
                 }
             }
 
-            TransactionAccountCard(
+            TransactionAccountField(
                 label = stringResource(R.string.to_this_account),
                 account = toAccount,
                 isPending = toPending,
@@ -294,7 +288,7 @@ fun TransactionPerformScreen(
                 onClick = onToAccountClick
             )
 
-            TransactionAccountCard(
+            TransactionAccountField(
                 label = stringResource(R.string.from_this_account),
                 account = fromAccount,
                 isPending = fromPending,
@@ -376,10 +370,9 @@ fun TransactionSplitScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            TransactionSelectorCard(
+            ProjectTextBox(
                 label = stringResource(R.string.rules),
-                value = budgetRule?.budgetRuleName
-                    ?: stringResource(R.string.choose_a_budget_rule),
+                value = budgetRule?.budgetRuleName ?: "",
                 onClick = onChooseBudgetRule
             )
 
@@ -423,7 +416,7 @@ fun TransactionSplitScreen(
                 }
             }
 
-            TransactionAccountCard(
+            TransactionAccountField(
                 label = stringResource(R.string.to_this_account),
                 account = toAccount,
                 isPending = toPending,
@@ -432,13 +425,13 @@ fun TransactionSplitScreen(
                 onClick = onChooseToAccount
             )
 
-            TransactionAccountCard(
+            TransactionAccountField(
                 label = stringResource(R.string.from_this_account),
                 account = fromAccount,
                 isPending = fromPending,
                 onPendingChange = onFromPendingChange,
                 allowPending = allowFromPending,
-                onClick = null
+                onClick = onFromAccountClick
             )
 
             ProjectTextField(
@@ -458,7 +451,7 @@ fun TransactionSplitScreen(
 }
 
 @Composable
-fun TransactionAccountCard(
+fun TransactionAccountField(
     label: String,
     account: Account?,
     isPending: Boolean,
@@ -466,63 +459,26 @@ fun TransactionAccountCard(
     allowPending: Boolean,
     onClick: (() -> Unit)? = null
 ) {
-    OutlinedCard(
-        onClick = onClick ?: {},
-        enabled = onClick != null,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(modifier = Modifier.padding(12.dp)) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        ProjectTextBox(
+            label = label,
+            value = account?.accountName ?: "",
+            onClick = onClick ?: {}
+        )
+        if (allowPending) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.clickable { onPendingChange(!isPending) }
             ) {
-                Text(
-                    text = "$label:",
-                    style = MaterialTheme.typography.titleMedium
+                Checkbox(
+                    checked = isPending,
+                    onCheckedChange = onPendingChange,
                 )
                 Text(
-                    text = account?.accountName ?: stringResource(R.string.choose_an_account),
-                    style = MaterialTheme.typography.bodyLarge
+                    text = stringResource(R.string.pending),
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
-            if (allowPending) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.clickable { onPendingChange(!isPending) }
-                ) {
-                    Checkbox(checked = isPending, onCheckedChange = onPendingChange)
-                    Text(
-                        text = stringResource(R.string.pending),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun TransactionSelectorCard(label: String, value: String, onClick: () -> Unit) {
-    OutlinedCard(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(12.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "$label:",
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = value,
-                style = MaterialTheme.typography.bodyLarge
-            )
         }
     }
 }

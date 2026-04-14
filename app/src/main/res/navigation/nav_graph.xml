@@ -657,6 +657,9 @@
         <action
             android:id="@+id/action_transactionPerformFragment_to_accountChooseFragment"
             app:destination="@id/accountChooseFragment" />
+        <action
+            android:id="@+id/action_transactionPerformFragment_to_budgetRuleChooseFragment"
+            app:destination="@id/budgetRuleChooseFragment" />
     </fragment>
 
     <!--    transactionSplitFragment-->

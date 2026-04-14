@@ -30,7 +30,12 @@ class AccountRepository(private val db: BillsDatabase) {
 
     fun searchAccountsWithType(query: String?) = db.getAccountDao().searchAccountsWithType(query)
 
+    fun searchAccountsWithTypeBudgetFirst(query: String?) =
+        db.getAccountDao().searchAccountsWithTypeBudgetFirst(query)
+
     fun getAccountsWithType() = db.getAccountDao().getAccountsWithType()
+
+    fun getAccountsWithTypeBudgetFirst() = db.getAccountDao().getAccountsWithTypeBudgetFirst()
 
     suspend fun getAccountWithType(accountId: Long) =
         db.getAccountDao().getAccountWithType(accountId)
