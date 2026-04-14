@@ -8,41 +8,10 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -81,7 +50,19 @@ class AccountTypesFragment : Fragment(), MenuProvider, RefreshableFragment {
         return ComposeView(requireContext()).apply {
             setContent {
                 BillsProjectionTheme {
-                    AccountTypesScreen()
+                    val query by searchQueryState
+                    val accountTypes by if (query.isEmpty()) {
+                        accountViewModel.getActiveAccountTypes().observeAsState(emptyList())
+                    } else {
+                        accountViewModel.searchAccountTypes("%$query%").observeAsState(emptyList())
+                    }
+                    AccountTypeListScreen(
+                        accountTypes = accountTypes,
+                        onAddClick = { gotoAccountTypeAdd() },
+                        onAccountTypeClick = { chooseAccountType(it) },
+                        onAccountTypeLongClick = { updateAccountType(it) },
+                        getAccountTypeInfo = { getAccountTypeInfoText(it) }
+                    )
                 }
             }
         }
@@ -98,118 +79,6 @@ class AccountTypesFragment : Fragment(), MenuProvider, RefreshableFragment {
         super.onViewCreated(view, savedInstanceState)
         val menuHost: MenuHost = mainActivity.topMenuBar
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
-    }
-
-    @Composable
-    fun AccountTypesScreen() {
-        val query by searchQueryState
-        val accountTypes by if (query.isEmpty()) {
-            accountViewModel.getActiveAccountTypes().observeAsState(emptyList())
-        } else {
-            accountViewModel.searchAccountTypes("%$query%").observeAsState(emptyList())
-        }
-
-        Scaffold(
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { gotoAccountTypeAdd() },
-                    containerColor = MaterialTheme.colorScheme.error
-                ) {
-                    Icon(
-                        Icons.Default.Add,
-                        contentDescription = stringResource(R.string.add_a_new_account_type),
-                        tint = Color.White
-                    )
-                }
-            }
-        ) { paddingValues ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-            ) {
-                if (accountTypes.isEmpty()) {
-                    Card(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .padding(32.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-                    ) {
-                        Text(
-                            text = stringResource(R.string.no_account_types_found), // Assuming this string exists or similar
-                            modifier = Modifier.padding(32.dp),
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                } else {
-                    LazyVerticalStaggeredGrid(
-                        columns = StaggeredGridCells.Fixed(2),
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalItemSpacing = 8.dp
-                    ) {
-                        items(accountTypes) { type ->
-                            AccountTypeItem(type)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    @OptIn(ExperimentalFoundationApi::class)
-    @Composable
-    fun AccountTypeItem(accountType: AccountType) {
-        val isDeleted = accountType.acctIsDeleted
-        val bgColor =
-            if (isDeleted) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surface
-        val textColor =
-            if (isDeleted) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSurface
-
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .combinedClickable(
-                    onClick = { chooseAccountType(accountType) },
-                    onLongClick = { updateAccountType(accountType) }
-                ),
-            colors = CardDefaults.cardColors(containerColor = bgColor),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-        ) {
-            Column(modifier = Modifier.padding(8.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = accountType.accountType,
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = textColor,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .size(12.dp)
-                            .background(Color(vf.getRandomColorInt()))
-                    )
-                }
-
-                val info = getAccountTypeInfoText(accountType)
-                if (info.isNotEmpty()) {
-                    Text(
-                        text = info,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = textColor,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                }
-            }
-        }
     }
 
     private fun getAccountTypeInfoText(type: AccountType): String {

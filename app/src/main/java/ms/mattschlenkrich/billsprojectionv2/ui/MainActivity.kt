@@ -479,7 +479,7 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.fragment_container_view) as NavHostFragment
         val navController = navHostFragment.navController
-        navController.navigate(R.id.accountsFragment)
+        navController.navigate(R.id.accountViewFragment)
     }
 
     private fun gotoTransactions() {

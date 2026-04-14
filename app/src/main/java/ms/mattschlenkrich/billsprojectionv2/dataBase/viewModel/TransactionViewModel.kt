@@ -197,4 +197,40 @@ class TransactionViewModel(
         query: String?, startDate: String, endDate: String
     ) =
         transactionRepository.getMinTransactionBySearch(query, startDate, endDate)
+
+    fun getTransactionsFiltered(
+        budgetRuleId: Long, accountId: Long, query: String, startDate: String, endDate: String
+    ) = transactionRepository.getTransactionsFiltered(
+        budgetRuleId, accountId, query, startDate, endDate
+    )
+
+    fun getSumFiltered(
+        budgetRuleId: Long, accountId: Long, query: String, startDate: String, endDate: String
+    ) = transactionRepository.getSumFiltered(
+        budgetRuleId, accountId, query, startDate, endDate
+    )
+
+    fun getSumToAccountFiltered(
+        accountId: Long, query: String, startDate: String, endDate: String
+    ) = transactionRepository.getSumToAccountFiltered(
+        accountId, query, startDate, endDate
+    )
+
+    fun getSumFromAccountFiltered(
+        accountId: Long, query: String, startDate: String, endDate: String
+    ) = transactionRepository.getSumFromAccountFiltered(
+        accountId, query, startDate, endDate
+    )
+
+    fun getMaxFiltered(
+        budgetRuleId: Long, accountId: Long, query: String, startDate: String, endDate: String
+    ) = transactionRepository.getMaxFiltered(
+        budgetRuleId, accountId, query, startDate, endDate
+    )
+
+    fun getMinFiltered(
+        budgetRuleId: Long, accountId: Long, query: String, startDate: String, endDate: String
+    ) = transactionRepository.getMinFiltered(
+        budgetRuleId, accountId, query, startDate, endDate
+    )
 }

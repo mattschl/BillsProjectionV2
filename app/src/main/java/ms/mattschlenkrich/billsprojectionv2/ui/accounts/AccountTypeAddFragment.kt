@@ -5,33 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Save
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -39,7 +15,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_TYPE_ADD
-import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
@@ -78,7 +53,22 @@ class AccountTypeAddFragment : Fragment(), RefreshableFragment {
         return ComposeView(requireContext()).apply {
             setContent {
                 BillsProjectionTheme {
-                    AccountTypeAddScreen()
+                    AccountTypeFormScreen(
+                        name = nameState.value,
+                        onNameChange = { nameState.value = it },
+                        keepTotals = keepTotalsState.value,
+                        onKeepTotalsChange = { keepTotalsState.value = it },
+                        isAsset = isAssetState.value,
+                        onIsAssetChange = { isAssetState.value = it },
+                        keepOwing = keepOwingState.value,
+                        onKeepOwingChange = { keepOwingState.value = it },
+                        displayAsAsset = displayAsAssetState.value,
+                        onDisplayAsAssetChange = { displayAsAssetState.value = it },
+                        allowPending = allowPendingState.value,
+                        onAllowPendingChange = { allowPendingState.value = it },
+                        onSaveClick = { saveAccountIfValid() },
+                        fabContentDescription = stringResource(R.string.save)
+                    )
                 }
             }
         }
@@ -92,88 +82,6 @@ class AccountTypeAddFragment : Fragment(), RefreshableFragment {
 
         lifecycleScope.launch(Dispatchers.IO) {
             accountTypeList = accountViewModel.getAccountTypeNames()
-        }
-    }
-
-    @Composable
-    fun AccountTypeAddScreen() {
-        var name by nameState
-        var keepTotals by keepTotalsState
-        var isAsset by isAssetState
-        var keepOwing by keepOwingState
-        var displayAsAsset by displayAsAssetState
-        var allowPending by allowPendingState
-
-        Scaffold(
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { saveAccountIfValid() },
-                    containerColor = Color(0xFFB00020)
-                ) {
-                    Icon(
-                        Icons.Default.Save,
-                        contentDescription = stringResource(R.string.save),
-                        tint = Color.White
-                    )
-                }
-            }
-        ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                ProjectTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text(stringResource(R.string.account_type)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
-                    singleLine = true
-                )
-
-                CheckboxRow(
-                    text = stringResource(R.string.this_account_does_not_keep_a_balance_owing_amount),
-                    checked = keepTotals,
-                    onCheckedChange = { keepTotals = it }
-                )
-                CheckboxRow(
-                    text = stringResource(R.string.this_is_an_asset),
-                    checked = isAsset,
-                    onCheckedChange = { isAsset = it }
-                )
-                CheckboxRow(
-                    text = stringResource(R.string.balance_owing_will_be_calculated),
-                    checked = keepOwing,
-                    onCheckedChange = { keepOwing = it }
-                )
-                CheckboxRow(
-                    text = stringResource(R.string.this_will_be_used_for_the_budget),
-                    checked = displayAsAsset,
-                    onCheckedChange = { displayAsAsset = it }
-                )
-                CheckboxRow(
-                    text = stringResource(R.string.transactions_may_be_postponed),
-                    checked = allowPending,
-                    onCheckedChange = { allowPending = it }
-                )
-            }
-        }
-    }
-
-    @Composable
-    fun CheckboxRow(text: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(checked = checked, onCheckedChange = onCheckedChange)
-            Text(text = text, modifier = Modifier.padding(start = 8.dp))
         }
     }
 
