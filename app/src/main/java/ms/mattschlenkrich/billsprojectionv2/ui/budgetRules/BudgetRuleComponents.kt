@@ -33,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectFieldDefaults
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
@@ -60,7 +61,8 @@ fun ExposedDropdown(
             label = label,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             modifier = Modifier
-                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
+            textStyle = ProjectFieldDefaults.textStyle()
         )
         ExposedDropdownMenu(
             expanded = expanded,
@@ -111,7 +113,7 @@ fun LabeledCheckbox(
 ) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
         Checkbox(checked = checked, onCheckedChange = onCheckedChange)
-        Text(text = label, style = MaterialTheme.typography.labelMedium)
+        Text(text = label, style = ProjectFieldDefaults.labelStyle())
     }
 }
 
@@ -225,11 +227,11 @@ fun BudgetRuleChooseItem(
             containerColor = containerColor,
             contentColor = contentColor
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(8.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -237,12 +239,12 @@ fun BudgetRuleChooseItem(
             Text(
                 text = rule.budgetRuleName + if (isDeleted) " " + stringResource(R.string.deleted) else "",
                 fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.weight(1f)
             )
             Box(
                 modifier = Modifier
-                    .size(15.dp, 10.dp)
+                    .size(10.dp, 8.dp)
                     .background(Color(vf.getRandomColorInt()))
             )
         }

@@ -100,6 +100,7 @@ class TransactionPerformFragment : Fragment(), RefreshableFragment {
                             onFromPendingChange = { fromPendingState.value = it },
                             allowFromPending = allowFromPendingState.value,
                             onFromAccountClick = { chooseFromAccount() },
+                            onChooseBudgetRule = { chooseBudgetRule() },
                             description = descriptionState.value,
                             onDescriptionChange = { descriptionState.value = it },
                             note = noteState.value,
@@ -253,6 +254,12 @@ class TransactionPerformFragment : Fragment(), RefreshableFragment {
         gotoAccountChooseFragment()
     }
 
+    private fun chooseBudgetRule() {
+        mainViewModel.addCallingFragment(TAG)
+        mainViewModel.setTransactionDetailed(getTransactionDetailed())
+        gotoBudgetRuleChooseFragment()
+    }
+
     private fun getTransactionDetailed(): TransactionDetailed {
         return TransactionDetailed(
             getCurrentTransactionForSave(),
@@ -357,6 +364,12 @@ class TransactionPerformFragment : Fragment(), RefreshableFragment {
     private fun gotoAccountChooseFragment() {
         findNavController().navigate(
             TransactionPerformFragmentDirections.actionTransactionPerformFragmentToAccountChooseFragment()
+        )
+    }
+
+    private fun gotoBudgetRuleChooseFragment() {
+        findNavController().navigate(
+            TransactionPerformFragmentDirections.actionTransactionPerformFragmentToBudgetRuleChooseFragment()
         )
     }
 

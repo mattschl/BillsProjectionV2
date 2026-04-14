@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_SPLIT
+import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
@@ -103,7 +104,7 @@ class TransactionSplitFragment : Fragment(), RefreshableFragment {
                             fromPending = fromPendingState.value,
                             onFromPendingChange = { fromPendingState.value = it },
                             allowFromPending = fromAccountWithTypeState.value?.accountType?.allowPending == true,
-                            onFromAccountClick = { },
+                            onFromAccountClick = { chooseFromAccount() },
                             description = descriptionState.value,
                             onDescriptionChange = { descriptionState.value = it },
                             note = noteState.value,
@@ -233,6 +234,13 @@ class TransactionSplitFragment : Fragment(), RefreshableFragment {
     private fun chooseToAccount() {
         mainViewModel.addCallingFragment(TAG)
         mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
+        mainViewModel.setSplitTransactionDetailed(getSplitTransDetailed())
+        gotoAccountChooseFragment()
+    }
+
+    private fun chooseFromAccount() {
+        mainViewModel.addCallingFragment(TAG)
+        mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
         mainViewModel.setSplitTransactionDetailed(getSplitTransDetailed())
         gotoAccountChooseFragment()
     }

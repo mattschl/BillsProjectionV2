@@ -67,18 +67,18 @@ class AccountChooseFragment : Fragment(), RefreshableFragment {
     fun AccountChooseFragmentScreen() {
         var searchQuery by remember { mutableStateOf("") }
         val accountsWithType by if (searchQuery.isEmpty()) {
-            accountViewModel.getAccountsWithType().observeAsState(emptyList())
+            accountViewModel.getAccountsWithTypeBudgetFirst().observeAsState(emptyList())
         } else {
-            accountViewModel.searchAccountsWithType("%$searchQuery%").observeAsState(emptyList())
+            accountViewModel.searchAccountsWithTypeBudgetFirst("%$searchQuery%")
+                .observeAsState(emptyList())
         }
 
-        AccountsListScreen(
+        AccountChooseScreen(
             searchQuery = searchQuery,
             onSearchQueryChange = { searchQuery = it },
             accountsWithType = accountsWithType,
-            onAddAccountClick = { gotoAccountAddFragment() },
             onAccountClick = { chooseAccountAndPopulateCache(it) },
-            getAccountInfoText = { "" }, // Choose screen doesn't show info text
+            onAddAccountClick = { gotoAccountAddFragment() },
         )
     }
 

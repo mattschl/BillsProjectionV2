@@ -42,6 +42,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectBalanceField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectIntField
+import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextBox
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
@@ -181,18 +182,16 @@ fun BudgetRuleScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                ClickableSelectionCard(
+                ProjectTextBox(
                     label = stringResource(R.string.to_this_account),
-                    value = toAccount?.accountName
-                        ?: stringResource(R.string.choose_an_account),
+                    value = toAccount?.accountName ?: "",
                     onClick = { onChooseAccount(REQUEST_TO_ACCOUNT) },
                     modifier = Modifier.weight(1f)
                 )
 
-                ClickableSelectionCard(
+                ProjectTextBox(
                     label = stringResource(R.string.from_this_account),
-                    value = fromAccount?.accountName
-                        ?: stringResource(R.string.choose_an_account),
+                    value = fromAccount?.accountName ?: "",
                     onClick = { onChooseAccount(REQUEST_FROM_ACCOUNT) },
                     modifier = Modifier.weight(1f)
                 )

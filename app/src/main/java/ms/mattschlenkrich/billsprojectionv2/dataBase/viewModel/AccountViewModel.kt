@@ -34,6 +34,9 @@ class AccountViewModel(
     fun getAccountsWithType() =
         accountRepository.getAccountsWithType()
 
+    fun getAccountsWithTypeBudgetFirst() =
+        accountRepository.getAccountsWithTypeBudgetFirst()
+
     suspend fun getAccountAndType(accountId: Long) =
         accountRepository.getAccountAndType(accountId)
 
@@ -63,6 +66,9 @@ class AccountViewModel(
 
     fun searchAccountsWithType(query: String) =
         accountRepository.searchAccountsWithType(query)
+
+    fun searchAccountsWithTypeBudgetFirst(query: String) =
+        accountRepository.searchAccountsWithTypeBudgetFirst(query)
 
     suspend fun getAccountWithType(accountId: Long) =
         accountRepository.getAccountWithType(accountId)

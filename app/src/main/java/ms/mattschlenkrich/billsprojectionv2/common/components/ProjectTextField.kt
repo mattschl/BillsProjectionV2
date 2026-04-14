@@ -2,11 +2,12 @@ package ms.mattschlenkrich.billsprojectionv2.common.components
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
@@ -24,6 +25,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProjectTextField(
     value: String,
@@ -31,7 +33,7 @@ fun ProjectTextField(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     readOnly: Boolean = false,
-    textStyle: TextStyle = LocalTextStyle.current,
+    textStyle: TextStyle = ProjectFieldDefaults.textStyle(),
     label: String? = null,
     placeholder: @Composable (() -> Unit)? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
@@ -47,8 +49,8 @@ fun ProjectTextField(
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     minLines: Int = 1,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    shape: Shape = OutlinedTextFieldDefaults.shape,
-    colors: TextFieldColors = OutlinedTextFieldDefaults.colors()
+    shape: Shape = ProjectFieldDefaults.shape(),
+    colors: TextFieldColors = ProjectFieldDefaults.colors()
 ) {
     val isFocused by interactionSource.collectIsFocusedAsState()
     var textFieldValueState by remember {
@@ -57,40 +59,37 @@ fun ProjectTextField(
 
     LaunchedEffect(value) {
         if (textFieldValueState.text != value) {
-            textFieldValueState = textFieldValueState.copy(text = value)
+            textFieldValueState = textFieldValueState.copy(
+                text = value,
+                selection = TextRange(value.length)
+            )
         }
     }
 
     LaunchedEffect(isFocused) {
-        if (isFocused) {
+        if (isFocused && !readOnly) {
             textFieldValueState = textFieldValueState.copy(
                 selection = TextRange(0, textFieldValueState.text.length)
             )
         }
     }
 
-    OutlinedTextField(
+    BasicTextField(
         value = textFieldValueState,
         onValueChange = {
-            textFieldValueState = it
-            if (value != it.text) {
-                onValueChange(it.text)
+            if (!readOnly) {
+                textFieldValueState = it
+                if (value != it.text) {
+                    onValueChange(it.text)
+                }
             }
         },
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = ProjectFieldDefaults.MinHeight),
         enabled = enabled,
         readOnly = readOnly,
         textStyle = textStyle,
-        label = if (label != null) {
-            { Text(label) }
-        } else null,
-        placeholder = placeholder,
-        leadingIcon = leadingIcon,
-        trailingIcon = trailingIcon,
-        prefix = prefix,
-        suffix = suffix,
-        supportingText = supportingText,
-        isError = isError,
         visualTransformation = visualTransformation,
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
@@ -98,11 +97,46 @@ fun ProjectTextField(
         maxLines = maxLines,
         minLines = minLines,
         interactionSource = interactionSource,
-        shape = shape,
-        colors = colors
+        decorationBox = @Composable { innerTextField ->
+            OutlinedTextFieldDefaults.DecorationBox(
+                value = textFieldValueState.text,
+                innerTextField = innerTextField,
+                enabled = enabled,
+                singleLine = singleLine,
+                visualTransformation = visualTransformation,
+                interactionSource = interactionSource,
+                label = if (label != null) {
+                    {
+                        Text(
+                            text = label,
+                            style = ProjectFieldDefaults.labelStyle()
+                        )
+                    }
+                } else null,
+                placeholder = placeholder,
+                leadingIcon = leadingIcon,
+                trailingIcon = trailingIcon,
+                prefix = prefix,
+                suffix = suffix,
+                supportingText = supportingText,
+                isError = isError,
+                colors = colors,
+                contentPadding = ProjectFieldDefaults.contentPadding(),
+                container = {
+                    OutlinedTextFieldDefaults.Container(
+                        enabled = enabled,
+                        isError = isError,
+                        interactionSource = interactionSource,
+                        colors = colors,
+                        shape = shape
+                    )
+                }
+            )
+        }
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProjectTextField(
     value: TextFieldValue,
@@ -110,7 +144,7 @@ fun ProjectTextField(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     readOnly: Boolean = false,
-    textStyle: TextStyle = LocalTextStyle.current,
+    textStyle: TextStyle = ProjectFieldDefaults.textStyle(),
     label: String? = null,
     placeholder: @Composable (() -> Unit)? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
@@ -126,8 +160,8 @@ fun ProjectTextField(
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     minLines: Int = 1,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    shape: Shape = OutlinedTextFieldDefaults.shape,
-    colors: TextFieldColors = OutlinedTextFieldDefaults.colors()
+    shape: Shape = ProjectFieldDefaults.shape(),
+    colors: TextFieldColors = ProjectFieldDefaults.colors()
 ) {
     val isFocused by interactionSource.collectIsFocusedAsState()
 
@@ -141,23 +175,15 @@ fun ProjectTextField(
         }
     }
 
-    OutlinedTextField(
+    BasicTextField(
         value = value,
         onValueChange = onValueChange,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = ProjectFieldDefaults.MinHeight),
         enabled = enabled,
         readOnly = readOnly,
         textStyle = textStyle,
-        label = if (label != null) {
-            { Text(label) }
-        } else null,
-        placeholder = placeholder,
-        leadingIcon = leadingIcon,
-        trailingIcon = trailingIcon,
-        prefix = prefix,
-        suffix = suffix,
-        supportingText = supportingText,
-        isError = isError,
         visualTransformation = visualTransformation,
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
@@ -165,7 +191,41 @@ fun ProjectTextField(
         maxLines = maxLines,
         minLines = minLines,
         interactionSource = interactionSource,
-        shape = shape,
-        colors = colors
+        decorationBox = @Composable { innerTextField ->
+            OutlinedTextFieldDefaults.DecorationBox(
+                value = value.text,
+                innerTextField = innerTextField,
+                enabled = enabled,
+                singleLine = singleLine,
+                visualTransformation = visualTransformation,
+                interactionSource = interactionSource,
+                label = if (label != null) {
+                    {
+                        Text(
+                            text = label,
+                            style = ProjectFieldDefaults.labelStyle()
+                        )
+                    }
+                } else null,
+                placeholder = placeholder,
+                leadingIcon = leadingIcon,
+                trailingIcon = trailingIcon,
+                prefix = prefix,
+                suffix = suffix,
+                supportingText = supportingText,
+                isError = isError,
+                colors = colors,
+                contentPadding = ProjectFieldDefaults.contentPadding(),
+                container = {
+                    OutlinedTextFieldDefaults.Container(
+                        enabled = enabled,
+                        isError = isError,
+                        interactionSource = interactionSource,
+                        colors = colors,
+                        shape = shape
+                    )
+                }
+            )
+        }
     )
 }

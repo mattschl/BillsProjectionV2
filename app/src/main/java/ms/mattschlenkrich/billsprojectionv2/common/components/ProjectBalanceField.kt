@@ -5,11 +5,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -28,9 +26,8 @@ fun ProjectBalanceField(
         onValueChange = onValueChange,
         label = label,
         modifier = modifier,
-        textStyle = MaterialTheme.typography.titleLarge.copy(
+        textStyle = ProjectFieldDefaults.titleStyle().copy(
             textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold
         ),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
         singleLine = true,
@@ -60,9 +57,8 @@ fun ProjectBalanceField(
         onValueChange = onValueChange,
         label = label,
         modifier = modifier,
-        textStyle = MaterialTheme.typography.titleLarge.copy(
+        textStyle = ProjectFieldDefaults.titleStyle().copy(
             textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold
         ),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
         singleLine = true,

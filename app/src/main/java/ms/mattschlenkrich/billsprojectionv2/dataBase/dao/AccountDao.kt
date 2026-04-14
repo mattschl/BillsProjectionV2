@@ -13,9 +13,13 @@ import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_NAME
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_TYPE_ID
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_UPDATE_TIME
 import ms.mattschlenkrich.billsprojectionv2.common.ACCT_DISPLAY_AS_ASSET
+import ms.mattschlenkrich.billsprojectionv2.common.BUD_FROM_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.common.BUD_IS_DELETED
+import ms.mattschlenkrich.billsprojectionv2.common.BUD_TO_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.common.IS_ASSET
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNT_TYPES
+import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.common.TYPE_ID
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountAndType
@@ -105,6 +109,25 @@ interface AccountDao {
     )
     fun searchAccountsWithType(query: String?): LiveData<List<AccountWithType>>
 
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
+    @Query(
+        "SELECT $TABLE_ACCOUNTS.*, $TABLE_ACCOUNT_TYPES.*, " +
+                "(SELECT COUNT(*) FROM $TABLE_BUDGET_RULES " +
+                " WHERE ($BUD_TO_ACCOUNT_ID = $TABLE_ACCOUNTS.$ACCOUNT_ID " +
+                " OR $BUD_FROM_ACCOUNT_ID = $TABLE_ACCOUNTS.$ACCOUNT_ID) " +
+                " AND $BUD_IS_DELETED = 0) as usedInBudget " +
+                "FROM $TABLE_ACCOUNTS " +
+                "LEFT JOIN $TABLE_ACCOUNT_TYPES ON " +
+                "$TABLE_ACCOUNT_TYPES.$TYPE_ID = $TABLE_ACCOUNTS.$ACCOUNT_TYPE_ID " +
+                "WHERE $TABLE_ACCOUNTS.$ACCOUNT_NAME LIKE :query " +
+                "ORDER BY $TABLE_ACCOUNT_TYPES.$ACCT_DISPLAY_AS_ASSET DESC, " +
+                "usedInBudget DESC, " +
+                "$TABLE_ACCOUNTS.$ACCOUNT_NAME " +
+                "COLLATE NOCASE ASC "
+    )
+    fun searchAccountsWithTypeBudgetFirst(query: String?): LiveData<List<AccountWithType>>
+
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
@@ -121,6 +144,26 @@ interface AccountDao {
                 "COLLATE NOCASE ASC "
     )
     fun getAccountsWithType(): LiveData<List<AccountWithType>>
+
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
+    @Query(
+        "SELECT $TABLE_ACCOUNTS.*, $TABLE_ACCOUNT_TYPES.*, " +
+                "(SELECT COUNT(*) FROM $TABLE_BUDGET_RULES " +
+                " WHERE ($BUD_TO_ACCOUNT_ID = $TABLE_ACCOUNTS.$ACCOUNT_ID " +
+                " OR $BUD_FROM_ACCOUNT_ID = $TABLE_ACCOUNTS.$ACCOUNT_ID) " +
+                " AND $BUD_IS_DELETED = 0) as usedInBudget " +
+                "FROM $TABLE_ACCOUNTS " +
+                "LEFT JOIN $TABLE_ACCOUNT_TYPES ON " +
+                "$TABLE_ACCOUNT_TYPES.$TYPE_ID = " +
+                "$TABLE_ACCOUNTS.$ACCOUNT_TYPE_ID " +
+                "WHERE $TABLE_ACCOUNTS.$ACCOUNT_IS_DELETED = 0  " +
+                "ORDER BY $TABLE_ACCOUNT_TYPES.$ACCT_DISPLAY_AS_ASSET DESC, " +
+                "usedInBudget DESC, " +
+                "$TABLE_ACCOUNTS.$ACCOUNT_NAME " +
+                "COLLATE NOCASE ASC "
+    )
+    fun getAccountsWithTypeBudgetFirst(): LiveData<List<AccountWithType>>
 
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @RewriteQueriesToDropUnusedColumns

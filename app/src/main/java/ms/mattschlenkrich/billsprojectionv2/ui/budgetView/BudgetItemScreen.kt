@@ -19,7 +19,6 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,13 +30,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectBalanceField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
+import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextBox
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 
@@ -133,22 +132,21 @@ fun BudgetItemScreen(
                 }
             }
 
-            ClickableSelectionCard(
+            ProjectTextBox(
                 label = stringResource(R.string.rules),
-                value = budgetRule?.budgetRuleName
-                    ?: stringResource(R.string.choose_a_budget_rule),
+                value = budgetRule?.budgetRuleName ?: "",
                 onClick = onChooseBudgetRule
             )
 
-            ClickableSelectionCard(
+            ProjectTextBox(
                 label = stringResource(R.string.to_this_account),
-                value = toAccount?.accountName ?: stringResource(R.string.choose_an_account),
+                value = toAccount?.accountName ?: "",
                 onClick = { onChooseAccount(REQUEST_TO_ACCOUNT) }
             )
 
-            ClickableSelectionCard(
+            ProjectTextBox(
                 label = stringResource(R.string.from_this_account),
-                value = fromAccount?.accountName ?: stringResource(R.string.choose_an_account),
+                value = fromAccount?.accountName ?: "",
                 onClick = { onChooseAccount(REQUEST_FROM_ACCOUNT) }
             )
 
@@ -195,23 +193,6 @@ fun BudgetItemScreen(
                     onCheckedChange = onIsLockedChange
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun ClickableSelectionCard(label: String, value: String, onClick: () -> Unit) {
-    OutlinedCard(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(text = label, style = MaterialTheme.typography.labelMedium)
-            Text(
-                text = value,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold
-            )
         }
     }
 }
