@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -54,6 +53,7 @@ import com.google.api.services.drive.DriveScopes
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 import java.security.SecureRandom
@@ -209,7 +209,7 @@ fun SyncScreen(
                         textFieldValue = textFieldValue.copy(text = viewModel.docContent)
                     }
                 }
-                OutlinedTextField(
+                ProjectTextField(
                     value = textFieldValue,
                     onValueChange = {
                         textFieldValue = it
@@ -217,10 +217,8 @@ fun SyncScreen(
                             viewModel.docContent = it.text
                         }
                     },
-                    label = { Text(stringResource(R.string.document_content)) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
+                    label = stringResource(R.string.document_content),
+                    modifier = Modifier.weight(1f)
                 )
 
                 FlowRow(

@@ -6,42 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Calculate
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -50,8 +17,6 @@ import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_SPLIT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
-import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
-import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
@@ -83,11 +48,8 @@ class TransactionSplitFragment : Fragment(), RefreshableFragment {
 
     private var dateState = mutableStateOf("")
     private var descriptionState = mutableStateOf("")
-    private var descriptionTextFieldValue = mutableStateOf(TextFieldValue(""))
     private var noteState = mutableStateOf("")
-    private var noteTextFieldValue = mutableStateOf(TextFieldValue(""))
     private var amountState = mutableStateOf("")
-    private var amountTextFieldValue = mutableStateOf(TextFieldValue(""))
     private var originalAmountState = mutableStateOf(0.0)
     private var remainderState = mutableStateOf(0.0)
 
@@ -119,7 +81,36 @@ class TransactionSplitFragment : Fragment(), RefreshableFragment {
             setContent {
                 BillsProjectionTheme {
                     if (refreshKey.intValue >= 0) {
-                        TransactionSplitScreen()
+                        TransactionSplitScreen(
+                            date = dateState.value,
+                            onDateChange = { dateState.value = it },
+                            budgetRule = budgetRuleState.value,
+                            onChooseBudgetRule = { chooseBudgetRule() },
+                            amount = amountState.value,
+                            onAmountChange = {
+                                amountState.value = it
+                                updateAmountsDisplay()
+                            },
+                            onGotoCalculator = { gotoCalculator() },
+                            originalAmount = originalAmountState.value,
+                            remainder = remainderState.value,
+                            toAccount = toAccountState.value,
+                            onChooseToAccount = { chooseToAccount() },
+                            toPending = toPendingState.value,
+                            onToPendingChange = { toPendingState.value = it },
+                            allowToPending = toAccountWithTypeState.value?.accountType?.allowPending == true,
+                            fromAccount = fromAccountState.value,
+                            fromPending = fromPendingState.value,
+                            onFromPendingChange = { fromPendingState.value = it },
+                            allowFromPending = fromAccountWithTypeState.value?.accountType?.allowPending == true,
+                            onFromAccountClick = { },
+                            description = descriptionState.value,
+                            onDescriptionChange = { descriptionState.value = it },
+                            note = noteState.value,
+                            onNoteChange = { noteState.value = it },
+                            onSaveClick = { saveTransactionIfValid() },
+                            nf = nf
+                        )
                     }
                 }
             }
@@ -172,7 +163,6 @@ class TransactionSplitFragment : Fragment(), RefreshableFragment {
         budgetRuleState.value = mTransactionDetailed.budgetRule!!
         if (descriptionState.value.isBlank()) {
             descriptionState.value = budgetRuleState.value!!.budgetRuleName
-            descriptionTextFieldValue.value = TextFieldValue(descriptionState.value)
         }
         if (toAccountState.value == null) {
             populateToAccountFromBudgetRule()
@@ -183,9 +173,7 @@ class TransactionSplitFragment : Fragment(), RefreshableFragment {
         val splitDetailed = mainViewModel.getSplitTransactionDetailed()!!
         val transaction = splitDetailed.transaction!!
         descriptionState.value = transaction.transName
-        descriptionTextFieldValue.value = TextFieldValue(transaction.transName)
         noteState.value = transaction.transNote
-        noteTextFieldValue.value = TextFieldValue(transaction.transNote)
         fromPendingState.value = transaction.transFromAccountPending
 
         if (mainViewModel.getTransferNum() != null && mainViewModel.getTransferNum() != 0.0) {
@@ -195,7 +183,6 @@ class TransactionSplitFragment : Fragment(), RefreshableFragment {
         } else {
             amountState.value = nf.displayDollars(0.0)
         }
-        amountTextFieldValue.value = TextFieldValue(amountState.value)
         updateAmountsDisplay()
 
         if (splitDetailed.toAccount != null) {
@@ -233,283 +220,6 @@ class TransactionSplitFragment : Fragment(), RefreshableFragment {
                 }
             }
         }
-    }
-
-    @Composable
-    fun TransactionSplitScreen() {
-        val date by dateState
-        val budgetRule by budgetRuleState
-        val toAccount by toAccountState
-        val fromAccount by fromAccountState
-        var toPending by toPendingState
-        var fromPending by fromPendingState
-        val originalAmount by originalAmountState
-        val remainder by remainderState
-
-        val toAccountWithType = toAccountWithTypeState.value
-        val fromAccountWithType = fromAccountWithTypeState.value
-
-        Scaffold(
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { saveTransactionIfValid() },
-                    modifier = Modifier
-                        .padding(16.dp),
-                    containerColor = Color(0xFFB00020) // Deep Red
-                ) {
-                    Icon(
-                        Icons.Default.Done,
-                        contentDescription = stringResource(R.string.save),
-                        tint = Color.White
-                    )
-                }
-            }
-        ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                ProjectDateField(
-                    value = date,
-                    onValueChange = { dateState.value = it },
-                    label = stringResource(R.string.date),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                SelectorCard(
-                    label = stringResource(R.string.rules),
-                    value = budgetRule?.budgetRuleName
-                        ?: stringResource(R.string.choose_a_budget_rule),
-                    onClick = { chooseBudgetRule() }
-                )
-
-                BalanceField(
-                    label = stringResource(R.string.transaction_amount),
-                    value = amountTextFieldValue.value,
-                    onValueChange = {
-                        amountTextFieldValue.value = it
-                        amountState.value = it.text
-                        updateAmountsDisplay()
-                    },
-                    onLongClick = { gotoCalculator() }
-                )
-
-                OutlinedCard(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(modifier = Modifier.padding(12.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = stringResource(R.string.original_amount),
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                            Text(
-                                text = nf.displayDollars(originalAmount),
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        }
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = stringResource(R.string.remainder),
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                            Text(
-                                text = nf.displayDollars(remainder),
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        }
-                    }
-                }
-
-                AccountSelectorCard(
-                    label = stringResource(R.string.to_this_account),
-                    account = toAccount,
-                    isPending = toPending,
-                    onPendingChange = { toPending = it },
-                    allowPending = toAccountWithType?.accountType?.allowPending == true,
-                    onClick = { chooseToAccount() }
-                )
-
-                AccountDisplayCard(
-                    label = stringResource(R.string.from_this_account),
-                    account = fromAccount,
-                    isPending = fromPending,
-                    onPendingChange = { fromPending = it },
-                    allowPending = fromAccountWithType?.accountType?.allowPending == true
-                )
-
-                ProjectTextField(
-                    value = descriptionTextFieldValue.value,
-                    onValueChange = {
-                        descriptionTextFieldValue.value = it
-                        descriptionState.value = it.text
-                    },
-                    label = { Text(stringResource(R.string.description)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
-
-                ProjectTextField(
-                    value = noteTextFieldValue.value,
-                    onValueChange = {
-                        noteTextFieldValue.value = it
-                        noteState.value = it.text
-                    },
-                    label = { Text(stringResource(R.string.notes)) },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }
-    }
-
-    @Composable
-    fun SelectorCard(label: String, value: String, onClick: () -> Unit) {
-        OutlinedCard(
-            onClick = onClick,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(
-                modifier = Modifier
-                    .padding(12.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "$label:",
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = value,
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
-        }
-    }
-
-    @Composable
-    fun AccountSelectorCard(
-        label: String,
-        account: Account?,
-        isPending: Boolean,
-        onPendingChange: (Boolean) -> Unit,
-        allowPending: Boolean,
-        onClick: () -> Unit
-    ) {
-        OutlinedCard(
-            onClick = onClick,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(modifier = Modifier.padding(12.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "$label:",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Text(
-                        text = account?.accountName ?: stringResource(R.string.choose_an_account),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
-                if (allowPending) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clickable { onPendingChange(!isPending) }
-                    ) {
-                        Checkbox(checked = isPending, onCheckedChange = onPendingChange)
-                        Text(
-                            text = stringResource(R.string.pending),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    @Composable
-    fun AccountDisplayCard(
-        label: String,
-        account: Account?,
-        isPending: Boolean,
-        onPendingChange: (Boolean) -> Unit,
-        allowPending: Boolean
-    ) {
-        OutlinedCard(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(modifier = Modifier.padding(12.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "$label:",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Text(
-                        text = account?.accountName ?: "",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
-                if (allowPending) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clickable { onPendingChange(!isPending) }
-                    ) {
-                        Checkbox(checked = isPending, onCheckedChange = onPendingChange)
-                        Text(
-                            text = stringResource(R.string.pending),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    @Composable
-    fun BalanceField(
-        label: String,
-        value: TextFieldValue,
-        onValueChange: (TextFieldValue) -> Unit,
-        onLongClick: () -> Unit
-    ) {
-        ProjectTextField(
-            value = value,
-            onValueChange = { onValueChange(it) },
-            label = { Text(label) },
-            modifier = Modifier.fillMaxWidth(),
-            textStyle = MaterialTheme.typography.titleLarge.copy(
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold
-            ),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            singleLine = true,
-            trailingIcon = {
-                IconButton(onClick = onLongClick) {
-                    Icon(
-                        imageVector = Icons.Default.Calculate,
-                        contentDescription = stringResource(R.string.calculator)
-                    )
-                }
-            }
-        )
     }
 
     private fun chooseBudgetRule() {

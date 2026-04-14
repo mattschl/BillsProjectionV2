@@ -157,4 +157,40 @@ class TransactionRepository(private val db: BillsDatabase) {
     fun getMinTransactionBySearch(
         query: String?, startDate: String, endDate: String
     ) = db.getTransactionDao().getMinTransactionBySearch(query, startDate, endDate)
+
+    fun getTransactionsFiltered(
+        budgetRuleId: Long, accountId: Long, query: String, startDate: String, endDate: String
+    ) = db.getTransactionDao().getTransactionsFiltered(
+        budgetRuleId, accountId, query, startDate, endDate
+    )
+
+    fun getSumFiltered(
+        budgetRuleId: Long, accountId: Long, query: String, startDate: String, endDate: String
+    ) = db.getTransactionDao().getSumFiltered(
+        budgetRuleId, accountId, query, startDate, endDate
+    )
+
+    fun getSumToAccountFiltered(
+        accountId: Long, query: String, startDate: String, endDate: String
+    ) = db.getTransactionDao().getSumToAccountFiltered(
+        accountId, query, startDate, endDate
+    )
+
+    fun getSumFromAccountFiltered(
+        accountId: Long, query: String, startDate: String, endDate: String
+    ) = db.getTransactionDao().getSumFromAccountFiltered(
+        accountId, query, startDate, endDate
+    )
+
+    fun getMaxFiltered(
+        budgetRuleId: Long, accountId: Long, query: String, startDate: String, endDate: String
+    ) = db.getTransactionDao().getMaxFiltered(
+        budgetRuleId, accountId, query, startDate, endDate
+    )
+
+    fun getMinFiltered(
+        budgetRuleId: Long, accountId: Long, query: String, startDate: String, endDate: String
+    ) = db.getTransactionDao().getMinFiltered(
+        budgetRuleId, accountId, query, startDate, endDate
+    )
 }

@@ -326,8 +326,7 @@ interface TransactionDao {
     )
     fun getMinTransactionByAccount(
         accountId: Long, startDate: String, endDate: String
-    ):
-            LiveData<Double>
+    ): LiveData<Double>
 
 
     @Query(
@@ -587,4 +586,115 @@ interface TransactionDao {
         query: String?, startDate: String, endDate: String
     ):
             LiveData<Double>
+
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
+    @Query(
+        "SELECT trans.*, " +
+                "budgetRule.*, " +
+                "toAccount.*, " +
+                "fromAccount.* " +
+                "FROM $TABLE_TRANSACTION AS trans " +
+                "LEFT JOIN $TABLE_BUDGET_RULES AS budgetRule ON " +
+                "trans.$TRANS_BUDGET_RULE_ID = budgetRule.$RULE_ID " +
+                "LEFT JOIN $TABLE_ACCOUNTS AS toAccount ON " +
+                "trans.$TRANSACTION_TO_ACCOUNT_ID = toAccount.$ACCOUNT_ID " +
+                "LEFT JOIN $TABLE_ACCOUNTS AS fromAccount ON " +
+                "trans.$TRANSACTION_FROM_ACCOUNT_ID = fromAccount.$ACCOUNT_ID " +
+                "WHERE trans.$TRANS_IS_DELETED = 0 " +
+                "AND (:budgetRuleId = -1 OR trans.$TRANS_BUDGET_RULE_ID = :budgetRuleId) " +
+                "AND (:accountId = -1 OR (trans.$TRANSACTION_TO_ACCOUNT_ID = :accountId OR trans.$TRANSACTION_FROM_ACCOUNT_ID = :accountId)) " +
+                "AND (:query = '' OR (trans.$TRANSACTION_NAME LIKE :query OR trans.$TRANSACTION_NOTE LIKE :query)) " +
+                "AND (:startDate = '' OR trans.$TRANSACTION_DATE >= :startDate) " +
+                "AND (:endDate = '' OR trans.$TRANSACTION_DATE <= :endDate) " +
+                "ORDER BY trans.$TRANSACTION_DATE DESC, trans.$TRANS_UPDATE_TIME DESC"
+    )
+    fun getTransactionsFiltered(
+        budgetRuleId: Long,
+        accountId: Long,
+        query: String,
+        startDate: String,
+        endDate: String
+    ): LiveData<List<TransactionDetailed>>
+
+    @Query(
+        "SELECT SUM($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
+                "WHERE $TRANS_IS_DELETED = 0 " +
+                "AND (:budgetRuleId = -1 OR $TRANS_BUDGET_RULE_ID = :budgetRuleId) " +
+                "AND (:accountId = -1 OR ($TRANSACTION_TO_ACCOUNT_ID = :accountId OR $TRANSACTION_FROM_ACCOUNT_ID = :accountId)) " +
+                "AND (:query = '' OR ($TRANSACTION_NAME LIKE :query OR $TRANSACTION_NOTE LIKE :query)) " +
+                "AND (:startDate = '' OR $TRANSACTION_DATE >= :startDate) " +
+                "AND (:endDate = '' OR $TRANSACTION_DATE <= :endDate)"
+    )
+    fun getSumFiltered(
+        budgetRuleId: Long,
+        accountId: Long,
+        query: String,
+        startDate: String,
+        endDate: String
+    ): LiveData<Double>
+
+    @Query(
+        "SELECT SUM($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
+                "WHERE $TRANS_IS_DELETED = 0 " +
+                "AND $TRANSACTION_TO_ACCOUNT_ID = :accountId " +
+                "AND (:query = '' OR ($TRANSACTION_NAME LIKE :query OR $TRANSACTION_NOTE LIKE :query)) " +
+                "AND (:startDate = '' OR $TRANSACTION_DATE >= :startDate) " +
+                "AND (:endDate = '' OR $TRANSACTION_DATE <= :endDate)"
+    )
+    fun getSumToAccountFiltered(
+        accountId: Long,
+        query: String,
+        startDate: String,
+        endDate: String
+    ): LiveData<Double>
+
+    @Query(
+        "SELECT SUM($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
+                "WHERE $TRANS_IS_DELETED = 0 " +
+                "AND $TRANSACTION_FROM_ACCOUNT_ID = :accountId " +
+                "AND (:query = '' OR ($TRANSACTION_NAME LIKE :query OR $TRANSACTION_NOTE LIKE :query)) " +
+                "AND (:startDate = '' OR $TRANSACTION_DATE >= :startDate) " +
+                "AND (:endDate = '' OR $TRANSACTION_DATE <= :endDate)"
+    )
+    fun getSumFromAccountFiltered(
+        accountId: Long,
+        query: String,
+        startDate: String,
+        endDate: String
+    ): LiveData<Double>
+
+    @Query(
+        "SELECT MAX($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
+                "WHERE $TRANS_IS_DELETED = 0 " +
+                "AND (:budgetRuleId = -1 OR $TRANS_BUDGET_RULE_ID = :budgetRuleId) " +
+                "AND (:accountId = -1 OR ($TRANSACTION_TO_ACCOUNT_ID = :accountId OR $TRANSACTION_FROM_ACCOUNT_ID = :accountId)) " +
+                "AND (:query = '' OR ($TRANSACTION_NAME LIKE :query OR $TRANSACTION_NOTE LIKE :query)) " +
+                "AND (:startDate = '' OR $TRANSACTION_DATE >= :startDate) " +
+                "AND (:endDate = '' OR $TRANSACTION_DATE <= :endDate)"
+    )
+    fun getMaxFiltered(
+        budgetRuleId: Long,
+        accountId: Long,
+        query: String,
+        startDate: String,
+        endDate: String
+    ): LiveData<Double>
+
+    @Query(
+        "SELECT MIN($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
+                "WHERE $TRANS_IS_DELETED = 0 " +
+                "AND (:budgetRuleId = -1 OR $TRANS_BUDGET_RULE_ID = :budgetRuleId) " +
+                "AND (:accountId = -1 OR ($TRANSACTION_TO_ACCOUNT_ID = :accountId OR $TRANSACTION_FROM_ACCOUNT_ID = :accountId)) " +
+                "AND (:query = '' OR ($TRANSACTION_NAME LIKE :query OR $TRANSACTION_NOTE LIKE :query)) " +
+                "AND (:startDate = '' OR $TRANSACTION_DATE >= :startDate) " +
+                "AND (:endDate = '' OR $TRANSACTION_DATE <= :endDate)"
+    )
+    fun getMinFiltered(
+        budgetRuleId: Long,
+        accountId: Long,
+        query: String,
+        startDate: String,
+        endDate: String
+    ): LiveData<Double>
 }

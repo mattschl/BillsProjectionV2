@@ -8,37 +8,11 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Calculate
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -49,7 +23,6 @@ import ms.mattschlenkrich.billsprojectionv2.common.BALANCE
 import ms.mattschlenkrich.billsprojectionv2.common.BUDGETED
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.OWING
-import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
@@ -87,7 +60,7 @@ class AccountAddFragment : Fragment(), MenuProvider, RefreshableFragment {
         return ComposeView(requireContext()).apply {
             setContent {
                 BillsProjectionTheme {
-                    AccountAddScreen()
+                    AccountAddFragmentScreen()
                 }
             }
         }
@@ -148,7 +121,7 @@ class AccountAddFragment : Fragment(), MenuProvider, RefreshableFragment {
     }
 
     @Composable
-    fun AccountAddScreen() {
+    fun AccountAddFragmentScreen() {
         var name by nameState
         var handle by handleState
         var balance by balanceState
@@ -159,160 +132,25 @@ class AccountAddFragment : Fragment(), MenuProvider, RefreshableFragment {
         val accountWithType = mainViewModel.getAccountWithType()
         val accountType = accountWithType?.accountType
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Row(modifier = Modifier.fillMaxWidth()) {
-                ProjectTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = {
-                        Text(
-                            stringResource(R.string.account_name),
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                    },
-                    modifier = Modifier
-                        .weight(1.5f)
-                        .height(56.dp),
-                    textStyle = MaterialTheme.typography.bodyMedium,
-                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
-                    singleLine = true
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                ProjectTextField(
-                    value = handle,
-                    onValueChange = { handle = it },
-                    label = {
-                        Text(
-                            stringResource(R.string.number),
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                    },
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(56.dp),
-                    textStyle = MaterialTheme.typography.bodyMedium,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                    singleLine = true
-                )
-            }
-
-            OutlinedCard(
-                onClick = { gotoAccountTypes() },
-                modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.small
-            ) {
-                Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(R.string.account_type) + ":",
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                        Text(
-                            text = accountType?.accountType
-                                ?: stringResource(R.string.choose_an_account_type),
-                            fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = if (accountType == null) MaterialTheme.colorScheme.error else Color.Unspecified
-                        )
-                    }
-                    if (accountType != null) {
-                        Spacer(modifier = Modifier.height(2.dp))
-                        Text(
-                            text = getAccountTypeDetails(accountType),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Color.Gray,
-                        )
-                    }
-                }
-            }
-
-            Row(modifier = Modifier.fillMaxWidth()) {
-                BalanceField(
-                    label = stringResource(R.string.balance),
-                    value = balance,
-                    onValueChange = { balance = it },
-                    onLongClick = { gotoCalculator(BALANCE) },
-                    modifier = Modifier.weight(1f)
-                )
-                BalanceField(
-                    label = stringResource(R.string.owing),
-                    value = owing,
-                    onValueChange = { owing = it },
-                    onLongClick = { gotoCalculator(OWING) },
-                    modifier = Modifier.weight(1f)
-                )
-            }
-
-            Row(modifier = Modifier.fillMaxWidth()) {
-                BalanceField(
-                    label = stringResource(R.string.budgeted),
-                    value = budgeted,
-                    onValueChange = { budgeted = it },
-                    onLongClick = { gotoCalculator(BUDGETED) },
-                    modifier = Modifier.weight(1f)
-                )
-                ProjectTextField(
-                    value = limit,
-                    onValueChange = { limit = it },
-                    label = {
-                        Text(
-                            stringResource(R.string.credit_limit),
-                            style = MaterialTheme.typography.labelSmall
-                        )
-                    },
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(56.dp)
-                        .padding(horizontal = 2.dp),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    textStyle = MaterialTheme.typography.bodyMedium.copy(
-                        textAlign = TextAlign.Center,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    singleLine = true
-                )
-            }
-        }
-    }
-
-    @Composable
-    fun BalanceField(
-        label: String,
-        value: String,
-        onValueChange: (String) -> Unit,
-        onLongClick: () -> Unit,
-        modifier: Modifier = Modifier
-    ) {
-        ProjectTextField(
-            value = value,
-            onValueChange = onValueChange,
-            label = { Text(label, style = MaterialTheme.typography.labelSmall) },
-            modifier = modifier
-                .padding(horizontal = 2.dp)
-                .height(56.dp),
-            textStyle = MaterialTheme.typography.bodyMedium.copy(
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold,
-            ),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            singleLine = true,
-            trailingIcon = {
-                IconButton(onClick = onLongClick) {
-                    Icon(
-                        imageVector = Icons.Default.Calculate,
-                        contentDescription = stringResource(R.string.calculator)
-                    )
-                }
-            }
+        AccountEditScreen(
+            name = name,
+            onNameChange = { name = it },
+            handle = handle,
+            onHandleChange = { handle = it },
+            accountType = accountType,
+            onAccountTypeClick = { gotoAccountTypes() },
+            accountTypeDetails = if (accountType != null) getAccountTypeDetails(accountType) else "",
+            balance = balance,
+            onBalanceChange = { balance = it },
+            onBalanceIconClick = { gotoCalculator(BALANCE) },
+            owing = owing,
+            onOwingChange = { owing = it },
+            onOwingIconClick = { gotoCalculator(OWING) },
+            budgeted = budgeted,
+            onBudgetedChange = { budgeted = it },
+            onBudgetedIconClick = { gotoCalculator(BUDGETED) },
+            limit = limit,
+            onLimitChange = { limit = it }
         )
     }
 

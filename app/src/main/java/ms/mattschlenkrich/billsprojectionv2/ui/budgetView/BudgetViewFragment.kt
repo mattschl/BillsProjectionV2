@@ -5,73 +5,28 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_100
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_500
-import ms.mattschlenkrich.billsprojectionv2.common.components.BudgetItemDisplay
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
-import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
@@ -96,16 +51,6 @@ class BudgetViewFragment : Fragment(), RefreshableFragment {
     private lateinit var transactionViewModel: TransactionViewModel
     private val nf = NumberFunctions()
     private val df = DateFunctions()
-    private val vf = VisualsFunctions()
-
-    private var selectedAsset = mutableStateOf("")
-    private var selectedPayDay = mutableStateOf("")
-    private var curAsset = mutableStateOf<AccountWithType?>(null)
-    private val budgetList = mutableStateListOf<BudgetItemDetailed>()
-    private val pendingList = mutableStateListOf<TransactionDetailed>()
-    private var pendingAmount = mutableDoubleStateOf(0.0)
-
-    private var refreshKey = mutableIntStateOf(0)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -116,8 +61,80 @@ class BudgetViewFragment : Fragment(), RefreshableFragment {
 
         return ComposeView(requireContext()).apply {
             setContent {
+                val assetList by budgetItemViewModel.getAssetsForBudget()
+                    .observeAsState(initial = emptyList())
+                var selectedAsset by remember {
+                    mutableStateOf(
+                        mainViewModel.getReturnToAsset() ?: assetList.firstOrNull() ?: ""
+                    )
+                }
+
+                if (selectedAsset.isEmpty() && assetList.isNotEmpty()) {
+                    selectedAsset = assetList.first()
+                }
+
+                if (selectedAsset.isNotEmpty()) {
+                    mainViewModel.setReturnToAsset(selectedAsset)
+                }
+
+                val payDayList by budgetItemViewModel.getPayDays(selectedAsset)
+                    .observeAsState(initial = emptyList())
+                var selectedPayDay by remember {
+                    mutableStateOf(
+                        mainViewModel.getReturnToPayDay() ?: payDayList.firstOrNull() ?: ""
+                    )
+                }
+
+                if (selectedPayDay.isEmpty() && payDayList.isNotEmpty()) {
+                    selectedPayDay = payDayList.first()
+                }
+
+                if (selectedPayDay.isNotEmpty()) {
+                    mainViewModel.setReturnToPayDay(selectedPayDay)
+                }
+
+                val curAsset by accountViewModel.getAccountDetailed(selectedAsset)
+                    .observeAsState(initial = null)
+
+                val pendingList by transactionViewModel.getPendingTransactionsDetailed(selectedAsset)
+                    .observeAsState(initial = emptyList())
+
+                val budgetList by budgetItemViewModel.getBudgetItems(selectedAsset, selectedPayDay)
+                    .observeAsState(initial = emptyList())
+
+                var pendingAmount = 0.0
+                pendingList.forEach {
+                    if (it.toAccount?.accountName == selectedAsset) {
+                        pendingAmount += it.transaction?.transAmount ?: 0.0
+                    } else {
+                        pendingAmount -= it.transaction?.transAmount ?: 0.0
+                    }
+                }
+
                 BillsProjectionTheme {
-                    BudgetViewScreen()
+                    BudgetViewScreen(
+                        assetList = assetList,
+                        selectedAsset = selectedAsset,
+                        onAssetSelected = {
+                            selectedAsset = it
+                            mainViewModel.setReturnToAsset(it)
+                        },
+                        payDayList = payDayList,
+                        selectedPayDay = selectedPayDay,
+                        onPayDaySelected = {
+                            selectedPayDay = it
+                            mainViewModel.setReturnToPayDay(it)
+                        },
+                        curAsset = curAsset,
+                        pendingList = pendingList,
+                        pendingAmount = pendingAmount,
+                        budgetList = budgetList,
+                        onAddClick = { onAddButtonPress() },
+                        onBudgetItemClick = { chooseOptionsForBudget(it) },
+                        onBudgetItemLockClick = { chooseLockUnlock(it) },
+                        onTransactionClick = { chooseOptionsForTransaction(it) },
+                        onAccountClick = { gotoAccount() }
+                    )
                 }
             }
         }
@@ -131,534 +148,8 @@ class BudgetViewFragment : Fragment(), RefreshableFragment {
         transactionViewModel = mainActivity.transactionViewModel
     }
 
-    @Preview
-    @Composable
-    fun BudgetViewScreen() {
-        val configuration = LocalConfiguration.current
-        val isTablet = configuration.screenWidthDp >= 600
-
-        val currentRefreshKey = refreshKey.intValue
-
-        val assetList by remember(currentRefreshKey) {
-            if (::budgetItemViewModel.isInitialized) {
-                budgetItemViewModel.getAssetsForBudget()
-            } else {
-                MutableLiveData(emptyList())
-            }
-        }.observeAsState(emptyList())
-
-        LaunchedEffect(assetList, currentRefreshKey) {
-            if (::mainViewModel.isInitialized &&
-                selectedAsset.value.isEmpty() && assetList.isNotEmpty()
-            ) {
-                val returnAsset = mainViewModel.getReturnToAsset()
-                if (returnAsset != null && assetList.contains(returnAsset)) {
-                    selectedAsset.value = returnAsset
-                } else {
-                    selectedAsset.value = assetList[0]
-                }
-            }
-        }
-
-        val curAssetDetail by remember(selectedAsset.value, currentRefreshKey) {
-            if (::accountViewModel.isInitialized && selectedAsset.value.isNotEmpty()) {
-                accountViewModel.getAccountDetailed(selectedAsset.value)
-            } else {
-                MutableLiveData(null)
-            }
-        }.observeAsState()
-
-        LaunchedEffect(curAssetDetail, currentRefreshKey) {
-            curAsset.value = curAssetDetail
-        }
-
-        LaunchedEffect(selectedAsset.value, currentRefreshKey) {
-            if (::mainViewModel.isInitialized && selectedAsset.value.isNotEmpty()) {
-                mainViewModel.setReturnToAsset(selectedAsset.value)
-            }
-        }
-
-        Scaffold(
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { onAddButtonPress() },
-                    containerColor = MaterialTheme.colorScheme.primary
-                ) {
-                    Icon(
-                        Icons.Default.Add,
-                        contentDescription = stringResource(R.string.add),
-                        tint = Color.White
-                    )
-                }
-            }
-        ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(if (isTablet) 8.dp else 4.dp)
-            ) {
-                SummaryCard(assetList, currentRefreshKey)
-
-                if (pendingList.isNotEmpty()) {
-                    Text(
-                        text = stringResource(R.string.pending_lined) + " " + nf.displayDollars(
-                            pendingAmount.doubleValue
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 1.dp),
-                        textAlign = TextAlign.Center,
-                        color = if (pendingAmount.doubleValue < 0) androidx.compose.ui.graphics.Color.Red else androidx.compose.ui.graphics.Color.Black,
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(max = if (isTablet) 150.dp else 100.dp)
-                    ) {
-                        items(pendingList) { pending ->
-                            PendingItem(pending)
-                        }
-                    }
-                }
-
-                if (budgetList.isNotEmpty()) {
-                    Text(
-                        text = stringResource(R.string.budgeted_lined),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 1.dp),
-                        textAlign = TextAlign.Center,
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    ) {
-                        items(budgetList) { budgetItem ->
-                            BudgetItemDisplay(
-                                budgetItemDetailed = budgetItem,
-                                isCredit = budgetItem.toAccount?.accountName == selectedAsset.value,
-                                onClick = { chooseOptionsForBudget(budgetItem) },
-                                onLockClick = { chooseLockUnlock(budgetItem) }
-                            )
-                        }
-                    }
-                } else {
-                    NoBudgetItemsCard()
-                }
-            }
-        }
-    }
-
-    @Composable
-    fun SummaryCard(
-        assetList: List<String>,
-        currentRefreshKey: Int,
-    ) {
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-        ) {
-            Column(modifier = Modifier.padding(2.dp)) {
-                DropdownSelector(
-                    label = stringResource(R.string.asset_account),
-                    options = assetList,
-                    selectedOption = selectedAsset.value,
-                    onOptionSelected = {
-                        selectedAsset.value = it
-                    },
-                )
-
-                val payDayList by remember(selectedAsset.value, currentRefreshKey) {
-                    if (::budgetItemViewModel.isInitialized) {
-                        budgetItemViewModel.getPayDays(selectedAsset.value)
-                    } else {
-                        MutableLiveData(emptyList())
-                    }
-                }.observeAsState(emptyList())
-
-                LaunchedEffect(payDayList, currentRefreshKey) {
-                    if (payDayList.isNotEmpty()) {
-                        val returnPayDay = if (::mainViewModel.isInitialized) {
-                            mainViewModel.getReturnToPayDay()
-                        } else null
-                        if (returnPayDay != null && payDayList.any {
-                                it == returnPayDay.replace(
-                                    getString(R.string.__current),
-                                    ""
-                                )
-                            }) {
-                            selectedPayDay.value =
-                                returnPayDay.replace(getString(R.string.__current), "")
-                        } else {
-                            selectedPayDay.value = payDayList[0]
-                        }
-                    } else {
-                        selectedPayDay.value = ""
-                    }
-                }
-
-                if (payDayList.isNotEmpty()) {
-                    DropdownSelector(
-                        label = stringResource(R.string.pay_day),
-                        options = payDayList.mapIndexed { index, s ->
-                            if (index == 0) "$s${
-                                getString(
-                                    R.string.__current
-                                )
-                            }" else s
-                        },
-                        selectedOption = if (payDayList.indexOf(selectedPayDay.value) == 0) "${selectedPayDay.value}${
-                            getString(
-                                R.string.__current
-                            )
-                        }" else selectedPayDay.value,
-                        onOptionSelected = {
-                            selectedPayDay.value = it.replace(getString(R.string.__current), "")
-                            if (::mainViewModel.isInitialized) {
-                                mainViewModel.setReturnToPayDay(it)
-                            }
-                        },
-                    )
-                }
-
-                val pendingTransactions by remember(selectedAsset.value, currentRefreshKey) {
-                    if (::transactionViewModel.isInitialized && selectedAsset.value.isNotEmpty()) {
-                        transactionViewModel.getPendingTransactionsDetailed(selectedAsset.value)
-                    } else {
-                        MutableLiveData(emptyList())
-                    }
-                }.observeAsState(emptyList())
-
-                val currentBudgetItems by remember(
-                    selectedAsset.value,
-                    selectedPayDay.value,
-                    currentRefreshKey
-                ) {
-                    if (::budgetItemViewModel.isInitialized && selectedAsset.value.isNotEmpty()) {
-                        budgetItemViewModel.getBudgetItems(
-                            selectedAsset.value,
-                            selectedPayDay.value
-                        )
-                    } else {
-                        MutableLiveData(emptyList())
-                    }
-                }.observeAsState(emptyList())
-
-                LaunchedEffect(pendingTransactions, currentRefreshKey) {
-                    pendingList.clear()
-                    pendingList.addAll(pendingTransactions)
-                    updatePendingTotal(pendingTransactions)
-                }
-
-                LaunchedEffect(currentBudgetItems, currentRefreshKey) {
-                    budgetList.clear()
-                    budgetList.addAll(currentBudgetItems)
-                }
-
-                curAsset.value?.let { asset ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        val label = if (asset.accountType!!.keepTotals) {
-                            stringResource(R.string.balance_in_account)
-                        } else if (asset.account.accountOwing >= 0.0) {
-                            stringResource(R.string.balance_owing)
-                        } else {
-                            stringResource(R.string.credit_of)
-                        }
-
-                        val amount = if (asset.accountType!!.keepTotals) {
-                            asset.account.accountBalance
-                        } else if (asset.account.accountOwing >= 0.0) {
-                            asset.account.accountOwing
-                        } else {
-                            -asset.account.accountOwing
-                        }
-
-                        Text(
-                            text = label,
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.clickable { gotoAccount() }
-                        )
-
-                        Text(
-                            text = nf.displayDollars(amount),
-                            fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = if (!asset.accountType!!.keepTotals && asset.account.accountOwing >= 0.0) androidx.compose.ui.graphics.Color.Red else androidx.compose.ui.graphics.Color.Black,
-                            modifier = Modifier.clickable { gotoAccount() }
-                        )
-
-                        SurplusDeficitInfo(asset, payDayList)
-                    }
-
-                    if (asset.accountType!!.tallyOwing) {
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 1.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            val creditLimit = asset.account.accountCreditLimit
-                            val available =
-                                creditLimit + pendingAmount.doubleValue - asset.account.accountOwing
-                            val availableReal =
-                                if (available > creditLimit) creditLimit else available
-
-                            Text(
-                                text = stringResource(R.string.available_credit),
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                            Text(
-                                text = nf.displayDollars(availableReal),
-                                fontWeight = FontWeight.Bold,
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        }
-                    }
-                }
-
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 1.dp),
-                    thickness = 1.dp,
-                    color = androidx.compose.ui.graphics.Color.Black
-                )
-
-                TotalsSection()
-            }
-        }
-    }
-
-    @Composable
-    fun TotalsSection() {
-        var credits = 0.0
-        var debits = 0.0
-        var fixedExpenses = 0.0
-        var otherExpenses = 0.0
-
-        budgetList.forEach { details ->
-            if (details.toAccount!!.accountName == selectedAsset.value) {
-                credits += details.budgetItem!!.biProjectedAmount
-            } else {
-                debits += details.budgetItem!!.biProjectedAmount
-            }
-            if (details.fromAccount!!.accountName == selectedAsset.value) {
-                if (details.budgetItem!!.biIsFixed) {
-                    fixedExpenses += details.budgetItem!!.biProjectedAmount
-                } else {
-                    otherExpenses += details.budgetItem!!.biProjectedAmount
-                }
-            }
-        }
-
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(
-                text = if (credits > 0.0) stringResource(R.string.credits_) + nf.displayDollars(
-                    credits
-                ) else stringResource(R.string.no_credits),
-                color = if (credits > 0.0) androidx.compose.ui.graphics.Color.Black else androidx.compose.ui.graphics.Color.Gray,
-                style = MaterialTheme.typography.bodySmall
-            )
-            Text(
-                text = if (debits > 0.0) stringResource(R.string.debits_) + nf.displayDollars(debits) else stringResource(
-                    R.string.no_debits
-                ),
-                color = if (debits > 0.0) androidx.compose.ui.graphics.Color.Red else androidx.compose.ui.graphics.Color.Gray,
-                style = MaterialTheme.typography.bodySmall
-            )
-        }
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(
-                text = if (fixedExpenses > 0.0) stringResource(R.string.fixed_expenses) + nf.displayDollars(
-                    fixedExpenses
-                ) else stringResource(R.string.no_fixed_expenses),
-                color = if (fixedExpenses > 0.0) androidx.compose.ui.graphics.Color.Red else androidx.compose.ui.graphics.Color.Gray,
-                style = MaterialTheme.typography.bodySmall
-            )
-            Text(
-                text = if (otherExpenses > 0.0) stringResource(R.string.discretionary_) + nf.displayDollars(
-                    otherExpenses
-                ) else stringResource(R.string.no_discretionary_expenses),
-                color = if (otherExpenses > 0.0) androidx.compose.ui.graphics.Color.Blue else androidx.compose.ui.graphics.Color.Gray,
-                style = MaterialTheme.typography.bodySmall
-            )
-        }
-    }
-
-    @Composable
-    fun SurplusDeficitInfo(
-        asset: AccountWithType?,
-        payDayList: List<String>,
-    ) {
-        var credits = 0.0
-        var debits = 0.0
-        budgetList.forEach { details ->
-            if (details.toAccount!!.accountName == selectedAsset.value) {
-                credits += details.budgetItem!!.biProjectedAmount
-            } else {
-                debits += details.budgetItem!!.biProjectedAmount
-            }
-        }
-
-        var surplus = credits - debits
-        if (asset != null && payDayList.isNotEmpty() && selectedPayDay.value == payDayList[0]) {
-            if (asset.accountType!!.keepTotals) {
-                surplus += asset.account.accountBalance
-            } else {
-                surplus -= asset.account.accountOwing
-            }
-        }
-
-        Text(
-            text = if (surplus >= 0.0) stringResource(R.string.surplus_of) + nf.displayDollars(
-                surplus
-            )
-            else stringResource(R.string.deficit_of) + nf.displayDollars(-surplus),
-            fontWeight = FontWeight.Bold,
-            color = if (surplus >= 0.0) androidx.compose.ui.graphics.Color.Black else androidx.compose.ui.graphics.Color.Red,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.width(110.dp)
-        )
-    }
-
-    @Composable
-    fun DropdownSelector(
-        label: String,
-        options: List<String>,
-        selectedOption: String,
-        onOptionSelected: (String) -> Unit,
-    ) {
-        var expanded by remember { mutableStateOf(false) }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { expanded = true }
-                .padding(vertical = 1.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "$label:",
-                modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.bodyLarge
-            )
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = selectedOption,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-            }
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                options.forEach { option ->
-                    DropdownMenuItem(
-                        text = { Text(option) },
-                        onClick = {
-                            onOptionSelected(option)
-                            expanded = false
-                        }
-                    )
-                }
-            }
-        }
-    }
-
-    @Composable
-    fun PendingItem(pending: TransactionDetailed) {
-        val color = remember { androidx.compose.ui.graphics.Color(vf.getRandomColorInt()) }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { chooseOptionsForTransaction(pending) }
-                .padding(vertical = 1.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(width = 10.dp, height = 5.dp)
-                    .background(color)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = df.getDisplayDate(pending.transaction!!.transDate),
-                modifier = Modifier.width(100.dp),
-                style = MaterialTheme.typography.bodySmall
-            )
-            val isCredit = pending.toAccount!!.accountName == selectedAsset.value
-            Text(
-                text = nf.displayDollars(pending.transaction.transAmount),
-                modifier = Modifier.width(90.dp),
-                fontWeight = FontWeight.Bold,
-                color = if (isCredit) androidx.compose.ui.graphics.Color.Black else androidx.compose.ui.graphics.Color.Red,
-                style = MaterialTheme.typography.bodySmall
-            )
-            Text(
-                text = pending.transaction.transName + if (pending.transaction.transNote.isNotBlank()) " - ${pending.transaction.transNote}" else "",
-                modifier = Modifier.weight(1f),
-                fontWeight = FontWeight.Bold,
-                color = if (isCredit) androidx.compose.ui.graphics.Color.Black else androidx.compose.ui.graphics.Color.Red,
-                style = MaterialTheme.typography.bodySmall,
-                maxLines = 1
-            )
-        }
-    }
-
-
-    @Preview(showBackground = true)
-    @Composable
-    fun NoBudgetItemsCardPreview() {
-        BillsProjectionTheme {
-            NoBudgetItemsCard()
-        }
-    }
-
-    @Composable
-    fun NoBudgetItemsCard() {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp)
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    text = stringResource(R.string.no_budget_items),
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = stringResource(R.string.instructions_budget_view),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-        }
-    }
-
-    private fun updatePendingTotal(transactions: List<TransactionDetailed>) {
-        var total = 0.0
-        for (item in transactions) {
-            if (item.transaction!!.transToAccountPending) {
-                total += item.transaction.transAmount
-            } else {
-                total -= item.transaction.transAmount
-            }
-        }
-        pendingAmount.doubleValue = total
-    }
-
     private fun onAddButtonPress() {
-        android.app.AlertDialog.Builder(requireContext())
+        AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.choose_an_action)).setItems(
                 arrayOf(
                     getString(R.string.schedule_a_new_budget_item),
@@ -762,7 +253,7 @@ class BudgetViewFragment : Fragment(), RefreshableFragment {
         val display =
             getString(R.string.this_will_apply_the_amount_of) + nf.displayDollars(pendingTransaction.transaction!!.transAmount) + (if (pendingTransaction.transaction.transToAccountPending) getString(
                 R.string._to_
-            ) else getString(R.string._From_)) + selectedAsset.value
+            ) else getString(R.string._From_)) + mainViewModel.getReturnToAsset()
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.confirm_completing_transaction))
             .setMessage(display)
@@ -777,14 +268,18 @@ class BudgetViewFragment : Fragment(), RefreshableFragment {
     private fun completePendingTransaction(transaction: TransactionDetailed) {
         lifecycleScope.launch {
             val trans = transaction.transaction!!
-            if (transaction.toAccount!!.accountName == selectedAsset.value) {
-                transactionViewModel.updateTransaction(
-                    trans.copy(
-                        transToAccountPending = false,
-                        transUpdateTime = df.getCurrentTimeAsString()
+            val selectedAsset = mainViewModel.getReturnToAsset()
+            if (selectedAsset != null) {
+                val asset = withContext(Dispatchers.IO) {
+                    accountViewModel.getAccountWithType(selectedAsset)
+                }
+                if (transaction.toAccount!!.accountName == selectedAsset) {
+                    transactionViewModel.updateTransaction(
+                        trans.copy(
+                            transToAccountPending = false,
+                            transUpdateTime = df.getCurrentTimeAsString()
+                        )
                     )
-                )
-                curAsset.value?.let { asset ->
                     if (asset.accountType!!.keepTotals) {
                         transactionViewModel.updateAccountBalance(
                             asset.account.accountBalance + trans.transAmount,
@@ -798,15 +293,13 @@ class BudgetViewFragment : Fragment(), RefreshableFragment {
                             df.getCurrentTimeAsString()
                         )
                     }
-                }
-            } else {
-                transactionViewModel.updateTransaction(
-                    trans.copy(
-                        transFromAccountPending = false,
-                        transUpdateTime = df.getCurrentTimeAsString()
+                } else {
+                    transactionViewModel.updateTransaction(
+                        trans.copy(
+                            transFromAccountPending = false,
+                            transUpdateTime = df.getCurrentTimeAsString()
+                        )
                     )
-                )
-                curAsset.value?.let { asset ->
                     if (asset.accountType!!.keepTotals) {
                         transactionViewModel.updateAccountBalance(
                             asset.account.accountBalance - trans.transAmount,
@@ -974,14 +467,20 @@ class BudgetViewFragment : Fragment(), RefreshableFragment {
 
     private fun setReturnVariables() {
         mainViewModel.setCallingFragments(TAG)
-        mainViewModel.setReturnToAsset(selectedAsset.value)
-        mainViewModel.setReturnToPayDay(selectedPayDay.value)
     }
 
     private fun gotoAccount() {
         setReturnVariables()
-        mainViewModel.setAccountWithType(curAsset.value)
-        findNavController().navigate(BudgetViewFragmentDirections.actionBudgetViewFragmentToAccountUpdateFragment())
+        val selectedAsset = mainViewModel.getReturnToAsset()
+        lifecycleScope.launch {
+            if (selectedAsset != null) {
+                val account = withContext(Dispatchers.IO) {
+                    accountViewModel.getAccountWithType(selectedAsset)
+                }
+                mainViewModel.setAccountWithType(account)
+                findNavController().navigate(BudgetViewFragmentDirections.actionBudgetViewFragmentToAccountUpdateFragment())
+            }
+        }
     }
 
     fun gotoBudgetItemUpdateFragment() {
@@ -1011,6 +510,5 @@ class BudgetViewFragment : Fragment(), RefreshableFragment {
     override fun refreshData() {
         updateViewModels()
         mainActivity.topMenuBar.title = getString(R.string.budget_view)
-        refreshKey.intValue++
     }
 }

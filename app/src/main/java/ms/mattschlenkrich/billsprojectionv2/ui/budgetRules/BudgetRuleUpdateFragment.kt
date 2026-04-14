@@ -9,36 +9,21 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -48,11 +33,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -68,12 +50,8 @@ import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
-import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
-import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.components.BudgetItemDisplay
-import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
-import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
@@ -129,7 +107,131 @@ class BudgetRuleUpdateFragment : Fragment(), MenuProvider, RefreshableFragment {
         return ComposeView(requireContext()).apply {
             setContent {
                 BillsProjectionTheme {
-                    BudgetRuleUpdateScreen()
+                    var name by nameState
+                    var amount by amountState
+                    var isFixed by isFixedState
+                    var isPayDay by isPayDayState
+                    var isAuto by isAutoState
+                    var startDate by startDateState
+                    var endDate by endDateState
+                    var frequencyType by frequencyTypeState
+                    var frequencyCount by frequencyCountState
+                    var dayOfWeek by dayOfWeekState
+                    var leadDays by leadDaysState
+
+                    val detailed = mainViewModel.getBudgetRuleDetailed()
+
+                    val ruleIdForObserve = ruleId
+                    val budgetItems by remember(ruleIdForObserve) {
+                        budgetItemViewModel.getBudgetItems(ruleIdForObserve)
+                    }.observeAsState(emptyList())
+
+                    BudgetRuleScreen(
+                        name = name,
+                        onNameChange = { name = it },
+                        amount = amount,
+                        onAmountChange = { amount = it },
+                        isFixed = isFixed,
+                        onIsFixedChange = { isFixed = it },
+                        isPayDay = isPayDay,
+                        onIsPayDayChange = { isPayDay = it },
+                        isAuto = isAuto,
+                        onIsAutoChange = { isAuto = it },
+                        startDate = startDate,
+                        onStartDateChange = { startDate = it },
+                        endDate = endDate,
+                        onEndDateChange = { endDate = it },
+                        frequencyType = frequencyType,
+                        onFrequencyTypeChange = { frequencyType = it },
+                        frequencyCount = frequencyCount,
+                        onFrequencyCountChange = { frequencyCount = it },
+                        dayOfWeek = dayOfWeek,
+                        onDayOfWeekChange = { dayOfWeek = it },
+                        leadDays = leadDays,
+                        onLeadDaysChange = { leadDays = it },
+                        toAccount = detailed?.toAccount,
+                        fromAccount = detailed?.fromAccount,
+                        onChooseAccount = { chooseAccount(it) },
+                        onGotoCalculator = { gotoCalculator() },
+                        floatingActionButton = {
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                FloatingActionButton(
+                                    onClick = { chooseAddOptionsOrUpdateBudgetRuleToContinue() },
+                                    containerColor = MaterialTheme.colorScheme.secondaryContainer
+                                ) {
+                                    Icon(Icons.Default.Add, contentDescription = "Add Options")
+                                }
+
+                                FloatingActionButton(
+                                    onClick = { updateBudgetRuleIfValid() },
+                                    containerColor = Color(0xFFB00020)
+                                ) {
+                                    Icon(
+                                        Icons.Default.Done,
+                                        contentDescription = "Update",
+                                        tint = Color.White
+                                    )
+                                }
+                            }
+                        },
+                        bottomContent = {
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+                            val pendingItems =
+                                budgetItems.filter { it.budgetItem?.biIsPending == true }
+                            if (pendingItems.isNotEmpty()) {
+                                val pendingTotal =
+                                    pendingItems.sumOf { it.budgetItem?.biProjectedAmount ?: 0.0 }
+                                OutlinedCard(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp),
+                                    colors = CardDefaults.outlinedCardColors(
+                                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
+                                            alpha = 0.3f
+                                        )
+                                    )
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .padding(12.dp)
+                                            .fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.pending),
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.primary
+                                        )
+                                        Text(
+                                            text = nf.displayDollars(pendingTotal) + " (${pendingItems.size})",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                }
+                                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                            }
+
+                            Text(
+                                text = stringResource(R.string.projected_date),
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+
+                            budgetItems.forEach { item ->
+                                BudgetItemDisplay(
+                                    budgetItemDetailed = item,
+                                    isCredit = item.toAccount?.accountId == detailed?.toAccount?.accountId,
+                                    onClick = { confirmGotoBudgetItem(item) }
+                                )
+                            }
+                        }
+                    )
                 }
             }
         }
@@ -205,353 +307,6 @@ class BudgetRuleUpdateFragment : Fragment(), MenuProvider, RefreshableFragment {
     private fun getBudgetRuleNameForValidation() {
         lifecycleScope.launch(Dispatchers.IO) {
             budgetNameList = budgetRuleViewModel.getBudgetRuleNameList()
-        }
-    }
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun BudgetRuleUpdateScreen() {
-        var name by nameState
-        var amount by amountState
-        var isFixed by isFixedState
-        var isPayDay by isPayDayState
-        var isAuto by isAutoState
-        var startDate by startDateState
-        var endDate by endDateState
-        var frequencyType by frequencyTypeState
-        var frequencyCount by frequencyCountState
-        var dayOfWeek by dayOfWeekState
-        var leadDays by leadDaysState
-
-        val detailed = mainViewModel.getBudgetRuleDetailed()
-        val toAccount = detailed?.toAccount
-        val fromAccount = detailed?.fromAccount
-
-        val ruleIdForObserve = ruleId
-        val budgetItems by remember(ruleIdForObserve) {
-            budgetItemViewModel.getBudgetItems(ruleIdForObserve)
-        }.observeAsState(emptyList())
-
-        val frequencyTypes = stringArrayResource(R.array.frequency_types)
-        val daysOfWeek = stringArrayResource(R.array.days_of_week)
-
-        Scaffold(
-            floatingActionButton = {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    FloatingActionButton(
-                        onClick = { chooseAddOptionsOrUpdateBudgetRuleToContinue() },
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer
-                    ) {
-                        Icon(Icons.Default.Add, contentDescription = "Add Options")
-                    }
-
-                    FloatingActionButton(
-                        onClick = { updateBudgetRuleIfValid() },
-                        containerColor = Color(0xFFB00020)
-                    ) {
-                        Icon(Icons.Default.Done, contentDescription = "Update", tint = Color.White)
-                    }
-                }
-            }
-        ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                ProjectTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text(stringResource(R.string.budget_rule_name)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
-                    singleLine = true,
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    ClickableSelectionCard(
-                        label = stringResource(R.string.to_this_account),
-                        value = toAccount?.accountName
-                            ?: stringResource(R.string.choose_an_account),
-                        onClick = { chooseToAccount() },
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    ClickableSelectionCard(
-                        label = stringResource(R.string.from_this_account),
-                        value = fromAccount?.accountName
-                            ?: stringResource(R.string.choose_an_account),
-                        onClick = { chooseFromAccount() },
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    ProjectTextField(
-                        value = amount,
-                        onValueChange = { amount = it },
-                        label = { Text(stringResource(R.string.amount)) },
-                        modifier = Modifier
-                            .weight(1f)
-                            .combinedClickable(
-                                onClick = {},
-                                onLongClick = { gotoCalculator() }
-                            ),
-                        trailingIcon = {
-                            IconButton(onClick = { gotoCalculator() }) {
-                                Icon(
-                                    imageVector = Icons.Default.Calculate,
-                                    contentDescription = stringResource(R.string.calculator)
-                                )
-                            }
-                        },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        singleLine = true,
-                    )
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(start = 4.dp)
-                    ) {
-                        Checkbox(
-                            checked = isFixed,
-                            onCheckedChange = { isFixed = it },
-                            modifier = Modifier.padding(0.dp)
-                        )
-                        Text(
-                            stringResource(R.string.fixed),
-                            style = MaterialTheme.typography.labelSmall
-                        )
-                    }
-                }
-
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    LabeledCheckbox(
-                        label = stringResource(R.string.make_a_pay_day),
-                        checked = isPayDay,
-                        onCheckedChange = { isPayDay = it },
-                        modifier = Modifier.weight(1f)
-                    )
-                    LabeledCheckbox(
-                        label = stringResource(R.string.automatic_payment),
-                        checked = isAuto,
-                        onCheckedChange = { isAuto = it },
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    ProjectDateField(
-                        value = startDate,
-                        onValueChange = { startDate = it },
-                        label = stringResource(R.string.start_date),
-                        modifier = Modifier.weight(1f)
-                    )
-                    ProjectDateField(
-                        value = endDate,
-                        onValueChange = { endDate = it },
-                        label = stringResource(R.string.end_date),
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-
-                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-
-                Text(
-                    text = stringResource(R.string.scheduling_rules),
-                    style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    ExposedDropdown(
-                        label = stringResource(R.string.budget_rules),
-                        options = frequencyTypes.toList(),
-                        selectedIndex = frequencyType,
-                        onItemSelected = { frequencyType = it },
-                        modifier = Modifier.weight(1.5f)
-                    )
-
-                    ProjectTextField(
-                        value = frequencyCount,
-                        onValueChange = { frequencyCount = it },
-                        label = { Text(stringResource(R.string.times)) },
-                        modifier = Modifier.weight(1f),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        singleLine = true,
-                    )
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    ExposedDropdown(
-                        label = stringResource(R.string.on_day),
-                        options = daysOfWeek.toList(),
-                        selectedIndex = dayOfWeek,
-                        onItemSelected = { dayOfWeek = it },
-                        modifier = Modifier.weight(1.5f)
-                    )
-
-                    ProjectTextField(
-                        value = leadDays,
-                        onValueChange = { leadDays = it },
-                        label = { Text(stringResource(R.string.lead_days)) },
-                        modifier = Modifier.weight(1f),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        singleLine = true,
-                    )
-                }
-
-                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-
-                val pendingItems = budgetItems.filter { it.budgetItem?.biIsPending == true }
-                if (pendingItems.isNotEmpty()) {
-                    val pendingTotal =
-                        pendingItems.sumOf { it.budgetItem?.biProjectedAmount ?: 0.0 }
-                    OutlinedCard(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        colors = CardDefaults.outlinedCardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .padding(12.dp)
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = stringResource(R.string.pending),
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                            Text(
-                                text = nf.displayDollars(pendingTotal) + " (${pendingItems.size})",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                }
-
-                Text(
-                    text = stringResource(R.string.projected_date),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-
-                budgetItems.forEach { item ->
-                    BudgetItemDisplay(
-                        budgetItemDetailed = item,
-                        isCredit = item.toAccount?.accountId == detailed?.toAccount?.accountId,
-                        onClick = { confirmGotoBudgetItem(item) }
-                    )
-                }
-            }
-        }
-    }
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun ExposedDropdown(
-        label: String,
-        options: List<String>,
-        selectedIndex: Int,
-        onItemSelected: (Int) -> Unit,
-        modifier: Modifier = Modifier
-    ) {
-        var expanded by remember { mutableStateOf(false) }
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = !expanded },
-            modifier = modifier
-        ) {
-            ProjectTextField(
-                value = options.getOrElse(selectedIndex) { "" },
-                onValueChange = {},
-                readOnly = true,
-                label = { Text(label) },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                modifier = Modifier
-                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-                    .fillMaxWidth()
-            )
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                options.forEachIndexed { index, selectionOption ->
-                    DropdownMenuItem(
-                        text = { Text(selectionOption) },
-                        onClick = {
-                            onItemSelected(index)
-                            expanded = false
-                        }
-                    )
-                }
-            }
-        }
-    }
-
-    @Composable
-    fun ClickableSelectionCard(
-        label: String,
-        value: String,
-        onClick: () -> Unit,
-        modifier: Modifier = Modifier
-    ) {
-        OutlinedCard(
-            onClick = onClick,
-            modifier = modifier
-        ) {
-            Column(modifier = Modifier.padding(8.dp)) {
-                Text(text = label, style = MaterialTheme.typography.labelSmall)
-                Text(
-                    text = value,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1
-                )
-            }
-        }
-    }
-
-    @Composable
-    fun LabeledCheckbox(
-        label: String,
-        checked: Boolean,
-        onCheckedChange: (Boolean) -> Unit,
-        modifier: Modifier = Modifier
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
-            Checkbox(checked = checked, onCheckedChange = onCheckedChange)
-            Text(text = label, style = MaterialTheme.typography.labelMedium)
         }
     }
 
@@ -751,17 +506,10 @@ class BudgetRuleUpdateFragment : Fragment(), MenuProvider, RefreshableFragment {
         )
     }
 
-    private fun chooseFromAccount() {
+    private fun chooseAccount(requestedAccount: String) {
         mainViewModel.addCallingFragment(TAG)
         mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
-        mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
-        gotoAccountChooseFragment()
-    }
-
-    private fun chooseToAccount() {
-        mainViewModel.addCallingFragment(TAG)
-        mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
-        mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
+        mainViewModel.setRequestedAccount(requestedAccount)
         gotoAccountChooseFragment()
     }
 

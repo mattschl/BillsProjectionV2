@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -69,18 +68,18 @@ fun BudgetItemDisplay(
 
         Text(
             text = df.getDisplayDate(budgetItem.biProjectedDate),
-            modifier = Modifier.width(100.dp),
+            modifier = Modifier.weight(1.25f),
             style = MaterialTheme.typography.bodySmall
         )
         Text(
             text = nf.displayDollars(budgetItem.biProjectedAmount),
-            modifier = Modifier.width(90.dp),
+            modifier = Modifier.weight(1f),
             fontWeight = FontWeight.Bold,
             color = if (isCredit) Color.Black else Color.Red,
             style = MaterialTheme.typography.bodySmall
         )
         Column(
-            modifier = Modifier.weight(2f)
+            modifier = Modifier.weight(2.5f)
         ) {
             Text(
                 text = budgetItem.biBudgetName,
@@ -93,7 +92,7 @@ fun BudgetItemDisplay(
                 text = "${budgetItemDetailed.fromAccount?.accountName ?: "Unknown"} -> ${budgetItemDetailed.toAccount?.accountName ?: "Unknown"}",
                 style = MaterialTheme.typography.labelSmall,
                 color = Color.Gray,
-                maxLines = 1
+                maxLines = 2
             )
             if (budgetItem.biIsFixed || budgetItem.biIsAutomatic) {
                 Text(

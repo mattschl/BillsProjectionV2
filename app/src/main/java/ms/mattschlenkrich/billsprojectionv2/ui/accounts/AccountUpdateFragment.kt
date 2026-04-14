@@ -9,35 +9,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Calculate
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,16 +16,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -72,7 +34,6 @@ import ms.mattschlenkrich.billsprojectionv2.common.BUDGETED
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.OWING
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_500
-import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
@@ -111,7 +72,7 @@ class AccountUpdateFragment : Fragment(), MenuProvider, RefreshableFragment {
         return ComposeView(requireContext()).apply {
             setContent {
                 BillsProjectionTheme {
-                    AccountUpdateScreen()
+                    AccountUpdateFragmentScreen()
                 }
             }
         }
@@ -134,7 +95,7 @@ class AccountUpdateFragment : Fragment(), MenuProvider, RefreshableFragment {
     }
 
     @Composable
-    fun AccountUpdateScreen() {
+    fun AccountUpdateFragmentScreen() {
         val accountWithTypeState = remember { mutableStateOf(mainViewModel.getAccountWithType()) }
         val accountNames by accountViewModel.getAccountNameList().observeAsState(emptyList())
 
@@ -206,300 +167,77 @@ class AccountUpdateFragment : Fragment(), MenuProvider, RefreshableFragment {
             mainViewModel.setTransferNum(0.0)
         }
 
-        Scaffold(
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = {
-                        updateAccountIfValid(
-                            name,
-                            handle,
-                            balance,
-                            owing,
-                            budgeted,
-                            limit,
-                            accountNames
-                        )
-                    },
-                    containerColor = Color(0xFFB00020) // Deep red
-                ) {
-                    Icon(
-                        Icons.Default.Check,
-                        contentDescription = "Done",
-                        tint = Color.White
-                    )
-                }
-            }
-        ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
-            ) {
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    ProjectTextField(
-                        value = name,
-                        onValueChange = { name = it },
-                        label = {
-                            Text(
-                                stringResource(R.string.account_name),
-                                style = MaterialTheme.typography.labelMedium
-                            )
-                        },
-                        modifier = Modifier
-                            .weight(1.5f)
-                            .height(56.dp),
-                        textStyle = MaterialTheme.typography.bodyMedium,
-                        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
-                        singleLine = true
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    ProjectTextField(
-                        value = handle,
-                        onValueChange = { handle = it },
-                        label = {
-                            Text(
-                                stringResource(R.string.number),
-                                style = MaterialTheme.typography.labelMedium
-                            )
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(56.dp),
-                        textStyle = MaterialTheme.typography.bodyMedium,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                        singleLine = true
-                    )
-                }
-                Spacer(modifier = Modifier.height(4.dp))
-                OutlinedCard(
-                    onClick = {
-                        gotoAccountTypes(
-                            name, handle, balance, owing, budgeted, limit
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.small
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp, vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = stringResource(R.string.account_type) + ":",
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                        Text(
-                            text = accountWithTypeState.value?.accountType?.accountType
-                                ?: stringResource(R.string.account_type),
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(4.dp))
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    BalanceField(
-                        label = stringResource(R.string.balance),
-                        value = balance,
-                        onValueChange = { balance = it },
-                        onLongClick = {
-                            gotoCalculator(
-                                BALANCE,
-                                name,
-                                handle,
-                                balance,
-                                owing,
-                                budgeted,
-                                limit
-                            )
-                        },
-                        modifier = Modifier.weight(1f)
-                    )
-                    BalanceField(
-                        label = stringResource(R.string.owing),
-                        value = owing,
-                        onValueChange = { owing = it },
-                        onLongClick = {
-                            gotoCalculator(
-                                OWING,
-                                name,
-                                handle,
-                                balance,
-                                owing,
-                                budgeted,
-                                limit
-                            )
-                        },
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-                Spacer(modifier = Modifier.height(4.dp))
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    BalanceField(
-                        label = stringResource(R.string.budgeted),
-                        value = budgeted,
-                        onValueChange = { budgeted = it },
-                        onLongClick = {
-                            gotoCalculator(
-                                BUDGETED,
-                                name,
-                                handle,
-                                balance,
-                                owing,
-                                budgeted,
-                                limit
-                            )
-                        },
-                        modifier = Modifier.weight(1f)
-                    )
-                    ProjectTextField(
-                        value = limit,
-                        onValueChange = { limit = it },
-                        label = {
-                            Text(
-                                stringResource(R.string.credit_limit),
-                                style = MaterialTheme.typography.labelSmall
-                            )
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(56.dp)
-                            .padding(horizontal = 2.dp),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        textStyle = MaterialTheme.typography.bodyMedium.copy(
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        singleLine = true
-                    )
-                }
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "ID: " + if (accountId == 0L) stringResource(R.string.id_not_created_yet) else accountId.toString(),
-                    color = Color.Gray,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 4.dp),
-                    textAlign = TextAlign.End,
-                    style = MaterialTheme.typography.labelSmall
+        AccountEditScreen(
+            name = name,
+            onNameChange = { name = it },
+            handle = handle,
+            onHandleChange = { handle = it },
+            accountType = accountWithTypeState.value?.accountType,
+            onAccountTypeClick = {
+                gotoAccountTypes(
+                    name, handle, balance, owing, budgeted, limit
                 )
-                Spacer(modifier = Modifier.height(4.dp))
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(history) { transaction ->
-                        HistoryItem(transaction)
-                    }
-                }
-            }
-        }
-    }
-
-    @Composable
-    fun BalanceField(
-        label: String,
-        value: String,
-        onValueChange: (String) -> Unit,
-        onLongClick: () -> Unit,
-        modifier: Modifier = Modifier
-    ) {
-        ProjectTextField(
-            value = value,
-            onValueChange = onValueChange,
-            label = { Text(label, style = MaterialTheme.typography.labelSmall) },
-            modifier = modifier
-                .padding(horizontal = 2.dp)
-                .height(56.dp),
-            textStyle = MaterialTheme.typography.bodyMedium.copy(
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold
-            ),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            singleLine = true,
-            trailingIcon = {
-                IconButton(onClick = onLongClick) {
-                    Icon(
-                        imageVector = Icons.Default.Calculate,
-                        contentDescription = stringResource(R.string.calculator)
-                    )
-                }
-            }
+            },
+            accountTypeDetails = "", // Update screen doesn't show it in current logic
+            balance = balance,
+            onBalanceChange = { balance = it },
+            onBalanceIconClick = {
+                gotoCalculator(
+                    BALANCE,
+                    name,
+                    handle,
+                    balance,
+                    owing,
+                    budgeted,
+                    limit
+                )
+            },
+            owing = owing,
+            onOwingChange = { owing = it },
+            onOwingIconClick = {
+                gotoCalculator(
+                    OWING,
+                    name,
+                    handle,
+                    balance,
+                    owing,
+                    budgeted,
+                    limit
+                )
+            },
+            budgeted = budgeted,
+            onBudgetedChange = { budgeted = it },
+            onBudgetedIconClick = {
+                gotoCalculator(
+                    BUDGETED,
+                    name,
+                    handle,
+                    balance,
+                    owing,
+                    budgeted,
+                    limit
+                )
+            },
+            limit = limit,
+            onLimitChange = { limit = it },
+            accountId = accountId,
+            history = history,
+            onHistoryItemClick = { showTransactionOptions(it) },
+            onSaveClick = {
+                updateAccountIfValid(
+                    name,
+                    handle,
+                    balance,
+                    owing,
+                    budgeted,
+                    limit,
+                    accountNames
+                )
+            },
+            nf = nf,
+            df = df,
+            vf = vf
         )
-    }
-
-    @Composable
-    fun HistoryItem(transactionDetailed: TransactionDetailed) {
-        val transaction = transactionDetailed.transaction ?: return
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 1.dp)
-                .clickable {
-                    showTransactionOptions(transactionDetailed)
-                },
-            elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp),
-            shape = MaterialTheme.shapes.extraSmall
-        ) {
-            Row(modifier = Modifier.height(IntrinsicSize.Min)) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(4.dp)
-                        .background(Color(vf.getRandomColorInt()))
-                )
-                Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = transaction.transName,
-                            fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.weight(1f),
-                            maxLines = 1
-                        )
-                        Text(
-                            text = nf.displayDollars(transaction.transAmount),
-                            fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = df.getDisplayDateWithYear(transaction.transDate),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Color.Gray
-                        )
-                        val toFromText = (transactionDetailed.fromAccount?.accountName ?: "") +
-                                " -> " + (transactionDetailed.toAccount?.accountName ?: "")
-                        Text(
-                            text = toFromText,
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Color.Gray,
-                            maxLines = 1,
-                            modifier = Modifier.weight(1f),
-                            textAlign = TextAlign.End
-                        )
-                    }
-                    if (transaction.transNote.isNotEmpty()) {
-                        Text(
-                            text = stringResource(R.string.note_) + transaction.transNote,
-                            style = MaterialTheme.typography.labelSmall,
-                            maxLines = 1,
-                            color = Color.DarkGray
-                        )
-                    }
-                }
-            }
-        }
     }
 
     private fun showTransactionOptions(transactionDetailed: TransactionDetailed) {

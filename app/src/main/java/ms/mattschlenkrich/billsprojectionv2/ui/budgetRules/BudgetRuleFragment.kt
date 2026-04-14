@@ -5,48 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.res.stringArrayResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -54,7 +19,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
-import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
@@ -91,7 +55,22 @@ class BudgetRuleFragment : Fragment(), RefreshableFragment {
         return ComposeView(requireContext()).apply {
             setContent {
                 BillsProjectionTheme {
-                    BudgetRulesScreen(refreshKey.intValue)
+                    val key by refreshKey
+                    var searchQuery by remember(key) { mutableStateOf("") }
+                    val budgetRulesDetailed by if (searchQuery.isEmpty()) {
+                        budgetRuleViewModel.getActiveBudgetRulesDetailed()
+                            .observeAsState(emptyList())
+                    } else {
+                        budgetRuleViewModel.searchBudgetRules("%$searchQuery%")
+                            .observeAsState(emptyList())
+                    }
+                    BudgetRulesListScreen(
+                        searchQuery = searchQuery,
+                        onSearchQueryChange = { searchQuery = it },
+                        budgetRulesDetailed = budgetRulesDetailed,
+                        onAddClick = { gotoBudgetRuleAdd() },
+                        onItemClick = { chooseOptionsForBudgetRule(it) }
+                    )
                 }
             }
         }
@@ -115,161 +94,6 @@ class BudgetRuleFragment : Fragment(), RefreshableFragment {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mainViewModel.removeCallingFragment(TAG)
-    }
-
-    @Composable
-    fun BudgetRulesScreen(refreshKey: Int) {
-        var searchQuery by remember(refreshKey) { mutableStateOf("") }
-        val budgetRulesDetailed by if (searchQuery.isEmpty()) {
-            budgetRuleViewModel.getActiveBudgetRulesDetailed().observeAsState(emptyList())
-        } else {
-            budgetRuleViewModel.searchBudgetRules("%$searchQuery%").observeAsState(emptyList())
-        }
-
-        Scaffold(
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { gotoBudgetRuleAdd() },
-                    containerColor = MaterialTheme.colorScheme.primary
-                ) {
-                    Icon(
-                        Icons.Default.Add,
-                        contentDescription = stringResource(R.string.add_budget_rule),
-                        tint = Color.White
-                    )
-                }
-            }
-        ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(8.dp)
-            ) {
-                ProjectTextField(
-                    value = searchQuery,
-                    onValueChange = { searchQuery = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = { Text(stringResource(R.string.search)) },
-                    placeholder = { Text(stringResource(R.string.enter_criteria)) },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Box(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    if (budgetRulesDetailed.isEmpty()) {
-                        Card(
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .padding(32.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.no_budget_rules_to_view),
-                                modifier = Modifier.padding(32.dp),
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    } else {
-                        LazyVerticalStaggeredGrid(
-                            columns = StaggeredGridCells.Fixed(2),
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(bottom = 80.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalItemSpacing = 8.dp
-                        ) {
-                            items(budgetRulesDetailed) { budgetRuleDetailed ->
-                                BudgetRuleItem(budgetRuleDetailed)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    @Composable
-    fun BudgetRuleItem(budgetRuleDetailed: BudgetRuleDetailed) {
-        val rule = budgetRuleDetailed.budgetRule!!
-        val isDeleted = rule.budIsDeleted
-        val containerColor = if (isDeleted) {
-            MaterialTheme.colorScheme.errorContainer
-        } else {
-            MaterialTheme.colorScheme.surface
-        }
-        val contentColor = if (isDeleted) {
-            MaterialTheme.colorScheme.onErrorContainer
-        } else {
-            MaterialTheme.colorScheme.onSurface
-        }
-
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { chooseOptionsForBudgetRule(budgetRuleDetailed) },
-            colors = CardDefaults.cardColors(
-                containerColor = containerColor,
-                contentColor = contentColor
-            ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = rule.budgetRuleName,
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .size(12.dp)
-                            .background(Color(vf.getRandomColorInt()))
-                    )
-                }
-
-                Text(
-                    text = stringResource(R.string.to_) + (budgetRuleDetailed.toAccount?.accountName
-                        ?: ""),
-                    style = MaterialTheme.typography.labelMedium
-                )
-                Text(
-                    text = stringResource(R.string.from_) + (budgetRuleDetailed.fromAccount?.accountName
-                        ?: ""),
-                    style = MaterialTheme.typography.labelMedium
-                )
-
-                val amount = nf.displayDollars(rule.budgetAmount)
-                val frequencyTypes = stringArrayResource(R.array.frequency_types)
-                val frequencyType = frequencyTypes.getOrElse(rule.budFrequencyTypeId) { "" }
-                val daysOfWeek = stringArrayResource(R.array.days_of_week)
-                val dayOfWeek = daysOfWeek.getOrElse(rule.budDayOfWeekId) { "" }
-
-                val info = "$amount $frequencyType X ${rule.budFrequencyCount}\nOn $dayOfWeek"
-                Text(
-                    text = info,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-                if (isDeleted) {
-                    Text(
-                        text = stringResource(R.string.deleted),
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-        }
     }
 
     private fun chooseOptionsForBudgetRule(budgetRuleDetailed: BudgetRuleDetailed) {

@@ -8,46 +8,10 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Calculate
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.dp
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -56,10 +20,6 @@ import androidx.navigation.fragment.findNavController
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_UPDATE
-import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
-import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
-import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
-import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
@@ -81,16 +41,14 @@ class BudgetItemUpdateFragment : Fragment(), MenuProvider, RefreshableFragment {
     private val nf = NumberFunctions()
     private val df = DateFunctions()
 
-    private var dateState = mutableStateOf("")
-    private var nameState = mutableStateOf("")
-    private var nameTextFieldValue = mutableStateOf(TextFieldValue(""))
-    private var payDayState = mutableStateOf("")
-    private var amountState = mutableStateOf("")
-    private var amountTextFieldValue = mutableStateOf(TextFieldValue(""))
-    private var isFixedState = mutableStateOf(false)
-    private var isPayDayItemState = mutableStateOf(false)
-    private var isAutoState = mutableStateOf(false)
-    private var isLockedState = mutableStateOf(true)
+    private val dateState = mutableStateOf("")
+    private val nameState = mutableStateOf("")
+    private val payDayState = mutableStateOf("")
+    private val amountState = mutableStateOf("")
+    private val isFixedState = mutableStateOf(false)
+    private val isPayDayItemState = mutableStateOf(false)
+    private val isAutoState = mutableStateOf(false)
+    private val isLockedState = mutableStateOf(true)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -100,7 +58,32 @@ class BudgetItemUpdateFragment : Fragment(), MenuProvider, RefreshableFragment {
         return ComposeView(requireContext()).apply {
             setContent {
                 BillsProjectionTheme {
-                    BudgetItemUpdateScreen()
+                    val payDays by budgetItemViewModel.getPayDays().observeAsState(emptyList())
+
+                    BudgetItemScreen(
+                        date = dateState.value,
+                        onDateChange = { dateState.value = it },
+                        name = nameState.value,
+                        onNameChange = { nameState.value = it },
+                        payDay = payDayState.value,
+                        onPayDayChange = { payDayState.value = it },
+                        amount = amountState.value,
+                        onAmountChange = { amountState.value = it },
+                        isFixed = isFixedState.value,
+                        onIsFixedChange = { isFixedState.value = it },
+                        isPayDayItem = isPayDayItemState.value,
+                        onIsPayDayItemChange = { isPayDayItemState.value = it },
+                        isAuto = isAutoState.value,
+                        onIsAutoChange = { isAutoState.value = it },
+                        isLocked = isLockedState.value,
+                        onIsLockedChange = { isLockedState.value = it },
+                        budgetItemDetailed = mainViewModel.getBudgetItemDetailed(),
+                        payDays = payDays,
+                        onSaveClick = { updateBudgetItemIfValid() },
+                        onChooseBudgetRule = { chooseBudgetRule() },
+                        onChooseAccount = { chooseAccount(it) },
+                        onGotoCalculator = { gotoCalculator() }
+                    )
                 }
             }
         }
@@ -133,10 +116,6 @@ class BudgetItemUpdateFragment : Fragment(), MenuProvider, RefreshableFragment {
             isAutoState.value = cached.budgetItem?.biIsAutomatic ?: false
             isLockedState.value = cached.budgetItem?.biLocked ?: true
             mainViewModel.setTransferNum(0.0)
-
-            // Update TextFieldValues
-            nameTextFieldValue.value = TextFieldValue(nameState.value)
-            amountTextFieldValue.value = TextFieldValue(amountState.value)
         }
     }
 
@@ -144,197 +123,6 @@ class BudgetItemUpdateFragment : Fragment(), MenuProvider, RefreshableFragment {
         super.onViewCreated(view, savedInstanceState)
         val menuHost: MenuHost = mainActivity.topMenuBar
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
-    }
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun BudgetItemUpdateScreen() {
-        var date by dateState
-        var name by nameState
-        var payDay by payDayState
-        var amount by amountState
-        var isFixed by isFixedState
-        var isPayDayItem by isPayDayItemState
-        var isAuto by isAutoState
-        var isLocked by isLockedState
-
-        val cached = mainViewModel.getBudgetItemDetailed()
-        val toAccount = cached?.toAccount
-        val fromAccount = cached?.fromAccount
-        val budgetRule = cached?.budgetRule
-
-        val payDays by budgetItemViewModel.getPayDays().observeAsState(emptyList())
-
-        Scaffold(
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { updateBudgetItemIfValid() },
-                    containerColor = Color(0xFFB00020)
-                ) {
-                    Icon(Icons.Default.Done, contentDescription = "Done", tint = Color.White)
-                }
-            }
-        ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                ProjectDateField(
-                    value = date,
-                    onValueChange = { date = it },
-                    label = stringResource(R.string.projected_date),
-                    modifier = Modifier.fillMaxWidth(),
-                )
-
-                ProjectTextField(
-                    value = name,
-                    onValueChange = {
-                        name = it
-                    },
-                    label = { Text(stringResource(R.string.description)) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-
-                var expanded by remember { mutableStateOf(false) }
-                ExposedDropdownMenuBox(
-                    expanded = expanded,
-                    onExpandedChange = { expanded = !expanded },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    ProjectTextField(
-                        value = payDay,
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text(stringResource(R.string.pay_day)) },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                        modifier = Modifier
-                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-                            .fillMaxWidth()
-                    )
-                    ExposedDropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
-                        payDays.forEach { selectionOption ->
-                            DropdownMenuItem(
-                                text = { Text(selectionOption) },
-                                onClick = {
-                                    payDay = selectionOption
-                                    expanded = false
-                                }
-                            )
-                        }
-                    }
-                }
-
-                ClickableSelectionCard(
-                    label = stringResource(R.string.rules),
-                    value = budgetRule?.budgetRuleName
-                        ?: stringResource(R.string.choose_a_budget_rule),
-                    onClick = { chooseBudgetRule() }
-                )
-
-                ClickableSelectionCard(
-                    label = stringResource(R.string.to_this_account),
-                    value = toAccount?.accountName ?: stringResource(R.string.choose_an_account),
-                    onClick = { chooseAccount(REQUEST_TO_ACCOUNT) }
-                )
-
-                ClickableSelectionCard(
-                    label = stringResource(R.string.from_this_account),
-                    value = fromAccount?.accountName ?: stringResource(R.string.choose_an_account),
-                    onClick = { chooseAccount(REQUEST_FROM_ACCOUNT) }
-                )
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    ProjectTextField(
-                        value = amount,
-                        onValueChange = {
-                            amount = it
-                        },
-                        label = { Text(stringResource(R.string.projected_amount)) },
-                        modifier = Modifier
-                            .weight(1f),
-                        trailingIcon = {
-                            IconButton(onClick = { gotoCalculator() }) {
-                                Icon(
-                                    imageVector = Icons.Default.Calculate,
-                                    contentDescription = stringResource(R.string.calculator)
-                                )
-                            }
-                        },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                    )
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(start = 8.dp)
-                    ) {
-                        Checkbox(checked = isFixed, onCheckedChange = { isFixed = it })
-                        Text(
-                            stringResource(R.string.fixed),
-                            style = MaterialTheme.typography.labelSmall
-                        )
-                    }
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    LabeledCheckbox(
-                        label = stringResource(R.string.pay_day),
-                        checked = isPayDayItem,
-                        onCheckedChange = { isPayDayItem = it }
-                    )
-                    LabeledCheckbox(
-                        label = stringResource(R.string.automatic),
-                        checked = isAuto,
-                        onCheckedChange = { isAuto = it }
-                    )
-                    LabeledCheckbox(
-                        label = stringResource(R.string.lock),
-                        checked = isLocked,
-                        onCheckedChange = { isLocked = it }
-                    )
-                }
-            }
-        }
-    }
-
-    @Composable
-    fun ClickableSelectionCard(label: String, value: String, onClick: () -> Unit) {
-        OutlinedCard(
-            onClick = onClick,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(modifier = Modifier.padding(12.dp)) {
-                Text(text = label, style = MaterialTheme.typography.labelMedium)
-                Text(
-                    text = value,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        }
-    }
-
-    @Composable
-    fun LabeledCheckbox(label: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Checkbox(checked = checked, onCheckedChange = onCheckedChange)
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelSmall
-            )
-        }
     }
 
     private fun chooseBudgetRule() {

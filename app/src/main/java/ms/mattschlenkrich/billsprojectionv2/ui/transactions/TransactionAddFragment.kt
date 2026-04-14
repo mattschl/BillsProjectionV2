@@ -9,45 +9,9 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Calculate
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -59,8 +23,6 @@ import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
-import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
-import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
@@ -89,11 +51,8 @@ class TransactionAddFragment : Fragment(), MenuProvider, RefreshableFragment {
 
     private var dateState = mutableStateOf("")
     private var descriptionState = mutableStateOf("")
-    private var descriptionTextFieldValue = mutableStateOf(TextFieldValue(""))
     private var noteState = mutableStateOf("")
-    private var noteTextFieldValue = mutableStateOf(TextFieldValue(""))
     private var amountState = mutableStateOf("")
-    private var amountTextFieldValue = mutableStateOf(TextFieldValue(""))
     private var toAccountState = mutableStateOf<Account?>(null)
     private var fromAccountState = mutableStateOf<Account?>(null)
     private var budgetRuleState = mutableStateOf<BudgetRule?>(null)
@@ -114,7 +73,34 @@ class TransactionAddFragment : Fragment(), MenuProvider, RefreshableFragment {
             setContent {
                 BillsProjectionTheme {
                     if (refreshKey.intValue >= 0) {
-                        TransactionAddScreen()
+                        TransactionEditScreen(
+                            date = dateState.value,
+                            onDateChange = { dateState.value = it },
+                            description = descriptionState.value,
+                            onDescriptionChange = { descriptionState.value = it },
+                            note = noteState.value,
+                            onNoteChange = { noteState.value = it },
+                            amount = amountState.value,
+                            onAmountChange = { amountState.value = it },
+                            toAccount = toAccountState.value,
+                            fromAccount = fromAccountState.value,
+                            budgetRule = budgetRuleState.value,
+                            toPending = toPendingState.value,
+                            onToPendingChange = { toPendingState.value = it },
+                            fromPending = fromPendingState.value,
+                            onFromPendingChange = { fromPendingState.value = it },
+                            allowToPending = toAccountWithTypeState.value?.accountType?.allowPending == true,
+                            allowFromPending = fromAccountWithTypeState.value?.accountType?.allowPending == true,
+                            onSaveClick = { saveTransactionIfValid() },
+                            onChooseBudgetRule = { chooseBudgetRule() },
+                            onChooseFromAccount = { chooseFromAccount() },
+                            onChooseToAccount = { chooseToAccount() },
+                            onSplitClick = { splitTransactions() },
+                            onGotoCalculator = { gotoCalculator() },
+                            isSplitEnabled = fromAccountState.value != null && nf.getDoubleFromDollars(
+                                amountState.value
+                            ) > 2.0
+                        )
                     }
                 }
             }
@@ -169,11 +155,6 @@ class TransactionAddFragment : Fragment(), MenuProvider, RefreshableFragment {
             toAccountState.value = cached.toAccount
             fromAccountState.value = cached.fromAccount
 
-            // Update TextFieldValues
-            descriptionTextFieldValue.value = TextFieldValue(descriptionState.value)
-            noteTextFieldValue.value = TextFieldValue(noteState.value)
-            amountTextFieldValue.value = TextFieldValue(amountState.value)
-
             // Load extra account info
             lifecycleScope.launch {
                 cached.toAccount?.let {
@@ -220,9 +201,6 @@ class TransactionAddFragment : Fragment(), MenuProvider, RefreshableFragment {
             dateState.value = df.getCurrentDateAsString()
             amountState.value = nf.displayDollars(0.0)
         }
-        descriptionTextFieldValue.value = TextFieldValue(descriptionState.value)
-        noteTextFieldValue.value = TextFieldValue(noteState.value)
-        amountTextFieldValue.value = TextFieldValue(amountState.value)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -230,225 +208,6 @@ class TransactionAddFragment : Fragment(), MenuProvider, RefreshableFragment {
         val menuHost: MenuHost = mainActivity.topMenuBar
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         refreshData()
-    }
-
-    @Composable
-    fun TransactionAddScreen() {
-        var date by dateState
-        var description by descriptionState
-        var note by noteState
-        var amount by amountState
-
-        val cached = mainViewModel.getTransactionDetailed()
-        val toAccount = cached?.toAccount
-        val fromAccount = cached?.fromAccount
-        val budgetRule = cached?.budgetRule
-        var toPending by toPendingState
-        var fromPending by fromPendingState
-
-        val toAccountWithType = toAccountWithTypeState.value
-        val fromAccountWithType = fromAccountWithTypeState.value
-
-        Scaffold(
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { saveTransactionIfValid() },
-                    modifier = Modifier
-                        .padding(16.dp),
-                    containerColor = Color(0xFFB00020) // Deep Red
-                ) {
-                    Icon(
-                        Icons.Default.Done,
-                        contentDescription = stringResource(R.string.save),
-                        tint = Color.White
-                    )
-                }
-            }
-        ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                var descriptionValue by descriptionTextFieldValue
-                ProjectTextField(
-                    value = descriptionValue,
-                    onValueChange = {
-                        descriptionValue = it
-                        description = it.text
-                    },
-                    label = { Text(stringResource(R.string.description)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
-
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    ProjectDateField(
-                        value = date,
-                        onValueChange = { date = it },
-                        label = stringResource(R.string.date),
-                        modifier = Modifier.weight(1f)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    BalanceField(
-                        label = stringResource(R.string.amount),
-                        value = amountTextFieldValue.value,
-                        onValueChange = {
-                            amountTextFieldValue.value = it
-                            amount = it.text
-                        },
-                        onLongClick = { gotoCalculator() },
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-
-                SelectorCard(
-                    label = stringResource(R.string.rules),
-                    value = budgetRule?.budgetRuleName
-                        ?: stringResource(R.string.choose_a_budget_rule),
-                    onClick = { chooseBudgetRule() }
-                )
-
-                AccountSelectorCard(
-                    label = stringResource(R.string.from_account_name),
-                    account = fromAccount,
-                    isPending = fromPending,
-                    onPendingChange = { fromPending = it },
-                    allowPending = fromAccountWithType?.accountType?.allowPending == true,
-                    onClick = { chooseFromAccount() }
-                )
-
-                AccountSelectorCard(
-                    label = stringResource(R.string.to_account_name),
-                    account = toAccount,
-                    isPending = toPending,
-                    onPendingChange = { toPending = it },
-                    allowPending = toAccountWithType?.accountType?.allowPending == true,
-                    onClick = { chooseToAccount() }
-                )
-
-                var noteValue by noteTextFieldValue
-                ProjectTextField(
-                    value = noteValue,
-                    onValueChange = {
-                        noteValue = it
-                        note = it.text
-                    },
-                    label = { Text(stringResource(R.string.note)) },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Button(
-                    onClick = { splitTransactions() },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = fromAccount != null && nf.getDoubleFromDollars(amount) > 2.0
-                ) {
-                    Text(stringResource(R.string.splitting_transaction))
-                }
-            }
-        }
-    }
-
-    @Composable
-    fun SelectorCard(label: String, value: String, onClick: () -> Unit) {
-        OutlinedCard(
-            onClick = onClick,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(
-                modifier = Modifier
-                    .padding(12.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "$label:",
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = value,
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
-        }
-    }
-
-    @Composable
-    fun AccountSelectorCard(
-        label: String,
-        account: Account?,
-        isPending: Boolean,
-        onPendingChange: (Boolean) -> Unit,
-        allowPending: Boolean,
-        onClick: () -> Unit
-    ) {
-        OutlinedCard(
-            onClick = onClick,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(modifier = Modifier.padding(12.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "$label:",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Text(
-                        text = account?.accountName ?: stringResource(R.string.choose_an_account),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
-                if (allowPending) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clickable { onPendingChange(!isPending) }
-                    ) {
-                        Checkbox(checked = isPending, onCheckedChange = onPendingChange)
-                        Text(
-                            text = stringResource(R.string.pending),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    @Composable
-    fun BalanceField(
-        label: String,
-        value: TextFieldValue,
-        onValueChange: (TextFieldValue) -> Unit,
-        onLongClick: () -> Unit,
-        modifier: Modifier = Modifier
-    ) {
-        ProjectTextField(
-            value = value,
-            onValueChange = { onValueChange(it) },
-            label = { Text(label) },
-            modifier = modifier.fillMaxWidth(),
-            textStyle = MaterialTheme.typography.titleLarge.copy(
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold
-            ),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            singleLine = true,
-            trailingIcon = {
-                IconButton(onClick = onLongClick) {
-                    Icon(
-                        imageVector = Icons.Default.Calculate,
-                        contentDescription = stringResource(R.string.calculator)
-                    )
-                }
-            }
-        )
     }
 
     private fun chooseBudgetRule() {
