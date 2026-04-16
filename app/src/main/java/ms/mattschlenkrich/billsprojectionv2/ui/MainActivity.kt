@@ -5,7 +5,6 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -13,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -34,7 +34,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -44,25 +43,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.net.toUri
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
-import androidx.fragment.app.FragmentContainerView
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.interfaces.RefreshableFragment
 import ms.mattschlenkrich.billsprojectionv2.common.projections.UpdateBudgetPredictions
 import ms.mattschlenkrich.billsprojectionv2.common.sync.NewActivity
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
@@ -82,6 +74,8 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewMod
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.TransactionViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.TransactionViewModelFactory
+import ms.mattschlenkrich.billsprojectionv2.ui.navigation.NavGraph
+import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 import java.time.LocalDate
 
@@ -98,7 +92,7 @@ class MainActivity : AppCompatActivity() {
 
     private val topMenuBarState = mutableStateOf(TopBarState())
 
-    interface MenuHostProxy : MenuHost {
+    interface MenuHostProxy {
         var title: String
         fun setTitle(titleResId: Int)
     }
@@ -113,37 +107,11 @@ class MainActivity : AppCompatActivity() {
         override fun setTitle(titleResId: Int) {
             title = getString(titleResId)
         }
-
-        override fun addMenuProvider(provider: MenuProvider) {
-            this@MainActivity.addMenuProvider(provider)
-        }
-
-        override fun addMenuProvider(provider: MenuProvider, owner: LifecycleOwner) {
-            this@MainActivity.addMenuProvider(provider, owner)
-        }
-
-        override fun addMenuProvider(
-            provider: MenuProvider,
-            owner: LifecycleOwner,
-            state: Lifecycle.State
-        ) {
-            this@MainActivity.addMenuProvider(provider, owner, state)
-        }
-
-        override fun removeMenuProvider(provider: MenuProvider) {
-            this@MainActivity.removeMenuProvider(provider)
-        }
-
-        override fun invalidateMenu() {
-            this@MainActivity.invalidateMenu()
-        }
     }
 
     val topMenuBar: MenuHostProxy by lazy { TopMenuBarProxy() }
 
     data class TopBarState(val title: String = "")
-
-    private val df = DateFunctions()
 
     private var isUpdating = mutableStateOf(false)
 
@@ -175,36 +143,45 @@ class MainActivity : AppCompatActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun MainScreen() {
-        var selectedItem by remember { mutableIntStateOf(0) }
+        val navController = rememberNavController()
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
 
         val syncLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult()
         ) { result ->
             if (result.resultCode == RESULT_OK) {
-                // Trigger refresh by resetting database instance and reloading view models
                 setupViewModels(clearExisting = true)
-                // Force a return to Budget View after sync
-                selectedItem = 0
-                gotoBudgetView()
+                navController.navigate(Screen.BudgetView.route) {
+                    popUpTo(navController.graph.startDestinationId) {
+                        inclusive = true
+                    }
+                }
             }
         }
 
         Scaffold(
+            modifier = Modifier.imePadding(),
             topBar = {
                 MainTopBar(
                     title = topMenuBarState.value.title.ifEmpty { stringResource(R.string.app_name) },
                     onSyncClick = { syncLauncher.launch(Intent(this, NewActivity::class.java)) },
                     onMenuItemClick = { actionId ->
-                        handleMenuAction(actionId)
+                        handleMenuAction(actionId, navController)
                     }
                 )
             },
             bottomBar = {
                 MainBottomBar(
-                    selectedItem = selectedItem,
-                    onItemSelected = { index, actionId ->
-                        selectedItem = index
-                        handleNavigation(actionId)
+                    currentRoute = currentRoute,
+                    onItemSelected = { route ->
+                        navController.navigate(route) {
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
                     }
                 )
             }
@@ -214,19 +191,9 @@ class MainActivity : AppCompatActivity() {
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                AndroidView(
-                    factory = { ctx ->
-                        FragmentContainerView(ctx).apply {
-                            id = R.id.fragment_container_view
-                            val navHostFragment =
-                                NavHostFragment.create(R.navigation.nav_graph)
-                            supportFragmentManager.beginTransaction()
-                                .replace(id, navHostFragment)
-                                .setPrimaryNavigationFragment(navHostFragment)
-                                .commit()
-                        }
-                    },
-                    modifier = Modifier.fillMaxSize()
+                NavGraph(
+                    navController = navController,
+                    activity = this@MainActivity
                 )
 
                 if (isUpdating.value) {
@@ -336,21 +303,21 @@ class MainActivity : AppCompatActivity() {
 
     @Composable
     fun MainBottomBar(
-        selectedItem: Int,
-        onItemSelected: (Int, Int) -> Unit
+        currentRoute: String?,
+        onItemSelected: (String) -> Unit
     ) {
         val items = listOf(
-            Triple(R.string.budget_view, R.drawable.ic_budget_view, R.id.navigation_budget_view),
-            Triple(R.string.transactions, R.drawable.ic_transactions, R.id.navigation_transactions),
-            Triple(R.string.accounts, R.drawable.ic_accounts, R.id.navigation_accounts),
-            Triple(R.string.analysis, R.drawable.ic_analysis, R.id.navigation_analysis),
-            Triple(R.string.budget_rules, R.drawable.ic_budget_rules, R.id.navigation_budget_rules),
+            Triple(R.string.budget_view, R.drawable.ic_budget_view, Screen.BudgetView.route),
+            Triple(R.string.transactions, R.drawable.ic_transactions, Screen.Transactions.route),
+            Triple(R.string.accounts, R.drawable.ic_accounts, Screen.Accounts.route),
+            Triple(R.string.analysis, R.drawable.ic_analysis, Screen.Analysis.route),
+            Triple(R.string.budget_rules, R.drawable.ic_budget_rules, Screen.BudgetRules.route),
         )
 
         NavigationBar(
             containerColor = Color.White
         ) {
-            items.forEachIndexed { index, (labelRes, iconRes, actionId) ->
+            items.forEach { (labelRes, iconRes, route) ->
                 NavigationBarItem(
                     icon = {
                         Icon(
@@ -359,58 +326,25 @@ class MainActivity : AppCompatActivity() {
                         )
                     },
                     label = { Text(stringResource(labelRes), softWrap = false) },
-                    selected = selectedItem == index,
-                    onClick = { onItemSelected(index, actionId) }
+                    selected = currentRoute == route,
+                    onClick = { onItemSelected(route) }
                 )
             }
         }
     }
 
-    private fun handleMenuAction(actionId: Int) {
+    private fun handleMenuAction(actionId: Int, navController: NavHostController) {
         when (actionId) {
             R.id.action_update_predictions -> updateBudget()
-            R.id.action_view_summary -> gotoBudgetList()
+            R.id.action_view_summary -> navController.navigate(Screen.BudgetList.route)
             R.id.action_delete_predictions -> chooseDeleteFuturePredictions()
-            R.id.action_settings -> gotoSettings()
-            R.id.action_help -> gotoHelp()
+            R.id.action_settings -> navController.navigate(Screen.Settings.route)
+            R.id.action_help -> navController.navigate(Screen.Help.route)
             R.id.action_privacy_policy -> {
                 val intent = Intent(Intent.ACTION_VIEW).apply {
                     data = getString(R.string.https_www_mschlenkrich_ca_privacy_policy).toUri()
                 }
                 startActivity(intent)
-            }
-        }
-    }
-
-    private fun handleNavigation(actionId: Int) {
-        when (actionId) {
-            R.id.navigation_budget_view -> gotoBudgetView()
-            R.id.navigation_accounts -> gotoAccounts()
-            R.id.navigation_transactions -> gotoTransactions()
-            R.id.navigation_budget_rules -> gotoBudgetRules()
-            R.id.navigation_analysis -> gotoAnalysis()
-        }
-    }
-
-    @Preview(showBackground = true)
-    @Composable
-    fun MainScreenPreview() {
-        BillsProjectionTheme {
-            Scaffold(
-                topBar = {
-                    MainTopBar(
-                        title = "Bills Projection V2",
-                        onSyncClick = {},
-                        onMenuItemClick = {}
-                    )
-                },
-                bottomBar = {
-                    MainBottomBar(selectedItem = 0, onItemSelected = { _, _ -> })
-                }
-            ) { paddingValues ->
-                Box(modifier = Modifier.padding(paddingValues)) {
-                    Text("Content Area", modifier = Modifier.padding(16.dp))
-                }
             }
         }
     }
@@ -427,66 +361,6 @@ class MainActivity : AppCompatActivity() {
             setNegativeButton(getString(R.string.cancel)) { _, _ -> }
             show()
         }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    private fun gotoHelp() {
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.fragment_container_view) as NavHostFragment
-        val navController = navHostFragment.navController
-        navController.navigate(R.id.helpFragment)
-    }
-
-    private fun gotoSettings() {
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.fragment_container_view) as NavHostFragment
-        val navController = navHostFragment.navController
-        navController.navigate(R.id.settingsFragment)
-    }
-
-    private fun gotoBudgetList() {
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.fragment_container_view) as NavHostFragment
-        val navController = navHostFragment.navController
-        navController.navigate(R.id.budgetListFragment)
-    }
-
-    private fun gotoAnalysis() {
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.fragment_container_view) as NavHostFragment
-        val navController = navHostFragment.navController
-        navController.navigate(R.id.transactionAnalysisFragment)
-    }
-
-    private fun gotoBudgetView() {
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.fragment_container_view) as NavHostFragment
-        val navController = navHostFragment.navController
-        navController.navigate(R.id.budgetViewFragment)
-    }
-
-    private fun gotoBudgetRules() {
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.fragment_container_view) as NavHostFragment
-        val navController = navHostFragment.navController
-        navController.navigate(R.id.budgetRuleFragment)
-    }
-
-    private fun gotoAccounts() {
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.fragment_container_view) as NavHostFragment
-        val navController = navHostFragment.navController
-        navController.navigate(R.id.accountViewFragment)
-    }
-
-    private fun gotoTransactions() {
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.fragment_container_view) as NavHostFragment
-        val navController = navHostFragment.navController
-        navController.navigate(R.id.transactionViewFragment)
     }
 
     private fun updateBudget() {
@@ -537,17 +411,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "onResume called")
-        // Reset database instance and re-initialize view models to ensure fresh data after sync
         setupViewModels(clearExisting = true)
-
-        // Trigger an update for the current fragment
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.fragment_container_view) as? NavHostFragment
-        navHostFragment?.childFragmentManager?.fragments?.forEach { fragment ->
-            if (fragment is RefreshableFragment) {
-                fragment.refreshData()
-            }
-        }
     }
 
     private fun setupBudgetItemViewModel() {
