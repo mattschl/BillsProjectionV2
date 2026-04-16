@@ -1,9 +1,7 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.transactions
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,7 +23,6 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,9 +37,9 @@ import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextBox
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
+import ms.mattschlenkrich.billsprojectionv2.common.components.TransactionHistoryItem
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 
 enum class TimeRange {
@@ -149,9 +145,9 @@ fun TransactionAnalysisScreen(
                     transactionList,
                     key = { it.transaction?.transId ?: it.hashCode() }
                 ) { transaction ->
-                    TransactionItemCompose(
+                    TransactionHistoryItem(
                         transactionDetailed = transaction,
-                        onClick = { onTransactionClick(transaction) },
+                        onClick = onTransactionClick,
                         nf = nf,
                         df = df
                     )
@@ -461,97 +457,6 @@ fun HelpCard() {
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
-        }
-    }
-}
-
-@Composable
-fun TransactionItemCompose(
-    transactionDetailed: TransactionDetailed,
-    onClick: () -> Unit,
-    nf: NumberFunctions,
-    df: DateFunctions
-) {
-    val vf = remember { VisualsFunctions() }
-    val trans = transactionDetailed.transaction!!
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(horizontal = 16.dp, vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .width(4.dp)
-                .height(32.dp)
-                .background(
-                    Color(vf.getRandomColorInt()),
-                    shape = RoundedCornerShape(2.dp)
-                )
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = trans.transName,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = nf.displayDollars(trans.transAmount),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.End,
-                    modifier = Modifier.padding(start = 8.dp)
-                )
-            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "${transactionDetailed.fromAccount?.accountName} → ${transactionDetailed.toAccount?.accountName}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = df.getDisplayDate(trans.transDate),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.outline,
-                    modifier = Modifier.padding(start = 8.dp)
-                )
-            }
-            if (trans.transToAccountPending || trans.transFromAccountPending) {
-                Text(
-                    text = stringResource(R.string.pending),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Color.Red,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-            if (trans.transNote.isNotEmpty()) {
-                Text(
-                    text = trans.transNote,
-                    style = MaterialTheme.typography.labelSmall,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.outline
-                )
-            }
         }
     }
 }
