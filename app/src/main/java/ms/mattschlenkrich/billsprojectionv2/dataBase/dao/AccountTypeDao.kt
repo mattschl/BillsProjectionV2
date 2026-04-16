@@ -69,5 +69,5 @@ interface AccountTypeDao {
                 "WHERE $ACCT_IS_DELETED = 0 " +
                 "ORDER BY $ACCOUNT_TYPE "
     )
-    fun getAccountTypeNames(): List<String>
+    fun getAccountTypeNames(): LiveData<List<String>>
 }
