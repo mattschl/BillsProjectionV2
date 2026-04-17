@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.budgetView
 
 import android.app.AlertDialog
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -10,6 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -24,6 +26,8 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
+
+private const val TAG = "BudgetViewScreenWrapper"
 
 @Composable
 fun BudgetViewScreenWrapper(
@@ -94,6 +98,7 @@ fun BudgetViewScreenWrapper(
         onAssetSelected = {
             selectedAsset = it
             mainViewModel.setReturnToAsset(it)
+            mainViewModel.setReturnToPayDay(null)
         },
         payDayList = payDayList,
         selectedPayDay = selectedPayDay,
@@ -241,6 +246,17 @@ fun BudgetViewScreenWrapper(
                                     curBudget.biProjectedDate,
                                     DateFunctions().getCurrentTimeAsString()
                                 )
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    delay(WAIT_100)
+                                    if (budgetList.isEmpty()) {
+                                        Log.d(
+                                            TAG,
+                                            " TODO BudgetViewScreenWrapper: UPDATE THE PAYDAY LIST and refresh"
+                                        )
+//                                        TODO("UPDATE THE PAYDAY LIST and refresh")
+
+                                    }
+                                }
                             }.setNegativeButton(activity.getString(R.string.ignore_this), null)
                             .show()
                     }
