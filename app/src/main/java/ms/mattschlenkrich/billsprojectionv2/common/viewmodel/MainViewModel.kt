@@ -31,6 +31,7 @@ class MainViewModel(
 
     fun setReturnToAsset(newAsset: String?) {
         _returnToAsset.value = newAsset
+        _returnToPayDay.value = null
     }
 
     fun getReturnToAsset(): String? {
