@@ -21,9 +21,9 @@ object ProjectFieldDefaults {
     @Composable
     fun contentPadding(): PaddingValues = OutlinedTextFieldDefaults.contentPadding(
         start = 8.dp,
-        top = 0.dp,
+        top = 4.dp,
         end = 8.dp,
-        bottom = 0.dp,
+        bottom = 4.dp,
     )
 
     @Composable
