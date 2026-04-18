@@ -137,6 +137,8 @@ fun AccountChooseScreen(
     vf: VisualsFunctions = VisualsFunctions()
 ) {
     Scaffold(
+        modifier = Modifier.imePadding(),
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddAccountClick,
@@ -220,8 +222,6 @@ fun AccountChooseItem(
 
     val containerColor = if (isDeleted) {
         MaterialTheme.colorScheme.errorContainer
-    } else if (displayInBudget) {
-        Color.Yellow.copy(alpha = 0.3f)
     } else {
         MaterialTheme.colorScheme.surface
     }
@@ -243,7 +243,7 @@ fun AccountChooseItem(
     ) {
         Row(
             modifier = Modifier
-                .padding(8.dp)
+                .padding(4.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -252,7 +252,8 @@ fun AccountChooseItem(
                 text = account.accountName,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                color = if (displayInBudget) Color.Red else Color.Black
             )
             Box(
                 modifier = Modifier
