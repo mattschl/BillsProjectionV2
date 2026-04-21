@@ -83,6 +83,26 @@ class AccountUpdateViewModel(
         transactionViewModel.updateTransaction(newTransaction)
     }
 
+    suspend fun updateTransactionWithoutAccountUpdate(
+        transaction: Transactions
+    ) {
+        transactionViewModel.updateTransaction(transaction)
+    }
+
+    suspend fun updateAccountBalance(
+        amount: Double, accountId: Long
+    ) {
+        transactionViewModel.updateAccountBalance(
+            amount, accountId, df.getCurrentTimeAsString()
+        )
+    }
+
+    suspend fun updateAccountOwing(
+        amount: Double, accountId: Long
+    ) {
+        transactionViewModel.updateAccountOwing(amount, accountId, df.getCurrentTimeAsString())
+    }
+
     private suspend fun updateAccountBalance(
         amount: Double, accountId: Long, creditAccount: Boolean
     ) {

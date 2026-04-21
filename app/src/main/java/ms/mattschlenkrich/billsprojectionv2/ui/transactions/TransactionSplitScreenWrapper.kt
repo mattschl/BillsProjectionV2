@@ -254,7 +254,9 @@ fun TransactionSplitScreenWrapper(
                             val oldTransaction = transactionDetailed.transaction!!
                             oldTransaction.transAmount = remainder
                             if (mainViewModel.getUpdatingTransaction()) {
-                                transactionViewModel.updateTransaction(oldTransaction)
+                                accountUpdateViewModel.updateTransactionWithoutAccountUpdate(
+                                    oldTransaction
+                                )
                             }
                             mainViewModel.setTransactionDetailed(
                                 TransactionDetailed(

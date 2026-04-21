@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -56,7 +55,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.projections.UpdateBudgetPredictions
-import ms.mattschlenkrich.billsprojectionv2.common.sync.NewActivity
+import ms.mattschlenkrich.billsprojectionv2.common.sync.SyncActivity
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.dataBase.BillsDatabase
@@ -165,7 +164,7 @@ class MainActivity : AppCompatActivity() {
             topBar = {
                 MainTopBar(
                     title = topMenuBarState.value.title.ifEmpty { stringResource(R.string.app_name) },
-                    onSyncClick = { syncLauncher.launch(Intent(this, NewActivity::class.java)) },
+                    onSyncClick = { syncLauncher.launch(Intent(this, SyncActivity::class.java)) },
                     onMenuItemClick = { actionId ->
                         handleMenuAction(actionId, navController)
                     }
@@ -233,12 +232,6 @@ class MainActivity : AppCompatActivity() {
         TopAppBar(
             title = { Text(title) },
             actions = {
-                IconButton(onClick = onSyncClick) {
-                    Icon(
-                        imageVector = Icons.Default.Sync,
-                        contentDescription = stringResource(R.string.sync_with_cloud)
-                    )
-                }
                 IconButton(onClick = { showMenu = true }) {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
@@ -267,6 +260,13 @@ class MainActivity : AppCompatActivity() {
                         text = { Text(stringResource(R.string.delete_future_predictions)) },
                         onClick = {
                             onMenuItemClick(R.id.action_delete_predictions)
+                            showMenu = false
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.sync)) },
+                        onClick = {
+                            onSyncClick()
                             showMenu = false
                         }
                     )

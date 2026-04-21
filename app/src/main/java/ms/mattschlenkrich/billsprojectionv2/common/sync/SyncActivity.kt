@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -58,9 +58,9 @@ import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 import java.security.SecureRandom
 
-private const val TAG: String = "NewActivity"
+private const val TAG: String = "SyncActivity"
 
-class NewActivity : ComponentActivity() {
+class SyncActivity : ComponentActivity() {
 
     private val viewModel: SyncViewModel by viewModels()
     private var mCurrentAccount: Account? = null
@@ -78,8 +78,12 @@ class NewActivity : ComponentActivity() {
         viewModel.deviceId = settings.deviceId
 
         lifecycleScope.launch {
-            delay(500) // Small delay to ensure Credential Manager is ready
-            signInWithCredentialManager()
+            delay(200) // Small delay to ensure Credential Manager is ready
+            settings.driveAccount?.let {
+                initializeDriveService(it)
+            } ?: run {
+                signInWithCredentialManager()
+            }
         }
 
         setContent {
@@ -98,7 +102,8 @@ class NewActivity : ComponentActivity() {
                         finish()
                     },
                     onConnect = { signInWithCredentialManager() },
-                    onSync = { viewModel.sync(::handleError) }
+                    onSync = { viewModel.sync(::handleError) },
+                    onQuery = { viewModel.queryDriveFiles() }
                 )
             }
         }
@@ -143,7 +148,7 @@ class NewActivity : ComponentActivity() {
             val request = GetCredentialRequest.Builder().addCredentialOption(googleIdOption).build()
 
             try {
-                val result = credentialManager.getCredential(this@NewActivity, request)
+                val result = credentialManager.getCredential(this@SyncActivity, request)
                 val googleIdTokenCredential =
                     GoogleIdTokenCredential.createFrom(result.credential.data)
                 initializeDriveService(googleIdTokenCredential.id)
@@ -163,6 +168,13 @@ class NewActivity : ComponentActivity() {
                 .build()
             viewModel.driveServiceHelper = DriveServiceHelper(googleDriveService)
             mCurrentAccount = account
+
+            // Save the successful account
+            val settingsManager = SettingsManager(this)
+            val settings = settingsManager.getSettings()
+            if (settings.driveAccount != email) {
+                settingsManager.saveSettings(settings.copy(driveAccount = email))
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Drive init failed", e)
         }
@@ -174,7 +186,7 @@ class NewActivity : ComponentActivity() {
     )
 
     companion object {
-        private val DRIVE_SCOPES = listOf(DriveScopes.DRIVE_FILE)
+        private val DRIVE_SCOPES = listOf(DriveScopes.DRIVE_APPDATA)
         private val HTTP_TRANSPORT: HttpTransport = NetHttpTransport()
         private val JSON_FACTORY: JsonFactory = GsonFactory.getDefaultInstance()
     }
@@ -186,7 +198,8 @@ fun SyncScreen(
     viewModel: SyncViewModel,
     onBack: () -> Unit,
     onConnect: () -> Unit,
-    onSync: () -> Unit
+    onSync: () -> Unit,
+    onQuery: () -> Unit
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize()
@@ -221,17 +234,29 @@ fun SyncScreen(
                     modifier = Modifier.weight(1f)
                 )
 
-                FlowRow(
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     if (viewModel.driveServiceHelper == null) {
-                        Button(onClick = onConnect) { Text(stringResource(R.string.connect_to_drive)) }
+                        Button(
+                            onClick = onConnect,
+                            modifier = Modifier.weight(1f)
+                        ) { Text(stringResource(R.string.connect_to_drive)) }
                     } else {
-                        Button(onClick = onSync) { Text(stringResource(R.string.sync)) }
+                        Button(
+                            onClick = onSync,
+                            modifier = Modifier.weight(1f)
+                        ) { Text(stringResource(R.string.sync)) }
+                        Button(
+                            onClick = onQuery,
+                            modifier = Modifier.weight(1f)
+                        ) { Text("Query") }
                     }
-                    Button(onClick = onBack) { Text(stringResource(R.string.return_button)) }
+                    Button(
+                        onClick = onBack,
+                        modifier = Modifier.weight(1f)
+                    ) { Text(stringResource(R.string.return_button)) }
                 }
             }
 
