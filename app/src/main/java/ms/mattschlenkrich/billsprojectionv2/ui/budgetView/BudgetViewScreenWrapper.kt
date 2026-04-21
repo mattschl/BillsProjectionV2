@@ -1,7 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.budgetView
 
 import android.app.AlertDialog
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -22,6 +21,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.WAIT_100
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.projections.UpdateBudgetPredictions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
@@ -249,12 +249,11 @@ fun BudgetViewScreenWrapper(
                                 CoroutineScope(Dispatchers.Main).launch {
                                     delay(WAIT_100)
                                     if (budgetList.isEmpty()) {
-                                        Log.d(
-                                            TAG,
-                                            " TODO BudgetViewScreenWrapper: UPDATE THE PAYDAY LIST and refresh"
-                                        )
-//                                        TODO("UPDATE THE PAYDAY LIST and refresh")
-
+                                        withContext(Dispatchers.IO) {
+                                            UpdateBudgetPredictions(activity).updatePredictions(
+                                                java.time.LocalDate.now().plusMonths(2).toString()
+                                            )
+                                        }
                                     }
                                 }
                             }.setNegativeButton(activity.getString(R.string.ignore_this), null)
@@ -340,43 +339,39 @@ fun BudgetViewScreenWrapper(
                                             accountViewModel.getAccountWithType(currentSelectedAsset)
                                         }
                                         if (pendingTransaction.toAccount!!.accountName == currentSelectedAsset) {
-                                            transactionViewModel.updateTransaction(
+                                            accountUpdateViewModel.updateTransactionWithoutAccountUpdate(
                                                 trans.copy(
                                                     transToAccountPending = false,
                                                     transUpdateTime = df.getCurrentTimeAsString()
                                                 )
                                             )
                                             if (asset.accountType!!.keepTotals) {
-                                                transactionViewModel.updateAccountBalance(
+                                                accountUpdateViewModel.updateAccountBalance(
                                                     asset.account.accountBalance + trans.transAmount,
-                                                    asset.account.accountId,
-                                                    df.getCurrentTimeAsString()
+                                                    asset.account.accountId
                                                 )
                                             } else if (asset.accountType.tallyOwing) {
-                                                transactionViewModel.updateAccountOwing(
+                                                accountUpdateViewModel.updateAccountOwing(
                                                     asset.account.accountOwing - trans.transAmount,
-                                                    asset.account.accountId,
-                                                    df.getCurrentTimeAsString()
+                                                    asset.account.accountId
                                                 )
                                             }
                                         } else {
-                                            transactionViewModel.updateTransaction(
+                                            accountUpdateViewModel.updateTransactionWithoutAccountUpdate(
                                                 trans.copy(
                                                     transFromAccountPending = false,
                                                     transUpdateTime = df.getCurrentTimeAsString()
                                                 )
                                             )
                                             if (asset.accountType!!.keepTotals) {
-                                                transactionViewModel.updateAccountBalance(
+                                                accountUpdateViewModel.updateAccountBalance(
                                                     asset.account.accountBalance - trans.transAmount,
-                                                    asset.account.accountId,
-                                                    df.getCurrentTimeAsString()
+                                                    asset.account.accountId
                                                 )
                                             } else if (asset.accountType.tallyOwing) {
-                                                transactionViewModel.updateAccountOwing(
+                                                accountUpdateViewModel.updateAccountOwing(
                                                     asset.account.accountOwing + trans.transAmount,
-                                                    asset.account.accountId,
-                                                    df.getCurrentTimeAsString()
+                                                    asset.account.accountId
                                                 )
                                             }
                                         }
@@ -403,10 +398,11 @@ fun BudgetViewScreenWrapper(
                     }
 
                     2 -> {
-                        transactionViewModel.deleteTransaction(
-                            pendingTransaction.transaction.transId,
-                            df.getCurrentTimeAsString()
-                        )
+                        activity.lifecycleScope.launch {
+                            accountUpdateViewModel.deleteTransaction(
+                                pendingTransaction.transaction
+                            )
+                        }
                     }
                 }
             }.setNegativeButton(activity.getString(R.string.cancel), null).show()

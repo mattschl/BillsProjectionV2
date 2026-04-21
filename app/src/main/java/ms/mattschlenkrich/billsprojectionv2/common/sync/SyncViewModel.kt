@@ -13,13 +13,10 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_ITEMS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_SYNC_HISTORY
-import ms.mattschlenkrich.billsprojectionv2.common.TABLE_TRANSACTION
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.BillsDatabase
@@ -64,10 +61,32 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
         showConflictDialog = null
     }
 
-    private suspend fun getTargetFolderId(helper: DriveServiceHelper): String {
-        val appsFolderId = helper.getOrCreateFolder("Apps")
-        val appName = getApplication<Application>().getString(R.string.app_name)
-        return helper.getOrCreateFolder(appName, appsFolderId)
+    fun queryDriveFiles() {
+        progressMessage = "Querying Drive..."
+        viewModelScope.launch {
+            try {
+                val helper = driveServiceHelper ?: return@launch
+                val fileList = helper.queryFiles()
+                val files = fileList.files ?: emptyList()
+
+                val report = StringBuilder("Files in App Data Folder:\n")
+                if (files.isEmpty()) {
+                    report.append("No files found.")
+                } else {
+                    files.filter { it.name.startsWith("bills2_") && it.name.endsWith(".db") }
+                        .sortedByDescending { it.name }
+                        .forEach { file ->
+                            report.append("- ${file.name} (${file.size ?: 0} bytes)\n")
+                        }
+                }
+                docContent = report.toString()
+            } catch (e: Exception) {
+                Log.e(TAG, "Query failed", e)
+                docContent = "Query failed: ${e.message}"
+            } finally {
+                progressMessage = null
+            }
+        }
     }
 
     fun sync(onError: (String, Exception, (() -> Unit)) -> Unit) {
@@ -78,7 +97,6 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             val startTime = df.getCurrentTimeAsString()
             try {
                 val helper = driveServiceHelper ?: return@launch
-                val targetFolderId = getTargetFolderId(helper)
                 val appDb = BillsDatabase(getApplication())
 
                 val myLastSync = withContext(Dispatchers.IO) {
@@ -87,7 +105,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
 
                 syncReport.append("My last sync: $myLastSync\n")
 
-                val fileList: FileList = helper.queryFiles(targetFolderId)
+                val fileList: FileList = helper.queryFiles()
                 val allFiles = fileList.files ?: emptyList()
                 val driveFiles = allFiles
                     .filter { it.name.startsWith("bills2_") && it.name.endsWith(".db") }
@@ -99,7 +117,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                             file to sqliteTs
                         } else null
                     }
-                    .filter { it.second >= myLastSync }
+                    .filter { it.second > myLastSync }
                     .sortedBy { it.second }
 
                 if (driveFiles.isEmpty()) {
@@ -114,12 +132,12 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                         val localWalFile = File(context.cacheDir, "${file.name}-wal")
                         val localShmFile = File(context.cacheDir, "${file.name}-shm")
 
-                        helper.downloadBinaryFile(file.name, localBackupFile, targetFolderId)
+                        helper.downloadBinaryFile(file.name, localBackupFile)
                         allFiles.find { it.name == localWalFile.name }?.let {
-                            helper.downloadBinaryFile(it.name, localWalFile, targetFolderId)
+                            helper.downloadBinaryFile(it.name, localWalFile)
                         }
                         allFiles.find { it.name == localShmFile.name }?.let {
-                            helper.downloadBinaryFile(it.name, localShmFile, targetFolderId)
+                            helper.downloadBinaryFile(it.name, localShmFile)
                         }
 
                         val result = processSync(localBackupFile)
@@ -143,11 +161,11 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
 
                 progressMessage = "Uploading merged database..."
                 val uploadTimestamp = df.getCurrentFileTimestamp()
-                val uploadedFile = performUpload(helper, targetFolderId, uploadTimestamp)
+                val uploadedFile = performUpload(helper, uploadTimestamp)
                 syncReport.append("\nMerged database uploaded: $uploadedFile")
 
                 progressMessage = "Cleaning up old backups..."
-                val driveFileList = helper.queryFiles(targetFolderId)
+                val driveFileList = helper.queryFiles()
                 val allDriveFiles = driveFileList.files ?: emptyList()
                 val driveBackups = allDriveFiles
                     .filter { it.name.startsWith("bills2_") && it.name.endsWith(".db") }
@@ -244,9 +262,11 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
 
                                 when (choice) {
                                     ConflictChoice.KEEP_LOCAL -> {
-                                        val newName = "${localName}_DRIVE_${getId(backupItem)}"
+                                        val newBackupName =
+                                            "${getName(backupItem)}_DRIVE_${getId(backupItem)}"
                                         val renamedItem =
-                                            copyWithName?.invoke(backupItem, newName) ?: backupItem
+                                            copyWithName?.invoke(backupItem, newBackupName)
+                                                ?: backupItem
                                         insert(renamedItem)
                                         inserts++
                                     }
@@ -315,7 +335,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             totalCount += at.first + at.second
 
             val acc = syncTable(
-                tableName = TABLE_ACCOUNTS,
+                tableName = "Accounts",
                 mapCursorToItem = { cursor ->
                     Account(
                         accountId = cursor.getLong(cursor.getColumnIndexOrThrow("accountId")),
@@ -385,7 +405,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             totalCount += br.first + br.second
 
             val trans = syncTable(
-                tableName = TABLE_TRANSACTION,
+                tableName = "Transactions",
                 mapCursorToItem = { cursor ->
                     Transactions(
                         transId = cursor.getLong(cursor.getColumnIndexOrThrow("transId")),
@@ -515,7 +535,6 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
 
     private suspend fun performUpload(
         helper: DriveServiceHelper,
-        targetFolderId: String,
         timestamp: String? = null
     ): String {
         return withContext(Dispatchers.IO) {
@@ -545,9 +564,8 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                         input.copyTo(output)
                     }
                 }
-                val mimeType =
-                    if (driveName.endsWith(".db")) "application/vnd.sqlite3" else "application/octet-stream"
-                helper.uploadFile(uploadFile, mimeType, driveName, targetFolderId)
+                val mimeType = "application/vnd.sqlite3"
+                helper.uploadFile(uploadFile, mimeType, driveName)
                 uploadFile.delete()
             }
 
