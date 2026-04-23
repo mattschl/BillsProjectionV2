@@ -1,20 +1,15 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.budgetView
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -43,17 +38,15 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.ALL_ITEMS
 import ms.mattschlenkrich.billsprojectionv2.common.components.BudgetItemDisplay
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
-import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 
 @Composable
 fun BudgetViewScreen(
@@ -137,6 +130,7 @@ fun BudgetViewScreen(
                         PendingItem(
                             pending = pending,
                             selectedAsset = selectedAsset,
+                            assetList = assetList,
                             onTransactionClick = onTransactionClick,
                             df = df,
                             nf = nf
@@ -163,7 +157,11 @@ fun BudgetViewScreen(
                     items(budgetList) { budgetItem ->
                         BudgetItemDisplay(
                             budgetItemDetailed = budgetItem,
-                            isCredit = budgetItem.toAccount?.accountName == selectedAsset,
+                            isCredit = if (selectedAsset == ALL_ITEMS) {
+                                assetList.contains(budgetItem.toAccount?.accountName)
+                            } else {
+                                budgetItem.toAccount?.accountName == selectedAsset
+                            },
                             onClick = { onBudgetItemClick(budgetItem) },
                             onLockClick = { onBudgetItemLockClick(budgetItem) }
                         )
@@ -296,6 +294,7 @@ fun SummaryCard(
             TotalsSection(
                 budgetList = budgetList,
                 selectedAsset = selectedAsset,
+                assetList = assetList,
                 nf = nf
             )
         }
@@ -306,6 +305,7 @@ fun SummaryCard(
 fun TotalsSection(
     budgetList: List<BudgetItemDetailed>,
     selectedAsset: String,
+    assetList: List<String>,
     nf: NumberFunctions,
 ) {
     var credits = 0.0
@@ -314,12 +314,25 @@ fun TotalsSection(
     var otherExpenses = 0.0
 
     budgetList.forEach { details ->
-        if (details.toAccount!!.accountName == selectedAsset) {
+        val isCredit = if (selectedAsset == ALL_ITEMS) {
+            assetList.contains(details.toAccount?.accountName)
+        } else {
+            details.toAccount?.accountName == selectedAsset
+        }
+
+        if (isCredit) {
             credits += details.budgetItem!!.biProjectedAmount
         } else {
             debits += details.budgetItem!!.biProjectedAmount
         }
-        if (details.fromAccount!!.accountName == selectedAsset) {
+
+        val isAssetRelated = if (selectedAsset == ALL_ITEMS) {
+            assetList.contains(details.fromAccount?.accountName)
+        } else {
+            details.fromAccount?.accountName == selectedAsset
+        }
+
+        if (isAssetRelated) {
             if (details.budgetItem!!.biIsFixed) {
                 fixedExpenses += details.budgetItem!!.biProjectedAmount
             } else {
@@ -443,84 +456,5 @@ fun DropdownSelector(
                 )
             }
         }
-    }
-}
-
-@Composable
-fun PendingItem(
-    pending: TransactionDetailed,
-    selectedAsset: String,
-    onTransactionClick: (TransactionDetailed) -> Unit,
-    df: DateFunctions,
-    nf: NumberFunctions,
-) {
-    val vf = VisualsFunctions()
-    val color = remember { Color(vf.getRandomColorInt()) }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onTransactionClick(pending) }
-            .padding(vertical = 1.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .size(width = 10.dp, height = 5.dp)
-                .background(color)
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = df.getDisplayDate(pending.transaction!!.transDate),
-            modifier = Modifier.width(100.dp),
-            style = MaterialTheme.typography.bodySmall
-        )
-        val isCredit = pending.toAccount!!.accountName == selectedAsset
-        Text(
-            text = nf.displayDollars(pending.transaction.transAmount),
-            modifier = Modifier.width(90.dp),
-            fontWeight = FontWeight.Bold,
-            color = if (isCredit) Color.Black else Color.Red,
-            style = MaterialTheme.typography.bodySmall
-        )
-        Text(
-            text = pending.transaction.transName + if (pending.transaction.transNote.isNotBlank()) " - ${pending.transaction.transNote}" else "",
-            modifier = Modifier.weight(1f),
-            fontWeight = FontWeight.Bold,
-            color = if (isCredit) Color.Black else Color.Red,
-            style = MaterialTheme.typography.bodySmall,
-            maxLines = 1
-        )
-    }
-}
-
-@Composable
-fun NoBudgetItemsCard() {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = stringResource(R.string.no_budget_items),
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.titleLarge
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = stringResource(R.string.instructions_budget_view),
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun NoBudgetItemsCardPreview() {
-    BillsProjectionTheme {
-        NoBudgetItemsCard()
     }
 }

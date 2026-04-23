@@ -16,6 +16,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.ALL_ITEMS
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_100
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
@@ -42,8 +43,13 @@ fun BudgetViewScreenWrapper(
 
     activity.topMenuBar.title = stringResource(R.string.view_the_budget)
 
-    val assetList by budgetItemViewModel.getAssetsForBudget()
+    val rawAssetList by budgetItemViewModel.getAssetsForBudget()
         .observeAsState(initial = emptyList())
+    val assetList = remember(rawAssetList) {
+        if (rawAssetList.isEmpty()) emptyList()
+        else listOf(ALL_ITEMS) + rawAssetList
+    }
+
     var selectedAsset by remember {
         mutableStateOf(
             mainViewModel.getReturnToAsset() ?: assetList.firstOrNull() ?: ""
@@ -87,8 +93,14 @@ fun BudgetViewScreenWrapper(
     pendingList.forEach {
         if (it.toAccount?.accountName == selectedAsset) {
             pendingAmount += it.transaction?.transAmount ?: 0.0
-        } else {
+        } else if (it.fromAccount?.accountName == selectedAsset) {
             pendingAmount -= it.transaction?.transAmount ?: 0.0
+        } else if (selectedAsset == ALL_ITEMS) {
+            if (assetList.contains(it.toAccount?.accountName)) {
+                pendingAmount += it.transaction?.transAmount ?: 0.0
+            } else if (assetList.contains(it.fromAccount?.accountName)) {
+                pendingAmount -= it.transaction?.transAmount ?: 0.0
+            }
         }
     }
 
@@ -306,12 +318,13 @@ fun BudgetViewScreenWrapper(
         onTransactionClick = { pendingTransaction ->
             val nf = NumberFunctions()
             val df = DateFunctions()
+            val trans = pendingTransaction.transaction!!
             AlertDialog.Builder(activity).setTitle(
                 activity.getString(R.string.choose_an_action_for) + nf.displayDollars(
-                    pendingTransaction.transaction!!.transAmount
+                    trans.transAmount
                 ) + activity.getString(
                     R.string._to_
-                ) + pendingTransaction.transaction.transName
+                ) + trans.transName
             ).setItems(
                 arrayOf(
                     activity.getString(R.string.complete_this_pending_transaction),
@@ -323,59 +336,24 @@ fun BudgetViewScreenWrapper(
                     0 -> {
                         val display =
                             activity.getString(R.string.this_will_apply_the_amount_of) + nf.displayDollars(
-                                pendingTransaction.transaction.transAmount
-                            ) + (if (pendingTransaction.transaction.transToAccountPending) activity.getString(
-                                R.string._to_
-                            ) else activity.getString(R.string._From_)) + mainViewModel.getReturnToAsset()
+                                trans.transAmount
+                            ) + " " + activity.getString(R.string._to_) + (pendingTransaction.toAccount?.accountName
+                                ?: "") +
+                                    activity.getString(R.string._and_) + activity.getString(R.string._From_) + (pendingTransaction.fromAccount?.accountName
+                                ?: "")
                         AlertDialog.Builder(activity)
                             .setTitle(activity.getString(R.string.confirm_completing_transaction))
                             .setMessage(display)
                             .setPositiveButton(activity.getString(R.string.confirm)) { _, _ ->
                                 activity.lifecycleScope.launch {
-                                    val trans = pendingTransaction.transaction
-                                    val currentSelectedAsset = mainViewModel.getReturnToAsset()
-                                    if (currentSelectedAsset != null) {
-                                        val asset = withContext(Dispatchers.IO) {
-                                            accountViewModel.getAccountWithType(currentSelectedAsset)
-                                        }
-                                        if (pendingTransaction.toAccount!!.accountName == currentSelectedAsset) {
-                                            accountUpdateViewModel.updateTransactionWithoutAccountUpdate(
-                                                trans.copy(
-                                                    transToAccountPending = false,
-                                                    transUpdateTime = df.getCurrentTimeAsString()
-                                                )
-                                            )
-                                            if (asset.accountType!!.keepTotals) {
-                                                accountUpdateViewModel.updateAccountBalance(
-                                                    asset.account.accountBalance + trans.transAmount,
-                                                    asset.account.accountId
-                                                )
-                                            } else if (asset.accountType.tallyOwing) {
-                                                accountUpdateViewModel.updateAccountOwing(
-                                                    asset.account.accountOwing - trans.transAmount,
-                                                    asset.account.accountId
-                                                )
-                                            }
-                                        } else {
-                                            accountUpdateViewModel.updateTransactionWithoutAccountUpdate(
-                                                trans.copy(
-                                                    transFromAccountPending = false,
-                                                    transUpdateTime = df.getCurrentTimeAsString()
-                                                )
-                                            )
-                                            if (asset.accountType!!.keepTotals) {
-                                                accountUpdateViewModel.updateAccountBalance(
-                                                    asset.account.accountBalance - trans.transAmount,
-                                                    asset.account.accountId
-                                                )
-                                            } else if (asset.accountType.tallyOwing) {
-                                                accountUpdateViewModel.updateAccountOwing(
-                                                    asset.account.accountOwing + trans.transAmount,
-                                                    asset.account.accountId
-                                                )
-                                            }
-                                        }
-                                    }
+                                    val updatedTrans = trans.copy(
+                                        transToAccountPending = false,
+                                        transFromAccountPending = false,
+                                        transUpdateTime = df.getCurrentTimeAsString()
+                                    )
+                                    accountUpdateViewModel.updateTransaction(
+                                        trans, updatedTrans
+                                    )
                                 }
                             }
                             .setNegativeButton(activity.getString(R.string.cancel), null).show()

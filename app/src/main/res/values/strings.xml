@@ -31,6 +31,8 @@
     <string name="add_an_unscheduled_transaction">Add an Unscheduled transaction</string>
     <string name="add_budget_rule">Add Budget Rule</string>
     <string name="adjust_the_projections_for_this_item">ADJUST the projections for this item.</string>
+    <string name="all_items_regardless_of_account">All Items Regardless of Account</string>
+    <string name="all_items">All Items</string>
     <string name="allow_transactions_pending">Allow transactions pending</string>
     <string name="amount">Amount</string>
     <string name="analysis">Analysis</string>
@@ -356,6 +358,7 @@
     <string name="would_you_like_to_save_this_budget_rule_and_continue">Would you like to save this Budget Rule and continue?</string>
     <string name="yearly_budget">Yearly Budget</string>
     <string name="yes">Yes</string>
+    <string name="_and_">" and "</string>
     <string name="zero">0</string>
     <string name="zero_digit">0</string>
     <string name="zero_dollars">$0.00</string>

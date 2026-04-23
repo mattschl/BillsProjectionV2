@@ -37,6 +37,8 @@ const val FRAG_BUDGET_LIST = "BudgetList"
 const val FRAG_TRANSACTION_ANALYSIS = "TransactionAnalysis"
 const val FRAG_TRANSACTION_SPLIT = "TransactionSplit"
 
+const val ALL_ITEMS = "All Items"
+
 const val TABLE_SYNC_HISTORY = "syncHistory"
 const val SYNC_ID = "syncId"
 const val SYNC_TIME = "syncTime"
