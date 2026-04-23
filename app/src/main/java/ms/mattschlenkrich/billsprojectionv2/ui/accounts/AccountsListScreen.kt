@@ -1,20 +1,15 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.accounts
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
@@ -204,129 +199,6 @@ fun AccountChooseScreen(
                         }
                     }
                 }
-            }
-        }
-    }
-}
-
-@Composable
-fun AccountChooseItem(
-    accountWithType: AccountWithType,
-    onClick: (AccountWithType) -> Unit,
-    vf: VisualsFunctions
-) {
-    val account = accountWithType.account
-    val isDeleted = account.accIsDeleted
-    val usedInBudget = (accountWithType.usedInBudget ?: 0) > 0
-    val displayInBudget = accountWithType.accountType?.displayAsAsset == true
-
-    val containerColor = if (isDeleted) {
-        MaterialTheme.colorScheme.errorContainer
-    } else {
-        MaterialTheme.colorScheme.surface
-    }
-    val contentColor = if (isDeleted) {
-        MaterialTheme.colorScheme.onErrorContainer
-    } else {
-        MaterialTheme.colorScheme.onSurface
-    }
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick(accountWithType) },
-        colors = CardDefaults.cardColors(
-            containerColor = containerColor,
-            contentColor = contentColor
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(4.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = account.accountName,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.weight(1f),
-                color = if (displayInBudget) Color.Red else Color.Black
-            )
-            Box(
-                modifier = Modifier
-                    .size(10.dp, 8.dp)
-                    .background(Color(vf.getRandomColorInt()))
-            )
-        }
-    }
-}
-
-@Composable
-fun AccountListItem(
-    accountWithType: AccountWithType,
-    onClick: (AccountWithType) -> Unit,
-    getAccountInfoText: (AccountWithType) -> String,
-    showType: Boolean = true,
-    vf: VisualsFunctions
-) {
-    val account = accountWithType.account
-    val isDeleted = account.accIsDeleted
-    val containerColor = if (isDeleted) {
-        MaterialTheme.colorScheme.errorContainer
-    } else {
-        MaterialTheme.colorScheme.surface
-    }
-    val contentColor = if (isDeleted) {
-        MaterialTheme.colorScheme.onErrorContainer
-    } else {
-        MaterialTheme.colorScheme.onSurface
-    }
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick(accountWithType) },
-        colors = CardDefaults.cardColors(
-            containerColor = containerColor,
-            contentColor = contentColor
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = account.accountName,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(1f)
-                )
-                Box(
-                    modifier = Modifier
-                        .size(12.dp)
-                        .background(Color(vf.getRandomColorInt()))
-                )
-            }
-            if (showType) {
-                Text(
-                    text = accountWithType.accountType?.accountType ?: "",
-                    style = MaterialTheme.typography.labelSmall
-                )
-            }
-
-            val info = getAccountInfoText(accountWithType)
-            if (info.isNotEmpty()) {
-                Text(
-                    text = info,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
             }
         }
     }

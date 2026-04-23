@@ -230,6 +230,20 @@ interface TransactionDao {
         updateTime: String
     )
 
+    @Query(
+        "UPDATE $TABLE_ACCOUNTS " +
+                "SET $ACCOUNT_BALANCE = :newBalance, " +
+                "$ACCOUNT_OWING = :newOwing, " +
+                "$ACCOUNT_UPDATE_TIME = :updateTime " +
+                "WHERE $ACCOUNT_ID = :accountId;"
+    )
+    suspend fun updateAccountBalanceAndOwing(
+        newBalance: Double,
+        newOwing: Double,
+        accountId: Long,
+        updateTime: String
+    )
+
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -249,13 +263,13 @@ interface TransactionDao {
                 "fromAccount.$ACCOUNT_ID " +
                 "WHERE $TABLE_TRANSACTION.$TRANS_IS_DELETED = 0 " +
                 "AND (" +
-                "($TABLE_TRANSACTION.$TRANSACTION_TO_ACCOUNT_ID = " +
+                "((:asset = 'All Items' OR $TABLE_TRANSACTION.$TRANSACTION_TO_ACCOUNT_ID = " +
                 "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
-                "WHERE $ACCOUNT_NAME = :asset) " +
+                "WHERE $ACCOUNT_NAME = :asset)) " +
                 "AND $TABLE_TRANSACTION.$TRANSACTION_TO_ACCOUNT_PENDING = 1)" +
-                "OR ($TABLE_TRANSACTION.$TRANSACTION_FROM_ACCOUNT_ID = " +
+                "OR ((:asset = 'All Items' OR $TABLE_TRANSACTION.$TRANSACTION_FROM_ACCOUNT_ID = " +
                 "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
-                "WHERE $ACCOUNT_NAME = :asset) " +
+                "WHERE $ACCOUNT_NAME = :asset)) " +
                 "AND $TABLE_TRANSACTION.$TRANSACTION_FROM_ACCOUNT_PENDING = 1)" +
                 ")" +
                 "ORDER BY $TABLE_TRANSACTION.$TRANSACTION_DATE ASC, " +

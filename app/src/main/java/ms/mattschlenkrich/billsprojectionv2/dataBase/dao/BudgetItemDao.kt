@@ -87,13 +87,14 @@ interface BudgetItemDao {
 
     @Query(
         "SELECT DISTINCT $BI_PAY_DAY FROM $TABLE_BUDGET_ITEMS " +
-                "WHERE ($BI_FROM_ACCOUNT_ID = " +
+                "WHERE (:asset = 'All Items' OR " +
+                "($BI_FROM_ACCOUNT_ID = " +
                 "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
                 "WHERE $ACCOUNT_NAME = :asset) " +
                 "OR $BI_TO_ACCOUNT_ID = " +
                 "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
                 "WHERE $ACCOUNT_NAME = :asset)" +
-                ")" +
+                "))" +
                 "AND $BI_IS_DELETED = 0 " +
                 "AND $BI_IS_COMPLETED = 0 " +
                 "AND $BI_IS_CANCELLED = 0 " +
@@ -158,13 +159,14 @@ interface BudgetItemDao {
                 "AND $BI_IS_CANCELLED = 0 " +
                 "AND $BI_IS_DELETED = 0 " +
                 "AND $BI_IS_COMPLETED = 0 " +
-                "AND ($TABLE_BUDGET_ITEMS.$BI_FROM_ACCOUNT_ID = " +
+                "AND (:asset = 'All Items' OR " +
+                "($TABLE_BUDGET_ITEMS.$BI_FROM_ACCOUNT_ID = " +
                 "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
                 "WHERE $ACCOUNT_NAME = :asset) " +
                 "OR $TABLE_BUDGET_ITEMS.$BI_TO_ACCOUNT_ID = " +
                 "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS  " +
                 "WHERE $ACCOUNT_NAME = :asset) " +
-                " )" +
+                " ))" +
                 "ORDER BY $TABLE_BUDGET_ITEMS.$BI_IS_PAY_DAY_ITEM DESC, " +
                 "$TABLE_BUDGET_ITEMS.$BI_ACTUAL_DATE , " +
                 "$TABLE_BUDGET_ITEMS.$BI_BUDGET_NAME ;"

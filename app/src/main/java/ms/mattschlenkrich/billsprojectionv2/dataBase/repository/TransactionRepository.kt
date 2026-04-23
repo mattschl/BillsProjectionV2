@@ -52,6 +52,12 @@ class TransactionRepository(private val db: BillsDatabase) {
         newOwing, accountId, updateTime
     )
 
+    suspend fun updateAccountBalanceAndOwing(
+        newBalance: Double, newOwing: Double, accountId: Long, updateTime: String
+    ) = db.getTransactionDao().updateAccountBalanceAndOwing(
+        newBalance, newOwing, accountId, updateTime
+    )
+
     fun getPendingTransactionsDetailed(asset: String) =
         db.getTransactionDao().getPendingTransactionsDetailed(asset)
 
