@@ -73,7 +73,11 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                 if (files.isEmpty()) {
                     report.append("No files found.")
                 } else {
-                    files.filter { it.name.startsWith("bills2_") && it.name.endsWith(".db") }
+                    files.filter {
+                        it.name.startsWith("bills2_") && it.name.endsWith(".db") || it.name.endsWith(
+                            "-wal"
+                        ) || it.name.endsWith("-shm")
+                    }
                         .sortedByDescending { it.name }
                         .forEach { file ->
                             report.append("- ${file.name} (${file.size ?: 0} bytes)\n")
