@@ -24,14 +24,16 @@ class MainViewModel(
     private val _requestedAccount = mutableStateOf<String?>("")
     private val _callingFragments = mutableStateOf<String?>("")
     private val _returnTo = mutableStateOf<String?>("")
-    private val _returnToAsset = mutableStateOf<String?>("")
+    private val _returnToAsset = mutableStateOf<String?>(null)
     private val _returnToPayDay = mutableStateOf<String?>(null)
     private val _transferNum = mutableStateOf<Double?>(0.0)
     private val _updatingTransaction = mutableStateOf(false)
 
     fun setReturnToAsset(newAsset: String?) {
-        _returnToAsset.value = newAsset
-        _returnToPayDay.value = null
+        if (_returnToAsset.value != newAsset) {
+            _returnToAsset.value = newAsset
+            _returnToPayDay.value = null
+        }
     }
 
     fun getReturnToAsset(): String? {

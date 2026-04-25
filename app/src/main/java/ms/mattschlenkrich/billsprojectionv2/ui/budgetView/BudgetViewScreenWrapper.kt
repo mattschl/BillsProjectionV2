@@ -4,9 +4,7 @@ import android.app.AlertDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
@@ -50,34 +48,18 @@ fun BudgetViewScreenWrapper(
         else listOf(ALL_ITEMS) + rawAssetList
     }
 
-    var selectedAsset by remember {
-        mutableStateOf(
-            mainViewModel.getReturnToAsset() ?: assetList.firstOrNull() ?: ""
-        )
-    }
+    val selectedAsset = mainViewModel.getReturnToAsset() ?: ""
 
     if (selectedAsset.isEmpty() && assetList.isNotEmpty()) {
-        selectedAsset = assetList.first()
-    }
-
-    if (selectedAsset.isNotEmpty()) {
-        mainViewModel.setReturnToAsset(selectedAsset)
+        mainViewModel.setReturnToAsset(assetList.first())
     }
 
     val payDayList by budgetItemViewModel.getPayDays(selectedAsset)
         .observeAsState(initial = emptyList())
-    var selectedPayDay by remember {
-        mutableStateOf(
-            mainViewModel.getReturnToPayDay() ?: payDayList.firstOrNull() ?: ""
-        )
-    }
+    val selectedPayDay = mainViewModel.getReturnToPayDay() ?: ""
 
     if (selectedPayDay.isEmpty() && payDayList.isNotEmpty()) {
-        selectedPayDay = payDayList.first()
-    }
-
-    if (selectedPayDay.isNotEmpty()) {
-        mainViewModel.setReturnToPayDay(selectedPayDay)
+        mainViewModel.setReturnToPayDay(payDayList.first())
     }
 
     val curAsset by accountViewModel.getAccountDetailed(selectedAsset)
@@ -108,14 +90,11 @@ fun BudgetViewScreenWrapper(
         assetList = assetList,
         selectedAsset = selectedAsset,
         onAssetSelected = {
-            selectedAsset = it
             mainViewModel.setReturnToAsset(it)
-            mainViewModel.setReturnToPayDay(null)
         },
         payDayList = payDayList,
         selectedPayDay = selectedPayDay,
         onPayDaySelected = {
-            selectedPayDay = it
             mainViewModel.setReturnToPayDay(it)
         },
         curAsset = curAsset,
