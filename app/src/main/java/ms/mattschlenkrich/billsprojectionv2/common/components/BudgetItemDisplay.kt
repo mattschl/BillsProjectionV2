@@ -67,7 +67,7 @@ fun BudgetItemDisplay(
     ) {
 
         Text(
-            text = df.getDisplayDate(budgetItem.biProjectedDate),
+            text = df.getDisplayDate(budgetItem.biActualDate),
             modifier = Modifier.weight(1.25f),
             style = MaterialTheme.typography.bodySmall
         )
