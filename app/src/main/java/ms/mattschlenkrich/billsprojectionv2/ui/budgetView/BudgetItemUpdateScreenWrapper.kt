@@ -1,6 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.budgetView
 
-import android.app.AlertDialog
+//import android.app.AlertDialog
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -84,7 +84,7 @@ fun BudgetItemUpdateScreenWrapper(
             biIsCancelled = false,
             biIsDeleted = false,
             biUpdateTime = df.getCurrentTimeAsString(),
-            biLocked = isLockedState.value,
+            biLocked = true,
         )
     }
 
@@ -127,7 +127,7 @@ fun BudgetItemUpdateScreenWrapper(
         }
     }
 
-    fun confirmDeleteBudgetItem() {
+    /*fun confirmDeleteBudgetItem() {
         AlertDialog.Builder(mainActivity).apply {
             setTitle(mainActivity.getString(R.string.delete_budget_item))
             setMessage(mainActivity.getString(R.string.are_you_sure_you_want_to_delete_this_budget_item))
@@ -142,7 +142,7 @@ fun BudgetItemUpdateScreenWrapper(
             }
             setNegativeButton(mainActivity.getString(R.string.cancel), null)
         }.create().show()
-    }
+    }*/
 
     fun chooseBudgetRule() {
         mainViewModel.addCallingFragment(TAG)
