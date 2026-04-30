@@ -81,7 +81,7 @@
     <string name="budgeted">Budgeted </string>
     <string name="budgeted_">"Budgeted: "</string>
     <string name="budgeted_amount">Budgeted Amount</string>
-    <string name="budgeted_lined">---------- Scheduled Expenses ----------</string>
+    <string name="budgeted_expenses">Scheduled Expenses</string>
     <string name="calculate_owing">Calculate Owing</string>
     <string name="calculator">Calculator</string>
     <string name="cancel">Cancel</string>
@@ -234,7 +234,7 @@
     <string name="pay_check">Pay Check</string>
     <string name="pay_day">Pay Day</string>
     <string name="pending">Pending</string>
-    <string name="pending_lined">------- Pending -------</string>
+    <string name="pending_items">Pending Items</string>
     <string name="perform_a_new_transaction_based_on_this_budget_rule">Perform a new Transaction based on this Budget Rule</string>
     <string name="perform_a_transaction">Perform a Transaction</string>
     <string name="perform_a_transaction_on_">Perform a TRANSACTION with a custom amount on </string>

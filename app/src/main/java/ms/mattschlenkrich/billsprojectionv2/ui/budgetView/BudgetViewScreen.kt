@@ -110,12 +110,12 @@ fun BudgetViewScreen(
 
             if (pendingList.isNotEmpty()) {
                 Text(
-                    text = stringResource(R.string.pending_lined) + " " + nf.displayDollars(
+                    text = stringResource(R.string.pending_items) + " " + nf.displayDollars(
                         pendingAmount
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 1.dp),
+                        .padding(vertical = 4.dp),
                     textAlign = TextAlign.Center,
                     color = if (pendingAmount < 0) Color.Red else Color.Black,
                     fontWeight = FontWeight.Bold,
@@ -141,7 +141,7 @@ fun BudgetViewScreen(
 
             if (budgetList.isNotEmpty()) {
                 Text(
-                    text = stringResource(R.string.budgeted_lined),
+                    text = stringResource(R.string.budgeted_expenses),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 1.dp),

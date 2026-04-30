@@ -91,6 +91,7 @@ fun BudgetViewScreenWrapper(
         selectedAsset = selectedAsset,
         onAssetSelected = {
             mainViewModel.setReturnToAsset(it)
+            mainViewModel.setReturnToPayDay(null)
         },
         payDayList = payDayList,
         selectedPayDay = selectedPayDay,
