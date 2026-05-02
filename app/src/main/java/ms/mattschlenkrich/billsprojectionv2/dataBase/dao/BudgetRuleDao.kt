@@ -103,6 +103,7 @@ interface BudgetRuleDao {
             LiveData<List<BudgetRuleDetailed>>
 
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -123,6 +124,7 @@ interface BudgetRuleDao {
     fun searchBudgetRules(query: String?): LiveData<List<BudgetRuleDetailed>>
 
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -142,6 +144,7 @@ interface BudgetRuleDao {
     fun getBudgetRuleDetailed(ruleId: Long): BudgetRuleDetailed?
 
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -161,6 +164,7 @@ interface BudgetRuleDao {
     fun getBudgetRuleFullLive(ruleId: Long): LiveData<BudgetRuleDetailed>
 
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -190,6 +194,7 @@ interface BudgetRuleDao {
             LiveData<List<BudgetRuleDetailed>>
 
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -230,6 +235,7 @@ interface BudgetRuleDao {
             LiveData<List<BudgetRuleComplete>>
 
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -270,6 +276,7 @@ interface BudgetRuleDao {
             LiveData<List<BudgetRuleComplete>>
 
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(

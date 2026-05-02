@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
+import androidx.room.RoomWarnings
 import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_BALANCE
@@ -54,6 +55,7 @@ interface TransactionDao {
     )
     suspend fun deleteTransaction(transId: Long, updateTime: String)
 
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -78,6 +80,7 @@ interface TransactionDao {
     fun getActiveTransactionsDetailed():
             LiveData<List<TransactionDetailed>>
 
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -103,6 +106,7 @@ interface TransactionDao {
     fun getActiveTransactionsDetailed(budgetRuleId: Long):
             LiveData<List<TransactionDetailed>>
 
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -131,6 +135,7 @@ interface TransactionDao {
         budgetRuleId: Long, startDate: String, endDate: String
     ): LiveData<List<TransactionDetailed>>
 
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -159,6 +164,7 @@ interface TransactionDao {
     fun searchActiveTransactionsDetailed(query: String?):
             LiveData<List<TransactionDetailed>>
 
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -181,6 +187,7 @@ interface TransactionDao {
     suspend fun getTransactionDetailed(transId: Long):
             TransactionDetailed
 
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -244,6 +251,7 @@ interface TransactionDao {
         updateTime: String
     )
 
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -385,6 +393,7 @@ interface TransactionDao {
         endDate: String
     ): LiveData<Double>
 
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -411,6 +420,7 @@ interface TransactionDao {
     fun getActiveTransactionByAccount(accountId: Long):
             LiveData<List<TransactionDetailed>>
 
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -480,6 +490,7 @@ interface TransactionDao {
         accountId: Long, startDate: String, endDate: String
     ): LiveData<Double>
 
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -509,6 +520,7 @@ interface TransactionDao {
         query: String?, startDate: String, endDate: String
     ): LiveData<List<TransactionDetailed>>
 
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -601,6 +613,7 @@ interface TransactionDao {
     ):
             LiveData<Double>
 
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
