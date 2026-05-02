@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
+import androidx.room.RoomWarnings
 import androidx.room.Transaction
 import androidx.room.Update
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_ID
@@ -54,7 +55,7 @@ interface AccountDao {
     )
     fun getActiveAccounts(): LiveData<List<Account>>
 
-    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+        @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -96,7 +97,7 @@ interface AccountDao {
     )
     fun searchAccounts(query: String?): LiveData<List<Account>>
 
-    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+        @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -109,6 +110,7 @@ interface AccountDao {
     )
     fun searchAccountsWithType(query: String?): LiveData<List<AccountWithType>>
 
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -128,7 +130,7 @@ interface AccountDao {
     )
     fun searchAccountsWithTypeBudgetFirst(query: String?): LiveData<List<AccountWithType>>
 
-    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+        @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -145,6 +147,7 @@ interface AccountDao {
     )
     fun getAccountsWithType(): LiveData<List<AccountWithType>>
 
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -165,7 +168,7 @@ interface AccountDao {
     )
     fun getAccountsWithTypeBudgetFirst(): LiveData<List<AccountWithType>>
 
-    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+        @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -178,6 +181,7 @@ interface AccountDao {
     )
     suspend fun getAccountWithType(accountId: Long): AccountWithType
 
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -191,6 +195,7 @@ interface AccountDao {
     fun getAccountWithTypeLive(accountId: Long): LiveData<AccountWithType>
 
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -204,6 +209,7 @@ interface AccountDao {
     suspend fun getAccountAndType(accountId: Long): AccountAndType
 
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -219,6 +225,7 @@ interface AccountDao {
     suspend fun getAccountWithType(accountName: String): AccountWithType
 
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -232,6 +239,7 @@ interface AccountDao {
     fun getAccountDetailed(accountId: Long): LiveData<AccountWithType>
 
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(

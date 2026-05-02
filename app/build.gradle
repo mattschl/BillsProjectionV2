@@ -1,6 +1,7 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias libs.plugins.android.application
-    alias libs.plugins.jetbrains.kotlin.android
     alias libs.plugins.jetbrains.kotlin.plugin.compose
     alias libs.plugins.google.devtools.ksp
     id 'kotlin-parcelize'
@@ -53,8 +54,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_21
         targetCompatibility JavaVersion.VERSION_21
     }
-    kotlinOptions {
-        jvmTarget = 21
+    kotlin {
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_21
+        }
     }
     buildFeatures {
         compose = true

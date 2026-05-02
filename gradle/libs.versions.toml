@@ -15,7 +15,6 @@ googleid = "1.2.0"
 jetbrainsKotlinPluginCompose = "2.3.21"
 junit = "4.13.2"
 junitVersion = "1.3.0"
-kotlin = "2.3.21"
 kotlinxCoroutinesAndroid = "1.10.2"
 lifecycle = "2.10.0"
 material = "1.13.0"
@@ -57,5 +56,4 @@ material = { group = "com.google.android.material", name = "material", version.r
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "googleDevtoolsKsp" }
-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 jetbrains-kotlin-plugin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "jetbrainsKotlinPluginCompose" }
