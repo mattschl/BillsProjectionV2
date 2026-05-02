@@ -181,4 +181,8 @@ class DateFunctions {
         val mDate = LocalDate.parse(date).minusMonths(1)
         return getLastOfMonth(mDate.toString())
     }
+
+    fun getOneYearAgo(date: String): String {
+        return LocalDate.parse(date).minusYears(1).toString()
+    }
 }

@@ -39,6 +39,7 @@ fun TransactionHistoryItem(
 ) {
     val vf = remember { VisualsFunctions() }
     val trans = transactionDetailed.transaction ?: return
+    val itemColor = remember(trans.transId) { Color(vf.getRandomColorInt()) }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -51,7 +52,7 @@ fun TransactionHistoryItem(
                 .width(4.dp)
                 .height(32.dp)
                 .background(
-                    Color(vf.getRandomColorInt()),
+                    itemColor,
                     shape = RoundedCornerShape(2.dp)
                 )
         )
