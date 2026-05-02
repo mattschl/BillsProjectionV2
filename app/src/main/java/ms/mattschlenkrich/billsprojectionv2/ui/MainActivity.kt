@@ -115,6 +115,7 @@ class MainActivity : AppCompatActivity() {
     private var isUpdating = mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_BillsProjectionV2)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
@@ -295,8 +296,8 @@ class MainActivity : AppCompatActivity() {
             },
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = colorResource(id = R.color.ic_bills_projection_background),
-                titleContentColor = Color.White,
-                actionIconContentColor = Color.White
+                titleContentColor = Color.Black,
+                actionIconContentColor = Color.Black
             )
         )
     }
