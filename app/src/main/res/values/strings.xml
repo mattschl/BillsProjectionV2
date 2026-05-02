@@ -249,6 +249,7 @@
     <string name="please_enter_an_amount_for_this_transaction">Please enter an amount for this transaction</string>
     <string name="plus">+</string>
     <string name="previous_month">Previous Month</string>
+    <string name="previous_year">Previous Year</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="projected_amount">Projected Amount</string>
     <string name="projected_date">Projected Date</string>

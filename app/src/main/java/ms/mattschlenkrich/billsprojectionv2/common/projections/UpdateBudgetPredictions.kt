@@ -1,7 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.common.projections
 
 import android.database.sqlite.SQLiteConstraintException
-import kotlinx.coroutines.runBlocking
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
@@ -24,27 +23,25 @@ class UpdateBudgetPredictions(
         return true
     }
 
-    fun updatePredictions(stopDate: String) {
-        runBlocking {
-            purgeOldItems()
-            deleteEligibleFutureItems()
-            val budgetRules = budgetRuleViewModel.getBudgetRulesActive()
-            if (budgetRules.isNotEmpty()) {
-                val payDayBudgetRuleList = getBudgetRuleListThatIsPayday(budgetRules)
-                if (payDayBudgetRuleList.isNotEmpty()) {
-                    updatePayDayBudgetItemPredictions(payDayBudgetRuleList, stopDate)
+    suspend fun updatePredictions(stopDate: String) {
+        purgeOldItems()
+        deleteEligibleFutureItems()
+        val budgetRules = budgetRuleViewModel.getBudgetRulesActive()
+        if (budgetRules.isNotEmpty()) {
+            val payDayBudgetRuleList = getBudgetRuleListThatIsPayday(budgetRules)
+            if (payDayBudgetRuleList.isNotEmpty()) {
+                updatePayDayBudgetItemPredictions(payDayBudgetRuleList, stopDate)
+            }
+            val rulesOnPayDay = getBudgetRulesFallingOnPayDay(budgetRules)
+            if (rulesOnPayDay.isNotEmpty()) {
+                val payDays = budgetItemViewModel.getPayDaysActive()
+                if (payDays.isNotEmpty()) {
+                    updateBudgetItemsFallingOnPaydays(rulesOnPayDay, stopDate, payDays)
                 }
-                val rulesOnPayDay = getBudgetRulesFallingOnPayDay(budgetRules)
-                if (rulesOnPayDay.isNotEmpty()) {
-                    val payDays = budgetItemViewModel.getPayDaysActive()
-                    if (payDays.isNotEmpty()) {
-                        updateBudgetItemsFallingOnPaydays(rulesOnPayDay, stopDate, payDays)
-                    }
-                }
-                val rulesOther = getBudgetRulesOther(budgetRules)
-                if (rulesOther.isNotEmpty()) {
-                    updateAllOtherBudgetItems(rulesOther, stopDate)
-                }
+            }
+            val rulesOther = getBudgetRulesOther(budgetRules)
+            if (rulesOther.isNotEmpty()) {
+                updateAllOtherBudgetItems(rulesOther, stopDate)
             }
         }
     }

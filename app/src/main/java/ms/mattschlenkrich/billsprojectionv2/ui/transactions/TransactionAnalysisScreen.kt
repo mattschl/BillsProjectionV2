@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -32,6 +31,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.AnalysisMode
+import ms.mattschlenkrich.billsprojectionv2.common.TimeRange
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextBox
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
@@ -39,19 +40,6 @@ import ms.mattschlenkrich.billsprojectionv2.common.components.TransactionHistory
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
-
-enum class TimeRange {
-    SHOW_ALL,
-    LAST_MONTH,
-    DATE_RANGE
-}
-
-enum class AnalysisMode {
-    BUDGET_RULE,
-    ACCOUNT,
-    SEARCH,
-    NONE
-}
 
 @Composable
 fun TransactionAnalysisScreen(
@@ -91,7 +79,6 @@ fun TransactionAnalysisScreen(
 
     Scaffold(
         modifier = Modifier.imePadding(),
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -253,6 +240,12 @@ fun CriteriaCard(
                     text = stringResource(R.string.previous_month),
                     selected = timeRange == TimeRange.LAST_MONTH,
                     onSelect = { onTimeRangeChange(TimeRange.LAST_MONTH) },
+                    modifier = Modifier.weight(1f)
+                )
+                TimeRangeOption(
+                    text = stringResource(R.string.previous_year),
+                    selected = timeRange == TimeRange.LAST_YEAR,
+                    onSelect = { onTimeRangeChange(TimeRange.LAST_YEAR) },
                     modifier = Modifier.weight(1f)
                 )
                 TimeRangeOption(

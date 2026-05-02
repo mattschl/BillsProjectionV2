@@ -15,7 +15,9 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.AnalysisMode
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
+import ms.mattschlenkrich.billsprojectionv2.common.TimeRange
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
@@ -39,7 +41,7 @@ fun TransactionAnalysisScreenWrapper(
     val df = DateFunctions()
     val coroutineScope = rememberCoroutineScope()
 
-    var timeRange by remember { mutableStateOf(TimeRange.SHOW_ALL) }
+    var timeRange by remember { mutableStateOf(TimeRange.LAST_YEAR) }
     var isSearchEnabled by remember { mutableStateOf(false) }
     var searchQueryInput by remember { mutableStateOf("") }
     var searchQueryActual by remember { mutableStateOf("") }
@@ -58,6 +60,7 @@ fun TransactionAnalysisScreenWrapper(
 
     val effectiveStartDate = when (timeRange) {
         TimeRange.LAST_MONTH -> df.getFirstOfPreviousMonth(df.getCurrentDateAsString())
+        TimeRange.LAST_YEAR -> df.getOneYearAgo(df.getCurrentDateAsString())
         TimeRange.DATE_RANGE -> startDate
         else -> ""
     }

@@ -40,7 +40,9 @@ fun BudgetItemDisplay(
     val df = DateFunctions()
     val vf = VisualsFunctions()
     val budgetItem = budgetItemDetailed.budgetItem!!
-    val color = remember { Color(vf.getRandomColorInt()) }
+    val color = remember(budgetItem.biRuleId, budgetItem.biProjectedDate) {
+        Color(vf.getRandomColorInt())
+    }
 
     Row(
         modifier = Modifier

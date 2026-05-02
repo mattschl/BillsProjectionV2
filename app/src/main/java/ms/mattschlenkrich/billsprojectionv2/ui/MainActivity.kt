@@ -314,9 +314,7 @@ class MainActivity : AppCompatActivity() {
             Triple(R.string.budget_rules, R.drawable.ic_budget_rules, Screen.BudgetRules.route),
         )
 
-        NavigationBar(
-            containerColor = Color.White
-        ) {
+        NavigationBar {
             items.forEach { (labelRes, iconRes, route) ->
                 NavigationBarItem(
                     icon = {
