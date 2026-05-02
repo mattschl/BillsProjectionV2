@@ -254,6 +254,7 @@
     <string name="projected_amount">Projected Amount</string>
     <string name="projected_date">Projected Date</string>
     <string name="query">Query Results</string>
+    <string name="query_drive">Query</string>
     <string name="regular_monthly_budget">Regular Monthly Budget</string>
     <string name="remainder">Remainder </string>
     <string name="rename_account">Rename Account?</string>
@@ -285,6 +286,7 @@
     <string name="surplus_or_deficit">Surplus or Deficit</string>
     <string name="sync">Sync Data</string>
     <string name="connect_to_drive">Connect to Drive</string>
+    <string name="disconnect">Disconnect</string>
     <string name="text_view">Text View</string>
     <string name="the_amount_of_a_split_transaction_must_be_less_than_the_original">The amount of a split transaction must be less than the original!</string>
     <string name="there_is_no_budget_rule">There is no Budget Rule!</string>

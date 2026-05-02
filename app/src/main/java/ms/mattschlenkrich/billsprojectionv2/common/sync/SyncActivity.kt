@@ -75,11 +75,21 @@ class SyncActivity : ComponentActivity() {
                         finish()
                     },
                     onConnect = { signInWithCredentialManager() },
+                    onDisconnect = { disconnectAccount() },
                     onSync = { viewModel.sync(::handleError) },
                     onQuery = { viewModel.queryDriveFiles() }
                 )
             }
         }
+    }
+
+    private fun disconnectAccount() {
+        val settingsManager = SettingsManager(this)
+        val settings = settingsManager.getSettings()
+        settingsManager.saveSettings(settings.copy(driveAccount = null))
+        viewModel.driveServiceHelper = null
+        mCurrentAccount = null
+        Toast.makeText(this, "Disconnected from Google account", Toast.LENGTH_SHORT).show()
     }
 
     private fun handleError(message: String, e: Exception, action: (() -> Unit)) {

@@ -36,6 +36,7 @@ fun SyncScreen(
     viewModel: SyncViewModel,
     onBack: () -> Unit,
     onConnect: () -> Unit,
+    onDisconnect: () -> Unit,
     onSync: () -> Unit,
     onQuery: () -> Unit
 ) {
@@ -89,7 +90,11 @@ fun SyncScreen(
                         Button(
                             onClick = onQuery,
                             modifier = Modifier.weight(1f)
-                        ) { Text("Query") }
+                        ) { Text(stringResource(R.string.query_drive)) }
+                        Button(
+                            onClick = onDisconnect,
+                            modifier = Modifier.weight(1f)
+                        ) { Text(stringResource(R.string.disconnect)) }
                     }
                     Button(
                         onClick = onBack,
