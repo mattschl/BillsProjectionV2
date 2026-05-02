@@ -31,8 +31,8 @@ android {
     defaultConfig {
         applicationId "ms.mattschlenkrich.billsprojectionv2"
         minSdk 28
+        targetSdk 37
         //noinspection EditedTargetSdkVersion
-        targetSdk 36
         versionCode 12
         versionName 'v2.12'
         ksp {
