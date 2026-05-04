@@ -32,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,6 +56,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.projections.UpdateBudgetPredictions
+import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 import ms.mattschlenkrich.billsprojectionv2.common.sync.SyncActivity
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModelFactory
@@ -121,9 +123,16 @@ class MainActivity : AppCompatActivity() {
 
         setupViewModels()
 
+        val settingsManager = SettingsManager(this)
+        val settings = settingsManager.getSettings()
+        val isFirstRun = settings.isFirstRun
+        if (isFirstRun) {
+            settingsManager.saveSettings(settings.copy(isFirstRun = false))
+        }
+
         setContent {
             BillsProjectionTheme {
-                MainScreen()
+                MainScreen(isFirstRun)
             }
         }
     }
@@ -142,10 +151,16 @@ class MainActivity : AppCompatActivity() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun MainScreen() {
+    fun MainScreen(isFirstRun: Boolean) {
         val navController = rememberNavController()
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
+
+        LaunchedEffect(Unit) {
+            if (isFirstRun) {
+                navController.navigate(Screen.Help.route)
+            }
+        }
 
         val syncLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult()

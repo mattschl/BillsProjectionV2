@@ -371,4 +371,5 @@
     <string name="choose_a_date_to_project_bills_to">Choose a date to project bills to.</string>
     <string name="sync_screen">Sync screen</string>
     <string name="done_button">Done</string>
+    <string name="please_see_help_in_the_options_menu_for_fist_time_instructions">Please see Help in the options menu for fist time instructions</string>
 </resources>
