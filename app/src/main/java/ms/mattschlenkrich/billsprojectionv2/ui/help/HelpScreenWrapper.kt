@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import ms.mattschlenkrich.billsprojectionv2.BuildConfig
 import ms.mattschlenkrich.billsprojectionv2.R
 
 @Composable
@@ -32,6 +33,14 @@ fun HelpScreenWrapper() {
             color = Color.Black,
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold
+        )
+
+        Text(
+            text = "Version: ${BuildConfig.VERSION_NAME}. Build ${BuildConfig.VERSION_CODE}",
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            color = Color.Gray,
+            style = MaterialTheme.typography.bodyMedium
         )
 
         HelpSection(
@@ -61,6 +70,10 @@ fun HelpScreenWrapper() {
         HelpSection(
             titleRes = R.string.current_budget_summary,
             contentRes = R.string.instructions_budget_list
+        )
+        HelpSection(
+            titleRes = R.string.sync_screen,
+            contentRes = R.string.sync_help_text
         )
     }
 }

@@ -13,6 +13,8 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import ms.mattschlenkrich.billsprojectionv2.BuildConfig
+import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_ITEMS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_RULES
@@ -37,7 +39,10 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
     var driveServiceHelper by mutableStateOf<DriveServiceHelper?>(null)
     var deviceId by mutableStateOf(0L)
     var progressMessage by mutableStateOf<String?>(null)
-    var docContent by mutableStateOf("")
+    var docContent by mutableStateOf(
+        "Version: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n\n" +
+                application.getString(R.string.sync_help_text)
+    )
 
     private val df = DateFunctions()
     private val nf = NumberFunctions()
