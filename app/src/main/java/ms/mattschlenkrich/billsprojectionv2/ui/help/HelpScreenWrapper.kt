@@ -14,10 +14,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.BuildConfig
 import ms.mattschlenkrich.billsprojectionv2.R
 
+@Preview
 @Composable
 fun HelpScreenWrapper() {
     Column(
@@ -56,12 +58,12 @@ fun HelpScreenWrapper() {
             contentRes = R.string.instructions_transaction_view
         )
         HelpSection(
-            titleRes = R.string.analysis_view_help,
-            contentRes = R.string.instructions_transactions_analysis_view
-        )
-        HelpSection(
             titleRes = R.string.accounts_help,
             contentRes = R.string.instruction_accounts
+        )
+        HelpSection(
+            titleRes = R.string.analysis_view_help,
+            contentRes = R.string.instructions_transactions_analysis_view
         )
         HelpSection(
             titleRes = R.string.budget_rule_help,

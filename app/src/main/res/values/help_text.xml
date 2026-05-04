@@ -45,8 +45,8 @@
         It is important to have a Budget Rule that is a pay day
         to create pay day periods for the budget.\n
         This view will help you to plan where your money will go for each pay period.\n\n
-        They can be edited by long tapping on them.
-        Most items will have a long tap option.\n
+        They can be edited by tapping on them.
+        Many items will have a long tap option.\n
         If you consistently keep track you will see trends that could be changed to
         better use your resources.\n
         Be sure to include annual and occasional expenses so you are not caught by surprise.\n\n
@@ -76,9 +76,9 @@
         Go to the Accounts tab at the bottom and rename, add, edit or delete accordingly.
         Long tap on items to view or edit them.\n\n
     Step 2. Figure out as many recurring transactions that will take place.
-        ie. Groceries, rent, car loan … etc. Especially you want to create pay days!\n
+        i.e. Groceries, rent, car loan … etc. Especially you want to create pay days!\n
         Go to the budget rules and rename, add or delete items accordingly.
-    Log tap on items to view or edit them.\n
+    Tap on items to view or edit them.\n
     TIP: View a summary of what the budget looks like by going to the upper right menu
     and choosing \"View Current Budget Summary\".\n\n
     Step 3. Enter transactions as they come along and after a few months you can see an
@@ -87,7 +87,8 @@
         Tap on any item to make a transaction on that item.
         The Budget View will automatically update as you perform transactions so it is
          preferable that you enter transactions from here.
-     Check what will come out on future paydays. Notice the surpluses or deficits.
+     Check what will come out on future paydays. Notice the surpluses or deficits.\n\n
+        View these instructions again by choosing Help Text in the menu on the upper right side.
 </string>
     <string name="instructions_budget_list">fine tune the current budget
         by going to the options menu on the top right
@@ -96,7 +97,7 @@
         Long tapping an item will allow you some options to adjust the budget.\n\n
     </string>
     <string name="sync_help_text">This allows you to sync your data between 2 or 3 devices.\n\n
-        This can simply be used to backup data. Or to share the current financial situations between
+        This can simply be used to backup data. Or to share the current financial situation between
         members of a household.\n\n
     *Warning* If more than one device is entering transactions, there may be some problems with
         account balances and budgetItems not displaying accurate info.\n\n

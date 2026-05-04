@@ -37,6 +37,11 @@ fun NoBudgetItemsCard() {
             Text(
                 text = stringResource(R.string.instructions_budget_view),
                 style = MaterialTheme.typography.bodyMedium
+
+            )
+            Text(
+                text = stringResource(R.string.please_see_help_in_the_options_menu_for_fist_time_instructions),
+                style = MaterialTheme.typography.bodyMedium
             )
         }
     }
