@@ -122,9 +122,9 @@ fun TransactionAnalysisScreen(
                 )
             }
 
-            if (transactionList.isEmpty()) {
+            if (mode == AnalysisMode.NONE || transactionList.isEmpty()) {
                 item {
-                    HelpCard()
+                    HelpCard(mode = mode)
                 }
             } else {
                 items(

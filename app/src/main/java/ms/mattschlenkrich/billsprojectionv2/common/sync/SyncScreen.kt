@@ -73,33 +73,46 @@ fun SyncScreen(
                     modifier = Modifier.fillMaxHeight(.75f)
                 )
 
-                Row(
+                Column(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    if (viewModel.driveServiceHelper == null) {
-                        Button(
-                            onClick = onConnect,
-                            modifier = Modifier.weight(1f)
-                        ) { Text(stringResource(R.string.connect_to_drive)) }
-                    } else {
-                        Button(
-                            onClick = onSync,
-                            modifier = Modifier.weight(1f)
-                        ) { Text(stringResource(R.string.sync)) }
-                        Button(
-                            onClick = onQuery,
-                            modifier = Modifier.weight(1f)
-                        ) { Text(stringResource(R.string.query_drive)) }
-                        Button(
-                            onClick = onDisconnect,
-                            modifier = Modifier.weight(1f)
-                        ) { Text(stringResource(R.string.disconnect)) }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        if (viewModel.driveServiceHelper == null) {
+                            Button(
+                                onClick = onConnect,
+                                modifier = Modifier.weight(1f)
+                            ) { Text(stringResource(R.string.connect_to_drive)) }
+                        } else {
+                            Button(
+                                onClick = onSync,
+                                modifier = Modifier.weight(1f)
+                            ) { Text(stringResource(R.string.sync)) }
+                            Button(
+                                onClick = onQuery,
+                                modifier = Modifier.weight(1f)
+                            ) { Text(stringResource(R.string.query_drive)) }
+                        }
                     }
-                    Button(
-                        onClick = onBack,
-                        modifier = Modifier.weight(1f)
-                    ) { Text(stringResource(R.string.return_button)) }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        if (viewModel.driveServiceHelper != null) {
+                            Button(
+                                onClick = onDisconnect,
+                                modifier = Modifier.weight(1f)
+                            ) { Text(stringResource(R.string.disconnect)) }
+                        }
+                        Button(
+                            onClick = onBack,
+                            modifier = Modifier.weight(1f)
+                        ) { Text(stringResource(R.string.done_button)) }
+                    }
                 }
             }
 
