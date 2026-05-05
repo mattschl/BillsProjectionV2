@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
@@ -37,7 +38,9 @@ fun TransactionAddScreenWrapper(
     val nf = remember { NumberFunctions() }
     val df = remember { DateFunctions() }
 
-    mainActivity.topMenuBar.title = mainActivity.getString(R.string.add_a_new_transaction)
+    LaunchedEffect(Unit) {
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.add_a_new_transaction)
+    }
 
     var date by remember { mutableStateOf(df.getCurrentDateAsString()) }
     var description by remember { mutableStateOf("") }
@@ -243,6 +246,7 @@ fun TransactionAddScreenWrapper(
             mainViewModel.setTransactionDetailed(getTransactionDetailed())
             navController.navigate(Screen.Calculator.route)
         },
-        isSplitEnabled = fromAccount != null && nf.getDoubleFromDollars(amount) > 2.0
+        isSplitEnabled = fromAccount != null && nf.getDoubleFromDollars(amount) > 2.0,
+        splitButtonText = stringResource(R.string.split)
     )
 }

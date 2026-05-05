@@ -48,7 +48,6 @@ fun TransactionSplitScreenWrapper(
     var note by remember { mutableStateOf("") }
     var amount by remember { mutableStateOf("") }
     var originalAmount by remember { mutableStateOf(0.0) }
-    var remainder by remember { mutableStateOf(0.0) }
 
     var budgetRule by remember { mutableStateOf<BudgetRule?>(null) }
     var toAccount by remember { mutableStateOf<Account?>(null) }
@@ -70,9 +69,6 @@ fun TransactionSplitScreenWrapper(
                 Toast.LENGTH_LONG
             ).show()
             amount = nf.displayDollars(0.0)
-            remainder = original
-        } else {
-            remainder = original - amt
         }
     }
 
@@ -173,7 +169,6 @@ fun TransactionSplitScreenWrapper(
         amount = amount,
         onAmountChange = {
             amount = it
-            updateAmountsDisplay()
         },
         onGotoCalculator = {
             mainViewModel.setTransferNum(nf.getDoubleFromDollars(amount.ifBlank {
@@ -185,7 +180,6 @@ fun TransactionSplitScreenWrapper(
             navController.navigate(Screen.Calculator.route)
         },
         originalAmount = originalAmount,
-        remainder = remainder,
         toAccount = toAccount,
         onChooseToAccount = {
             mainViewModel.addCallingFragment(TAG)
@@ -211,7 +205,6 @@ fun TransactionSplitScreenWrapper(
         note = note,
         onNoteChange = { note = it },
         onSaveClick = {
-            updateAmountsDisplay()
             val amt = nf.getDoubleFromDollars(amount)
             val answer = if (amount.isBlank()) {
                 mainActivity.getString(R.string.please_enter_an_amount_for_this_transaction)
@@ -252,7 +245,7 @@ fun TransactionSplitScreenWrapper(
                             accountUpdateViewModel.performTransaction(mTransaction)
                             val transactionDetailed = mainViewModel.getTransactionDetailed()!!
                             val oldTransaction = transactionDetailed.transaction!!
-                            oldTransaction.transAmount = remainder
+                            oldTransaction.transAmount = originalAmount - amt
                             if (mainViewModel.getUpdatingTransaction()) {
                                 accountUpdateViewModel.updateTransactionWithoutAccountUpdate(
                                     oldTransaction
@@ -279,6 +272,5 @@ fun TransactionSplitScreenWrapper(
                 ).show()
             }
         },
-        nf = nf
     )
 }

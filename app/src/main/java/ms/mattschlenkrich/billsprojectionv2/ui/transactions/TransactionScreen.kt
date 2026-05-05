@@ -24,6 +24,9 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,6 +38,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectBalanceFiel
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextBox
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
+import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
@@ -67,6 +71,8 @@ fun TransactionEditScreen(
     isSplitEnabled: Boolean,
     splitButtonText: String = stringResource(R.string.splitting_transaction)
 ) {
+    val nf = remember { NumberFunctions() }
+
     Scaffold(
         modifier = Modifier.imePadding(),
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -167,7 +173,6 @@ fun TransactionPerformScreen(
     onSplitClick: () -> Unit,
     budgetedAmount: String,
     onBudgetedAmountChange: (String) -> Unit,
-    remainder: Double,
     toAccount: Account?,
     toPending: Boolean,
     onToPendingChange: (Boolean) -> Unit,
@@ -185,8 +190,16 @@ fun TransactionPerformScreen(
     onNoteChange: (String) -> Unit,
     onSaveClick: () -> Unit,
     isSplitEnabled: Boolean,
-    nf: NumberFunctions
 ) {
+    val nf = remember { NumberFunctions() }
+    val df = remember { DateFunctions() }
+
+    val remainder by remember(amount, budgetedAmount) {
+        derivedStateOf {
+            nf.getDoubleFromDollars(budgetedAmount) - nf.getDoubleFromDollars(amount)
+        }
+    }
+
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
@@ -326,7 +339,6 @@ fun TransactionSplitScreen(
     onAmountChange: (String) -> Unit,
     onGotoCalculator: () -> Unit,
     originalAmount: Double,
-    remainder: Double,
     toAccount: Account?,
     onChooseToAccount: () -> Unit,
     toPending: Boolean,
@@ -342,8 +354,16 @@ fun TransactionSplitScreen(
     note: String,
     onNoteChange: (String) -> Unit,
     onSaveClick: () -> Unit,
-    nf: NumberFunctions
 ) {
+    val nf = remember { NumberFunctions() }
+    val df = remember { DateFunctions() }
+
+    val remainder by remember(amount, originalAmount) {
+        derivedStateOf {
+            originalAmount - nf.getDoubleFromDollars(amount)
+        }
+    }
+
     Scaffold(
         modifier = Modifier.imePadding(),
         contentWindowInsets = WindowInsets(0, 0, 0, 0),

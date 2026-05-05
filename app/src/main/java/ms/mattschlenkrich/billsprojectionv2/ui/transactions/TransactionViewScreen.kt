@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -27,12 +28,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.components.TransactionHistoryItem
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 
 @Composable
 fun TransactionViewScreen(
     transactionList: List<TransactionDetailed>,
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
     onAddClick: () -> Unit,
     onTransactionClick: (TransactionDetailed) -> Unit
 ) {
@@ -45,24 +49,40 @@ fun TransactionViewScreen(
             ) {
                 Icon(
                     Icons.Default.Add,
-                    contentDescription = stringResource(R.string.image),
+                    contentDescription = stringResource(R.string.add),
                     tint = Color.White
                 )
             }
         }
     ) { paddingValues ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            if (transactionList.isEmpty()) {
-                EmptyState()
-            } else {
-                TransactionList(
-                    transactions = transactionList,
-                    onTransactionClick = onTransactionClick
-                )
+            ProjectTextField(
+                value = searchQuery,
+                onValueChange = onSearchQueryChange,
+                label = stringResource(R.string.search),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                singleLine = true
+            )
+
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+            ) {
+                if (transactionList.isEmpty()) {
+                    EmptyState()
+                } else {
+                    TransactionList(
+                        transactions = transactionList,
+                        onTransactionClick = onTransactionClick
+                    )
+                }
             }
         }
     }
@@ -106,7 +126,10 @@ private fun TransactionList(
     LazyColumn(
         modifier = Modifier.fillMaxSize()
     ) {
-        items(transactions) { transactionDetailed ->
+        items(
+            transactions,
+            key = { it.transaction?.transId ?: it.hashCode() }
+        ) { transactionDetailed ->
             TransactionHistoryItem(
                 transactionDetailed = transactionDetailed,
                 onClick = onTransactionClick

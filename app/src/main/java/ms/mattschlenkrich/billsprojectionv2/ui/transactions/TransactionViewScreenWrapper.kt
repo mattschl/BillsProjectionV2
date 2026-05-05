@@ -2,11 +2,12 @@ package ms.mattschlenkrich.billsprojectionv2.ui.transactions
 
 import android.app.AlertDialog
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.res.stringResource
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.async
@@ -26,21 +27,24 @@ fun TransactionViewScreenWrapper(
     val transactionViewModel = activity.transactionViewModel
     val accountUpdateViewModel = activity.accountUpdateViewModel
     val budgetRuleViewModel = activity.budgetRuleViewModel
-    val nf = NumberFunctions()
+    val nf = remember { NumberFunctions() }
 
-    activity.topMenuBar.title = stringResource(R.string.view_transaction_history)
+    LaunchedEffect(Unit) {
+        activity.topMenuBar.title = activity.getString(R.string.view_transaction_history)
+    }
 
-    val searchQueryState = remember { mutableStateOf("") }
-    val query by searchQueryState
+    var searchQuery by remember { mutableStateOf("") }
 
-    val transactionList by if (query.isBlank()) {
+    val transactionList by if (searchQuery.isBlank()) {
         transactionViewModel.getActiveTransactionsDetailed()
     } else {
-        transactionViewModel.searchActiveTransactionsDetailed("%$query%")
+        transactionViewModel.searchActiveTransactionsDetailed("%$searchQuery%")
     }.observeAsState(initial = emptyList())
 
     TransactionViewScreen(
         transactionList = transactionList,
+        searchQuery = searchQuery,
+        onSearchQueryChange = { searchQuery = it },
         onAddClick = {
             mainViewModel.addCallingFragment(FRAG_TRANSACTION_VIEW)
             mainViewModel.setTransactionDetailed(null)

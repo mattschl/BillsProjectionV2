@@ -2,6 +2,7 @@ package ms.mattschlenkrich.billsprojectionv2.ui.transactions
 
 import android.app.AlertDialog
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -37,9 +38,13 @@ fun TransactionAnalysisScreenWrapper(
     val budgetRuleViewModel = mainActivity.budgetRuleViewModel
     val accountUpdateViewModel = mainActivity.accountUpdateViewModel
 
-    val nf = NumberFunctions()
-    val df = DateFunctions()
+    val nf = remember { NumberFunctions() }
+    val df = remember { DateFunctions() }
     val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.transaction_analysis)
+    }
 
     var timeRange by remember { mutableStateOf(TimeRange.LAST_YEAR) }
     var isSearchEnabled by remember { mutableStateOf(false) }

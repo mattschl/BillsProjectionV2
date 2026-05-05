@@ -5,7 +5,6 @@ import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -54,13 +53,6 @@ fun TransactionPerformScreenWrapper(
     var fromPending by remember { mutableStateOf(false) }
     var allowToPending by remember { mutableStateOf(false) }
     var allowFromPending by remember { mutableStateOf(false) }
-    var remainder by remember { mutableDoubleStateOf(0.0) }
-
-    fun calculateRemainder() {
-        val amt = nf.getDoubleFromDollars(amount)
-        val budgeted = nf.getDoubleFromDollars(budgetedAmount)
-        remainder = budgeted - amt
-    }
 
     LaunchedEffect(Unit) {
         if (mainViewModel.getTransactionDetailed() != null) {
@@ -133,7 +125,6 @@ fun TransactionPerformScreenWrapper(
                 }
             }
         }
-        calculateRemainder()
     }
 
     fun getCurrentTransactionForSave(): Transactions {
@@ -169,7 +160,6 @@ fun TransactionPerformScreenWrapper(
         amount = amount,
         onAmountChange = {
             amount = it
-            calculateRemainder()
         },
         onSplitClick = {
             mainViewModel.setSplitTransactionDetailed(null)
@@ -184,7 +174,6 @@ fun TransactionPerformScreenWrapper(
         budgetedAmount = budgetedAmount,
         onBudgetedAmountChange = {
             budgetedAmount = it
-            calculateRemainder()
             val amt = nf.getDoubleFromDollars(budgetedAmount)
             mainViewModel.getBudgetItemDetailed()?.let { detailed ->
                 if (amt != detailed.budgetItem?.biProjectedAmount) {
@@ -193,7 +182,6 @@ fun TransactionPerformScreenWrapper(
                 }
             }
         },
-        remainder = remainder,
         toAccount = toAccount,
         toPending = toPending,
         onToPendingChange = { toPending = it },
@@ -224,7 +212,6 @@ fun TransactionPerformScreenWrapper(
         note = note,
         onNoteChange = { note = it },
         onSaveClick = {
-            calculateRemainder()
             val amt = nf.getDoubleFromDollars(amount)
             val answer = if (description.isBlank()) {
                 mainActivity.getString(R.string.please_enter_a_name_or_description)
@@ -254,7 +241,7 @@ fun TransactionPerformScreenWrapper(
                         val mTransaction = getCurrentTransactionForSave()
                         mainActivity.lifecycleScope.launch {
                             accountUpdateViewModel.performTransaction(mTransaction)
-                            val rem = remainder
+                            val rem = nf.getDoubleFromDollars(budgetedAmount) - amt
                             val completed = rem < 2.0
                             val detailed = mainViewModel.getBudgetItemDetailed()
                             if (detailed != null) {
@@ -286,6 +273,5 @@ fun TransactionPerformScreenWrapper(
             }
         },
         isSplitEnabled = nf.getDoubleFromDollars(amount) > 2.0 && fromAccount != null,
-        nf = nf
     )
 }
