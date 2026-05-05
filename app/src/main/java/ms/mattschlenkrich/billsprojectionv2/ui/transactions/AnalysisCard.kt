@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -32,13 +33,19 @@ fun AnalysisCard(
 ) {
     if (mode == AnalysisMode.NONE) return
 
-    var totals = 0.0
-    transactionList.forEach { totals += it.transaction?.transAmount ?: 0.0 }
+    val analysisData = remember(transactionList, effectiveEndDate) {
+        var totalAmount = 0.0
+        transactionList.forEach { totalAmount += it.transaction?.transAmount ?: 0.0 }
 
-    val months = if (transactionList.isNotEmpty()) {
-        val startDateStr = transactionList.last().transaction?.transDate ?: effectiveEndDate
-        df.getMonthsBetween(startDateStr, effectiveEndDate) + 1
-    } else 1
+        val monthsCount = if (transactionList.isNotEmpty()) {
+            val startDateStr = transactionList.last().transaction?.transDate ?: effectiveEndDate
+            df.getMonthsBetween(startDateStr, effectiveEndDate) + 1
+        } else 1
+        Pair(totalAmount, monthsCount)
+    }
+
+    val totals = analysisData.first
+    val months = analysisData.second
 
     Card(
         modifier = Modifier
