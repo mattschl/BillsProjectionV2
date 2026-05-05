@@ -2,6 +2,7 @@ package ms.mattschlenkrich.billsprojectionv2.ui.budgetView
 
 import android.app.AlertDialog
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
@@ -50,16 +51,20 @@ fun BudgetViewScreenWrapper(
 
     val selectedAsset = mainViewModel.getReturnToAsset() ?: ""
 
-    if (selectedAsset.isEmpty() && assetList.isNotEmpty()) {
-        mainViewModel.setReturnToAsset(assetList.first())
+    LaunchedEffect(assetList) {
+        if (selectedAsset.isEmpty() && assetList.isNotEmpty()) {
+            mainViewModel.setReturnToAsset(assetList.first())
+        }
     }
 
     val payDayList by budgetItemViewModel.getPayDays(selectedAsset)
         .observeAsState(initial = emptyList())
     val selectedPayDay = mainViewModel.getReturnToPayDay() ?: ""
 
-    if (selectedPayDay.isEmpty() && payDayList.isNotEmpty()) {
-        mainViewModel.setReturnToPayDay(payDayList.first())
+    LaunchedEffect(payDayList) {
+        if (selectedPayDay.isEmpty() && payDayList.isNotEmpty()) {
+            mainViewModel.setReturnToPayDay(payDayList.first())
+        }
     }
 
     val curAsset by accountViewModel.getAccountDetailed(selectedAsset)
@@ -71,19 +76,22 @@ fun BudgetViewScreenWrapper(
     val budgetList by budgetItemViewModel.getBudgetItems(selectedAsset, selectedPayDay)
         .observeAsState(initial = emptyList())
 
-    var pendingAmount = 0.0
-    pendingList.forEach {
-        if (it.toAccount?.accountName == selectedAsset) {
-            pendingAmount += it.transaction?.transAmount ?: 0.0
-        } else if (it.fromAccount?.accountName == selectedAsset) {
-            pendingAmount -= it.transaction?.transAmount ?: 0.0
-        } else if (selectedAsset == ALL_ITEMS) {
-            if (assetList.contains(it.toAccount?.accountName)) {
-                pendingAmount += it.transaction?.transAmount ?: 0.0
-            } else if (assetList.contains(it.fromAccount?.accountName)) {
-                pendingAmount -= it.transaction?.transAmount ?: 0.0
+    val pendingAmount = remember(pendingList, selectedAsset, assetList) {
+        var amount = 0.0
+        pendingList.forEach {
+            if (it.toAccount?.accountName == selectedAsset) {
+                amount += it.transaction?.transAmount ?: 0.0
+            } else if (it.fromAccount?.accountName == selectedAsset) {
+                amount -= it.transaction?.transAmount ?: 0.0
+            } else if (selectedAsset == ALL_ITEMS) {
+                if (assetList.contains(it.toAccount?.accountName)) {
+                    amount += it.transaction?.transAmount ?: 0.0
+                } else if (assetList.contains(it.fromAccount?.accountName)) {
+                    amount -= it.transaction?.transAmount ?: 0.0
+                }
             }
         }
+        amount
     }
 
     BudgetViewScreen(

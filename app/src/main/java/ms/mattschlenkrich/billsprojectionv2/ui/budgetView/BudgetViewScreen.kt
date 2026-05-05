@@ -68,6 +68,42 @@ fun BudgetViewScreen(
     val nf = NumberFunctions()
     val df = DateFunctions()
 
+    val budgetTotals = remember(budgetList, selectedAsset, assetList) {
+        var credits = 0.0
+        var debits = 0.0
+        var fixedExpenses = 0.0
+        var otherExpenses = 0.0
+
+        budgetList.forEach { details ->
+            val isCredit = if (selectedAsset == ALL_ITEMS) {
+                assetList.contains(details.toAccount?.accountName)
+            } else {
+                details.toAccount?.accountName == selectedAsset
+            }
+
+            if (isCredit) {
+                credits += details.budgetItem!!.biProjectedAmount
+            } else {
+                debits += details.budgetItem!!.biProjectedAmount
+            }
+
+            val isAssetRelated = if (selectedAsset == ALL_ITEMS) {
+                assetList.contains(details.fromAccount?.accountName)
+            } else {
+                details.fromAccount?.accountName == selectedAsset
+            }
+
+            if (isAssetRelated) {
+                if (details.budgetItem!!.biIsFixed) {
+                    fixedExpenses += details.budgetItem!!.biProjectedAmount
+                } else {
+                    otherExpenses += details.budgetItem!!.biProjectedAmount
+                }
+            }
+        }
+        BudgetTotals(credits, debits, fixedExpenses, otherExpenses)
+    }
+
     val configuration = LocalConfiguration.current
     val isTablet = configuration.screenWidthDp >= 600
 
@@ -100,7 +136,7 @@ fun BudgetViewScreen(
                 selectedPayDay = selectedPayDay,
                 onPayDaySelected = onPayDaySelected,
                 curAsset = curAsset,
-                budgetList = budgetList,
+                budgetTotals = budgetTotals,
                 pendingAmount = pendingAmount,
                 onAccountClick = onAccountClick,
                 nf = nf
@@ -124,7 +160,10 @@ fun BudgetViewScreen(
                         .fillMaxWidth()
                         .heightIn(max = if (isTablet) 150.dp else 100.dp)
                 ) {
-                    items(pendingList) { pending ->
+                    items(
+                        pendingList,
+                        key = { it.transaction?.transId ?: it.hashCode() }
+                    ) { pending ->
                         PendingItem(
                             pending = pending,
                             selectedAsset = selectedAsset,
@@ -152,7 +191,10 @@ fun BudgetViewScreen(
                         .fillMaxWidth()
                         .weight(1f)
                 ) {
-                    items(budgetList) { budgetItem ->
+                    items(
+                        budgetList,
+                        key = { "${it.budgetItem?.biRuleId}_${it.budgetItem?.biProjectedDate}" }
+                    ) { budgetItem ->
                         BudgetItemDisplay(
                             budgetItemDetailed = budgetItem,
                             isCredit = if (selectedAsset == ALL_ITEMS) {
@@ -172,6 +214,13 @@ fun BudgetViewScreen(
     }
 }
 
+data class BudgetTotals(
+    val credits: Double,
+    val debits: Double,
+    val fixedExpenses: Double,
+    val otherExpenses: Double
+)
+
 @Composable
 fun SummaryCard(
     assetList: List<String>,
@@ -181,7 +230,7 @@ fun SummaryCard(
     selectedPayDay: String,
     onPayDaySelected: (String) -> Unit,
     curAsset: AccountWithType?,
-    budgetList: List<BudgetItemDetailed>,
+    budgetTotals: BudgetTotals,
     pendingAmount: Double,
     onAccountClick: () -> Unit,
     nf: NumberFunctions,
@@ -251,9 +300,8 @@ fun SummaryCard(
                     SurplusDeficitInfo(
                         asset = asset,
                         payDayList = payDayList,
-                        selectedAsset = selectedAsset,
                         selectedPayDay = selectedPayDay,
-                        budgetList = budgetList,
+                        budgetTotals = budgetTotals,
                         nf = nf
                     )
                 }
@@ -290,9 +338,7 @@ fun SummaryCard(
             )
 
             TotalsSection(
-                budgetList = budgetList,
-                selectedAsset = selectedAsset,
-                assetList = assetList,
+                budgetTotals = budgetTotals,
                 nf = nf
             )
         }
@@ -301,73 +347,40 @@ fun SummaryCard(
 
 @Composable
 fun TotalsSection(
-    budgetList: List<BudgetItemDetailed>,
-    selectedAsset: String,
-    assetList: List<String>,
+    budgetTotals: BudgetTotals,
     nf: NumberFunctions,
 ) {
-    var credits = 0.0
-    var debits = 0.0
-    var fixedExpenses = 0.0
-    var otherExpenses = 0.0
-
-    budgetList.forEach { details ->
-        val isCredit = if (selectedAsset == ALL_ITEMS) {
-            assetList.contains(details.toAccount?.accountName)
-        } else {
-            details.toAccount?.accountName == selectedAsset
-        }
-
-        if (isCredit) {
-            credits += details.budgetItem!!.biProjectedAmount
-        } else {
-            debits += details.budgetItem!!.biProjectedAmount
-        }
-
-        val isAssetRelated = if (selectedAsset == ALL_ITEMS) {
-            assetList.contains(details.fromAccount?.accountName)
-        } else {
-            details.fromAccount?.accountName == selectedAsset
-        }
-
-        if (isAssetRelated) {
-            if (details.budgetItem!!.biIsFixed) {
-                fixedExpenses += details.budgetItem!!.biProjectedAmount
-            } else {
-                otherExpenses += details.budgetItem!!.biProjectedAmount
-            }
-        }
-    }
-
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         Text(
-            text = if (credits > 0.0) stringResource(R.string.credits_) + nf.displayDollars(
-                credits
+            text = if (budgetTotals.credits > 0.0) stringResource(R.string.credits_) + nf.displayDollars(
+                budgetTotals.credits
             ) else stringResource(R.string.no_credits),
-            color = if (credits > 0.0) Color.Black else Color.Gray,
+            color = if (budgetTotals.credits > 0.0) Color.Black else Color.Gray,
             style = MaterialTheme.typography.bodySmall
         )
         Text(
-            text = if (debits > 0.0) stringResource(R.string.debits_) + nf.displayDollars(debits) else stringResource(
+            text = if (budgetTotals.debits > 0.0) stringResource(R.string.debits_) + nf.displayDollars(
+                budgetTotals.debits
+            ) else stringResource(
                 R.string.no_debits
             ),
-            color = if (debits > 0.0) Color.Red else Color.Gray,
+            color = if (budgetTotals.debits > 0.0) Color.Red else Color.Gray,
             style = MaterialTheme.typography.bodySmall
         )
     }
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         Text(
-            text = if (fixedExpenses > 0.0) stringResource(R.string.fixed_expenses) + nf.displayDollars(
-                fixedExpenses
+            text = if (budgetTotals.fixedExpenses > 0.0) stringResource(R.string.fixed_expenses) + nf.displayDollars(
+                budgetTotals.fixedExpenses
             ) else stringResource(R.string.no_fixed_expenses),
-            color = if (fixedExpenses > 0.0) Color.Red else Color.Gray,
+            color = if (budgetTotals.fixedExpenses > 0.0) Color.Red else Color.Gray,
             style = MaterialTheme.typography.bodySmall
         )
         Text(
-            text = if (otherExpenses > 0.0) stringResource(R.string.discretionary_) + nf.displayDollars(
-                otherExpenses
+            text = if (budgetTotals.otherExpenses > 0.0) stringResource(R.string.discretionary_) + nf.displayDollars(
+                budgetTotals.otherExpenses
             ) else stringResource(R.string.no_discretionary_expenses),
-            color = if (otherExpenses > 0.0) Color.Blue else Color.Gray,
+            color = if (budgetTotals.otherExpenses > 0.0) Color.Blue else Color.Gray,
             style = MaterialTheme.typography.bodySmall
         )
     }
@@ -377,22 +390,11 @@ fun TotalsSection(
 fun SurplusDeficitInfo(
     asset: AccountWithType?,
     payDayList: List<String>,
-    selectedAsset: String,
     selectedPayDay: String,
-    budgetList: List<BudgetItemDetailed>,
+    budgetTotals: BudgetTotals,
     nf: NumberFunctions,
 ) {
-    var credits = 0.0
-    var debits = 0.0
-    budgetList.forEach { details ->
-        if (details.toAccount!!.accountName == selectedAsset) {
-            credits += details.budgetItem!!.biProjectedAmount
-        } else {
-            debits += details.budgetItem!!.biProjectedAmount
-        }
-    }
-
-    var surplus = credits - debits
+    var surplus = budgetTotals.credits - budgetTotals.debits
     if (asset != null && payDayList.isNotEmpty() && selectedPayDay == payDayList[0]) {
         if (asset.accountType!!.keepTotals) {
             surplus += asset.account.accountBalance
