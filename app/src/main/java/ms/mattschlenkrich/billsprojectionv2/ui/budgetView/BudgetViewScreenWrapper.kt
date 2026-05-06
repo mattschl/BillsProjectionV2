@@ -61,8 +61,8 @@ fun BudgetViewScreenWrapper(
         .observeAsState(initial = emptyList())
     val selectedPayDay = mainViewModel.getReturnToPayDay() ?: ""
 
-    LaunchedEffect(payDayList) {
-        if (selectedPayDay.isEmpty() && payDayList.isNotEmpty()) {
+    LaunchedEffect(payDayList, selectedAsset) {
+        if (mainViewModel.getReturnToPayDay() == null && payDayList.isNotEmpty()) {
             mainViewModel.setReturnToPayDay(payDayList.first())
         }
     }
@@ -99,7 +99,6 @@ fun BudgetViewScreenWrapper(
         selectedAsset = selectedAsset,
         onAssetSelected = {
             mainViewModel.setReturnToAsset(it)
-            mainViewModel.setReturnToPayDay(null)
         },
         payDayList = payDayList,
         selectedPayDay = selectedPayDay,
