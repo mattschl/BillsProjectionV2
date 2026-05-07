@@ -41,7 +41,9 @@ fun TransactionSplitScreenWrapper(
     val nf = remember { NumberFunctions() }
     val df = remember { DateFunctions() }
 
-    mainActivity.topMenuBar.title = mainActivity.getString(R.string.splitting_transaction)
+    LaunchedEffect(Unit) {
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.splitting_transaction)
+    }
 
     var date by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }

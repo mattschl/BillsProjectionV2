@@ -39,7 +39,9 @@ fun TransactionPerformScreenWrapper(
     val nf = remember { NumberFunctions() }
     val df = remember { DateFunctions() }
 
-    mainActivity.topMenuBar.title = mainActivity.getString(R.string.perform_a_transaction)
+    LaunchedEffect(Unit) {
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.perform_a_transaction)
+    }
 
     var date by remember { mutableStateOf(df.getCurrentDateAsString()) }
     var description by remember { mutableStateOf("") }
@@ -271,6 +273,11 @@ fun TransactionPerformScreenWrapper(
                     Toast.LENGTH_LONG
                 ).show()
             }
+        },
+        onGotoCalculator = {
+            mainViewModel.setTransferNum(nf.getDoubleFromDollars(amount))
+            mainViewModel.setTransactionDetailed(getTransactionDetailed())
+            navController.navigate(Screen.Calculator.route)
         },
         isSplitEnabled = nf.getDoubleFromDollars(amount) > 2.0 && fromAccount != null,
     )
