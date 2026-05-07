@@ -189,6 +189,7 @@ fun TransactionPerformScreen(
     note: String,
     onNoteChange: (String) -> Unit,
     onSaveClick: () -> Unit,
+    onGotoCalculator: () -> Unit,
     isSplitEnabled: Boolean,
 ) {
     val nf = remember { NumberFunctions() }
@@ -250,6 +251,7 @@ fun TransactionPerformScreen(
                 ProjectBalanceField(
                     value = amount,
                     onValueChange = onAmountChange,
+                    onIconClick = onGotoCalculator,
                     modifier = Modifier.weight(1.5f),
                     label = stringResource(R.string.amount)
                 )

@@ -37,9 +37,13 @@ fun TransactionUpdateScreenWrapper(
     val accountViewModel = mainActivity.accountViewModel
     val accountUpdateViewModel = mainActivity.accountUpdateViewModel
 
-    val nf = NumberFunctions()
-    val df = DateFunctions()
+    val nf = remember { NumberFunctions() }
+    val df = remember { DateFunctions() }
     val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.update_this_transaction)
+    }
 
     var date by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
