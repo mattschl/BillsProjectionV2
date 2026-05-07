@@ -38,7 +38,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectBalanceFiel
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextBox
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
-import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
+//import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
@@ -71,7 +71,7 @@ fun TransactionEditScreen(
     isSplitEnabled: Boolean,
     splitButtonText: String = stringResource(R.string.splitting_transaction)
 ) {
-    val nf = remember { NumberFunctions() }
+//    val nf = remember { NumberFunctions() }
 
     Scaffold(
         modifier = Modifier.imePadding(),
@@ -193,7 +193,7 @@ fun TransactionPerformScreen(
     isSplitEnabled: Boolean,
 ) {
     val nf = remember { NumberFunctions() }
-    val df = remember { DateFunctions() }
+//    val df = remember { DateFunctions() }
 
     val remainder by remember(amount, budgetedAmount) {
         derivedStateOf {
@@ -271,10 +271,10 @@ fun TransactionPerformScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(
+                        /*Text(
                             text = stringResource(R.string.budgeted),
                             style = MaterialTheme.typography.labelMedium
-                        )
+                        )*/
                         ProjectBalanceField(
                             value = budgetedAmount,
                             onValueChange = onBudgetedAmountChange,
@@ -358,7 +358,7 @@ fun TransactionSplitScreen(
     onSaveClick: () -> Unit,
 ) {
     val nf = remember { NumberFunctions() }
-    val df = remember { DateFunctions() }
+//    val df = remember { DateFunctions() }
 
     val remainder by remember(amount, originalAmount) {
         derivedStateOf {

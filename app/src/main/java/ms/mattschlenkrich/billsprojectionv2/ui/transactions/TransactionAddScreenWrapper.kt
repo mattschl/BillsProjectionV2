@@ -92,7 +92,7 @@ fun TransactionAddScreenWrapper(
                 toAccountWithType = awt
                 if (trans == null) {
                     toPending = awt.accountType?.allowPending == true &&
-                            awt.accountType?.tallyOwing == true
+                            awt.accountType.tallyOwing == true
                 }
             }
             cached.fromAccount?.let {
@@ -100,7 +100,7 @@ fun TransactionAddScreenWrapper(
                 fromAccountWithType = awt
                 if (trans == null) {
                     fromPending = awt.accountType?.allowPending == true &&
-                            awt.accountType?.tallyOwing == true
+                            awt.accountType.tallyOwing == true
                 }
             }
 
@@ -111,7 +111,7 @@ fun TransactionAddScreenWrapper(
                 toAccountWithType = awt
                 if (trans == null) {
                     toPending = awt.accountType?.allowPending == true &&
-                            awt.accountType?.tallyOwing == true
+                            awt.accountType.tallyOwing == true
                 }
             }
             if (fromAccount == null && rule?.budFromAccountId != 0L && rule != null) {
@@ -121,7 +121,7 @@ fun TransactionAddScreenWrapper(
                 fromAccountWithType = awt
                 if (trans == null) {
                     fromPending = awt.accountType?.allowPending == true &&
-                            awt.accountType?.tallyOwing == true
+                            awt.accountType.tallyOwing == true
                 }
             }
             mainViewModel.setTransferNum(0.0)
