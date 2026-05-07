@@ -38,7 +38,7 @@ fun TransactionSplitScreenWrapper(
     val accountViewModel = mainActivity.accountViewModel
     val budgetRuleViewModel = mainActivity.budgetRuleViewModel
     val accountUpdateViewModel = mainActivity.accountUpdateViewModel
-    val transactionViewModel = mainActivity.transactionViewModel
+//    val transactionViewModel = mainActivity.transactionViewModel
     val nf = remember { NumberFunctions() }
     val df = remember { DateFunctions() }
 
@@ -96,12 +96,13 @@ fun TransactionSplitScreenWrapper(
             note = transaction.transNote
             fromPending = transaction.transFromAccountPending
 
-            if (mainViewModel.getTransferNum() != null && mainViewModel.getTransferNum() != 0.0) {
-                amount = nf.displayDollars(mainViewModel.getTransferNum()!!)
+            amount =
+                if (mainViewModel.getTransferNum() != null && mainViewModel.getTransferNum() != 0.0) {
+                    nf.displayDollars(mainViewModel.getTransferNum()!!)
             } else if (transaction.transAmount != 0.0) {
-                amount = nf.displayDollars(transaction.transAmount)
+                    nf.displayDollars(transaction.transAmount)
             } else {
-                amount = nf.displayDollars(0.0)
+                    nf.displayDollars(0.0)
             }
             updateAmountsDisplay()
 
@@ -126,7 +127,7 @@ fun TransactionSplitScreenWrapper(
                             accountViewModel.getAccountWithType(toAccount!!.accountId)
                         toAccountWithType = accountWithType
                         if (accountWithType.accountType!!.allowPending) {
-                            toPending = splitDetailed.transaction!!.transToAccountPending
+                            toPending = splitDetailed.transaction.transToAccountPending
                         }
                     }
                 }
