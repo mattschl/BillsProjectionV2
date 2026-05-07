@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -58,7 +59,7 @@ fun TransactionUpdateScreenWrapper(
     var toAccountWithType by remember { mutableStateOf<AccountWithType?>(null) }
     var fromAccountWithType by remember { mutableStateOf<AccountWithType?>(null) }
 
-    var transactionId by remember { mutableStateOf(0L) }
+    var transactionId by remember { mutableLongStateOf(0L) }
 
     fun getCurrentTransactionForSave(): Transactions {
         return Transactions(
