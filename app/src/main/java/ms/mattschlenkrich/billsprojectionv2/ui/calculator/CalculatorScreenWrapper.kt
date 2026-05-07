@@ -79,7 +79,7 @@ fun CalculatorScreenWrapper(
         when {
             digit == "0" && number != "0" -> number += "0"
             number == "0" -> number = digit
-            digit != "0" && digit != "." && digit != "-" -> number += digit
+            digit != "." && digit != "-" -> number += digit
             digit == "." && !number.contains(".") -> number += "."
             digit == "-" -> prefix = if (prefix == "-") "" else "-"
         }
@@ -134,7 +134,7 @@ fun CalculatorScreenWrapper(
     }
 
     fun performBackspace() {
-        var prefix = if (displayValue.contains("-")) "-" else ""
+        val prefix = if (displayValue.contains("-")) "-" else ""
         var num = displayValue.replace("-", "")
         num = if (num.length > 1) {
             num.substring(0, num.length - 1)

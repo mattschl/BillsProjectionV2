@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -49,7 +50,7 @@ fun TransactionSplitScreenWrapper(
     var description by remember { mutableStateOf("") }
     var note by remember { mutableStateOf("") }
     var amount by remember { mutableStateOf("") }
-    var originalAmount by remember { mutableStateOf(0.0) }
+    var originalAmount by remember { mutableDoubleStateOf(0.0) }
 
     var budgetRule by remember { mutableStateOf<BudgetRule?>(null) }
     var toAccount by remember { mutableStateOf<Account?>(null) }
@@ -109,7 +110,7 @@ fun TransactionSplitScreenWrapper(
                 val accountWithType = accountViewModel.getAccountWithType(toAccount!!.accountId)
                 toAccountWithType = accountWithType
                 if (accountWithType.accountType!!.allowPending) {
-                    toPending = splitDetailed.transaction!!.transToAccountPending
+                    toPending = splitDetailed.transaction.transToAccountPending
                 }
             }
             if (splitDetailed.budgetRule != null) {
