@@ -34,7 +34,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -105,8 +106,9 @@ fun BudgetViewScreen(
         BudgetTotals(credits, debits, fixedExpenses, otherExpenses)
     }
 
-    val configuration = LocalConfiguration.current
-    val isTablet = configuration.screenWidthDp >= 600
+    val windowInfo = LocalWindowInfo.current
+    val density = LocalDensity.current
+    val isTablet = with(density) { windowInfo.containerSize.width.toDp() >= 600.dp }
 
     Scaffold(
         modifier = Modifier.imePadding(),
@@ -277,7 +279,7 @@ fun SummaryCard(
                         stringResource(R.string.credit_of)
                     }
 
-                    val amount = if (asset.accountType!!.keepTotals) {
+                    val amount = if (asset.accountType.keepTotals) {
                         asset.account.accountBalance
                     } else if (asset.account.accountOwing >= 0.0) {
                         asset.account.accountOwing
@@ -295,7 +297,7 @@ fun SummaryCard(
                         text = nf.displayDollars(amount),
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.bodyLarge,
-                        color = if (!asset.accountType!!.keepTotals && asset.account.accountOwing >= 0.0) Color.Red else Color.Black,
+                        color = if (!asset.accountType.keepTotals && asset.account.accountOwing >= 0.0) Color.Red else Color.Black,
                         modifier = Modifier.clickable { onAccountClick() }
                     )
 

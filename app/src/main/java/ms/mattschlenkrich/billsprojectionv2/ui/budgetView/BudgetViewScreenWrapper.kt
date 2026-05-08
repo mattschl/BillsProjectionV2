@@ -27,7 +27,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transact
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 
-private const val TAG = "BudgetViewScreenWrapper"
+//private const val TAG = "BudgetViewScreenWrapper"
 
 @Composable
 fun BudgetViewScreenWrapper(
