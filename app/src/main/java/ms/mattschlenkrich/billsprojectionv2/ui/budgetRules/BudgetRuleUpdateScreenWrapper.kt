@@ -23,6 +23,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -75,11 +77,11 @@ fun BudgetRuleUpdateScreenWrapper(
     var isAutoState by remember { mutableStateOf(false) }
     var startDateState by remember { mutableStateOf("") }
     var endDateState by remember { mutableStateOf("") }
-    var frequencyTypeState by remember { mutableStateOf(0) }
+    var frequencyTypeState by remember { mutableIntStateOf(0) }
     var frequencyCountState by remember { mutableStateOf("1") }
-    var dayOfWeekState by remember { mutableStateOf(0) }
+    var dayOfWeekState by remember { mutableIntStateOf(0) }
     var leadDaysState by remember { mutableStateOf("0") }
-    var ruleIdState by remember { mutableStateOf(0L) }
+    var ruleIdState by remember { mutableLongStateOf(0L) }
 
     var budgetNameList by remember { mutableStateOf<List<String>?>(null) }
 
