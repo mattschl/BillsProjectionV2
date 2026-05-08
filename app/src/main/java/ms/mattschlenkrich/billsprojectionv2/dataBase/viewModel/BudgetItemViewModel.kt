@@ -17,10 +17,10 @@ class BudgetItemViewModel(
     suspend fun insertOrReplaceBudgetItemSync(budgetItem: BudgetItem) =
         budgetItemRepository.insertOrReplaceBudgetItem(budgetItem)
 
-    suspend fun updateBudgetItemSync(budgetItem: BudgetItem) =
-        budgetItemRepository.updateBudgetItem(budgetItem)
+    /*suspend fun updateBudgetItemSync(budgetItem: BudgetItem) =
+        budgetItemRepository.updateBudgetItem(budgetItem)*/
 
-    suspend fun rewriteBudgetItemSync(
+    /*suspend fun rewriteBudgetItemSync(
         budgetRuleId: Long, projectedDate: String, actualDate: String, payDay: String,
         budgetName: String, isPayDay: Boolean, toAccountId: Long, fromAccountId: Long,
         projectedAmount: Double, isFixed: Boolean, isAutomatic: Boolean, updateTime: String
@@ -28,36 +28,36 @@ class BudgetItemViewModel(
         budgetItemRepository.rewriteBudgetItem(
             budgetRuleId, projectedDate, actualDate, payDay, budgetName, isPayDay, toAccountId,
             fromAccountId, projectedAmount, isFixed, isAutomatic, updateTime
-        )
+        )*/
 
-    suspend fun purgeOldBudgetItemsSync(cutoffDate: String) =
-        budgetItemRepository.purgeOldBudgetItems(cutoffDate)
+    /*  suspend fun purgeOldBudgetItemsSync(cutoffDate: String) =
+          budgetItemRepository.purgeOldBudgetItems(cutoffDate)*/
 
-    suspend fun deleteFutureBudgetItemsSync(currentDate: String, updateTime: String) =
-        budgetItemRepository.deleteFutureBudgetItems(currentDate, updateTime)
+    /* suspend fun deleteFutureBudgetItemsSync(currentDate: String, updateTime: String) =
+         budgetItemRepository.deleteFutureBudgetItems(currentDate, updateTime)*/
 
-    suspend fun killFutureBudgetItemsSync(currentDate: String, updateTime: String) =
-        budgetItemRepository.killFutureBudgetItems(currentDate, updateTime)
+    /* suspend fun killFutureBudgetItemsSync(currentDate: String, updateTime: String) =
+         budgetItemRepository.killFutureBudgetItems(currentDate, updateTime)*/
 
     fun insertBudgetItem(budgetItem: BudgetItem) = viewModelScope.launch {
         budgetItemRepository.insertBudgetItem(budgetItem)
     }
 
-    fun insertOrReplaceBudgetItem(budgetItem: BudgetItem) = viewModelScope.launch {
+    /*fun insertOrReplaceBudgetItem(budgetItem: BudgetItem) = viewModelScope.launch {
         budgetItemRepository.insertOrReplaceBudgetItem(budgetItem)
-    }
+    }*/
 
     fun updateBudgetItem(budgetItem: BudgetItem) = viewModelScope.launch {
         budgetItemRepository.updateBudgetItem(budgetItem)
     }
 
-    fun deleteBudgetItem(
-        budgetRulId: Long, projectedDate: String, updateTime: String
-    ) = viewModelScope.launch {
-        budgetItemRepository.deleteBudgetItem(
-            budgetRulId, projectedDate, updateTime
-        )
-    }
+    /* fun deleteBudgetItem(
+         budgetRulId: Long, projectedDate: String, updateTime: String
+     ) = viewModelScope.launch {
+         budgetItemRepository.deleteBudgetItem(
+             budgetRulId, projectedDate, updateTime
+         )
+     }*/
 
     fun killFutureBudgetItems(currentDate: String, updateTime: String) =
         viewModelScope.launch {

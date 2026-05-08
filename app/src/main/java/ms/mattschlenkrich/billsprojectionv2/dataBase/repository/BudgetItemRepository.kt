@@ -14,11 +14,11 @@ class BudgetItemRepository(private val db: BillsDatabase) {
     suspend fun insertOrReplaceBudgetItem(budgetItem: BudgetItem) =
         db.getBudgetItemDao().insertOrReplaceBudgetItem(budgetItem)
 
-    suspend fun deleteBudgetItem(
+    /*suspend fun deleteBudgetItem(
         budgetRulId: Long, projectedDate: String, updateTime: String
     ) = db.getBudgetItemDao().deleteBudgetItem(
         budgetRulId, projectedDate, updateTime
-    )
+    )*/
 
     suspend fun killFutureBudgetItems(currentDate: String, updateTime: String) =
         db.getBudgetItemDao().killFutureBudgetItems(currentDate, updateTime)

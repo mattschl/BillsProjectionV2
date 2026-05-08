@@ -53,10 +53,10 @@ class AccountViewModel(
             accountRepository.updateAccountType(accountType)
         }
 
-    fun deleteAccountType(accountTypeId: Long, updateTime: String) =
-        viewModelScope.launch {
-            accountRepository.deleteAccountType(accountTypeId, updateTime)
-        }
+    /* fun deleteAccountType(accountTypeId: Long, updateTime: String) =
+         viewModelScope.launch {
+             accountRepository.deleteAccountType(accountTypeId, updateTime)
+         }*/
 
     fun getActiveAccountTypes() =
         accountRepository.getActiveAccountTypes()

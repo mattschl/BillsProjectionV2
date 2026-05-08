@@ -4,6 +4,7 @@ import android.app.Application
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
@@ -37,7 +38,7 @@ private const val TAG = "SyncViewModel"
 class SyncViewModel(application: Application) : AndroidViewModel(application) {
 
     var driveServiceHelper by mutableStateOf<DriveServiceHelper?>(null)
-    var deviceId by mutableStateOf(0L)
+    var deviceId by mutableLongStateOf(0L)
     var progressMessage by mutableStateOf<String?>(null)
     var docContent by mutableStateOf(
         "Version: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n\n" +

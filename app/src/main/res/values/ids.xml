@@ -1,19 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="navigation_budget_view" type="id" />
-    <item name="navigation_accounts" type="id" />
-    <item name="navigation_transactions" type="id" />
-    <item name="navigation_budget_rules" type="id" />
-    <item name="navigation_analysis" type="id" />
-    <item name="action_sync" type="id" />
-    <item name="action_search" type="id" />
-    <item name="action_delete" type="id" />
-    <item name="action_save" type="id" />
     <item name="action_update_predictions" type="id" />
     <item name="action_view_summary" type="id" />
     <item name="action_delete_predictions" type="id" />
     <item name="action_settings" type="id" />
     <item name="action_help" type="id" />
     <item name="action_privacy_policy" type="id" />
-    <item name="action_version" type="id" />
 </resources>

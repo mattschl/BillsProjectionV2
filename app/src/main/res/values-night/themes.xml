@@ -27,39 +27,4 @@
         <item name="android:windowBackground">@color/ic_bills_projection_background</item>
     </style>
 
-    <style name="Theme.BillsProjectionV2.Small" parent="Theme.BillsProjectionV2">
-        <item name="text_info_size">@dimen/font_size_small</item>
-        <item name="text_heading_size">@dimen/font_size_heading_small</item>
-        <item name="text_size_normal">@dimen/font_size_normal_small</item>
-        <item name="text_size_title">@dimen/font_size_title_small</item>
-        <item name="title_text_size">@dimen/font_size_title_small</item>
-        <item name="text_size_calc">@dimen/font_size_calc_small</item>
-    </style>
-
-    <style name="Theme.BillsProjectionV2.Medium" parent="Theme.BillsProjectionV2">
-        <item name="text_info_size">@dimen/font_size_medium</item>
-        <item name="text_heading_size">@dimen/font_size_heading_medium</item>
-        <item name="text_size_normal">@dimen/font_size_normal_medium</item>
-        <item name="text_size_title">@dimen/font_size_title_medium</item>
-        <item name="title_text_size">@dimen/font_size_title_medium</item>
-        <item name="text_size_calc">@dimen/font_size_calc_medium</item>
-    </style>
-
-    <style name="Theme.BillsProjectionV2.Large" parent="Theme.BillsProjectionV2">
-        <item name="text_info_size">@dimen/font_size_large</item>
-        <item name="text_heading_size">@dimen/font_size_heading_large</item>
-        <item name="text_size_normal">@dimen/font_size_normal_large</item>
-        <item name="text_size_title">@dimen/font_size_title_large</item>
-        <item name="title_text_size">@dimen/font_size_title_large</item>
-        <item name="text_size_calc">@dimen/font_size_calc_large</item>
-    </style>
-
-    <style name="Theme.BillsProjectionV2.ExtraLarge" parent="Theme.BillsProjectionV2">
-        <item name="text_info_size">@dimen/font_size_small_xl</item>
-        <item name="text_heading_size">@dimen/font_size_heading_xl</item>
-        <item name="text_size_normal">@dimen/font_size_normal_xl</item>
-        <item name="text_size_title">@dimen/font_size_title_xl</item>
-        <item name="title_text_size">@dimen/font_size_title_xl</item>
-        <item name="text_size_calc">@dimen/font_size_calc_xl</item>
-    </style>
 </resources>

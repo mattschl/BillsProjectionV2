@@ -1,7 +1,7 @@
 <resources>
     <string name="instruction_accounts">
         Use the \"Accounts\" tab to work with accounts.\n\n
-        Add an account by tapping the \"+\" (or add) button on the bottom of the screen.
+        Add an account by tapping the \"+\" (or add) button at the bottom of the screen.
         Long tap on an existing account to edit or delete it.\n\n
         Type in the account name (these must be unique) and if desired an account number
          or identifier.\n\n
@@ -12,7 +12,7 @@
     </string>
     <string name="instructions_budget_rules">
         Use the \"Budget Rules\" tab to work with Budget Rules.\n\n
-        Add a Budget Rule by tapping the \"+\" (or add) button on the bottom of the screen.
+        Add a Budget Rule by tapping the \"+\" (or add) button at the bottom of the screen.
         Long tap on an existing Budget Rule to edit or delete it.\n\n
         Type in the Budget Rule name. (must be unique)\n\n
         Tap to add a \"to\" account and a \"from\" account.
@@ -97,7 +97,7 @@
         Long tapping an item will allow you some options to adjust the budget.\n\n
     </string>
     <string name="sync_help_text">This allows you to sync your data between 2 or 3 devices.\n\n
-        This can simply be used to backup data. Or to share the current financial situation between
+        This can simply be used to back up and restore data. Or to share the current financial situation between
         members of a household.\n\n
     *Warning* If more than one device is entering transactions, there may be some problems with
         account balances and budgetItems not displaying accurate info.\n\n

@@ -45,7 +45,7 @@ fun AccountUpdateScreenWrapper(
     val budgetRuleViewModel = mainActivity.budgetRuleViewModel
     val nf = remember { NumberFunctions() }
     val df = remember { DateFunctions() }
-    val vf = remember { VisualsFunctions() }
+    remember { VisualsFunctions() }
 
     mainActivity.topMenuBar.title = mainActivity.getString(R.string.update_account)
 

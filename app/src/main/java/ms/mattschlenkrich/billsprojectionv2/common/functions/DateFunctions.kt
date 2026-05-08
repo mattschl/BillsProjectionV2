@@ -14,7 +14,7 @@ import java.util.TimeZone
 
 //private const val TAG = "DateFunctions"
 
-@Suppress("unused")
+@Suppress("unused", "SpellCheckingInspection")
 class DateFunctions {
     private val utcTimeZone = TimeZone.getTimeZone("UTC")
     private val dateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA).apply {
