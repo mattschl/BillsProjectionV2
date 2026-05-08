@@ -268,7 +268,7 @@ fun BudgetListItem(
         } else nf.displayDollars(if (showFullDetails) budgetRule.budgetAmount else amt)
 
     val textColor =
-        if (fromAccount.accountType!!.isAsset || fromAccount.accountType!!.displayAsAsset) Color.Red else Color.Black
+        if (fromAccount.accountType!!.isAsset || fromAccount.accountType.displayAsAsset) Color.Red else Color.Black
 
     Column(
         modifier = Modifier
