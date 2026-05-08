@@ -386,7 +386,6 @@ fun AccountUpdateScreenWrapper(
             }
         },
         nf = nf,
-        df = df,
-        vf = vf
+        df = df
     )
 }

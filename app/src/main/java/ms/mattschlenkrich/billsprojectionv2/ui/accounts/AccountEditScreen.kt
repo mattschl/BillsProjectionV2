@@ -35,7 +35,6 @@ import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.components.TransactionHistoryItem
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 
@@ -64,8 +63,7 @@ fun AccountEditScreen(
     onHistoryItemClick: (TransactionDetailed) -> Unit = {},
     onSaveClick: (() -> Unit)? = null,
     nf: NumberFunctions = NumberFunctions(),
-    df: DateFunctions = DateFunctions(),
-    vf: VisualsFunctions = VisualsFunctions()
+    df: DateFunctions = DateFunctions()
 ) {
     Scaffold(
         modifier = Modifier.imePadding(),

@@ -98,12 +98,10 @@ private fun populateTransactionDetailed(mainActivity: MainActivity, curAccount: 
     val isToAccount = mainViewModel.getRequestedAccount() == REQUEST_TO_ACCOUNT
     val isFromAccount = mainViewModel.getRequestedAccount() == REQUEST_FROM_ACCOUNT
 
-    val accountType = curAccount.accountType
+    val accountType = curAccount.accountType!!
     val updatedTransaction = tempTrans.transaction?.copy(
-        transToAccountPending = (accountType?.allowPending ?: false) && (accountType?.tallyOwing
-            ?: false) && isToAccount,
-        transFromAccountPending = (accountType?.allowPending
-            ?: false) && (accountType?.tallyOwing ?: false) && isFromAccount
+        transToAccountPending = (accountType.allowPending || accountType.tallyOwing) && !isToAccount,
+        transFromAccountPending = (accountType.allowPending || accountType.tallyOwing) && isFromAccount
     )
 
     val transactionDetailed = tempTrans.copy(
