@@ -13,6 +13,7 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.remember
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.NoCredentialException
 import androidx.lifecycle.lifecycleScope
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -137,7 +138,10 @@ class SyncActivity : ComponentActivity() {
                 initializeDriveService(googleIdTokenCredential.id)
             } catch (e: Exception) {
                 Log.e(TAG, "Sign-in error", e)
+            } catch (noCred: NoCredentialException) {
+                Log.e(TAG, "No credentials ", noCred)
             }
+
         }
     }
 

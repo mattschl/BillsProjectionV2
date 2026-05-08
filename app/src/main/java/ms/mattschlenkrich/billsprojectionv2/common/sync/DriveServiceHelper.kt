@@ -72,7 +72,7 @@ class DriveServiceHelper(private val mDriveService: Drive) {
     /**
      * Deletes a file from Google Drive.
      */
-    suspend fun deleteFile(fileId: String) = withContext(Dispatchers.IO) {
+    suspend fun deleteFile(fileId: String): Void? = withContext(Dispatchers.IO) {
         mDriveService.files().delete(fileId).execute()
     }
 

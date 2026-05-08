@@ -54,11 +54,11 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
             }
 
             INTERVAL_ON_PAY_DAY -> {
-                return ArrayList<LocalDate>()
+                return ArrayList()
             }
 
             INTERVAL_SPECIAL -> {
-                return ArrayList<LocalDate>()
+                return ArrayList()
             }
 
             INTERVAL_ONE_TIME -> {
@@ -68,7 +68,7 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
             }
 
             else -> {
-                return ArrayList<LocalDate>()
+                return ArrayList()
             }
         }
     }

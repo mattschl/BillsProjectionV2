@@ -1,60 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="top_margin_medium">12sp</dimen>
-    <dimen name="top_big_margin">24sp</dimen>
-    <dimen name="view_spacer">96dp</dimen>
-    <dimen name="padding_start_end">24dp</dimen>
-    <dimen name="text_info_size">22sp</dimen>
-    <dimen name="text_heading_size">26sp</dimen>
-    <dimen name="title_text_size">28sp</dimen>
-    <dimen name="margin_large">54dp</dimen>
-    <dimen name="text_box_width">225dp</dimen>
-    <dimen name="text_box_wide">300dp</dimen>
-    <dimen name="text_target_size">75dp</dimen>
-    <dimen name="touch_size">75dp</dimen>
-    <dimen name="margin_medium">30dp</dimen>
-    <dimen name="recycler_height_small">180dp</dimen>
-    <dimen name="top_margin">6dp</dimen>
-    <dimen name="text_size_title">28sp</dimen>
-    <dimen name="text_size_calc">36sp</dimen>
-    <dimen name="text_size_normal">20sp</dimen>
-    <dimen name="normal_margin">15dp</dimen>
-    <dimen name="Large_margin">36dp</dimen>
-    <dimen name="nav_header_vertical_spacing">12dp</dimen>
-    <dimen name="text_box_narrow">150dp</dimen>
-    <dimen name="margin_small">15dp</dimen>
-    <dimen name="margin_standard">12dp</dimen>
-    <dimen name="margin_medium_large">24dp</dimen>
-    <dimen name="margin_xlarge">48dp</dimen>
-    <dimen name="padding_huge">75dp</dimen>
-    <dimen name="dimen_1dp">2dp</dimen>
-    <dimen name="dimen_5dp">8dp</dimen>
-    <dimen name="dimen_10dp">15dp</dimen>
-    <dimen name="font_size_small">14sp</dimen>
     <dimen name="font_size_medium">18sp</dimen>
-    <dimen name="font_size_large">22sp</dimen>
 
-    <dimen name="font_size_heading_small">18sp</dimen>
     <dimen name="font_size_heading_medium">22sp</dimen>
-    <dimen name="font_size_heading_large">26sp</dimen>
 
-    <dimen name="font_size_normal_small">12sp</dimen>
     <dimen name="font_size_normal_medium">16sp</dimen>
-    <dimen name="font_size_normal_large">20sp</dimen>
 
-    <dimen name="font_size_title_small">18sp</dimen>
     <dimen name="font_size_title_medium">24sp</dimen>
-    <dimen name="font_size_title_large">30sp</dimen>
 
-    <dimen name="font_size_calc_small">24sp</dimen>
     <dimen name="font_size_calc_medium">30sp</dimen>
-    <dimen name="font_size_calc_large">36sp</dimen>
 
-    <dimen name="font_size_small_xl">22sp</dimen>
-    <dimen name="font_size_medium_xl">26sp</dimen>
-    <dimen name="font_size_large_xl">30sp</dimen>
-    <dimen name="font_size_heading_xl">34sp</dimen>
-    <dimen name="font_size_normal_xl">25sp</dimen>
-    <dimen name="font_size_title_xl">40sp</dimen>
-    <dimen name="font_size_calc_xl">48sp</dimen>
 </resources>

@@ -1,12 +1,14 @@
 package ms.mattschlenkrich.billsprojectionv2.common.projections
 
 import android.database.sqlite.SQLiteConstraintException
+import android.util.Log
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import java.time.LocalDate
 
+private const val TAG = "UpdateBudgetPredictions"
 class UpdateBudgetPredictions(
     mainActivity: MainActivity,
 ) {
@@ -16,10 +18,15 @@ class UpdateBudgetPredictions(
     private val projectBudgetDates = ProjectBudgetDates(mainActivity)
 
     fun killPredictions(): Boolean {
-        val startDate = LocalDate.now().minusWeeks(2).toString()
-        budgetItemViewModel.killFutureBudgetItems(
-            startDate, df.getCurrentTimeAsString()
-        )
+        try {
+            val startDate = LocalDate.now().minusWeeks(2).toString()
+            budgetItemViewModel.killFutureBudgetItems(
+                startDate, df.getCurrentTimeAsString()
+            )
+        } catch (e: Exception) {
+            Log.e(TAG, "An unknown error occurred", e)
+            return false
+        }
         return true
     }
 
@@ -187,16 +194,26 @@ class UpdateBudgetPredictions(
         }
     }
 
-    private suspend fun deleteEligibleFutureItems(): Boolean {
-        budgetItemViewModel.deleteFutureBudgetItems(
-            df.getCurrentDateAsString(), df.getCurrentTimeAsString()
-        )
+    private fun deleteEligibleFutureItems(): Boolean {
+        try {
+            budgetItemViewModel.deleteFutureBudgetItems(
+                df.getCurrentDateAsString(), df.getCurrentTimeAsString()
+            )
+        } catch (e: Exception) {
+            Log.e(TAG, "An unknown error occurred", e)
+            return false
+        }
         return true
     }
 
-    private suspend fun purgeOldItems(): Boolean {
-        val cutoffDate = LocalDate.now().minusMonths(2).toString()
-        budgetItemViewModel.purgeOldBudgetItems(cutoffDate)
+    private fun purgeOldItems(): Boolean {
+        try {
+            val cutoffDate = LocalDate.now().minusMonths(2).toString()
+            budgetItemViewModel.purgeOldBudgetItems(cutoffDate)
+        } catch (e: Exception) {
+            Log.e(TAG, "An unknown error occurred", e)
+            return false
+        }
         return true
     }
 
@@ -229,6 +246,7 @@ class UpdateBudgetPredictions(
             )
             true
         } catch (e: SQLiteConstraintException) {
+            Log.d(TAG, "Try next item", e)
             budgetItemViewModel.insertOrReplaceBudgetItemSync(
                 newBudgetItem
             )

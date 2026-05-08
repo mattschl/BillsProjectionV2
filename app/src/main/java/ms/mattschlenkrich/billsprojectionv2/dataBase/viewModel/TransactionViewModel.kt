@@ -35,15 +35,15 @@ class TransactionViewModel(
     fun getActiveTransactionsDetailed() =
         transactionRepository.getActiveTransactionsDetailed()
 
-    fun getActiveTransactionsDetailed(budgetRuleId: Long) =
-        transactionRepository.getActiveTransactionsDetailed(budgetRuleId)
+    /*fun getActiveTransactionsDetailed(budgetRuleId: Long) =
+        transactionRepository.getActiveTransactionsDetailed(budgetRuleId)*/
 
-    fun getActiveTransactionsDetailed(
-        budgetRuleId: Long, startDate: String, endDate: String
-    ) =
-        transactionRepository.getActiveTransactionsDetailed(
-            budgetRuleId, startDate, endDate
-        )
+    /* fun getActiveTransactionsDetailed(
+         budgetRuleId: Long, startDate: String, endDate: String
+     ) =
+         transactionRepository.getActiveTransactionsDetailed(
+             budgetRuleId, startDate, endDate
+         )*/
 
     fun searchActiveTransactionsDetailed(query: String?) =
         transactionRepository.searchActiveTransactionsDetailed(query)
@@ -76,107 +76,107 @@ class TransactionViewModel(
     fun getPendingTransactionsDetailed(asset: String) =
         transactionRepository.getPendingTransactionsDetailed(asset)
 
-    fun getMaxTransactionByBudgetRule(budgetRuleId: Long) =
-        transactionRepository.getMaxTransactionByBudgetRule(budgetRuleId)
+    /*fun getMaxTransactionByBudgetRule(budgetRuleId: Long) =
+        transactionRepository.getMaxTransactionByBudgetRule(budgetRuleId)*/
 
-    fun getMaxTransactionByBudgetRule(
-        budgetRuleId: Long, startDate: String, endDate: String
-    ) = transactionRepository.getMaxTransactionByBudgetRule(
-        budgetRuleId, startDate, endDate
-    )
+    /* fun getMaxTransactionByBudgetRule(
+         budgetRuleId: Long, startDate: String, endDate: String
+     ) = transactionRepository.getMaxTransactionByBudgetRule(
+         budgetRuleId, startDate, endDate
+     )*/
 
-    fun getMinTransactionByBudgetRule(budgetRuleId: Long) =
-        transactionRepository.getMinTransactionByBudgetRule(budgetRuleId)
+    /*fun getMinTransactionByBudgetRule(budgetRuleId: Long) =
+        transactionRepository.getMinTransactionByBudgetRule(budgetRuleId)*/
 
-    fun getMinTransactionByBudgetRule(
-        budgetRuleId: Long, startDate: String, endDate: String
-    ) = transactionRepository.getMinTransactionByBudgetRule(
-        budgetRuleId, startDate, endDate
-    )
+    /*  fun getMinTransactionByBudgetRule(
+          budgetRuleId: Long, startDate: String, endDate: String
+      ) = transactionRepository.getMinTransactionByBudgetRule(
+          budgetRuleId, startDate, endDate
+      )*/
 
-    fun getSumTransactionByBudgetRule(budgetRuleId: Long) =
-        transactionRepository.getSumTransactionByBudgetRule(budgetRuleId)
+    /*fun getSumTransactionByBudgetRule(budgetRuleId: Long) =
+        transactionRepository.getSumTransactionByBudgetRule(budgetRuleId)*/
 
-    fun getSumTransactionByBudgetRule(
+    /*fun getSumTransactionByBudgetRule(
         budgetRuleId: Long, startDate: String, endDate: String
     ) = transactionRepository.getSumTransactionByBudgetRule(
         budgetRuleId, startDate, endDate
-    )
+    )*/
 
     fun getActiveTransactionByAccount(accountId: Long) =
         transactionRepository.getActiveTransactionByAccount(accountId)
 
-    fun getActiveTransactionByAccount(
+    /*fun getActiveTransactionByAccount(
         accountId: Long, startDate: String, endDate: String
     ) = transactionRepository.getActiveTransactionByAccount(
         accountId, startDate, endDate
-    )
+    )*/
 
-    fun getSumTransactionToAccount(accountId: Long) =
-        transactionRepository.getSumTransactionToAccount(accountId)
+    /* fun getSumTransactionToAccount(accountId: Long) =
+         transactionRepository.getSumTransactionToAccount(accountId)*/
 
-    fun getSumTransactionToAccount(
-        accountId: Long, startDate: String, endDate: String
-    ) = transactionRepository.getSumTransactionToAccount(
-        accountId, startDate, endDate
-    )
+    /* fun getSumTransactionToAccount(
+         accountId: Long, startDate: String, endDate: String
+     ) = transactionRepository.getSumTransactionToAccount(
+         accountId, startDate, endDate
+     )*/
 
-    fun getSumTransactionFromAccount(accountId: Long) =
-        transactionRepository.getSumTransactionFromAccount(accountId)
+    /*  fun getSumTransactionFromAccount(accountId: Long) =
+          transactionRepository.getSumTransactionFromAccount(accountId)*/
 
-    fun getSumTransactionFromAccount(
-        accountId: Long, startDate: String, endDate: String
-    ) = transactionRepository.getSumTransactionFromAccount(
-        accountId, startDate, endDate
-    )
+    /* fun getSumTransactionFromAccount(
+         accountId: Long, startDate: String, endDate: String
+     ) = transactionRepository.getSumTransactionFromAccount(
+         accountId, startDate, endDate
+     )*/
 
-    fun getMaxTransactionByAccount(accountId: Long) =
-        transactionRepository.getMaxTransactionByAccount(accountId)
+    /*fun getMaxTransactionByAccount(accountId: Long) =
+        transactionRepository.getMaxTransactionByAccount(accountId)*/
 
-    fun getMaxTransactionByAccount(
+    /*fun getMaxTransactionByAccount(
         accountId: Long, startDate: String, endDate: String
     ) = transactionRepository.getMaxTransactionByAccount(
         accountId, startDate, endDate
-    )
+    )*/
 
-    fun getMinTransactionByAccount(accountId: Long) =
-        transactionRepository.getMinTransactionByAccount(accountId)
+    /*fun getMinTransactionByAccount(accountId: Long) =
+        transactionRepository.getMinTransactionByAccount(accountId)*/
 
-    fun getMinTransactionByAccount(
-        accountId: Long, startDate: String, endDate: String
-    ) = transactionRepository.getMinTransactionByAccount(
-        accountId, startDate, endDate
-    )
+    /* fun getMinTransactionByAccount(
+         accountId: Long, startDate: String, endDate: String
+     ) = transactionRepository.getMinTransactionByAccount(
+         accountId, startDate, endDate
+     )*/
 
-    fun getActiveTransactionBySearch(
+    /*fun getActiveTransactionBySearch(
         query: String?, startDate: String, endDate: String
     ) = transactionRepository.getActiveTransactionBySearch(
         query, startDate, endDate
-    )
+    )*/
 
-    fun getActiveTransactionBySearch(query: String?) =
-        transactionRepository.getActiveTransactionBySearch(query)
+    /*fun getActiveTransactionBySearch(query: String?) =
+        transactionRepository.getActiveTransactionBySearch(query)*/
 
-    fun getSumTransactionBySearch(query: String?) =
-        transactionRepository.getSumTransactionBySearch(query)
+    /*fun getSumTransactionBySearch(query: String?) =
+        transactionRepository.getSumTransactionBySearch(query)*/
 
-    fun getSumTransactionBySearch(
+    /*fun getSumTransactionBySearch(
         query: String?, startDate: String, endDate: String
-    ) = transactionRepository.getSumTransactionBySearch(query, startDate, endDate)
+    ) = transactionRepository.getSumTransactionBySearch(query, startDate, endDate)*/
 
-    fun getMaxTransactionBySearch(query: String?) =
-        transactionRepository.getMaxTransactionBySearch(query)
+    /*fun getMaxTransactionBySearch(query: String?) =
+        transactionRepository.getMaxTransactionBySearch(query)*/
 
-    fun getMaxTransactionBySearch(
+    /*fun getMaxTransactionBySearch(
         query: String?, startDate: String, endDate: String
-    ) = transactionRepository.getMaxTransactionBySearch(query, startDate, endDate)
+    ) = transactionRepository.getMaxTransactionBySearch(query, startDate, endDate)*/
 
-    fun getMinTransactionBySearch(query: String?) =
-        transactionRepository.getMinTransactionBySearch(query)
+    /*fun getMinTransactionBySearch(query: String?) =
+        transactionRepository.getMinTransactionBySearch(query)*/
 
-    fun getMinTransactionBySearch(
-        query: String?, startDate: String, endDate: String
-    ) = transactionRepository.getMinTransactionBySearch(query, startDate, endDate)
+    /* fun getMinTransactionBySearch(
+         query: String?, startDate: String, endDate: String
+     ) = transactionRepository.getMinTransactionBySearch(query, startDate, endDate)*/
 
     fun getTransactionsFiltered(
         budgetRuleId: Long, accountId: Long, query: String, startDate: String, endDate: String
