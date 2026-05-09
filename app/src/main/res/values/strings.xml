@@ -247,4 +247,8 @@
     <string name="sync_screen">Sync screen</string>
     <string name="done_button">Done</string>
     <string name="please_see_help_in_the_options_menu_for_fist_time_instructions">Please see Help in the options menu for fist time instructions</string>
+    <string name="all">All</string>
+    <string name="month">Month</string>
+    <string name="year">Year</string>
+    <string name="custom">Custom</string>
 </resources>

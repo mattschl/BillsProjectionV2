@@ -233,25 +233,25 @@ fun CriteriaCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 TimeRangeOption(
-                    text = stringResource(R.string.show_all),
+                    text = stringResource(R.string.all),
                     selected = timeRange == TimeRange.SHOW_ALL,
                     onSelect = { onTimeRangeChange(TimeRange.SHOW_ALL) },
                     modifier = Modifier.weight(1f)
                 )
                 TimeRangeOption(
-                    text = stringResource(R.string.previous_month),
+                    text = stringResource(R.string.month),
                     selected = timeRange == TimeRange.LAST_MONTH,
                     onSelect = { onTimeRangeChange(TimeRange.LAST_MONTH) },
                     modifier = Modifier.weight(1f)
                 )
                 TimeRangeOption(
-                    text = stringResource(R.string.previous_year),
+                    text = stringResource(R.string.year),
                     selected = timeRange == TimeRange.LAST_YEAR,
                     onSelect = { onTimeRangeChange(TimeRange.LAST_YEAR) },
                     modifier = Modifier.weight(1f)
                 )
                 TimeRangeOption(
-                    text = stringResource(R.string.date_range),
+                    text = stringResource(R.string.custom),
                     selected = timeRange == TimeRange.DATE_RANGE,
                     onSelect = { onTimeRangeChange(TimeRange.DATE_RANGE) },
                     modifier = Modifier.weight(1f)
