@@ -66,8 +66,8 @@ fun AccountEditScreen(
     df: DateFunctions = DateFunctions()
 ) {
     Scaffold(
-        modifier = Modifier.imePadding(),
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        modifier = Modifier.imePadding(),
         floatingActionButton = {
             if (onSaveClick != null) {
                 FloatingActionButton(

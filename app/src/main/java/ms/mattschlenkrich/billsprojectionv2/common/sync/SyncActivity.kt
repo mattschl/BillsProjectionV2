@@ -10,7 +10,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.NoCredentialException
@@ -69,17 +73,22 @@ class SyncActivity : ComponentActivity() {
                 else -> 1.0f
             }
             BillsProjectionTheme(fontScale = fontScale) {
-                SyncScreen(
-                    viewModel = viewModel,
-                    onBack = {
-                        setResult(RESULT_OK)
-                        finish()
-                    },
-                    onConnect = { signInWithCredentialManager() },
-                    onDisconnect = { disconnectAccount() },
-                    onSync = { viewModel.sync(::handleError) },
-                    onQuery = { viewModel.queryDriveFiles() }
-                )
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    SyncScreen(
+                        viewModel = viewModel,
+                        onBack = {
+                            setResult(RESULT_OK)
+                            finish()
+                        },
+                        onConnect = { signInWithCredentialManager() },
+                        onDisconnect = { disconnectAccount() },
+                        onSync = { viewModel.sync(::handleError) },
+                        onQuery = { viewModel.queryDriveFiles() }
+                    )
+                }
             }
         }
     }

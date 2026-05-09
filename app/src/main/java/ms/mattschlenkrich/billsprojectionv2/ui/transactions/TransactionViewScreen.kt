@@ -42,8 +42,8 @@ fun TransactionViewScreen(
     onTransactionClick: (TransactionDetailed) -> Unit
 ) {
     Scaffold(
-        modifier = Modifier.imePadding(),
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        modifier = Modifier.imePadding(),
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddClick,

@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.transactions
 
+//import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -38,7 +39,6 @@ import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectBalanceFiel
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextBox
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
-//import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
@@ -78,8 +78,8 @@ fun TransactionEditScreen(
 //    val nf = remember { NumberFunctions() }
 
     Scaffold(
-        modifier = Modifier.imePadding(),
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        modifier = Modifier.imePadding(),
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onSaveClick,
@@ -214,6 +214,7 @@ fun TransactionPerformScreen(
     }
 
     Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onSaveClick,
@@ -387,8 +388,8 @@ fun TransactionSplitScreen(
     }
 
     Scaffold(
-        modifier = Modifier.imePadding(),
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        modifier = Modifier.imePadding(),
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onSaveClick,

@@ -9,11 +9,10 @@
         <item name="colorSecondary">@color/teal_200</item>
         <item name="colorSecondaryVariant">@color/teal_700</item>
         <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Splash screen attributes -->
         <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/ic_bills_projection_background</item>
         <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="31">@mipmap/ic_bills_projection</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
         <!-- Default Font Sizes to prevent crashes -->
         <item name="text_info_size">@dimen/font_size_medium</item>
         <item name="text_heading_size">@dimen/font_size_heading_medium</item>

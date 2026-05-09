@@ -53,8 +53,8 @@ fun AccountTypeListScreen(
     getAccountTypeInfo: (AccountType) -> String
 ) {
     Scaffold(
-        modifier = Modifier.imePadding(),
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        modifier = Modifier.imePadding(),
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddClick,
@@ -185,6 +185,7 @@ fun AccountTypeFormScreen(
     fabContentDescription: String
 ) {
     Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onSaveClick,
