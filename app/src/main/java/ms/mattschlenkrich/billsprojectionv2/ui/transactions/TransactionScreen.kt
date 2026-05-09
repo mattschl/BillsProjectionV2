@@ -69,7 +69,11 @@ fun TransactionEditScreen(
     onSplitClick: () -> Unit,
     onGotoCalculator: () -> Unit,
     isSplitEnabled: Boolean,
-    splitButtonText: String = stringResource(R.string.splitting_transaction)
+    splitButtonText: String = stringResource(R.string.splitting_transaction),
+    descriptionError: Boolean = false,
+    amountError: Boolean = false,
+    toAccountError: Boolean = false,
+    fromAccountError: Boolean = false,
 ) {
 //    val nf = remember { NumberFunctions() }
 
@@ -102,7 +106,8 @@ fun TransactionEditScreen(
                 value = description,
                 onValueChange = onDescriptionChange,
                 label = stringResource(R.string.description),
-                singleLine = true
+                singleLine = true,
+                isError = descriptionError
             )
 
             Row(modifier = Modifier.fillMaxWidth()) {
@@ -118,7 +123,8 @@ fun TransactionEditScreen(
                     value = amount,
                     onValueChange = onAmountChange,
                     onIconClick = onGotoCalculator,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    isError = amountError
                 )
             }
 
@@ -134,7 +140,8 @@ fun TransactionEditScreen(
                 isPending = fromPending,
                 onPendingChange = onFromPendingChange,
                 allowPending = allowFromPending,
-                onClick = onChooseFromAccount
+                onClick = onChooseFromAccount,
+                isError = fromAccountError
             )
 
             TransactionAccountField(
@@ -143,7 +150,8 @@ fun TransactionEditScreen(
                 isPending = toPending,
                 onPendingChange = onToPendingChange,
                 allowPending = allowToPending,
-                onClick = onChooseToAccount
+                onClick = onChooseToAccount,
+                isError = toAccountError
             )
 
             ProjectTextField(
@@ -191,6 +199,10 @@ fun TransactionPerformScreen(
     onSaveClick: () -> Unit,
     onGotoCalculator: () -> Unit,
     isSplitEnabled: Boolean,
+    descriptionError: Boolean = false,
+    amountError: Boolean = false,
+    toAccountError: Boolean = false,
+    fromAccountError: Boolean = false,
 ) {
     val nf = remember { NumberFunctions() }
 //    val df = remember { DateFunctions() }
@@ -253,7 +265,8 @@ fun TransactionPerformScreen(
                     onValueChange = onAmountChange,
                     onIconClick = onGotoCalculator,
                     modifier = Modifier.weight(1.5f),
-                    label = stringResource(R.string.amount)
+                    label = stringResource(R.string.amount),
+                    isError = amountError
                 )
                 Button(
                     onClick = onSplitClick,
@@ -304,7 +317,8 @@ fun TransactionPerformScreen(
                 isPending = toPending,
                 onPendingChange = onToPendingChange,
                 allowPending = allowToPending,
-                onClick = onToAccountClick
+                onClick = onToAccountClick,
+                isError = toAccountError
             )
 
             TransactionAccountField(
@@ -313,13 +327,15 @@ fun TransactionPerformScreen(
                 isPending = fromPending,
                 onPendingChange = onFromPendingChange,
                 allowPending = allowFromPending,
-                onClick = onFromAccountClick
+                onClick = onFromAccountClick,
+                isError = fromAccountError
             )
 
             ProjectTextField(
                 value = description,
                 onValueChange = onDescriptionChange,
-                label = stringResource(R.string.description)
+                label = stringResource(R.string.description),
+                isError = descriptionError
             )
 
             ProjectTextField(
@@ -356,6 +372,10 @@ fun TransactionSplitScreen(
     note: String,
     onNoteChange: (String) -> Unit,
     onSaveClick: () -> Unit,
+    descriptionError: Boolean = false,
+    amountError: Boolean = false,
+    toAccountError: Boolean = false,
+    fromAccountError: Boolean = false,
 ) {
     val nf = remember { NumberFunctions() }
 //    val df = remember { DateFunctions() }
@@ -408,7 +428,8 @@ fun TransactionSplitScreen(
                 label = stringResource(R.string.transaction_amount),
                 value = amount,
                 onValueChange = onAmountChange,
-                onIconClick = onGotoCalculator
+                onIconClick = onGotoCalculator,
+                isError = amountError
             )
 
             OutlinedCard(
@@ -450,7 +471,8 @@ fun TransactionSplitScreen(
                 isPending = toPending,
                 onPendingChange = onToPendingChange,
                 allowPending = allowToPending,
-                onClick = onChooseToAccount
+                onClick = onChooseToAccount,
+                isError = toAccountError
             )
 
             TransactionAccountField(
@@ -459,14 +481,16 @@ fun TransactionSplitScreen(
                 isPending = fromPending,
                 onPendingChange = onFromPendingChange,
                 allowPending = allowFromPending,
-                onClick = onFromAccountClick
+                onClick = onFromAccountClick,
+                isError = fromAccountError
             )
 
             ProjectTextField(
                 value = description,
                 onValueChange = onDescriptionChange,
                 label = stringResource(R.string.description),
-                singleLine = true
+                singleLine = true,
+                isError = descriptionError
             )
 
             ProjectTextField(
@@ -485,13 +509,15 @@ fun TransactionAccountField(
     isPending: Boolean,
     onPendingChange: (Boolean) -> Unit,
     allowPending: Boolean,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
+    isError: Boolean = false,
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         ProjectTextBox(
             label = label,
             value = account?.accountName ?: "",
-            onClick = onClick ?: {}
+            onClick = onClick ?: {},
+            isError = isError
         )
         if (allowPending) {
             Row(

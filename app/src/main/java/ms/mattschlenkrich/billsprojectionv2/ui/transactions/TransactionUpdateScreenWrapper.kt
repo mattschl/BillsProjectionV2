@@ -61,6 +61,11 @@ fun TransactionUpdateScreenWrapper(
 
     var transactionId by remember { mutableLongStateOf(0L) }
 
+    var descriptionError by remember { mutableStateOf(false) }
+    var amountError by remember { mutableStateOf(false) }
+    var toAccountError by remember { mutableStateOf(false) }
+    var fromAccountError by remember { mutableStateOf(false) }
+
     fun getCurrentTransactionForSave(): Transactions {
         return Transactions(
             transactionId,
@@ -134,7 +139,12 @@ fun TransactionUpdateScreenWrapper(
     }
 
     fun updateTransactionIfValid() {
-        if (description.isBlank()) {
+        descriptionError = description.isBlank()
+        toAccountError = toAccount == null
+        fromAccountError = fromAccount == null
+        amountError = amount.isBlank() || nf.getDoubleFromDollars(amount) == 0.0
+
+        if (descriptionError) {
             Toast.makeText(
                 mainActivity,
                 mainActivity.getString(R.string.error) + mainActivity.getString(R.string.please_enter_a_name_or_description),
@@ -142,7 +152,7 @@ fun TransactionUpdateScreenWrapper(
             ).show()
             return
         }
-        if (toAccount == null) {
+        if (toAccountError) {
             Toast.makeText(
                 mainActivity,
                 mainActivity.getString(R.string.error) + mainActivity.getString(R.string.there_needs_to_be_an_account_money_will_go_to),
@@ -150,7 +160,7 @@ fun TransactionUpdateScreenWrapper(
             ).show()
             return
         }
-        if (fromAccount == null) {
+        if (fromAccountError) {
             Toast.makeText(
                 mainActivity,
                 mainActivity.getString(R.string.error) + mainActivity.getString(R.string.there_needs_to_be_an_account_money_will_come_from),
@@ -158,7 +168,7 @@ fun TransactionUpdateScreenWrapper(
             ).show()
             return
         }
-        if (amount.isBlank()) {
+        if (amountError) {
             Toast.makeText(
                 mainActivity,
                 mainActivity.getString(R.string.error) + mainActivity.getString(R.string.please_enter_an_amount_for_this_transaction),
@@ -242,6 +252,10 @@ fun TransactionUpdateScreenWrapper(
         onFromPendingChange = { fromPending = it },
         allowToPending = toAccountWithType?.accountType?.allowPending == true,
         allowFromPending = fromAccountWithType?.accountType?.allowPending == true,
+        descriptionError = descriptionError,
+        amountError = amountError,
+        toAccountError = toAccountError,
+        fromAccountError = fromAccountError,
         onSaveClick = { updateTransactionIfValid() },
         onChooseBudgetRule = {
             mainViewModel.addCallingFragment(TAG)

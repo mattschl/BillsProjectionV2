@@ -12,7 +12,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_PERFORM
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
@@ -55,6 +54,11 @@ fun TransactionPerformScreenWrapper(
     var fromPending by remember { mutableStateOf(false) }
     var allowToPending by remember { mutableStateOf(false) }
     var allowFromPending by remember { mutableStateOf(false) }
+
+    var descriptionError by remember { mutableStateOf(false) }
+    var amountError by remember { mutableStateOf(false) }
+    var toAccountError by remember { mutableStateOf(false) }
+    var fromAccountError by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         if (mainViewModel.getTransactionDetailed() != null) {
@@ -215,17 +219,30 @@ fun TransactionPerformScreenWrapper(
         onNoteChange = { note = it },
         onSaveClick = {
             val amt = nf.getDoubleFromDollars(amount)
-            val answer = if (description.isBlank()) {
-                mainActivity.getString(R.string.please_enter_a_name_or_description)
-            } else if (amt == 0.0) {
-                mainActivity.getString(R.string.please_enter_an_amount_for_this_transaction)
-            } else if (fromAccount == null || toAccount == null) {
-                " " + mainActivity.getString(R.string.choose_an_account)
-            } else {
-                ANSWER_OK
-            }
+            descriptionError = description.isBlank()
+            amountError = amt == 0.0
+            toAccountError = toAccount == null
+            fromAccountError = fromAccount == null
 
-            if (answer == ANSWER_OK) {
+            if (descriptionError) {
+                Toast.makeText(
+                    mainActivity,
+                    mainActivity.getString(R.string.please_enter_a_name_or_description),
+                    Toast.LENGTH_LONG
+                ).show()
+            } else if (amountError) {
+                Toast.makeText(
+                    mainActivity,
+                    mainActivity.getString(R.string.please_enter_an_amount_for_this_transaction),
+                    Toast.LENGTH_LONG
+                ).show()
+            } else if (toAccountError || fromAccountError) {
+                Toast.makeText(
+                    mainActivity,
+                    mainActivity.getString(R.string.error) + mainActivity.getString(R.string.choose_an_account),
+                    Toast.LENGTH_LONG
+                ).show()
+            } else {
                 var display =
                     mainActivity.getString(R.string.this_will_perform) + " " + description +
                             mainActivity.getString(R.string._for_) + " " + nf.displayDollars(amt) +
@@ -266,12 +283,6 @@ fun TransactionPerformScreenWrapper(
                     }
                     .setNegativeButton(mainActivity.getString(R.string.go_back), null)
                     .show()
-            } else {
-                Toast.makeText(
-                    mainActivity,
-                    mainActivity.getString(R.string.error) + answer,
-                    Toast.LENGTH_LONG
-                ).show()
             }
         },
         onGotoCalculator = {
@@ -280,5 +291,9 @@ fun TransactionPerformScreenWrapper(
             navController.navigate(Screen.Calculator.route)
         },
         isSplitEnabled = nf.getDoubleFromDollars(amount) > 2.0 && fromAccount != null,
+        descriptionError = descriptionError,
+        amountError = amountError,
+        toAccountError = toAccountError,
+        fromAccountError = fromAccountError,
     )
 }

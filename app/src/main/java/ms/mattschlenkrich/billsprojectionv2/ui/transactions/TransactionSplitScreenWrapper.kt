@@ -62,6 +62,11 @@ fun TransactionSplitScreenWrapper(
     var toAccountWithType by remember { mutableStateOf<AccountWithType?>(null) }
     var fromAccountWithType by remember { mutableStateOf<AccountWithType?>(null) }
 
+    var descriptionError by remember { mutableStateOf(false) }
+    var amountError by remember { mutableStateOf(false) }
+    var toAccountError by remember { mutableStateOf(false) }
+    var fromAccountError by remember { mutableStateOf(false) }
+
     fun updateAmountsDisplay() {
         val amt = nf.getDoubleFromDollars(amount)
         val original = originalAmount
@@ -208,8 +213,17 @@ fun TransactionSplitScreenWrapper(
         onDescriptionChange = { description = it },
         note = note,
         onNoteChange = { note = it },
+        descriptionError = descriptionError,
+        amountError = amountError,
+        toAccountError = toAccountError,
+        fromAccountError = fromAccountError,
         onSaveClick = {
             val amt = nf.getDoubleFromDollars(amount)
+            descriptionError = description.isBlank()
+            amountError = amount.isBlank() || amt == 0.0 || amt >= originalAmount
+            toAccountError = toAccount == null
+            fromAccountError = fromAccount == null
+
             val answer = if (amount.isBlank()) {
                 mainActivity.getString(R.string.please_enter_an_amount_for_this_transaction)
             } else if (amt >= originalAmount) {

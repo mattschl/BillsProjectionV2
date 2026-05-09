@@ -55,6 +55,11 @@ fun TransactionAddScreenWrapper(
     var toAccountWithType by remember { mutableStateOf<AccountWithType?>(null) }
     var fromAccountWithType by remember { mutableStateOf<AccountWithType?>(null) }
 
+    var descriptionError by remember { mutableStateOf(false) }
+    var amountError by remember { mutableStateOf(false) }
+    var toAccountError by remember { mutableStateOf(false) }
+    var fromAccountError by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         val cached = mainViewModel.getTransactionDetailed()
         if (cached != null) {
@@ -168,27 +173,36 @@ fun TransactionAddScreenWrapper(
         onFromPendingChange = { fromPending = it },
         allowToPending = toAccountWithType?.accountType?.allowPending == true,
         allowFromPending = fromAccountWithType?.accountType?.allowPending == true,
+        descriptionError = descriptionError,
+        amountError = amountError,
+        toAccountError = toAccountError,
+        fromAccountError = fromAccountError,
         onSaveClick = {
             val trans = getTransactionDetailed().transaction!!
-            if (trans.transName.isBlank()) {
+            descriptionError = trans.transName.isBlank()
+            toAccountError = trans.transToAccountId == 0L
+            fromAccountError = trans.transFromAccountId == 0L
+            amountError = trans.transAmount == 0.0
+
+            if (descriptionError) {
                 Toast.makeText(
                     mainActivity,
                     mainActivity.getString(R.string.please_enter_a_name_or_description),
                     Toast.LENGTH_LONG
                 ).show()
-            } else if (trans.transToAccountId == 0L) {
+            } else if (toAccountError) {
                 Toast.makeText(
                     mainActivity,
                     mainActivity.getString(R.string.there_needs_to_be_an_account_money_will_go_to),
                     Toast.LENGTH_LONG
                 ).show()
-            } else if (trans.transFromAccountId == 0L) {
+            } else if (fromAccountError) {
                 Toast.makeText(
                     mainActivity,
                     mainActivity.getString(R.string.there_needs_to_be_an_account_money_will_come_from),
                     Toast.LENGTH_LONG
                 ).show()
-            } else if (trans.transAmount == 0.0) {
+            } else if (amountError) {
                 Toast.makeText(
                     mainActivity,
                     mainActivity.getString(R.string.please_enter_an_amount_for_this_transaction),
