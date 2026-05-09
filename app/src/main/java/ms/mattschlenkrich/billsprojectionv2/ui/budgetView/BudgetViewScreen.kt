@@ -111,8 +111,8 @@ fun BudgetViewScreen(
     val isTablet = with(density) { windowInfo.containerSize.width.toDp() >= 600.dp }
 
     Scaffold(
-        modifier = Modifier.imePadding(),
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        modifier = Modifier.imePadding(),
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onAddClick() },

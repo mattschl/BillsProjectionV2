@@ -117,9 +117,9 @@ class MainActivity : AppCompatActivity() {
     private var isUpdating = mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         setTheme(R.style.Theme_BillsProjectionV2)
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
 
         setupViewModels()
 
@@ -132,7 +132,12 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             BillsProjectionTheme {
-                MainScreen(isFirstRun)
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    MainScreen(isFirstRun)
+                }
             }
         }
     }
@@ -176,7 +181,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         Scaffold(
-            modifier = Modifier.imePadding(),
+            modifier = Modifier.fillMaxSize(),
             topBar = {
                 MainTopBar(
                     title = topMenuBarState.value.title.ifEmpty { stringResource(R.string.app_name) },
@@ -205,6 +210,7 @@ class MainActivity : AppCompatActivity() {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
+                    .imePadding()
             ) {
                 NavGraph(
                     navController = navController,

@@ -58,8 +58,8 @@ fun BudgetRulesListScreen(
     onItemClick: (BudgetRuleDetailed) -> Unit
 ) {
     Scaffold(
-        modifier = Modifier.imePadding(),
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        modifier = Modifier.imePadding(),
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddClick,
@@ -164,8 +164,8 @@ fun BudgetRuleScreen(
     val daysOfWeek = stringArrayResource(R.array.days_of_week)
 
     Scaffold(
-        modifier = Modifier.imePadding(),
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        modifier = Modifier.imePadding(),
         floatingActionButton = floatingActionButton
     ) { paddingValues ->
         Column(
