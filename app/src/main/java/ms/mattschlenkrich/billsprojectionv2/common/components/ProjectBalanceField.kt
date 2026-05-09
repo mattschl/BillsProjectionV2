@@ -18,7 +18,8 @@ fun ProjectBalanceField(
     onValueChange: (String) -> Unit,
     label: String,
     modifier: Modifier = Modifier,
-    onIconClick: (() -> Unit)? = null
+    onIconClick: (() -> Unit)? = null,
+    isError: Boolean = false
 ) {
     ProjectTextField(
         value = value,
@@ -28,6 +29,7 @@ fun ProjectBalanceField(
         textStyle = ProjectFieldDefaults.titleStyle().copy(
             textAlign = TextAlign.Center,
         ),
+        isError = isError,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
         singleLine = true,
         trailingIcon = if (onIconClick != null) {
