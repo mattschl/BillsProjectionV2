@@ -4,5 +4,6 @@ data class AppSettings(
     val deviceId: Long,
     val fontSize: String? = "medium",
     val driveAccount: String? = null,
-    val isFirstRun: Boolean = true
+    val isFirstRun: Boolean = true,
+    val themeMode: String? = "system"
 )
