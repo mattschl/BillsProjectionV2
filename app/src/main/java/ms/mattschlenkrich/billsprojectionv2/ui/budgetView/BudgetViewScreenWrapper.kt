@@ -6,7 +6,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
@@ -40,7 +39,9 @@ fun BudgetViewScreenWrapper(
     val transactionViewModel = activity.transactionViewModel
     val accountUpdateViewModel = activity.accountUpdateViewModel
 
-    activity.topMenuBar.title = stringResource(R.string.view_the_budget)
+    LaunchedEffect(Unit) {
+        activity.topMenuBar.title = activity.getString(R.string.view_the_budget)
+    }
 
     val rawAssetList by budgetItemViewModel.getAssetsForBudget()
         .observeAsState(initial = emptyList())

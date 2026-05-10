@@ -21,7 +21,9 @@ fun CalculatorScreenWrapper(
 ) {
     val mainViewModel = mainActivity.mainViewModel
     val nf = NumberFunctions()
-    mainActivity.topMenuBar.setTitle(R.string.calculator)
+    LaunchedEffect(Unit) {
+        mainActivity.topMenuBar.setTitle(R.string.calculator)
+    }
 
     var displayValue by remember { mutableStateOf("0") }
     val formulaList = remember { mutableStateListOf("") }

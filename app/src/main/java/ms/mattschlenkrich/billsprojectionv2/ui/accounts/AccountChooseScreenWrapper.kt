@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.accounts
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -33,7 +34,9 @@ fun AccountChooseScreenWrapper(
 ) {
     val mainViewModel = mainActivity.mainViewModel
     val accountViewModel = mainActivity.accountViewModel
-    mainActivity.topMenuBar.title = mainActivity.getString(R.string.choose_an_account)
+    LaunchedEffect(Unit) {
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.choose_an_account)
+    }
 
     var searchQuery by remember { mutableStateOf("") }
     val accountsWithType by if (searchQuery.isEmpty()) {

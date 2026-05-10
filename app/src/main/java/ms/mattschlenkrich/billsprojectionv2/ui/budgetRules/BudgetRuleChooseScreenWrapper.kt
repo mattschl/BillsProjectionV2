@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.budgetRules
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -25,7 +26,9 @@ fun BudgetRuleChooseScreenWrapper(
 ) {
     val mainViewModel = mainActivity.mainViewModel
     val budgetRuleViewModel = mainActivity.budgetRuleViewModel
-    mainActivity.topMenuBar.title = mainActivity.getString(R.string.choose_a_budget_rule)
+    LaunchedEffect(Unit) {
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.choose_a_budget_rule)
+    }
 
     var searchQuery by remember { mutableStateOf("") }
     val budgetRulesDetailed by if (searchQuery.isEmpty()) {

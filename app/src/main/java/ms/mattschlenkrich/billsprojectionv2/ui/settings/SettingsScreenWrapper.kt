@@ -8,6 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,6 +26,9 @@ import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 fun SettingsScreenWrapper(
     mainActivity: MainActivity
 ) {
+    LaunchedEffect(Unit) {
+        mainActivity.topMenuBar.setTitle(R.string.settings)
+    }
     val settingsManager = remember { SettingsManager(mainActivity) }
     val settings = remember { settingsManager.getSettings() }
     var selectedFontSize by remember { mutableStateOf(settings.fontSize ?: "medium") }

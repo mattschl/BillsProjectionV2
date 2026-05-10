@@ -2,12 +2,12 @@ package ms.mattschlenkrich.billsprojectionv2.ui.budgetRules
 
 import android.app.AlertDialog
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
@@ -30,7 +30,9 @@ fun BudgetRuleScreenWrapper(
     val nf = NumberFunctions()
     val df = DateFunctions()
 
-    activity.topMenuBar.title = stringResource(R.string.choose_a_budget_rule)
+    LaunchedEffect(Unit) {
+        activity.topMenuBar.setTitle(R.string.budget_rules)
+    }
 
     var searchQuery by remember { mutableStateOf("") }
     val budgetRulesDetailed by if (searchQuery.isEmpty()) {

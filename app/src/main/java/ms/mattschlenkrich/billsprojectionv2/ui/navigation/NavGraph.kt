@@ -58,7 +58,7 @@ fun NavGraph(
             BudgetRuleScreenWrapper(activity, navController)
         }
         composable(Screen.Help.route) {
-            HelpScreenWrapper()
+            HelpScreenWrapper(activity)
         }
         composable(Screen.Settings.route) {
             SettingsScreenWrapper(activity)
