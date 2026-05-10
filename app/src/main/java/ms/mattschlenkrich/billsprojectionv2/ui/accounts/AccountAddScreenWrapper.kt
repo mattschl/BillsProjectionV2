@@ -2,6 +2,7 @@ package ms.mattschlenkrich.billsprojectionv2.ui.accounts
 
 import android.widget.Toast
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,7 +32,9 @@ fun AccountAddScreenWrapper(
     val nf = remember { NumberFunctions() }
     val df = remember { DateFunctions() }
 
-    mainActivity.topMenuBar.title = mainActivity.getString(R.string.add_a_new_account)
+    LaunchedEffect(Unit) {
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.add_a_new_account)
+    }
 
     var name by remember { mutableStateOf("") }
     var handle by remember { mutableStateOf("") }

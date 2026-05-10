@@ -2,6 +2,7 @@ package ms.mattschlenkrich.billsprojectionv2.ui.budgetView
 
 import android.app.AlertDialog
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.NavHostController
@@ -22,6 +23,10 @@ fun BudgetListScreenWrapper(
     val mainViewModel = mainActivity.mainViewModel
     val budgetRuleViewModel = mainActivity.budgetRuleViewModel
     val df = DateFunctions()
+
+    LaunchedEffect(Unit) {
+        mainActivity.topMenuBar.setTitle(R.string.view_budget_summary)
+    }
 
     val budgetDate = df.getCurrentDateAsString()
     val monthlyRules by budgetRuleViewModel.getBudgetRulesCompleteMonthly(budgetDate)

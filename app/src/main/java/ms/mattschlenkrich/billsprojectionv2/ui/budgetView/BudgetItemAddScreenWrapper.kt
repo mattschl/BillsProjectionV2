@@ -27,8 +27,8 @@ fun BudgetItemAddScreenWrapper(
 ) {
     val mainViewModel = mainActivity.mainViewModel
     val budgetItemViewModel = mainActivity.budgetItemViewModel
-    val nf = NumberFunctions()
-    val df = DateFunctions()
+    val nf = remember { NumberFunctions() }
+    val df = remember { DateFunctions() }
 
     val dateState = remember { mutableStateOf("") }
     val nameState = remember { mutableStateOf("") }

@@ -47,7 +47,9 @@ fun AccountUpdateScreenWrapper(
     val df = remember { DateFunctions() }
     remember { VisualsFunctions() }
 
-    mainActivity.topMenuBar.title = mainActivity.getString(R.string.update_account)
+    LaunchedEffect(Unit) {
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.update_account)
+    }
 
     val accountWithTypeState = remember { mutableStateOf(mainViewModel.getAccountWithType()) }
     val accountNames by accountViewModel.getAccountNameList().observeAsState(emptyList())

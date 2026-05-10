@@ -66,8 +66,8 @@ fun BudgetRuleUpdateScreenWrapper(
     val mainViewModel = mainActivity.mainViewModel
     val budgetRuleViewModel = mainActivity.budgetRuleViewModel
     val budgetItemViewModel = mainActivity.budgetItemViewModel
-    val nf = NumberFunctions()
-    val df = DateFunctions()
+    val nf = remember { NumberFunctions() }
+    val df = remember { DateFunctions() }
     val scope = rememberCoroutineScope()
 
     var nameState by remember { mutableStateOf("") }

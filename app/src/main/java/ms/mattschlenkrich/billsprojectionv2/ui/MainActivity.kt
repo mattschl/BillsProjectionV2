@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -183,8 +184,17 @@ class MainActivity : AppCompatActivity() {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             topBar = {
+                val isTopLevel = currentRoute in listOf(
+                    Screen.BudgetView.route,
+                    Screen.Transactions.route,
+                    Screen.Accounts.route,
+                    Screen.Analysis.route,
+                    Screen.BudgetRules.route
+                )
                 MainTopBar(
                     title = topMenuBarState.value.title.ifEmpty { stringResource(R.string.app_name) },
+                    showBackButton = !isTopLevel,
+                    onBackClick = { navController.popBackStack() },
                     onSyncClick = { syncLauncher.launch(Intent(this, SyncActivity::class.java)) },
                     onMenuItemClick = { actionId ->
                         handleMenuAction(actionId, navController)
@@ -192,18 +202,27 @@ class MainActivity : AppCompatActivity() {
                 )
             },
             bottomBar = {
-                MainBottomBar(
-                    currentRoute = currentRoute,
-                    onItemSelected = { route ->
-                        navController.navigate(route) {
-                            popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
+                val isTopLevel = currentRoute in listOf(
+                    Screen.BudgetView.route,
+                    Screen.Transactions.route,
+                    Screen.Accounts.route,
+                    Screen.Analysis.route,
+                    Screen.BudgetRules.route
                 )
+                if (isTopLevel) {
+                    MainBottomBar(
+                        currentRoute = currentRoute,
+                        onItemSelected = { route ->
+                            navController.navigate(route) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                    )
+                }
             }
         ) { paddingValues ->
             Box(
@@ -246,6 +265,8 @@ class MainActivity : AppCompatActivity() {
     @Composable
     fun MainTopBar(
         title: String,
+        showBackButton: Boolean = false,
+        onBackClick: () -> Unit = {},
         onSyncClick: () -> Unit,
         onMenuItemClick: (Int) -> Unit
     ) {
@@ -253,6 +274,16 @@ class MainActivity : AppCompatActivity() {
 
         TopAppBar(
             title = { Text(title) },
+            navigationIcon = {
+                if (showBackButton) {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.go_back)
+                        )
+                    }
+                }
+            },
             actions = {
                 IconButton(onClick = { showMenu = true }) {
                     Icon(

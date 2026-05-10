@@ -3,6 +3,7 @@ package ms.mattschlenkrich.billsprojectionv2.ui.accounts
 import android.app.AlertDialog
 import android.widget.Toast
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +31,10 @@ fun AccountTypesScreenWrapper(
 ) {
     val mainViewModel = mainActivity.mainViewModel
     val accountViewModel = mainActivity.accountViewModel
+
+    LaunchedEffect(Unit) {
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.account_type)
+    }
 
     var searchQuery by remember { mutableStateOf("") }
 
@@ -96,7 +101,9 @@ fun AccountTypeAddScreenWrapper(
     val nf = remember { NumberFunctions() }
     val df = remember { DateFunctions() }
 
-    mainActivity.topMenuBar.title = mainActivity.getString(R.string.add_account_type)
+    LaunchedEffect(Unit) {
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.add_account_type)
+    }
 
     var name by remember { mutableStateOf("") }
     var keepTotals by remember { mutableStateOf(false) }
@@ -166,7 +173,9 @@ fun AccountTypeUpdateScreenWrapper(
 
     val accountType = mainViewModel.getAccountType() ?: return
 
-    mainActivity.topMenuBar.title = mainActivity.getString(R.string.update_account_type)
+    LaunchedEffect(Unit) {
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.update_account_type)
+    }
 
     var name by remember { mutableStateOf(accountType.accountType) }
     var keepTotals by remember { mutableStateOf(accountType.keepTotals) }
