@@ -24,12 +24,14 @@ fun BillsProjectionTheme(
 ) {
     val context = LocalContext.current
     val isPreview = androidx.compose.ui.platform.LocalInspectionMode.current
+    val settingsManager = remember { SettingsManager(context) }
+    val settings = if (isPreview) null else settingsManager.getSettings()
+
     val actualFontScale = fontScale ?: if (isPreview) {
         1.0f
     } else {
-        val settingsManager = remember { SettingsManager(context) }
         val fontSize = try {
-            settingsManager.getSettings().fontSize
+            settings?.fontSize
         } catch (e: Exception) {
             "normal"
         }
@@ -41,13 +43,25 @@ fun BillsProjectionTheme(
         }
     }
 
+    val actualDarkTheme = if (isPreview) {
+        darkTheme
+    } else {
+        when (settings?.themeMode) {
+            "light" -> false
+            "dark" -> true
+            else -> isSystemInDarkTheme()
+        }
+    }
+
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            if (actualDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(
+                context
+            )
         }
 
-        darkTheme -> darkColorScheme()
+        actualDarkTheme -> darkColorScheme()
         else -> lightColorScheme()
     }
 
