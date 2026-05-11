@@ -63,14 +63,14 @@ fun PendingItem(
             text = nf.displayDollars(pending.transaction.transAmount),
             modifier = Modifier.width(90.dp),
             fontWeight = FontWeight.Bold,
-            color = if (isCredit) Color.Black else Color.Red,
+            color = if (isCredit) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error,
             style = MaterialTheme.typography.bodySmall
         )
         Text(
             text = pending.transaction.transName + if (pending.transaction.transNote.isNotBlank()) " - ${pending.transaction.transNote}" else "",
             modifier = Modifier.weight(1f),
             fontWeight = FontWeight.Bold,
-            color = if (isCredit) Color.Black else Color.Red,
+            color = if (isCredit) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error,
             style = MaterialTheme.typography.bodySmall,
             maxLines = 1
         )

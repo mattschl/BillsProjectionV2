@@ -26,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
@@ -62,7 +61,7 @@ fun CalculatorScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp),
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -78,7 +77,10 @@ fun CalculatorScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(120.dp)
-                    .background(Color.LightGray.copy(alpha = 0.2f), RoundedCornerShape(8.dp))
+                    .background(
+                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        RoundedCornerShape(8.dp)
+                    )
                     .padding(8.dp),
                 state = listState
             ) {
@@ -100,60 +102,61 @@ fun CalculatorScreen(
             ) {
                 val buttonModifier = Modifier
                     .size(64.dp)
-                val redButtonColors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFB00020)
+                val primaryButtonColors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 )
-                val whiteButtonColors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White,
-                    contentColor = Color.Black
+                val secondaryButtonColors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                 )
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    CalcButton("7", whiteButtonColors, buttonModifier) { onDigitClick("7") }
-                    CalcButton("8", whiteButtonColors, buttonModifier) { onDigitClick("8") }
-                    CalcButton("9", whiteButtonColors, buttonModifier) { onDigitClick("9") }
+                    CalcButton("7", secondaryButtonColors, buttonModifier) { onDigitClick("7") }
+                    CalcButton("8", secondaryButtonColors, buttonModifier) { onDigitClick("8") }
+                    CalcButton("9", secondaryButtonColors, buttonModifier) { onDigitClick("9") }
                     CalcButton(
                         "/",
-                        redButtonColors,
+                        primaryButtonColors,
                         buttonModifier
                     ) { onOperatorClick("/") }
-                    CalcButton("<-", redButtonColors, buttonModifier) { onBackspaceClick() }
+                    CalcButton("<-", primaryButtonColors, buttonModifier) { onBackspaceClick() }
                 }
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    CalcButton("4", whiteButtonColors, buttonModifier) { onDigitClick("4") }
-                    CalcButton("5", whiteButtonColors, buttonModifier) { onDigitClick("5") }
-                    CalcButton("6", whiteButtonColors, buttonModifier) { onDigitClick("6") }
+                    CalcButton("4", secondaryButtonColors, buttonModifier) { onDigitClick("4") }
+                    CalcButton("5", secondaryButtonColors, buttonModifier) { onDigitClick("5") }
+                    CalcButton("6", secondaryButtonColors, buttonModifier) { onDigitClick("6") }
                     CalcButton(
                         "X",
-                        redButtonColors,
+                        primaryButtonColors,
                         buttonModifier
                     ) { onOperatorClick("X") }
-                    CalcButton("C", redButtonColors, buttonModifier) { onClearClick() }
+                    CalcButton("C", primaryButtonColors, buttonModifier) { onClearClick() }
                 }
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    CalcButton("1", whiteButtonColors, buttonModifier) { onDigitClick("1") }
-                    CalcButton("2", whiteButtonColors, buttonModifier) { onDigitClick("2") }
-                    CalcButton("3", whiteButtonColors, buttonModifier) { onDigitClick("3") }
+                    CalcButton("1", secondaryButtonColors, buttonModifier) { onDigitClick("1") }
+                    CalcButton("2", secondaryButtonColors, buttonModifier) { onDigitClick("2") }
+                    CalcButton("3", secondaryButtonColors, buttonModifier) { onDigitClick("3") }
                     CalcButton(
                         "-",
-                        redButtonColors,
+                        primaryButtonColors,
                         buttonModifier
                     ) { onOperatorClick("-") }
-                    CalcButton("CA", redButtonColors, buttonModifier) { onClearAllClick() }
+                    CalcButton("CA", primaryButtonColors, buttonModifier) { onClearAllClick() }
                 }
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    CalcButton(".", whiteButtonColors, buttonModifier) { onDigitClick(".") }
-                    CalcButton("0", whiteButtonColors, buttonModifier) { onDigitClick("0") }
-                    CalcButton("+/-", whiteButtonColors, buttonModifier) { onDigitClick("-") }
+                    CalcButton(".", secondaryButtonColors, buttonModifier) { onDigitClick(".") }
+                    CalcButton("0", secondaryButtonColors, buttonModifier) { onDigitClick("0") }
+                    CalcButton("+/-", secondaryButtonColors, buttonModifier) { onDigitClick("-") }
                     CalcButton(
                         "+",
-                        redButtonColors,
+                        primaryButtonColors,
                         buttonModifier
                     ) { onOperatorClick("+") }
-                    CalcButton("=", redButtonColors, buttonModifier) { onEqualClick() }
+                    CalcButton("=", primaryButtonColors, buttonModifier) { onEqualClick() }
                 }
             }
 
@@ -164,7 +167,8 @@ fun CalculatorScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFB00020)
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             ) {
                 Text(

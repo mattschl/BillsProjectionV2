@@ -26,7 +26,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -58,7 +57,7 @@ fun AccountsListScreen(
                 Icon(
                     Icons.Default.Add,
                     contentDescription = stringResource(R.string.add_a_new_account),
-                    tint = Color.White
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
@@ -88,7 +87,10 @@ fun AccountsListScreen(
                         modifier = Modifier
                             .align(Alignment.Center)
                             .padding(32.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        ),
                         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                     ) {
                         Text(
@@ -142,7 +144,7 @@ fun AccountChooseScreen(
                 Icon(
                     Icons.Default.Add,
                     contentDescription = stringResource(R.string.add_a_new_account),
-                    tint = Color.White
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
@@ -172,7 +174,10 @@ fun AccountChooseScreen(
                         modifier = Modifier
                             .align(Alignment.Center)
                             .padding(32.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        ),
                         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                     ) {
                         Text(

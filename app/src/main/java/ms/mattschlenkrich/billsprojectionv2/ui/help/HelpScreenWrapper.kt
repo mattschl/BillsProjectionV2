@@ -11,7 +11,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -35,7 +34,7 @@ fun HelpScreenWrapper(activity: MainActivity) {
             text = stringResource(id = R.string.help_text),
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold
         )
@@ -44,7 +43,7 @@ fun HelpScreenWrapper(activity: MainActivity) {
             text = "Version: ${BuildConfig.VERSION_NAME}. Build ${BuildConfig.VERSION_CODE}",
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
-            color = Color.Gray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.bodyMedium
         )
 
@@ -89,14 +88,14 @@ fun HelpSection(titleRes: Int, contentRes: Int) {
         Text(
             text = stringResource(id = titleRes),
             style = MaterialTheme.typography.headlineSmall,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(start = 8.dp)
         )
         Text(
             text = stringResource(id = contentRes),
             style = MaterialTheme.typography.bodyLarge,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(8.dp),
             textAlign = TextAlign.Start
         )

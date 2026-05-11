@@ -77,7 +77,7 @@ fun BudgetItemDisplay(
             text = nf.displayDollars(budgetItem.biProjectedAmount),
             modifier = Modifier.weight(1f),
             fontWeight = FontWeight.Bold,
-            color = if (isCredit) Color.Black else Color.Red,
+            color = if (isCredit) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error,
             style = MaterialTheme.typography.bodySmall
         )
         Column(
@@ -86,14 +86,14 @@ fun BudgetItemDisplay(
             Text(
                 text = budgetItem.biBudgetName,
                 fontWeight = FontWeight.Bold,
-                color = if (isCredit) Color.Black else Color.Red,
+                color = if (isCredit) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall,
                 maxLines = 1
             )
             Text(
                 text = "${budgetItemDetailed.fromAccount?.accountName ?: "Unknown"} -> ${budgetItemDetailed.toAccount?.accountName ?: "Unknown"}",
                 style = MaterialTheme.typography.labelSmall,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 2
             )
             if (budgetItem.biIsFixed || budgetItem.biIsAutomatic) {
@@ -101,7 +101,7 @@ fun BudgetItemDisplay(
                     text = (if (budgetItem.biIsFixed) "Fixed" else "Variable") +
                             (if (budgetItem.biIsAutomatic) ", Automatic" else ""),
                     style = MaterialTheme.typography.labelSmall,
-                    color = Color.Red,
+                    color = MaterialTheme.colorScheme.tertiary,
                     maxLines = 1
                 )
             }
@@ -118,7 +118,7 @@ fun BudgetItemDisplay(
                     .size(24.dp)
                     .clickable { onLockClick() }
                     .padding(4.dp),
-                tint = if (budgetItem.biLocked) Color.Red else Color.Black
+                tint = if (budgetItem.biLocked) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
             )
         }
     }

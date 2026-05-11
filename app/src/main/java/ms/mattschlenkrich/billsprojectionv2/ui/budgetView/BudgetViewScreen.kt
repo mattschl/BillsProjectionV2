@@ -33,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
@@ -121,7 +120,7 @@ fun BudgetViewScreen(
                 Icon(
                     Icons.Default.Add,
                     contentDescription = stringResource(R.string.add),
-                    tint = Color.White
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
@@ -155,7 +154,7 @@ fun BudgetViewScreen(
                         .fillMaxWidth()
                         .padding(vertical = 4.dp),
                     textAlign = TextAlign.Center,
-                    color = if (pendingAmount < 0) Color.Red else Color.Black,
+                    color = if (pendingAmount < 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleMedium
                 )
@@ -297,7 +296,7 @@ fun SummaryCard(
                         text = nf.displayDollars(amount),
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.bodyLarge,
-                        color = if (!asset.accountType.keepTotals && asset.account.accountOwing >= 0.0) Color.Red else Color.Black,
+                        color = if (!asset.accountType.keepTotals && asset.account.accountOwing >= 0.0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.clickable { onAccountClick() }
                     )
 
@@ -338,7 +337,7 @@ fun SummaryCard(
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = 1.dp),
                 thickness = 1.dp,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.outline
             )
 
             TotalsSection(
@@ -359,7 +358,9 @@ fun TotalsSection(
             text = if (budgetTotals.credits > 0.0) stringResource(R.string.credits_) + nf.displayDollars(
                 budgetTotals.credits
             ) else stringResource(R.string.no_credits),
-            color = if (budgetTotals.credits > 0.0) Color.Black else Color.Gray,
+            color = if (budgetTotals.credits > 0.0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(
+                alpha = 0.4f
+            ),
             style = MaterialTheme.typography.bodySmall
         )
         Text(
@@ -368,7 +369,9 @@ fun TotalsSection(
             ) else stringResource(
                 R.string.no_debits
             ),
-            color = if (budgetTotals.debits > 0.0) Color.Red else Color.Gray,
+            color = if (budgetTotals.debits > 0.0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface.copy(
+                alpha = 0.4f
+            ),
             style = MaterialTheme.typography.bodySmall
         )
     }
@@ -377,14 +380,18 @@ fun TotalsSection(
             text = if (budgetTotals.fixedExpenses > 0.0) stringResource(R.string.fixed_expenses) + nf.displayDollars(
                 budgetTotals.fixedExpenses
             ) else stringResource(R.string.no_fixed_expenses),
-            color = if (budgetTotals.fixedExpenses > 0.0) Color.Red else Color.Gray,
+            color = if (budgetTotals.fixedExpenses > 0.0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface.copy(
+                alpha = 0.4f
+            ),
             style = MaterialTheme.typography.bodySmall
         )
         Text(
             text = if (budgetTotals.otherExpenses > 0.0) stringResource(R.string.discretionary_) + nf.displayDollars(
                 budgetTotals.otherExpenses
             ) else stringResource(R.string.no_discretionary_expenses),
-            color = if (budgetTotals.otherExpenses > 0.0) Color.Blue else Color.Gray,
+            color = if (budgetTotals.otherExpenses > 0.0) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurface.copy(
+                alpha = 0.4f
+            ),
             style = MaterialTheme.typography.bodySmall
         )
     }
@@ -413,7 +420,7 @@ fun SurplusDeficitInfo(
         )
         else stringResource(R.string.deficit_of) + nf.displayDollars(-surplus),
         fontWeight = FontWeight.Bold,
-        color = if (surplus >= 0.0) Color.Black else Color.Red,
+        color = if (surplus >= 0.0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error,
         textAlign = TextAlign.Center,
         style = MaterialTheme.typography.bodySmall,
         modifier = Modifier.width(110.dp)
