@@ -30,7 +30,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -84,12 +83,12 @@ fun TransactionEditScreen(
             FloatingActionButton(
                 onClick = onSaveClick,
                 modifier = Modifier.padding(16.dp),
-                containerColor = Color(0xFFB00020)
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Icon(
                     Icons.Default.Done,
-                    contentDescription = stringResource(R.string.save),
-                    tint = Color.White
+                    contentDescription = stringResource(R.string.save)
                 )
             }
         }
@@ -219,12 +218,12 @@ fun TransactionPerformScreen(
             FloatingActionButton(
                 onClick = onSaveClick,
                 modifier = Modifier.padding(16.dp),
-                containerColor = Color(0xFFB00020)
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Icon(
                     Icons.Default.Done,
-                    contentDescription = stringResource(R.string.save),
-                    tint = Color.White
+                    contentDescription = stringResource(R.string.save)
                 )
             }
         }
@@ -394,12 +393,12 @@ fun TransactionSplitScreen(
             FloatingActionButton(
                 onClick = onSaveClick,
                 modifier = Modifier.padding(16.dp),
-                containerColor = Color(0xFFB00020)
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Icon(
                     Icons.Default.Done,
-                    contentDescription = stringResource(R.string.save),
-                    tint = Color.White
+                    contentDescription = stringResource(R.string.save)
                 )
             }
         }

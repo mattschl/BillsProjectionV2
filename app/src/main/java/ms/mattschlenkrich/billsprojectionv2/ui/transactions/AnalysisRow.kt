@@ -19,8 +19,8 @@ import androidx.compose.ui.unit.dp
 fun AnalysisRow(
     label1: String, value1: String,
     label2: String, value2: String,
-    value1Color: Color = Color.Black,
-    value2Color: Color = Color.Black
+    value1Color: Color = MaterialTheme.colorScheme.onSurface,
+    value2Color: Color = MaterialTheme.colorScheme.onSurface
 ) {
     Row(modifier = Modifier.fillMaxWidth()) {
         Column(
@@ -31,6 +31,7 @@ fun AnalysisRow(
             Text(
                 text = label1,
                 style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -50,6 +51,7 @@ fun AnalysisRow(
             Text(
                 text = label2,
                 style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

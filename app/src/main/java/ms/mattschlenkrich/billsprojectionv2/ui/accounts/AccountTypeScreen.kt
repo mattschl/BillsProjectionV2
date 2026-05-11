@@ -58,12 +58,12 @@ fun AccountTypeListScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddClick,
-                containerColor = MaterialTheme.colorScheme.error
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Icon(
                     Icons.Default.Add,
-                    contentDescription = stringResource(R.string.add_a_new_account_type),
-                    tint = Color.White
+                    contentDescription = stringResource(R.string.add_a_new_account_type)
                 )
             }
         }
@@ -78,7 +78,10 @@ fun AccountTypeListScreen(
                     modifier = Modifier
                         .align(Alignment.Center)
                         .padding(32.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
                     elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                 ) {
                     Text(
@@ -189,12 +192,12 @@ fun AccountTypeFormScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onSaveClick,
-                containerColor = Color(0xFFB00020)
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Icon(
                     Icons.Default.Save,
-                    contentDescription = fabContentDescription,
-                    tint = Color.White
+                    contentDescription = fabContentDescription
                 )
             }
         }

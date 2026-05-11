@@ -22,7 +22,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -72,12 +71,12 @@ fun AccountEditScreen(
             if (onSaveClick != null) {
                 FloatingActionButton(
                     onClick = onSaveClick,
-                    containerColor = Color(0xFFB00020)
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 ) {
                     Icon(
                         Icons.Default.Check,
-                        contentDescription = stringResource(R.string.save),
-                        tint = Color.White
+                        contentDescription = stringResource(R.string.save)
                     )
                 }
             }
@@ -123,7 +122,7 @@ fun AccountEditScreen(
                 Text(
                     text = accountTypeDetails,
                     style = MaterialTheme.typography.labelSmall,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(start = 4.dp)
                 )
             }
@@ -169,7 +168,7 @@ fun AccountEditScreen(
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "ID: $accountId",
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 4.dp),

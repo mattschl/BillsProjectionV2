@@ -349,7 +349,8 @@ class MainActivity : AppCompatActivity() {
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = colorResource(id = R.color.ic_bills_projection_background),
                 titleContentColor = Color.Black,
-                actionIconContentColor = Color.Black
+                actionIconContentColor = Color.Black,
+                navigationIconContentColor = Color.Black
             )
         )
     }

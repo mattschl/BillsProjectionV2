@@ -64,7 +64,7 @@ fun AccountChooseItem(
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.weight(1f),
-                color = if (displayInBudget) Color.Red else Color.Black
+                color = if (displayInBudget) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurface
             )
             Box(
                 modifier = Modifier

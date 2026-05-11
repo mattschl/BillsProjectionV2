@@ -105,7 +105,7 @@ fun TransactionHistoryItem(
                 Text(
                     text = stringResource(R.string.pending),
                     style = MaterialTheme.typography.labelSmall,
-                    color = Color.Red,
+                    color = MaterialTheme.colorScheme.error,
                     fontWeight = FontWeight.Bold
                 )
             }

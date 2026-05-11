@@ -6,10 +6,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -61,7 +61,7 @@ fun AnalysisCard(
                     value1 = nf.displayDollars((sumToAccount ?: 0.0) / months) + " / $months",
                     label2 = stringResource(R.string.debit_average),
                     value2 = nf.displayDollars((sumFromAccount ?: 0.0) / months),
-                    value2Color = Color.Red
+                    value2Color = MaterialTheme.colorScheme.error
                 )
             } else {
                 AnalysisRow(
@@ -87,7 +87,7 @@ fun AnalysisCard(
                     value1 = nf.displayDollars(sumToAccount ?: 0.0),
                     label2 = stringResource(R.string.total_debits),
                     value2 = nf.displayDollars(sumFromAccount ?: 0.0),
-                    value2Color = Color.Red
+                    value2Color = MaterialTheme.colorScheme.error
                 )
             } else {
                 AnalysisRow(

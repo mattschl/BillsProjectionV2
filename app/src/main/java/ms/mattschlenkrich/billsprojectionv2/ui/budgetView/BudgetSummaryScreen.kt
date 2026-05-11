@@ -218,7 +218,7 @@ fun BudgetSummary(
                 else stringResource(R.string.deficit_of) + nf.displayDollars(-diff),
                 style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.Bold,
-                color = if (diff >= 0) Color.Unspecified else Color.Red,
+                color = if (diff >= 0) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
         }
@@ -268,7 +268,7 @@ fun BudgetListItem(
         } else nf.displayDollars(if (showFullDetails) budgetRule.budgetAmount else amt)
 
     val textColor =
-        if (fromAccount.accountType!!.isAsset || fromAccount.accountType.displayAsAsset) Color.Red else Color.Black
+        if (fromAccount.accountType!!.isAsset || fromAccount.accountType.displayAsAsset) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
 
     Column(
         modifier = Modifier
