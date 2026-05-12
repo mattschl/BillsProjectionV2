@@ -259,7 +259,11 @@ fun TransactionPerformScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = stringResource(R.string.amount), modifier = Modifier.weight(1f))
+                Text(
+                    text = stringResource(R.string.amount),
+                    modifier = Modifier.weight(1f),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
                 ProjectBalanceField(
                     value = amount,
                     onValueChange = onAmountChange,
@@ -300,12 +304,14 @@ fun TransactionPerformScreen(
                     ) {
                         Text(
                             text = stringResource(R.string.remainder),
-                            style = MaterialTheme.typography.labelMedium
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
                             text = nf.displayDollars(remainder),
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = if (remainder >= 0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error
                         )
                     }
                 }
@@ -530,7 +536,8 @@ fun TransactionAccountField(
                 )
                 Text(
                     text = stringResource(R.string.pending),
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         }

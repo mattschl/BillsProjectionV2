@@ -112,7 +112,11 @@ fun LabeledCheckbox(
 ) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
         Checkbox(checked = checked, onCheckedChange = onCheckedChange)
-        Text(text = label, style = ProjectFieldDefaults.labelStyle())
+        Text(
+            text = label,
+            style = ProjectFieldDefaults.labelStyle(),
+            color = MaterialTheme.colorScheme.onSurface
+        )
     }
 }
 
@@ -168,12 +172,14 @@ fun BudgetRuleItem(
             Text(
                 text = stringResource(R.string.to_) + (budgetRuleDetailed.toAccount?.accountName
                     ?: ""),
-                style = MaterialTheme.typography.labelMedium
+                style = MaterialTheme.typography.labelMedium,
+                color = contentColor.copy(alpha = 0.8f)
             )
             Text(
                 text = stringResource(R.string.from_) + (budgetRuleDetailed.fromAccount?.accountName
                     ?: ""),
-                style = MaterialTheme.typography.labelMedium
+                style = MaterialTheme.typography.labelMedium,
+                color = contentColor.copy(alpha = 0.8f)
             )
 
             val amount = nf.displayDollars(rule.budgetAmount)
@@ -186,12 +192,14 @@ fun BudgetRuleItem(
             Text(
                 text = info,
                 style = MaterialTheme.typography.bodyMedium,
+                color = contentColor,
                 modifier = Modifier.padding(top = 8.dp)
             )
             if (isDeleted) {
                 Text(
                     text = stringResource(R.string.deleted),
                     style = MaterialTheme.typography.labelMedium,
+                    color = contentColor,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -239,6 +247,7 @@ fun BudgetRuleChooseItem(
                 text = rule.budgetRuleName + if (isDeleted) " " + stringResource(R.string.deleted) else "",
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.bodySmall,
+                color = contentColor,
                 modifier = Modifier.weight(1f)
             )
             Box(

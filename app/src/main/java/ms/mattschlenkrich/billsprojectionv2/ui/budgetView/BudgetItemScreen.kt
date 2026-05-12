@@ -172,7 +172,8 @@ fun BudgetItemScreen(
                     Checkbox(checked = isFixed, onCheckedChange = onIsFixedChange)
                     Text(
                         stringResource(R.string.fixed),
-                        style = MaterialTheme.typography.labelSmall
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
@@ -211,7 +212,8 @@ private fun LabeledCheckbox(
         Checkbox(checked = checked, onCheckedChange = onCheckedChange)
         Text(
             text = label,
-            style = MaterialTheme.typography.labelSmall
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }

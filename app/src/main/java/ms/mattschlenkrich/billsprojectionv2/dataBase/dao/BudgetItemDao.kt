@@ -114,7 +114,7 @@ interface BudgetItemDao {
                 "AND $BI_IS_CANCELLED = 0 " +
                 "AND $BI_LOCKED = 0"
     )
-    suspend fun deleteFutureBudgetItems(currentDate: String, updateTime: String)
+    suspend fun deleteFutureItems(currentDate: String, updateTime: String)
 
 
     @Query(
@@ -126,7 +126,8 @@ interface BudgetItemDao {
                 "$BI_IS_MANUALLY_ENTERED = 0 " +
                 "WHERE $BI_ACTUAL_DATE >= :currentDate " +
                 "AND $BI_IS_COMPLETED = 0 " +
-                "AND $BI_IS_CANCELLED = 0 "
+                "AND $BI_IS_CANCELLED = 0 " +
+                "AND $BI_LOCKED = 0"
     )
     suspend fun killFutureBudgetItems(currentDate: String, updateTime: String)
 

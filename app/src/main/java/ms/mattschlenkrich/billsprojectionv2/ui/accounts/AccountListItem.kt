@@ -63,6 +63,7 @@ fun AccountListItem(
                     text = account.accountName,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleMedium,
+                    color = contentColor,
                     modifier = Modifier.weight(1f)
                 )
                 Box(
@@ -74,7 +75,8 @@ fun AccountListItem(
             if (showType) {
                 Text(
                     text = accountWithType.accountType?.accountType ?: "",
-                    style = MaterialTheme.typography.labelSmall
+                    style = MaterialTheme.typography.labelSmall,
+                    color = contentColor.copy(alpha = 0.7f)
                 )
             }
 
@@ -83,6 +85,7 @@ fun AccountListItem(
                 Text(
                     text = info,
                     style = MaterialTheme.typography.bodySmall,
+                    color = contentColor,
                     modifier = Modifier.padding(top = 8.dp)
                 )
             }
