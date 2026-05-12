@@ -65,12 +65,12 @@ class UpdateBudgetPredictions(
         for (rule in payDayBudgetRuleList) {
             val endDate = if (rule.budEndDate!! > stopDate) stopDate else rule.budEndDate
             val payDates = projectBudgetDates.projectDates(
-                rule.budStartDate,
-                endDate,
-                rule.budFrequencyCount.toLong(),
-                rule.budFrequencyTypeId,
-                rule.budDayOfWeekId,
-                rule.budLeadDays.toLong()
+                startDate = rule.budStartDate,
+                endDate = endDate,
+                interval = rule.budFrequencyCount.toLong(),
+                intervalTypeId = rule.budFrequencyTypeId,
+                dayOfWeekId = rule.budDayOfWeekId,
+                leadDays = rule.budLeadDays.toLong()
             )
             for (date in payDates) {
                 insertOrRewriteBudgetItem(
@@ -107,12 +107,12 @@ class UpdateBudgetPredictions(
         for (rule in rulesOther) {
             val endDate = if (rule.budEndDate!! > stopDate) stopDate else rule.budEndDate
             val payDates = projectBudgetDates.projectDates(
-                rule.budStartDate,
-                endDate,
-                rule.budFrequencyCount.toLong(),
-                rule.budFrequencyTypeId,
-                rule.budDayOfWeekId,
-                rule.budLeadDays.toLong()
+                startDate = rule.budStartDate,
+                endDate = endDate,
+                interval = rule.budFrequencyCount.toLong(),
+                intervalTypeId = rule.budFrequencyTypeId,
+                dayOfWeekId = rule.budDayOfWeekId,
+                leadDays = rule.budLeadDays.toLong()
             )
             for (date in payDates) {
                 val assignedPayDay = findPayDayForDate(date, payDays)
@@ -145,18 +145,18 @@ class UpdateBudgetPredictions(
         updateTime: String
     ) {
         val newBudgetItem = BudgetItem(
-            rule.ruleId,
-            projectedDate,
-            actualDate,
-            payDay,
-            rule.budgetRuleName,
-            rule.budIsPayDay,
-            rule.budToAccountId,
-            rule.budFromAccountId,
-            rule.budgetAmount,
-            false,
-            rule.budFixedAmount,
-            rule.budIsAutoPay,
+            biRuleId = rule.ruleId,
+            biProjectedDate = projectedDate,
+            biActualDate = actualDate,
+            biPayDay = payDay,
+            biBudgetName = rule.budgetRuleName,
+            biIsPayDayItem = rule.budIsPayDay,
+            biToAccountId = rule.budToAccountId,
+            biFromAccountId = rule.budFromAccountId,
+            biProjectedAmount = rule.budgetAmount,
+            biIsPending = false,
+            biIsFixed = rule.budFixedAmount,
+            biIsAutomatic = rule.budIsAutoPay,
             biManuallyEntered = false,
             biLocked = false,
             biIsCompleted = false,
@@ -168,22 +168,22 @@ class UpdateBudgetPredictions(
             budgetItemViewModel.insertBudgetItemSync(newBudgetItem)
         } catch (e: SQLiteConstraintException) {
             // Row exists, rewrite it
+            Log.d(TAG, "THE BUDGET ITEM WAS NOT ADDED - rewriting now.\n $e")
+            budgetItemViewModel.rewriteBudgetItem(
+                budgetRuleId = rule.ruleId,
+                projectedDate = projectedDate,
+                actualDate = actualDate,
+                payDay = payDay,
+                budgetName = rule.budgetRuleName,
+                isPayDay = rule.budIsPayDay,
+                toAccountId = rule.budToAccountId,
+                fromAccountId = rule.budFromAccountId,
+                projectedAmount = rule.budgetAmount,
+                isFixed = rule.budFixedAmount,
+                isAutomatic = rule.budIsAutoPay,
+                updateTime = updateTime
+            )
         }
-        // Always attempt rewrite to ensure valid future items are "undeleted" and updated
-        budgetItemViewModel.rewriteBudgetItem(
-            rule.ruleId,
-            projectedDate,
-            actualDate,
-            payDay,
-            rule.budgetRuleName,
-            rule.budIsPayDay,
-            rule.budToAccountId,
-            rule.budFromAccountId,
-            rule.budgetAmount,
-            rule.budFixedAmount,
-            rule.budIsAutoPay,
-            updateTime
-        )
     }
 
     private fun getBudgetRulesOther(
