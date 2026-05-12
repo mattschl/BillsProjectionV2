@@ -31,7 +31,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -436,12 +435,12 @@ fun BudgetRuleUpdateScreenWrapper(
 
                 FloatingActionButton(
                     onClick = { updateBudgetRuleIfValid() },
-                    containerColor = Color(0xFFB00020)
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 ) {
                     Icon(
                         Icons.Default.Done,
-                        contentDescription = "Update",
-                        tint = Color.White
+                        contentDescription = "Update"
                     )
                 }
             }

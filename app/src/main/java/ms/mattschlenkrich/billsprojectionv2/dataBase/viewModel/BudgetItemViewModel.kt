@@ -33,11 +33,11 @@ class BudgetItemViewModel(
     /*  suspend fun purgeOldBudgetItemsSync(cutoffDate: String) =
           budgetItemRepository.purgeOldBudgetItems(cutoffDate)*/
 
-    /* suspend fun deleteFutureBudgetItemsSync(currentDate: String, updateTime: String) =
-         budgetItemRepository.deleteFutureBudgetItems(currentDate, updateTime)*/
+    suspend fun deleteFutureItemsSync(currentDate: String, updateTime: String) =
+        budgetItemRepository.deleteFutureItems(currentDate, updateTime)
 
-    /* suspend fun killFutureBudgetItemsSync(currentDate: String, updateTime: String) =
-         budgetItemRepository.killFutureBudgetItems(currentDate, updateTime)*/
+    suspend fun killFutureBudgetItemsSync(currentDate: String, updateTime: String) =
+        budgetItemRepository.killFutureBudgetItems(currentDate, updateTime)
 
     fun insertBudgetItem(budgetItem: BudgetItem) = viewModelScope.launch {
         budgetItemRepository.insertBudgetItem(budgetItem)
@@ -69,8 +69,8 @@ class BudgetItemViewModel(
     fun getPayDaysActive() = budgetItemRepository.getPayDaysActive()
 
 
-    fun deleteFutureBudgetItems(currentDate: String, updateTime: String) = viewModelScope.launch {
-        budgetItemRepository.deleteFutureBudgetItems(
+    fun deleteFutureItems(currentDate: String, updateTime: String) = viewModelScope.launch {
+        budgetItemRepository.deleteFutureItems(
             currentDate, updateTime
         )
     }

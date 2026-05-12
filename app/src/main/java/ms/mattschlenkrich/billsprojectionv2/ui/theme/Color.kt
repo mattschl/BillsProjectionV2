@@ -28,29 +28,29 @@ val LightOnSurfaceVariant = Color(0xFF44474E)
 val LightOutline = Color(0xFF74777F)
 
 // Dark Colors
-val DarkPrimary = Color(0xFFD0E4FF)
-val DarkOnPrimary = Color(0xFF00315C)
+val DarkPrimary = Color(0xFF99C9FF) // More vivid light blue
+val DarkOnPrimary = Color(0xFF000000) // High contrast black on light blue
 val DarkPrimaryContainer = Color(0xFF004787)
 val DarkOnPrimaryContainer = Color(0xFFD3E4FF)
-val DarkSecondary = Color(0xFFA9F7BB)
-val DarkOnSecondary = Color(0xFF00391D)
+val DarkSecondary = Color(0xFF7FFFB0) // More vivid light green
+val DarkOnSecondary = Color(0xFF000000) // High contrast black on light green
 val DarkSecondaryContainer = Color(0xFF00522C)
 val DarkOnSecondaryContainer = Color(0xFFA9F7BB)
 val DarkTertiary = Color(0xFFFFB4AB)
-val DarkOnTertiary = Color(0xFF690005)
+val DarkOnTertiary = Color(0xFF000000)
 val DarkTertiaryContainer = Color(0xFF93000A)
 val DarkOnTertiaryContainer = Color(0xFFFFDAD6)
 val DarkError = Color(0xFFFFB4AB)
-val DarkOnError = Color(0xFF690005)
+val DarkOnError = Color(0xFF000000)
 val DarkErrorContainer = Color(0xFF93000A)
 val DarkOnErrorContainer = Color(0xFFFFDAD6)
-val DarkBackground = Color(0xFF1A1C1E)
-val DarkOnBackground = Color(0xFFE2E2E6)
-val DarkSurface = Color(0xFF1A1C1E)
-val DarkOnSurface = Color(0xFFE2E2E6)
-val DarkSurfaceVariant = Color(0xFF3F474D)
-val DarkOnSurfaceVariant = Color(0xFFD1E4FF)
-val DarkOutline = Color(0xFF8D9199)
+val DarkBackground = Color(0xFF000000) // Pure Black
+val DarkOnBackground = Color(0xFFFFFFFF) // Pure White
+val DarkSurface = Color(0xFF121212) // Material Dark Gray
+val DarkOnSurface = Color(0xFFFFFFFF) // Pure White
+val DarkSurfaceVariant = Color(0xFF2C2C2C) // Darker variant
+val DarkOnSurfaceVariant = Color(0xFFE0E0E0) // Lighter for contrast
+val DarkOutline = Color(0xFFB0B0B0)
 
 // Branded Green
 val AppIconGreen = Color(0xFF9CED79)
