@@ -87,7 +87,7 @@ fun ProjectTextField(
         },
         modifier = modifier
             .fillMaxWidth()
-            .defaultMinSize(minHeight = ProjectFieldDefaults.MinHeight),
+            .defaultMinSize(minHeight = ProjectFieldDefaults.minHeight()),
         enabled = enabled,
         readOnly = readOnly,
         textStyle = textStyle.copy(color = MaterialTheme.colorScheme.onSurface),
@@ -181,7 +181,7 @@ fun ProjectTextField(
         onValueChange = onValueChange,
         modifier = modifier
             .fillMaxWidth()
-            .defaultMinSize(minHeight = ProjectFieldDefaults.MinHeight),
+            .defaultMinSize(minHeight = ProjectFieldDefaults.minHeight()),
         enabled = enabled,
         readOnly = readOnly,
         textStyle = textStyle.copy(color = MaterialTheme.colorScheme.onSurface),

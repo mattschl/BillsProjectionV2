@@ -5,12 +5,20 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 object ProjectFieldDefaults {
-    val MinHeight = 36.dp
+    @Composable
+    fun minHeight(): Dp {
+        val fontSize = MaterialTheme.typography.bodyMedium.fontSize
+        return with(LocalDensity.current) {
+            fontSize.toDp() * 2f
+        }
+    }
 
     @Composable
     fun shape(): Shape = OutlinedTextFieldDefaults.shape
