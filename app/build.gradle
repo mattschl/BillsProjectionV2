@@ -33,19 +33,20 @@ android {
         minSdk 28
         targetSdk 37
         //noinspection EditedTargetSdkVersion
-        versionCode 14
+        versionCode 15
         versionName 'v2'
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        versionNameSuffix '-new syncing'
+        versionNameSuffix '-Dark Mode'
         signingConfig signingConfigs.debug
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
