@@ -178,6 +178,7 @@ fun BudgetRuleScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            Spacer(modifier = Modifier.height(4.dp))
             ProjectTextField(
                 value = name,
                 onValueChange = onNameChange,
