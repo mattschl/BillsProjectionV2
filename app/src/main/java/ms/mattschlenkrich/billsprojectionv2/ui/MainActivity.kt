@@ -49,6 +49,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -455,7 +456,7 @@ class MainActivity : AppCompatActivity() {
     private fun deleteFuturePredictions() {
         val updateBudgetPredictions =
             UpdateBudgetPredictions(this)
-        CoroutineScope(Dispatchers.IO).launch {
+        lifecycleScope.launch {
             updateBudgetPredictions.killPredictions()
         }
     }

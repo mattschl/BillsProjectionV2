@@ -7,7 +7,7 @@ val LightPrimary = Color(0xFF073763)
 val LightOnPrimary = Color(0xFFFFFFFF)
 val LightPrimaryContainer = Color(0xFFD3E4FF)
 val LightOnPrimaryContainer = Color(0xFF001C38)
-val LightSecondary = Color(0xFF00A86B)
+val LightSecondary = Color(0xFF9CED79)
 val LightOnSecondary = Color(0xFFFFFFFF)
 val LightSecondaryContainer = Color(0xFFA9F7BB)
 val LightOnSecondaryContainer = Color(0xFF00210E)
@@ -32,7 +32,7 @@ val DarkPrimary = Color(0xFF99C9FF) // More vivid light blue
 val DarkOnPrimary = Color(0xFF000000) // High contrast black on light blue
 val DarkPrimaryContainer = Color(0xFF004787)
 val DarkOnPrimaryContainer = Color(0xFFD3E4FF)
-val DarkSecondary = Color(0xFF7FFFB0) // More vivid light green
+val DarkSecondary = Color(0xFF9CED79) // More vivid light green
 val DarkOnSecondary = Color(0xFF000000) // High contrast black on light green
 val DarkSecondaryContainer = Color(0xFF00522C)
 val DarkOnSecondaryContainer = Color(0xFFA9F7BB)
@@ -53,5 +53,6 @@ val DarkOnSurfaceVariant = Color(0xFFE0E0E0) // Lighter for contrast
 val DarkOutline = Color(0xFFB0B0B0)
 
 // Branded Green
+@Suppress("unused")
 val AppIconGreen = Color(0xFF9CED79)
 val AppIconGreenDark = Color(0xFF29A860)

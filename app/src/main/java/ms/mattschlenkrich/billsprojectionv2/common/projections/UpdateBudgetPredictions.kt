@@ -2,7 +2,6 @@ package ms.mattschlenkrich.billsprojectionv2.common.projections
 
 import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
-import kotlinx.coroutines.runBlocking
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
@@ -19,14 +18,12 @@ class UpdateBudgetPredictions(
     private val df = DateFunctions()
     private val projectBudgetDates = ProjectBudgetDates(mainActivity)
 
-    fun killPredictions(): Boolean {
+    suspend fun killPredictions(): Boolean {
         try {
             val startDate = LocalDate.now().minusWeeks(2).toString()
-            runBlocking {
-                budgetItemViewModel.killFutureBudgetItemsSync(
-                    startDate, df.getCurrentTimeAsString()
-                )
-            }
+            budgetItemViewModel.killFutureBudgetItemsSync(
+                startDate, df.getCurrentTimeAsString()
+            )
         } catch (e: Exception) {
             Log.e(TAG, "An unknown error occurred", e)
             return false
