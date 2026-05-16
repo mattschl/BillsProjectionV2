@@ -65,7 +65,11 @@ fun BudgetViewScreenWrapper(
     LaunchedEffect(payDayList, selectedAsset) {
         if (payDayList.isNotEmpty()) {
             val currentPayDay = mainViewModel.getReturnToPayDay()
-            if (currentPayDay == null || !payDayList.contains(currentPayDay)) {
+            if (currentPayDay == null) {
+                // If this is the initial load on startup, select the earliest payday
+                // to ensure any uncompleted items from the past are shown.
+                mainViewModel.setReturnToPayDay(payDayList.first())
+            } else if (!payDayList.contains(currentPayDay)) {
                 // If the current payday is not in the list for the new asset,
                 // find the first payday that is equal to or after today.
                 val today = DateFunctions().getCurrentDateAsString()
