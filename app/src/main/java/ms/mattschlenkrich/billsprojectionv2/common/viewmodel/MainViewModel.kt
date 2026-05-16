@@ -32,7 +32,6 @@ class MainViewModel(
     fun setReturnToAsset(newAsset: String?) {
         if (_returnToAsset.value != newAsset) {
             _returnToAsset.value = newAsset
-            _returnToPayDay.value = null
         }
     }
 
