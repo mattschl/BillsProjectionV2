@@ -60,12 +60,20 @@ fun BudgetRuleChooseScreenWrapper(
                     if (callingFragments.contains(FRAG_TRANSACTION_SPLIT)) {
                         val mTransactionSplit = mainViewModel.getSplitTransactionDetailed()
                         mainViewModel.setSplitTransactionDetailed(
-                            mTransactionSplit?.copy(budgetRule = budgetRuleDetailed.budgetRule)
+                            mTransactionSplit?.copy(
+                                budgetRule = budgetRuleDetailed.budgetRule,
+                                toAccount = budgetRuleDetailed.toAccount,
+                                fromAccount = budgetRuleDetailed.fromAccount
+                            )
                         )
                     } else {
                         val mTransaction = mainViewModel.getTransactionDetailed()
                         mainViewModel.setTransactionDetailed(
-                            mTransaction?.copy(budgetRule = budgetRuleDetailed.budgetRule)
+                            mTransaction?.copy(
+                                budgetRule = budgetRuleDetailed.budgetRule,
+                                toAccount = budgetRuleDetailed.toAccount,
+                                fromAccount = budgetRuleDetailed.fromAccount
+                            )
                         )
                     }
                     if (callingFragments.contains(FRAG_BUDGET_ITEM_ADD) || callingFragments.contains(
@@ -74,7 +82,11 @@ fun BudgetRuleChooseScreenWrapper(
                     ) {
                         val mBudgetDetailed = mainViewModel.getBudgetItemDetailed()
                         mainViewModel.setBudgetItemDetailed(
-                            mBudgetDetailed?.copy(budgetRule = budgetRuleDetailed.budgetRule)
+                            mBudgetDetailed?.copy(
+                                budgetRule = budgetRuleDetailed.budgetRule,
+                                toAccount = budgetRuleDetailed.toAccount,
+                                fromAccount = budgetRuleDetailed.fromAccount
+                            )
                         )
                     }
                     navController.popBackStack()

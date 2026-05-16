@@ -46,20 +46,34 @@ fun BudgetItemUpdateScreenWrapper(
     LaunchedEffect(Unit) {
         mainActivity.topMenuBar.title = mainActivity.getString(R.string.update_this_budget_item)
         if (budgetItemDetailedCached != null) {
-            dateState.value = budgetItemDetailedCached.budgetItem?.biActualDate ?: ""
-            nameState.value = budgetItemDetailedCached.budgetItem?.biBudgetName ?: ""
-            payDayState.value = budgetItemDetailedCached.budgetItem?.biPayDay ?: ""
-            amountState.value = nf.displayDollars(
-                if (mainViewModel.getTransferNum() != 0.0) {
-                    mainViewModel.getTransferNum()!!
-                } else {
-                    budgetItemDetailedCached.budgetItem?.biProjectedAmount ?: 0.0
-                }
-            )
-            isFixedState.value = budgetItemDetailedCached.budgetItem?.biIsFixed ?: false
-            isPayDayItemState.value = budgetItemDetailedCached.budgetItem?.biIsPayDayItem ?: false
-            isAutoState.value = budgetItemDetailedCached.budgetItem?.biIsAutomatic ?: false
-            isLockedState.value = budgetItemDetailedCached.budgetItem?.biLocked ?: true
+            val item = budgetItemDetailedCached.budgetItem
+            val rule = budgetItemDetailedCached.budgetRule
+            val ruleChanged = rule != null && rule.ruleId != item?.biRuleId
+
+            dateState.value = item?.biActualDate ?: ""
+
+            if (ruleChanged || item?.biBudgetName.isNullOrBlank()) {
+                nameState.value = rule?.budgetRuleName ?: ""
+                amountState.value = nf.displayDollars(
+                    if (mainViewModel.getTransferNum() != 0.0) mainViewModel.getTransferNum()!!
+                    else rule?.budgetAmount ?: 0.0
+                )
+                isFixedState.value = rule?.budFixedAmount ?: false
+                isPayDayItemState.value = rule?.budIsPayDay ?: false
+                isAutoState.value = rule?.budIsAutoPay ?: false
+            } else {
+                nameState.value = item?.biBudgetName ?: ""
+                amountState.value = nf.displayDollars(
+                    if (mainViewModel.getTransferNum() != 0.0) mainViewModel.getTransferNum()!!
+                    else item?.biProjectedAmount ?: 0.0
+                )
+                isFixedState.value = item?.biIsFixed ?: false
+                isPayDayItemState.value = item?.biIsPayDayItem ?: false
+                isAutoState.value = item?.biIsAutomatic ?: false
+            }
+
+            payDayState.value = item?.biPayDay ?: ""
+            isLockedState.value = item?.biLocked ?: true
             mainViewModel.setTransferNum(0.0)
         }
     }
@@ -84,7 +98,7 @@ fun BudgetItemUpdateScreenWrapper(
             biIsCancelled = false,
             biIsDeleted = false,
             biUpdateTime = df.getCurrentTimeAsString(),
-            biLocked = true,
+            biLocked = isLockedState.value,
         )
     }
 

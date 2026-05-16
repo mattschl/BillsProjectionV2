@@ -65,20 +65,24 @@ fun TransactionAddScreenWrapper(
         if (cached != null) {
             val trans = cached.transaction
             val rule = cached.budgetRule
+            val ruleChanged = rule != null && rule.ruleId != trans?.transRuleId
+
             if (trans != null) {
                 date = trans.transDate
-                description = if (rule != null && trans.transName.isBlank())
-                    rule.budgetRuleName
-                else trans.transName
+                if (ruleChanged || trans.transName.isBlank()) {
+                    description = rule?.budgetRuleName ?: ""
+                    amount = nf.displayDollars(rule?.budgetAmount ?: 0.0)
+                } else {
+                    description = trans.transName
+                    amount = nf.displayDollars(
+                        if ((mainViewModel.getTransferNum() ?: 0.0) != 0.0)
+                            mainViewModel.getTransferNum()!!
+                        else trans.transAmount
+                    )
+                }
                 note = trans.transNote
                 toPending = trans.transToAccountPending
                 fromPending = trans.transFromAccountPending
-                amount = nf.displayDollars(
-                    if ((mainViewModel.getTransferNum()
-                            ?: 0.0) != 0.0
-                    ) mainViewModel.getTransferNum()!!
-                    else trans.transAmount
-                )
             } else {
                 date = df.getCurrentDateAsString()
                 if (rule != null) {
@@ -95,7 +99,7 @@ fun TransactionAddScreenWrapper(
             cached.toAccount?.let {
                 val awt = accountViewModel.getAccountWithType(it.accountId)
                 toAccountWithType = awt
-                if (trans == null) {
+                if (trans == null || ruleChanged) {
                     toPending = awt.accountType?.allowPending == true &&
                             awt.accountType.tallyOwing == true
                 }
@@ -103,7 +107,7 @@ fun TransactionAddScreenWrapper(
             cached.fromAccount?.let {
                 val awt = accountViewModel.getAccountWithType(it.accountId)
                 fromAccountWithType = awt
-                if (trans == null) {
+                if (trans == null || ruleChanged) {
                     fromPending = awt.accountType?.allowPending == true &&
                             awt.accountType.tallyOwing == true
                 }
@@ -114,7 +118,7 @@ fun TransactionAddScreenWrapper(
                 toAccount = acc
                 val awt = accountViewModel.getAccountWithType(acc.accountId)
                 toAccountWithType = awt
-                if (trans == null) {
+                if (trans == null || ruleChanged) {
                     toPending = awt.accountType?.allowPending == true &&
                             awt.accountType.tallyOwing == true
                 }
@@ -124,7 +128,7 @@ fun TransactionAddScreenWrapper(
                 fromAccount = acc
                 val awt = accountViewModel.getAccountWithType(acc.accountId)
                 fromAccountWithType = awt
-                if (trans == null) {
+                if (trans == null || ruleChanged) {
                     fromPending = awt.accountType?.allowPending == true &&
                             awt.accountType.tallyOwing == true
                 }

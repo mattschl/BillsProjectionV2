@@ -42,10 +42,6 @@ fun TransactionUpdateScreenWrapper(
     val df = remember { DateFunctions() }
     val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.update_this_transaction)
-    }
-
     var date by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var note by remember { mutableStateOf("") }
@@ -184,6 +180,7 @@ fun TransactionUpdateScreenWrapper(
     }
 
     LaunchedEffect(Unit) {
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.update_this_transaction)
         if (mainViewModel.getOldTransaction() != null && mainViewModel.getTransactionDetailed() == null) {
             val transFull = mainViewModel.getOldTransaction()!!
             val trans = transFull.transaction
@@ -203,27 +200,45 @@ fun TransactionUpdateScreenWrapper(
         } else if (mainViewModel.getTransactionDetailed() != null) {
             val cached = mainViewModel.getTransactionDetailed()!!
             val trans = cached.transaction
+            val rule = cached.budgetRule
+            val ruleChanged = rule != null && rule.ruleId != trans?.transRuleId
+
             if (trans != null) {
                 transactionId = trans.transId
                 date = trans.transDate
-                amount = nf.displayDollars(
-                    if (mainViewModel.getTransferNum() != 0.0) mainViewModel.getTransferNum()!!
-                    else trans.transAmount
-                )
-                description = trans.transName
+                if (ruleChanged || trans.transName.isBlank()) {
+                    description = rule?.budgetRuleName ?: ""
+                    amount = nf.displayDollars(rule?.budgetAmount ?: 0.0)
+                } else {
+                    description = trans.transName
+                    amount = nf.displayDollars(
+                        if (mainViewModel.getTransferNum() != 0.0) mainViewModel.getTransferNum()!!
+                        else trans.transAmount
+                    )
+                }
                 note = trans.transNote
                 toPending = trans.transToAccountPending
                 fromPending = trans.transFromAccountPending
             }
-            budgetRule = cached.budgetRule
+            budgetRule = rule
             toAccount = cached.toAccount
             fromAccount = cached.fromAccount
 
             toAccount?.let {
-                toAccountWithType = accountViewModel.getAccountWithType(it.accountId)
+                val awt = accountViewModel.getAccountWithType(it.accountId)
+                toAccountWithType = awt
+                if (ruleChanged) {
+                    toPending = awt.accountType?.allowPending == true &&
+                            awt.accountType.tallyOwing == true
+                }
             }
             fromAccount?.let {
-                fromAccountWithType = accountViewModel.getAccountWithType(it.accountId)
+                val awt = accountViewModel.getAccountWithType(it.accountId)
+                fromAccountWithType = awt
+                if (ruleChanged) {
+                    fromPending = awt.accountType?.allowPending == true &&
+                            awt.accountType.tallyOwing == true
+                }
             }
             mainViewModel.setTransferNum(0.0)
         }
