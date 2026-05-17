@@ -247,6 +247,9 @@ interface BudgetItemDao {
     )
     suspend fun purgeOldBudgetItems(cutoffDate: String)
 
+    @Query("SELECT * FROM $TABLE_BUDGET_ITEMS")
+    fun getAllBudgetItemsSync(): List<BudgetItem>
+
     @Query(
         "UPDATE $TABLE_BUDGET_ITEMS " +
                 "SET $BI_LOCKED = :lock, " +

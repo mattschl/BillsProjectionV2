@@ -28,6 +28,9 @@ interface AccountTypeDao {
     )
     suspend fun deleteAccountType(accountTypeId: Long, updateTime: String)
 
+    @Query("SELECT * FROM $TABLE_ACCOUNT_TYPES WHERE $TYPE_ID = :typeId")
+    fun getAccountTypeSync(typeId: Long): AccountType?
+
     @Query(
         "SELECT * FROM $TABLE_ACCOUNT_TYPES " +
                 "WHERE $TYPE_ID = :accountTypeId"

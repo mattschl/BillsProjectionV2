@@ -47,6 +47,15 @@ interface AccountDao {
     )
     suspend fun deleteAccount(accountId: Long, updateTime: String)
 
+    @Query("SELECT * FROM $TABLE_ACCOUNTS WHERE $ACCOUNT_IS_DELETED = 0")
+    fun getActiveAccountsSync(): List<Account>
+
+    @Query("SELECT * FROM $TABLE_ACCOUNTS")
+    fun getAllAccountsSync(): List<Account>
+
+    @Query("SELECT * FROM $TABLE_ACCOUNTS WHERE $ACCOUNT_ID = :accountId")
+    fun getAccountSync(accountId: Long): Account?
+
     @Query(
         "SELECT * FROM $TABLE_ACCOUNTS " +
                 "WHERE $ACCOUNT_IS_DELETED = 0 " +
