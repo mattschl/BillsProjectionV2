@@ -57,7 +57,8 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
         val localId: Long,
         val localTime: String,
         val driveId: Long,
-        val driveTime: String
+        val driveTime: String,
+        val messageResId: Int? = null
     )
 
     enum class ConflictChoice { KEEP_LOCAL, KEEP_DRIVE }
@@ -86,7 +87,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                     }
                         .sortedByDescending { it.name }
                         .forEach { file ->
-                            report.append("- ${file.name} (${file.size ?: 0} bytes)\n")
+                            report.append("- ${file.name} (${file.size} bytes)\n")
                         }
                 }
                 docContent = report.toString()
@@ -115,9 +116,38 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
 
                 syncReport.append("My last sync: $myLastSync\n")
 
-                val fileList: FileList = helper.queryFiles()
-                val allFiles = fileList.files ?: emptyList()
-                val driveFiles = allFiles
+                val allFiles: FileList = helper.queryFiles()
+                val fileList = allFiles.files ?: emptyList()
+
+                // Check for sync lock
+                val lockFile = fileList.find { it.name == "sync.lock" }
+                if (lockFile != null) {
+                    val modifiedTime = lockFile.modifiedTime.value
+                    val currentTime = System.currentTimeMillis()
+                    val diffMinutes = (currentTime - modifiedTime) / (60 * 1000)
+                    if (diffMinutes < 10) {
+                        status = "Busy"
+                        syncReport.append("\nAborted: Sync already in progress on another device.")
+                        android.widget.Toast.makeText(
+                            getApplication(),
+                            R.string.sync_already_in_progress,
+                            android.widget.Toast.LENGTH_LONG
+                        ).show()
+                        return@launch
+                    } else {
+                        // Stale lock, delete it
+                        helper.deleteFile(lockFile.id)
+                        syncReport.append("\nRemoved stale lock file.\n")
+                    }
+                }
+
+                // Create new sync lock
+                val tempLockFile = File(getApplication<Application>().cacheDir, "sync.lock")
+                tempLockFile.writeText("Device: $deviceId\nStarted: $startTime")
+                helper.uploadFile(tempLockFile, "text/plain", "sync.lock")
+                tempLockFile.delete()
+
+                val driveFiles = fileList
                     .filter { it.name.startsWith("bills2_") && it.name.endsWith(".db") }
                     .mapNotNull { file ->
                         val tsPart = file.name.substringAfter("bills2_").substringBefore(".db")
@@ -142,12 +172,12 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                         val localWalFile = File(context.cacheDir, "${file.name}-wal")
                         val localShmFile = File(context.cacheDir, "${file.name}-shm")
 
-                        helper.downloadBinaryFile(file.name, localBackupFile)
-                        allFiles.find { it.name == localWalFile.name }?.let {
-                            helper.downloadBinaryFile(it.name, localWalFile)
+                        helper.downloadBinaryFile(file.name, localBackupFile, allFiles)
+                        fileList.find { it.name == localWalFile.name }?.let {
+                            helper.downloadBinaryFile(it.name, localWalFile, allFiles)
                         }
-                        allFiles.find { it.name == localShmFile.name }?.let {
-                            helper.downloadBinaryFile(it.name, localShmFile)
+                        fileList.find { it.name == localShmFile.name }?.let {
+                            helper.downloadBinaryFile(it.name, localShmFile, allFiles)
                         }
 
                         val result = processSync(localBackupFile)
@@ -175,9 +205,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                 syncReport.append("\nMerged database uploaded: $uploadedFile")
 
                 progressMessage = "Cleaning up old backups..."
-                val driveFileList = helper.queryFiles()
-                val allDriveFiles = driveFileList.files ?: emptyList()
-                val driveBackups = allDriveFiles
+                val driveBackups = fileList
                     .filter { it.name.startsWith("bills2_") && it.name.endsWith(".db") }
                     .sortedByDescending { it.name }
 
@@ -185,9 +213,9 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                     val backupsToDelete = driveBackups.drop(6)
                     for (baseFile in backupsToDelete) {
                         helper.deleteFile(baseFile.id)
-                        allDriveFiles.find { it.name == "${baseFile.name}-wal" }
+                        fileList.find { it.name == "${baseFile.name}-wal" }
                             ?.let { helper.deleteFile(it.id) }
-                        allDriveFiles.find { it.name == "${baseFile.name}-shm" }
+                        fileList.find { it.name == "${baseFile.name}-shm" }
                             ?.let { helper.deleteFile(it.id) }
                     }
                     syncReport.append("\nDeleted ${backupsToDelete.size} old backups from Drive.")
@@ -216,6 +244,20 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                     startTime
                 }
                 logSyncHistory(finalSyncTime, status, syncReport.toString())
+
+                // Release sync lock
+                if (status != "Busy") {
+                    try {
+                        driveServiceHelper?.let { h ->
+                            h.queryFiles().files?.find { it.name == "sync.lock" }?.let { lock ->
+                                h.deleteFile(lock.id)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Failed to release sync lock", e)
+                    }
+                }
+
                 progressMessage = null
             }
         }
@@ -236,6 +278,8 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             suspend fun <T> syncTable(
                 tableName: String,
                 mapCursorToItem: (android.database.Cursor) -> T,
+                getExistingLocalMap: (suspend () -> Map<String, T>)? = null,
+                getItemKey: (T) -> String,
                 getExistingById: suspend (T) -> T?,
                 getExistingByName: (suspend (T) -> T?)? = null,
                 getUpdateTime: (T) -> String,
@@ -248,10 +292,13 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             ): Pair<Int, Int> {
                 var inserts = 0
                 var updates = 0
+                val localMap = getExistingLocalMap?.invoke() ?: emptyMap()
+
                 backupDb.query(tableName, null, null, null, null, null, null).use { cursor ->
                     while (cursor.moveToNext()) {
                         val backupItem = mapCursorToItem(cursor)
-                        val existingById = getExistingById(backupItem)
+                        val existingById =
+                            localMap[getItemKey(backupItem)] ?: getExistingById(backupItem)
                         val backupTime = getUpdateTime(backupItem)
 
                         if (existingById == null) {
@@ -325,6 +372,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                         acctUpdateTime = cursor.getString(cursor.getColumnIndexOrThrow("acctUpdateTime"))
                     )
                 },
+                getItemKey = { it.typeId.toString() },
                 getExistingById = {
                     appDb.getAccountTypesDao().findAccountType(it.typeId).firstOrNull()
                 },
@@ -344,6 +392,99 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             if (at.first > 0 || at.second > 0) report.append("- Account Types: ${at.first} added, ${at.second} updated\n")
             totalCount += at.first + at.second
 
+            val backupTransIds = mutableSetOf<Long>()
+            val trans = syncTable(
+                tableName = "Transactions",
+                mapCursorToItem = { cursor ->
+                    Transactions(
+                        transId = cursor.getLong(cursor.getColumnIndexOrThrow("transId")),
+                        transDate = cursor.getString(cursor.getColumnIndexOrThrow("transDate")),
+                        transName = cursor.getString(cursor.getColumnIndexOrThrow("transName")),
+                        transNote = cursor.getString(cursor.getColumnIndexOrThrow("transNote")),
+                        transRuleId = cursor.getLong(cursor.getColumnIndexOrThrow("transRuleId")),
+                        transToAccountId = cursor.getLong(cursor.getColumnIndexOrThrow("transToAccountId")),
+                        transToAccountPending = cursor.getInt(cursor.getColumnIndexOrThrow("transToAccountPending")) != 0,
+                        transFromAccountId = cursor.getLong(cursor.getColumnIndexOrThrow("transFromAccountId")),
+                        transFromAccountPending = cursor.getInt(cursor.getColumnIndexOrThrow("transFromAccountPending")) != 0,
+                        transAmount = cursor.getDouble(cursor.getColumnIndexOrThrow("transAmount")),
+                        transIsDeleted = cursor.getInt(cursor.getColumnIndexOrThrow("transIsDeleted")) != 0,
+                        transUpdateTime = cursor.getString(cursor.getColumnIndexOrThrow("transUpdateTime"))
+                    ).also { backupTransIds.add(it.transId) }
+                },
+                getExistingLocalMap = {
+                    appDb.getTransactionDao().getAllTransactionsSync()
+                        .associateBy { it.transId.toString() }
+                },
+                getItemKey = { it.transId.toString() },
+                getExistingById = { appDb.getTransactionDao().getTransaction(it.transId) },
+                getExistingByName = { backupItem ->
+                    val backupDate = LocalDate.parse(backupItem.transDate)
+                    appDb.getTransactionDao().getAllTransactionsSync().find { localItem ->
+                        val localDate = LocalDate.parse(localItem.transDate)
+                        val daysDiff =
+                            java.time.temporal.ChronoUnit.DAYS.between(backupDate, localDate)
+
+                        localItem.transId != backupItem.transId &&
+                                Math.abs(daysDiff) <= 2 &&
+                                localItem.transAmount == backupItem.transAmount &&
+                                localItem.transToAccountId == backupItem.transToAccountId &&
+                                localItem.transFromAccountId == backupItem.transFromAccountId &&
+                                !localItem.transIsDeleted
+                    }
+                },
+                getUpdateTime = { it.transUpdateTime },
+                getName = { it.transName },
+                getId = { it.transId },
+                insert = { backupItem ->
+                    val backupDate = LocalDate.parse(backupItem.transDate)
+                    val existingDuplicate =
+                        appDb.getTransactionDao().getAllTransactionsSync().find { localItem ->
+                            val localDate = LocalDate.parse(localItem.transDate)
+                            val daysDiff =
+                                java.time.temporal.ChronoUnit.DAYS.between(backupDate, localDate)
+
+                            localItem.transId != backupItem.transId &&
+                                    Math.abs(daysDiff) <= 2 &&
+                                    localItem.transAmount == backupItem.transAmount &&
+                                    localItem.transToAccountId == backupItem.transToAccountId &&
+                                    localItem.transFromAccountId == backupItem.transFromAccountId &&
+                                    !localItem.transIsDeleted
+                        }
+
+                    if (existingDuplicate != null) {
+                        val choice = showConflictDialog(
+                            "Transactions",
+                            backupItem.transName,
+                            existingDuplicate.transId,
+                            existingDuplicate.transUpdateTime,
+                            backupItem.transId,
+                            backupItem.transUpdateTime,
+                            R.string.duplicate_transaction_message
+                        )
+                        if (choice == ConflictChoice.KEEP_DRIVE) {
+                            appDb.getTransactionDao().deleteTransaction(
+                                existingDuplicate.transId, df.getCurrentTimeAsString()
+                            )
+                            applyTransactionEffect(appDb, backupItem, 1.0)
+                            appDb.getTransactionDao().insertTransaction(backupItem)
+                        }
+                    } else {
+                        applyTransactionEffect(appDb, backupItem, 1.0)
+                        appDb.getTransactionDao().insertTransaction(backupItem)
+                    }
+                },
+                update = { backupItem ->
+                    val localItem = appDb.getTransactionDao().getTransaction(backupItem.transId)
+                    if (localItem != null) {
+                        applyTransactionEffect(appDb, localItem, -1.0)
+                    }
+                    applyTransactionEffect(appDb, backupItem, 1.0)
+                    appDb.getTransactionDao().updateTransaction(backupItem)
+                }
+            )
+            if (trans.first > 0 || trans.second > 0) report.append("- Transactions: ${trans.first} added, ${trans.second} updated\n")
+            totalCount += trans.first + trans.second
+
             val acc = syncTable(
                 tableName = "Accounts",
                 mapCursorToItem = { cursor ->
@@ -360,13 +501,50 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                         accUpdateTime = cursor.getString(cursor.getColumnIndexOrThrow("accUpdateTime"))
                     )
                 },
+                getItemKey = { it.accountId.toString() },
                 getExistingById = { appDb.getAccountDao().findAccount(it.accountId).firstOrNull() },
                 getExistingByName = { appDb.getAccountDao().findAccountByName(it.accountName) },
                 getUpdateTime = { it.accUpdateTime },
                 getName = { it.accountName },
                 getId = { it.accountId },
                 insert = { appDb.getAccountDao().insertAccount(it) },
-                update = { appDb.getAccountDao().updateAccount(it) },
+                update = { backupAccount ->
+                    val localAccount =
+                        appDb.getAccountDao().getAccountSync(backupAccount.accountId)
+                    if (localAccount != null && backupAccount.accUpdateTime > localAccount.accUpdateTime) {
+                        val localTransactions =
+                            appDb.getTransactionDao().getAllTransactionsSync()
+                        val unaccounted = localTransactions.filter {
+                            it.transId !in backupTransIds && !it.transIsDeleted
+                        }
+
+                        var reconciledBalance = backupAccount.accountBalance
+                        var reconciledOwing = backupAccount.accountOwing
+
+                        for (lt in unaccounted) {
+                            if (lt.transToAccountId == backupAccount.accountId && !lt.transToAccountPending) {
+                                reconciledBalance += lt.transAmount
+                            }
+                            if (lt.transFromAccountId == backupAccount.accountId && !lt.transFromAccountPending) {
+                                reconciledBalance -= lt.transAmount
+                            }
+                            val type = appDb.getAccountTypesDao()
+                                .getAccountTypeSync(backupAccount.accountTypeId)
+                            if (type?.tallyOwing == true) {
+                                if (lt.transToAccountId == backupAccount.accountId) reconciledOwing -= lt.transAmount
+                                if (lt.transFromAccountId == backupAccount.accountId) reconciledOwing += lt.transAmount
+                            }
+                        }
+
+                        appDb.getAccountDao().updateAccount(
+                            backupAccount.copy(
+                                accountBalance = reconciledBalance,
+                                accountOwing = reconciledOwing,
+                                accUpdateTime = df.getCurrentTimeAsString()
+                            )
+                        )
+                    }
+                },
                 rename = { id, name, time ->
                     appDb.getAccountDao().renameAccount(id, name, time)
                 },
@@ -397,6 +575,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                         budUpdateTime = cursor.getString(cursor.getColumnIndexOrThrow("budUpdateTime"))
                     )
                 },
+                getItemKey = { it.ruleId.toString() },
                 getExistingById = { appDb.getBudgetRuleDao().getBudgetRule(it.ruleId) },
                 getExistingByName = {
                     appDb.getBudgetRuleDao().findBudgetRuleByName(it.budgetRuleName)
@@ -413,32 +592,6 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             )
             if (br.first > 0 || br.second > 0) report.append("- Budget Rules: ${br.first} added, ${br.second} updated\n")
             totalCount += br.first + br.second
-
-            val trans = syncTable(
-                tableName = "Transactions",
-                mapCursorToItem = { cursor ->
-                    Transactions(
-                        transId = cursor.getLong(cursor.getColumnIndexOrThrow("transId")),
-                        transDate = cursor.getString(cursor.getColumnIndexOrThrow("transDate")),
-                        transName = cursor.getString(cursor.getColumnIndexOrThrow("transName")),
-                        transNote = cursor.getString(cursor.getColumnIndexOrThrow("transNote")),
-                        transRuleId = cursor.getLong(cursor.getColumnIndexOrThrow("transRuleId")),
-                        transToAccountId = cursor.getLong(cursor.getColumnIndexOrThrow("transToAccountId")),
-                        transToAccountPending = cursor.getInt(cursor.getColumnIndexOrThrow("transToAccountPending")) != 0,
-                        transFromAccountId = cursor.getLong(cursor.getColumnIndexOrThrow("transFromAccountId")),
-                        transFromAccountPending = cursor.getInt(cursor.getColumnIndexOrThrow("transFromAccountPending")) != 0,
-                        transAmount = cursor.getDouble(cursor.getColumnIndexOrThrow("transAmount")),
-                        transIsDeleted = cursor.getInt(cursor.getColumnIndexOrThrow("transIsDeleted")) != 0,
-                        transUpdateTime = cursor.getString(cursor.getColumnIndexOrThrow("transUpdateTime"))
-                    )
-                },
-                getExistingById = { appDb.getTransactionDao().getTransaction(it.transId) },
-                getUpdateTime = { it.transUpdateTime },
-                insert = { appDb.getTransactionDao().insertTransaction(it) },
-                update = { appDb.getTransactionDao().updateTransaction(it) }
-            )
-            if (trans.first > 0 || trans.second > 0) report.append("- Transactions: ${trans.first} added, ${trans.second} updated\n")
-            totalCount += trans.first + trans.second
 
             val bi = syncTable(
                 tableName = TABLE_BUDGET_ITEMS,
@@ -464,6 +617,11 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                         biLocked = cursor.getInt(cursor.getColumnIndexOrThrow("biLocked")) != 0
                     )
                 },
+                getExistingLocalMap = {
+                    appDb.getBudgetItemDao().getAllBudgetItemsSync()
+                        .associateBy { "${it.biRuleId}_${it.biProjectedDate}" }
+                },
+                getItemKey = { "${it.biRuleId}_${it.biProjectedDate}" },
                 getExistingById = {
                     appDb.getBudgetItemDao().getBudgetItem(it.biRuleId, it.biProjectedDate)
                 },
@@ -486,6 +644,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                         syncRecordsProcessed = cursor.getString(cursor.getColumnIndexOrThrow("syncRecordsProcessed"))
                     )
                 },
+                getItemKey = { it.syncId.toString() },
                 getExistingById = { appDb.getSyncHistoryDao().getSyncHistory(it.syncId) },
                 getUpdateTime = { it.syncTime },
                 insert = {
@@ -516,11 +675,13 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
         localId: Long,
         localTime: String,
         driveId: Long,
-        driveTime: String
+        driveTime: String,
+        messageResId: Int? = null
     ): ConflictChoice {
         val deferred = CompletableDeferred<ConflictChoice>()
         conflictDeferred = deferred
-        showConflictDialog = ConflictInfo(tableName, name, localId, localTime, driveId, driveTime)
+        showConflictDialog =
+            ConflictInfo(tableName, name, localId, localTime, driveId, driveTime, messageResId)
         return deferred.await()
     }
 
@@ -540,6 +701,50 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to log sync history", e)
             }
+        }
+    }
+
+    private suspend fun applyTransactionEffectToAccount(
+        db: BillsDatabase,
+        accountId: Long,
+        amount: Double,
+        isCredit: Boolean,
+        multiplier: Double
+    ) {
+        val account = db.getAccountDao().getAccountSync(accountId) ?: return
+        val type = db.getAccountTypesDao().getAccountTypeSync(account.accountTypeId) ?: return
+
+        var balance = account.accountBalance
+        var owing = account.accountOwing
+
+        if (type.keepTotals) {
+            balance += (if (isCredit) amount else -amount) * multiplier
+        }
+        if (type.tallyOwing) {
+            owing += (if (isCredit) -amount else amount) * multiplier
+        }
+
+        db.getTransactionDao().updateAccountBalanceAndOwing(
+            balance, owing, accountId, df.getCurrentTimeAsString()
+        )
+    }
+
+    private suspend fun applyTransactionEffect(
+        db: BillsDatabase,
+        transaction: Transactions,
+        multiplier: Double
+    ) {
+        if (transaction.transIsDeleted) return
+
+        if (!transaction.transToAccountPending && transaction.transToAccountId != 0L) {
+            applyTransactionEffectToAccount(
+                db, transaction.transToAccountId, transaction.transAmount, true, multiplier
+            )
+        }
+        if (!transaction.transFromAccountPending && transaction.transFromAccountId != 0L) {
+            applyTransactionEffectToAccount(
+                db, transaction.transFromAccountId, transaction.transAmount, false, multiplier
+            )
         }
     }
 

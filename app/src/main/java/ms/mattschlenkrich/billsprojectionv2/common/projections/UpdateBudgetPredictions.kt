@@ -163,9 +163,13 @@ class UpdateBudgetPredictions(
         )
         try {
             budgetItemViewModel.insertBudgetItemSync(newBudgetItem)
+            Log.d(TAG, "ADDING BUDGET ITEM ${newBudgetItem.biBudgetName}")
         } catch (e: SQLiteConstraintException) {
             // Row exists, rewrite it
-            Log.d(TAG, "THE BUDGET ITEM WAS NOT ADDED - rewriting now.\n $e")
+            Log.d(
+                TAG,
+                "THE BUDGET ITEM WAS NOT ADDED - rewriting ${newBudgetItem.biBudgetName}.\n $e"
+            )
             budgetItemViewModel.rewriteBudgetItem(
                 budgetRuleId = rule.ruleId,
                 projectedDate = projectedDate,

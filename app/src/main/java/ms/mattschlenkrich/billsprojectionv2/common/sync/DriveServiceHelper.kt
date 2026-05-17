@@ -40,6 +40,13 @@ class DriveServiceHelper(private val mDriveService: Drive) {
     }
 
     /**
+     * Finds a file ID in a pre-fetched [FileList].
+     */
+    fun findFileIdInList(fileName: String, fileList: FileList): String? {
+        return fileList.files?.find { it.name == fileName }?.id
+    }
+
+    /**
      * Finds a file ID on Google Drive by its name.
      */
     suspend fun findFileIdByName(fileName: String): String? =
@@ -58,11 +65,15 @@ class DriveServiceHelper(private val mDriveService: Drive) {
 
     /**
      * Downloads a file from Google Drive to a local file.
+     * Can optionally use a pre-fetched [FileList] to avoid a network lookup.
      */
-    suspend fun downloadBinaryFile(fileName: String, targetFile: File) =
+    suspend fun downloadBinaryFile(fileName: String, targetFile: File, fileList: FileList? = null) =
         withContext(Dispatchers.IO) {
-            val fileId = findFileIdByName(fileName)
-                ?: throw IOException("File not found on Drive: $fileName")
+            val fileId = if (fileList != null) {
+                findFileIdInList(fileName, fileList)
+            } else {
+                findFileIdByName(fileName)
+            } ?: throw IOException("File not found on Drive: $fileName")
 
             FileOutputStream(targetFile).use { outputStream ->
                 mDriveService.files().get(fileId).executeMediaAndDownloadTo(outputStream)

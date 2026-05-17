@@ -41,6 +41,12 @@ interface TransactionDao {
     @Update
     suspend fun updateTransaction(transaction: Transactions)
 
+    @Query("SELECT * FROM $TABLE_TRANSACTION WHERE $TRANS_IS_DELETED = 0")
+    fun getActiveTransactionsSync(): List<Transactions>
+
+    @Query("SELECT * FROM $TABLE_TRANSACTION")
+    fun getAllTransactionsSync(): List<Transactions>
+
     @Query(
         "SELECT * FROM $TABLE_TRANSACTION " +
                 "WHERE $TRANSACTION_ID = :transId"

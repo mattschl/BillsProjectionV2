@@ -18,7 +18,7 @@ fun ConflictDialog(
         text = {
             Text(
                 stringResource(
-                    R.string.sync_conflict_message,
+                    info.messageResId ?: R.string.sync_conflict_message,
                     info.tableName,
                     info.name,
                     info.localId,
