@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -42,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ALL_ITEMS
 import ms.mattschlenkrich.billsprojectionv2.common.components.BudgetItemDisplay
+import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectFieldDefaults
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
@@ -120,7 +122,8 @@ fun BudgetViewScreen(
                 Icon(
                     Icons.Default.Add,
                     contentDescription = stringResource(R.string.add),
-                    tint = MaterialTheme.colorScheme.onPrimary
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(ProjectFieldDefaults.iconSize())
                 )
             }
         }
@@ -454,7 +457,11 @@ fun DropdownSelector(
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.bodyLarge
             )
-            Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+            Icon(
+                Icons.Default.ArrowDropDown,
+                contentDescription = null,
+                modifier = Modifier.size(ProjectFieldDefaults.iconSize())
+            )
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             options.forEach { option ->

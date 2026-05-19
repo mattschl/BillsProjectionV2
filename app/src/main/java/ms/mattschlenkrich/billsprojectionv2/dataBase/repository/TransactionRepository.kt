@@ -40,6 +40,22 @@ class TransactionRepository(private val db: BillsDatabase) {
         transId, toAccountID, fromAccountID
     )
 
+    fun getSumTransactionByBudgetRuleSync(
+        budgetRuleId: Long,
+        startDate: String,
+        endDate: String
+    ) = db.getTransactionDao().getSumTransactionByBudgetRuleSync(
+        budgetRuleId, startDate, endDate
+    )
+
+    fun getCountTransactionByBudgetRuleSync(
+        budgetRuleId: Long,
+        startDate: String,
+        endDate: String
+    ) = db.getTransactionDao().getCountTransactionByBudgetRuleSync(
+        budgetRuleId, startDate, endDate
+    )
+
     suspend fun updateAccountBalance(
         newBalance: Double, accountId: Long, updateTime: String
     ) = db.getTransactionDao().updateAccountBalance(

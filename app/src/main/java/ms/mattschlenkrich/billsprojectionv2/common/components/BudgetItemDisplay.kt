@@ -115,7 +115,7 @@ fun BudgetItemDisplay(
                 ),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(24.dp)
+                    .size(ProjectFieldDefaults.iconSize())
                     .clickable { onLockClick() }
                     .padding(4.dp),
                 tint = if (budgetItem.biLocked) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface

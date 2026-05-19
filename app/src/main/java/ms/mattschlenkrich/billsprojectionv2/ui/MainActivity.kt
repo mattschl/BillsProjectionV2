@@ -57,6 +57,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectFieldDefaults
 import ms.mattschlenkrich.billsprojectionv2.common.projections.UpdateBudgetPredictions
 import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 import ms.mattschlenkrich.billsprojectionv2.common.sync.SyncActivity
@@ -280,7 +281,8 @@ class MainActivity : AppCompatActivity() {
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.go_back)
+                            contentDescription = stringResource(R.string.go_back),
+                            modifier = Modifier.size(ProjectFieldDefaults.iconSize())
                         )
                     }
                 }
@@ -289,7 +291,8 @@ class MainActivity : AppCompatActivity() {
                 IconButton(onClick = { showMenu = true }) {
                     Icon(
                         imageVector = Icons.Default.Settings,
-                        contentDescription = stringResource(R.string.more_options)
+                        contentDescription = stringResource(R.string.more_options),
+                        modifier = Modifier.size(ProjectFieldDefaults.iconSize())
                     )
                 }
                 DropdownMenu(
@@ -375,7 +378,8 @@ class MainActivity : AppCompatActivity() {
                     icon = {
                         Icon(
                             painterResource(iconRes),
-                            contentDescription = stringResource(labelRes)
+                            contentDescription = stringResource(labelRes),
+                            modifier = Modifier.size(ProjectFieldDefaults.iconSize())
                         )
                     },
                     label = { Text(stringResource(labelRes), softWrap = false) },

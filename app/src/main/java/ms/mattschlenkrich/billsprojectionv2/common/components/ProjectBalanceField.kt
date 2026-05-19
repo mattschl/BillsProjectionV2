@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.common.components
 
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Calculate
@@ -37,7 +38,8 @@ fun ProjectBalanceField(
                 IconButton(onClick = onIconClick) {
                     Icon(
                         imageVector = Icons.Default.Calculate,
-                        contentDescription = stringResource(R.string.calculator)
+                        contentDescription = stringResource(R.string.calculator),
+                        modifier = Modifier.size(ProjectFieldDefaults.iconSize())
                     )
                 }
             }

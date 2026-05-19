@@ -399,6 +399,32 @@ interface TransactionDao {
         endDate: String
     ): LiveData<Double>
 
+    @Query(
+        "SELECT SUM($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
+                "WHERE $TRANS_BUDGET_RULE_ID = :budgetRuleId " +
+                "AND $TRANSACTION_DATE >= :startDate " +
+                "AND $TRANSACTION_DATE <= :endDate " +
+                "AND $TRANS_IS_DELETED = 0"
+    )
+    fun getSumTransactionByBudgetRuleSync(
+        budgetRuleId: Long,
+        startDate: String,
+        endDate: String
+    ): Double?
+
+    @Query(
+        "SELECT COUNT($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
+                "WHERE $TRANS_BUDGET_RULE_ID = :budgetRuleId " +
+                "AND $TRANSACTION_DATE >= :startDate " +
+                "AND $TRANSACTION_DATE <= :endDate " +
+                "AND $TRANS_IS_DELETED = 0"
+    )
+    fun getCountTransactionByBudgetRuleSync(
+        budgetRuleId: Long,
+        startDate: String,
+        endDate: String
+    ): Int
+
     @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction

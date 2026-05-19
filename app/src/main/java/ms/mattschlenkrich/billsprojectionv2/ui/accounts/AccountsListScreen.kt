@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
@@ -31,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectFieldDefaults
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
@@ -57,7 +59,8 @@ fun AccountsListScreen(
                 Icon(
                     Icons.Default.Add,
                     contentDescription = stringResource(R.string.add_a_new_account),
-                    tint = MaterialTheme.colorScheme.onPrimary
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(ProjectFieldDefaults.iconSize())
                 )
             }
         }
@@ -144,7 +147,8 @@ fun AccountChooseScreen(
                 Icon(
                     Icons.Default.Add,
                     contentDescription = stringResource(R.string.add_a_new_account),
-                    tint = MaterialTheme.colorScheme.onPrimary
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(ProjectFieldDefaults.iconSize())
                 )
             }
         }

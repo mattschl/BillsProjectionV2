@@ -191,6 +191,7 @@ fun BudgetRuleAddScreenWrapper(
         fromAccount = cached?.fromAccount,
         onChooseAccount = { chooseAccount(it) },
         onGotoCalculator = { gotoCalculator() },
+        suggestedAmount = null,
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { saveBudgetRuleIfValid() },

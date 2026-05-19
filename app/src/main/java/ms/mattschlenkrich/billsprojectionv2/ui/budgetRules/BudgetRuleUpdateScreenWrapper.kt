@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -42,8 +43,12 @@ import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_UPDATE
+import ms.mattschlenkrich.billsprojectionv2.common.FREQ_MONTHLY
+import ms.mattschlenkrich.billsprojectionv2.common.FREQ_WEEKLY
+import ms.mattschlenkrich.billsprojectionv2.common.FREQ_YEARLY
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.components.BudgetItemDisplay
+import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectFieldDefaults
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
@@ -54,6 +59,8 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transact
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 private const val TAG = FRAG_BUDGET_RULE_UPDATE
 
@@ -81,6 +88,8 @@ fun BudgetRuleUpdateScreenWrapper(
     var dayOfWeekState by remember { mutableIntStateOf(0) }
     var leadDaysState by remember { mutableStateOf("0") }
     var ruleIdState by remember { mutableLongStateOf(0L) }
+
+    var suggestedAmountState by remember { mutableStateOf<Double?>(null) }
 
     var budgetNameList by remember { mutableStateOf<List<String>?>(null) }
 
@@ -118,6 +127,49 @@ fun BudgetRuleUpdateScreenWrapper(
                 frequencyCountState = rule.budFrequencyCount.toString()
                 dayOfWeekState = rule.budDayOfWeekId
                 leadDaysState = rule.budLeadDays.toString()
+
+                // Calculate suggested amount
+                scope.launch(Dispatchers.IO) {
+                    val today = LocalDate.now()
+                    val yearAgo = today.minusYears(1)
+                    val calcStart =
+                        if (rule.budStartDate > yearAgo.toString()) rule.budStartDate else yearAgo.toString()
+                    val totalSum =
+                        mainActivity.transactionViewModel.getSumTransactionByBudgetRuleSync(
+                            rule.ruleId, calcStart, today.toString()
+                        ) ?: 0.0
+
+                    if (totalSum > 0.0) {
+                        val daysElapsed = ChronoUnit.DAYS.between(
+                            LocalDate.parse(calcStart),
+                            today
+                        )
+                        if (daysElapsed > 0) {
+                            val daysPerOccurrence = when (rule.budFrequencyTypeId) {
+                                FREQ_MONTHLY -> 30.4375 * rule.budFrequencyCount
+                                FREQ_WEEKLY -> 7.0 * rule.budFrequencyCount
+                                FREQ_YEARLY -> 365.25 * rule.budFrequencyCount
+                                else -> 0.0
+                            }
+
+                            if (daysPerOccurrence > 0) {
+                                val expectedOccurrences = daysElapsed.toDouble() / daysPerOccurrence
+                                if (expectedOccurrences >= 1.0) {
+                                    suggestedAmountState = totalSum / expectedOccurrences
+                                }
+                            } else {
+                                // For other types, use average per actual transaction
+                                val totalCount =
+                                    mainActivity.transactionViewModel.getCountTransactionByBudgetRuleSync(
+                                        rule.ruleId, calcStart, today.toString()
+                                    )
+                                if (totalCount > 0) {
+                                    suggestedAmountState = totalSum / totalCount
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -422,6 +474,7 @@ fun BudgetRuleUpdateScreenWrapper(
         fromAccount = detailedCached?.fromAccount,
         onChooseAccount = { chooseAccount(it) },
         onGotoCalculator = { gotoCalculator() },
+        suggestedAmount = suggestedAmountState,
         floatingActionButton = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -430,7 +483,11 @@ fun BudgetRuleUpdateScreenWrapper(
                     onClick = { chooseAddOptionsOrUpdateBudgetRuleToContinue() },
                     containerColor = MaterialTheme.colorScheme.secondaryContainer
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "Add Options")
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = "Add Options",
+                        modifier = Modifier.size(ProjectFieldDefaults.iconSize())
+                    )
                 }
 
                 FloatingActionButton(
@@ -440,7 +497,8 @@ fun BudgetRuleUpdateScreenWrapper(
                 ) {
                     Icon(
                         Icons.Default.Done,
-                        contentDescription = "Update"
+                        contentDescription = "Update",
+                        modifier = Modifier.size(ProjectFieldDefaults.iconSize())
                     )
                 }
             }
@@ -451,7 +509,11 @@ fun BudgetRuleUpdateScreenWrapper(
                 horizontalArrangement = Arrangement.End
             ) {
                 IconButton(onClick = { confirmDeleteBudgetRule() }) {
-                    Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.delete))
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = stringResource(R.string.delete),
+                        modifier = Modifier.size(ProjectFieldDefaults.iconSize())
+                    )
                 }
             }
 

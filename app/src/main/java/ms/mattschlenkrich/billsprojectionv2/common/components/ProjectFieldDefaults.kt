@@ -16,7 +16,23 @@ object ProjectFieldDefaults {
     fun minHeight(): Dp {
         val fontSize = MaterialTheme.typography.bodyMedium.fontSize
         return with(LocalDensity.current) {
+            fontSize.toDp() * 1.25f
+        }
+    }
+
+    @Composable
+    fun maxHeight(): Dp {
+        val fontSize = MaterialTheme.typography.bodyMedium.fontSize
+        return with(LocalDensity.current) {
             fontSize.toDp() * 2f
+        }
+    }
+
+    @Composable
+    fun iconSize(): Dp {
+        val fontSize = MaterialTheme.typography.bodyMedium.fontSize
+        return with(LocalDensity.current) {
+            fontSize.toDp() * 1.25f
         }
     }
 

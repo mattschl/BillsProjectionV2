@@ -45,6 +45,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectIntField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextBox
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
+import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
 
@@ -159,6 +160,7 @@ fun BudgetRuleScreen(
     fromAccount: Account?,
     onChooseAccount: (String) -> Unit,
     onGotoCalculator: () -> Unit,
+    suggestedAmount: Double? = null,
     floatingActionButton: @Composable () -> Unit,
     bottomContent: @Composable () -> Unit = {}
 ) {
@@ -211,13 +213,24 @@ fun BudgetRuleScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                ProjectBalanceField(
-                    value = amount,
-                    onValueChange = onAmountChange,
-                    label = stringResource(R.string.amount),
-                    modifier = Modifier.weight(1f),
-                    onIconClick = onGotoCalculator
-                )
+                Column(modifier = Modifier.weight(1f)) {
+                    ProjectBalanceField(
+                        value = amount,
+                        onValueChange = onAmountChange,
+                        label = stringResource(R.string.amount),
+                        modifier = Modifier.fillMaxWidth(),
+                        onIconClick = onGotoCalculator
+                    )
+                    suggestedAmount?.let {
+                        val nf = NumberFunctions()
+                        Text(
+                            text = "Suggested: " + nf.displayDollars(it),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+                }
                 LabeledCheckbox(
                     label = stringResource(R.string.fixed),
                     checked = isFixed,

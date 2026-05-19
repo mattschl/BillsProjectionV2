@@ -2,6 +2,7 @@ package ms.mattschlenkrich.billsprojectionv2.common.components
 
 import android.app.DatePickerDialog
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.Icon
@@ -54,7 +55,8 @@ fun ProjectDateField(
         trailingIcon = {
             Icon(
                 imageVector = Icons.Default.CalendarMonth,
-                contentDescription = label
+                contentDescription = label,
+                modifier = Modifier.size(ProjectFieldDefaults.iconSize())
             )
         }
     )

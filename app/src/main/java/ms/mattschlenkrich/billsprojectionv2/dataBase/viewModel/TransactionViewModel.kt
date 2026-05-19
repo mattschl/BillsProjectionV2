@@ -21,6 +21,22 @@ class TransactionViewModel(
             transId, toAccountID, fromAccountID
         )
 
+    fun getSumTransactionByBudgetRuleSync(
+        budgetRuleId: Long,
+        startDate: String,
+        endDate: String
+    ) = transactionRepository.getSumTransactionByBudgetRuleSync(
+        budgetRuleId, startDate, endDate
+    )
+
+    fun getCountTransactionByBudgetRuleSync(
+        budgetRuleId: Long,
+        startDate: String,
+        endDate: String
+    ) = transactionRepository.getCountTransactionByBudgetRuleSync(
+        budgetRuleId, startDate, endDate
+    )
+
     suspend fun getTransactionDetailed(transId: Long) =
         transactionRepository.getTransactionDetailed(transId)
 
