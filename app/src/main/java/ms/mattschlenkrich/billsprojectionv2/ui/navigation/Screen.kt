@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.navigation
 
 sealed class Screen(val route: String) {
+    object MainPager : Screen("main_pager")
     object BudgetView : Screen("budget_view")
     object Transactions : Screen("transactions")
     object Accounts : Screen("accounts")

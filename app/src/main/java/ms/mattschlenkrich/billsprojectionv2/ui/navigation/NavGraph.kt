@@ -1,5 +1,6 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.navigation
 
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -35,13 +36,17 @@ import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionViewScree
 fun NavGraph(
     navController: NavHostController,
     activity: MainActivity,
+    pagerState: PagerState,
     modifier: Modifier = Modifier
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.BudgetView.route,
+        startDestination = Screen.MainPager.route,
         modifier = modifier
     ) {
+        composable(Screen.MainPager.route) {
+            MainPagerScreen(activity, NavHostControllerWrapper(navController), pagerState)
+        }
         composable(Screen.BudgetView.route) {
             BudgetViewScreenWrapper(activity, navController)
         }

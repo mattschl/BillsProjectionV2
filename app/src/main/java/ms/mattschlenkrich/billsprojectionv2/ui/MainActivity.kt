@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Settings
@@ -37,6 +39,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -134,7 +137,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         setContent {
-            BillsProjectionTheme {
+            val s = remember { SettingsManager(this).getSettings() }
+            val fontScale = when (s.fontSize) {
+                "small" -> 0.8f
+                "large" -> 1.2f
+                "extra_large" -> 1.5f
+                else -> 1.0f
+            }
+            BillsProjectionTheme(fontScale = fontScale) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -164,18 +174,29 @@ class MainActivity : AppCompatActivity() {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
 
+        val pagerState = rememberPagerState(pageCount = { 5 })
+        val coroutineScope = rememberCoroutineScope()
+
         LaunchedEffect(Unit) {
             if (isFirstRun) {
                 navController.navigate(Screen.Help.route)
             }
         }
 
+        val isTopLevel = currentRoute == Screen.MainPager.route || currentRoute in listOf(
+            Screen.BudgetView.route,
+            Screen.Transactions.route,
+            Screen.Accounts.route,
+            Screen.Analysis.route,
+            Screen.BudgetRules.route
+        )
+
         val syncLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult()
         ) { result ->
             if (result.resultCode == RESULT_OK) {
                 setupViewModels(clearExisting = true)
-                navController.navigate(Screen.BudgetView.route) {
+                navController.navigate(Screen.MainPager.route) {
                     popUpTo(navController.graph.startDestinationId) {
                         inclusive = true
                     }
@@ -186,13 +207,6 @@ class MainActivity : AppCompatActivity() {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             topBar = {
-                val isTopLevel = currentRoute in listOf(
-                    Screen.BudgetView.route,
-                    Screen.Transactions.route,
-                    Screen.Accounts.route,
-                    Screen.Analysis.route,
-                    Screen.BudgetRules.route
-                )
                 MainTopBar(
                     title = topMenuBarState.value.title.ifEmpty { stringResource(R.string.app_name) },
                     showBackButton = !isTopLevel,
@@ -204,23 +218,22 @@ class MainActivity : AppCompatActivity() {
                 )
             },
             bottomBar = {
-                val isTopLevel = currentRoute in listOf(
-                    Screen.BudgetView.route,
-                    Screen.Transactions.route,
-                    Screen.Accounts.route,
-                    Screen.Analysis.route,
-                    Screen.BudgetRules.route
-                )
                 if (isTopLevel) {
                     MainBottomBar(
+                        pagerState = pagerState,
                         currentRoute = currentRoute,
-                        onItemSelected = { route ->
-                            navController.navigate(route) {
-                                popUpTo(navController.graph.startDestinationId) {
-                                    saveState = true
+                        onItemSelected = { pageIndex ->
+                            coroutineScope.launch {
+                                if (currentRoute != Screen.MainPager.route) {
+                                    navController.navigate(Screen.MainPager.route) {
+                                        popUpTo(navController.graph.startDestinationId) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
                                 }
-                                launchSingleTop = true
-                                restoreState = true
+                                pagerState.animateScrollToPage(pageIndex)
                             }
                         }
                     )
@@ -235,7 +248,8 @@ class MainActivity : AppCompatActivity() {
             ) {
                 NavGraph(
                     navController = navController,
-                    activity = this@MainActivity
+                    activity = this@MainActivity,
+                    pagerState = pagerState
                 )
 
                 if (isUpdating.value) {
@@ -361,8 +375,9 @@ class MainActivity : AppCompatActivity() {
 
     @Composable
     fun MainBottomBar(
+        pagerState: PagerState,
         currentRoute: String?,
-        onItemSelected: (String) -> Unit
+        onItemSelected: (Int) -> Unit
     ) {
         val items = listOf(
             Triple(R.string.budget_view, R.drawable.ic_budget_view, Screen.BudgetView.route),
@@ -373,7 +388,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         NavigationBar {
-            items.forEach { (labelRes, iconRes, route) ->
+            items.forEachIndexed { index, (labelRes, iconRes, route) ->
                 NavigationBarItem(
                     icon = {
                         Icon(
@@ -383,8 +398,8 @@ class MainActivity : AppCompatActivity() {
                         )
                     },
                     label = { Text(stringResource(labelRes), softWrap = false) },
-                    selected = currentRoute == route,
-                    onClick = { onItemSelected(route) }
+                    selected = currentRoute == route || (currentRoute == Screen.MainPager.route && pagerState.currentPage == index),
+                    onClick = { onItemSelected(index) }
                 )
             }
         }
