@@ -168,7 +168,9 @@ fun SyncScreen(
             viewModel.showConflictDialog?.let { info ->
                 ConflictDialog(
                     info = info,
-                    onChoice = { viewModel.onConflictChoice(it) }
+                    onChoice = { choice, applyToAll ->
+                        viewModel.onConflictChoice(choice, applyToAll)
+                    }
                 )
             }
         }

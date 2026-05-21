@@ -265,4 +265,5 @@
     <string name="password_must_not_be_empty">Password cannot be empty</string>
     <string name="login">Login</string>
     <string name="incorrect_password">Incorrect Password</string>
+    <string name="apply_to_all_conflicts">Apply to all remaining conflicts</string>
 </resources>

@@ -48,6 +48,8 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
     private val df = DateFunctions()
     private val nf = NumberFunctions()
 
+    private var applyToAllChoice: ConflictChoice? = null
+
     var showConflictDialog by mutableStateOf<ConflictInfo?>(null)
     private var conflictDeferred: CompletableDeferred<ConflictChoice>? = null
 
@@ -63,7 +65,10 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
 
     enum class ConflictChoice { KEEP_LOCAL, KEEP_DRIVE }
 
-    fun onConflictChoice(choice: ConflictChoice) {
+    fun onConflictChoice(choice: ConflictChoice, applyToAll: Boolean) {
+        if (applyToAll) {
+            applyToAllChoice = choice
+        }
         conflictDeferred?.complete(choice)
         showConflictDialog = null
     }
@@ -106,6 +111,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             var status = "Failed"
             val syncReport = StringBuilder("Sync Report:\n")
             val startTime = df.getCurrentTimeAsString()
+            applyToAllChoice = null
             try {
                 val helper = driveServiceHelper ?: return@launch
                 val appDb = BillsDatabase(getApplication())
@@ -392,7 +398,153 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             if (at.first > 0 || at.second > 0) report.append("- Account Types: ${at.first} added, ${at.second} updated\n")
             totalCount += at.first + at.second
 
+            // Pre-scan backup transactions for reconciliation
             val backupTransIds = mutableSetOf<Long>()
+            val backupTransList = mutableListOf<Transactions>()
+            backupDb.query("Transactions", null, null, null, null, null, null).use { cursor ->
+                while (cursor.moveToNext()) {
+                    val bt = Transactions(
+                        transId = cursor.getLong(cursor.getColumnIndexOrThrow("transId")),
+                        transDate = cursor.getString(cursor.getColumnIndexOrThrow("transDate")),
+                        transName = cursor.getString(cursor.getColumnIndexOrThrow("transName")),
+                        transNote = cursor.getString(cursor.getColumnIndexOrThrow("transNote")),
+                        transRuleId = cursor.getLong(cursor.getColumnIndexOrThrow("transRuleId")),
+                        transToAccountId = cursor.getLong(cursor.getColumnIndexOrThrow("transToAccountId")),
+                        transToAccountPending = cursor.getInt(cursor.getColumnIndexOrThrow("transToAccountPending")) != 0,
+                        transFromAccountId = cursor.getLong(cursor.getColumnIndexOrThrow("transFromAccountId")),
+                        transFromAccountPending = cursor.getInt(cursor.getColumnIndexOrThrow("transFromAccountPending")) != 0,
+                        transAmount = cursor.getDouble(cursor.getColumnIndexOrThrow("transAmount")),
+                        transIsDeleted = cursor.getInt(cursor.getColumnIndexOrThrow("transIsDeleted")) != 0,
+                        transUpdateTime = cursor.getString(cursor.getColumnIndexOrThrow("transUpdateTime"))
+                    )
+                    backupTransIds.add(bt.transId)
+                    if (!bt.transIsDeleted) backupTransList.add(bt)
+                }
+            }
+
+            val acc = syncTable(
+                tableName = "Accounts",
+                mapCursorToItem = { cursor ->
+                    Account(
+                        accountId = cursor.getLong(cursor.getColumnIndexOrThrow("accountId")),
+                        accountName = cursor.getString(cursor.getColumnIndexOrThrow("accountName")),
+                        accountNumber = cursor.getString(cursor.getColumnIndexOrThrow("accountNumber")),
+                        accountTypeId = cursor.getLong(cursor.getColumnIndexOrThrow("accountTypeId")),
+                        accBudgetedAmount = cursor.getDouble(cursor.getColumnIndexOrThrow("accBudgetedAmount")),
+                        accountBalance = cursor.getDouble(cursor.getColumnIndexOrThrow("accountBalance")),
+                        accountOwing = cursor.getDouble(cursor.getColumnIndexOrThrow("accountOwing")),
+                        accountCreditLimit = cursor.getDouble(cursor.getColumnIndexOrThrow("accountCreditLimit")),
+                        accIsDeleted = cursor.getInt(cursor.getColumnIndexOrThrow("accIsDeleted")) != 0,
+                        accUpdateTime = cursor.getString(cursor.getColumnIndexOrThrow("accUpdateTime"))
+                    )
+                },
+                getItemKey = { it.accountId.toString() },
+                getExistingById = { appDb.getAccountDao().findAccount(it.accountId).firstOrNull() },
+                getExistingByName = { appDb.getAccountDao().findAccountByName(it.accountName) },
+                getUpdateTime = { it.accUpdateTime },
+                getName = { it.accountName },
+                getId = { it.accountId },
+                insert = { appDb.getAccountDao().insertAccount(it) },
+                update = { backupAccount ->
+                    val localAccount =
+                        appDb.getAccountDao().getAccountSync(backupAccount.accountId)
+                    if (localAccount != null && backupAccount.accUpdateTime > localAccount.accUpdateTime) {
+                        val localTransactions =
+                            appDb.getTransactionDao().getAllTransactionsSync()
+                        val unaccounted = localTransactions.filter { lt ->
+                            if (lt.transIsDeleted) return@filter false
+                            if (lt.transId in backupTransIds) return@filter false
+
+                            // Check for logical duplicates in backup
+                            val lDate = LocalDate.parse(lt.transDate)
+                            val isDuplicate = backupTransList.any { bt ->
+                                val bDate = LocalDate.parse(bt.transDate)
+                                val diff = java.time.temporal.ChronoUnit.DAYS.between(bDate, lDate)
+                                Math.abs(diff) <= 2 &&
+                                        bt.transAmount == lt.transAmount &&
+                                        bt.transToAccountId == lt.transToAccountId &&
+                                        bt.transFromAccountId == lt.transFromAccountId
+                            }
+                            !isDuplicate
+                        }
+
+                        var reconciledBalance = backupAccount.accountBalance
+                        var reconciledOwing = backupAccount.accountOwing
+
+                        for (lt in unaccounted) {
+                            if (lt.transToAccountId == backupAccount.accountId && !lt.transToAccountPending) {
+                                reconciledBalance += lt.transAmount
+                            }
+                            if (lt.transFromAccountId == backupAccount.accountId && !lt.transFromAccountPending) {
+                                reconciledBalance -= lt.transAmount
+                            }
+                            val type = appDb.getAccountTypesDao()
+                                .getAccountTypeSync(backupAccount.accountTypeId)
+                            if (type?.tallyOwing == true) {
+                                if (lt.transToAccountId == backupAccount.accountId) reconciledOwing -= lt.transAmount
+                                if (lt.transFromAccountId == backupAccount.accountId) reconciledOwing += lt.transAmount
+                            }
+                        }
+
+                        appDb.getAccountDao().updateAccount(
+                            backupAccount.copy(
+                                accountBalance = reconciledBalance,
+                                accountOwing = reconciledOwing,
+                                accUpdateTime = df.getCurrentTimeAsString()
+                            )
+                        )
+                    } else if (localAccount == null) {
+                        appDb.getAccountDao().insertAccount(backupAccount)
+                    }
+                },
+                rename = { id, name, time ->
+                    appDb.getAccountDao().renameAccount(id, name, time)
+                },
+                copyWithName = { item, name -> item.copy(accountName = name) }
+            )
+            if (acc.first > 0 || acc.second > 0) report.append("- Accounts: ${acc.first} added, ${acc.second} updated\n")
+            totalCount += acc.first + acc.second
+
+            val br = syncTable(
+                tableName = TABLE_BUDGET_RULES,
+                mapCursorToItem = { cursor ->
+                    BudgetRule(
+                        ruleId = cursor.getLong(cursor.getColumnIndexOrThrow("ruleId")),
+                        budgetRuleName = cursor.getString(cursor.getColumnIndexOrThrow("budgetRuleName")),
+                        budToAccountId = cursor.getLong(cursor.getColumnIndexOrThrow("budToAccountId")),
+                        budFromAccountId = cursor.getLong(cursor.getColumnIndexOrThrow("budFromAccountId")),
+                        budgetAmount = cursor.getDouble(cursor.getColumnIndexOrThrow("budgetAmount")),
+                        budFixedAmount = cursor.getInt(cursor.getColumnIndexOrThrow("budFixedAmount")) != 0,
+                        budIsPayDay = cursor.getInt(cursor.getColumnIndexOrThrow("budIsPayDay")) != 0,
+                        budIsAutoPay = cursor.getInt(cursor.getColumnIndexOrThrow("budIsAutoPay")) != 0,
+                        budStartDate = cursor.getString(cursor.getColumnIndexOrThrow("budStartDate")),
+                        budEndDate = cursor.getString(cursor.getColumnIndexOrThrow("budEndDate")),
+                        budDayOfWeekId = cursor.getInt(cursor.getColumnIndexOrThrow("budDayOfWeekId")),
+                        budFrequencyTypeId = cursor.getInt(cursor.getColumnIndexOrThrow("budFrequencyTypeId")),
+                        budFrequencyCount = cursor.getInt(cursor.getColumnIndexOrThrow("budFrequencyCount")),
+                        budLeadDays = cursor.getInt(cursor.getColumnIndexOrThrow("budLeadDays")),
+                        budIsDeleted = cursor.getInt(cursor.getColumnIndexOrThrow("budIsDeleted")) != 0,
+                        budUpdateTime = cursor.getString(cursor.getColumnIndexOrThrow("budUpdateTime"))
+                    )
+                },
+                getItemKey = { it.ruleId.toString() },
+                getExistingById = { appDb.getBudgetRuleDao().getBudgetRule(it.ruleId) },
+                getExistingByName = {
+                    appDb.getBudgetRuleDao().findBudgetRuleByName(it.budgetRuleName)
+                },
+                getUpdateTime = { it.budUpdateTime },
+                getName = { it.budgetRuleName },
+                getId = { it.ruleId },
+                insert = { appDb.getBudgetRuleDao().insertBudgetRule(it) },
+                update = { appDb.getBudgetRuleDao().updateBudgetRule(it) },
+                rename = { id, name, time ->
+                    appDb.getBudgetRuleDao().renameBudgetRule(id, name, time)
+                },
+                copyWithName = { item, name -> item.copy(budgetRuleName = name) }
+            )
+            if (br.first > 0 || br.second > 0) report.append("- Budget Rules: ${br.first} added, ${br.second} updated\n")
+            totalCount += br.first + br.second
+
             val trans = syncTable(
                 tableName = "Transactions",
                 mapCursorToItem = { cursor ->
@@ -409,7 +561,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                         transAmount = cursor.getDouble(cursor.getColumnIndexOrThrow("transAmount")),
                         transIsDeleted = cursor.getInt(cursor.getColumnIndexOrThrow("transIsDeleted")) != 0,
                         transUpdateTime = cursor.getString(cursor.getColumnIndexOrThrow("transUpdateTime"))
-                    ).also { backupTransIds.add(it.transId) }
+                    )
                 },
                 getExistingLocalMap = {
                     appDb.getTransactionDao().getAllTransactionsSync()
@@ -465,133 +617,18 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                             appDb.getTransactionDao().deleteTransaction(
                                 existingDuplicate.transId, df.getCurrentTimeAsString()
                             )
-                            applyTransactionEffect(appDb, backupItem, 1.0)
                             appDb.getTransactionDao().insertTransaction(backupItem)
                         }
                     } else {
-                        applyTransactionEffect(appDb, backupItem, 1.0)
                         appDb.getTransactionDao().insertTransaction(backupItem)
                     }
                 },
                 update = { backupItem ->
-                    val localItem = appDb.getTransactionDao().getTransaction(backupItem.transId)
-                    if (localItem != null) {
-                        applyTransactionEffect(appDb, localItem, -1.0)
-                    }
-                    applyTransactionEffect(appDb, backupItem, 1.0)
                     appDb.getTransactionDao().updateTransaction(backupItem)
                 }
             )
             if (trans.first > 0 || trans.second > 0) report.append("- Transactions: ${trans.first} added, ${trans.second} updated\n")
             totalCount += trans.first + trans.second
-
-            val acc = syncTable(
-                tableName = "Accounts",
-                mapCursorToItem = { cursor ->
-                    Account(
-                        accountId = cursor.getLong(cursor.getColumnIndexOrThrow("accountId")),
-                        accountName = cursor.getString(cursor.getColumnIndexOrThrow("accountName")),
-                        accountNumber = cursor.getString(cursor.getColumnIndexOrThrow("accountNumber")),
-                        accountTypeId = cursor.getLong(cursor.getColumnIndexOrThrow("accountTypeId")),
-                        accBudgetedAmount = cursor.getDouble(cursor.getColumnIndexOrThrow("accBudgetedAmount")),
-                        accountBalance = cursor.getDouble(cursor.getColumnIndexOrThrow("accountBalance")),
-                        accountOwing = cursor.getDouble(cursor.getColumnIndexOrThrow("accountOwing")),
-                        accountCreditLimit = cursor.getDouble(cursor.getColumnIndexOrThrow("accountCreditLimit")),
-                        accIsDeleted = cursor.getInt(cursor.getColumnIndexOrThrow("accIsDeleted")) != 0,
-                        accUpdateTime = cursor.getString(cursor.getColumnIndexOrThrow("accUpdateTime"))
-                    )
-                },
-                getItemKey = { it.accountId.toString() },
-                getExistingById = { appDb.getAccountDao().findAccount(it.accountId).firstOrNull() },
-                getExistingByName = { appDb.getAccountDao().findAccountByName(it.accountName) },
-                getUpdateTime = { it.accUpdateTime },
-                getName = { it.accountName },
-                getId = { it.accountId },
-                insert = { appDb.getAccountDao().insertAccount(it) },
-                update = { backupAccount ->
-                    val localAccount =
-                        appDb.getAccountDao().getAccountSync(backupAccount.accountId)
-                    if (localAccount != null && backupAccount.accUpdateTime > localAccount.accUpdateTime) {
-                        val localTransactions =
-                            appDb.getTransactionDao().getAllTransactionsSync()
-                        val unaccounted = localTransactions.filter {
-                            it.transId !in backupTransIds && !it.transIsDeleted
-                        }
-
-                        var reconciledBalance = backupAccount.accountBalance
-                        var reconciledOwing = backupAccount.accountOwing
-
-                        for (lt in unaccounted) {
-                            if (lt.transToAccountId == backupAccount.accountId && !lt.transToAccountPending) {
-                                reconciledBalance += lt.transAmount
-                            }
-                            if (lt.transFromAccountId == backupAccount.accountId && !lt.transFromAccountPending) {
-                                reconciledBalance -= lt.transAmount
-                            }
-                            val type = appDb.getAccountTypesDao()
-                                .getAccountTypeSync(backupAccount.accountTypeId)
-                            if (type?.tallyOwing == true) {
-                                if (lt.transToAccountId == backupAccount.accountId) reconciledOwing -= lt.transAmount
-                                if (lt.transFromAccountId == backupAccount.accountId) reconciledOwing += lt.transAmount
-                            }
-                        }
-
-                        appDb.getAccountDao().updateAccount(
-                            backupAccount.copy(
-                                accountBalance = reconciledBalance,
-                                accountOwing = reconciledOwing,
-                                accUpdateTime = df.getCurrentTimeAsString()
-                            )
-                        )
-                    }
-                },
-                rename = { id, name, time ->
-                    appDb.getAccountDao().renameAccount(id, name, time)
-                },
-                copyWithName = { item, name -> item.copy(accountName = name) }
-            )
-            if (acc.first > 0 || acc.second > 0) report.append("- Accounts: ${acc.first} added, ${acc.second} updated\n")
-            totalCount += acc.first + acc.second
-
-            val br = syncTable(
-                tableName = TABLE_BUDGET_RULES,
-                mapCursorToItem = { cursor ->
-                    BudgetRule(
-                        ruleId = cursor.getLong(cursor.getColumnIndexOrThrow("ruleId")),
-                        budgetRuleName = cursor.getString(cursor.getColumnIndexOrThrow("budgetRuleName")),
-                        budToAccountId = cursor.getLong(cursor.getColumnIndexOrThrow("budToAccountId")),
-                        budFromAccountId = cursor.getLong(cursor.getColumnIndexOrThrow("budFromAccountId")),
-                        budgetAmount = cursor.getDouble(cursor.getColumnIndexOrThrow("budgetAmount")),
-                        budFixedAmount = cursor.getInt(cursor.getColumnIndexOrThrow("budFixedAmount")) != 0,
-                        budIsPayDay = cursor.getInt(cursor.getColumnIndexOrThrow("budIsPayDay")) != 0,
-                        budIsAutoPay = cursor.getInt(cursor.getColumnIndexOrThrow("budIsAutoPay")) != 0,
-                        budStartDate = cursor.getString(cursor.getColumnIndexOrThrow("budStartDate")),
-                        budEndDate = cursor.getString(cursor.getColumnIndexOrThrow("budEndDate")),
-                        budDayOfWeekId = cursor.getInt(cursor.getColumnIndexOrThrow("budDayOfWeekId")),
-                        budFrequencyTypeId = cursor.getInt(cursor.getColumnIndexOrThrow("budFrequencyTypeId")),
-                        budFrequencyCount = cursor.getInt(cursor.getColumnIndexOrThrow("budFrequencyCount")),
-                        budLeadDays = cursor.getInt(cursor.getColumnIndexOrThrow("budLeadDays")),
-                        budIsDeleted = cursor.getInt(cursor.getColumnIndexOrThrow("budIsDeleted")) != 0,
-                        budUpdateTime = cursor.getString(cursor.getColumnIndexOrThrow("budUpdateTime"))
-                    )
-                },
-                getItemKey = { it.ruleId.toString() },
-                getExistingById = { appDb.getBudgetRuleDao().getBudgetRule(it.ruleId) },
-                getExistingByName = {
-                    appDb.getBudgetRuleDao().findBudgetRuleByName(it.budgetRuleName)
-                },
-                getUpdateTime = { it.budUpdateTime },
-                getName = { it.budgetRuleName },
-                getId = { it.ruleId },
-                insert = { appDb.getBudgetRuleDao().insertBudgetRule(it) },
-                update = { appDb.getBudgetRuleDao().updateBudgetRule(it) },
-                rename = { id, name, time ->
-                    appDb.getBudgetRuleDao().renameBudgetRule(id, name, time)
-                },
-                copyWithName = { item, name -> item.copy(budgetRuleName = name) }
-            )
-            if (br.first > 0 || br.second > 0) report.append("- Budget Rules: ${br.first} added, ${br.second} updated\n")
-            totalCount += br.first + br.second
 
             val bi = syncTable(
                 tableName = TABLE_BUDGET_ITEMS,
@@ -678,6 +715,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
         driveTime: String,
         messageResId: Int? = null
     ): ConflictChoice {
+        applyToAllChoice?.let { return it }
         val deferred = CompletableDeferred<ConflictChoice>()
         conflictDeferred = deferred
         showConflictDialog =
@@ -701,50 +739,6 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to log sync history", e)
             }
-        }
-    }
-
-    private suspend fun applyTransactionEffectToAccount(
-        db: BillsDatabase,
-        accountId: Long,
-        amount: Double,
-        isCredit: Boolean,
-        multiplier: Double
-    ) {
-        val account = db.getAccountDao().getAccountSync(accountId) ?: return
-        val type = db.getAccountTypesDao().getAccountTypeSync(account.accountTypeId) ?: return
-
-        var balance = account.accountBalance
-        var owing = account.accountOwing
-
-        if (type.keepTotals) {
-            balance += (if (isCredit) amount else -amount) * multiplier
-        }
-        if (type.tallyOwing) {
-            owing += (if (isCredit) -amount else amount) * multiplier
-        }
-
-        db.getTransactionDao().updateAccountBalanceAndOwing(
-            balance, owing, accountId, df.getCurrentTimeAsString()
-        )
-    }
-
-    private suspend fun applyTransactionEffect(
-        db: BillsDatabase,
-        transaction: Transactions,
-        multiplier: Double
-    ) {
-        if (transaction.transIsDeleted) return
-
-        if (!transaction.transToAccountPending && transaction.transToAccountId != 0L) {
-            applyTransactionEffectToAccount(
-                db, transaction.transToAccountId, transaction.transAmount, true, multiplier
-            )
-        }
-        if (!transaction.transFromAccountPending && transaction.transFromAccountId != 0L) {
-            applyTransactionEffectToAccount(
-                db, transaction.transFromAccountId, transaction.transAmount, false, multiplier
-            )
         }
     }
 
