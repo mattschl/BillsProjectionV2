@@ -253,4 +253,16 @@
     <string name="system_default">System Default</string>
     <string name="light">Light</string>
     <string name="dark">Dark</string>
+    <string name="security">Security</string>
+    <string name="password_protection">Password Protection</string>
+    <string name="set_password">Set Password</string>
+    <string name="change_password">Change Password</string>
+    <string name="remove_password">Remove Password</string>
+    <string name="enter_new_password">Enter New Password</string>
+    <string name="confirm_new_password">Confirm New Password</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="passwords_do_not_match">Passwords do not match</string>
+    <string name="password_must_not_be_empty">Password cannot be empty</string>
+    <string name="login">Login</string>
+    <string name="incorrect_password">Incorrect Password</string>
 </resources>

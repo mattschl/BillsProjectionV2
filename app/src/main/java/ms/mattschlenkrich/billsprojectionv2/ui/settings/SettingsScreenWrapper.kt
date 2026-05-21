@@ -1,12 +1,22 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.settings
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -19,6 +29,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
+import ms.mattschlenkrich.billsprojectionv2.common.functions.SecurityUtils
 import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 
@@ -33,11 +45,16 @@ fun SettingsScreenWrapper(
     val settings = remember { settingsManager.getSettings() }
     var selectedFontSize by remember { mutableStateOf(settings.fontSize ?: "medium") }
     var selectedThemeMode by remember { mutableStateOf(settings.themeMode ?: "system") }
+    var usePasswordProtection by remember { mutableStateOf(settings.usePasswordProtection) }
+    var isPasswordSet by remember { mutableStateOf(settings.passwordHash != null) }
+
+    var showPasswordDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
         Text(
             text = stringResource(id = R.string.settings),
@@ -90,7 +107,150 @@ fun SettingsScreenWrapper(
                 selectedFontSize = "extra_large"
             }
         }
+
+        Text(
+            text = stringResource(id = R.string.security),
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(top = 24.dp)
+        )
+
+        Column(modifier = Modifier.padding(top = 8.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(R.string.password_protection),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Switch(
+                    checked = usePasswordProtection,
+                    onCheckedChange = { checked ->
+                        if (checked && !isPasswordSet) {
+                            showPasswordDialog = true
+                        } else {
+                            usePasswordProtection = checked
+                            val currentSettings = settingsManager.getSettings()
+                            settingsManager.saveSettings(currentSettings.copy(usePasswordProtection = checked))
+                        }
+                    }
+                )
+            }
+
+            if (isPasswordSet) {
+                Spacer(modifier = Modifier.height(16.dp))
+                OutlinedButton(
+                    onClick = { showPasswordDialog = true },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(stringResource(R.string.change_password))
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedButton(
+                    onClick = {
+                        val currentSettings = settingsManager.getSettings()
+                        settingsManager.saveSettings(
+                            currentSettings.copy(
+                                passwordHash = null,
+                                usePasswordProtection = false
+                            )
+                        )
+                        isPasswordSet = false
+                        usePasswordProtection = false
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(stringResource(R.string.remove_password))
+                }
+            }
+        }
     }
+
+    if (showPasswordDialog) {
+        SetPasswordDialog(
+            onDismiss = { showPasswordDialog = false },
+            onPasswordSet = { newPassword ->
+                val hash = SecurityUtils().hashPassword(newPassword)
+                val currentSettings = settingsManager.getSettings()
+                settingsManager.saveSettings(
+                    currentSettings.copy(
+                        passwordHash = hash,
+                        usePasswordProtection = true
+                    )
+                )
+                isPasswordSet = true
+                usePasswordProtection = true
+                showPasswordDialog = false
+            }
+        )
+    }
+}
+
+@Composable
+fun SetPasswordDialog(
+    onDismiss: () -> Unit,
+    onPasswordSet: (String) -> Unit
+) {
+    var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
+    var error by remember { mutableStateOf<String?>(null) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.set_password)) },
+        text = {
+            Column {
+                ProjectTextField(
+                    value = password,
+                    onValueChange = {
+                        password = it
+                        error = null
+                    },
+                    label = stringResource(R.string.enter_new_password),
+                    singleLine = true
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                ProjectTextField(
+                    value = confirmPassword,
+                    onValueChange = {
+                        confirmPassword = it
+                        error = null
+                    },
+                    label = stringResource(R.string.confirm_new_password),
+                    singleLine = true
+                )
+                if (error != null) {
+                    Text(
+                        text = error!!,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    if (password.isEmpty()) {
+                        error = "Password cannot be empty"
+                    } else if (password != confirmPassword) {
+                        error = "Passwords do not match"
+                    } else {
+                        onPasswordSet(password)
+                    }
+                }
+            ) {
+                Text(stringResource(R.string.save))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.cancel))
+            }
+        }
+    )
 }
 
 @Composable

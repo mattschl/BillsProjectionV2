@@ -51,6 +51,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.net.toUri
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
@@ -81,6 +83,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewMod
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.TransactionViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.TransactionViewModelFactory
+import ms.mattschlenkrich.billsprojectionv2.ui.auth.LoginScreen
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.NavGraph
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
@@ -121,6 +124,7 @@ class MainActivity : AppCompatActivity() {
     data class TopBarState(val title: String = "")
 
     private var isUpdating = mutableStateOf(false)
+    private var isAuthenticated = mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -136,6 +140,17 @@ class MainActivity : AppCompatActivity() {
             settingsManager.saveSettings(settings.copy(isFirstRun = false))
         }
 
+        isAuthenticated.value = !settings.usePasswordProtection || settings.passwordHash == null
+
+        lifecycle.addObserver(LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_STOP) {
+                val s = SettingsManager(this).getSettings()
+                if (s.usePasswordProtection && s.passwordHash != null) {
+                    isAuthenticated.value = false
+                }
+            }
+        })
+
         setContent {
             val s = remember { SettingsManager(this).getSettings() }
             val fontScale = when (s.fontSize) {
@@ -149,7 +164,14 @@ class MainActivity : AppCompatActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen(isFirstRun)
+                    if (isAuthenticated.value) {
+                        MainScreen(isFirstRun)
+                    } else {
+                        LoginScreen(
+                            passwordHash = s.passwordHash!!,
+                            onAuthenticated = { isAuthenticated.value = true }
+                        )
+                    }
                 }
             }
         }

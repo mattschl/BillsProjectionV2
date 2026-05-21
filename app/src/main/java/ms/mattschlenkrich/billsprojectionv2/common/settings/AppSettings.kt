@@ -5,5 +5,7 @@ data class AppSettings(
     val fontSize: String? = "medium",
     val driveAccount: String? = null,
     val isFirstRun: Boolean = true,
-    val themeMode: String? = "system"
+    val themeMode: String? = "system",
+    val passwordHash: String? = null,
+    val usePasswordProtection: Boolean = false
 )
