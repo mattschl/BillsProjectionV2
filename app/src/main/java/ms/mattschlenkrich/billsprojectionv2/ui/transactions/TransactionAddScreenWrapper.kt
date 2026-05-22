@@ -66,6 +66,7 @@ fun TransactionAddScreenWrapper(
             val trans = cached.transaction
             val rule = cached.budgetRule
             val ruleChanged = rule != null && rule.ruleId != trans?.transRuleId
+            val requestedAccount = mainViewModel.getRequestedAccount()
 
             if (trans != null) {
                 date = trans.transDate
@@ -99,7 +100,7 @@ fun TransactionAddScreenWrapper(
             cached.toAccount?.let {
                 val awt = accountViewModel.getAccountWithType(it.accountId)
                 toAccountWithType = awt
-                if (trans == null || ruleChanged) {
+                if (trans == null || ruleChanged || requestedAccount == REQUEST_TO_ACCOUNT) {
                     toPending = awt.accountType?.allowPending == true &&
                             awt.accountType.tallyOwing == true
                 }
@@ -107,7 +108,7 @@ fun TransactionAddScreenWrapper(
             cached.fromAccount?.let {
                 val awt = accountViewModel.getAccountWithType(it.accountId)
                 fromAccountWithType = awt
-                if (trans == null || ruleChanged) {
+                if (trans == null || ruleChanged || requestedAccount == REQUEST_FROM_ACCOUNT) {
                     fromPending = awt.accountType?.allowPending == true &&
                             awt.accountType.tallyOwing == true
                 }
@@ -133,6 +134,7 @@ fun TransactionAddScreenWrapper(
                             awt.accountType.tallyOwing == true
                 }
             }
+            mainViewModel.setRequestedAccount("")
             mainViewModel.setTransferNum(0.0)
         }
     }
@@ -215,7 +217,7 @@ fun TransactionAddScreenWrapper(
             } else {
                 var display = mainActivity.getString(R.string.this_will_perform) + trans.transName +
                         mainActivity.getString(R.string._for_) + nf.getDollarsFromDouble(trans.transAmount) +
-                        mainActivity.getString(R.string.__from) + "${fromAccount?.accountName} "
+                        mainActivity.getString(R.string.__from) + (fromAccount?.accountName ?: "")
                 if (trans.transFromAccountPending) display += mainActivity.getString(R.string._pending)
                 display += mainActivity.getString(R.string._to) + " ${toAccount?.accountName}"
                 if (trans.transToAccountPending) display += mainActivity.getString(R.string._pending)

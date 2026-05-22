@@ -108,9 +108,9 @@ fun TransactionUpdateScreenWrapper(
         var display = mainActivity.getString(R.string.this_will_perform) + trans.transName +
                 mainActivity.getString(R.string._for_) + nf.getDollarsFromDouble(trans.transAmount) +
                 mainActivity.getString(R.string.__from) + (fromAccount?.accountName ?: "")
-        if (fromPending) display += mainActivity.getString(R.string.pending)
+        if (fromPending) display += " " + mainActivity.getString(R.string.pending)
         display += mainActivity.getString(R.string._to) + (toAccount?.accountName ?: "")
-        if (toPending) display += mainActivity.getString(R.string.pending)
+        if (toPending) display += " " + mainActivity.getString(R.string.pending)
 
         AlertDialog.Builder(mainActivity)
             .setTitle(mainActivity.getString(R.string.confirm_performing_transaction))
@@ -202,6 +202,7 @@ fun TransactionUpdateScreenWrapper(
             val trans = cached.transaction
             val rule = cached.budgetRule
             val ruleChanged = rule != null && rule.ruleId != trans?.transRuleId
+            val requestedAccount = mainViewModel.getRequestedAccount()
 
             if (trans != null) {
                 transactionId = trans.transId
@@ -227,7 +228,7 @@ fun TransactionUpdateScreenWrapper(
             toAccount?.let {
                 val awt = accountViewModel.getAccountWithType(it.accountId)
                 toAccountWithType = awt
-                if (ruleChanged) {
+                if (ruleChanged || requestedAccount == REQUEST_TO_ACCOUNT) {
                     toPending = awt.accountType?.allowPending == true &&
                             awt.accountType.tallyOwing == true
                 }
@@ -235,11 +236,12 @@ fun TransactionUpdateScreenWrapper(
             fromAccount?.let {
                 val awt = accountViewModel.getAccountWithType(it.accountId)
                 fromAccountWithType = awt
-                if (ruleChanged) {
+                if (ruleChanged || requestedAccount == REQUEST_FROM_ACCOUNT) {
                     fromPending = awt.accountType?.allowPending == true &&
                             awt.accountType.tallyOwing == true
                 }
             }
+            mainViewModel.setRequestedAccount("")
             mainViewModel.setTransferNum(0.0)
         }
 
