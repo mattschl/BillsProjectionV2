@@ -83,14 +83,21 @@ fun AccountChooseScreenWrapper(
 private fun populateSplitTransaction(mainActivity: MainActivity, curAccount: AccountWithType) {
     val mainViewModel = mainActivity.mainViewModel
     val splitTrans = mainViewModel.getSplitTransactionDetailed()!!
-    val isToAccount = mainViewModel.getRequestedAccount() == REQUEST_TO_ACCOUNT
+    val requestedAccount = mainViewModel.getRequestedAccount()
+    val isToAccount = requestedAccount == REQUEST_TO_ACCOUNT
+    val isFromAccount = requestedAccount == REQUEST_FROM_ACCOUNT
+
+    val accountType = curAccount.accountType!!
     val updatedTransaction = splitTrans.transaction?.copy(
-        transToAccountPending = curAccount.accountType?.tallyOwing ?: false
+        transToAccountPending = if (isToAccount) (accountType.allowPending && accountType.tallyOwing)
+        else splitTrans.transaction.transToAccountPending,
+        transFromAccountPending = if (isFromAccount) (accountType.allowPending && accountType.tallyOwing)
+        else splitTrans.transaction.transFromAccountPending
     )
     val splitTransactionDetailed = splitTrans.copy(
         transaction = updatedTransaction,
         toAccount = if (isToAccount) curAccount.account else splitTrans.toAccount,
-        fromAccount = if (!isToAccount) curAccount.account else splitTrans.fromAccount,
+        fromAccount = if (isFromAccount) curAccount.account else splitTrans.fromAccount,
     )
     mainViewModel.setSplitTransactionDetailed(splitTransactionDetailed)
 }
@@ -98,13 +105,16 @@ private fun populateSplitTransaction(mainActivity: MainActivity, curAccount: Acc
 private fun populateTransactionDetailed(mainActivity: MainActivity, curAccount: AccountWithType) {
     val mainViewModel = mainActivity.mainViewModel
     val tempTrans = mainViewModel.getTransactionDetailed()!!
-    val isToAccount = mainViewModel.getRequestedAccount() == REQUEST_TO_ACCOUNT
-    val isFromAccount = mainViewModel.getRequestedAccount() == REQUEST_FROM_ACCOUNT
+    val requestedAccount = mainViewModel.getRequestedAccount()
+    val isToAccount = requestedAccount == REQUEST_TO_ACCOUNT
+    val isFromAccount = requestedAccount == REQUEST_FROM_ACCOUNT
 
     val accountType = curAccount.accountType!!
     val updatedTransaction = tempTrans.transaction?.copy(
-        transToAccountPending = (accountType.allowPending || accountType.tallyOwing) && !isToAccount,
-        transFromAccountPending = (accountType.allowPending || accountType.tallyOwing) && isFromAccount
+        transToAccountPending = if (isToAccount) (accountType.allowPending && accountType.tallyOwing)
+        else tempTrans.transaction.transToAccountPending,
+        transFromAccountPending = if (isFromAccount) (accountType.allowPending && accountType.tallyOwing)
+        else tempTrans.transaction.transFromAccountPending
     )
 
     val transactionDetailed = tempTrans.copy(

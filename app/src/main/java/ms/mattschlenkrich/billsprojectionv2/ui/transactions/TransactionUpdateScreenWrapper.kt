@@ -202,7 +202,6 @@ fun TransactionUpdateScreenWrapper(
             val trans = cached.transaction
             val rule = cached.budgetRule
             val ruleChanged = rule != null && rule.ruleId != trans?.transRuleId
-            val requestedAccount = mainViewModel.getRequestedAccount()
 
             if (trans != null) {
                 transactionId = trans.transId
@@ -228,7 +227,7 @@ fun TransactionUpdateScreenWrapper(
             toAccount?.let {
                 val awt = accountViewModel.getAccountWithType(it.accountId)
                 toAccountWithType = awt
-                if (ruleChanged || requestedAccount == REQUEST_TO_ACCOUNT) {
+                if (ruleChanged) {
                     toPending = awt.accountType?.allowPending == true &&
                             awt.accountType.tallyOwing == true
                 }
@@ -236,7 +235,7 @@ fun TransactionUpdateScreenWrapper(
             fromAccount?.let {
                 val awt = accountViewModel.getAccountWithType(it.accountId)
                 fromAccountWithType = awt
-                if (ruleChanged || requestedAccount == REQUEST_FROM_ACCOUNT) {
+                if (ruleChanged) {
                     fromPending = awt.accountType?.allowPending == true &&
                             awt.accountType.tallyOwing == true
                 }

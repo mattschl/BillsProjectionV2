@@ -66,7 +66,6 @@ fun TransactionAddScreenWrapper(
             val trans = cached.transaction
             val rule = cached.budgetRule
             val ruleChanged = rule != null && rule.ruleId != trans?.transRuleId
-            val requestedAccount = mainViewModel.getRequestedAccount()
 
             if (trans != null) {
                 date = trans.transDate
@@ -100,7 +99,7 @@ fun TransactionAddScreenWrapper(
             cached.toAccount?.let {
                 val awt = accountViewModel.getAccountWithType(it.accountId)
                 toAccountWithType = awt
-                if (trans == null || ruleChanged || requestedAccount == REQUEST_TO_ACCOUNT) {
+                if (ruleChanged) {
                     toPending = awt.accountType?.allowPending == true &&
                             awt.accountType.tallyOwing == true
                 }
@@ -108,7 +107,7 @@ fun TransactionAddScreenWrapper(
             cached.fromAccount?.let {
                 val awt = accountViewModel.getAccountWithType(it.accountId)
                 fromAccountWithType = awt
-                if (trans == null || ruleChanged || requestedAccount == REQUEST_FROM_ACCOUNT) {
+                if (ruleChanged) {
                     fromPending = awt.accountType?.allowPending == true &&
                             awt.accountType.tallyOwing == true
                 }
@@ -119,20 +118,16 @@ fun TransactionAddScreenWrapper(
                 toAccount = acc
                 val awt = accountViewModel.getAccountWithType(acc.accountId)
                 toAccountWithType = awt
-                if (trans == null || ruleChanged) {
-                    toPending = awt.accountType?.allowPending == true &&
-                            awt.accountType.tallyOwing == true
-                }
+                toPending = awt.accountType?.allowPending == true &&
+                        awt.accountType.tallyOwing == true
             }
             if (fromAccount == null && rule?.budFromAccountId != 0L && rule != null) {
                 val acc = accountViewModel.getAccount(rule.budFromAccountId)
                 fromAccount = acc
                 val awt = accountViewModel.getAccountWithType(acc.accountId)
                 fromAccountWithType = awt
-                if (trans == null || ruleChanged) {
-                    fromPending = awt.accountType?.allowPending == true &&
-                            awt.accountType.tallyOwing == true
-                }
+                fromPending = awt.accountType?.allowPending == true &&
+                        awt.accountType.tallyOwing == true
             }
             mainViewModel.setRequestedAccount("")
             mainViewModel.setTransferNum(0.0)
