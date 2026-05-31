@@ -7,5 +7,6 @@ data class AppSettings(
     val isFirstRun: Boolean = true,
     val themeMode: String? = "system",
     val passwordHash: String? = null,
-    val usePasswordProtection: Boolean = false
+    val usePasswordProtection: Boolean = false,
+    val defaultAccount: String? = null
 )

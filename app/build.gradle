@@ -33,13 +33,13 @@ android {
         minSdk 28
         targetSdk 37
         //noinspection EditedTargetSdkVersion
-        versionCode 16
+        versionCode 17
         versionName 'v2'
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        versionNameSuffix '-Sync Improvements'
+        versionNameSuffix '-setting defaults'
         signingConfig signingConfigs.debug
     }
 
@@ -129,8 +129,11 @@ dependencies {
     implementation(libs.google.api.client.gson)
 
     // Credentials API
+    //noinspection LoginCredentials
     implementation libs.androidx.credentials
+    //noinspection LoginCredentials
     implementation libs.androidx.credentials.play.services.auth
+    //noinspection LoginCredentials
     implementation libs.googleid
 
 }

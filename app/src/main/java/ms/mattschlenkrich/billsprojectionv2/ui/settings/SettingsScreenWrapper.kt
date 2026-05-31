@@ -20,6 +20,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -29,10 +30,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.ALL_ITEMS
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.SecurityUtils
 import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.DropdownSelector
 
 @Composable
 fun SettingsScreenWrapper(
@@ -47,6 +50,14 @@ fun SettingsScreenWrapper(
     var selectedThemeMode by remember { mutableStateOf(settings.themeMode ?: "system") }
     var usePasswordProtection by remember { mutableStateOf(settings.usePasswordProtection) }
     var isPasswordSet by remember { mutableStateOf(settings.passwordHash != null) }
+
+    val rawAssetList by mainActivity.budgetItemViewModel.getAssetsForBudget()
+        .observeAsState(initial = emptyList())
+    val assetList = remember(rawAssetList) {
+        if (rawAssetList.isEmpty()) listOf(ALL_ITEMS)
+        else listOf(ALL_ITEMS) + rawAssetList
+    }
+    var defaultAccount by remember { mutableStateOf(settings.defaultAccount ?: ALL_ITEMS) }
 
     var showPasswordDialog by remember { mutableStateOf(false) }
 
@@ -106,6 +117,25 @@ fun SettingsScreenWrapper(
                 updateFontSize("extra_large", settingsManager, mainActivity)
                 selectedFontSize = "extra_large"
             }
+        }
+
+        Text(
+            text = stringResource(id = R.string.general),
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(top = 24.dp)
+        )
+
+        Column(modifier = Modifier.padding(top = 8.dp)) {
+            DropdownSelector(
+                label = stringResource(R.string.default_startup_account),
+                options = assetList,
+                selectedOption = if (assetList.contains(defaultAccount)) defaultAccount else ALL_ITEMS,
+                onOptionSelected = { selected ->
+                    defaultAccount = selected
+                    val currentSettings = settingsManager.getSettings()
+                    settingsManager.saveSettings(currentSettings.copy(defaultAccount = selected))
+                }
+            )
         }
 
         Text(

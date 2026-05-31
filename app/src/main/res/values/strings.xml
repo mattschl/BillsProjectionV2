@@ -266,4 +266,6 @@
     <string name="login">Login</string>
     <string name="incorrect_password">Incorrect Password</string>
     <string name="apply_to_all_conflicts">Apply to all remaining conflicts</string>
+    <string name="default_startup_account">Default Startup Account</string>
+    <string name="password_recovery_note">If you have forgotten your password, please email the developer at matt_schl@hotmail.com to receive the recovery key.</string>
 </resources>

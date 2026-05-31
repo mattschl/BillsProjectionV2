@@ -21,6 +21,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.projections.UpdateBudgetPredictions
+import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
@@ -54,7 +55,13 @@ fun BudgetViewScreenWrapper(
 
     LaunchedEffect(assetList) {
         if (selectedAsset.isEmpty() && assetList.isNotEmpty()) {
-            mainViewModel.setReturnToAsset(assetList.first())
+            val settings = SettingsManager(activity).getSettings()
+            val defaultAccount = settings.defaultAccount ?: ALL_ITEMS
+            if (assetList.contains(defaultAccount)) {
+                mainViewModel.setReturnToAsset(defaultAccount)
+            } else {
+                mainViewModel.setReturnToAsset(assetList.first())
+            }
         }
     }
 
