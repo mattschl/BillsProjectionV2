@@ -169,7 +169,11 @@ class MainActivity : AppCompatActivity() {
                     } else {
                         LoginScreen(
                             passwordHash = s.passwordHash!!,
-                            onAuthenticated = { isAuthenticated.value = true }
+                            onAuthenticated = { isAuthenticated.value = true },
+                            onPasswordChanged = { newHash ->
+                                val currentSettings = settingsManager.getSettings()
+                                settingsManager.saveSettings(currentSettings.copy(passwordHash = newHash))
+                            }
                         )
                     }
                 }
