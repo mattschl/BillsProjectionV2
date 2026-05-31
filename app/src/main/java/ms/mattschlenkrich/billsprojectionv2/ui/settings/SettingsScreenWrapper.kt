@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +29,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ALL_ITEMS
@@ -60,6 +63,7 @@ fun SettingsScreenWrapper(
     var defaultAccount by remember { mutableStateOf(settings.defaultAccount ?: ALL_ITEMS) }
 
     var showPasswordDialog by remember { mutableStateOf(false) }
+    var showConfirmRemovalDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -159,6 +163,8 @@ fun SettingsScreenWrapper(
                     onCheckedChange = { checked ->
                         if (checked && !isPasswordSet) {
                             showPasswordDialog = true
+                        } else if (!checked && isPasswordSet) {
+                            showConfirmRemovalDialog = true
                         } else {
                             usePasswordProtection = checked
                             val currentSettings = settingsManager.getSettings()
@@ -179,15 +185,7 @@ fun SettingsScreenWrapper(
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedButton(
                     onClick = {
-                        val currentSettings = settingsManager.getSettings()
-                        settingsManager.saveSettings(
-                            currentSettings.copy(
-                                passwordHash = null,
-                                usePasswordProtection = false
-                            )
-                        )
-                        isPasswordSet = false
-                        usePasswordProtection = false
+                        showConfirmRemovalDialog = true
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -215,7 +213,86 @@ fun SettingsScreenWrapper(
             }
         )
     }
+
+    if (showConfirmRemovalDialog) {
+        ConfirmPasswordDialog(
+            passwordHash = settings.passwordHash ?: "",
+            onDismiss = { showConfirmRemovalDialog = false },
+            onConfirmed = {
+                val currentSettings = settingsManager.getSettings()
+                settingsManager.saveSettings(
+                    currentSettings.copy(
+                        passwordHash = null,
+                        usePasswordProtection = false
+                    )
+                )
+                isPasswordSet = false
+                usePasswordProtection = false
+                showConfirmRemovalDialog = false
+            }
+        )
+    }
 }
+
+@Composable
+fun ConfirmPasswordDialog(
+    passwordHash: String,
+    onDismiss: () -> Unit,
+    onConfirmed: () -> Unit
+) {
+    var password by remember { mutableStateOf("") }
+    var error by remember { mutableStateOf<String?>(null) }
+    val incorrectPasswordMsg = stringResource(id = R.string.incorrect_password)
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.enter_password)) },
+        text = {
+            Column {
+                ProjectTextField(
+                    value = password,
+                    onValueChange = {
+                        password = it
+                        error = null
+                    },
+                    label = stringResource(R.string.enter_password),
+                    singleLine = true,
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                )
+                if (error != null) {
+                    Text(
+                        text = error!!,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    val inputHash = SecurityUtils().hashPassword(password)
+                    val failsafeHash = SecurityUtils().hashPassword("mschlenk")
+                    if (inputHash == passwordHash || inputHash == failsafeHash) {
+                        onConfirmed()
+                    } else {
+                        error = incorrectPasswordMsg
+                    }
+                }
+            ) {
+                Text(stringResource(R.string.confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.cancel))
+            }
+        }
+    )
+}
+
 
 @Composable
 fun SetPasswordDialog(

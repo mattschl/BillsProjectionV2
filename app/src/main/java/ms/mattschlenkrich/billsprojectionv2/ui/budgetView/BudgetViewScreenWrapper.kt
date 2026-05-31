@@ -53,7 +53,7 @@ fun BudgetViewScreenWrapper(
 
     val selectedAsset = mainViewModel.getReturnToAsset() ?: ""
 
-    LaunchedEffect(assetList) {
+    LaunchedEffect(assetList, selectedAsset) {
         if (selectedAsset.isEmpty() && assetList.isNotEmpty()) {
             val settings = SettingsManager(activity).getSettings()
             val defaultAccount = settings.defaultAccount ?: ALL_ITEMS

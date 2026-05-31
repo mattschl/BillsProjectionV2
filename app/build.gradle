@@ -33,13 +33,13 @@ android {
         minSdk 28
         targetSdk 37
         //noinspection EditedTargetSdkVersion
-        versionCode 17
+        versionCode 18
         versionName 'v2'
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        versionNameSuffix '-setting defaults'
+        versionNameSuffix '-password protected'
         signingConfig signingConfigs.debug
     }
 

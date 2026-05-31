@@ -221,6 +221,7 @@ class MainActivity : AppCompatActivity() {
             contract = ActivityResultContracts.StartActivityForResult()
         ) { result ->
             if (result.resultCode == RESULT_OK) {
+                mainViewModel.eraseAll()
                 setupViewModels(clearExisting = true)
                 navController.navigate(Screen.MainPager.route) {
                     popUpTo(navController.graph.startDestinationId) {
