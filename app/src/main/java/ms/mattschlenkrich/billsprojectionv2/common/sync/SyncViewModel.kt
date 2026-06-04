@@ -60,7 +60,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
         val localTime: String,
         val driveId: Long,
         val driveTime: String,
-        val messageResId: Int? = null
+        val messageResId: Int? = null,
     )
 
     enum class ConflictChoice { KEEP_LOCAL, KEEP_DRIVE }
@@ -158,7 +158,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                 helper.uploadFile(tempLockFile, "text/plain", "sync.lock")
                 tempLockFile.delete()
 
-                val driveFiles = fileList
+                val driveFiles = fileList.asSequence()
                     .filter { it.name.startsWith("bills2_") && it.name.endsWith(".db") }
                     .mapNotNull { file ->
                         val tsPart = file.name.substringAfter("bills2_").substringBefore(".db")
@@ -171,12 +171,14 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                     .filter { it.second > myLastSync }
                     .sortedBy { it.second }
 
-                if (driveFiles.isEmpty()) {
+                val driveFilesList = driveFiles.toList()
+
+                if (driveFilesList.isEmpty()) {
                     syncReport.append("No new backups found on Drive.\n")
                 } else {
-                    syncReport.append("Found ${driveFiles.size} backups to evaluate.\n")
+                    syncReport.append("Found ${driveFilesList.size} backups to evaluate.\n")
 
-                    for ((file, _) in driveFiles) {
+                    for ((file, _) in driveFilesList) {
                         progressMessage = "Syncing ${file.name}..."
                         val context = getApplication<Application>()
                         val localBackupFile = File(context.cacheDir, file.name)
@@ -242,7 +244,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
 
                     // Cull if older than 28 days OR if already successfully synced
                     val isRedundant = allSuccessfulSyncs.any { it.syncTime == sqliteTs }
-                    sqliteTs < staleDate || isRedundant
+                    (sqliteTs < staleDate) || isRedundant
                 }
 
                 // Keep a minimum of 3 most recent backups regardless of age or redundancy
@@ -308,7 +310,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             val backupDb = SQLiteDatabase.openDatabase(
                 backupFile.absolutePath,
                 null,
-                SQLiteDatabase.OPEN_READONLY
+                SQLiteDatabase.OPEN_READONLY,
             )
             val appDb = BillsDatabase(getApplication())
 
@@ -343,7 +345,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
 
                         if (existingById == null) {
                             val existingByName = getExistingByName?.invoke(backupItem)
-                            if (existingByName != null && getName != null && getId != null && rename != null) {
+                            if ((existingByName != null) && (getName != null) && (getId != null) && (rename != null)) {
                                 val localName = getName(existingByName)
                                 val localId = getId(existingByName)
                                 val localTime = getUpdateTime(existingByName)

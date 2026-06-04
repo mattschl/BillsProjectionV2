@@ -302,6 +302,8 @@ fun SetPasswordDialog(
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
+    val emptyError = stringResource(id = R.string.password_must_not_be_empty)
+    val mismatchError = stringResource(id = R.string.passwords_do_not_match)
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -315,7 +317,9 @@ fun SetPasswordDialog(
                         error = null
                     },
                     label = stringResource(R.string.enter_new_password),
-                    singleLine = true
+                    singleLine = true,
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 ProjectTextField(
@@ -325,7 +329,9 @@ fun SetPasswordDialog(
                         error = null
                     },
                     label = stringResource(R.string.confirm_new_password),
-                    singleLine = true
+                    singleLine = true,
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                 )
                 if (error != null) {
                     Text(
@@ -341,9 +347,9 @@ fun SetPasswordDialog(
             TextButton(
                 onClick = {
                     if (password.isEmpty()) {
-                        error = "Password cannot be empty"
+                        error = emptyError
                     } else if (password != confirmPassword) {
-                        error = "Passwords do not match"
+                        error = mismatchError
                     } else {
                         onPasswordSet(password)
                     }

@@ -10,14 +10,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ALL_ITEMS
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
-import ms.mattschlenkrich.billsprojectionv2.common.WAIT_100
-import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.projections.UpdateBudgetPredictions
@@ -191,8 +188,6 @@ fun BudgetViewScreenWrapper(
                                     ) + nf.displayDollars(curBudget.biProjectedAmount) + activity.getString(
                                         R.string.from
                                     ) + curBudgetDetailed.fromAccount!!.accountName
-                                display += if (fromPending) activity.getString(R.string._pending) else ""
-                                delay(WAIT_100)
                                 display += activity.getString(R.string._to) + curBudgetDetailed.toAccount!!.accountName
                                 display += if (toPending) activity.getString(R.string._pending) else ""
 
@@ -267,7 +262,6 @@ fun BudgetViewScreenWrapper(
                                     DateFunctions().getCurrentTimeAsString()
                                 )
                                 CoroutineScope(Dispatchers.Main).launch {
-                                    delay(WAIT_100)
                                     if (budgetList.isEmpty()) {
                                         withContext(Dispatchers.IO) {
                                             UpdateBudgetPredictions(activity).updatePredictions(
@@ -378,7 +372,6 @@ fun BudgetViewScreenWrapper(
                                 trans.transFromAccountId
                             )
                             mainViewModel.setOldTransaction(transactionFull)
-                            delay(WAIT_250)
                             navController.navigate(Screen.TransactionUpdate.route)
                         }
                     }

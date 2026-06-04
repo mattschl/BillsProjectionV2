@@ -32,9 +32,11 @@ import com.google.api.services.drive.DriveScopes
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
 import java.security.SecureRandom
+import kotlin.time.Duration.Companion.milliseconds
 
 private const val TAG: String = "SyncActivity"
 
@@ -56,7 +58,7 @@ class SyncActivity : ComponentActivity() {
         viewModel.deviceId = settings.deviceId
 
         lifecycleScope.launch {
-            delay(200) // Small delay to ensure Credential Manager is ready
+            delay(WAIT_250.milliseconds) // Small delay to ensure Credential Manager is ready
             settings.driveAccount?.let {
                 initializeDriveService(it)
             } ?: run {

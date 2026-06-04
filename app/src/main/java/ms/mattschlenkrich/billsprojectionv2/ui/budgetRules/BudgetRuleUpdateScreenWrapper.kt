@@ -37,7 +37,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -46,7 +45,6 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_MONTHLY
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_WEEKLY
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_YEARLY
-import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.components.BudgetItemDisplay
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectFieldDefaults
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
@@ -314,7 +312,6 @@ fun BudgetRuleUpdateScreenWrapper(
         withContext(Dispatchers.IO) {
             curPayday = budgetItemViewModel.getPayDaysActive().first()
         }
-        delay(WAIT_250)
         val tempBudgetItem = BudgetItem(
             detailed.budgetRule!!.ruleId,
             biProjectedDate = df.getCurrentDateAsString(),
@@ -348,7 +345,6 @@ fun BudgetRuleUpdateScreenWrapper(
             val detailed = mainViewModel.getBudgetRuleDetailed()!!
             mainViewModel.setBudgetItemDetailed(createBudgetItemDetailed(detailed))
             mainViewModel.addCallingFragment(TAG)
-            delay(1000L)
             navController.navigate(Screen.BudgetItemAdd.route)
         }
     }

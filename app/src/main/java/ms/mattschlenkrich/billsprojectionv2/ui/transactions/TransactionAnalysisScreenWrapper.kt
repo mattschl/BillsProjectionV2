@@ -13,13 +13,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.AnalysisMode
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
 import ms.mattschlenkrich.billsprojectionv2.common.TimeRange
-import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
@@ -259,7 +257,6 @@ fun TransactionAnalysisScreenWrapper(
                             }
                             mainViewModel.setOldTransaction(oldTransactionFull.await())
                             launch(Dispatchers.Main) {
-                                delay(WAIT_250)
                                 navController.navigate(Screen.TransactionUpdate.route)
                             }
                         }

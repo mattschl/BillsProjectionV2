@@ -82,7 +82,7 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
         if (leadDays == 0L) {
             minusDates = datesToFix
         } else {
-            for (i in 0 until datesToFix.size) {
+            for (i in datesToFix.indices) {
                 minusDates.add(datesToFix[i].minusDays(leadDays))
             }
         }
@@ -93,7 +93,7 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
             }
 
             DAY_WEEK_DAY -> {
-                for (i in 0 until minusDates.size) {
+                for (i in minusDates.indices) {
                     var newDate = minusDates[i]
                     if (minusDates[i].dayOfWeek == DayOfWeek.SATURDAY) {
                         newDate = minusDates[i].minusDays(1)
@@ -138,7 +138,7 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
                         0
                     }
                 }
-                for (i in 0 until minusDates.size) {
+                for (i in minusDates.indices) {
                     val dateToFix = minusDates[i]
                     if (dateToFix.dayOfWeek.value == dayNumber) {
                         fixedDates.add(minusDates[i])

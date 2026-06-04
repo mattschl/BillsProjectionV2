@@ -55,4 +55,3 @@ val DarkOutline = Color(0xFFB0B0B0)
 // Branded Green
 @Suppress("unused")
 val AppIconGreen = Color(0xFF9CED79)
-val AppIconGreenDark = Color(0xFF29A860)

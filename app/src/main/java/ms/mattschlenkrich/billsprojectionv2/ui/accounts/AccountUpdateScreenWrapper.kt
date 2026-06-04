@@ -12,7 +12,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -21,7 +20,6 @@ import ms.mattschlenkrich.billsprojectionv2.common.BALANCE
 import ms.mattschlenkrich.billsprojectionv2.common.BUDGETED
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.OWING
-import ms.mattschlenkrich.billsprojectionv2.common.WAIT_500
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
@@ -158,7 +156,6 @@ fun AccountUpdateScreenWrapper(
                 mainActivity.accountUpdateViewModel.updateTransaction(
                     transaction, newTransaction
                 )
-                delay(WAIT_500)
             }
         }
     }
@@ -191,7 +188,6 @@ fun AccountUpdateScreenWrapper(
     fun deleteTransaction(transaction: Transactions) {
         mainActivity.lifecycleScope.launch {
             mainActivity.accountUpdateViewModel.deleteTransaction(transaction)
-            delay(WAIT_500)
         }
     }
 
@@ -249,7 +245,6 @@ fun AccountUpdateScreenWrapper(
                         )
                         mainViewModel.setOldTransaction(oldTransactionFull)
                         withContext(Dispatchers.Main) {
-                            delay(WAIT_500)
                             navController.navigate(Screen.TransactionUpdate.route)
                         }
                     }

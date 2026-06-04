@@ -21,6 +21,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -45,8 +46,9 @@ fun LoginScreen(
 ) {
     var password by remember { mutableStateOf("") }
     val incorrectPasswordMsg = stringResource(id = R.string.incorrect_password)
+    val emptyPasswordMsg = stringResource(id = R.string.password_must_not_be_empty)
     var error by remember { mutableStateOf<String?>(null) }
-    var failedAttempts by remember { mutableStateOf(0) }
+    var failedAttempts by remember { mutableIntStateOf(0) }
     var showResetMode by remember { mutableStateOf(false) }
 
     Surface(
@@ -125,17 +127,27 @@ fun LoginScreen(
 
                         Button(
                             onClick = {
-                                val inputHash = SecurityUtils().hashPassword(password)
-                                val failsafeHash = SecurityUtils().hashPassword("mschlenk")
-                                if (inputHash == passwordHash) {
-                                    failedAttempts = 0
-                                    onAuthenticated()
-                                } else if (inputHash == failsafeHash) {
-                                    failedAttempts = 0
-                                    showResetMode = true
+                                if (password.isEmpty()) {
+                                    error = emptyPasswordMsg
                                 } else {
-                                    failedAttempts++
-                                    error = incorrectPasswordMsg
+                                    val inputHash = SecurityUtils().hashPassword(password)
+                                    val failsafeHash = SecurityUtils().hashPassword("mschlenk")
+                                    when (inputHash) {
+                                        passwordHash -> {
+                                            failedAttempts = 0
+                                            onAuthenticated()
+                                        }
+
+                                        failsafeHash -> {
+                                            failedAttempts = 0
+                                            showResetMode = true
+                                        }
+
+                                        else -> {
+                                            failedAttempts++
+                                            error = incorrectPasswordMsg
+                                        }
+                                    }
                                 }
                             },
                             modifier = Modifier.fillMaxWidth()
@@ -164,6 +176,8 @@ fun ResetPasswordContent(
     var newPassword by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
+    val emptyError = stringResource(id = R.string.password_must_not_be_empty)
+    val mismatchError = stringResource(id = R.string.passwords_do_not_match)
 
     Column(
         modifier = Modifier
@@ -220,9 +234,9 @@ fun ResetPasswordContent(
         Button(
             onClick = {
                 if (newPassword.isEmpty()) {
-                    error = "Password cannot be empty"
+                    error = emptyError
                 } else if (newPassword != confirmPassword) {
-                    error = "Passwords do not match"
+                    error = mismatchError
                 } else {
                     onPasswordSet(newPassword)
                 }
