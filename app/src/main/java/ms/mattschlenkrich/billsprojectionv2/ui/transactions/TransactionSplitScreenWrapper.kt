@@ -26,6 +26,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transact
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
+import ms.mattschlenkrich.billsprojectionv2.ui.transactions.compose.TransactionSplitScreen
 
 private const val TAG = FRAG_TRANSACTION_SPLIT
 
@@ -104,11 +105,11 @@ fun TransactionSplitScreenWrapper(
             amount =
                 if (mainViewModel.getTransferNum() != null && mainViewModel.getTransferNum() != 0.0) {
                     nf.displayDollars(mainViewModel.getTransferNum()!!)
-            } else if (transaction.transAmount != 0.0) {
+                } else if (transaction.transAmount != 0.0) {
                     nf.displayDollars(transaction.transAmount)
-            } else {
+                } else {
                     nf.displayDollars(0.0)
-            }
+                }
             updateAmountsDisplay()
 
             if (splitDetailed.toAccount != null) {

@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.ui.transactions
+package ms.mattschlenkrich.billsprojectionv2.ui.transactions.compose
 
 //import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import androidx.compose.foundation.clickable

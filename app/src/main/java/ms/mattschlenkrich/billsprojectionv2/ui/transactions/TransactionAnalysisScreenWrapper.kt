@@ -25,6 +25,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
+import ms.mattschlenkrich.billsprojectionv2.ui.transactions.compose.TransactionAnalysisScreen
 
 private const val TAG = FRAG_TRANSACTION_ANALYSIS
 

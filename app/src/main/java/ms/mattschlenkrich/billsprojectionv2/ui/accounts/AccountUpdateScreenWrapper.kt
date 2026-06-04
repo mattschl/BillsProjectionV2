@@ -30,6 +30,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithTy
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.ui.accounts.compose.AccountEditScreen
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 
 private const val TAG = FRAG_ACCOUNT_UPDATE

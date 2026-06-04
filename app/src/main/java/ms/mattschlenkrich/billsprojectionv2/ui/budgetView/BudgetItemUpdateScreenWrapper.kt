@@ -17,6 +17,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.compose.BudgetItemScreen
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 
 private const val TAG = FRAG_BUDGET_ITEM_UPDATE

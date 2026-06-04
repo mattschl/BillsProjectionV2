@@ -42,7 +42,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
     var progressMessage by mutableStateOf<String?>(null)
     var docContent by mutableStateOf(
         "Version: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n\n" +
-                application.getString(R.string.sync_help_text)
+                application.getString(R.string.sync_help_text),
     )
 
     private val df = DateFunctions()
@@ -85,11 +85,12 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                 if (files.isEmpty()) {
                     report.append("No files found.")
                 } else {
-                    files.filter {
-                        it.name.startsWith("bills2_") && it.name.endsWith(".db") || it.name.endsWith(
-                            "-wal"
-                        ) || it.name.endsWith("-shm")
-                    }
+                    files.asSequence()
+                        .filter {
+                            (it.name.startsWith("bills2_") && it.name.endsWith(".db")) ||
+                                    it.name.endsWith("-wal") ||
+                                    it.name.endsWith("-shm")
+                        }
                         .sortedByDescending { it.name }
                         .forEach { file ->
                             report.append("- ${file.name} (${file.size} bytes)\n")
@@ -111,6 +112,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             var status = "Failed"
             val syncReport = StringBuilder("Sync Report:\n")
             val startTime = df.getCurrentTimeAsString()
+            var uploadTimestamp: String? = null
             applyToAllChoice = null
             try {
                 val helper = driveServiceHelper ?: return@launch
@@ -126,12 +128,13 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                 val fileList = allFiles.files ?: emptyList()
 
                 // Check for sync lock
-                val lockFile = fileList.find { it.name == "sync.lock" }
-                if (lockFile != null) {
-                    val modifiedTime = lockFile.modifiedTime.value
+                val lockFiles = fileList.filter { it.name == "sync.lock" }
+                if (lockFiles.isNotEmpty()) {
+                    val newestLock = lockFiles.maxByOrNull { it.modifiedTime.value }!!
+                    val modifiedTime = newestLock.modifiedTime.value
                     val currentTime = System.currentTimeMillis()
                     val diffMinutes = (currentTime - modifiedTime) / (60 * 1000)
-                    if (diffMinutes < 10) {
+                    if (diffMinutes < 5) {
                         status = "Busy"
                         syncReport.append("\nAborted: Sync already in progress on another device.")
                         android.widget.Toast.makeText(
@@ -141,9 +144,11 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                         ).show()
                         return@launch
                     } else {
-                        // Stale lock, delete it
-                        helper.deleteFile(lockFile.id)
-                        syncReport.append("\nRemoved stale lock file.\n")
+                        // Stale locks, delete them all
+                        for (lock in lockFiles) {
+                            helper.deleteFile(lock.id)
+                        }
+                        syncReport.append("\nRemoved stale lock file(s).\n")
                     }
                 }
 
@@ -206,7 +211,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                 syncReport.append("\nOld sync history records purged (cutoff: $syncCutoff).")
 
                 progressMessage = "Uploading merged database..."
-                val uploadTimestamp = df.getCurrentFileTimestamp()
+                uploadTimestamp = df.getCurrentFileTimestamp()
                 val uploadedFile = performUpload(helper, uploadTimestamp)
                 syncReport.append("\nMerged database uploaded: $uploadedFile")
 
@@ -215,8 +220,40 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                     .filter { it.name.startsWith("bills2_") && it.name.endsWith(".db") }
                     .sortedByDescending { it.name }
 
-                if (driveBackups.size > 6) {
-                    val backupsToDelete = driveBackups.drop(6)
+                val staleDate = LocalDate.now().minusDays(28).toString()
+
+                // Get all successful sync records to identify redundancy and latest machine backups
+                val allSuccessfulSyncs = withContext(Dispatchers.IO) {
+                    appDb.getSyncHistoryDao().getAllSuccessfulSyncHistory()
+                }
+
+                val latestByMachine = allSuccessfulSyncs.groupBy { it.syncDeviceId }
+                    .mapValues { entry -> entry.value.maxOf { it.syncTime } }
+                val preservedByMachine = latestByMachine.values.toSet()
+
+                // Identify candidates for deletion (stale or already synced)
+                val candidates = driveBackups.filter { backup ->
+                    val tsPart = backup.name.substringAfter("bills2_").substringBefore(".db")
+                    val date = df.parseFileTimestamp(tsPart)
+                    val sqliteTs = date?.let { df.getDateTimeStringFromDate(it) } ?: ""
+
+                    // Safety: Never delete the latest backup from any machine
+                    if (sqliteTs in preservedByMachine) return@filter false
+
+                    // Cull if older than 28 days OR if already successfully synced
+                    val isRedundant = allSuccessfulSyncs.any { it.syncTime == sqliteTs }
+                    sqliteTs < staleDate || isRedundant
+                }
+
+                // Keep a minimum of 3 most recent backups regardless of age or redundancy
+                val backupsToDelete = if (driveBackups.size <= 3) {
+                    emptyList()
+                } else {
+                    val safeZone = driveBackups.take(3).toSet()
+                    candidates.filter { it !in safeZone }
+                }
+
+                if (backupsToDelete.isNotEmpty()) {
                     for (baseFile in backupsToDelete) {
                         helper.deleteFile(baseFile.id)
                         fileList.find { it.name == "${baseFile.name}-wal" }
@@ -224,7 +261,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                         fileList.find { it.name == "${baseFile.name}-shm" }
                             ?.let { helper.deleteFile(it.id) }
                     }
-                    syncReport.append("\nDeleted ${backupsToDelete.size} old backups from Drive.")
+                    syncReport.append("\nDeleted ${backupsToDelete.size} old/redundant backups from Drive.")
                 }
 
                 status = "Success"
@@ -235,12 +272,8 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                 syncReport.append("\nError: ${e.message}")
                 onError("Sync failed", e) { sync(onError) }
             } finally {
-                val finalSyncTime = if (status == "Success") {
-                    val reportStr = syncReport.toString()
-                    val driveTimestamp =
-                        reportStr.substringAfter("Merged database uploaded: bills2_")
-                            .substringBefore(".db")
-                    val driveDate = df.parseFileTimestamp(driveTimestamp)
+                val finalSyncTime = if (status == "Success" && uploadTimestamp != null) {
+                    val driveDate = df.parseFileTimestamp(uploadTimestamp)
                     if (driveDate != null) {
                         df.getDateTimeStringFromDate(driveDate)
                     } else {
@@ -255,9 +288,10 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                 if (status != "Busy") {
                     try {
                         driveServiceHelper?.let { h ->
-                            h.queryFiles().files?.find { it.name == "sync.lock" }?.let { lock ->
-                                h.deleteFile(lock.id)
-                            }
+                            h.queryFiles().files?.filter { it.name == "sync.lock" }
+                                ?.forEach { lock ->
+                                    h.deleteFile(lock.id)
+                                }
                         }
                     } catch (e: Exception) {
                         Log.e(TAG, "Failed to release sync lock", e)
@@ -460,7 +494,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                             val isDuplicate = backupTransList.any { bt ->
                                 val bDate = LocalDate.parse(bt.transDate)
                                 val diff = java.time.temporal.ChronoUnit.DAYS.between(bDate, lDate)
-                                Math.abs(diff) <= 2 &&
+                                kotlin.math.abs(diff) <= 2 &&
                                         bt.transAmount == lt.transAmount &&
                                         bt.transToAccountId == lt.transToAccountId &&
                                         bt.transFromAccountId == lt.transFromAccountId
@@ -577,7 +611,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                             java.time.temporal.ChronoUnit.DAYS.between(backupDate, localDate)
 
                         localItem.transId != backupItem.transId &&
-                                Math.abs(daysDiff) <= 2 &&
+                                kotlin.math.abs(daysDiff) <= 2 &&
                                 localItem.transAmount == backupItem.transAmount &&
                                 localItem.transToAccountId == backupItem.transToAccountId &&
                                 localItem.transFromAccountId == backupItem.transFromAccountId &&
@@ -596,7 +630,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                                 java.time.temporal.ChronoUnit.DAYS.between(backupDate, localDate)
 
                             localItem.transId != backupItem.transId &&
-                                    Math.abs(daysDiff) <= 2 &&
+                                    kotlin.math.abs(daysDiff) <= 2 &&
                                     localItem.transAmount == backupItem.transAmount &&
                                     localItem.transToAccountId == backupItem.transToAccountId &&
                                     localItem.transFromAccountId == backupItem.transFromAccountId &&

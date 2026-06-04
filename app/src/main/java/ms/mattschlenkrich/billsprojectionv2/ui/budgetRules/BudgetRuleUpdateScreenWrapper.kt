@@ -58,6 +58,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.compose.BudgetRuleScreen
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit

@@ -25,6 +25,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.compose.BudgetRuleScreen
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 
 private const val TAG = FRAG_BUDGET_RULE_ADD

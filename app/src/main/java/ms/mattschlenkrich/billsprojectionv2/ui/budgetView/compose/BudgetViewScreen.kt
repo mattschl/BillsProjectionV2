@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.ui.budgetView
+package ms.mattschlenkrich.billsprojectionv2.ui.budgetView.compose
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

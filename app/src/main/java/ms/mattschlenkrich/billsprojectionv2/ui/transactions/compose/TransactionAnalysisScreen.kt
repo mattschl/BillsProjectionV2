@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.ui.transactions
+package ms.mattschlenkrich.billsprojectionv2.ui.transactions.compose
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,7 +35,6 @@ import ms.mattschlenkrich.billsprojectionv2.common.TimeRange
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextBox
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
-import ms.mattschlenkrich.billsprojectionv2.common.components.TransactionHistoryItem
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed

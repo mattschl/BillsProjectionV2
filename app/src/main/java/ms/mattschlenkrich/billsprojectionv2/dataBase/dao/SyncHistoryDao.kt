@@ -24,8 +24,8 @@ interface SyncHistoryDao {
     @Query("SELECT * FROM $TABLE_SYNC_HISTORY ORDER BY syncTime DESC LIMIT 1")
     suspend fun getLastSyncHistory(): SyncHistory?
 
-    @Query("SELECT * FROM $TABLE_SYNC_HISTORY ORDER BY syncTime DESC")
-    suspend fun getAllSyncHistory(): List<SyncHistory>
+    @Query("SELECT * FROM $TABLE_SYNC_HISTORY WHERE syncStatus = 'Success' ORDER BY syncTime DESC")
+    suspend fun getAllSuccessfulSyncHistory(): List<SyncHistory>
 
     @Query("DELETE FROM $TABLE_SYNC_HISTORY WHERE syncTime < :cutoffTime")
     suspend fun purgeOldSyncHistory(cutoffTime: String)

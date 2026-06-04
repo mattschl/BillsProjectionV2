@@ -18,6 +18,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.compose.BudgetRulesListScreen
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 
 @Composable

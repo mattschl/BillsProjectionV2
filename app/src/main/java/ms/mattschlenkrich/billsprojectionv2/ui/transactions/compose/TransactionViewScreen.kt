@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.ui.transactions
+package ms.mattschlenkrich.billsprojectionv2.ui.transactions.compose
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,7 +29,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
-import ms.mattschlenkrich.billsprojectionv2.common.components.TransactionHistoryItem
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 
 @Composable

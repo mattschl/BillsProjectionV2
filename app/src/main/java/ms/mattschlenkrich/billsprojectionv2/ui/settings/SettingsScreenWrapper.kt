@@ -38,7 +38,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.SecurityUtils
 import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
-import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.DropdownSelector
+import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.compose.DropdownSelector
 
 @Composable
 fun SettingsScreenWrapper(

@@ -20,6 +20,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.ui.accounts.compose.AccountTypeFormScreen
+import ms.mattschlenkrich.billsprojectionv2.ui.accounts.compose.AccountTypeListScreen
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 
 private const val TAG = FRAG_ACCOUNT_TYPES

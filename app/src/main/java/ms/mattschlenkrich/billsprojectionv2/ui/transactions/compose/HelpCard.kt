@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.ui.transactions
+package ms.mattschlenkrich.billsprojectionv2.ui.transactions.compose
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

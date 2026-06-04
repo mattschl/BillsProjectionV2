@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.ui.accounts
+package ms.mattschlenkrich.billsprojectionv2.ui.accounts.compose
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background

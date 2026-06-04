@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.ui.accounts
+package ms.mattschlenkrich.billsprojectionv2.ui.accounts.compose
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,11 +31,11 @@ import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectBalanceField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextBox
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
-import ms.mattschlenkrich.billsprojectionv2.common.components.TransactionHistoryItem
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
+import ms.mattschlenkrich.billsprojectionv2.ui.transactions.compose.TransactionHistoryItem
 
 @Composable
 fun AccountEditScreen(

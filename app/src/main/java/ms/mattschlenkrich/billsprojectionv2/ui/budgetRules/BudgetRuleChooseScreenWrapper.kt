@@ -15,6 +15,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_CHOOSE
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_SPLIT
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.compose.BudgetRuleChooseScreen
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 
 private const val TAG = FRAG_BUDGET_RULE_CHOOSE

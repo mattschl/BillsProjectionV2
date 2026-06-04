@@ -25,7 +25,9 @@ import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.compose.BudgetViewScreen
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
+import java.time.LocalDate
 
 //private const val TAG = "BudgetViewScreenWrapper"
 
@@ -269,7 +271,7 @@ fun BudgetViewScreenWrapper(
                                     if (budgetList.isEmpty()) {
                                         withContext(Dispatchers.IO) {
                                             UpdateBudgetPredictions(activity).updatePredictions(
-                                                java.time.LocalDate.now().plusMonths(2).toString()
+                                                LocalDate.now().plusMonths(2).toString()
                                             )
                                         }
                                     }

@@ -17,6 +17,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
+import ms.mattschlenkrich.billsprojectionv2.ui.transactions.compose.TransactionViewScreen
 
 @Composable
 fun TransactionViewScreenWrapper(

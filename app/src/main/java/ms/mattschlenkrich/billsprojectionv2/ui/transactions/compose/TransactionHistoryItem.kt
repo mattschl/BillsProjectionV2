@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.common.components
+package ms.mattschlenkrich.billsprojectionv2.ui.transactions.compose
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
