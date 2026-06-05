@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,6 +23,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -170,6 +172,19 @@ fun SyncScreen(
                     info = info,
                     onChoice = { choice, applyToAll ->
                         viewModel.onConflictChoice(choice, applyToAll)
+                    }
+                )
+            }
+
+            if (viewModel.showReconciliationWarning) {
+                AlertDialog(
+                    onDismissRequest = { viewModel.showReconciliationWarning = false },
+                    title = { Text(stringResource(R.string.reconciliation_warning_title)) },
+                    text = { Text(stringResource(R.string.reconciliation_warning_message)) },
+                    confirmButton = {
+                        TextButton(onClick = { viewModel.showReconciliationWarning = false }) {
+                            Text(stringResource(android.R.string.ok))
+                        }
                     }
                 )
             }

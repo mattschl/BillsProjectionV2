@@ -51,6 +51,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
     private var applyToAllChoice: ConflictChoice? = null
 
     var showConflictDialog by mutableStateOf<ConflictInfo?>(null)
+    var showReconciliationWarning by mutableStateOf(false)
     private var conflictDeferred: CompletableDeferred<ConflictChoice>? = null
 
     data class ConflictInfo(
@@ -506,6 +507,10 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
 
                         var reconciledBalance = backupAccount.accountBalance
                         var reconciledOwing = backupAccount.accountOwing
+
+                        if (unaccounted.isNotEmpty()) {
+                            showReconciliationWarning = true
+                        }
 
                         for (lt in unaccounted) {
                             if (lt.transToAccountId == backupAccount.accountId && !lt.transToAccountPending) {
