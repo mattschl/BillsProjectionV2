@@ -176,13 +176,13 @@ fun SyncScreen(
                 )
             }
 
-            if (viewModel.showReconciliationWarning) {
+            if (viewModel.showTransactionWarning) {
                 AlertDialog(
-                    onDismissRequest = { viewModel.showReconciliationWarning = false },
-                    title = { Text(stringResource(R.string.reconciliation_warning_title)) },
-                    text = { Text(stringResource(R.string.reconciliation_warning_message)) },
+                    onDismissRequest = { viewModel.showTransactionWarning = false },
+                    title = { Text(stringResource(R.string.transaction_sync_warning_title)) },
+                    text = { Text(stringResource(R.string.transaction_sync_warning_message)) },
                     confirmButton = {
-                        TextButton(onClick = { viewModel.showReconciliationWarning = false }) {
+                        TextButton(onClick = { viewModel.showTransactionWarning = false }) {
                             Text(stringResource(android.R.string.ok))
                         }
                     }

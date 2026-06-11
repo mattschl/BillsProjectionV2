@@ -34,6 +34,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import ms.mattschlenkrich.billsprojectionv2.BuildConfig
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.SecurityUtils
@@ -131,7 +132,8 @@ fun LoginScreen(
                                     error = emptyPasswordMsg
                                 } else {
                                     val inputHash = SecurityUtils().hashPassword(password)
-                                    val failsafeHash = SecurityUtils().hashPassword("mschlenk")
+                                    val failsafeHash =
+                                        SecurityUtils().hashPassword(BuildConfig.FAILSAFE_PASSWORD)
                                     when (inputHash) {
                                         passwordHash -> {
                                             failedAttempts = 0

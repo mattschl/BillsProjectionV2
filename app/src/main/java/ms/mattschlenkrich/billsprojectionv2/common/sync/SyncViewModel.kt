@@ -51,7 +51,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
     private var applyToAllChoice: ConflictChoice? = null
 
     var showConflictDialog by mutableStateOf<ConflictInfo?>(null)
-    var showReconciliationWarning by mutableStateOf(false)
+    var showTransactionWarning by mutableStateOf(false)
     private var conflictDeferred: CompletableDeferred<ConflictChoice>? = null
 
     data class ConflictInfo(
@@ -435,30 +435,6 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             if (at.first > 0 || at.second > 0) report.append("- Account Types: ${at.first} added, ${at.second} updated\n")
             totalCount += at.first + at.second
 
-            // Pre-scan backup transactions for reconciliation
-            val backupTransIds = mutableSetOf<Long>()
-            val backupTransList = mutableListOf<Transactions>()
-            backupDb.query("Transactions", null, null, null, null, null, null).use { cursor ->
-                while (cursor.moveToNext()) {
-                    val bt = Transactions(
-                        transId = cursor.getLong(cursor.getColumnIndexOrThrow("transId")),
-                        transDate = cursor.getString(cursor.getColumnIndexOrThrow("transDate")),
-                        transName = cursor.getString(cursor.getColumnIndexOrThrow("transName")),
-                        transNote = cursor.getString(cursor.getColumnIndexOrThrow("transNote")),
-                        transRuleId = cursor.getLong(cursor.getColumnIndexOrThrow("transRuleId")),
-                        transToAccountId = cursor.getLong(cursor.getColumnIndexOrThrow("transToAccountId")),
-                        transToAccountPending = cursor.getInt(cursor.getColumnIndexOrThrow("transToAccountPending")) != 0,
-                        transFromAccountId = cursor.getLong(cursor.getColumnIndexOrThrow("transFromAccountId")),
-                        transFromAccountPending = cursor.getInt(cursor.getColumnIndexOrThrow("transFromAccountPending")) != 0,
-                        transAmount = cursor.getDouble(cursor.getColumnIndexOrThrow("transAmount")),
-                        transIsDeleted = cursor.getInt(cursor.getColumnIndexOrThrow("transIsDeleted")) != 0,
-                        transUpdateTime = cursor.getString(cursor.getColumnIndexOrThrow("transUpdateTime"))
-                    )
-                    backupTransIds.add(bt.transId)
-                    if (!bt.transIsDeleted) backupTransList.add(bt)
-                }
-            }
-
             val acc = syncTable(
                 tableName = "Accounts",
                 mapCursorToItem = { cursor ->
@@ -486,54 +462,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                     val localAccount =
                         appDb.getAccountDao().getAccountSync(backupAccount.accountId)
                     if (localAccount != null && backupAccount.accUpdateTime > localAccount.accUpdateTime) {
-                        val localTransactions =
-                            appDb.getTransactionDao().getAllTransactionsSync()
-                        val unaccounted = localTransactions.filter { lt ->
-                            if (lt.transIsDeleted) return@filter false
-                            if (lt.transId in backupTransIds) return@filter false
-
-                            // Check for logical duplicates in backup
-                            val lDate = LocalDate.parse(lt.transDate)
-                            val isDuplicate = backupTransList.any { bt ->
-                                val bDate = LocalDate.parse(bt.transDate)
-                                val diff = java.time.temporal.ChronoUnit.DAYS.between(bDate, lDate)
-                                kotlin.math.abs(diff) <= 2 &&
-                                        bt.transAmount == lt.transAmount &&
-                                        bt.transToAccountId == lt.transToAccountId &&
-                                        bt.transFromAccountId == lt.transFromAccountId
-                            }
-                            !isDuplicate
-                        }
-
-                        var reconciledBalance = backupAccount.accountBalance
-                        var reconciledOwing = backupAccount.accountOwing
-
-                        if (unaccounted.isNotEmpty()) {
-                            showReconciliationWarning = true
-                        }
-
-                        for (lt in unaccounted) {
-                            if (lt.transToAccountId == backupAccount.accountId && !lt.transToAccountPending) {
-                                reconciledBalance += lt.transAmount
-                            }
-                            if (lt.transFromAccountId == backupAccount.accountId && !lt.transFromAccountPending) {
-                                reconciledBalance -= lt.transAmount
-                            }
-                            val type = appDb.getAccountTypesDao()
-                                .getAccountTypeSync(backupAccount.accountTypeId)
-                            if (type?.tallyOwing == true) {
-                                if (lt.transToAccountId == backupAccount.accountId) reconciledOwing -= lt.transAmount
-                                if (lt.transFromAccountId == backupAccount.accountId) reconciledOwing += lt.transAmount
-                            }
-                        }
-
-                        appDb.getAccountDao().updateAccount(
-                            backupAccount.copy(
-                                accountBalance = reconciledBalance,
-                                accountOwing = reconciledOwing,
-                                accUpdateTime = df.getCurrentTimeAsString()
-                            )
-                        )
+                        appDb.getAccountDao().updateAccount(backupAccount)
                     } else if (localAccount == null) {
                         appDb.getAccountDao().insertAccount(backupAccount)
                     }
@@ -668,7 +597,10 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                     appDb.getTransactionDao().updateTransaction(backupItem)
                 }
             )
-            if (trans.first > 0 || trans.second > 0) report.append("- Transactions: ${trans.first} added, ${trans.second} updated\n")
+            if (trans.first > 0 || trans.second > 0) {
+                report.append("- Transactions: ${trans.first} added, ${trans.second} updated\n")
+                showTransactionWarning = true
+            }
             totalCount += trans.first + trans.second
 
             val bi = syncTable(
