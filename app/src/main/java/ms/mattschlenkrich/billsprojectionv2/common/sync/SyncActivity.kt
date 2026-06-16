@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.billsprojectionv2.common.sync
 
 import android.accounts.Account
+import android.accounts.AccountManager
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
@@ -61,8 +62,6 @@ class SyncActivity : ComponentActivity() {
             delay(WAIT_250.milliseconds) // Small delay to ensure Credential Manager is ready
             settings.driveAccount?.let {
                 initializeDriveService(it)
-            } ?: run {
-                signInWithCredentialManager()
             }
         }
 
@@ -86,6 +85,7 @@ class SyncActivity : ComponentActivity() {
                             finish()
                         },
                         onConnect = { signInWithCredentialManager() },
+                        onConnectLegacy = { signInWithAccountPicker() },
                         onDisconnect = { disconnectAccount() },
                         onSync = { viewModel.sync(::handleError) },
                         onQuery = { viewModel.queryDriveFiles() }
@@ -131,6 +131,15 @@ class SyncActivity : ComponentActivity() {
         }
     }
 
+    private val legacySignInLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val accountName = result.data?.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
+            accountName?.let { initializeDriveService(it) }
+        }
+    }
+
     private fun signInWithCredentialManager() {
         lifecycleScope.launch {
             val googleIdOption = GetGoogleIdOption.Builder()
@@ -154,6 +163,13 @@ class SyncActivity : ComponentActivity() {
             }
 
         }
+    }
+
+    private fun signInWithAccountPicker() {
+        val intent = AccountManager.newChooseAccountIntent(
+            null, null, arrayOf("com.google"), null, null, null, null
+        )
+        legacySignInLauncher.launch(intent)
     }
 
     private fun initializeDriveService(email: String) {

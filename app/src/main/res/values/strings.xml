@@ -77,6 +77,7 @@
     <string name="confirm_new_password">Confirm New Password</string>
     <string name="confirm_performing_transaction">Confirm performing transaction</string>
     <string name="connect_to_drive">Connect to Drive</string>
+    <string name="connect_to_drive_legacy">Connect to Drive (Legacy)</string>
     <string name="create_a_scheduled_item_with_this_budget_rule">Create a scheduled item with this Budget Rule</string>
     <string name="credit_average">Credit Average</string>
     <string name="credit_limit">Credit Limit </string>

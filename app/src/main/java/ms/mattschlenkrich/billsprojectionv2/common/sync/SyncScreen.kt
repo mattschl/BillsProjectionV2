@@ -49,6 +49,7 @@ fun SyncScreen(
     viewModel: SyncViewModel,
     onBack: () -> Unit,
     onConnect: () -> Unit,
+    onConnectLegacy: () -> Unit,
     onDisconnect: () -> Unit,
     onSync: () -> Unit,
     onQuery: () -> Unit
@@ -119,6 +120,10 @@ fun SyncScreen(
                                 onClick = onConnect,
                                 modifier = Modifier.weight(1f)
                             ) { Text(stringResource(R.string.connect_to_drive)) }
+                            Button(
+                                onClick = onConnectLegacy,
+                                modifier = Modifier.weight(1f)
+                            ) { Text(stringResource(R.string.connect_to_drive_legacy)) }
                         } else {
                             Button(
                                 onClick = onSync,
