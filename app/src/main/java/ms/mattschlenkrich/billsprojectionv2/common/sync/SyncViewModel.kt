@@ -52,6 +52,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
 
     var showConflictDialog by mutableStateOf<ConflictInfo?>(null)
     var showTransactionWarning by mutableStateOf(false)
+    private var transactionWarningShownThisSync = false
     private var conflictDeferred: CompletableDeferred<ConflictChoice>? = null
 
     data class ConflictInfo(
@@ -109,6 +110,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
 
     fun sync(onError: (String, Exception, (() -> Unit)) -> Unit) {
         progressMessage = "Synchronizing..."
+        transactionWarningShownThisSync = false
         viewModelScope.launch {
             var status = "Failed"
             val syncReport = StringBuilder("Sync Report:\n")
@@ -599,7 +601,10 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             )
             if (trans.first > 0 || trans.second > 0) {
                 report.append("- Transactions: ${trans.first} added, ${trans.second} updated\n")
-                showTransactionWarning = true
+                if (!transactionWarningShownThisSync) {
+                    showTransactionWarning = true
+                    transactionWarningShownThisSync = true
+                }
             }
             totalCount += trans.first + trans.second
 

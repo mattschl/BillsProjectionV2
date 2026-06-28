@@ -217,17 +217,26 @@ class MainActivity : AppCompatActivity() {
             Screen.BudgetRules.route
         )
 
+        var shouldResetNavigation by remember { mutableStateOf(false) }
+
         val syncLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult()
         ) { result ->
             if (result.resultCode == RESULT_OK) {
                 mainViewModel.eraseAll()
                 setupViewModels(clearExisting = true)
+                shouldResetNavigation = true
+            }
+        }
+
+        if (shouldResetNavigation) {
+            LaunchedEffect(Unit) {
                 navController.navigate(Screen.MainPager.route) {
                     popUpTo(navController.graph.startDestinationId) {
                         inclusive = true
                     }
                 }
+                shouldResetNavigation = false
             }
         }
 
