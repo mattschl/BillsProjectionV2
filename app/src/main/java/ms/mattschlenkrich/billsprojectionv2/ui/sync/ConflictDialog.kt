@@ -24,8 +24,8 @@ import ms.mattschlenkrich.billsprojectionv2.R
 
 @Composable
 fun ConflictDialog(
-    info: SyncViewModel.ConflictInfo,
-    onChoice: (SyncViewModel.ConflictChoice, Boolean) -> Unit
+    info: ConflictInfo,
+    onChoice: (ConflictChoice, Boolean) -> Unit
 ) {
     var applyToAll by remember { mutableStateOf(false) }
 
@@ -67,7 +67,7 @@ fun ConflictDialog(
         confirmButton = {
             TextButton(onClick = {
                 onChoice(
-                    SyncViewModel.ConflictChoice.KEEP_LOCAL,
+                    ConflictChoice.KEEP_LOCAL,
                     applyToAll
                 )
             }) {
@@ -77,7 +77,7 @@ fun ConflictDialog(
         dismissButton = {
             TextButton(onClick = {
                 onChoice(
-                    SyncViewModel.ConflictChoice.KEEP_DRIVE,
+                    ConflictChoice.KEEP_DRIVE,
                     applyToAll
                 )
             }) {
