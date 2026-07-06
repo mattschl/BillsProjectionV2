@@ -27,7 +27,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".common.sync.SyncActivity"
+            android:name=".ui.sync.SyncActivity"
             android:exported="false"
             android:label="@string/sync" />
     </application>

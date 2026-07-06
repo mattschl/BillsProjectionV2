@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.ui.theme
+package ms.mattschlenkrich.billsprojectionv2.common.theme
 
 import androidx.compose.ui.graphics.Color
 

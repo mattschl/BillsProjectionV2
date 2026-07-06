@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.common.sync
+package ms.mattschlenkrich.billsprojectionv2.ui.sync
 
 import android.accounts.Account
 import android.accounts.AccountManager
@@ -35,7 +35,7 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
 import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
-import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
+import ms.mattschlenkrich.billsprojectionv2.common.theme.BillsProjectionTheme
 import java.security.SecureRandom
 import kotlin.time.Duration.Companion.milliseconds
 

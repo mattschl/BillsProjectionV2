@@ -65,7 +65,7 @@ import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectFieldDefaults
 import ms.mattschlenkrich.billsprojectionv2.common.projections.UpdateBudgetPredictions
 import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
-import ms.mattschlenkrich.billsprojectionv2.common.sync.SyncActivity
+import ms.mattschlenkrich.billsprojectionv2.common.theme.BillsProjectionTheme
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.dataBase.BillsDatabase
@@ -86,7 +86,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.TransactionViewMo
 import ms.mattschlenkrich.billsprojectionv2.ui.auth.LoginScreen
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.NavGraph
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
-import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
+import ms.mattschlenkrich.billsprojectionv2.ui.sync.SyncActivity
 import java.time.LocalDate
 
 private const val TAG = "MainActivity"

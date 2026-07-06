@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.common.sync
+package ms.mattschlenkrich.billsprojectionv2.ui.sync
 
 import com.google.api.client.http.FileContent
 import com.google.api.services.drive.Drive

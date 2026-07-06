@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.common.sync
+package ms.mattschlenkrich.billsprojectionv2.ui.sync
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column

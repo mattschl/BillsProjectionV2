@@ -16,7 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.ui.theme.BillsProjectionTheme
+import ms.mattschlenkrich.billsprojectionv2.common.theme.BillsProjectionTheme
 
 @Composable
 fun NoBudgetItemsCard() {
