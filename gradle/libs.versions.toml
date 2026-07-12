@@ -1,16 +1,16 @@
 [versions]
 activity = "1.13.0"
 agp = "9.2.1"
-androidxComposeUi = "1.11.3"
+androidxComposeUi = "1.11.4"
 apiClient = "2.9.0"
 appcompat = "1.7.1"
-composeRuntime = "1.11.3"
-composeUi = "1.11.3"
+composeRuntime = "1.11.4"
+composeUi = "1.11.4"
 coreKtx = "1.19.0"
 credentials = "1.6.0"
 espressoCore = "3.7.0"
 googleApiServicesDrive = "v3-rev20260624-2.0.0"
-googleDevtoolsKsp = "2.3.9"
+googleDevtoolsKsp = "2.3.10"
 googleid = "1.2.0"
 jetbrainsKotlinPluginCompose = "2.4.0"
 junit = "4.13.2"
@@ -25,7 +25,6 @@ room = "2.8.4"
 
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
-androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activity" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "composeRuntime" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "composeUi" }
@@ -37,9 +36,7 @@ androidx-credentials = { group = "androidx.credentials", name = "credentials", v
 androidx-credentials-play-services-auth = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "credentials" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
-androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle" }
-androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }

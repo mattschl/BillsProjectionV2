@@ -110,14 +110,14 @@ fun BudgetItemDisplay(
         if (onLockClick != null) {
             Icon(
                 painter = painterResource(
-                    id = if (budgetItem.biLocked) R.drawable.ic_liocked_foreground
+                    id = if (budgetItem.biLocked) R.drawable.ic_locked_foreground
                     else R.drawable.ic_unlocked_foreground
                 ),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(ProjectFieldDefaults.iconSize())
+                    .size(ProjectFieldDefaults.iconSize() * 2f)
                     .clickable { onLockClick() }
-                    .padding(4.dp),
+                    .padding(2.dp),
                 tint = if (budgetItem.biLocked) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
             )
         }
