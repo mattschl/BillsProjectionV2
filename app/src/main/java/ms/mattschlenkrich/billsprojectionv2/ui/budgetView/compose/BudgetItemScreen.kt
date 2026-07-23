@@ -101,17 +101,50 @@ fun BudgetItemScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Spacer(modifier = Modifier.height(4.dp))
-            ProjectDateField(
-                value = date,
-                onValueChange = onDateChange,
-                label = stringResource(R.string.projected_date),
-                modifier = Modifier.fillMaxWidth(),
-            )
 
             ProjectTextField(
                 value = name,
                 onValueChange = onNameChange,
                 label = stringResource(R.string.description),
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ProjectDateField(
+                    value = date,
+                    onValueChange = onDateChange,
+                    label = stringResource(R.string.projected_date),
+                    modifier = Modifier.weight(1f),
+                )
+
+                ProjectBalanceField(
+                    value = amount,
+                    onValueChange = onAmountChange,
+                    label = stringResource(R.string.projected_amount),
+                    modifier = Modifier.weight(1f),
+                    onIconClick = onGotoCalculator,
+                    isHighlighted = true
+                )
+            }
+
+            ProjectTextBox(
+                label = stringResource(R.string.rules),
+                value = budgetRule?.budgetRuleName ?: "",
+                onClick = onChooseBudgetRule
+            )
+
+            ProjectTextBox(
+                label = stringResource(R.string.from_this_account),
+                value = fromAccount?.accountName ?: "",
+                onClick = { onChooseAccount(REQUEST_FROM_ACCOUNT) }
+            )
+
+            ProjectTextBox(
+                label = stringResource(R.string.to_this_account),
+                value = toAccount?.accountName ?: "",
+                onClick = { onChooseAccount(REQUEST_TO_ACCOUNT) }
             )
 
             var expanded by remember { mutableStateOf(false) }
@@ -145,57 +178,26 @@ fun BudgetItemScreen(
                 }
             }
 
-            ProjectTextBox(
-                label = stringResource(R.string.rules),
-                value = budgetRule?.budgetRuleName ?: "",
-                onClick = onChooseBudgetRule
-            )
-
-            ProjectTextBox(
-                label = stringResource(R.string.to_this_account),
-                value = toAccount?.accountName ?: "",
-                onClick = { onChooseAccount(REQUEST_TO_ACCOUNT) }
-            )
-
-            ProjectTextBox(
-                label = stringResource(R.string.from_this_account),
-                value = fromAccount?.accountName ?: "",
-                onClick = { onChooseAccount(REQUEST_FROM_ACCOUNT) }
-            )
-
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                ProjectBalanceField(
-                    value = amount,
-                    onValueChange = onAmountChange,
-                    label = stringResource(R.string.projected_amount),
-                    modifier = Modifier.weight(1f),
-                    onIconClick = onGotoCalculator
+                LabeledCheckbox(
+                    label = stringResource(R.string.fixed),
+                    checked = isFixed,
+                    onCheckedChange = onIsFixedChange
                 )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(start = 8.dp)
-                ) {
-                    Checkbox(checked = isFixed, onCheckedChange = onIsFixedChange)
-                    Text(
-                        stringResource(R.string.fixed),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
+                LabeledCheckbox(
+                    label = stringResource(R.string.pay_day),
+                    checked = isPayDayItem,
+                    onCheckedChange = onIsPayDayItemChange
+                )
             }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                LabeledCheckbox(
-                    label = stringResource(R.string.pay_day),
-                    checked = isPayDayItem,
-                    onCheckedChange = onIsPayDayItemChange
-                )
                 LabeledCheckbox(
                     label = stringResource(R.string.automatic),
                     checked = isAuto,

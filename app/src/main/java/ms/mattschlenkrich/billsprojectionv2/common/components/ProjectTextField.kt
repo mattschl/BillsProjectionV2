@@ -3,7 +3,6 @@ package ms.mattschlenkrich.billsprojectionv2.common.components
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -86,11 +85,7 @@ fun ProjectTextField(
             }
         },
         modifier = modifier
-            .fillMaxWidth()
-            .heightIn(
-                min = ProjectFieldDefaults.minHeight(),
-                max = ProjectFieldDefaults.maxHeight()
-            ),
+            .fillMaxWidth(),
         enabled = enabled,
         readOnly = readOnly,
         textStyle = textStyle.copy(color = MaterialTheme.colorScheme.onSurface),
@@ -183,11 +178,7 @@ fun ProjectTextField(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier
-            .fillMaxWidth()
-            .heightIn(
-                min = ProjectFieldDefaults.minHeight(),
-                max = ProjectFieldDefaults.maxHeight()
-            ),
+            .fillMaxWidth(),
         enabled = enabled,
         readOnly = readOnly,
         textStyle = textStyle.copy(color = MaterialTheme.colorScheme.onSurface),

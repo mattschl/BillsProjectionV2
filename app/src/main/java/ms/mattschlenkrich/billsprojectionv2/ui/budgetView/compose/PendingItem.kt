@@ -72,7 +72,6 @@ fun PendingItem(
             fontWeight = FontWeight.Bold,
             color = if (isCredit) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error,
             style = MaterialTheme.typography.bodySmall,
-            maxLines = 1
         )
     }
 }

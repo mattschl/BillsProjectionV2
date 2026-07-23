@@ -107,7 +107,6 @@ fun TransactionEditScreen(
                 value = description,
                 onValueChange = onDescriptionChange,
                 label = stringResource(R.string.description),
-                singleLine = true,
                 isError = descriptionError
             )
 
@@ -125,7 +124,8 @@ fun TransactionEditScreen(
                     onValueChange = onAmountChange,
                     onIconClick = onGotoCalculator,
                     modifier = Modifier.weight(1f),
-                    isError = amountError
+                    isError = amountError,
+                    isHighlighted = true
                 )
             }
 
@@ -233,56 +233,44 @@ fun TransactionPerformScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
                 .padding(paddingValues)
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Spacer(modifier = Modifier.height(4.dp))
-            ProjectDateField(
-                value = date,
-                onValueChange = onDateChange,
-                label = stringResource(R.string.date),
-                modifier = Modifier.fillMaxWidth()
+
+            ProjectTextField(
+                value = description,
+                onValueChange = onDescriptionChange,
+                label = stringResource(R.string.description),
+                isError = descriptionError
             )
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                ProjectTextBox(
-                    label = stringResource(R.string.rules),
-                    value = budgetRule?.budgetRuleName ?: "",
-                    onClick = onChooseBudgetRule,
+            Row(modifier = Modifier.fillMaxWidth()) {
+                ProjectDateField(
+                    value = date,
+                    onValueChange = onDateChange,
+                    label = stringResource(R.string.date),
                     modifier = Modifier.weight(1f)
                 )
-            }
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = stringResource(R.string.amount),
-                    modifier = Modifier.weight(1f),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+                Spacer(modifier = Modifier.width(8.dp))
                 ProjectBalanceField(
+                    label = stringResource(R.string.amount),
                     value = amount,
                     onValueChange = onAmountChange,
                     onIconClick = onGotoCalculator,
-                    modifier = Modifier.weight(1.5f),
-                    label = stringResource(R.string.amount),
-                    isError = amountError
+                    modifier = Modifier.weight(1f),
+                    isError = amountError,
+                    isHighlighted = true
                 )
-                Button(
-                    onClick = onSplitClick,
-                    enabled = isSplitEnabled,
-                    modifier = Modifier.padding(start = 8.dp)
-                ) {
-                    Text(text = stringResource(R.string.split))
-                }
             }
+
+            ProjectTextBox(
+                label = stringResource(R.string.rules),
+                value = budgetRule?.budgetRuleName ?: "",
+                onClick = onChooseBudgetRule,
+            )
 
             OutlinedCard(modifier = Modifier.fillMaxWidth()) {
                 Row(
@@ -291,10 +279,6 @@ fun TransactionPerformScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        /*Text(
-                            text = stringResource(R.string.budgeted),
-                            style = MaterialTheme.typography.labelMedium
-                        )*/
                         ProjectBalanceField(
                             value = budgetedAmount,
                             onValueChange = onBudgetedAmountChange,
@@ -321,16 +305,6 @@ fun TransactionPerformScreen(
             }
 
             TransactionAccountField(
-                label = stringResource(R.string.to_this_account),
-                account = toAccount,
-                isPending = toPending,
-                onPendingChange = onToPendingChange,
-                allowPending = allowToPending,
-                onClick = onToAccountClick,
-                isError = toAccountError
-            )
-
-            TransactionAccountField(
                 label = stringResource(R.string.from_this_account),
                 account = fromAccount,
                 isPending = fromPending,
@@ -340,11 +314,14 @@ fun TransactionPerformScreen(
                 isError = fromAccountError
             )
 
-            ProjectTextField(
-                value = description,
-                onValueChange = onDescriptionChange,
-                label = stringResource(R.string.description),
-                isError = descriptionError
+            TransactionAccountField(
+                label = stringResource(R.string.to_this_account),
+                account = toAccount,
+                isPending = toPending,
+                onPendingChange = onToPendingChange,
+                allowPending = allowToPending,
+                onClick = onToAccountClick,
+                isError = toAccountError
             )
 
             ProjectTextField(
@@ -352,6 +329,14 @@ fun TransactionPerformScreen(
                 onValueChange = onNoteChange,
                 label = stringResource(R.string.notes)
             )
+
+            Button(
+                onClick = onSplitClick,
+                modifier = Modifier.fillMaxWidth(),
+                enabled = isSplitEnabled
+            ) {
+                Text(stringResource(R.string.split))
+            }
         }
     }
 }
@@ -421,25 +406,37 @@ fun TransactionSplitScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Spacer(modifier = Modifier.height(4.dp))
-            ProjectDateField(
-                value = date,
-                onValueChange = onDateChange,
-                label = stringResource(R.string.date),
-                modifier = Modifier.fillMaxWidth()
+
+            ProjectTextField(
+                value = description,
+                onValueChange = onDescriptionChange,
+                label = stringResource(R.string.description),
+                isError = descriptionError
             )
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                ProjectDateField(
+                    value = date,
+                    onValueChange = onDateChange,
+                    label = stringResource(R.string.date),
+                    modifier = Modifier.weight(1f)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                ProjectBalanceField(
+                    label = stringResource(R.string.transaction_amount),
+                    value = amount,
+                    onValueChange = onAmountChange,
+                    onIconClick = onGotoCalculator,
+                    modifier = Modifier.weight(1f),
+                    isError = amountError,
+                    isHighlighted = true
+                )
+            }
 
             ProjectTextBox(
                 label = stringResource(R.string.rules),
                 value = budgetRule?.budgetRuleName ?: "",
                 onClick = onChooseBudgetRule
-            )
-
-            ProjectBalanceField(
-                label = stringResource(R.string.transaction_amount),
-                value = amount,
-                onValueChange = onAmountChange,
-                onIconClick = onGotoCalculator,
-                isError = amountError
             )
 
             OutlinedCard(
@@ -476,16 +473,6 @@ fun TransactionSplitScreen(
             }
 
             TransactionAccountField(
-                label = stringResource(R.string.to_this_account),
-                account = toAccount,
-                isPending = toPending,
-                onPendingChange = onToPendingChange,
-                allowPending = allowToPending,
-                onClick = onChooseToAccount,
-                isError = toAccountError
-            )
-
-            TransactionAccountField(
                 label = stringResource(R.string.from_this_account),
                 account = fromAccount,
                 isPending = fromPending,
@@ -495,12 +482,14 @@ fun TransactionSplitScreen(
                 isError = fromAccountError
             )
 
-            ProjectTextField(
-                value = description,
-                onValueChange = onDescriptionChange,
-                label = stringResource(R.string.description),
-                singleLine = true,
-                isError = descriptionError
+            TransactionAccountField(
+                label = stringResource(R.string.to_this_account),
+                account = toAccount,
+                isPending = toPending,
+                onPendingChange = onToPendingChange,
+                allowPending = allowToPending,
+                onClick = onChooseToAccount,
+                isError = toAccountError
             )
 
             ProjectTextField(

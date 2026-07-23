@@ -88,13 +88,11 @@ fun BudgetItemDisplay(
                 fontWeight = FontWeight.Bold,
                 color = if (isCredit) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall,
-                maxLines = 1
             )
             Text(
                 text = "${budgetItemDetailed.fromAccount?.accountName ?: "Unknown"} -> ${budgetItemDetailed.toAccount?.accountName ?: "Unknown"}",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 2
             )
             if (budgetItem.biIsFixed || budgetItem.biIsAutomatic) {
                 Text(
@@ -102,7 +100,6 @@ fun BudgetItemDisplay(
                             (if (budgetItem.biIsAutomatic) ", Automatic" else ""),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.tertiary,
-                    maxLines = 1
                 )
             }
 
