@@ -18,7 +18,7 @@
         Tap to add a \"to\" account and a \"from\" account.
         This will be a default of how a transaction will be performed from the Budget View.
         This may be change when actually performing the transaction.\n
-        ie. Instead of a bank account, use a credit card.\n\n
+        i.e. Instead of a bank account, use a credit card.\n\n
         The amount is the amount budgeted during a pay period or at the time scheduled.
         This may be set to zero just so it appears on the Budget View.\n
         If this is a fixed amount that must be paid you can check \"Fixed amount\".
