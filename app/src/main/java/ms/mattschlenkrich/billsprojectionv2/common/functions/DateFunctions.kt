@@ -17,21 +17,22 @@ import java.util.TimeZone
 @Suppress("unused")
 class DateFunctions {
     private val utcTimeZone = TimeZone.getTimeZone("UTC")
+    private val localTimeZone = TimeZone.getDefault()
     private val dateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA).apply {
-        timeZone = utcTimeZone
+        timeZone = localTimeZone
     }
     private val timeFormatter = SimpleDateFormat(SQLITE_TIME, Locale.CANADA).apply {
         timeZone = utcTimeZone
     }
     private val dateChecker = SimpleDateFormat(DATE_CHECK, Locale.CANADA).apply {
-        timeZone = utcTimeZone
+        timeZone = localTimeZone
     }
     private val displayDateString = SimpleDateFormat(DISPLAY_DATE, Locale.CANADA).apply {
-        timeZone = utcTimeZone
+        timeZone = localTimeZone
     }
     private val displayDateWithYear =
         SimpleDateFormat(DISPLAY_DATE_WITH_YEAR, Locale.CANADA).apply {
-            timeZone = utcTimeZone
+            timeZone = localTimeZone
         }
     private val fileTimestampFormat = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.CANADA).apply {
         timeZone = utcTimeZone
@@ -46,7 +47,7 @@ class DateFunctions {
     }
 
     fun getCurrentDateAsString(): String {
-        return dateFormat.format(Calendar.getInstance(utcTimeZone).time)
+        return dateFormat.format(Calendar.getInstance(localTimeZone).time)
     }
 
     fun convertDateToString(date: LocalDate): String {

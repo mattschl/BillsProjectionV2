@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
@@ -20,7 +21,19 @@ fun ProjectDateField(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    val df = DateFunctions()
+    val df = remember { DateFunctions() }
+
+    val displayValue = remember(value) {
+        if (value.isNotEmpty() && value.contains("-")) {
+            try {
+                df.getDisplayDateWithYear(value)
+            } catch (e: Exception) {
+                value
+            }
+        } else {
+            value
+        }
+    }
 
     val showDatePicker = {
         val curDate = if (value.contains("-")) value else df.getCurrentDateAsString()
@@ -45,7 +58,7 @@ fun ProjectDateField(
     }
 
     ProjectTextBox(
-        value = value,
+        value = displayValue,
         onValueChange = onValueChange,
         modifier = modifier,
         label = label,

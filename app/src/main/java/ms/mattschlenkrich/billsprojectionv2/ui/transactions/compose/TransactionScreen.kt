@@ -115,15 +115,15 @@ fun TransactionEditScreen(
                     value = date,
                     onValueChange = onDateChange,
                     label = stringResource(R.string.date),
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(2f)
                 )
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(2.dp))
                 ProjectBalanceField(
                     label = stringResource(R.string.amount),
                     value = amount,
                     onValueChange = onAmountChange,
                     onIconClick = onGotoCalculator,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(3f),
                     isError = amountError,
                     isHighlighted = true
                 )
@@ -252,7 +252,7 @@ fun TransactionPerformScreen(
                     value = date,
                     onValueChange = onDateChange,
                     label = stringResource(R.string.date),
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(2f)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 ProjectBalanceField(
@@ -260,7 +260,7 @@ fun TransactionPerformScreen(
                     value = amount,
                     onValueChange = onAmountChange,
                     onIconClick = onGotoCalculator,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(3f),
                     isError = amountError,
                     isHighlighted = true
                 )
@@ -278,7 +278,7 @@ fun TransactionPerformScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Column(modifier = Modifier.weight(1f)) {
+                    Column(modifier = Modifier.weight(3f)) {
                         ProjectBalanceField(
                             value = budgetedAmount,
                             onValueChange = onBudgetedAmountChange,
@@ -286,7 +286,7 @@ fun TransactionPerformScreen(
                         )
                     }
                     Column(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(2f),
                         horizontalAlignment = Alignment.End
                     ) {
                         Text(
@@ -419,7 +419,7 @@ fun TransactionSplitScreen(
                     value = date,
                     onValueChange = onDateChange,
                     label = stringResource(R.string.date),
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(2f)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 ProjectBalanceField(
@@ -427,7 +427,7 @@ fun TransactionSplitScreen(
                     value = amount,
                     onValueChange = onAmountChange,
                     onIconClick = onGotoCalculator,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(3f),
                     isError = amountError,
                     isHighlighted = true
                 )
