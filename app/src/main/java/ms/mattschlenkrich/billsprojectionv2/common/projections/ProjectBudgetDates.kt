@@ -20,7 +20,15 @@ import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import java.time.DayOfWeek
 import java.time.LocalDate
 
-class ProjectBudgetDates(private val mainActivity: MainActivity) {
+class ProjectBudgetDates(
+    private val frequencyTypes: Array<String>,
+    private val daysOfWeek: Array<String>
+) {
+
+    constructor(mainActivity: MainActivity) : this(
+        mainActivity.baseContext.resources.getStringArray(R.array.frequency_types),
+        mainActivity.baseContext.resources.getStringArray(R.array.days_of_week)
+    )
 
     fun projectDates(
         startDate: String,
@@ -30,10 +38,8 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
         dayOfWeekId: Int,
         leadDays: Long,
     ): ArrayList<LocalDate> {
-        val intervalType =
-            mainActivity.baseContext.resources.getStringArray(R.array.frequency_types)[intervalTypeId]
-        val dayOfWeek =
-            mainActivity.baseContext.resources.getStringArray(R.array.days_of_week)[dayOfWeekId]
+        val intervalType = frequencyTypes[intervalTypeId]
+        val dayOfWeek = daysOfWeek[dayOfWeekId]
         when (intervalType) {
             INTERVAL_WEEKLY -> {
                 return projectWeekly(
@@ -73,7 +79,7 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
         }
     }
 
-    private fun fixDates(
+    internal fun fixDates(
         datesToFix: ArrayList<LocalDate>,
         dayOfWeek: String,
         leadDays: Long,
@@ -86,10 +92,10 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
                 minusDates.add(datesToFix[i].minusDays(leadDays))
             }
         }
-        var fixedDates = ArrayList<LocalDate>()
+        val fixedDates = ArrayList<LocalDate>()
         when (dayOfWeek) {
             DAY_ANY_DAY -> {
-                fixedDates = minusDates
+                fixedDates.addAll(minusDates)
             }
 
             DAY_WEEK_DAY -> {
@@ -160,7 +166,7 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
         return fixedDates
     }
 
-    private fun projectMonthly(
+    internal fun projectMonthly(
         startDate: String,
         endDate: String,
         interval: Long,
@@ -182,7 +188,7 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
     }
 
 
-    private fun projectWeekly(
+    internal fun projectWeekly(
         startDate: String, endDate: String, interval: Long
     ): ArrayList<LocalDate> {
         val dates = ArrayList<LocalDate>()
@@ -199,7 +205,7 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
         return dates
     }
 
-    private fun projectYearly(
+    internal fun projectYearly(
         startDate: String, endDate: String, interval: Long, dayOfWeek: String, leadDays: Long
     ): ArrayList<LocalDate> {
         val datesToFix = ArrayList<LocalDate>()
@@ -216,7 +222,7 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
         return fixDates(datesToFix, dayOfWeek, leadDays)
     }
 
-    private fun projectOneTime(
+    internal fun projectOneTime(
         startDate: String,
         dayOfWeek: String,
         leadDays: Long,
@@ -230,7 +236,7 @@ class ProjectBudgetDates(private val mainActivity: MainActivity) {
         startDate: String, interval: Long, payDayList: List<String>, endDate: String
     ): ArrayList<LocalDate> {
         val dates = ArrayList<LocalDate>()
-        for (d in 0 until payDayList.size - 1) {
+        for (d in payDayList.indices) {
             if (payDayList[d] in startDate..endDate && (d + 1) % interval.toInt() == 0 && payDayList[d] >= LocalDate.now()
                     .toString()
             ) {
