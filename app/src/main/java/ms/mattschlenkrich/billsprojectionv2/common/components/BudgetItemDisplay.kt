@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -64,7 +65,11 @@ fun BudgetItemDisplay(
                 onClick = onClick,
                 onLongClick = onLongClick
             )
-            .padding(vertical = 1.dp),
+            .padding(vertical = 1.dp)
+            .alpha(
+                if (budgetItem.biIsCancelled || budgetItem.biIsCompleted) 0.5f
+                else 1.0f
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
 

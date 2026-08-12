@@ -90,6 +90,9 @@ class BudgetItemViewModel(
     fun getBudgetItems(asset: String, payDay: String) =
         budgetItemRepository.getBudgetItems(asset, payDay)
 
+    fun getBudgetItemsAll(asset: String, payDay: String) =
+        budgetItemRepository.getBudgetItemsAll(asset, payDay)
+
     fun getBudgetItems(budgetRuleId: Long) =
         budgetItemRepository.getBudgetItems(budgetRuleId)
 

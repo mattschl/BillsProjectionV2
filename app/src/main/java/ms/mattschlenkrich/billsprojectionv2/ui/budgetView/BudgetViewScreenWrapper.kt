@@ -5,7 +5,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
@@ -91,8 +93,21 @@ fun BudgetViewScreenWrapper(
     val pendingList by transactionViewModel.getPendingTransactionsDetailed(selectedAsset)
         .observeAsState(initial = emptyList())
 
-    val budgetList by budgetItemViewModel.getBudgetItems(selectedAsset, selectedPayDay)
+    var showAllBudgetItems by remember { mutableStateOf(false) }
+
+    val allBudgetList by budgetItemViewModel.getBudgetItemsAll(selectedAsset, selectedPayDay)
         .observeAsState(initial = emptyList())
+
+    val budgetList = remember(allBudgetList, showAllBudgetItems) {
+        if (showAllBudgetItems) {
+            allBudgetList
+        } else {
+            allBudgetList.filter {
+                val item = it.budgetItem!!
+                !item.biIsCancelled && !item.biIsCompleted && !item.biIsDeleted
+            }
+        }
+    }
 
     val pendingAmount = remember(pendingList, selectedAsset, assetList) {
         var amount = 0.0
@@ -127,6 +142,7 @@ fun BudgetViewScreenWrapper(
         pendingList = pendingList,
         pendingAmount = pendingAmount,
         budgetList = budgetList,
+        hasAnyBudgetItems = allBudgetList.isNotEmpty(),
         onAddClick = {
             AlertDialog.Builder(activity)
                 .setTitle(activity.getString(R.string.choose_an_action)).setItems(
@@ -398,6 +414,9 @@ fun BudgetViewScreenWrapper(
                     navController.navigate(Screen.AccountUpdate.route)
                 }
             }
+        },
+        onScheduledExpensesLongClick = {
+            showAllBudgetItems = !showAllBudgetItems
         }
     )
 }

@@ -1,6 +1,8 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.budgetView.compose
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,7 +36,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -50,6 +54,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithTy
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BudgetViewScreen(
     assetList: List<String>,
@@ -62,14 +67,17 @@ fun BudgetViewScreen(
     pendingList: List<TransactionDetailed>,
     pendingAmount: Double,
     budgetList: List<BudgetItemDetailed>,
+    hasAnyBudgetItems: Boolean,
     onAddClick: () -> Unit,
     onBudgetItemClick: (BudgetItemDetailed) -> Unit,
     onBudgetItemLockClick: (BudgetItemDetailed) -> Unit,
     onTransactionClick: (TransactionDetailed) -> Unit,
     onAccountClick: () -> Unit,
+    onScheduledExpensesLongClick: () -> Unit = {},
 ) {
     val nf = NumberFunctions()
     val df = DateFunctions()
+    val haptic = LocalHapticFeedback.current
 
     val budgetTotals = remember(budgetList, selectedAsset, assetList) {
         var credits = 0.0
@@ -182,35 +190,44 @@ fun BudgetViewScreen(
                 }
             }
 
-            if (budgetList.isNotEmpty()) {
+            if (hasAnyBudgetItems) {
                 Text(
                     text = stringResource(R.string.budgeted_expenses),
                     modifier = Modifier
                         .fillMaxWidth()
+                        .combinedClickable(
+                            onClick = {},
+                            onLongClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                onScheduledExpensesLongClick()
+                            }
+                        )
                         .padding(vertical = 1.dp),
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleLarge
                 )
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                ) {
-                    items(
-                        budgetList,
-                        key = { "${it.budgetItem?.biRuleId}_${it.budgetItem?.biProjectedDate}" }
-                    ) { budgetItem ->
-                        BudgetItemDisplay(
-                            budgetItemDetailed = budgetItem,
-                            isCredit = if (selectedAsset == ALL_ITEMS) {
-                                assetList.contains(budgetItem.toAccount?.accountName)
-                            } else {
-                                budgetItem.toAccount?.accountName == selectedAsset
-                            },
-                            onClick = { onBudgetItemClick(budgetItem) },
-                            onLockClick = { onBudgetItemLockClick(budgetItem) }
-                        )
+                if (budgetList.isNotEmpty()) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    ) {
+                        items(
+                            budgetList,
+                            key = { "${it.budgetItem?.biRuleId}_${it.budgetItem?.biProjectedDate}" }
+                        ) { budgetItem ->
+                            BudgetItemDisplay(
+                                budgetItemDetailed = budgetItem,
+                                isCredit = if (selectedAsset == ALL_ITEMS) {
+                                    assetList.contains(budgetItem.toAccount?.accountName)
+                                } else {
+                                    budgetItem.toAccount?.accountName == selectedAsset
+                                },
+                                onClick = { onBudgetItemClick(budgetItem) },
+                                onLockClick = { onBudgetItemLockClick(budgetItem) }
+                            )
+                        }
                     }
                 }
             } else {

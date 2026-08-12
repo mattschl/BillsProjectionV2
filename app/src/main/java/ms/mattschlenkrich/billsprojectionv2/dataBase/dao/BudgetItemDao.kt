@@ -182,6 +182,39 @@ interface BudgetItemDao {
     @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Query(
+        "SELECT * " +
+                "FROM $TABLE_BUDGET_ITEMS " +
+                "LEFT JOIN $TABLE_BUDGET_RULES as budgetRule ON " +
+                "$TABLE_BUDGET_ITEMS.$BI_BUDGET_RULE_ID = " +
+                "budgetRule.ruleId " +
+                "LEFT JOIN $TABLE_ACCOUNTS as toAccount ON " +
+                "$TABLE_BUDGET_ITEMS.$BI_TO_ACCOUNT_ID = " +
+                "toAccount.accountId " +
+                "LEFT JOIN $TABLE_ACCOUNTS as fromAccount ON " +
+                "$TABLE_BUDGET_ITEMS.$BI_FROM_ACCOUNT_ID = " +
+                "fromAccount.accountId " +
+                "WHERE $TABLE_BUDGET_ITEMS.$BI_PAY_DAY = :payDay " +
+                "AND $BI_IS_DELETED = 0 " +
+                "AND (:asset = 'All Items' OR " +
+                "($TABLE_BUDGET_ITEMS.$BI_FROM_ACCOUNT_ID = " +
+                "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
+                "WHERE $ACCOUNT_NAME = :asset) " +
+                "OR $TABLE_BUDGET_ITEMS.$BI_TO_ACCOUNT_ID = " +
+                "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS  " +
+                "WHERE $ACCOUNT_NAME = :asset) " +
+                " ))" +
+                "ORDER BY $TABLE_BUDGET_ITEMS.$BI_IS_PAY_DAY_ITEM DESC, " +
+                "$TABLE_BUDGET_ITEMS.$BI_ACTUAL_DATE , " +
+                "$TABLE_BUDGET_ITEMS.$BI_BUDGET_NAME ;"
+    )
+    fun getBudgetItemsAll(asset: String, payDay: String)
+            : LiveData<List<BudgetItemDetailed>>
+
+    //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @Transaction
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
+    @RewriteQueriesToDropUnusedColumns
+    @Query(
         "SELECT $TABLE_BUDGET_ITEMS.*, budgetRule.*, " +
                 "toAccount.*, fromAccount.* " +
                 "FROM $TABLE_BUDGET_ITEMS " +
