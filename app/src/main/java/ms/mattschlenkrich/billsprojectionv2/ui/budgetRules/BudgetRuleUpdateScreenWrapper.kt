@@ -12,6 +12,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -45,6 +47,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_MONTHLY
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_WEEKLY
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_YEARLY
+import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.components.BudgetItemDisplay
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectFieldDefaults
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
@@ -89,6 +92,8 @@ fun BudgetRuleUpdateScreenWrapper(
     var ruleIdState by remember { mutableLongStateOf(0L) }
 
     var suggestedAmountState by remember { mutableStateOf<Double?>(null) }
+    var sheetTitle by remember { mutableStateOf("") }
+    var sheetOptions by remember { mutableStateOf(emptyList<ActionOption>()) }
 
     var budgetNameList by remember { mutableStateOf<List<String>?>(null) }
 
@@ -357,26 +362,22 @@ fun BudgetRuleUpdateScreenWrapper(
 
     fun chooseOptions() {
         val detailed = mainViewModel.getBudgetRuleDetailed()!!
-        AlertDialog.Builder(mainActivity)
-            .setTitle(
-                mainActivity.getString(R.string.choose_an_action_for) + " " +
-                        detailed.budgetRule!!.budgetRuleName
-            )
-            .setItems(
-                arrayOf(
-                    mainActivity.getString(R.string.add_a_new_transaction_based_on_the_budget_rule),
-                    mainActivity.getString(R.string.create_a_scheduled_item_with_this_budget_rule),
-                    mainActivity.getString(R.string.view_a_summary_of_transactions_for_this_budget_rule)
-                )
-            ) { _, pos ->
-                when (pos) {
-                    0 -> addNewTransaction()
-                    1 -> createNewBudgetItem()
-                    2 -> gotoAnalysis()
-                }
-            }
-            .setNegativeButton(mainActivity.getString(R.string.cancel), null)
-            .show()
+        sheetTitle = mainActivity.getString(R.string.choose_an_action_for) + " " +
+                detailed.budgetRule!!.budgetRuleName
+        sheetOptions = listOf(
+            ActionOption(
+                mainActivity.getString(R.string.add_a_new_transaction_based_on_the_budget_rule),
+                Icons.Default.Add
+            ) { addNewTransaction() },
+            ActionOption(
+                mainActivity.getString(R.string.create_a_scheduled_item_with_this_budget_rule),
+                Icons.Default.Add
+            ) { createNewBudgetItem() },
+            ActionOption(
+                mainActivity.getString(R.string.view_a_summary_of_transactions_for_this_budget_rule),
+                Icons.Default.History
+            ) { gotoAnalysis() }
+        )
     }
 
     fun chooseAddOptionsOrUpdateBudgetRuleToContinue() {
@@ -565,16 +566,27 @@ fun BudgetRuleUpdateScreenWrapper(
                     budgetItemDetailed = item,
                     isCredit = item.toAccount?.accountId == detailedCached?.toAccount?.accountId,
                     onClick = {
-                        AlertDialog.Builder(mainActivity).setTitle(
+                        sheetTitle =
                             mainActivity.getString(R.string.would_you_like_to_go_to_this_budget_item_on) + " ${
                                 df.getDisplayDate(item.budgetItem!!.biActualDate)
                             }?"
-                        ).setPositiveButton(mainActivity.getString(R.string.yes)) { _, _ ->
-                            gotoBudgetItem(item)
-                        }.setNegativeButton(mainActivity.getString(R.string.cancel), null).show()
+                        sheetOptions = listOf(
+                            ActionOption(
+                                mainActivity.getString(R.string.yes),
+                                Icons.Default.PlayArrow
+                            ) {
+                                gotoBudgetItem(item)
+                            }
+                        )
                     }
                 )
             }
+        },
+        sheetTitle = sheetTitle,
+        sheetOptions = sheetOptions,
+        onSheetDismiss = {
+            sheetOptions = emptyList()
+            sheetTitle = ""
         }
     )
 }

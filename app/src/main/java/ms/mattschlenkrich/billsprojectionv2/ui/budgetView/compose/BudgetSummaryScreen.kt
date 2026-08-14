@@ -18,10 +18,12 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,20 +38,36 @@ import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_MONTHLY
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_WEEKLY
+import ms.mattschlenkrich.billsprojectionv2.common.components.ActionBottomSheet
+import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleComplete
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BudgetSummaryScreen(
     monthlyRules: List<BudgetRuleComplete>,
     occasionalRules: List<BudgetRuleComplete>,
     annualRules: List<BudgetRuleComplete>,
-    onRuleClick: (BudgetRuleComplete) -> Unit
+    onRuleClick: (BudgetRuleComplete) -> Unit,
+    sheetTitle: String = "",
+    sheetOptions: List<ActionOption> = emptyList(),
+    onSheetDismiss: () -> Unit = {}
 ) {
     val df = DateFunctions()
     val nf = NumberFunctions()
+    val sheetState = rememberModalBottomSheetState()
+
+    if (sheetOptions.isNotEmpty()) {
+        ActionBottomSheet(
+            title = sheetTitle,
+            options = sheetOptions,
+            sheetState = sheetState,
+            onDismissRequest = onSheetDismiss
+        )
+    }
 
     var monthlyExpanded by remember { mutableStateOf(false) }
     var occasionalExpanded by remember { mutableStateOf(false) }

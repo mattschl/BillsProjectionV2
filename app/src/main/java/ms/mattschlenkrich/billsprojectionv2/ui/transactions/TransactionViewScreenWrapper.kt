@@ -1,6 +1,11 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.transactions
 
 import android.app.AlertDialog
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Rule
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -14,6 +19,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
+import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
@@ -41,6 +47,9 @@ fun TransactionViewScreenWrapper(
     } else {
         transactionViewModel.searchActiveTransactionsDetailed("%$searchQuery%")
     }.observeAsState(initial = emptyList())
+
+    var sheetTitle by remember { mutableStateOf("") }
+    var sheetOptions by remember { mutableStateOf(emptyList<ActionOption>()) }
 
     TransactionViewScreen(
         transactionList = transactionList,
@@ -73,70 +82,72 @@ fun TransactionViewScreenWrapper(
                 )
             }
 
-            val items = mutableListOf(
-                context.getString(R.string.edit_this_transaction),
-                display,
-                context.getString(R.string.go_to_the_rules_for_future_budgets_of_this_kind),
-                context.getString(R.string.delete_this_transaction)
-            )
-
-            AlertDialog.Builder(context)
-                .setTitle(context.getString(R.string.choose_an_action_for) + " " + trans.transName)
-                .setItems(items.toTypedArray()) { _, pos ->
-                    when (pos) {
-                        0 -> {
-                            mainViewModel.setCallingFragments(FRAG_TRANSACTION_VIEW)
-                            mainViewModel.setTransactionDetailed(transactionDetailed)
-                            activity.lifecycleScope.launch {
-                                val oldTransactionFull = async {
-                                    transactionViewModel.getTransactionFull(
-                                        transactionDetailed.transaction.transId,
-                                        transactionDetailed.transaction.transToAccountId,
-                                        transactionDetailed.transaction.transFromAccountId
-                                    )
-                                }.await()
-                                mainViewModel.setOldTransaction(oldTransactionFull)
-                                navController.navigate(Screen.TransactionUpdate.route)
-                            }
-                        }
-
-                        1 -> if (trans.transToAccountPending || trans.transFromAccountPending) {
-                            val newTransaction = trans.copy(
-                                transToAccountPending = false,
-                                transFromAccountPending = false
+            sheetTitle = context.getString(R.string.choose_an_action_for) + " " + trans.transName
+            sheetOptions = listOf(
+                ActionOption(
+                    context.getString(R.string.edit_this_transaction),
+                    Icons.Default.Edit
+                ) {
+                    mainViewModel.setCallingFragments(FRAG_TRANSACTION_VIEW)
+                    mainViewModel.setTransactionDetailed(transactionDetailed)
+                    activity.lifecycleScope.launch {
+                        val oldTransactionFull = async {
+                            transactionViewModel.getTransactionFull(
+                                transactionDetailed.transaction.transId,
+                                transactionDetailed.transaction.transToAccountId,
+                                transactionDetailed.transaction.transFromAccountId
                             )
-                            activity.lifecycleScope.launch {
-                                accountUpdateViewModel.updateTransaction(trans, newTransaction)
-                            }
-                        }
-
-                        2 -> {
-                            mainViewModel.setCallingFragments(FRAG_TRANSACTION_VIEW)
-                            budgetRuleViewModel.getBudgetRuleFullLive(
-                                transactionDetailed.transaction.transRuleId
-                            ).observe(activity) { bRuleDetailed ->
-                                if (bRuleDetailed != null) {
-                                    mainViewModel.setBudgetRuleDetailed(bRuleDetailed)
-                                    navController.navigate(Screen.BudgetRuleUpdate.route)
-                                }
-                            }
-                        }
-
-                        3 -> {
-                            AlertDialog.Builder(activity)
-                                .setTitle(activity.getString(R.string.are_you_sure_you_want_to_delete) + " " + trans.transName)
-                                .setPositiveButton(activity.getString(R.string.delete)) { _, _ ->
-                                    activity.lifecycleScope.launch {
-                                        accountUpdateViewModel.deleteTransaction(trans)
-                                    }
-                                }
-                                .setNegativeButton(activity.getString(R.string.cancel), null)
-                                .show()
+                        }.await()
+                        mainViewModel.setOldTransaction(oldTransactionFull)
+                        navController.navigate(Screen.TransactionUpdate.route)
+                    }
+                },
+                ActionOption(display, Icons.Default.Check) {
+                    if (trans.transToAccountPending || trans.transFromAccountPending) {
+                        val newTransaction = trans.copy(
+                            transToAccountPending = false,
+                            transFromAccountPending = false
+                        )
+                        activity.lifecycleScope.launch {
+                            accountUpdateViewModel.updateTransaction(trans, newTransaction)
                         }
                     }
+                },
+                ActionOption(
+                    context.getString(R.string.go_to_the_rules_for_future_budgets_of_this_kind),
+                    Icons.AutoMirrored.Filled.Rule
+                ) {
+                    mainViewModel.setCallingFragments(FRAG_TRANSACTION_VIEW)
+                    budgetRuleViewModel.getBudgetRuleFullLive(
+                        transactionDetailed.transaction.transRuleId
+                    ).observe(activity) { bRuleDetailed ->
+                        if (bRuleDetailed != null) {
+                            mainViewModel.setBudgetRuleDetailed(bRuleDetailed)
+                            navController.navigate(Screen.BudgetRuleUpdate.route)
+                        }
+                    }
+                },
+                ActionOption(
+                    context.getString(R.string.delete_this_transaction),
+                    Icons.Default.Delete
+                ) {
+                    AlertDialog.Builder(activity)
+                        .setTitle(activity.getString(R.string.are_you_sure_you_want_to_delete) + " " + trans.transName)
+                        .setPositiveButton(activity.getString(R.string.delete)) { _, _ ->
+                            activity.lifecycleScope.launch {
+                                accountUpdateViewModel.deleteTransaction(trans)
+                            }
+                        }
+                        .setNegativeButton(activity.getString(R.string.cancel), null)
+                        .show()
                 }
-                .setNegativeButton(context.getString(R.string.cancel), null)
-                .show()
+            )
+        },
+        sheetTitle = sheetTitle,
+        sheetOptions = sheetOptions,
+        onSheetDismiss = {
+            sheetOptions = emptyList()
+            sheetTitle = ""
         }
     )
 }

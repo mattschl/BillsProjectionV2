@@ -24,12 +24,14 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -48,6 +50,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ALL_ITEMS
+import ms.mattschlenkrich.billsprojectionv2.common.components.ActionBottomSheet
+import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.components.BudgetItemDisplay
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectFieldDefaults
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
@@ -56,7 +60,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithTy
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun BudgetViewScreen(
     assetList: List<String>,
@@ -77,11 +81,32 @@ fun BudgetViewScreen(
     onAccountClick: () -> Unit,
     onScheduledExpensesLongClick: () -> Unit = {},
     isShowingAll: Boolean = false,
+    sheetTitle: String = "",
+    sheetOptions: List<ActionOption> = emptyList(),
+    onSheetDismiss: () -> Unit = {},
 ) {
     val nf = NumberFunctions()
     val df = DateFunctions()
     val haptic = LocalHapticFeedback.current
     val lazyListState = rememberLazyListState()
+    val sheetState = rememberModalBottomSheetState()
+
+    LaunchedEffect(sheetOptions) {
+        if (sheetOptions.isNotEmpty()) {
+            sheetState.show()
+        } else {
+            sheetState.hide()
+        }
+    }
+
+    if (sheetOptions.isNotEmpty()) {
+        ActionBottomSheet(
+            title = sheetTitle,
+            options = sheetOptions,
+            sheetState = sheetState,
+            onDismissRequest = onSheetDismiss
+        )
+    }
 
     LaunchedEffect(isShowingAll) {
         if (isShowingAll) {

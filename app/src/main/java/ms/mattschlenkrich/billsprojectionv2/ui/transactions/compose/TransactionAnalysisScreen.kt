@@ -19,9 +19,11 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +34,8 @@ import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.AnalysisMode
 import ms.mattschlenkrich.billsprojectionv2.common.TimeRange
+import ms.mattschlenkrich.billsprojectionv2.common.components.ActionBottomSheet
+import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextBox
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
@@ -39,6 +43,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionAnalysisScreen(
     // Filter State
@@ -70,10 +75,23 @@ fun TransactionAnalysisScreen(
     // Actions
     onBudgetRuleClick: () -> Unit,
     onAccountClick: () -> Unit,
-    onTransactionClick: (TransactionDetailed) -> Unit
+    onTransactionClick: (TransactionDetailed) -> Unit,
+    sheetTitle: String = "",
+    sheetOptions: List<ActionOption> = emptyList(),
+    onSheetDismiss: () -> Unit = {}
 ) {
     val nf = NumberFunctions()
     val df = DateFunctions()
+    val sheetState = rememberModalBottomSheetState()
+
+    if (sheetOptions.isNotEmpty()) {
+        ActionBottomSheet(
+            title = sheetTitle,
+            options = sheetOptions,
+            sheetState = sheetState,
+            onDismissRequest = onSheetDismiss
+        )
+    }
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),

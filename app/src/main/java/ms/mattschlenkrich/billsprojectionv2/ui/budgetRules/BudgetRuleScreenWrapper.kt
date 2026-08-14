@@ -1,6 +1,10 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.budgetRules
 
-import android.app.AlertDialog
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.History
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -11,6 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
+import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
@@ -44,6 +49,9 @@ fun BudgetRuleScreenWrapper(
             .observeAsState(emptyList())
     }
 
+    var sheetTitle by remember { mutableStateOf("") }
+    var sheetOptions by remember { mutableStateOf(emptyList<ActionOption>()) }
+
     BudgetRulesListScreen(
         searchQuery = searchQuery,
         onSearchQueryChange = { searchQuery = it },
@@ -54,98 +62,105 @@ fun BudgetRuleScreenWrapper(
             navController.navigate(Screen.BudgetRuleAdd.route)
         },
         onItemClick = { budgetRuleDetailed ->
-            AlertDialog.Builder(activity).setTitle(
-                activity.getString(R.string.choose_an_action_for) + budgetRuleDetailed.budgetRule!!.budgetRuleName
-            ).setItems(
-                arrayOf(
+            val rule = budgetRuleDetailed.budgetRule!!
+            sheetTitle = activity.getString(R.string.choose_an_action_for) + rule.budgetRuleName
+            sheetOptions = listOf(
+                ActionOption(
                     activity.getString(R.string.view_or_edit_this_budget_rule),
+                    Icons.Default.Edit
+                ) {
+                    mainViewModel.addCallingFragment(FRAG_BUDGET_RULES)
+                    mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
+                    navController.navigate(Screen.BudgetRuleUpdate.route)
+                },
+                ActionOption(
                     activity.getString(R.string.add_a_new_transaction_based_on_the_budget_rule),
+                    Icons.Default.Add
+                ) {
+                    val mTransaction = Transactions(
+                        nf.generateId(),
+                        df.getCurrentDateAsString(),
+                        rule.budgetRuleName,
+                        "",
+                        rule.ruleId,
+                        0L,
+                        false,
+                        0L,
+                        false,
+                        rule.budgetAmount,
+                        false,
+                        df.getCurrentTimeAsString()
+                    )
+                    mainViewModel.setTransactionDetailed(
+                        TransactionDetailed(
+                            mTransaction,
+                            rule,
+                            null,
+                            null,
+                        )
+                    )
+                    mainViewModel.addCallingFragment(FRAG_BUDGET_RULES)
+                    navController.navigate(Screen.TransactionAdd.route)
+                },
+                ActionOption(
                     activity.getString(R.string.create_a_scheduled_item_with_this_budget_rule),
+                    Icons.Default.Add
+                ) {
+                    mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
+                    mainViewModel.addCallingFragment(FRAG_BUDGET_RULES)
+                    mainViewModel.setBudgetItemDetailed(
+                        BudgetItemDetailed(
+                            BudgetItem(
+                                rule.ruleId,
+                                df.getCurrentDateAsString(),
+                                df.getCurrentDateAsString(),
+                                "",
+                                rule.budgetRuleName,
+                                rule.budIsPayDay,
+                                budgetRuleDetailed.toAccount!!.accountId,
+                                budgetRuleDetailed.fromAccount!!.accountId,
+                                rule.budgetAmount,
+                                false,
+                                rule.budFixedAmount,
+                                rule.budIsAutoPay,
+                                biManuallyEntered = true,
+                                biIsCompleted = false,
+                                biIsCancelled = false,
+                                biIsDeleted = false,
+                                biUpdateTime = df.getCurrentTimeAsString(),
+                                biLocked = true
+                            ),
+                            rule,
+                            budgetRuleDetailed.toAccount!!,
+                            budgetRuleDetailed.fromAccount!!,
+                        )
+                    )
+                    navController.navigate(Screen.BudgetItemAdd.route)
+                },
+                ActionOption(
                     activity.getString(R.string.view_a_summary_of_transactions_for_this_budget_rule),
+                    Icons.Default.History
+                ) {
+                    mainViewModel.addCallingFragment(FRAG_BUDGET_RULES)
+                    mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
+                    mainViewModel.setAccountWithType(null)
+                    navController.navigate(Screen.Analysis.route)
+                },
+                ActionOption(
                     activity.getString(R.string.delete_this_budget_rule),
-                )
-            ) { _, pos ->
-                when (pos) {
-                    0 -> {
-                        mainViewModel.addCallingFragment(FRAG_BUDGET_RULES)
-                        mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
-                        navController.navigate(Screen.BudgetRuleUpdate.route)
-                    }
-
-                    1 -> {
-                        val mTransaction = Transactions(
-                            nf.generateId(),
-                            df.getCurrentDateAsString(),
-                            budgetRuleDetailed.budgetRule!!.budgetRuleName,
-                            "",
-                            budgetRuleDetailed.budgetRule!!.ruleId,
-                            0L,
-                            false,
-                            0L,
-                            false,
-                            budgetRuleDetailed.budgetRule!!.budgetAmount,
-                            false,
-                            df.getCurrentTimeAsString()
-                        )
-                        mainViewModel.setTransactionDetailed(
-                            TransactionDetailed(
-                                mTransaction,
-                                budgetRuleDetailed.budgetRule,
-                                null,
-                                null,
-                            )
-                        )
-                        mainViewModel.addCallingFragment(FRAG_BUDGET_RULES)
-                        navController.navigate(Screen.TransactionAdd.route)
-                    }
-
-                    2 -> {
-                        mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
-                        mainViewModel.addCallingFragment(FRAG_BUDGET_RULES)
-                        mainViewModel.setBudgetItemDetailed(
-                            BudgetItemDetailed(
-                                BudgetItem(
-                                    budgetRuleDetailed.budgetRule!!.ruleId,
-                                    df.getCurrentDateAsString(),
-                                    df.getCurrentDateAsString(),
-                                    "",
-                                    budgetRuleDetailed.budgetRule!!.budgetRuleName,
-                                    budgetRuleDetailed.budgetRule!!.budIsPayDay,
-                                    budgetRuleDetailed.toAccount!!.accountId,
-                                    budgetRuleDetailed.fromAccount!!.accountId,
-                                    budgetRuleDetailed.budgetRule!!.budgetAmount,
-                                    false,
-                                    budgetRuleDetailed.budgetRule!!.budFixedAmount,
-                                    budgetRuleDetailed.budgetRule!!.budIsAutoPay,
-                                    biManuallyEntered = true,
-                                    biIsCompleted = false,
-                                    biIsCancelled = false,
-                                    biIsDeleted = false,
-                                    biUpdateTime = df.getCurrentTimeAsString(),
-                                    biLocked = true
-                                ),
-                                budgetRuleDetailed.budgetRule!!,
-                                budgetRuleDetailed.toAccount!!,
-                                budgetRuleDetailed.fromAccount!!,
-                            )
-                        )
-                        navController.navigate(Screen.BudgetItemAdd.route)
-                    }
-
-                    3 -> {
-                        mainViewModel.addCallingFragment(FRAG_BUDGET_RULES)
-                        mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
-                        mainViewModel.setAccountWithType(null)
-                        navController.navigate(Screen.Analysis.route)
-                    }
-
-                    4 -> {
-                        budgetRuleViewModel.deleteBudgetRule(
-                            budgetRuleDetailed.budgetRule!!.ruleId, df.getCurrentTimeAsString()
-                        )
-                    }
+                    Icons.Default.Delete
+                ) {
+                    budgetRuleViewModel.deleteBudgetRule(
+                        rule.ruleId, df.getCurrentTimeAsString()
+                    )
                 }
-            }.setNegativeButton(activity.getString(R.string.cancel), null).show()
+            )
+        },
+        sheetTitle = sheetTitle,
+        sheetOptions = sheetOptions,
+        onSheetDismiss = {
+            sheetOptions = emptyList()
+            sheetTitle = ""
         }
     )
 }

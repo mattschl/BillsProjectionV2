@@ -1,6 +1,9 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.accounts
 
-import android.app.AlertDialog
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.History
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -11,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNTS
+import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
@@ -40,6 +44,9 @@ fun AccountViewScreenWrapper(
         accountViewModel.searchAccountsWithType("%$searchQuery%").observeAsState(emptyList())
     }
 
+    var sheetTitle by remember { mutableStateOf("") }
+    var sheetOptions by remember { mutableStateOf(emptyList<ActionOption>()) }
+
     AccountsListScreen(
         searchQuery = searchQuery,
         onSearchQueryChange = { searchQuery = it },
@@ -50,36 +57,35 @@ fun AccountViewScreenWrapper(
             navController.navigate(Screen.AccountAdd.route)
         },
         onAccountClick = { accountWithType ->
-            AlertDialog.Builder(activity).setTitle(
+            sheetTitle =
                 activity.getString(R.string.choose_an_action_for) + accountWithType.account.accountName
-            ).setItems(
-                arrayOf(
+            sheetOptions = listOf(
+                ActionOption(
                     activity.getString(R.string.edit_this_account),
+                    Icons.Default.Edit
+                ) {
+                    mainViewModel.addCallingFragment(FRAG_ACCOUNTS)
+                    mainViewModel.setAccountWithType(accountWithType)
+                    navController.navigate(Screen.AccountUpdate.route)
+                },
+                ActionOption(
                     activity.getString(R.string.delete_this_account),
-                    activity.getString(R.string.view_a_summary_of_transactions_using_this_account)
-                )
-            ) { _, pos ->
-                when (pos) {
-                    0 -> {
-                        mainViewModel.addCallingFragment(FRAG_ACCOUNTS)
-                        mainViewModel.setAccountWithType(accountWithType)
-                        navController.navigate(Screen.AccountUpdate.route)
-                    }
-
-                    1 -> {
-                        accountViewModel.deleteAccount(
-                            accountWithType.account.accountId, df.getCurrentTimeAsString()
-                        )
-                    }
-
-                    2 -> {
-                        mainViewModel.addCallingFragment(FRAG_ACCOUNTS)
-                        mainViewModel.setAccountWithType(accountWithType)
-                        mainViewModel.setBudgetRuleDetailed(null)
-                        navController.navigate(Screen.Analysis.route)
-                    }
+                    Icons.Default.Delete
+                ) {
+                    accountViewModel.deleteAccount(
+                        accountWithType.account.accountId, df.getCurrentTimeAsString()
+                    )
+                },
+                ActionOption(
+                    activity.getString(R.string.view_a_summary_of_transactions_using_this_account),
+                    Icons.Default.History
+                ) {
+                    mainViewModel.addCallingFragment(FRAG_ACCOUNTS)
+                    mainViewModel.setAccountWithType(accountWithType)
+                    mainViewModel.setBudgetRuleDetailed(null)
+                    navController.navigate(Screen.Analysis.route)
                 }
-            }.setNegativeButton(activity.getString(R.string.cancel), null).show()
+            )
         },
         getAccountInfoText = { accountWithType ->
             val account = accountWithType.account
@@ -104,6 +110,12 @@ fun AccountViewScreenWrapper(
             }
             parts.joinToString("\n")
         },
-        vf = vf
+        vf = vf,
+        sheetTitle = sheetTitle,
+        sheetOptions = sheetOptions,
+        onSheetDismiss = {
+            sheetOptions = emptyList()
+            sheetTitle = ""
+        }
     )
 }

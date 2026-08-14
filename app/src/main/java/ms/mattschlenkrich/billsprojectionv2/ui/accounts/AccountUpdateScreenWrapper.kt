@@ -2,6 +2,11 @@ package ms.mattschlenkrich.billsprojectionv2.ui.accounts
 
 import android.app.AlertDialog
 import android.widget.Toast
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Rule
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -20,6 +25,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.BALANCE
 import ms.mattschlenkrich.billsprojectionv2.common.BUDGETED
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.OWING
+import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
@@ -105,6 +111,9 @@ fun AccountUpdateScreenWrapper(
 
     val liveAccountWithType by accountViewModel.getAccountWithTypeLive(accountId)
         .observeAsState()
+
+    var sheetTitle by remember { mutableStateOf("") }
+    var sheetOptions by remember { mutableStateOf(emptyList<ActionOption>()) }
 
     LaunchedEffect(liveAccountWithType) {
         liveAccountWithType?.let { awt ->
@@ -224,50 +233,52 @@ fun AccountUpdateScreenWrapper(
         }
 
         val options = mutableListOf(
-            mainActivity.getString(R.string.edit_this_transaction),
-            display,
-            mainActivity.getString(R.string.go_to_the_rules_for_future_budgets_of_this_kind),
-            mainActivity.getString(R.string.delete_this_transaction)
-        )
-
-        AlertDialog.Builder(mainActivity).setTitle(
-            mainActivity.getString(R.string.choose_an_action_for) + transaction.transName
-        ).setItems(options.toTypedArray()) { _, pos ->
-            when (pos) {
-                0 -> {
-                    mainViewModel.setCallingFragments(TAG)
-                    mainViewModel.setTransactionDetailed(transactionDetailed)
-                    mainActivity.lifecycleScope.launch(Dispatchers.IO) {
-                        val oldTransactionFull = transactionViewModel.getTransactionFull(
-                            transaction.transId,
-                            transaction.transToAccountId,
-                            transaction.transFromAccountId
-                        )
-                        mainViewModel.setOldTransaction(oldTransactionFull)
-                        withContext(Dispatchers.Main) {
-                            navController.navigate(Screen.TransactionUpdate.route)
-                        }
+            ActionOption(
+                mainActivity.getString(R.string.edit_this_transaction),
+                Icons.Default.Edit
+            ) {
+                mainViewModel.setCallingFragments(TAG)
+                mainViewModel.setTransactionDetailed(transactionDetailed)
+                mainActivity.lifecycleScope.launch(Dispatchers.IO) {
+                    val oldTransactionFull = transactionViewModel.getTransactionFull(
+                        transaction.transId,
+                        transaction.transToAccountId,
+                        transaction.transFromAccountId
+                    )
+                    mainViewModel.setOldTransaction(oldTransactionFull)
+                    withContext(Dispatchers.Main) {
+                        navController.navigate(Screen.TransactionUpdate.route)
                     }
                 }
-
-                1 -> if (transaction.transToAccountPending || transaction.transFromAccountPending) {
+            },
+            ActionOption(display, Icons.Default.Check) {
+                if (transaction.transToAccountPending || transaction.transFromAccountPending) {
                     confirmCompletePendingTransactions(transactionDetailed)
                 }
-
-                2 -> {
-                    mainViewModel.setCallingFragments(TAG)
-                    budgetRuleViewModel.getBudgetRuleFullLive(
-                        transaction.transRuleId
-                    ).observe(mainActivity) { bRuleDetailed ->
-                        mainViewModel.setBudgetRuleDetailed(bRuleDetailed)
-                        mainViewModel.addCallingFragment(TAG)
-                        navController.navigate(Screen.BudgetRuleUpdate.route)
-                    }
+            },
+            ActionOption(
+                mainActivity.getString(R.string.go_to_the_rules_for_future_budgets_of_this_kind),
+                Icons.AutoMirrored.Filled.Rule
+            ) {
+                mainViewModel.setCallingFragments(TAG)
+                budgetRuleViewModel.getBudgetRuleFullLive(
+                    transaction.transRuleId
+                ).observe(mainActivity) { bRuleDetailed ->
+                    mainViewModel.setBudgetRuleDetailed(bRuleDetailed)
+                    mainViewModel.addCallingFragment(TAG)
+                    navController.navigate(Screen.BudgetRuleUpdate.route)
                 }
-
-                3 -> confirmDeleteTransaction(transactionDetailed)
+            },
+            ActionOption(
+                mainActivity.getString(R.string.delete_this_transaction),
+                Icons.Default.Delete
+            ) {
+                confirmDeleteTransaction(transactionDetailed)
             }
-        }.setNegativeButton(mainActivity.getString(R.string.cancel), null).show()
+        )
+
+        sheetTitle = mainActivity.getString(R.string.choose_an_action_for) + transaction.transName
+        sheetOptions = options
     }
 
     AccountEditScreen(
@@ -384,6 +395,12 @@ fun AccountUpdateScreenWrapper(
             }
         },
         nf = nf,
-        df = df
+        df = df,
+        sheetTitle = sheetTitle,
+        sheetOptions = sheetOptions,
+        onSheetDismiss = {
+            sheetOptions = emptyList()
+            sheetTitle = ""
+        }
     )
 }

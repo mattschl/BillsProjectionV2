@@ -14,12 +14,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,17 +30,34 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.components.ActionBottomSheet
+import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionViewScreen(
     transactionList: List<TransactionDetailed>,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     onAddClick: () -> Unit,
-    onTransactionClick: (TransactionDetailed) -> Unit
+    onTransactionClick: (TransactionDetailed) -> Unit,
+    sheetTitle: String = "",
+    sheetOptions: List<ActionOption> = emptyList(),
+    onSheetDismiss: () -> Unit = {}
 ) {
+    val sheetState = rememberModalBottomSheetState()
+
+    if (sheetOptions.isNotEmpty()) {
+        ActionBottomSheet(
+            title = sheetTitle,
+            options = sheetOptions,
+            sheetState = sheetState,
+            onDismissRequest = onSheetDismiss
+        )
+    }
+
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         modifier = Modifier.imePadding(),

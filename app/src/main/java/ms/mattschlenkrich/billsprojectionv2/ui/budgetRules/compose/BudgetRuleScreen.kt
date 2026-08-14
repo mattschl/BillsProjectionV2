@@ -22,12 +22,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +42,8 @@ import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
+import ms.mattschlenkrich.billsprojectionv2.common.components.ActionBottomSheet
+import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectBalanceField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectIntField
@@ -49,14 +53,29 @@ import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BudgetRulesListScreen(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     budgetRulesDetailed: List<BudgetRuleDetailed>,
     onAddClick: () -> Unit,
-    onItemClick: (BudgetRuleDetailed) -> Unit
+    onItemClick: (BudgetRuleDetailed) -> Unit,
+    sheetTitle: String = "",
+    sheetOptions: List<ActionOption> = emptyList(),
+    onSheetDismiss: () -> Unit = {}
 ) {
+    val sheetState = rememberModalBottomSheetState()
+
+    if (sheetOptions.isNotEmpty()) {
+        ActionBottomSheet(
+            title = sheetTitle,
+            options = sheetOptions,
+            sheetState = sheetState,
+            onDismissRequest = onSheetDismiss
+        )
+    }
+
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         modifier = Modifier.imePadding(),
@@ -132,6 +151,7 @@ fun BudgetRulesListScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BudgetRuleScreen(
     name: String,
@@ -162,10 +182,23 @@ fun BudgetRuleScreen(
     onGotoCalculator: () -> Unit,
     suggestedAmount: Double? = null,
     floatingActionButton: @Composable () -> Unit,
-    bottomContent: @Composable () -> Unit = {}
+    bottomContent: @Composable () -> Unit = {},
+    sheetTitle: String = "",
+    sheetOptions: List<ActionOption> = emptyList(),
+    onSheetDismiss: () -> Unit = {}
 ) {
     val frequencyTypes = stringArrayResource(R.array.frequency_types)
     val daysOfWeek = stringArrayResource(R.array.days_of_week)
+    val sheetState = rememberModalBottomSheetState()
+
+    if (sheetOptions.isNotEmpty()) {
+        ActionBottomSheet(
+            title = sheetTitle,
+            options = sheetOptions,
+            sheetState = sheetState,
+            onDismissRequest = onSheetDismiss
+        )
+    }
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
