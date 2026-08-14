@@ -173,7 +173,8 @@ fun BudgetViewScreenWrapper(
             ).setItems(
                 arrayOf(
                     activity.getString(R.string.perform_a_transaction_on_) + " \"${curBudget.biBudgetName}\" ",
-                    if (curBudget.biProjectedAmount == 0.0) "" else activity.getString(R.string.perform_action) + "\"${curBudget.biBudgetName}\" " + activity.getString(
+                    if (curBudget.biProjectedAmount == 0.0) ""
+                    else activity.getString(R.string.perform_action) + "\"${curBudget.biBudgetName}\" " + activity.getString(
                         R.string.for_amount_of_the_full_amount_
                     ) + nf.displayDollars(curBudget.biProjectedAmount),
                     activity.getString(R.string.adjust_the_projections_for_this_item),
@@ -417,6 +418,7 @@ fun BudgetViewScreenWrapper(
         },
         onScheduledExpensesLongClick = {
             showAllBudgetItems = !showAllBudgetItems
-        }
+        },
+        isShowingAll = showAllBudgetItems
     )
 }

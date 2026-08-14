@@ -1,7 +1,7 @@
 <resources>
     <string name="_From_">" from "</string>
-    <string name="__current">" - Current"</string>
-    <string name="__from">"\n\nFROM:   "</string>
+    <string name="__current">" - (Current)"</string>
+    <string name="__from">"\n\nFROM:   "</string>)
     <string name="_and">"\n and "</string>
     <string name="_and_">" and "</string>
     <string name="_continue">Continue</string>
@@ -24,7 +24,7 @@
     <string name="add_account_type">Add Account Type</string>
     <string name="add_an_unscheduled_transaction">Add an Unscheduled transaction</string>
     <string name="add_budget_rule">Add Budget Rule</string>
-    <string name="adjust_the_projections_for_this_item">ADJUST the projections for this item.</string>
+    <string name="adjust_the_projections_for_this_item">ADJUST the PROJECTION for this item.</string>
     <string name="all">All</string>
     <string name="allow_transactions_pending">Allow transactions pending</string>
     <string name="amount">Amount</string>
@@ -118,7 +118,7 @@
     <string name="fixed_">"Fixed: "</string>
     <string name="fixed_expenses">Fixed Expenses</string>
     <string name="font_size">Font Size</string>
-    <string name="for_amount_of_the_full_amount_">"\nfor the full mount of "</string>
+    <string name="for_amount_of_the_full_amount_">"for the fULL AMOUNT of "</string>
     <string name="from">"\n\nFROM:   "</string>
     <string name="from_">"From: "</string>
     <string name="from_account_name">From Account Name</string>
@@ -178,7 +178,7 @@
     <string name="pending_items">Pending Items</string>
     <string name="perform_a_transaction">Perform a Transaction</string>
     <string name="perform_a_transaction_on_">Perform a TRANSACTION with a custom amount on </string>
-    <string name="perform_action">"PERFORM action "</string>
+    <string name="perform_action">"PERFORM ACTION "</string>
     <string name="please_choose_an_account_type">Please choose an account Type</string>
     <string name="please_enter_a_budgeted_amount_including_zero">Please enter a budgeted amount (including zero)</string>
     <string name="please_enter_a_name">Please enter a name</string>

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -30,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -74,10 +76,18 @@ fun BudgetViewScreen(
     onTransactionClick: (TransactionDetailed) -> Unit,
     onAccountClick: () -> Unit,
     onScheduledExpensesLongClick: () -> Unit = {},
+    isShowingAll: Boolean = false,
 ) {
     val nf = NumberFunctions()
     val df = DateFunctions()
     val haptic = LocalHapticFeedback.current
+    val lazyListState = rememberLazyListState()
+
+    LaunchedEffect(isShowingAll) {
+        if (isShowingAll) {
+            lazyListState.animateScrollToItem(0)
+        }
+    }
 
     val budgetTotals = remember(budgetList, selectedAsset, assetList) {
         var credits = 0.0
@@ -209,6 +219,7 @@ fun BudgetViewScreen(
                 )
                 if (budgetList.isNotEmpty()) {
                     LazyColumn(
+                        state = lazyListState,
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f)

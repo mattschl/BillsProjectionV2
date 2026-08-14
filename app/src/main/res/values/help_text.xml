@@ -43,10 +43,10 @@
     <string name="instructions_budget_view">To fill in the budget,
         you will need to update Budget Rules according to your circumstances.\n\n
         It is important to have a Budget Rule that is a pay day
-        to create pay day periods for the budget.\n
-        This view will help you to plan where your money will go for each pay period.\n\n
-        They can be edited by tapping on them.
-        Many items will have a long tap option.\n
+        to create pay day periods for the budget.\n\n
+        This view will help you to plan where your money will go for each pay period.\n
+        budget item can be edited or acted upon by tapping on them.\n
+        You can add new transactions not budgeted or new budget items by tapping on the \"+\" button.\n
         If you consistently keep track you will see trends that could be changed to
         better use your resources.\n
         Be sure to include annual and occasional expenses so you are not caught by surprise.\n\n
@@ -54,7 +54,11 @@
         update budget predictions from the options on the top right to populate this view.
         It is a good idea to \"lock\" items for the current pay period to prevent losing any
         changes you have made.\n\n
-        To view a Budget monthly, occasional and annual summary,
+        If you accidentally cancel a budget item, you can view all canceled and completed
+        budget items by long pressing the words \"Scheduled Expenses\" to see those
+        items for that pay period.
+        Then you can restore them or add a transaction based on that item.\n\n
+        To view the current Budget summary monthly, occasional and annual summary,
         go to the top right menu and choose View Current Budget Summary.
     </string>
     <string name="instructions_transaction_view">Add transactions to discover your spending habits.
