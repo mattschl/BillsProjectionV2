@@ -19,11 +19,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -34,10 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -53,6 +47,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.ALL_ITEMS
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionBottomSheet
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.components.BudgetItemDisplay
+import ms.mattschlenkrich.billsprojectionv2.common.components.DropdownSelector
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectFieldDefaults
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
@@ -193,9 +188,11 @@ fun BudgetViewScreen(
 
             if (pendingList.isNotEmpty()) {
                 Text(
-                    text = stringResource(R.string.pending_items) + " " + nf.displayDollars(
-                        pendingAmount
-                    ),
+                    text = "${stringResource(R.string.pending_items)} ${
+                        nf.displayDollars(
+                            pendingAmount
+                        )
+                    }",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp),
@@ -411,20 +408,22 @@ fun TotalsSection(
 ) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         Text(
-            text = if (budgetTotals.credits > 0.0) stringResource(R.string.credits_) + nf.displayDollars(
-                budgetTotals.credits
-            ) else stringResource(R.string.no_credits),
+            text = if (budgetTotals.credits > 0.0) "${stringResource(R.string.credits_)}${
+                nf.displayDollars(
+                    budgetTotals.credits
+                )
+            }" else stringResource(R.string.no_credits),
             color = if (budgetTotals.credits > 0.0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(
                 alpha = 0.4f
             ),
             style = MaterialTheme.typography.bodySmall
         )
         Text(
-            text = if (budgetTotals.debits > 0.0) stringResource(R.string.debits_) + nf.displayDollars(
-                budgetTotals.debits
-            ) else stringResource(
-                R.string.no_debits
-            ),
+            text = if (budgetTotals.debits > 0.0) "${stringResource(R.string.debits_)}${
+                nf.displayDollars(
+                    budgetTotals.debits
+                )
+            }" else stringResource(R.string.no_debits),
             color = if (budgetTotals.debits > 0.0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface.copy(
                 alpha = 0.4f
             ),
@@ -433,18 +432,22 @@ fun TotalsSection(
     }
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         Text(
-            text = if (budgetTotals.fixedExpenses > 0.0) stringResource(R.string.fixed_expenses) + nf.displayDollars(
-                budgetTotals.fixedExpenses
-            ) else stringResource(R.string.no_fixed_expenses),
+            text = if (budgetTotals.fixedExpenses > 0.0) "${stringResource(R.string.fixed_expenses)}${
+                nf.displayDollars(
+                    budgetTotals.fixedExpenses
+                )
+            }" else stringResource(R.string.no_fixed_expenses),
             color = if (budgetTotals.fixedExpenses > 0.0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface.copy(
                 alpha = 0.4f
             ),
             style = MaterialTheme.typography.bodySmall
         )
         Text(
-            text = if (budgetTotals.otherExpenses > 0.0) stringResource(R.string.discretionary_) + nf.displayDollars(
-                budgetTotals.otherExpenses
-            ) else stringResource(R.string.no_discretionary_expenses),
+            text = if (budgetTotals.otherExpenses > 0.0) "${stringResource(R.string.discretionary_)}${
+                nf.displayDollars(
+                    budgetTotals.otherExpenses
+                )
+            }" else stringResource(R.string.no_discretionary_expenses),
             color = if (budgetTotals.otherExpenses > 0.0) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurface.copy(
                 alpha = 0.4f
             ),
@@ -471,61 +474,16 @@ fun SurplusDeficitInfo(
     }
 
     Text(
-        text = if (surplus >= 0.0) stringResource(R.string.surplus_of) + nf.displayDollars(
-            surplus
-        )
-        else stringResource(R.string.deficit_of) + nf.displayDollars(-surplus),
+        text = if (surplus >= 0.0) "${stringResource(R.string.surplus_of)}${
+            nf.displayDollars(
+                surplus
+            )
+        }"
+        else "${stringResource(R.string.deficit_of)}${nf.displayDollars(-surplus)}",
         fontWeight = FontWeight.Bold,
         color = if (surplus >= 0.0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error,
         textAlign = TextAlign.Center,
         style = MaterialTheme.typography.bodySmall,
         modifier = Modifier.width(110.dp)
     )
-}
-
-@Composable
-fun DropdownSelector(
-    label: String,
-    options: List<String>,
-    selectedOption: String,
-    onOptionSelected: (String) -> Unit,
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { expanded = true }
-            .padding(vertical = 1.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "$label:",
-            modifier = Modifier.weight(1f),
-            style = MaterialTheme.typography.bodyLarge
-        )
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = selectedOption,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.bodyLarge
-            )
-            Icon(
-                Icons.Default.ArrowDropDown,
-                contentDescription = null,
-                modifier = Modifier.size(ProjectFieldDefaults.iconSize())
-            )
-        }
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            options.forEach { option ->
-                DropdownMenuItem(
-                    text = { Text(option) },
-                    onClick = {
-                        onOptionSelected(option)
-                        expanded = false
-                    }
-                )
-            }
-        }
-    }
 }

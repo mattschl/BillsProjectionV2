@@ -63,7 +63,8 @@ fun BudgetRuleScreenWrapper(
         },
         onItemClick = { budgetRuleDetailed ->
             val rule = budgetRuleDetailed.budgetRule!!
-            sheetTitle = activity.getString(R.string.choose_an_action_for) + rule.budgetRuleName
+            sheetTitle =
+                "${activity.getString(R.string.choose_an_action_for)} ${rule.budgetRuleName}"
             sheetOptions = listOf(
                 ActionOption(
                     activity.getString(R.string.view_or_edit_this_budget_rule),

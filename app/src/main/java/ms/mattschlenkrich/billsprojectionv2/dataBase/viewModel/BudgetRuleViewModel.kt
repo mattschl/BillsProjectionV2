@@ -4,8 +4,11 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import ms.mattschlenkrich.billsprojectionv2.common.functions.BudgetLogic
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.dataBase.repository.BudgetRuleRepository
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 class BudgetRuleViewModel(
     app: Application,
@@ -56,4 +59,34 @@ class BudgetRuleViewModel(
 
     fun getBudgetRulesCompletedAnnually(today: String) =
         budgetRuleRepository.getBudgetRulesCompletedAnnually(today)
+
+    fun calculateSuggestedAmount(
+        rule: BudgetRule,
+        transactionViewModel: TransactionViewModel
+    ): Double? {
+        val today = LocalDate.now()
+        val yearAgo = today.minusYears(1)
+        val calcStart =
+            if (rule.budStartDate > yearAgo.toString()) rule.budStartDate else yearAgo.toString()
+        val totalSum =
+            transactionViewModel.getSumTransactionByBudgetRuleSync(
+                rule.ruleId, calcStart, today.toString()
+            ) ?: 0.0
+        val totalCount =
+            transactionViewModel.getCountTransactionByBudgetRuleSync(
+                rule.ruleId, calcStart, today.toString()
+            )
+        val daysElapsed = ChronoUnit.DAYS.between(
+            LocalDate.parse(calcStart),
+            today
+        )
+
+        return BudgetLogic.calculateSuggestedAmount(
+            totalSum = totalSum,
+            totalCount = totalCount,
+            daysElapsed = daysElapsed,
+            frequencyTypeId = rule.budFrequencyTypeId,
+            frequencyCount = rule.budFrequencyCount
+        )
+    }
 }

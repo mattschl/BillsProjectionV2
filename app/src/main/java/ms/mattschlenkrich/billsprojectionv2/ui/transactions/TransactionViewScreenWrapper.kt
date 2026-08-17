@@ -65,24 +65,32 @@ fun TransactionViewScreenWrapper(
             var display = ""
             val trans = transactionDetailed.transaction!!
             if (trans.transToAccountPending) {
-                display += context.getString(R.string.complete_the_pending_amount_of) + nf.displayDollars(
-                    trans.transAmount
-                ) + context.getString(R.string._to_) + transactionDetailed.toAccount!!.accountName + " " + context.getString(
-                    R.string.pending
-                )
+                display += "${context.getString(R.string.complete_the_pending_amount_of)}${
+                    nf.displayDollars(
+                        trans.transAmount
+                    )
+                }${context.getString(R.string._to_)}${transactionDetailed.toAccount!!.accountName} ${
+                    context.getString(
+                        R.string.pending
+                    )
+                }"
             }
             if (display.isNotEmpty() && trans.transFromAccountPending) {
-                display += " " + context.getString(R.string._and) + " "
+                display += " ${context.getString(R.string._and)} "
             }
             if (trans.transFromAccountPending) {
-                display += context.getString(R.string.complete_the_pending_amount_of) + nf.displayDollars(
-                    trans.transAmount
-                ) + context.getString(R.string._From_) + transactionDetailed.fromAccount!!.accountName + " " + context.getString(
-                    R.string.pending
-                )
+                display += "${context.getString(R.string.complete_the_pending_amount_of)}${
+                    nf.displayDollars(
+                        trans.transAmount
+                    )
+                }${context.getString(R.string._From_)}${transactionDetailed.fromAccount!!.accountName} ${
+                    context.getString(
+                        R.string.pending
+                    )
+                }"
             }
 
-            sheetTitle = context.getString(R.string.choose_an_action_for) + " " + trans.transName
+            sheetTitle = "${context.getString(R.string.choose_an_action_for)} ${trans.transName}"
             sheetOptions = listOf(
                 ActionOption(
                     context.getString(R.string.edit_this_transaction),
@@ -132,7 +140,7 @@ fun TransactionViewScreenWrapper(
                     Icons.Default.Delete
                 ) {
                     AlertDialog.Builder(activity)
-                        .setTitle(activity.getString(R.string.are_you_sure_you_want_to_delete) + " " + trans.transName)
+                        .setTitle("${activity.getString(R.string.are_you_sure_you_want_to_delete)} ${trans.transName}")
                         .setPositiveButton(activity.getString(R.string.delete)) { _, _ ->
                             activity.lifecycleScope.launch {
                                 accountUpdateViewModel.deleteTransaction(trans)

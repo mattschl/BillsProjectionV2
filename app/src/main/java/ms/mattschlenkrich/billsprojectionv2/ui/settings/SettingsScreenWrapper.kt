@@ -35,11 +35,11 @@ import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.BuildConfig
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ALL_ITEMS
+import ms.mattschlenkrich.billsprojectionv2.common.components.DropdownSelector
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.SecurityUtils
 import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
-import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.compose.DropdownSelector
 
 @Composable
 fun SettingsScreenWrapper(

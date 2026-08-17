@@ -181,10 +181,11 @@ fun BudgetViewScreenWrapper(
         onBudgetItemClick = { curBudgetDetailed ->
             val curBudget = curBudgetDetailed.budgetItem!!
             val nf = NumberFunctions()
-            sheetTitle = activity.getString(R.string.choose_an_action_for) + curBudget.biBudgetName
+            sheetTitle =
+                "${activity.getString(R.string.choose_an_action_for)} ${curBudget.biBudgetName}"
             sheetOptions = listOf(
                 ActionOption(
-                    activity.getString(R.string.perform_a_transaction_on_) + " \"${curBudget.biBudgetName}\" ",
+                    "${activity.getString(R.string.perform_a_transaction_on_)} \"${curBudget.biBudgetName}\" ",
                     Icons.Default.Edit
                 ) {
                     mainViewModel.setBudgetItemDetailed(curBudgetDetailed)
@@ -194,9 +195,11 @@ fun BudgetViewScreenWrapper(
                 },
                 ActionOption(
                     if (curBudget.biProjectedAmount == 0.0) ""
-                    else activity.getString(R.string.perform_action) + "\"${curBudget.biBudgetName}\" " + activity.getString(
-                        R.string.for_amount_of_the_full_amount_
-                    ) + nf.displayDollars(curBudget.biProjectedAmount),
+                    else "${activity.getString(R.string.perform_action)}\"${curBudget.biBudgetName}\" ${
+                        activity.getString(
+                            R.string.for_amount_of_the_full_amount_
+                        )
+                    }${nf.displayDollars(curBudget.biProjectedAmount)}",
                     Icons.Default.Check
                 ) {
                     if (curBudget.biProjectedAmount > 0.0) {
@@ -208,12 +211,16 @@ fun BudgetViewScreenWrapper(
                                 accountUpdateViewModel.isTransactionPending(curBudget.biFromAccountId)
 
                             var display =
-                                activity.getString(R.string.this_will_perform) + curBudget.biBudgetName + activity.getString(
-                                    R.string.applying_the_amount_of
-                                ) + nf.displayDollars(curBudget.biProjectedAmount) + activity.getString(
-                                    R.string.from
-                                ) + curBudgetDetailed.fromAccount!!.accountName
-                            display += activity.getString(R.string._to) + curBudgetDetailed.toAccount!!.accountName
+                                "${activity.getString(R.string.this_will_perform)}${curBudget.biBudgetName}${
+                                    activity.getString(
+                                        R.string.applying_the_amount_of
+                                    )
+                                }${nf.displayDollars(curBudget.biProjectedAmount)}${
+                                    activity.getString(
+                                        R.string.from
+                                    )
+                                }${curBudgetDetailed.fromAccount!!.accountName}"
+                            display += "${activity.getString(R.string._to)}${curBudgetDetailed.toAccount!!.accountName}"
                             display += if (toPending) activity.getString(R.string._pending) else ""
 
                             AlertDialog.Builder(activity)
@@ -275,17 +282,21 @@ fun BudgetViewScreenWrapper(
                     navController.navigate(Screen.BudgetRuleUpdate.route)
                 },
                 ActionOption(
-                    activity.getString(R.string.cancel_this_projected_item),
+                    "${activity.getString(R.string.this_will_cancel)}${curBudget.biBudgetName}${
+                        activity.getString(
+                            R.string.with_the_amount_of
+                        )
+                    }${nf.displayDollars(curBudget.biProjectedAmount)}${activity.getString(R.string._remaining)}",
                     Icons.Default.Cancel
                 ) {
                     AlertDialog.Builder(activity)
                         .setTitle(activity.getString(R.string.confirm_cancelling_budget_item))
                         .setMessage(
-                            activity.getString(R.string.this_will_cancel) + curBudget.biBudgetName + activity.getString(
-                                R.string.with_the_amount_of
-                            ) + nf.displayDollars(
-                                curBudget.biProjectedAmount
-                            ) + activity.getString(R.string._remaining)
+                            "${activity.getString(R.string.this_will_cancel)}${curBudget.biBudgetName}${
+                                activity.getString(
+                                    R.string.with_the_amount_of
+                                )
+                            }${nf.displayDollars(curBudget.biProjectedAmount)}${activity.getString(R.string._remaining)}"
                         ).setPositiveButton(activity.getString(R.string.cancel_now)) { _, _ ->
                             budgetItemViewModel.cancelBudgetItem(
                                 curBudget.biRuleId,
@@ -312,7 +323,7 @@ fun BudgetViewScreenWrapper(
             sheetTitle = activity.getString(R.string.lock_or_unlock)
             sheetOptions = listOf(
                 ActionOption(
-                    activity.getString(R.string.lock) + budgetItem.biBudgetName,
+                    "${activity.getString(R.string.lock)}${budgetItem.biBudgetName}",
                     Icons.Default.Lock
                 ) {
                     budgetItemViewModel.lockUnlockBudgetItem(
@@ -323,7 +334,7 @@ fun BudgetViewScreenWrapper(
                     )
                 },
                 ActionOption(
-                    activity.getString(R.string.un_lock) + budgetItem.biBudgetName,
+                    "${activity.getString(R.string.un_lock)}${budgetItem.biBudgetName}",
                     Icons.Default.LockOpen
                 ) {
                     budgetItemViewModel.lockUnlockBudgetItem(
@@ -359,23 +370,25 @@ fun BudgetViewScreenWrapper(
             val nf = NumberFunctions()
             val df = DateFunctions()
             val trans = pendingTransaction.transaction!!
-            sheetTitle = activity.getString(R.string.choose_an_action_for) + nf.displayDollars(
-                trans.transAmount
-            ) + activity.getString(
-                R.string._to_
-            ) + trans.transName
+            sheetTitle =
+                "${activity.getString(R.string.choose_an_action_for)}${nf.displayDollars(trans.transAmount)}${
+                    activity.getString(R.string._to_)
+                }${trans.transName}"
             sheetOptions = listOf(
                 ActionOption(
                     activity.getString(R.string.complete_this_pending_transaction),
                     Icons.Default.Check
                 ) {
                     val display =
-                        activity.getString(R.string.this_will_apply_the_amount_of) + nf.displayDollars(
-                            trans.transAmount
-                        ) + " " + activity.getString(R.string._to_) + (pendingTransaction.toAccount?.accountName
-                            ?: "") +
-                                activity.getString(R.string._and_) + activity.getString(R.string._From_) + (pendingTransaction.fromAccount?.accountName
-                            ?: "")
+                        "${activity.getString(R.string.this_will_apply_the_amount_of)}${
+                            nf.displayDollars(
+                                trans.transAmount
+                            )
+                        } ${activity.getString(R.string._to_)}${pendingTransaction.toAccount?.accountName ?: ""}${
+                            activity.getString(
+                                R.string._and_
+                            )
+                        }${activity.getString(R.string._From_)}${pendingTransaction.fromAccount?.accountName ?: ""}"
                     AlertDialog.Builder(activity)
                         .setTitle(activity.getString(R.string.confirm_completing_transaction))
                         .setMessage(display)

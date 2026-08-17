@@ -211,11 +211,12 @@ fun TransactionAddScreenWrapper(
                     Toast.LENGTH_LONG
                 ).show()
             } else {
-                var display = mainActivity.getString(R.string.this_will_perform) + trans.transName +
-                        mainActivity.getString(R.string._for_) + nf.getDollarsFromDouble(trans.transAmount) +
-                        mainActivity.getString(R.string.__from) + (fromAccount?.accountName ?: "")
+                var display =
+                    "${mainActivity.getString(R.string.this_will_perform)}${trans.transName}${
+                        mainActivity.getString(R.string._for_)
+                    }${nf.getDollarsFromDouble(trans.transAmount)}${mainActivity.getString(R.string.__from)}${fromAccount?.accountName ?: ""}"
                 if (trans.transFromAccountPending) display += mainActivity.getString(R.string._pending)
-                display += mainActivity.getString(R.string._to) + " ${toAccount?.accountName}"
+                display += "${mainActivity.getString(R.string._to)} ${toAccount?.accountName}"
                 if (trans.transToAccountPending) display += mainActivity.getString(R.string._pending)
 
                 AlertDialog.Builder(mainActivity)

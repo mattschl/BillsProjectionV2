@@ -36,13 +36,13 @@ android {
         minSdk 28
         targetSdk 37
         //noinspection EditedTargetSdkVersion
-        versionCode 22
+        versionCode 23
         versionName 'v2'
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        versionNameSuffix '-ui'
+        versionNameSuffix '-menus'
         signingConfig signingConfigs.debug
         buildConfigField "String", "FAILSAFE_PASSWORD", "\"${localProperties.getProperty('FAILSAFE_PASSWORD')}\""
     }

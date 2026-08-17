@@ -226,10 +226,11 @@ fun TransactionAnalysisScreenWrapper(
         onTransactionClick = { transactionDetailed ->
             var display = ""
             if (transactionDetailed.transaction!!.transToAccountPending) {
-                display += mainActivity.getString(R.string.complete_the_pending_amount_of) + nf.displayDollars(
-                    transactionDetailed.transaction.transAmount
-                ) + mainActivity.getString(R.string._to_) + (transactionDetailed.toAccount?.accountName
-                    ?: "")
+                display += "${mainActivity.getString(R.string.complete_the_pending_amount_of)}${
+                    nf.displayDollars(
+                        transactionDetailed.transaction.transAmount
+                    )
+                }${mainActivity.getString(R.string._to_)}${transactionDetailed.toAccount?.accountName ?: ""}"
             }
             if (transactionDetailed.transaction.transToAccountPending) {
                 display += mainActivity.getString(R.string._pending)
@@ -238,12 +239,14 @@ fun TransactionAnalysisScreenWrapper(
                 display += mainActivity.getString(R.string._and)
             }
             if (transactionDetailed.transaction.transFromAccountPending) {
-                display += mainActivity.getString(R.string.complete_the_pending_amount_of) + nf.displayDollars(
-                    transactionDetailed.transaction.transAmount
-                ) + mainActivity.getString(R.string._From_) + transactionDetailed.fromAccount!!.accountName
+                display += "${mainActivity.getString(R.string.complete_the_pending_amount_of)}${
+                    nf.displayDollars(
+                        transactionDetailed.transaction.transAmount
+                    )
+                }${mainActivity.getString(R.string._From_)}${transactionDetailed.fromAccount!!.accountName}"
             }
             sheetTitle =
-                mainActivity.getString(R.string.choose_an_action_for) + transactionDetailed.transaction.transName
+                "${mainActivity.getString(R.string.choose_an_action_for)}${transactionDetailed.transaction.transName}"
             sheetOptions = listOf(
                 ActionOption(
                     mainActivity.getString(R.string.edit_this_transaction),
@@ -307,7 +310,7 @@ fun TransactionAnalysisScreenWrapper(
                     Icons.Default.Delete
                 ) {
                     AlertDialog.Builder(mainActivity).setTitle(
-                        mainActivity.getString(R.string.are_you_sure_you_want_to_delete) + transactionDetailed.transaction.transName
+                        "${mainActivity.getString(R.string.are_you_sure_you_want_to_delete)}${transactionDetailed.transaction.transName}"
                     ).setPositiveButton(mainActivity.getString(R.string.delete)) { _, _ ->
                         coroutineScope.launch(Dispatchers.IO) {
                             accountUpdateViewModel.deleteTransaction(

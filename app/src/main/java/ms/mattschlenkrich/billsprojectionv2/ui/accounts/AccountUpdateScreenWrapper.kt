@@ -171,18 +171,17 @@ fun AccountUpdateScreenWrapper(
 
     fun confirmCompletePendingTransactions(transactionDetailed: TransactionDetailed) {
         val transaction = transactionDetailed.transaction ?: return
-        var display = mainActivity.getString(R.string.this_will_apply_the_amount_of) +
-                nf.displayDollars(transaction.transAmount)
+        var display = "${mainActivity.getString(R.string.this_will_apply_the_amount_of)}${
+            nf.displayDollars(transaction.transAmount)
+        }"
         display += if (transaction.transToAccountPending) {
-            mainActivity.getString(R.string.to_) + (transactionDetailed.toAccount?.accountName
-                ?: "")
+            "${mainActivity.getString(R.string.to_)}${transactionDetailed.toAccount?.accountName ?: ""}"
         } else ""
         display += if (transaction.transToAccountPending && transaction.transFromAccountPending) {
             mainActivity.getString(R.string._and)
         } else ""
         display += if (transaction.transFromAccountPending) {
-            mainActivity.getString(R.string.from) + (transactionDetailed.fromAccount?.accountName
-                ?: "")
+            "${mainActivity.getString(R.string.from)}${transactionDetailed.fromAccount?.accountName ?: ""}"
         } else ""
 
         AlertDialog.Builder(mainActivity)
@@ -203,7 +202,7 @@ fun AccountUpdateScreenWrapper(
     fun confirmDeleteTransaction(transactionDetailed: TransactionDetailed) {
         val transaction = transactionDetailed.transaction ?: return
         AlertDialog.Builder(mainActivity).setTitle(
-            mainActivity.getString(R.string.are_you_sure_you_want_to_delete) + transaction.transName
+            "${mainActivity.getString(R.string.are_you_sure_you_want_to_delete)}${transaction.transName}"
         ).setPositiveButton(mainActivity.getString(R.string.delete)) { _, _ ->
             deleteTransaction(transaction)
         }.setNegativeButton(mainActivity.getString(R.string.cancel), null).show()
@@ -214,10 +213,11 @@ fun AccountUpdateScreenWrapper(
         val transaction = transactionDetailed.transaction ?: return
 
         if (transaction.transToAccountPending) {
-            display += mainActivity.getString(R.string.complete_the_pending_amount_of) + nf.displayDollars(
-                transaction.transAmount
-            ) + mainActivity.getString(R.string._to_) + (transactionDetailed.toAccount?.accountName
-                ?: "")
+            display += "${mainActivity.getString(R.string.complete_the_pending_amount_of)}${
+                nf.displayDollars(
+                    transaction.transAmount
+                )
+            }${mainActivity.getString(R.string._to_)}${transactionDetailed.toAccount?.accountName ?: ""}"
         }
         if (transaction.transToAccountPending) {
             display += mainActivity.getString(R.string._pending)
@@ -226,10 +226,11 @@ fun AccountUpdateScreenWrapper(
             display += mainActivity.getString(R.string._and)
         }
         if (transaction.transFromAccountPending) {
-            display += mainActivity.getString(R.string.complete_the_pending_amount_of) + nf.displayDollars(
-                transaction.transAmount
-            ) + mainActivity.getString(R.string._From_) + (transactionDetailed.fromAccount?.accountName
-                ?: "")
+            display += "${mainActivity.getString(R.string.complete_the_pending_amount_of)}${
+                nf.displayDollars(
+                    transaction.transAmount
+                )
+            }${mainActivity.getString(R.string._From_)}${transactionDetailed.fromAccount?.accountName ?: ""}"
         }
 
         val options = mutableListOf(
@@ -277,7 +278,8 @@ fun AccountUpdateScreenWrapper(
             }
         )
 
-        sheetTitle = mainActivity.getString(R.string.choose_an_action_for) + transaction.transName
+        sheetTitle =
+            "${mainActivity.getString(R.string.choose_an_action_for)}${transaction.transName}"
         sheetOptions = options
     }
 
@@ -373,9 +375,11 @@ fun AccountUpdateScreenWrapper(
                     AlertDialog.Builder(mainActivity).apply {
                         setTitle(mainActivity.getString(R.string.rename_account))
                         setMessage(
-                            mainActivity.getString(R.string.are_you_sure_you_want_to_rename_this_account) +
-                                    mainActivity.getString(R.string.note) +
-                                    mainActivity.getString(R.string.this_will_not_replace_an_existing_account_type)
+                            "${mainActivity.getString(R.string.are_you_sure_you_want_to_rename_this_account)}${
+                                mainActivity.getString(
+                                    R.string.note
+                                )
+                            }${mainActivity.getString(R.string.this_will_not_replace_an_existing_account_type)}"
                         )
                         setPositiveButton(mainActivity.getString(R.string.update_account)) { _, _ ->
                             accountViewModel.updateAccount(getUpdatedAccount())

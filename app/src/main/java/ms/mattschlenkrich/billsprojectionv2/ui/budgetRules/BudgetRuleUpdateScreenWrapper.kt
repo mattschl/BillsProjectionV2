@@ -44,9 +44,6 @@ import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_UPDATE
-import ms.mattschlenkrich.billsprojectionv2.common.FREQ_MONTHLY
-import ms.mattschlenkrich.billsprojectionv2.common.FREQ_WEEKLY
-import ms.mattschlenkrich.billsprojectionv2.common.FREQ_YEARLY
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.components.BudgetItemDisplay
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectFieldDefaults
@@ -61,8 +58,6 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transact
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.compose.BudgetRuleScreen
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
-import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 
 private const val TAG = FRAG_BUDGET_RULE_UPDATE
 
@@ -134,45 +129,10 @@ fun BudgetRuleUpdateScreenWrapper(
 
                 // Calculate suggested amount
                 scope.launch(Dispatchers.IO) {
-                    val today = LocalDate.now()
-                    val yearAgo = today.minusYears(1)
-                    val calcStart =
-                        if (rule.budStartDate > yearAgo.toString()) rule.budStartDate else yearAgo.toString()
-                    val totalSum =
-                        mainActivity.transactionViewModel.getSumTransactionByBudgetRuleSync(
-                            rule.ruleId, calcStart, today.toString()
-                        ) ?: 0.0
-
-                    if (totalSum > 0.0) {
-                        val daysElapsed = ChronoUnit.DAYS.between(
-                            LocalDate.parse(calcStart),
-                            today
-                        )
-                        if (daysElapsed > 0) {
-                            val daysPerOccurrence = when (rule.budFrequencyTypeId) {
-                                FREQ_MONTHLY -> 30.4375 * rule.budFrequencyCount
-                                FREQ_WEEKLY -> 7.0 * rule.budFrequencyCount
-                                FREQ_YEARLY -> 365.25 * rule.budFrequencyCount
-                                else -> 0.0
-                            }
-
-                            if (daysPerOccurrence > 0) {
-                                val expectedOccurrences = daysElapsed.toDouble() / daysPerOccurrence
-                                if (expectedOccurrences >= 1.0) {
-                                    suggestedAmountState = totalSum / expectedOccurrences
-                                }
-                            } else {
-                                // For other types, use average per actual transaction
-                                val totalCount =
-                                    mainActivity.transactionViewModel.getCountTransactionByBudgetRuleSync(
-                                        rule.ruleId, calcStart, today.toString()
-                                    )
-                                if (totalCount > 0) {
-                                    suggestedAmountState = totalSum / totalCount
-                                }
-                            }
-                        }
-                    }
+                    suggestedAmountState = budgetRuleViewModel.calculateSuggestedAmount(
+                        rule,
+                        mainActivity.transactionViewModel
+                    )
                 }
             }
         }
@@ -362,8 +322,8 @@ fun BudgetRuleUpdateScreenWrapper(
 
     fun chooseOptions() {
         val detailed = mainViewModel.getBudgetRuleDetailed()!!
-        sheetTitle = mainActivity.getString(R.string.choose_an_action_for) + " " +
-                detailed.budgetRule!!.budgetRuleName
+        sheetTitle =
+            "${mainActivity.getString(R.string.choose_an_action_for)} ${detailed.budgetRule!!.budgetRuleName}"
         sheetOptions = listOf(
             ActionOption(
                 mainActivity.getString(R.string.add_a_new_transaction_based_on_the_budget_rule),

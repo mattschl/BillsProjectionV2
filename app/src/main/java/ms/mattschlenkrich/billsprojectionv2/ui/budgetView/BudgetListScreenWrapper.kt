@@ -53,8 +53,7 @@ fun BudgetListScreenWrapper(
         annualRules = annualRules,
         onRuleClick = { curRule ->
             sheetTitle =
-                mainActivity.getString(R.string.choose_an_action_for) + (curRule.budgetRule?.budgetRuleName
-                    ?: "")
+                "${mainActivity.getString(R.string.choose_an_action_for)} ${(curRule.budgetRule?.budgetRuleName ?: "")}"
             sheetOptions = listOf(
                 ActionOption(
                     mainActivity.getString(R.string.view_or_edit_this_budget_rule),
