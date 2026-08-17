@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -15,13 +16,15 @@ import androidx.navigation.NavHostController
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
-import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.components.ManagedActionBottomSheet
+import ms.mattschlenkrich.billsprojectionv2.common.components.rememberActionSheetState
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.accounts.compose.AccountsListScreen
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountViewScreenWrapper(
     activity: MainActivity,
@@ -29,9 +32,9 @@ fun AccountViewScreenWrapper(
 ) {
     val mainViewModel = activity.mainViewModel
     val accountViewModel = activity.accountViewModel
-    val cf = NumberFunctions()
-    val vf = VisualsFunctions()
-    val df = DateFunctions()
+    val cf = LocalNumberFunctions.current
+    val df = LocalDateFunctions.current
+    val actionSheetState = rememberActionSheetState()
 
     LaunchedEffect(Unit) {
         activity.topMenuBar.setTitle(R.string.accounts)
@@ -44,9 +47,6 @@ fun AccountViewScreenWrapper(
         accountViewModel.searchAccountsWithType("%$searchQuery%").observeAsState(emptyList())
     }
 
-    var sheetTitle by remember { mutableStateOf("") }
-    var sheetOptions by remember { mutableStateOf(emptyList<ActionOption>()) }
-
     AccountsListScreen(
         searchQuery = searchQuery,
         onSearchQueryChange = { searchQuery = it },
@@ -57,34 +57,35 @@ fun AccountViewScreenWrapper(
             navController.navigate(Screen.AccountAdd.route)
         },
         onAccountClick = { accountWithType ->
-            sheetTitle =
-                activity.getString(R.string.choose_an_action_for) + accountWithType.account.accountName
-            sheetOptions = listOf(
-                ActionOption(
-                    activity.getString(R.string.edit_this_account),
-                    Icons.Default.Edit
-                ) {
-                    mainViewModel.addCallingFragment(FRAG_ACCOUNTS)
-                    mainViewModel.setAccountWithType(accountWithType)
-                    navController.navigate(Screen.AccountUpdate.route)
-                },
-                ActionOption(
-                    activity.getString(R.string.delete_this_account),
-                    Icons.Default.Delete
-                ) {
-                    accountViewModel.deleteAccount(
-                        accountWithType.account.accountId, df.getCurrentTimeAsString()
-                    )
-                },
-                ActionOption(
-                    activity.getString(R.string.view_a_summary_of_transactions_using_this_account),
-                    Icons.Default.History
-                ) {
-                    mainViewModel.addCallingFragment(FRAG_ACCOUNTS)
-                    mainViewModel.setAccountWithType(accountWithType)
-                    mainViewModel.setBudgetRuleDetailed(null)
-                    navController.navigate(Screen.Analysis.route)
-                }
+            actionSheetState.show(
+                activity.getString(R.string.choose_an_action_for) + accountWithType.account.accountName,
+                listOf(
+                    ActionOption(
+                        activity.getString(R.string.edit_this_account),
+                        Icons.Default.Edit
+                    ) {
+                        mainViewModel.addCallingFragment(FRAG_ACCOUNTS)
+                        mainViewModel.setAccountWithType(accountWithType)
+                        navController.navigate(Screen.AccountUpdate.route)
+                    },
+                    ActionOption(
+                        activity.getString(R.string.delete_this_account),
+                        Icons.Default.Delete
+                    ) {
+                        accountViewModel.deleteAccount(
+                            accountWithType.account.accountId, df.getCurrentTimeAsString()
+                        )
+                    },
+                    ActionOption(
+                        activity.getString(R.string.view_a_summary_of_transactions_using_this_account),
+                        Icons.Default.History
+                    ) {
+                        mainViewModel.addCallingFragment(FRAG_ACCOUNTS)
+                        mainViewModel.setAccountWithType(accountWithType)
+                        mainViewModel.setBudgetRuleDetailed(null)
+                        navController.navigate(Screen.Analysis.route)
+                    }
+                )
             )
         },
         getAccountInfoText = { accountWithType ->
@@ -110,12 +111,11 @@ fun AccountViewScreenWrapper(
             }
             parts.joinToString("\n")
         },
-        vf = vf,
-        sheetTitle = sheetTitle,
-        sheetOptions = sheetOptions,
+        sheetTitle = actionSheetState.title,
+        sheetOptions = actionSheetState.options,
         onSheetDismiss = {
-            sheetOptions = emptyList()
-            sheetTitle = ""
+            actionSheetState.dismiss()
         }
     )
+    ManagedActionBottomSheet(actionSheetState)
 }

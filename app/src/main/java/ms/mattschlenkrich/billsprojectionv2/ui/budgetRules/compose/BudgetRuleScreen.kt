@@ -49,7 +49,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectIntField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextBox
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
-import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
 
@@ -242,7 +242,7 @@ fun BudgetRuleScreen(
                         isHighlighted = true
                     )
                     suggestedAmount?.let {
-                        val nf = NumberFunctions()
+                        val nf = LocalNumberFunctions.current
                         Text(
                             text = "Suggested: " + nf.displayDollars(it),
                             style = MaterialTheme.typography.labelSmall,

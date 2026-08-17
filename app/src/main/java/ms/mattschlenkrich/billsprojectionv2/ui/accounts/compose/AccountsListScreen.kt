@@ -38,7 +38,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.components.ActionBottomSheet
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectFieldDefaults
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
-import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalVisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,11 +51,11 @@ fun AccountsListScreen(
     onAccountClick: (AccountWithType) -> Unit,
     getAccountInfoText: (AccountWithType) -> String,
     showType: Boolean = true,
-    vf: VisualsFunctions = VisualsFunctions(),
     sheetTitle: String = "",
     sheetOptions: List<ActionOption> = emptyList(),
     onSheetDismiss: () -> Unit = {}
 ) {
+    val vf = LocalVisualsFunctions.current
     val sheetState = rememberModalBottomSheetState()
 
     if (sheetOptions.isNotEmpty()) {
@@ -153,8 +153,8 @@ fun AccountChooseScreen(
     accountsWithType: List<AccountWithType>,
     onAccountClick: (AccountWithType) -> Unit,
     onAddAccountClick: () -> Unit,
-    vf: VisualsFunctions = VisualsFunctions()
 ) {
+    val vf = LocalVisualsFunctions.current
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         modifier = Modifier.imePadding(),

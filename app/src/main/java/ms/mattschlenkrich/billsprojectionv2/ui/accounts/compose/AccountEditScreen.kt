@@ -35,8 +35,6 @@ import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectBalanceField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextBox
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
-import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.ui.transactions.compose.TransactionHistoryItem
@@ -66,8 +64,6 @@ fun AccountEditScreen(
     history: List<TransactionDetailed> = emptyList(),
     onHistoryItemClick: (TransactionDetailed) -> Unit = {},
     onSaveClick: (() -> Unit)? = null,
-    nf: NumberFunctions = NumberFunctions(),
-    df: DateFunctions = DateFunctions(),
     sheetTitle: String = "",
     sheetOptions: List<ActionOption> = emptyList(),
     onSheetDismiss: () -> Unit = {}
@@ -201,8 +197,6 @@ fun AccountEditScreen(
                         TransactionHistoryItem(
                             transactionDetailed = transaction,
                             onClick = onHistoryItemClick,
-                            nf = nf,
-                            df = df
                         )
                     }
                 }

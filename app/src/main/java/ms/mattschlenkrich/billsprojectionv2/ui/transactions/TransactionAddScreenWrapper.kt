@@ -16,8 +16,9 @@ import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
-import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.TransactionMessageHelper
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
@@ -36,8 +37,8 @@ fun TransactionAddScreenWrapper(
 ) {
     val mainViewModel = mainActivity.mainViewModel
     val accountViewModel = mainActivity.accountViewModel
-    val nf = remember { NumberFunctions() }
-    val df = remember { DateFunctions() }
+    val nf = LocalNumberFunctions.current
+    val df = LocalDateFunctions.current
 
     LaunchedEffect(Unit) {
         mainActivity.topMenuBar.title = mainActivity.getString(R.string.add_a_new_transaction)
@@ -211,13 +212,10 @@ fun TransactionAddScreenWrapper(
                     Toast.LENGTH_LONG
                 ).show()
             } else {
-                var display =
-                    "${mainActivity.getString(R.string.this_will_perform)}${trans.transName}${
-                        mainActivity.getString(R.string._for_)
-                    }${nf.getDollarsFromDouble(trans.transAmount)}${mainActivity.getString(R.string.__from)}${fromAccount?.accountName ?: ""}"
-                if (trans.transFromAccountPending) display += mainActivity.getString(R.string._pending)
-                display += "${mainActivity.getString(R.string._to)} ${toAccount?.accountName}"
-                if (trans.transToAccountPending) display += mainActivity.getString(R.string._pending)
+                val transactionDetailed = getTransactionDetailed()
+                val display = TransactionMessageHelper.buildConfirmationMessage(
+                    mainActivity, transactionDetailed, nf
+                )
 
                 AlertDialog.Builder(mainActivity)
                     .setTitle(mainActivity.getString(R.string.confirm_performing_transaction))

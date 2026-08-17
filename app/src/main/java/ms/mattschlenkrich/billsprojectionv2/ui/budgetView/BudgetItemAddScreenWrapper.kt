@@ -11,8 +11,8 @@ import androidx.navigation.NavController
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_ADD
-import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
@@ -28,8 +28,8 @@ fun BudgetItemAddScreenWrapper(
 ) {
     val mainViewModel = mainActivity.mainViewModel
     val budgetItemViewModel = mainActivity.budgetItemViewModel
-    val nf = remember { NumberFunctions() }
-    val df = remember { DateFunctions() }
+    val nf = LocalNumberFunctions.current
+    val df = LocalDateFunctions.current
 
     val dateState = remember { mutableStateOf("") }
     val nameState = remember { mutableStateOf("") }

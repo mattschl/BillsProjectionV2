@@ -7,6 +7,7 @@ import androidx.compose.material.icons.automirrored.filled.Rule
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,9 +27,11 @@ import ms.mattschlenkrich.billsprojectionv2.common.BUDGETED
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.OWING
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
-import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.components.ManagedActionBottomSheet
+import ms.mattschlenkrich.billsprojectionv2.common.components.rememberActionSheetState
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.TransactionMessageHelper
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
@@ -39,6 +42,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 
 private const val TAG = FRAG_ACCOUNT_UPDATE
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountUpdateScreenWrapper(
     mainActivity: MainActivity,
@@ -48,9 +52,9 @@ fun AccountUpdateScreenWrapper(
     val accountViewModel = mainActivity.accountViewModel
     val transactionViewModel = mainActivity.transactionViewModel
     val budgetRuleViewModel = mainActivity.budgetRuleViewModel
-    val nf = remember { NumberFunctions() }
-    val df = remember { DateFunctions() }
-    remember { VisualsFunctions() }
+    val nf = LocalNumberFunctions.current
+    val df = LocalDateFunctions.current
+    val actionSheetState = rememberActionSheetState()
 
     LaunchedEffect(Unit) {
         mainActivity.topMenuBar.title = mainActivity.getString(R.string.update_account)
@@ -112,9 +116,6 @@ fun AccountUpdateScreenWrapper(
     val liveAccountWithType by accountViewModel.getAccountWithTypeLive(accountId)
         .observeAsState()
 
-    var sheetTitle by remember { mutableStateOf("") }
-    var sheetOptions by remember { mutableStateOf(emptyList<ActionOption>()) }
-
     LaunchedEffect(liveAccountWithType) {
         liveAccountWithType?.let { awt ->
             if (awt.accountType?.keepTotals == true) {
@@ -170,19 +171,9 @@ fun AccountUpdateScreenWrapper(
     }
 
     fun confirmCompletePendingTransactions(transactionDetailed: TransactionDetailed) {
-        val transaction = transactionDetailed.transaction ?: return
-        var display = "${mainActivity.getString(R.string.this_will_apply_the_amount_of)}${
-            nf.displayDollars(transaction.transAmount)
-        }"
-        display += if (transaction.transToAccountPending) {
-            "${mainActivity.getString(R.string.to_)}${transactionDetailed.toAccount?.accountName ?: ""}"
-        } else ""
-        display += if (transaction.transToAccountPending && transaction.transFromAccountPending) {
-            mainActivity.getString(R.string._and)
-        } else ""
-        display += if (transaction.transFromAccountPending) {
-            "${mainActivity.getString(R.string.from)}${transactionDetailed.fromAccount?.accountName ?: ""}"
-        } else ""
+        val display = TransactionMessageHelper.buildPendingCompletionMessage(
+            mainActivity, transactionDetailed, nf
+        )
 
         AlertDialog.Builder(mainActivity)
             .setTitle(mainActivity.getString(R.string.confirm_completing_transaction))
@@ -209,29 +200,10 @@ fun AccountUpdateScreenWrapper(
     }
 
     fun showTransactionOptions(transactionDetailed: TransactionDetailed) {
-        var display = ""
         val transaction = transactionDetailed.transaction ?: return
-
-        if (transaction.transToAccountPending) {
-            display += "${mainActivity.getString(R.string.complete_the_pending_amount_of)}${
-                nf.displayDollars(
-                    transaction.transAmount
-                )
-            }${mainActivity.getString(R.string._to_)}${transactionDetailed.toAccount?.accountName ?: ""}"
-        }
-        if (transaction.transToAccountPending) {
-            display += mainActivity.getString(R.string._pending)
-        }
-        if (display != "" && transaction.transFromAccountPending) {
-            display += mainActivity.getString(R.string._and)
-        }
-        if (transaction.transFromAccountPending) {
-            display += "${mainActivity.getString(R.string.complete_the_pending_amount_of)}${
-                nf.displayDollars(
-                    transaction.transAmount
-                )
-            }${mainActivity.getString(R.string._From_)}${transactionDetailed.fromAccount?.accountName ?: ""}"
-        }
+        val display = TransactionMessageHelper.buildPendingCompletionMessage(
+            mainActivity, transactionDetailed, nf
+        )
 
         val options = mutableListOf(
             ActionOption(
@@ -278,9 +250,10 @@ fun AccountUpdateScreenWrapper(
             }
         )
 
-        sheetTitle =
-            "${mainActivity.getString(R.string.choose_an_action_for)}${transaction.transName}"
-        sheetOptions = options
+        actionSheetState.show(
+            "${mainActivity.getString(R.string.choose_an_action_for)}${transaction.transName}",
+            options
+        )
     }
 
     AccountEditScreen(
@@ -398,13 +371,11 @@ fun AccountUpdateScreenWrapper(
                 ).show()
             }
         },
-        nf = nf,
-        df = df,
-        sheetTitle = sheetTitle,
-        sheetOptions = sheetOptions,
+        sheetTitle = actionSheetState.title,
+        sheetOptions = actionSheetState.options,
         onSheetDismiss = {
-            sheetOptions = emptyList()
-            sheetTitle = ""
+            actionSheetState.dismiss()
         }
     )
+    ManagedActionBottomSheet(actionSheetState)
 }

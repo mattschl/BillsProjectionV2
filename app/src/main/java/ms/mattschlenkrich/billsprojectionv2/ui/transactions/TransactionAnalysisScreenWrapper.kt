@@ -6,6 +6,7 @@ import androidx.compose.material.icons.automirrored.filled.Rule
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,8 +25,11 @@ import ms.mattschlenkrich.billsprojectionv2.common.AnalysisMode
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
 import ms.mattschlenkrich.billsprojectionv2.common.TimeRange
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
-import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.components.ManagedActionBottomSheet
+import ms.mattschlenkrich.billsprojectionv2.common.components.rememberActionSheetState
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.TransactionMessageHelper
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
@@ -33,6 +37,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.transactions.compose.TransactionA
 
 private const val TAG = FRAG_TRANSACTION_ANALYSIS
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionAnalysisScreenWrapper(
     mainActivity: MainActivity,
@@ -43,9 +48,10 @@ fun TransactionAnalysisScreenWrapper(
     val budgetRuleViewModel = mainActivity.budgetRuleViewModel
     val accountUpdateViewModel = mainActivity.accountUpdateViewModel
 
-    val nf = remember { NumberFunctions() }
-    val df = remember { DateFunctions() }
+    val nf = LocalNumberFunctions.current
+    val df = LocalDateFunctions.current
     val coroutineScope = rememberCoroutineScope()
+    val actionSheetState = rememberActionSheetState()
 
     LaunchedEffect(Unit) {
         mainActivity.topMenuBar.title = mainActivity.getString(R.string.transaction_analysis)
@@ -57,9 +63,6 @@ fun TransactionAnalysisScreenWrapper(
     var searchQueryActual by remember { mutableStateOf("") }
     var startDate by remember { mutableStateOf(df.getFirstOfMonth(df.getCurrentDateAsString())) }
     var endDate by remember { mutableStateOf(df.getCurrentDateAsString()) }
-
-    var sheetTitle by remember { mutableStateOf("") }
-    var sheetOptions by remember { mutableStateOf(emptyList<ActionOption>()) }
 
     val budgetRuleDetailed = mainViewModel.getBudgetRuleDetailed()
     val accountWithType = mainViewModel.getAccountWithType()
@@ -224,30 +227,11 @@ fun TransactionAnalysisScreenWrapper(
             navController.navigate(Screen.AccountChoose.route)
         },
         onTransactionClick = { transactionDetailed ->
-            var display = ""
-            if (transactionDetailed.transaction!!.transToAccountPending) {
-                display += "${mainActivity.getString(R.string.complete_the_pending_amount_of)}${
-                    nf.displayDollars(
-                        transactionDetailed.transaction.transAmount
-                    )
-                }${mainActivity.getString(R.string._to_)}${transactionDetailed.toAccount?.accountName ?: ""}"
-            }
-            if (transactionDetailed.transaction.transToAccountPending) {
-                display += mainActivity.getString(R.string._pending)
-            }
-            if (display != "" && transactionDetailed.transaction.transFromAccountPending) {
-                display += mainActivity.getString(R.string._and)
-            }
-            if (transactionDetailed.transaction.transFromAccountPending) {
-                display += "${mainActivity.getString(R.string.complete_the_pending_amount_of)}${
-                    nf.displayDollars(
-                        transactionDetailed.transaction.transAmount
-                    )
-                }${mainActivity.getString(R.string._From_)}${transactionDetailed.fromAccount!!.accountName}"
-            }
-            sheetTitle =
-                "${mainActivity.getString(R.string.choose_an_action_for)}${transactionDetailed.transaction.transName}"
-            sheetOptions = listOf(
+            val display = TransactionMessageHelper.buildPendingCompletionMessage(
+                mainActivity, transactionDetailed, nf
+            )
+
+            val options = listOf(
                 ActionOption(
                     mainActivity.getString(R.string.edit_this_transaction),
                     Icons.Default.Edit
@@ -257,7 +241,7 @@ fun TransactionAnalysisScreenWrapper(
                     coroutineScope.launch(Dispatchers.IO) {
                         val oldTransactionFull = async {
                             transactionViewModel.getTransactionFull(
-                                transactionDetailed.transaction.transId,
+                                transactionDetailed.transaction!!.transId,
                                 transactionDetailed.transaction.transToAccountId,
                                 transactionDetailed.transaction.transFromAccountId
                             )
@@ -269,7 +253,7 @@ fun TransactionAnalysisScreenWrapper(
                     }
                 },
                 ActionOption(display, Icons.Default.Check) {
-                    if (transactionDetailed.transaction.transToAccountPending || transactionDetailed.transaction.transFromAccountPending) {
+                    if (transactionDetailed.transaction!!.transToAccountPending || transactionDetailed.transaction.transFromAccountPending) {
                         transactionDetailed.transaction.apply {
                             val newTransaction = Transactions(
                                 transId,
@@ -299,7 +283,7 @@ fun TransactionAnalysisScreenWrapper(
                 ) {
                     mainViewModel.setCallingFragments(TAG)
                     budgetRuleViewModel.getBudgetRuleFullLive(
-                        transactionDetailed.transaction.transRuleId
+                        transactionDetailed.transaction!!.transRuleId
                     ).observe(mainActivity) { bRuleDetailed ->
                         mainViewModel.setBudgetRuleDetailed(bRuleDetailed)
                         navController.navigate(Screen.BudgetRuleUpdate.route)
@@ -310,7 +294,7 @@ fun TransactionAnalysisScreenWrapper(
                     Icons.Default.Delete
                 ) {
                     AlertDialog.Builder(mainActivity).setTitle(
-                        "${mainActivity.getString(R.string.are_you_sure_you_want_to_delete)}${transactionDetailed.transaction.transName}"
+                        "${mainActivity.getString(R.string.are_you_sure_you_want_to_delete)}${transactionDetailed.transaction!!.transName}"
                     ).setPositiveButton(mainActivity.getString(R.string.delete)) { _, _ ->
                         coroutineScope.launch(Dispatchers.IO) {
                             accountUpdateViewModel.deleteTransaction(
@@ -320,12 +304,17 @@ fun TransactionAnalysisScreenWrapper(
                     }.setNegativeButton(mainActivity.getString(R.string.cancel), null).show()
                 }
             )
+
+            actionSheetState.show(
+                "${mainActivity.getString(R.string.choose_an_action_for)}${transactionDetailed.transaction!!.transName}",
+                options
+            )
         },
-        sheetTitle = sheetTitle,
-        sheetOptions = sheetOptions,
+        sheetTitle = actionSheetState.title,
+        sheetOptions = actionSheetState.options,
         onSheetDismiss = {
-            sheetOptions = emptyList()
-            sheetTitle = ""
+            actionSheetState.dismiss()
         }
     )
+    ManagedActionBottomSheet(actionSheetState)
 }

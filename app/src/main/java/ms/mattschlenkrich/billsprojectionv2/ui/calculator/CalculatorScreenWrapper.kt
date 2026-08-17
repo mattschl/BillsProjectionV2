@@ -11,7 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 
 @Composable
@@ -20,7 +20,7 @@ fun CalculatorScreenWrapper(
     navController: NavController
 ) {
     val mainViewModel = mainActivity.mainViewModel
-    val nf = NumberFunctions()
+    val nf = LocalNumberFunctions.current
     LaunchedEffect(Unit) {
         mainActivity.topMenuBar.setTitle(R.string.calculator)
     }

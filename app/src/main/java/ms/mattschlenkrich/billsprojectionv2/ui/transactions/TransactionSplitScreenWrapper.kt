@@ -17,8 +17,9 @@ import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_SPLIT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
-import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.TransactionMessageHelper
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
@@ -40,8 +41,8 @@ fun TransactionSplitScreenWrapper(
     val budgetRuleViewModel = mainActivity.budgetRuleViewModel
     val accountUpdateViewModel = mainActivity.accountUpdateViewModel
 //    val transactionViewModel = mainActivity.transactionViewModel
-    val nf = remember { NumberFunctions() }
-    val df = remember { DateFunctions() }
+    val nf = LocalNumberFunctions.current
+    val df = LocalDateFunctions.current
 
     LaunchedEffect(Unit) {
         mainActivity.topMenuBar.title = mainActivity.getString(R.string.splitting_transaction)
@@ -248,13 +249,10 @@ fun TransactionSplitScreenWrapper(
             }
 
             if (answer == ANSWER_OK) {
-                var display =
-                    mainActivity.getString(R.string.this_will_perform) + description + mainActivity.getString(
-                        R.string._for_
-                    ) + nf.getDollarsFromDouble(amt) + mainActivity.getString(R.string.__from) + fromAccount!!.accountName
-                display += if (fromPending) mainActivity.getString(R.string._pending) else ""
-                display += mainActivity.getString(R.string._to) + toAccount!!.accountName
-                display += if (toPending) mainActivity.getString(R.string._pending) else ""
+                val transactionDetailed = getSplitTransDetailed()
+                val display = TransactionMessageHelper.buildConfirmationMessage(
+                    mainActivity, transactionDetailed, nf
+                )
                 AlertDialog.Builder(mainActivity)
                     .setTitle(mainActivity.getString(R.string.confirm_performing_transaction))
                     .setMessage(display)

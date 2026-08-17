@@ -6,6 +6,7 @@ import androidx.compose.material.icons.automirrored.filled.Rule
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -20,11 +21,15 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
-import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.components.ManagedActionBottomSheet
+import ms.mattschlenkrich.billsprojectionv2.common.components.rememberActionSheetState
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.TransactionMessageHelper
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 import ms.mattschlenkrich.billsprojectionv2.ui.transactions.compose.TransactionViewScreen
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionViewScreenWrapper(
     activity: MainActivity,
@@ -34,7 +39,8 @@ fun TransactionViewScreenWrapper(
     val transactionViewModel = activity.transactionViewModel
     val accountUpdateViewModel = activity.accountUpdateViewModel
     val budgetRuleViewModel = activity.budgetRuleViewModel
-    val nf = remember { NumberFunctions() }
+    val nf = LocalNumberFunctions.current
+    val actionSheetState = rememberActionSheetState()
 
     LaunchedEffect(Unit) {
         activity.topMenuBar.title = activity.getString(R.string.view_transaction_history)
@@ -48,9 +54,6 @@ fun TransactionViewScreenWrapper(
         transactionViewModel.searchActiveTransactionsDetailed("%$searchQuery%")
     }.observeAsState(initial = emptyList())
 
-    var sheetTitle by remember { mutableStateOf("") }
-    var sheetOptions by remember { mutableStateOf(emptyList<ActionOption>()) }
-
     TransactionViewScreen(
         transactionList = transactionList,
         searchQuery = searchQuery,
@@ -62,36 +65,12 @@ fun TransactionViewScreenWrapper(
         },
         onTransactionClick = { transactionDetailed ->
             val context = activity
-            var display = ""
             val trans = transactionDetailed.transaction!!
-            if (trans.transToAccountPending) {
-                display += "${context.getString(R.string.complete_the_pending_amount_of)}${
-                    nf.displayDollars(
-                        trans.transAmount
-                    )
-                }${context.getString(R.string._to_)}${transactionDetailed.toAccount!!.accountName} ${
-                    context.getString(
-                        R.string.pending
-                    )
-                }"
-            }
-            if (display.isNotEmpty() && trans.transFromAccountPending) {
-                display += " ${context.getString(R.string._and)} "
-            }
-            if (trans.transFromAccountPending) {
-                display += "${context.getString(R.string.complete_the_pending_amount_of)}${
-                    nf.displayDollars(
-                        trans.transAmount
-                    )
-                }${context.getString(R.string._From_)}${transactionDetailed.fromAccount!!.accountName} ${
-                    context.getString(
-                        R.string.pending
-                    )
-                }"
-            }
+            val display = TransactionMessageHelper.buildPendingCompletionMessage(
+                activity, transactionDetailed, nf
+            )
 
-            sheetTitle = "${context.getString(R.string.choose_an_action_for)} ${trans.transName}"
-            sheetOptions = listOf(
+            val options = listOf(
                 ActionOption(
                     context.getString(R.string.edit_this_transaction),
                     Icons.Default.Edit
@@ -150,12 +129,17 @@ fun TransactionViewScreenWrapper(
                         .show()
                 }
             )
+
+            actionSheetState.show(
+                "${context.getString(R.string.choose_an_action_for)} ${trans.transName}",
+                options
+            )
         },
-        sheetTitle = sheetTitle,
-        sheetOptions = sheetOptions,
+        sheetTitle = actionSheetState.title,
+        sheetOptions = actionSheetState.options,
         onSheetDismiss = {
-            sheetOptions = emptyList()
-            sheetTitle = ""
+            actionSheetState.dismiss()
         }
     )
+    ManagedActionBottomSheet(actionSheetState)
 }

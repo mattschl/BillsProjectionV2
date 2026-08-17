@@ -34,8 +34,8 @@ import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectFieldDefaults
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
-import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalVisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -137,8 +137,8 @@ fun BudgetRuleItem(
     } else {
         MaterialTheme.colorScheme.onSurface
     }
-    val vf = VisualsFunctions()
-    val nf = NumberFunctions()
+    val vf = LocalVisualsFunctions.current
+    val nf = LocalNumberFunctions.current
 
     Card(
         modifier = Modifier
@@ -224,7 +224,7 @@ fun BudgetRuleChooseItem(
     } else {
         MaterialTheme.colorScheme.onSurface
     }
-    val vf = VisualsFunctions()
+    val vf = LocalVisualsFunctions.current
 
     Card(
         modifier = Modifier

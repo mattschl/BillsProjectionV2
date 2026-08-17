@@ -39,7 +39,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectBalanceFiel
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextBox
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
-import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
 
@@ -205,9 +205,7 @@ fun TransactionPerformScreen(
     toAccountError: Boolean = false,
     fromAccountError: Boolean = false,
 ) {
-    val nf = remember { NumberFunctions() }
-//    val df = remember { DateFunctions() }
-
+    val nf = LocalNumberFunctions.current
     val remainder by remember(amount, budgetedAmount) {
         derivedStateOf {
             nf.getDoubleFromDollars(budgetedAmount) - nf.getDoubleFromDollars(amount)
@@ -371,7 +369,7 @@ fun TransactionSplitScreen(
     toAccountError: Boolean = false,
     fromAccountError: Boolean = false,
 ) {
-    val nf = remember { NumberFunctions() }
+    val nf = LocalNumberFunctions.current
 //    val df = remember { DateFunctions() }
 
     val remainder by remember(amount, originalAmount) {

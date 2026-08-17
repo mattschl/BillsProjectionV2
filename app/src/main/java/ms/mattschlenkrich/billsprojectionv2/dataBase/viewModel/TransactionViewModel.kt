@@ -2,6 +2,8 @@ package ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
+import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.repository.TransactionRepository
 
@@ -229,4 +231,27 @@ class TransactionViewModel(
     ) = transactionRepository.getMinFiltered(
         budgetRuleId, accountId, query, startDate, endDate
     )
+
+    fun createTransactionDetailedFromBudgetItem(budgetItemDetailed: BudgetItemDetailed): TransactionDetailed {
+        val item = budgetItemDetailed.budgetItem!!
+        return TransactionDetailed(
+            transaction = Transactions(
+                transId = 0,
+                transDate = item.biActualDate,
+                transName = item.biBudgetName,
+                transNote = "",
+                transRuleId = item.biRuleId,
+                transToAccountId = item.biToAccountId,
+                transToAccountPending = item.biIsPending,
+                transFromAccountId = item.biFromAccountId,
+                transFromAccountPending = item.biIsPending,
+                transAmount = item.biProjectedAmount,
+                transIsDeleted = false,
+                transUpdateTime = ""
+            ),
+            budgetRule = budgetItemDetailed.budgetRule,
+            toAccount = budgetItemDetailed.toAccount,
+            fromAccount = budgetItemDetailed.fromAccount
+        )
+    }
 }

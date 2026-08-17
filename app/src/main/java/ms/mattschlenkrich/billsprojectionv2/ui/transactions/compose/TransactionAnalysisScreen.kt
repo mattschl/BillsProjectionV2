@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -39,8 +40,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextBox
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
-import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -80,8 +81,6 @@ fun TransactionAnalysisScreen(
     sheetOptions: List<ActionOption> = emptyList(),
     onSheetDismiss: () -> Unit = {}
 ) {
-    val nf = NumberFunctions()
-    val df = DateFunctions()
     val sheetState = rememberModalBottomSheetState()
 
     if (sheetOptions.isNotEmpty()) {
@@ -126,7 +125,6 @@ fun TransactionAnalysisScreen(
 
             item {
                 AnalysisCard(
-                    mode = mode,
                     transactionList = transactionList,
                     sumToAccount = sumToAccount,
                     sumFromAccount = sumFromAccount,
@@ -134,8 +132,6 @@ fun TransactionAnalysisScreen(
                     maxVal = maxVal,
                     minVal = minVal,
                     effectiveEndDate = effectiveEndDate,
-                    nf = nf,
-                    df = df
                 )
             }
 
@@ -151,9 +147,105 @@ fun TransactionAnalysisScreen(
                     TransactionHistoryItem(
                         transactionDetailed = transaction,
                         onClick = onTransactionClick,
-                        nf = nf,
-                        df = df
                     )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun AnalysisCard(
+    transactionList: List<TransactionDetailed>,
+    sumToAccount: Double?,
+    sumFromAccount: Double?,
+    sumCredits: Double?,
+    maxVal: Double?,
+    minVal: Double?,
+    effectiveEndDate: String,
+) {
+    val nf = LocalNumberFunctions.current
+    val df = LocalDateFunctions.current
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(
+                text = stringResource(R.string.analysis_view_help),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "${stringResource(R.string.add)} ${transactionList.size}", // Reusing 'add' if count is missing
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Text(
+                    text = "${stringResource(R.string.end_date)} ${
+                        df.getDisplayDate(
+                            effectiveEndDate
+                        )
+                    }",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            if (sumCredits != null) {
+                Text(
+                    text = "${stringResource(R.string.total_credits)} ${nf.displayDollars(sumCredits)}",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            if (sumToAccount != null || sumFromAccount != null) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    if (sumToAccount != null) {
+                        Text(
+                            text = "${stringResource(R.string.to_)} ${nf.displayDollars(sumToAccount)}",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                    if (sumFromAccount != null) {
+                        Text(
+                            text = "${stringResource(R.string.from_)} ${
+                                nf.displayDollars(
+                                    sumFromAccount
+                                )
+                            }",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
+            }
+
+            if (maxVal != null || minVal != null) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    if (maxVal != null) {
+                        Text(
+                            text = "${stringResource(R.string.highest)} ${nf.displayDollars(maxVal)}",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                    if (minVal != null) {
+                        Text(
+                            text = "${stringResource(R.string.lowest)} ${nf.displayDollars(minVal)}",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
                 }
             }
         }

@@ -13,7 +13,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -24,6 +29,44 @@ data class ActionOption(
     val icon: ImageVector? = null,
     val onClick: () -> Unit
 )
+
+class ActionSheetState {
+    var title by mutableStateOf("")
+    var options by mutableStateOf(emptyList<ActionOption>())
+
+    fun show(title: String, options: List<ActionOption>) {
+        this.title = title
+        this.options = options
+    }
+
+    fun dismiss() {
+        this.options = emptyList()
+        this.title = ""
+    }
+
+    fun isVisible(): Boolean = options.isNotEmpty()
+}
+
+@Composable
+fun rememberActionSheetState(): ActionSheetState {
+    return remember { ActionSheetState() }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ManagedActionBottomSheet(
+    state: ActionSheetState,
+    sheetState: SheetState = rememberModalBottomSheetState()
+) {
+    if (state.isVisible()) {
+        ActionBottomSheet(
+            title = state.title,
+            options = state.options,
+            sheetState = sheetState,
+            onDismissRequest = { state.dismiss() }
+        )
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

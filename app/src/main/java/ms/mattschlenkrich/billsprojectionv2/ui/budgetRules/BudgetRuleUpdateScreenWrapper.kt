@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -46,9 +47,11 @@ import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.components.BudgetItemDisplay
+import ms.mattschlenkrich.billsprojectionv2.common.components.ManagedActionBottomSheet
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectFieldDefaults
-import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.components.rememberActionSheetState
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
@@ -61,6 +64,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 
 private const val TAG = FRAG_BUDGET_RULE_UPDATE
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BudgetRuleUpdateScreenWrapper(
     mainActivity: MainActivity,
@@ -69,9 +73,10 @@ fun BudgetRuleUpdateScreenWrapper(
     val mainViewModel = mainActivity.mainViewModel
     val budgetRuleViewModel = mainActivity.budgetRuleViewModel
     val budgetItemViewModel = mainActivity.budgetItemViewModel
-    val nf = remember { NumberFunctions() }
-    val df = remember { DateFunctions() }
+    val nf = LocalNumberFunctions.current
+    val df = LocalDateFunctions.current
     val scope = rememberCoroutineScope()
+    val actionSheetState = rememberActionSheetState()
 
     var nameState by remember { mutableStateOf("") }
     var amountState by remember { mutableStateOf("") }
@@ -87,8 +92,6 @@ fun BudgetRuleUpdateScreenWrapper(
     var ruleIdState by remember { mutableLongStateOf(0L) }
 
     var suggestedAmountState by remember { mutableStateOf<Double?>(null) }
-    var sheetTitle by remember { mutableStateOf("") }
-    var sheetOptions by remember { mutableStateOf(emptyList<ActionOption>()) }
 
     var budgetNameList by remember { mutableStateOf<List<String>?>(null) }
 
@@ -322,21 +325,22 @@ fun BudgetRuleUpdateScreenWrapper(
 
     fun chooseOptions() {
         val detailed = mainViewModel.getBudgetRuleDetailed()!!
-        sheetTitle =
-            "${mainActivity.getString(R.string.choose_an_action_for)} ${detailed.budgetRule!!.budgetRuleName}"
-        sheetOptions = listOf(
-            ActionOption(
-                mainActivity.getString(R.string.add_a_new_transaction_based_on_the_budget_rule),
-                Icons.Default.Add
-            ) { addNewTransaction() },
-            ActionOption(
-                mainActivity.getString(R.string.create_a_scheduled_item_with_this_budget_rule),
-                Icons.Default.Add
-            ) { createNewBudgetItem() },
-            ActionOption(
-                mainActivity.getString(R.string.view_a_summary_of_transactions_for_this_budget_rule),
-                Icons.Default.History
-            ) { gotoAnalysis() }
+        actionSheetState.show(
+            "${mainActivity.getString(R.string.choose_an_action_for)} ${detailed.budgetRule!!.budgetRuleName}",
+            listOf(
+                ActionOption(
+                    mainActivity.getString(R.string.add_a_new_transaction_based_on_the_budget_rule),
+                    Icons.Default.Add
+                ) { addNewTransaction() },
+                ActionOption(
+                    mainActivity.getString(R.string.create_a_scheduled_item_with_this_budget_rule),
+                    Icons.Default.Add
+                ) { createNewBudgetItem() },
+                ActionOption(
+                    mainActivity.getString(R.string.view_a_summary_of_transactions_for_this_budget_rule),
+                    Icons.Default.History
+                ) { gotoAnalysis() }
+            )
         )
     }
 
@@ -526,27 +530,28 @@ fun BudgetRuleUpdateScreenWrapper(
                     budgetItemDetailed = item,
                     isCredit = item.toAccount?.accountId == detailedCached?.toAccount?.accountId,
                     onClick = {
-                        sheetTitle =
+                        actionSheetState.show(
                             mainActivity.getString(R.string.would_you_like_to_go_to_this_budget_item_on) + " ${
                                 df.getDisplayDate(item.budgetItem!!.biActualDate)
-                            }?"
-                        sheetOptions = listOf(
-                            ActionOption(
-                                mainActivity.getString(R.string.yes),
-                                Icons.Default.PlayArrow
-                            ) {
-                                gotoBudgetItem(item)
-                            }
+                            }?",
+                            listOf(
+                                ActionOption(
+                                    mainActivity.getString(R.string.yes),
+                                    Icons.Default.PlayArrow
+                                ) {
+                                    gotoBudgetItem(item)
+                                }
+                            )
                         )
                     }
                 )
             }
         },
-        sheetTitle = sheetTitle,
-        sheetOptions = sheetOptions,
+        sheetTitle = actionSheetState.title,
+        sheetOptions = actionSheetState.options,
         onSheetDismiss = {
-            sheetOptions = emptyList()
-            sheetTitle = ""
+            actionSheetState.dismiss()
         }
     )
+    ManagedActionBottomSheet(actionSheetState)
 }

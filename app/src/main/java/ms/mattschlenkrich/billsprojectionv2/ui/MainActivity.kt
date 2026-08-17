@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,7 +39,6 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -47,26 +47,23 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalVisualsFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.projections.UpdateBudgetPredictions
 import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 import ms.mattschlenkrich.billsprojectionv2.common.theme.BillsProjectionTheme
 import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModel
-import ms.mattschlenkrich.billsprojectionv2.common.viewmodel.MainViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.dataBase.BillsDatabase
-import ms.mattschlenkrich.billsprojectionv2.dataBase.repository.AccountRepository
-import ms.mattschlenkrich.billsprojectionv2.dataBase.repository.BudgetItemRepository
-import ms.mattschlenkrich.billsprojectionv2.dataBase.repository.BudgetRuleRepository
-import ms.mattschlenkrich.billsprojectionv2.dataBase.repository.TransactionRepository
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountUpdateViewModel
-import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountUpdateViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModel
-import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.AccountViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetItemViewModel
-import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetItemViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewModel
-import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewModelFactory
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.TransactionViewModel
-import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.TransactionViewModelFactory
+import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.ViewModelHelper
 import ms.mattschlenkrich.billsprojectionv2.ui.auth.LoginScreen
 import ms.mattschlenkrich.billsprojectionv2.ui.compose.MainBottomBar
 import ms.mattschlenkrich.billsprojectionv2.ui.compose.MainTopBar
@@ -146,21 +143,27 @@ class MainActivity : AppCompatActivity() {
                 else -> 1.0f
             }
             BillsProjectionTheme(fontScale = fontScale) {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                CompositionLocalProvider(
+                    LocalNumberFunctions provides NumberFunctions(),
+                    LocalDateFunctions provides DateFunctions(),
+                    LocalVisualsFunctions provides VisualsFunctions()
                 ) {
-                    if (isAuthenticated.value) {
-                        MainScreen(isFirstRun)
-                    } else {
-                        LoginScreen(
-                            passwordHash = s.passwordHash!!,
-                            onAuthenticated = { isAuthenticated.value = true },
-                            onPasswordChanged = { newHash ->
-                                val currentSettings = settingsManager.getSettings()
-                                settingsManager.saveSettings(currentSettings.copy(passwordHash = newHash))
-                            }
-                        )
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        if (isAuthenticated.value) {
+                            MainScreen(isFirstRun)
+                        } else {
+                            LoginScreen(
+                                passwordHash = s.passwordHash!!,
+                                onAuthenticated = { isAuthenticated.value = true },
+                                onPasswordChanged = { newHash ->
+                                    val currentSettings = settingsManager.getSettings()
+                                    settingsManager.saveSettings(currentSettings.copy(passwordHash = newHash))
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -171,12 +174,14 @@ class MainActivity : AppCompatActivity() {
         if (clearExisting) {
             BillsDatabase.resetInstance()
         }
-        setupMainViewModel()
-        setupAccountViewModel()
-        setupBudgetRuleViewModel()
-        setupTransactionViewModel()
-        setupBudgetItemViewModel()
-        setupAccountUpdateViewModel()
+        mainViewModel = ViewModelHelper.setupMainViewModel(this)
+        accountViewModel = ViewModelHelper.setupAccountViewModel(this)
+        budgetRuleViewModel = ViewModelHelper.setupBudgetRuleViewModel(this)
+        transactionViewModel = ViewModelHelper.setupTransactionViewModel(this)
+        budgetItemViewModel = ViewModelHelper.setupBudgetItemViewModel(this)
+        accountUpdateViewModel = ViewModelHelper.setupAccountUpdateViewModel(
+            this, transactionViewModel, accountViewModel
+        )
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -378,75 +383,5 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         Log.d(TAG, "onResume called")
         setupViewModels(clearExisting = true)
-    }
-
-    private fun setupBudgetItemViewModel() {
-        val budgetItemRepository = BudgetItemRepository(
-            BillsDatabase(this)
-        )
-        val budgetItemViewModelFactory =
-            BudgetItemViewModelFactory(application, budgetItemRepository)
-        budgetItemViewModel = ViewModelProvider(
-            this,
-            budgetItemViewModelFactory
-        )[BudgetItemViewModel::class.java]
-    }
-
-    private fun setupBudgetRuleViewModel() {
-        val budgetRuleRepository = BudgetRuleRepository(
-            BillsDatabase(this)
-        )
-        val budgetRuleViewModelFactory =
-            BudgetRuleViewModelFactory(application, budgetRuleRepository)
-        budgetRuleViewModel = ViewModelProvider(
-            this,
-            budgetRuleViewModelFactory
-        )[BudgetRuleViewModel::class.java]
-    }
-
-    private fun setupAccountViewModel() {
-        val accountRepository = AccountRepository(
-            BillsDatabase(this)
-        )
-        val accountViewModelFactory =
-            AccountViewModelFactory(application, accountRepository)
-        accountViewModel = ViewModelProvider(
-            this,
-            accountViewModelFactory
-        )[AccountViewModel::class.java]
-    }
-
-    private fun setupTransactionViewModel() {
-        val transactionRepository = TransactionRepository(
-            BillsDatabase(this)
-        )
-        val transactionViewModelFactory =
-            TransactionViewModelFactory(application, transactionRepository)
-        transactionViewModel = ViewModelProvider(
-            this,
-            transactionViewModelFactory
-        )[TransactionViewModel::class.java]
-    }
-
-    private fun setupMainViewModel() {
-        val mainViewModelFactory = MainViewModelFactory(application)
-        mainViewModel = ViewModelProvider(
-            this,
-            mainViewModelFactory
-        )[MainViewModel::class.java]
-    }
-
-    private fun setupAccountUpdateViewModel() {
-        val accountUpdateViewModelFactory =
-            AccountUpdateViewModelFactory(
-                this,
-                transactionViewModel,
-                accountViewModel,
-                application
-            )
-        accountUpdateViewModel = ViewModelProvider(
-            this,
-            accountUpdateViewModelFactory
-        )[AccountUpdateViewModel::class.java]
     }
 }

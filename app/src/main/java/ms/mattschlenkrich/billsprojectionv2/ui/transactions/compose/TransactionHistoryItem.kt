@@ -24,19 +24,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalVisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 
 @Composable
 fun TransactionHistoryItem(
     transactionDetailed: TransactionDetailed,
     onClick: (TransactionDetailed) -> Unit,
-    nf: NumberFunctions = NumberFunctions(),
-    df: DateFunctions = DateFunctions()
 ) {
-    val vf = remember { VisualsFunctions() }
+    val nf = LocalNumberFunctions.current
+    val df = LocalDateFunctions.current
+    val vf = LocalVisualsFunctions.current
     val trans = transactionDetailed.transaction ?: return
     val itemColor = remember(trans.transId) { Color(vf.getRandomColorInt()) }
     Row(

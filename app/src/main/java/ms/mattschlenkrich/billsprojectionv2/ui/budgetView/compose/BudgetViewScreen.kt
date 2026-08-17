@@ -49,8 +49,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.components.BudgetItemDisplay
 import ms.mattschlenkrich.billsprojectionv2.common.components.DropdownSelector
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectFieldDefaults
-import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
@@ -80,8 +80,8 @@ fun BudgetViewScreen(
     sheetOptions: List<ActionOption> = emptyList(),
     onSheetDismiss: () -> Unit = {},
 ) {
-    val nf = NumberFunctions()
-    val df = DateFunctions()
+    val nf = LocalNumberFunctions.current
+    val df = LocalDateFunctions.current
     val haptic = LocalHapticFeedback.current
     val lazyListState = rememberLazyListState()
     val sheetState = rememberModalBottomSheetState()
@@ -183,7 +183,6 @@ fun BudgetViewScreen(
                 budgetTotals = budgetTotals,
                 pendingAmount = pendingAmount,
                 onAccountClick = onAccountClick,
-                nf = nf
             )
 
             if (pendingList.isNotEmpty()) {
@@ -289,8 +288,8 @@ fun SummaryCard(
     budgetTotals: BudgetTotals,
     pendingAmount: Double,
     onAccountClick: () -> Unit,
-    nf: NumberFunctions,
 ) {
+    val nf = LocalNumberFunctions.current
     val currentTag = stringResource(R.string.__current)
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -358,7 +357,6 @@ fun SummaryCard(
                         payDayList = payDayList,
                         selectedPayDay = selectedPayDay,
                         budgetTotals = budgetTotals,
-                        nf = nf
                     )
                 }
 
@@ -395,7 +393,6 @@ fun SummaryCard(
 
             TotalsSection(
                 budgetTotals = budgetTotals,
-                nf = nf
             )
         }
     }
@@ -404,8 +401,8 @@ fun SummaryCard(
 @Composable
 fun TotalsSection(
     budgetTotals: BudgetTotals,
-    nf: NumberFunctions,
 ) {
+    val nf = LocalNumberFunctions.current
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         Text(
             text = if (budgetTotals.credits > 0.0) "${stringResource(R.string.credits_)}${
@@ -462,8 +459,8 @@ fun SurplusDeficitInfo(
     payDayList: List<String>,
     selectedPayDay: String,
     budgetTotals: BudgetTotals,
-    nf: NumberFunctions,
 ) {
+    val nf = LocalNumberFunctions.current
     var surplus = budgetTotals.credits - budgetTotals.debits
     if (asset != null && payDayList.isNotEmpty() && selectedPayDay == payDayList[0]) {
         if (asset.accountType!!.keepTotals) {

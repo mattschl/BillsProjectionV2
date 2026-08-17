@@ -40,9 +40,9 @@ import ms.mattschlenkrich.billsprojectionv2.common.FREQ_MONTHLY
 import ms.mattschlenkrich.billsprojectionv2.common.FREQ_WEEKLY
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionBottomSheet
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
-import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalVisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleComplete
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,8 +56,8 @@ fun BudgetSummaryScreen(
     sheetOptions: List<ActionOption> = emptyList(),
     onSheetDismiss: () -> Unit = {}
 ) {
-    val df = DateFunctions()
-    val nf = NumberFunctions()
+    val df = LocalDateFunctions.current
+    val nf = LocalNumberFunctions.current
     val sheetState = rememberModalBottomSheetState()
 
     if (sheetOptions.isNotEmpty()) {
@@ -87,14 +87,12 @@ fun BudgetSummaryScreen(
         }
         if (monthlyExpanded) {
             item {
-                BudgetSummary(monthlyRules, type = "monthly", nf = nf)
+                BudgetSummary(monthlyRules, type = "monthly")
             }
             items(monthlyRules) { rule ->
                 BudgetListItem(
                     curRule = rule,
                     onRuleClick = onRuleClick,
-                    df = df,
-                    nf = nf
                 )
             }
         }
@@ -108,14 +106,12 @@ fun BudgetSummaryScreen(
         }
         if (occasionalExpanded) {
             item {
-                BudgetSummary(occasionalRules, type = "occasional", nf = nf)
+                BudgetSummary(occasionalRules, type = "occasional")
             }
             items(occasionalRules) { rule ->
                 BudgetListItem(
                     curRule = rule,
                     onRuleClick = onRuleClick,
-                    df = df,
-                    nf = nf
                 )
             }
         }
@@ -129,15 +125,13 @@ fun BudgetSummaryScreen(
         }
         if (annualExpanded) {
             item {
-                BudgetSummary(annualRules, type = "annual", nf = nf)
+                BudgetSummary(annualRules, type = "annual")
             }
             items(annualRules) { rule ->
                 BudgetListItem(
                     curRule = rule,
                     showFullDetails = true,
                     onRuleClick = onRuleClick,
-                    df = df,
-                    nf = nf
                 )
             }
         }
@@ -172,8 +166,8 @@ fun BudgetSectionHeader(title: String, isExpanded: Boolean, onToggle: () -> Unit
 fun BudgetSummary(
     rules: List<BudgetRuleComplete>,
     type: String,
-    nf: NumberFunctions
 ) {
+    val nf = LocalNumberFunctions.current
     var totalCredits = 0.0
     var totalDebits = 0.0
     var totalFixed = 0.0
@@ -248,10 +242,10 @@ fun BudgetListItem(
     curRule: BudgetRuleComplete,
     showFullDetails: Boolean = false,
     onRuleClick: (BudgetRuleComplete) -> Unit,
-    df: DateFunctions,
-    nf: NumberFunctions,
 ) {
-    val vf = VisualsFunctions()
+    val df = LocalDateFunctions.current
+    val nf = LocalNumberFunctions.current
+    val vf = LocalVisualsFunctions.current
     val budgetRule = curRule.budgetRule!!
     val toAccount = curRule.toAccount!!
     val fromAccount = curRule.fromAccount!!
