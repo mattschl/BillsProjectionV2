@@ -15,7 +15,8 @@ class TransactionRepository(private val db: BillsDatabase) {
             transId, updateTime
         )
 
-    fun getActiveTransactionsDetailed() = db.getTransactionDao().getActiveTransactionsDetailed()
+    fun getActiveTransactionsDetailed() =
+        db.getTransactionDao().getTransactionsFiltered(-1L, -1L, "", "", "")
 
     /*fun getActiveTransactionsDetailed(budgetRuleId: Long) =
         db.getTransactionDao().getActiveTransactionsDetailed(budgetRuleId)
@@ -30,7 +31,7 @@ class TransactionRepository(private val db: BillsDatabase) {
         db.getTransactionDao().getTransactionDetailed(transId)
 
     fun searchActiveTransactionsDetailed(query: String?) =
-        db.getTransactionDao().searchActiveTransactionsDetailed(query)
+        db.getTransactionDao().getTransactionsFiltered(-1L, -1L, query ?: "", "", "")
 
     suspend fun getTransactionFull(
         transId: Long,
@@ -105,7 +106,7 @@ class TransactionRepository(private val db: BillsDatabase) {
     )*/
 
     fun getActiveTransactionByAccount(accountId: Long) =
-        db.getTransactionDao().getActiveTransactionByAccount(accountId)
+        db.getTransactionDao().getTransactionsFiltered(-1L, accountId, "", "", "")
 
     /* fun getActiveTransactionByAccount(
          accountId: Long, startDate: String, endDate: String

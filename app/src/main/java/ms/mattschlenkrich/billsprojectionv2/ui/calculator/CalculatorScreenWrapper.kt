@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.functions.CalculatorLogic
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 
@@ -49,43 +50,27 @@ fun CalculatorScreenWrapper(
 
         if (operatorList.isEmpty() || operatorList[currentCounter] == "") {
             if (formulaList.isEmpty()) {
-                formulaList.add(displayValue)
+                formulaList.add(nf.getNumberFromDouble(curNumber))
                 resultList.add(curNumber)
                 operatorList.add("")
                 prevNumberList.add(0.0)
             } else {
-                formulaList[currentCounter] = displayValue
+                formulaList[currentCounter] = nf.getNumberFromDouble(curNumber)
                 resultList[currentCounter] = curNumber
             }
         } else {
             val prev = prevNumberList[currentCounter]
-            val result = when (operatorList[currentCounter]) {
-                "+" -> prev + curNumber
-                "-" -> prev - curNumber
-                "X" -> prev * curNumber
-                "/" -> prev / curNumber
-                else -> curNumber
-            }
+            val op = operatorList[currentCounter]
+            val result = CalculatorLogic.calculate(prev, curNumber, op, nf)
             resultList[currentCounter] = result
             formulaList[currentCounter] =
-                "${nf.getNumberFromDouble(prev)} ${operatorList[currentCounter]} " +
-                        "${nf.getNumberFromDouble(curNumber)} = ${nf.getDollarsFromDouble(result)}"
+                CalculatorLogic.formatFormula(prev, curNumber, op, result, nf)
         }
         transferResult = resultList[currentCounter]
     }
 
     fun addDigit(digit: String) {
-        var prefix = if (displayValue.contains("-")) "-" else ""
-        var number = displayValue.replace("-", "")
-
-        when {
-            digit == "0" && number != "0" -> number += "0"
-            number == "0" -> number = digit
-            digit != "." && digit != "-" -> number += digit
-            digit == "." && !number.contains(".") -> number += "."
-            digit == "-" -> prefix = if (prefix == "-") "" else "-"
-        }
-        displayValue = prefix + number
+        displayValue = CalculatorLogic.addDigit(displayValue, digit)
         performMath()
     }
 
@@ -136,14 +121,7 @@ fun CalculatorScreenWrapper(
     }
 
     fun performBackspace() {
-        val prefix = if (displayValue.contains("-")) "-" else ""
-        var num = displayValue.replace("-", "")
-        num = if (num.length > 1) {
-            num.substring(0, num.length - 1)
-        } else {
-            "0"
-        }
-        displayValue = prefix + num
+        displayValue = CalculatorLogic.backspace(displayValue)
         performMath()
     }
 

@@ -14,6 +14,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.credentials.CredentialManager
@@ -34,6 +35,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.WAIT_250
+import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalVisualsFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 import ms.mattschlenkrich.billsprojectionv2.common.theme.BillsProjectionTheme
 import java.security.SecureRandom
@@ -74,22 +81,28 @@ class SyncActivity : ComponentActivity() {
                 else -> 1.0f
             }
             BillsProjectionTheme(fontScale = fontScale) {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                CompositionLocalProvider(
+                    LocalNumberFunctions provides NumberFunctions(),
+                    LocalDateFunctions provides DateFunctions(),
+                    LocalVisualsFunctions provides VisualsFunctions()
                 ) {
-                    SyncScreen(
-                        viewModel = viewModel,
-                        onBack = {
-                            setResult(RESULT_OK)
-                            finish()
-                        },
-                        onConnect = { signInWithCredentialManager() },
-                        onConnectLegacy = { signInWithAccountPicker() },
-                        onDisconnect = { disconnectAccount() },
-                        onSync = { viewModel.sync(::handleError) },
-                        onQuery = { viewModel.queryDriveFiles() }
-                    )
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        SyncScreen(
+                            viewModel = viewModel,
+                            onBack = {
+                                setResult(RESULT_OK)
+                                finish()
+                            },
+                            onConnect = { signInWithCredentialManager() },
+                            onConnectLegacy = { signInWithAccountPicker() },
+                            onDisconnect = { disconnectAccount() },
+                            onSync = { viewModel.sync(::handleError) },
+                            onQuery = { viewModel.queryDriveFiles() }
+                        )
+                    }
                 }
             }
         }

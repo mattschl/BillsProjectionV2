@@ -19,9 +19,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.common.ALL_ITEMS
-import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalVisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 
 @Composable
@@ -30,10 +30,10 @@ fun PendingItem(
     selectedAsset: String,
     assetList: List<String>,
     onTransactionClick: (TransactionDetailed) -> Unit,
-    df: DateFunctions,
-    nf: NumberFunctions,
 ) {
-    val vf = VisualsFunctions()
+    val df = LocalDateFunctions.current
+    val nf = LocalNumberFunctions.current
+    val vf = LocalVisualsFunctions.current
     val color = remember { Color(vf.getRandomColorInt()) }
     val isCredit = if (pending.toAccount?.accountName == selectedAsset) true
     else if (pending.fromAccount?.accountName == selectedAsset) false

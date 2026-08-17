@@ -14,7 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.Dispatchers
@@ -22,10 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
-import ms.mattschlenkrich.billsprojectionv2.common.BALANCE
-import ms.mattschlenkrich.billsprojectionv2.common.BUDGETED
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
-import ms.mattschlenkrich.billsprojectionv2.common.OWING
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.components.ManagedActionBottomSheet
 import ms.mattschlenkrich.billsprojectionv2.common.components.rememberActionSheetState
@@ -55,6 +51,7 @@ fun AccountUpdateScreenWrapper(
     val nf = LocalNumberFunctions.current
     val df = LocalDateFunctions.current
     val actionSheetState = rememberActionSheetState()
+    val state = rememberAccountEditState(nf, df)
 
     LaunchedEffect(Unit) {
         mainActivity.topMenuBar.title = mainActivity.getString(R.string.update_account)
@@ -64,52 +61,8 @@ fun AccountUpdateScreenWrapper(
     val accountNames by accountViewModel.getAccountNameList().observeAsState(emptyList())
 
     val initialAccount = accountWithTypeState.value?.account
-    var name by remember { mutableStateOf(initialAccount?.accountName ?: "") }
-    var handle by remember { mutableStateOf(initialAccount?.accountNumber ?: "") }
-    var balance by remember {
-        mutableStateOf(
-            nf.displayDollars(
-                if (mainViewModel.getTransferNum() != 0.0 && mainViewModel.getReturnTo()
-                        ?.contains(BALANCE) == true
-                ) {
-                    mainViewModel.getTransferNum()!!
-                } else {
-                    initialAccount?.accountBalance ?: 0.0
-                }
-            )
-        )
-    }
-    var owing by remember {
-        mutableStateOf(
-            nf.displayDollars(
-                if (mainViewModel.getTransferNum() != 0.0 && mainViewModel.getReturnTo()
-                        ?.contains(OWING) == true
-                ) {
-                    mainViewModel.getTransferNum()!!
-                } else {
-                    initialAccount?.accountOwing ?: 0.0
-                }
-            )
-        )
-    }
-    var budgeted by remember {
-        mutableStateOf(
-            nf.displayDollars(
-                if (mainViewModel.getTransferNum() != 0.0 && mainViewModel.getReturnTo()
-                        ?.contains(BUDGETED) == true
-                ) {
-                    mainViewModel.getTransferNum()!!
-                } else {
-                    initialAccount?.accBudgetedAmount ?: 0.0
-                }
-            )
-        )
-    }
-    var limit by remember {
-        mutableStateOf(nf.displayDollars(initialAccount?.accountCreditLimit ?: 0.0))
-    }
-
     val accountId = initialAccount?.accountId ?: 0L
+
     val history by transactionViewModel.getActiveTransactionByAccount(accountId)
         .observeAsState(emptyList())
 
@@ -119,29 +72,27 @@ fun AccountUpdateScreenWrapper(
     LaunchedEffect(liveAccountWithType) {
         liveAccountWithType?.let { awt ->
             if (awt.accountType?.keepTotals == true) {
-                balance = nf.displayDollars(awt.account.accountBalance)
+                state.balance = nf.displayDollars(awt.account.accountBalance)
             } else if (awt.accountType?.tallyOwing == true) {
-                owing = nf.displayDollars(awt.account.accountOwing)
+                state.owing = nf.displayDollars(awt.account.accountOwing)
             }
         }
     }
 
     LaunchedEffect(Unit) {
         mainViewModel.setTransferNum(0.0)
+        state.updateFrom(
+            accountWithTypeState.value,
+            mainViewModel.getTransferNum(),
+            mainViewModel.getReturnTo()
+        )
     }
 
     fun getUpdatedAccount(): Account {
-        return Account(
-            mainViewModel.getAccountWithType()!!.account.accountId,
-            name.trim(),
-            handle.trim(),
-            mainViewModel.getAccountWithType()!!.accountType?.typeId ?: 0L,
-            nf.getDoubleFromDollars(budgeted),
-            nf.getDoubleFromDollars(balance),
-            nf.getDoubleFromDollars(owing),
-            nf.getDoubleFromDollars(limit),
-            false,
-            df.getCurrentTimeAsString()
+        val currentAwt = mainViewModel.getAccountWithType()!!
+        return state.toAccount(
+            currentAwt.account.accountId,
+            currentAwt.accountType?.typeId ?: 0L
         )
     }
 
@@ -257,10 +208,10 @@ fun AccountUpdateScreenWrapper(
     }
 
     AccountEditScreen(
-        name = name,
-        onNameChange = { name = it },
-        handle = handle,
-        onHandleChange = { handle = it },
+        name = state.name,
+        onNameChange = { state.name = it },
+        handle = state.handle,
+        onHandleChange = { state.handle = it },
         accountType = accountWithTypeState.value?.accountType,
         onAccountTypeClick = {
             mainViewModel.addCallingFragment(TAG)
@@ -273,10 +224,10 @@ fun AccountUpdateScreenWrapper(
             navController.navigate(Screen.AccountTypes.route)
         },
         accountTypeDetails = "",
-        balance = balance,
-        onBalanceChange = { balance = it },
+        balance = state.balance,
+        onBalanceChange = { state.balance = it },
         onBalanceIconClick = {
-            mainViewModel.setTransferNum(nf.getDoubleFromDollars(balance.ifBlank {
+            mainViewModel.setTransferNum(nf.getDoubleFromDollars(state.balance.ifBlank {
                 mainActivity.getString(
                     R.string.zero_double
                 )
@@ -289,10 +240,10 @@ fun AccountUpdateScreenWrapper(
             )
             navController.navigate(Screen.Calculator.route)
         },
-        owing = owing,
-        onOwingChange = { owing = it },
+        owing = state.owing,
+        onOwingChange = { state.owing = it },
         onOwingIconClick = {
-            mainViewModel.setTransferNum(nf.getDoubleFromDollars(owing.ifBlank {
+            mainViewModel.setTransferNum(nf.getDoubleFromDollars(state.owing.ifBlank {
                 mainActivity.getString(
                     R.string.zero_double
                 )
@@ -305,10 +256,10 @@ fun AccountUpdateScreenWrapper(
             )
             navController.navigate(Screen.Calculator.route)
         },
-        budgeted = budgeted,
-        onBudgetedChange = { budgeted = it },
+        budgeted = state.budgeted,
+        onBudgetedChange = { state.budgeted = it },
         onBudgetedIconClick = {
-            mainViewModel.setTransferNum(nf.getDoubleFromDollars(budgeted.ifBlank {
+            mainViewModel.setTransferNum(nf.getDoubleFromDollars(state.budgeted.ifBlank {
                 mainActivity.getString(
                     R.string.zero_double
                 )
@@ -321,15 +272,15 @@ fun AccountUpdateScreenWrapper(
             )
             navController.navigate(Screen.Calculator.route)
         },
-        limit = limit,
-        onLimitChange = { limit = it },
+        limit = state.limit,
+        onLimitChange = { state.limit = it },
         accountId = accountId,
         history = history,
         onHistoryItemClick = { showTransactionOptions(it) },
         onSaveClick = {
-            val answer = if (name.isBlank()) {
+            val answer = if (state.name.isBlank()) {
                 mainActivity.getString(R.string.please_enter_a_name)
-            } else if (accountNames.any { it == name && it != mainViewModel.getAccountWithType()!!.account.accountName }) {
+            } else if (accountNames.any { it == state.name && it != mainViewModel.getAccountWithType()!!.account.accountName }) {
                 mainActivity.getString(R.string.this_budget_rule_already_exists)
             } else if (mainViewModel.getAccountWithType()?.accountType == null) {
                 mainActivity.getString(R.string.please_choose_an_account_type)
@@ -339,7 +290,7 @@ fun AccountUpdateScreenWrapper(
 
             if (answer == ANSWER_OK) {
                 val accountWithType = mainViewModel.getAccountWithType()!!
-                if (name.trim() == accountWithType.account.accountName.trim()) {
+                if (state.name.trim() == accountWithType.account.accountName.trim()) {
                     accountViewModel.updateAccount(getUpdatedAccount())
                     mainViewModel.removeCallingFragment(TAG)
                     mainViewModel.setAccountWithType(null)

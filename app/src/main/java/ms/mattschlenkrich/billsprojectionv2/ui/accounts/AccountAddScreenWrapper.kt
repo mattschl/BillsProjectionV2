@@ -3,16 +3,9 @@ package ms.mattschlenkrich.billsprojectionv2.ui.accounts
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.BALANCE
-import ms.mattschlenkrich.billsprojectionv2.common.BUDGETED
 import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_ADD
-import ms.mattschlenkrich.billsprojectionv2.common.OWING
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
@@ -32,82 +25,40 @@ fun AccountAddScreenWrapper(
     val accountViewModel = mainActivity.accountViewModel
     val nf = LocalNumberFunctions.current
     val df = LocalDateFunctions.current
+    val state = rememberAccountEditState(nf, df)
 
     LaunchedEffect(Unit) {
         mainActivity.topMenuBar.title = mainActivity.getString(R.string.add_a_new_account)
     }
 
-    var name by remember { mutableStateOf("") }
-    var handle by remember { mutableStateOf("") }
-    var balance by remember { mutableStateOf("") }
-    var owing by remember { mutableStateOf("") }
-    var budgeted by remember { mutableStateOf("") }
-    var limit by remember { mutableStateOf("") }
-
     // Initialize values from cache if they exist
     val cached = mainViewModel.getAccountWithType()
-    if (cached != null) {
-        name = cached.account.accountName
-        handle = cached.account.accountNumber
-        balance = nf.displayDollars(
-            if (mainViewModel.getTransferNum() != 0.0 &&
-                mainViewModel.getReturnTo()?.contains(BALANCE) == true
-            ) {
-                mainViewModel.getTransferNum()!!
-            } else {
-                cached.account.accountBalance
-            }
-        )
-        owing = nf.displayDollars(
-            if (mainViewModel.getTransferNum() != 0.0 &&
-                mainViewModel.getReturnTo()?.contains(OWING) == true
-            ) {
-                mainViewModel.getTransferNum()!!
-            } else {
-                cached.account.accountOwing
-            }
-        )
-        budgeted = nf.displayDollars(
-            if (mainViewModel.getTransferNum() != 0.0 &&
-                mainViewModel.getReturnTo()?.contains(BUDGETED) == true
-            ) {
-                mainViewModel.getTransferNum()!!
-            } else {
-                cached.account.accBudgetedAmount
-            }
-        )
-        limit = nf.displayDollars(cached.account.accountCreditLimit)
-        mainViewModel.setTransferNum(0.0)
-    } else {
-        balance = nf.displayDollars(0.0)
-        owing = nf.displayDollars(0.0)
-        budgeted = nf.displayDollars(0.0)
-        limit = nf.displayDollars(0.0)
+    LaunchedEffect(Unit) {
+        if (cached != null) {
+            state.updateFrom(cached, mainViewModel.getTransferNum(), mainViewModel.getReturnTo())
+            mainViewModel.setTransferNum(0.0)
+        } else {
+            state.balance = nf.displayDollars(0.0)
+            state.owing = nf.displayDollars(0.0)
+            state.budgeted = nf.displayDollars(0.0)
+            state.limit = nf.displayDollars(0.0)
+        }
     }
 
-    val accountWithType = mainViewModel.getAccountWithType()
-    val accountType = accountWithType?.accountType
+    val accountType = cached?.accountType
 
     fun getCurrentAccount(): Account {
-        return Account(
+        return state.toAccount(
             nf.generateId(),
-            name.trim(),
-            handle.trim(),
-            mainViewModel.getAccountWithType()?.accountType?.typeId ?: 0L,
-            nf.getDoubleFromDollars(budgeted),
-            nf.getDoubleFromDollars(balance),
-            nf.getDoubleFromDollars(owing),
-            nf.getDoubleFromDollars(limit),
-            false,
-            df.getCurrentTimeAsString()
+            mainViewModel.getAccountWithType()?.accountType?.typeId ?: 0L
         )
     }
 
     AccountEditScreen(
-        name = name,
-        onNameChange = { name = it },
-        handle = handle,
-        onHandleChange = { handle = it },
+        name = state.name,
+        onNameChange = { state.name = it },
+        handle = state.handle,
+        onHandleChange = { state.handle = it },
         accountType = accountType,
         onAccountTypeClick = {
             mainViewModel.addCallingFragment(TAG)
@@ -129,10 +80,10 @@ fun AccountAddScreenWrapper(
             if (details.isEmpty()) mainActivity.getString(R.string.this_account_does_not_keep_a_balance_owing_amount)
             else details.joinToString("\n")
         } else "",
-        balance = balance,
-        onBalanceChange = { balance = it },
+        balance = state.balance,
+        onBalanceChange = { state.balance = it },
         onBalanceIconClick = {
-            mainViewModel.setTransferNum(nf.getDoubleFromDollars(balance.ifBlank {
+            mainViewModel.setTransferNum(nf.getDoubleFromDollars(state.balance.ifBlank {
                 mainActivity.getString(
                     R.string.zero_double
                 )
@@ -145,10 +96,10 @@ fun AccountAddScreenWrapper(
             )
             navController.navigate(Screen.Calculator.route)
         },
-        owing = owing,
-        onOwingChange = { owing = it },
+        owing = state.owing,
+        onOwingChange = { state.owing = it },
         onOwingIconClick = {
-            mainViewModel.setTransferNum(nf.getDoubleFromDollars(owing.ifBlank {
+            mainViewModel.setTransferNum(nf.getDoubleFromDollars(state.owing.ifBlank {
                 mainActivity.getString(
                     R.string.zero_double
                 )
@@ -161,10 +112,10 @@ fun AccountAddScreenWrapper(
             )
             navController.navigate(Screen.Calculator.route)
         },
-        budgeted = budgeted,
-        onBudgetedChange = { budgeted = it },
+        budgeted = state.budgeted,
+        onBudgetedChange = { state.budgeted = it },
         onBudgetedIconClick = {
-            mainViewModel.setTransferNum(nf.getDoubleFromDollars(budgeted.ifBlank {
+            mainViewModel.setTransferNum(nf.getDoubleFromDollars(state.budgeted.ifBlank {
                 mainActivity.getString(
                     R.string.zero_double
                 )
@@ -177,11 +128,11 @@ fun AccountAddScreenWrapper(
             )
             navController.navigate(Screen.Calculator.route)
         },
-        limit = limit,
-        onLimitChange = { limit = it },
+        limit = state.limit,
+        onLimitChange = { state.limit = it },
         onSaveClick = {
             val accountNames = accountViewModel.getAccountNameList().value ?: emptyList()
-            val curName = name.trim()
+            val curName = state.name.trim()
 
             if (curName.isEmpty()) {
                 Toast.makeText(

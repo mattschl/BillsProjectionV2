@@ -27,8 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -77,19 +75,7 @@ fun BudgetRuleUpdateScreenWrapper(
     val df = LocalDateFunctions.current
     val scope = rememberCoroutineScope()
     val actionSheetState = rememberActionSheetState()
-
-    var nameState by remember { mutableStateOf("") }
-    var amountState by remember { mutableStateOf("") }
-    var isFixedState by remember { mutableStateOf(false) }
-    var isPayDayState by remember { mutableStateOf(false) }
-    var isAutoState by remember { mutableStateOf(false) }
-    var startDateState by remember { mutableStateOf("") }
-    var endDateState by remember { mutableStateOf("") }
-    var frequencyTypeState by remember { mutableIntStateOf(0) }
-    var frequencyCountState by remember { mutableStateOf("1") }
-    var dayOfWeekState by remember { mutableIntStateOf(0) }
-    var leadDaysState by remember { mutableStateOf("0") }
-    var ruleIdState by remember { mutableLongStateOf(0L) }
+    val state = rememberBudgetRuleEditState(nf, df)
 
     var suggestedAmountState by remember { mutableStateOf<Double?>(null) }
 
@@ -97,8 +83,8 @@ fun BudgetRuleUpdateScreenWrapper(
 
     val detailedCached = mainViewModel.getBudgetRuleDetailed()
 
-    val budgetItems by remember(ruleIdState) {
-        budgetItemViewModel.getBudgetItems(ruleIdState)
+    val budgetItems by remember(state.ruleId) {
+        budgetItemViewModel.getBudgetItems(state.ruleId)
     }.observeAsState(emptyList())
 
     LaunchedEffect(Unit) {
@@ -110,25 +96,8 @@ fun BudgetRuleUpdateScreenWrapper(
         if (detailedCached != null) {
             val rule = detailedCached.budgetRule
             if (rule != null) {
-                ruleIdState = rule.ruleId
-                nameState = rule.budgetRuleName
-                amountState = nf.displayDollars(
-                    if (mainViewModel.getTransferNum() != 0.0) {
-                        mainViewModel.getTransferNum()!!
-                    } else {
-                        rule.budgetAmount
-                    }
-                )
+                state.updateFrom(rule, mainViewModel.getTransferNum())
                 mainViewModel.setTransferNum(0.0)
-                isFixedState = rule.budFixedAmount
-                isPayDayState = rule.budIsPayDay
-                isAutoState = rule.budIsAutoPay
-                startDateState = rule.budStartDate
-                endDateState = rule.budEndDate ?: ""
-                frequencyTypeState = rule.budFrequencyTypeId
-                frequencyCountState = rule.budFrequencyCount.toString()
-                dayOfWeekState = rule.budDayOfWeekId
-                leadDaysState = rule.budLeadDays.toString()
 
                 // Calculate suggested amount
                 scope.launch(Dispatchers.IO) {
@@ -143,33 +112,14 @@ fun BudgetRuleUpdateScreenWrapper(
 
     fun getCurrentBudgetRuleForSaving(): BudgetRule {
         val detailed = mainViewModel.getBudgetRuleDetailed()
-        return BudgetRule(
-            detailed?.budgetRule?.ruleId ?: ruleIdState,
-            nameState.trim(),
+        return state.toBudgetRule(
             detailed?.toAccount?.accountId ?: 0L,
-            detailed?.fromAccount?.accountId ?: 0L,
-            nf.getDoubleFromDollars(amountState),
-            isFixedState,
-            isPayDayState,
-            isAutoState,
-            startDateState,
-            endDateState,
-            dayOfWeekState,
-            frequencyTypeState,
-            frequencyCountState.toIntOrNull() ?: 1,
-            leadDaysState.toIntOrNull() ?: 0,
-            false,
-            df.getCurrentTimeAsString()
+            detailed?.fromAccount?.accountId ?: 0L
         )
     }
 
     fun getBudgetRuleDetailed(): BudgetRuleDetailed {
-        val detailed = mainViewModel.getBudgetRuleDetailed()
-        return BudgetRuleDetailed(
-            getCurrentBudgetRuleForSaving(),
-            detailed?.toAccount,
-            detailed?.fromAccount
-        )
+        return state.toBudgetRuleDetailed(mainViewModel.getBudgetRuleDetailed())
     }
 
     fun updateBudgetRule() {
@@ -179,13 +129,13 @@ fun BudgetRuleUpdateScreenWrapper(
     }
 
     fun validateBudgetRule(): String {
-        if (nameState.isBlank()) {
+        if (state.name.isBlank()) {
             return mainActivity.getString(R.string.please_enter_a_name)
         }
         val detailed = mainViewModel.getBudgetRuleDetailed()
         budgetNameList?.let { list ->
             for (name in list) {
-                if (name == nameState.trim() &&
+                if (name == state.name.trim() &&
                     detailed?.budgetRule != null &&
                     name != detailed.budgetRule!!.budgetRuleName
                 ) {
@@ -199,7 +149,7 @@ fun BudgetRuleUpdateScreenWrapper(
         if (detailed.fromAccount == null) {
             return mainActivity.getString(R.string.there_needs_to_be_an_account_money_will_come_from)
         }
-        if (amountState.isEmpty()) {
+        if (state.amount.isEmpty()) {
             return mainActivity.getString(R.string.please_enter_a_budgeted_amount_including_zero)
         }
         return ANSWER_OK
@@ -227,7 +177,7 @@ fun BudgetRuleUpdateScreenWrapper(
 
     fun deleteBudgeRule() {
         val detailed = mainViewModel.getBudgetRuleDetailed()
-        val rId = detailed?.budgetRule?.ruleId ?: ruleIdState
+        val rId = detailed?.budgetRule?.ruleId ?: state.ruleId
         if (rId != 0L) {
             budgetRuleViewModel.deleteBudgetRule(rId, df.getCurrentTimeAsString())
         }
@@ -285,14 +235,14 @@ fun BudgetRuleUpdateScreenWrapper(
             biProjectedDate = df.getCurrentDateAsString(),
             biActualDate = df.getCurrentDateAsString(),
             biPayDay = curPayday,
-            biBudgetName = nameState,
+            biBudgetName = state.name,
             biIsPayDayItem = false,
             biToAccountId = detailed.toAccount!!.accountId,
             biFromAccountId = detailed.fromAccount!!.accountId,
             biProjectedAmount = detailed.budgetRule!!.budgetAmount,
             biIsPending = true,
-            biIsFixed = isFixedState,
-            biIsAutomatic = isAutoState,
+            biIsFixed = state.isFixed,
+            biIsAutomatic = state.isAuto,
             biManuallyEntered = true,
             biIsCompleted = false,
             biIsCancelled = false,
@@ -403,35 +353,35 @@ fun BudgetRuleUpdateScreenWrapper(
     fun gotoCalculator() {
         mainViewModel.setTransferNum(
             nf.getDoubleFromDollars(
-                amountState.ifBlank { mainActivity.getString(R.string.zero_double) })
+                state.amount.ifBlank { mainActivity.getString(R.string.zero_double) })
         )
         mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
         navController.navigate(Screen.Calculator.route)
     }
 
     BudgetRuleScreen(
-        name = nameState,
-        onNameChange = { nameState = it },
-        amount = amountState,
-        onAmountChange = { amountState = it },
-        isFixed = isFixedState,
-        onIsFixedChange = { isFixedState = it },
-        isPayDay = isPayDayState,
-        onIsPayDayChange = { isPayDayState = it },
-        isAuto = isAutoState,
-        onIsAutoChange = { isAutoState = it },
-        startDate = startDateState,
-        onStartDateChange = { startDateState = it },
-        endDate = endDateState,
-        onEndDateChange = { endDateState = it },
-        frequencyType = frequencyTypeState,
-        onFrequencyTypeChange = { frequencyTypeState = it },
-        frequencyCount = frequencyCountState,
-        onFrequencyCountChange = { frequencyCountState = it },
-        dayOfWeek = dayOfWeekState,
-        onDayOfWeekChange = { dayOfWeekState = it },
-        leadDays = leadDaysState,
-        onLeadDaysChange = { leadDaysState = it },
+        name = state.name,
+        onNameChange = { state.name = it },
+        amount = state.amount,
+        onAmountChange = { state.amount = it },
+        isFixed = state.isFixed,
+        onIsFixedChange = { state.isFixed = it },
+        isPayDay = state.isPayDay,
+        onIsPayDayChange = { state.isPayDay = it },
+        isAuto = state.isAuto,
+        onIsAutoChange = { state.isAuto = it },
+        startDate = state.startDate,
+        onStartDateChange = { state.startDate = it },
+        endDate = state.endDate,
+        onEndDateChange = { state.endDate = it },
+        frequencyType = state.frequencyType,
+        onFrequencyTypeChange = { state.frequencyType = it },
+        frequencyCount = state.frequencyCount,
+        onFrequencyCountChange = { state.frequencyCount = it },
+        dayOfWeek = state.dayOfWeek,
+        onDayOfWeekChange = { state.dayOfWeek = it },
+        leadDays = state.leadDays,
+        onLeadDaysChange = { state.leadDays = it },
         toAccount = detailedCached?.toAccount,
         fromAccount = detailedCached?.fromAccount,
         onChooseAccount = { chooseAccount(it) },

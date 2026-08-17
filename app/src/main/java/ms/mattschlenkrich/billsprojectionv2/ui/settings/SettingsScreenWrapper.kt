@@ -45,15 +45,13 @@ import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 fun SettingsScreenWrapper(
     mainActivity: MainActivity
 ) {
+    val settingsManager = remember { SettingsManager(mainActivity) }
+    val initialSettings = remember { settingsManager.getSettings() }
+    val state = rememberSettingsEditState(initialSettings)
+
     LaunchedEffect(Unit) {
         mainActivity.topMenuBar.setTitle(R.string.settings)
     }
-    val settingsManager = remember { SettingsManager(mainActivity) }
-    val settings = remember { settingsManager.getSettings() }
-    var selectedFontSize by remember { mutableStateOf(settings.fontSize ?: "medium") }
-    var selectedThemeMode by remember { mutableStateOf(settings.themeMode ?: "system") }
-    var usePasswordProtection by remember { mutableStateOf(settings.usePasswordProtection) }
-    var isPasswordSet by remember { mutableStateOf(settings.passwordHash != null) }
 
     val rawAssetList by mainActivity.budgetItemViewModel.getAssetsForBudget()
         .observeAsState(initial = emptyList())
@@ -61,7 +59,6 @@ fun SettingsScreenWrapper(
         if (rawAssetList.isEmpty()) listOf(ALL_ITEMS)
         else listOf(ALL_ITEMS) + rawAssetList
     }
-    var defaultAccount by remember { mutableStateOf(settings.defaultAccount ?: ALL_ITEMS) }
 
     var showPasswordDialog by remember { mutableStateOf(false) }
     var showConfirmRemovalDialog by remember { mutableStateOf(false) }
@@ -85,17 +82,17 @@ fun SettingsScreenWrapper(
         )
 
         Column(modifier = Modifier.padding(top = 8.dp)) {
-            ThemeOption("system", R.string.system_default, selectedThemeMode) {
+            ThemeOption("system", R.string.system_default, state.themeMode) {
                 updateThemeMode("system", settingsManager, mainActivity)
-                selectedThemeMode = "system"
+                state.themeMode = "system"
             }
-            ThemeOption("light", R.string.light, selectedThemeMode) {
+            ThemeOption("light", R.string.light, state.themeMode) {
                 updateThemeMode("light", settingsManager, mainActivity)
-                selectedThemeMode = "light"
+                state.themeMode = "light"
             }
-            ThemeOption("dark", R.string.dark, selectedThemeMode) {
+            ThemeOption("dark", R.string.dark, state.themeMode) {
                 updateThemeMode("dark", settingsManager, mainActivity)
-                selectedThemeMode = "dark"
+                state.themeMode = "dark"
             }
         }
 
@@ -106,21 +103,21 @@ fun SettingsScreenWrapper(
         )
 
         Column(modifier = Modifier.padding(top = 8.dp)) {
-            FontSizeOption("small", R.string.small, selectedFontSize) {
+            FontSizeOption("small", R.string.small, state.fontSize) {
                 updateFontSize("small", settingsManager, mainActivity)
-                selectedFontSize = "small"
+                state.fontSize = "small"
             }
-            FontSizeOption("medium", R.string.medium, selectedFontSize) {
+            FontSizeOption("medium", R.string.medium, state.fontSize) {
                 updateFontSize("medium", settingsManager, mainActivity)
-                selectedFontSize = "medium"
+                state.fontSize = "medium"
             }
-            FontSizeOption("large", R.string.large, selectedFontSize) {
+            FontSizeOption("large", R.string.large, state.fontSize) {
                 updateFontSize("large", settingsManager, mainActivity)
-                selectedFontSize = "large"
+                state.fontSize = "large"
             }
-            FontSizeOption("extra_large", R.string.extra_large, selectedFontSize) {
+            FontSizeOption("extra_large", R.string.extra_large, state.fontSize) {
                 updateFontSize("extra_large", settingsManager, mainActivity)
-                selectedFontSize = "extra_large"
+                state.fontSize = "extra_large"
             }
         }
 
@@ -134,9 +131,9 @@ fun SettingsScreenWrapper(
             DropdownSelector(
                 label = stringResource(R.string.default_startup_account),
                 options = assetList,
-                selectedOption = if (assetList.contains(defaultAccount)) defaultAccount else ALL_ITEMS,
+                selectedOption = if (assetList.contains(state.defaultAccount)) state.defaultAccount else ALL_ITEMS,
                 onOptionSelected = { selected ->
-                    defaultAccount = selected
+                    state.defaultAccount = selected
                     val currentSettings = settingsManager.getSettings()
                     settingsManager.saveSettings(currentSettings.copy(defaultAccount = selected))
                 }
@@ -160,14 +157,14 @@ fun SettingsScreenWrapper(
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Switch(
-                    checked = usePasswordProtection,
+                    checked = state.usePasswordProtection,
                     onCheckedChange = { checked ->
-                        if (checked && !isPasswordSet) {
+                        if (checked && !state.isPasswordSet) {
                             showPasswordDialog = true
-                        } else if (!checked && isPasswordSet) {
+                        } else if (!checked && state.isPasswordSet) {
                             showConfirmRemovalDialog = true
                         } else {
-                            usePasswordProtection = checked
+                            state.usePasswordProtection = checked
                             val currentSettings = settingsManager.getSettings()
                             settingsManager.saveSettings(currentSettings.copy(usePasswordProtection = checked))
                         }
@@ -175,7 +172,7 @@ fun SettingsScreenWrapper(
                 )
             }
 
-            if (isPasswordSet) {
+            if (state.isPasswordSet) {
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedButton(
                     onClick = { showPasswordDialog = true },
@@ -208,8 +205,8 @@ fun SettingsScreenWrapper(
                         usePasswordProtection = true
                     )
                 )
-                isPasswordSet = true
-                usePasswordProtection = true
+                state.isPasswordSet = true
+                state.usePasswordProtection = true
                 showPasswordDialog = false
             }
         )
@@ -217,7 +214,7 @@ fun SettingsScreenWrapper(
 
     if (showConfirmRemovalDialog) {
         ConfirmPasswordDialog(
-            passwordHash = settings.passwordHash ?: "",
+            passwordHash = initialSettings.passwordHash ?: "",
             onDismiss = { showConfirmRemovalDialog = false },
             onConfirmed = {
                 val currentSettings = settingsManager.getSettings()
@@ -227,8 +224,8 @@ fun SettingsScreenWrapper(
                         usePasswordProtection = false
                     )
                 )
-                isPasswordSet = false
-                usePasswordProtection = false
+                state.isPasswordSet = false
+                state.usePasswordProtection = false
                 showConfirmRemovalDialog = false
             }
         )

@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.lifecycleScope
@@ -20,11 +19,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.TransactionMessageHelper
-import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
-import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
-import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
-import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 import ms.mattschlenkrich.billsprojectionv2.ui.transactions.compose.TransactionSplitScreen
@@ -40,37 +35,18 @@ fun TransactionSplitScreenWrapper(
     val accountViewModel = mainActivity.accountViewModel
     val budgetRuleViewModel = mainActivity.budgetRuleViewModel
     val accountUpdateViewModel = mainActivity.accountUpdateViewModel
-//    val transactionViewModel = mainActivity.transactionViewModel
     val nf = LocalNumberFunctions.current
     val df = LocalDateFunctions.current
+    val state = rememberTransactionEditState(nf, df)
 
     LaunchedEffect(Unit) {
         mainActivity.topMenuBar.title = mainActivity.getString(R.string.splitting_transaction)
     }
 
-    var date by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var note by remember { mutableStateOf("") }
-    var amount by remember { mutableStateOf("") }
     var originalAmount by remember { mutableDoubleStateOf(0.0) }
 
-    var budgetRule by remember { mutableStateOf<BudgetRule?>(null) }
-    var toAccount by remember { mutableStateOf<Account?>(null) }
-    var fromAccount by remember { mutableStateOf<Account?>(null) }
-
-    var toPending by remember { mutableStateOf(false) }
-    var fromPending by remember { mutableStateOf(false) }
-
-    var toAccountWithType by remember { mutableStateOf<AccountWithType?>(null) }
-    var fromAccountWithType by remember { mutableStateOf<AccountWithType?>(null) }
-
-    var descriptionError by remember { mutableStateOf(false) }
-    var amountError by remember { mutableStateOf(false) }
-    var toAccountError by remember { mutableStateOf(false) }
-    var fromAccountError by remember { mutableStateOf(false) }
-
     fun updateAmountsDisplay() {
-        val amt = nf.getDoubleFromDollars(amount)
+        val amt = nf.getDoubleFromDollars(state.amount)
         val original = originalAmount
         if (original < amt) {
             Toast.makeText(
@@ -78,7 +54,7 @@ fun TransactionSplitScreenWrapper(
                 mainActivity.getString(R.string.error) + mainActivity.getString(R.string.new_amount_cannot_be_more_than_the_original_amount),
                 Toast.LENGTH_LONG
             ).show()
-            amount = nf.displayDollars(0.0)
+            state.amount = nf.displayDollars(0.0)
         }
     }
 
@@ -87,54 +63,39 @@ fun TransactionSplitScreenWrapper(
         if (mTransactionDetailed != null) {
             val transaction = mTransactionDetailed.transaction!!
             originalAmount = transaction.transAmount
-            date = transaction.transDate
-            fromAccount = mTransactionDetailed.fromAccount!!
-            fromPending = transaction.transFromAccountPending
+            state.date = transaction.transDate
+            state.fromAccount = mTransactionDetailed.fromAccount
+            state.fromPending = transaction.transFromAccountPending
 
-            val accountWithType = accountViewModel.getAccountWithType(fromAccount!!.accountId)
-            fromAccountWithType = accountWithType
+            val accountWithType = accountViewModel.getAccountWithType(state.fromAccount!!.accountId)
+            state.fromAccountWithType = accountWithType
             updateAmountsDisplay()
         }
 
         val splitDetailed = mainViewModel.getSplitTransactionDetailed()
         if (splitDetailed != null) {
-            val transaction = splitDetailed.transaction!!
-            description = transaction.transName
-            note = transaction.transNote
-            fromPending = transaction.transFromAccountPending
-
-            amount =
-                if (mainViewModel.getTransferNum() != null && mainViewModel.getTransferNum() != 0.0) {
-                    nf.displayDollars(mainViewModel.getTransferNum()!!)
-                } else if (transaction.transAmount != 0.0) {
-                    nf.displayDollars(transaction.transAmount)
-                } else {
-                    nf.displayDollars(0.0)
-                }
+            state.updateFrom(splitDetailed, mainViewModel.getTransferNum())
             updateAmountsDisplay()
 
-            if (splitDetailed.toAccount != null) {
-                toAccount = splitDetailed.toAccount
-                val accountWithType = accountViewModel.getAccountWithType(toAccount!!.accountId)
-                toAccountWithType = accountWithType
-                if (accountWithType.accountType!!.allowPending) {
-                    toPending = splitDetailed.transaction.transToAccountPending
-                }
+            if (state.toAccount != null) {
+                val accountWithType =
+                    accountViewModel.getAccountWithType(state.toAccount!!.accountId)
+                state.toAccountWithType = accountWithType
             }
-            if (splitDetailed.budgetRule != null) {
-                budgetRule = splitDetailed.budgetRule
-                if (description.isBlank()) {
-                    description = budgetRule!!.budgetRuleName
+            if (state.budgetRule != null) {
+                if (state.description.isBlank()) {
+                    state.description = state.budgetRule!!.budgetRuleName
                 }
-                if (toAccount == null) {
-                    val ruleFull = budgetRuleViewModel.getBudgetRuleDetailed(budgetRule!!.ruleId)
+                if (state.toAccount == null) {
+                    val ruleFull =
+                        budgetRuleViewModel.getBudgetRuleDetailed(state.budgetRule!!.ruleId)
                     if (ruleFull != null) {
-                        toAccount = ruleFull.toAccount
+                        state.toAccount = ruleFull.toAccount
                         val accountWithType =
-                            accountViewModel.getAccountWithType(toAccount!!.accountId)
-                        toAccountWithType = accountWithType
+                            accountViewModel.getAccountWithType(state.toAccount!!.accountId)
+                        state.toAccountWithType = accountWithType
                         if (accountWithType.accountType!!.allowPending) {
-                            toPending = splitDetailed.transaction.transToAccountPending
+                            state.toPending = splitDetailed.transaction!!.transToAccountPending
                         }
                     }
                 }
@@ -142,99 +103,70 @@ fun TransactionSplitScreenWrapper(
         }
     }
 
-    fun getCurrentTransactionForSave(): Transactions {
-        return Transactions(
-            nf.generateId(),
-            date,
-            description,
-            note,
-            budgetRule?.ruleId ?: 0L,
-            toAccount?.accountId ?: 0L,
-            toPending,
-            fromAccount?.accountId ?: 0L,
-            fromPending,
-            nf.getDoubleFromDollars(amount),
-            transIsDeleted = false,
-            transUpdateTime = df.getCurrentTimeAsString()
-        )
-    }
-
-    fun getSplitTransDetailed(): TransactionDetailed {
-        return TransactionDetailed(
-            getCurrentTransactionForSave(),
-            budgetRule,
-            toAccount,
-            fromAccount,
-        )
-    }
-
     TransactionSplitScreen(
-        date = date,
-        onDateChange = { date = it },
-        budgetRule = budgetRule,
+        date = state.date,
+        onDateChange = { state.date = it },
+        budgetRule = state.budgetRule,
         onChooseBudgetRule = {
             mainViewModel.addCallingFragment(TAG)
-            mainViewModel.setSplitTransactionDetailed(getSplitTransDetailed())
+            mainViewModel.setSplitTransactionDetailed(state.toTransactionDetailed())
             navController.navigate(Screen.BudgetRuleChoose.route)
         },
-        amount = amount,
+        amount = state.amount,
         onAmountChange = {
-            amount = it
+            state.amount = it
         },
         onGotoCalculator = {
-            mainViewModel.setTransferNum(nf.getDoubleFromDollars(amount.ifBlank {
+            mainViewModel.setTransferNum(nf.getDoubleFromDollars(state.amount.ifBlank {
                 mainActivity.getString(
                     R.string.zero_double
                 )
             }))
-            mainViewModel.setSplitTransactionDetailed(getSplitTransDetailed())
+            mainViewModel.setSplitTransactionDetailed(state.toTransactionDetailed())
             navController.navigate(Screen.Calculator.route)
         },
         originalAmount = originalAmount,
-        toAccount = toAccount,
+        toAccount = state.toAccount,
         onChooseToAccount = {
             mainViewModel.addCallingFragment(TAG)
             mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
-            mainViewModel.setSplitTransactionDetailed(getSplitTransDetailed())
+            mainViewModel.setSplitTransactionDetailed(state.toTransactionDetailed())
             navController.navigate(Screen.AccountChoose.route)
         },
-        toPending = toPending,
-        onToPendingChange = { toPending = it },
-        allowToPending = toAccountWithType?.accountType?.allowPending == true,
-        fromAccount = fromAccount,
-        fromPending = fromPending,
-        onFromPendingChange = { fromPending = it },
-        allowFromPending = fromAccountWithType?.accountType?.allowPending == true,
+        toPending = state.toPending,
+        onToPendingChange = { state.toPending = it },
+        allowToPending = state.toAccountWithType?.accountType?.allowPending == true,
+        fromAccount = state.fromAccount,
+        fromPending = state.fromPending,
+        onFromPendingChange = { state.fromPending = it },
+        allowFromPending = state.fromAccountWithType?.accountType?.allowPending == true,
         onFromAccountClick = {
             mainViewModel.addCallingFragment(TAG)
             mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
-            mainViewModel.setSplitTransactionDetailed(getSplitTransDetailed())
+            mainViewModel.setSplitTransactionDetailed(state.toTransactionDetailed())
             navController.navigate(Screen.AccountChoose.route)
         },
-        description = description,
-        onDescriptionChange = { description = it },
-        note = note,
-        onNoteChange = { note = it },
-        descriptionError = descriptionError,
-        amountError = amountError,
-        toAccountError = toAccountError,
-        fromAccountError = fromAccountError,
+        description = state.description,
+        onDescriptionChange = { state.description = it },
+        note = state.note,
+        onNoteChange = { state.note = it },
+        descriptionError = state.descriptionError,
+        amountError = state.amountError,
+        toAccountError = state.toAccountError,
+        fromAccountError = state.fromAccountError,
         onSaveClick = {
-            val amt = nf.getDoubleFromDollars(amount)
-            descriptionError = description.isBlank()
-            amountError = amount.isBlank() || amt == 0.0 || amt >= originalAmount
-            toAccountError = toAccount == null
-            fromAccountError = fromAccount == null
+            val amt = nf.getDoubleFromDollars(state.amount)
+            val valid = state.validate()
 
-            val answer = if (amount.isBlank()) {
+            val answer = if (state.amount.isBlank()) {
                 mainActivity.getString(R.string.please_enter_an_amount_for_this_transaction)
             } else if (amt >= originalAmount) {
                 mainActivity.getString(R.string.the_amount_of_a_split_transaction_must_be_less_than_the_original)
-            } else if (description.isBlank()) {
+            } else if (state.description.isBlank()) {
                 mainActivity.getString(R.string.please_enter_a_name_or_description)
-            } else if (toAccount == null) {
+            } else if (state.toAccount == null) {
                 mainActivity.getString(R.string.there_needs_to_be_an_account_money_will_go_to)
-            } else if (budgetRule == null) {
+            } else if (state.budgetRule == null) {
                 AlertDialog.Builder(mainActivity).apply {
                     setMessage(
                         mainActivity.getString(R.string.there_is_no_budget_rule) + mainActivity.getString(
@@ -249,7 +181,7 @@ fun TransactionSplitScreenWrapper(
             }
 
             if (answer == ANSWER_OK) {
-                val transactionDetailed = getSplitTransDetailed()
+                val transactionDetailed = state.toTransactionDetailed()
                 val display = TransactionMessageHelper.buildConfirmationMessage(
                     mainActivity, transactionDetailed, nf
                 )
@@ -257,11 +189,11 @@ fun TransactionSplitScreenWrapper(
                     .setTitle(mainActivity.getString(R.string.confirm_performing_transaction))
                     .setMessage(display)
                     .setPositiveButton(mainActivity.getString(R.string.confirm)) { _, _ ->
-                        val mTransaction = getCurrentTransactionForSave()
+                        val mTransaction = state.toTransactions()
                         mainActivity.lifecycleScope.launch {
                             accountUpdateViewModel.performTransaction(mTransaction)
-                            val transactionDetailed = mainViewModel.getTransactionDetailed()!!
-                            val oldTransaction = transactionDetailed.transaction!!
+                            val cachedDetailed = mainViewModel.getTransactionDetailed()!!
+                            val oldTransaction = cachedDetailed.transaction!!
                             oldTransaction.transAmount = originalAmount - amt
                             if (mainViewModel.getUpdatingTransaction()) {
                                 accountUpdateViewModel.updateTransactionWithoutAccountUpdate(
@@ -271,9 +203,9 @@ fun TransactionSplitScreenWrapper(
                             mainViewModel.setTransactionDetailed(
                                 TransactionDetailed(
                                     oldTransaction,
-                                    transactionDetailed.budgetRule,
-                                    transactionDetailed.toAccount,
-                                    transactionDetailed.fromAccount
+                                    cachedDetailed.budgetRule,
+                                    cachedDetailed.toAccount,
+                                    cachedDetailed.fromAccount
                                 )
                             )
                             mainViewModel.setSplitTransactionDetailed(null)

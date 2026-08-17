@@ -244,7 +244,7 @@ fun BudgetRuleScreen(
                     suggestedAmount?.let {
                         val nf = LocalNumberFunctions.current
                         Text(
-                            text = "Suggested: " + nf.displayDollars(it),
+                            text = "${stringResource(R.string.average)}: ${nf.displayDollars(it)}",
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.secondary,
                             modifier = Modifier.padding(start = 8.dp)

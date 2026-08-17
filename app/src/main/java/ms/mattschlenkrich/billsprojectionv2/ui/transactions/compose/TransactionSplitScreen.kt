@@ -15,13 +15,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -30,41 +33,48 @@ import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectBalanceFiel
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectDateField
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextBox
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
 
 @Composable
-fun TransactionEditScreen(
+fun TransactionSplitScreen(
     date: String,
     onDateChange: (String) -> Unit,
+    budgetRule: BudgetRule?,
+    onChooseBudgetRule: () -> Unit,
+    amount: String,
+    onAmountChange: (String) -> Unit,
+    onGotoCalculator: () -> Unit,
+    originalAmount: Double,
+    toAccount: Account?,
+    onChooseToAccount: () -> Unit,
+    toPending: Boolean,
+    onToPendingChange: (Boolean) -> Unit,
+    allowToPending: Boolean,
+    fromAccount: Account?,
+    fromPending: Boolean,
+    onFromPendingChange: (Boolean) -> Unit,
+    allowFromPending: Boolean,
+    onFromAccountClick: () -> Unit,
     description: String,
     onDescriptionChange: (String) -> Unit,
     note: String,
     onNoteChange: (String) -> Unit,
-    amount: String,
-    onAmountChange: (String) -> Unit,
-    toAccount: Account?,
-    fromAccount: Account?,
-    budgetRule: BudgetRule?,
-    toPending: Boolean,
-    onToPendingChange: (Boolean) -> Unit,
-    fromPending: Boolean,
-    onFromPendingChange: (Boolean) -> Unit,
-    allowToPending: Boolean,
-    allowFromPending: Boolean,
     onSaveClick: () -> Unit,
-    onChooseBudgetRule: () -> Unit,
-    onChooseFromAccount: () -> Unit,
-    onChooseToAccount: () -> Unit,
-    onSplitClick: () -> Unit,
-    onGotoCalculator: () -> Unit,
-    isSplitEnabled: Boolean,
-    splitButtonText: String = stringResource(R.string.splitting_transaction),
     descriptionError: Boolean = false,
     amountError: Boolean = false,
     toAccountError: Boolean = false,
     fromAccountError: Boolean = false,
 ) {
+    val nf = LocalNumberFunctions.current
+
+    val remainder by remember(amount, originalAmount) {
+        derivedStateOf {
+            originalAmount - nf.getDoubleFromDollars(amount)
+        }
+    }
+
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         modifier = Modifier.imePadding(),
@@ -91,6 +101,7 @@ fun TransactionEditScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Spacer(modifier = Modifier.height(4.dp))
+
             ProjectTextField(
                 value = description,
                 onValueChange = onDescriptionChange,
@@ -105,9 +116,9 @@ fun TransactionEditScreen(
                     label = stringResource(R.string.date),
                     modifier = Modifier.weight(2f)
                 )
-                Spacer(modifier = Modifier.width(2.dp))
+                Spacer(modifier = Modifier.width(8.dp))
                 ProjectBalanceField(
-                    label = stringResource(R.string.amount),
+                    label = stringResource(R.string.transaction_amount),
                     value = amount,
                     onValueChange = onAmountChange,
                     onIconClick = onGotoCalculator,
@@ -123,18 +134,51 @@ fun TransactionEditScreen(
                 onClick = onChooseBudgetRule
             )
 
+            OutlinedCard(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = stringResource(R.string.original_amount),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = nf.displayDollars(originalAmount),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = stringResource(R.string.remainder),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = nf.displayDollars(remainder),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                }
+            }
+
             TransactionAccountField(
-                label = stringResource(R.string.from_account_name),
+                label = stringResource(R.string.from_this_account),
                 account = fromAccount,
                 isPending = fromPending,
                 onPendingChange = onFromPendingChange,
                 allowPending = allowFromPending,
-                onClick = onChooseFromAccount,
+                onClick = onFromAccountClick,
                 isError = fromAccountError
             )
 
             TransactionAccountField(
-                label = stringResource(R.string.to_account_name),
+                label = stringResource(R.string.to_this_account),
                 account = toAccount,
                 isPending = toPending,
                 onPendingChange = onToPendingChange,
@@ -146,16 +190,8 @@ fun TransactionEditScreen(
             ProjectTextField(
                 value = note,
                 onValueChange = onNoteChange,
-                label = stringResource(R.string.note)
+                label = stringResource(R.string.notes)
             )
-
-            Button(
-                onClick = onSplitClick,
-                modifier = Modifier.fillMaxWidth(),
-                enabled = isSplitEnabled
-            ) {
-                Text(splitButtonText)
-            }
         }
     }
 }

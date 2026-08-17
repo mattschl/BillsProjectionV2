@@ -4,10 +4,7 @@ import android.app.AlertDialog
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
@@ -18,10 +15,6 @@ import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.TransactionMessageHelper
-import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
-import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
-import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
-import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 import ms.mattschlenkrich.billsprojectionv2.ui.transactions.compose.TransactionPerformScreen
@@ -39,150 +32,79 @@ fun TransactionPerformScreenWrapper(
     val budgetItemViewModel = mainActivity.budgetItemViewModel
     val nf = LocalNumberFunctions.current
     val df = LocalDateFunctions.current
+    val state = rememberTransactionEditState(nf, df)
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         mainActivity.topMenuBar.title = mainActivity.getString(R.string.perform_a_transaction)
-    }
 
-    var date by remember { mutableStateOf(df.getCurrentDateAsString()) }
-    var description by remember { mutableStateOf("") }
-    var note by remember { mutableStateOf("") }
-    var amount by remember { mutableStateOf("") }
-    var budgetedAmount by remember { mutableStateOf("") }
-    var toAccount by remember { mutableStateOf<Account?>(null) }
-    var fromAccount by remember { mutableStateOf<Account?>(null) }
-    var budgetRule by remember { mutableStateOf<BudgetRule?>(null) }
-    var toPending by remember { mutableStateOf(false) }
-    var fromPending by remember { mutableStateOf(false) }
-    var allowToPending by remember { mutableStateOf(false) }
-    var allowFromPending by remember { mutableStateOf(false) }
+        val cachedTrans = mainViewModel.getTransactionDetailed()
+        val cachedBudgetItem = mainViewModel.getBudgetItemDetailed()
 
-    var descriptionError by remember { mutableStateOf(false) }
-    var amountError by remember { mutableStateOf(false) }
-    var toAccountError by remember { mutableStateOf(false) }
-    var fromAccountError by remember { mutableStateOf(false) }
+        if (cachedTrans != null) {
+            state.updateFrom(cachedTrans, mainViewModel.getTransferNum())
+            mainViewModel.setTransferNum(0.0)
 
-    LaunchedEffect(Unit) {
-        if (mainViewModel.getTransactionDetailed() != null) {
-            val detailed = mainViewModel.getTransactionDetailed()!!
-            val trans = detailed.transaction
-            if (trans != null) {
-                budgetRule = detailed.budgetRule
-                toAccount = detailed.toAccount
-                fromAccount = detailed.fromAccount
-
-                description = trans.transName
-                note = trans.transNote
-                date = trans.transDate
-
-                val curAmount = if (mainViewModel.getTransferNum() != 0.0) {
-                    mainViewModel.getTransferNum()!!
-                } else {
-                    trans.transAmount
-                }
-                amount = nf.displayDollars(curAmount)
-                mainViewModel.setTransferNum(0.0)
-
-                val bAmount =
-                    mainViewModel.getBudgetItemDetailed()?.budgetItem?.biProjectedAmount ?: 0.0
-                budgetedAmount = nf.displayDollars(bAmount)
-
-                toPending = trans.transToAccountPending
-                fromPending = trans.transFromAccountPending
-
-                detailed.toAccount?.let { acc ->
-                    accountViewModel.getAccountDetailed(acc.accountId).observe(mainActivity) {
-                        allowToPending = it.accountType?.allowPending == true
-                    }
-                }
-
-                detailed.fromAccount?.let { acc ->
-                    accountViewModel.getAccountDetailed(acc.accountId).observe(mainActivity) {
-                        allowFromPending = it.accountType?.allowPending == true
-                    }
+            state.toAccount?.let { acc ->
+                accountViewModel.getAccountDetailed(acc.accountId).observe(mainActivity) {
+                    state.toAccountWithType = it
                 }
             }
-        } else if (mainViewModel.getBudgetItemDetailed() != null) {
-            val detailed = mainViewModel.getBudgetItemDetailed()!!
-            val budgetItem = detailed.budgetItem!!
 
-            toAccount = detailed.toAccount
-            fromAccount = detailed.fromAccount
-            budgetRule = detailed.budgetRule
-
-            description = budgetItem.biBudgetName
-            date = df.getCurrentDateAsString()
-            budgetedAmount = nf.displayDollars(budgetItem.biProjectedAmount)
-            amount = nf.displayDollars(0.0)
-
-            detailed.toAccount?.let { acc ->
+            state.fromAccount?.let { acc ->
                 accountViewModel.getAccountDetailed(acc.accountId).observe(mainActivity) {
-                    allowToPending = it.accountType?.allowPending == true
+                    state.fromAccountWithType = it
+                }
+            }
+        } else if (cachedBudgetItem != null) {
+            val budgetItem = cachedBudgetItem.budgetItem!!
+            state.date = df.getCurrentDateAsString()
+            state.description = budgetItem.biBudgetName
+            state.amount = nf.displayDollars(0.0)
+            state.budgetRule = cachedBudgetItem.budgetRule
+            state.toAccount = cachedBudgetItem.toAccount
+            state.fromAccount = cachedBudgetItem.fromAccount
+
+            state.toAccount?.let { acc ->
+                accountViewModel.getAccountDetailed(acc.accountId).observe(mainActivity) {
+                    state.toAccountWithType = it
                     if (it.accountType?.allowPending == true && it.accountType.tallyOwing) {
-                        toPending = true
+                        state.toPending = true
                     }
                 }
             }
 
-            detailed.fromAccount?.let { acc ->
+            state.fromAccount?.let { acc ->
                 accountViewModel.getAccountDetailed(acc.accountId).observe(mainActivity) {
-                    allowFromPending = it.accountType?.allowPending == true
+                    state.fromAccountWithType = it
                     if (it.accountType?.allowPending == true && it.accountType.tallyOwing) {
-                        fromPending = true
+                        state.fromPending = true
                     }
                 }
             }
         }
     }
 
-    fun getCurrentTransactionForSave(): Transactions {
-        return Transactions(
-            transId = nf.generateId(),
-            transDate = date,
-            transName = description,
-            transNote = note,
-            transRuleId = budgetRule?.ruleId ?: 0L,
-            transToAccountId = toAccount?.accountId ?: 0L,
-            transToAccountPending = toPending,
-            transFromAccountId = fromAccount?.accountId ?: 0L,
-            transFromAccountPending = fromPending,
-            transAmount = nf.getDoubleFromDollars(amount),
-            transIsDeleted = false,
-            transUpdateTime = df.getCurrentTimeAsString()
-        )
-    }
-
-    fun getTransactionDetailed(): TransactionDetailed {
-        return TransactionDetailed(
-            getCurrentTransactionForSave(),
-            budgetRule,
-            toAccount,
-            fromAccount
-        )
-    }
-
     TransactionPerformScreen(
-        date = date,
-        onDateChange = { date = it },
-        budgetRule = budgetRule,
-        amount = amount,
-        onAmountChange = {
-            amount = it
-        },
+        date = state.date,
+        onDateChange = { state.date = it },
+        budgetRule = state.budgetRule,
+        amount = state.amount,
+        onAmountChange = { state.amount = it },
         onSplitClick = {
             mainViewModel.setSplitTransactionDetailed(null)
             mainViewModel.setTransferNum(0.0)
-            val amt = nf.getDoubleFromDollars(amount)
-            if (fromAccount != null && amt > 2.0) {
+            if (state.fromAccount != null && nf.getDoubleFromDollars(state.amount) > 2.0) {
                 mainViewModel.addCallingFragment(TAG)
-                mainViewModel.setTransactionDetailed(getTransactionDetailed())
+                mainViewModel.setTransactionDetailed(state.toTransactionDetailed())
                 navController.navigate(Screen.TransactionSplit.route)
             }
         },
-        budgetedAmount = budgetedAmount,
+        budgetedAmount = nf.displayDollars(
+            mainViewModel.getBudgetItemDetailed()?.budgetItem?.biProjectedAmount ?: 0.0
+        ),
         onBudgetedAmountChange = {
-            budgetedAmount = it
-            val amt = nf.getDoubleFromDollars(budgetedAmount)
+            val amt = nf.getDoubleFromDollars(it)
             mainViewModel.getBudgetItemDetailed()?.let { detailed ->
                 if (amt != detailed.budgetItem?.biProjectedAmount) {
                     detailed.budgetItem?.biProjectedAmount = amt
@@ -190,62 +112,38 @@ fun TransactionPerformScreenWrapper(
                 }
             }
         },
-        toAccount = toAccount,
-        toPending = toPending,
-        onToPendingChange = { toPending = it },
-        allowToPending = allowToPending,
+        toAccount = state.toAccount,
+        toPending = state.toPending,
+        onToPendingChange = { state.toPending = it },
+        allowToPending = state.toAccountWithType?.accountType?.allowPending == true,
         onToAccountClick = {
             mainViewModel.addCallingFragment(TAG)
             mainViewModel.setRequestedAccount(REQUEST_TO_ACCOUNT)
-            mainViewModel.setTransactionDetailed(getTransactionDetailed())
+            mainViewModel.setTransactionDetailed(state.toTransactionDetailed())
             navController.navigate(Screen.AccountChoose.route)
         },
-        fromAccount = fromAccount,
-        fromPending = fromPending,
-        onFromPendingChange = { fromPending = it },
-        allowFromPending = allowFromPending,
+        fromAccount = state.fromAccount,
+        fromPending = state.fromPending,
+        onFromPendingChange = { state.fromPending = it },
+        allowFromPending = state.fromAccountWithType?.accountType?.allowPending == true,
         onFromAccountClick = {
             mainViewModel.addCallingFragment(TAG)
             mainViewModel.setRequestedAccount(REQUEST_FROM_ACCOUNT)
-            mainViewModel.setTransactionDetailed(getTransactionDetailed())
+            mainViewModel.setTransactionDetailed(state.toTransactionDetailed())
             navController.navigate(Screen.AccountChoose.route)
         },
         onChooseBudgetRule = {
             mainViewModel.addCallingFragment(TAG)
-            mainViewModel.setTransactionDetailed(getTransactionDetailed())
+            mainViewModel.setTransactionDetailed(state.toTransactionDetailed())
             navController.navigate(Screen.BudgetRuleChoose.route)
         },
-        description = description,
-        onDescriptionChange = { description = it },
-        note = note,
-        onNoteChange = { note = it },
+        description = state.description,
+        onDescriptionChange = { state.description = it },
+        note = state.note,
+        onNoteChange = { state.note = it },
         onSaveClick = {
-            val amt = nf.getDoubleFromDollars(amount)
-            descriptionError = description.isBlank()
-            amountError = amt == 0.0
-            toAccountError = toAccount == null
-            fromAccountError = fromAccount == null
-
-            if (descriptionError) {
-                Toast.makeText(
-                    mainActivity,
-                    mainActivity.getString(R.string.please_enter_a_name_or_description),
-                    Toast.LENGTH_LONG
-                ).show()
-            } else if (amountError) {
-                Toast.makeText(
-                    mainActivity,
-                    mainActivity.getString(R.string.please_enter_an_amount_for_this_transaction),
-                    Toast.LENGTH_LONG
-                ).show()
-            } else if (toAccountError || fromAccountError) {
-                Toast.makeText(
-                    mainActivity,
-                    mainActivity.getString(R.string.error) + mainActivity.getString(R.string.choose_an_account),
-                    Toast.LENGTH_LONG
-                ).show()
-            } else {
-                val transactionDetailed = getTransactionDetailed()
+            if (state.validate()) {
+                val transactionDetailed = state.toTransactionDetailed()
                 val display = TransactionMessageHelper.buildConfirmationMessage(
                     mainActivity, transactionDetailed, nf
                 )
@@ -254,10 +152,13 @@ fun TransactionPerformScreenWrapper(
                     .setTitle(mainActivity.getString(R.string.confirm_performing_transaction))
                     .setMessage(display)
                     .setPositiveButton(mainActivity.getString(R.string.confirm)) { _, _ ->
-                        val mTransaction = getCurrentTransactionForSave()
+                        val mTransaction = state.toTransactions()
                         mainActivity.lifecycleScope.launch {
                             accountUpdateViewModel.performTransaction(mTransaction)
-                            val rem = nf.getDoubleFromDollars(budgetedAmount) - amt
+                            val budgetedAmount =
+                                mainViewModel.getBudgetItemDetailed()?.budgetItem?.biProjectedAmount
+                                    ?: 0.0
+                            val rem = budgetedAmount - mTransaction.transAmount
                             val completed = rem < 2.0
                             val detailed = mainViewModel.getBudgetItemDetailed()
                             if (detailed != null) {
@@ -280,17 +181,23 @@ fun TransactionPerformScreenWrapper(
                     }
                     .setNegativeButton(mainActivity.getString(R.string.go_back), null)
                     .show()
+            } else {
+                Toast.makeText(
+                    mainActivity,
+                    mainActivity.getString(R.string.error) + mainActivity.getString(R.string.please_enter_a_name_or_description),
+                    Toast.LENGTH_LONG
+                ).show()
             }
         },
         onGotoCalculator = {
-            mainViewModel.setTransferNum(nf.getDoubleFromDollars(amount))
-            mainViewModel.setTransactionDetailed(getTransactionDetailed())
+            mainViewModel.setTransferNum(nf.getDoubleFromDollars(state.amount))
+            mainViewModel.setTransactionDetailed(state.toTransactionDetailed())
             navController.navigate(Screen.Calculator.route)
         },
-        isSplitEnabled = nf.getDoubleFromDollars(amount) > 2.0 && fromAccount != null,
-        descriptionError = descriptionError,
-        amountError = amountError,
-        toAccountError = toAccountError,
-        fromAccountError = fromAccountError,
+        isSplitEnabled = nf.getDoubleFromDollars(state.amount) > 2.0 && state.fromAccount != null,
+        descriptionError = state.descriptionError,
+        amountError = state.amountError,
+        toAccountError = state.toAccountError,
+        fromAccountError = state.fromAccountError,
     )
 }

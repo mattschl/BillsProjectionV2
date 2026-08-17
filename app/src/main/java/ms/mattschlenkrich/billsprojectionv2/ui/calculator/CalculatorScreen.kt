@@ -28,7 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
 
 @Composable
 fun CalculatorScreen(
@@ -43,7 +43,7 @@ fun CalculatorScreen(
     onBackspaceClick: () -> Unit,
     onTransferClick: () -> Unit
 ) {
-    val nf = NumberFunctions()
+    val nf = LocalNumberFunctions.current
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         modifier = Modifier.fillMaxSize(),

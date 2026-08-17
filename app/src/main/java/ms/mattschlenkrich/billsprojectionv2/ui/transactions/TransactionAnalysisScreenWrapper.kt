@@ -30,7 +30,6 @@ import ms.mattschlenkrich.billsprojectionv2.common.components.rememberActionShee
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.TransactionMessageHelper
-import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 import ms.mattschlenkrich.billsprojectionv2.ui.transactions.compose.TransactionAnalysisScreen
@@ -52,6 +51,7 @@ fun TransactionAnalysisScreenWrapper(
     val df = LocalDateFunctions.current
     val coroutineScope = rememberCoroutineScope()
     val actionSheetState = rememberActionSheetState()
+    val state = rememberTransactionEditState(nf, df)
 
     LaunchedEffect(Unit) {
         mainActivity.topMenuBar.title = mainActivity.getString(R.string.transaction_analysis)
@@ -227,6 +227,7 @@ fun TransactionAnalysisScreenWrapper(
             navController.navigate(Screen.AccountChoose.route)
         },
         onTransactionClick = { transactionDetailed ->
+            state.updateFrom(transactionDetailed)
             val display = TransactionMessageHelper.buildPendingCompletionMessage(
                 mainActivity, transactionDetailed, nf
             )
@@ -254,26 +255,14 @@ fun TransactionAnalysisScreenWrapper(
                 },
                 ActionOption(display, Icons.Default.Check) {
                     if (transactionDetailed.transaction!!.transToAccountPending || transactionDetailed.transaction.transFromAccountPending) {
-                        transactionDetailed.transaction.apply {
-                            val newTransaction = Transactions(
-                                transId,
-                                transDate,
-                                transName,
-                                transNote,
-                                transRuleId,
-                                transToAccountId,
-                                false,
-                                transFromAccountId,
-                                false,
-                                transAmount,
-                                transIsDeleted,
-                                transUpdateTime
+                        val newTransaction = transactionDetailed.transaction.copy(
+                            transToAccountPending = false,
+                            transFromAccountPending = false
+                        )
+                        coroutineScope.launch(Dispatchers.IO) {
+                            accountUpdateViewModel.updateTransaction(
+                                transactionDetailed.transaction, newTransaction
                             )
-                            coroutineScope.launch(Dispatchers.IO) {
-                                accountUpdateViewModel.updateTransaction(
-                                    transactionDetailed.transaction, newTransaction
-                                )
-                            }
                         }
                     }
                 },
