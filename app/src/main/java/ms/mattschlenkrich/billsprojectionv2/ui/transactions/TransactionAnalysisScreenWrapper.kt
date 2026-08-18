@@ -254,16 +254,14 @@ fun TransactionAnalysisScreenWrapper(
                     }
                 },
                 ActionOption(display, Icons.Default.Check) {
-                    if (transactionDetailed.transaction!!.transToAccountPending || transactionDetailed.transaction.transFromAccountPending) {
-                        val newTransaction = transactionDetailed.transaction.copy(
-                            transToAccountPending = false,
-                            transFromAccountPending = false
+                    val newTransaction = transactionDetailed.transaction!!.copy(
+                        transToAccountPending = false,
+                        transFromAccountPending = false
+                    )
+                    coroutineScope.launch(Dispatchers.IO) {
+                        accountUpdateViewModel.updateTransaction(
+                            transactionDetailed.transaction, newTransaction
                         )
-                        coroutineScope.launch(Dispatchers.IO) {
-                            accountUpdateViewModel.updateTransaction(
-                                transactionDetailed.transaction, newTransaction
-                            )
-                        }
                     }
                 },
                 ActionOption(

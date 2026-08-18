@@ -176,9 +176,7 @@ fun AccountUpdateScreenWrapper(
                 }
             },
             ActionOption(display, Icons.Default.Check) {
-                if (transaction.transToAccountPending || transaction.transFromAccountPending) {
-                    confirmCompletePendingTransactions(transactionDetailed)
-                }
+                confirmCompletePendingTransactions(transactionDetailed)
             },
             ActionOption(
                 mainActivity.getString(R.string.go_to_the_rules_for_future_budgets_of_this_kind),

@@ -90,14 +90,12 @@ fun TransactionViewScreenWrapper(
                     }
                 },
                 ActionOption(display, Icons.Default.Check) {
-                    if (trans.transToAccountPending || trans.transFromAccountPending) {
-                        val newTransaction = trans.copy(
-                            transToAccountPending = false,
-                            transFromAccountPending = false
-                        )
-                        activity.lifecycleScope.launch {
-                            accountUpdateViewModel.updateTransaction(trans, newTransaction)
-                        }
+                    val newTransaction = trans.copy(
+                        transToAccountPending = false,
+                        transFromAccountPending = false
+                    )
+                    activity.lifecycleScope.launch {
+                        accountUpdateViewModel.updateTransaction(trans, newTransaction)
                     }
                 },
                 ActionOption(

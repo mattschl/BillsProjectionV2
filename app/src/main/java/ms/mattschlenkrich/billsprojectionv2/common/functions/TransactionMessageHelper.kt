@@ -37,6 +37,8 @@ object TransactionMessageHelper {
         nf: NumberFunctions
     ): String {
         val trans = transactionDetailed.transaction ?: return ""
+        if (!trans.transToAccountPending && !trans.transFromAccountPending) return ""
+
         val toAccountName = transactionDetailed.toAccount?.accountName ?: ""
         val fromAccountName = transactionDetailed.fromAccount?.accountName ?: ""
 
