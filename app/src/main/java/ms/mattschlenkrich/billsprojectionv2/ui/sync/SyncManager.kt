@@ -23,7 +23,7 @@ class SyncManager(
     private val nf: NumberFunctions,
     private val onProgressUpdate: (String) -> Unit,
     private val onConflict: suspend (ConflictInfo) -> ConflictChoice,
-    private val onTransactionWarning: () -> Unit
+    private val onTransactionWarning: () -> Unit,
 ) {
     private var transactionWarningShownThisSync = false
 
@@ -110,7 +110,7 @@ class SyncManager(
             syncReport.append("\nError: ${e.message}")
             throw e
         } finally {
-            val finalSyncTime = if (status == "Success" && uploadTimestamp != null) {
+            val finalSyncTime = if ((status == "Success") && (uploadTimestamp != null)) {
                 df.getDateTimeStringFromDate(df.parseFileTimestamp(uploadTimestamp)!!)
             } else startTime
             logSyncHistory(finalSyncTime, status, syncReport.toString())
@@ -126,7 +126,7 @@ class SyncManager(
 
     private suspend fun processBackupFile(
         file: com.google.api.services.drive.model.File,
-        allFiles: FileList
+        allFiles: FileList,
     ): String {
         val localBackupFile = File(application.cacheDir, file.name)
         val localWalFile = File(application.cacheDir, "${file.name}-wal")
@@ -144,7 +144,7 @@ class SyncManager(
             val backupDb = SQLiteDatabase.openDatabase(
                 localBackupFile.absolutePath,
                 null,
-                SQLiteDatabase.OPEN_READONLY
+                SQLiteDatabase.OPEN_READONLY,
             )
             val appDb = BillsDatabase(application)
             val syncHelper = DatabaseSyncHelper(appDb, df, deviceId, onConflict)
@@ -155,7 +155,7 @@ class SyncManager(
             val acc = syncHelper.syncAccounts(backupDb); totalCount += acc.first + acc.second
             val br = syncHelper.syncBudgetRules(backupDb); totalCount += br.first + br.second
             val trans = syncHelper.syncTransactions(backupDb)
-            if (trans.first > 0 || trans.second > 0) {
+            if ((trans.first > 0) || (trans.second > 0)) {
                 if (!transactionWarningShownThisSync) {
                     onTransactionWarning()
                     transactionWarningShownThisSync = true
@@ -206,11 +206,12 @@ class SyncManager(
 
     private suspend fun cleanupOldBackups(
         fileList: List<com.google.api.services.drive.model.File>,
-        appDb: BillsDatabase
+        appDb: BillsDatabase,
     ) {
-        val driveBackups = fileList
+        val driveBackups = fileList.asSequence()
             .filter { it.name.startsWith("bills2_") && it.name.endsWith(".db") }
             .sortedByDescending { it.name }
+            .toList()
 
         if (driveBackups.size <= 3) return
 
@@ -222,7 +223,7 @@ class SyncManager(
         val preservedByMachine = allSuccessfulSyncs.groupBy { it.syncDeviceId }
             .mapValues { entry -> entry.value.maxOf { it.syncTime } }.values.toSet()
 
-        val safeZone = driveBackups.take(3).toSet()
+        val safeZone = driveBackups.asSequence().take(3).toSet()
         val toDelete = driveBackups.filter { backup ->
             if (backup in safeZone) return@filter false
             val tsPart = backup.name.substringAfter("bills2_").substringBefore(".db")
@@ -247,7 +248,7 @@ class SyncManager(
                 val syncHistory = SyncHistory(
                     syncId = nf.generateId(), syncTime = time,
                     syncSourceName = "Google Drive", syncDeviceId = deviceId,
-                    syncStatus = status, syncRecordsProcessed = records
+                    syncStatus = status, syncRecordsProcessed = records,
                 )
                 BillsDatabase(application).getSyncHistoryDao().insertSyncHistory(syncHistory)
             } catch (e: Exception) {

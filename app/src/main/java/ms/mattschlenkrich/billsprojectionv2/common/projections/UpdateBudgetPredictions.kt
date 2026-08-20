@@ -22,7 +22,7 @@ class UpdateBudgetPredictions(
         try {
             val startDate = LocalDate.now().minusWeeks(2).toString()
             budgetItemViewModel.killFutureBudgetItemsSync(
-                startDate, df.getCurrentTimeAsString()
+                startDate, df.getCurrentTimeAsString(),
             )
         } catch (e: Exception) {
             Log.e(TAG, "An unknown error occurred", e)
@@ -67,7 +67,7 @@ class UpdateBudgetPredictions(
                 interval = rule.budFrequencyCount.toLong(),
                 intervalTypeId = rule.budFrequencyTypeId,
                 dayOfWeekId = rule.budDayOfWeekId,
-                leadDays = rule.budLeadDays.toLong()
+                leadDays = rule.budLeadDays.toLong(),
             )
             for (date in payDates) {
                 insertOrRewriteBudgetItem(
@@ -78,24 +78,24 @@ class UpdateBudgetPredictions(
     }
 
     private suspend fun updateBudgetItemsFallingOnPaydays(
-        rulesOnPayDay: ArrayList<BudgetRule>, stopDate: String, payDays: List<String>
+        rulesOnPayDay: ArrayList<BudgetRule>, stopDate: String, payDays: List<String>,
     ) {
         val updateTime = df.getCurrentTimeAsString()
         for (rule in rulesOnPayDay) {
             val endDate = if (rule.budEndDate!! > stopDate) stopDate else rule.budEndDate
             val payDates = projectBudgetDates.projectOnPayDay(
-                rule.budStartDate, rule.budFrequencyCount.toLong(), payDays, endDate
+                rule.budStartDate, rule.budFrequencyCount.toLong(), payDays, endDate,
             )
             for (date in payDates) {
                 insertOrRewriteBudgetItem(
-                    rule, date.toString(), date.toString(), date.toString(), updateTime
+                    rule, date.toString(), date.toString(), date.toString(), updateTime,
                 )
             }
         }
     }
 
     private suspend fun updateAllOtherBudgetItems(
-        rulesOther: ArrayList<BudgetRule>, stopDate: String
+        rulesOther: ArrayList<BudgetRule>, stopDate: String,
     ) {
         val updateTime = df.getCurrentTimeAsString()
         val payDays = budgetItemViewModel.getPayDaysActive()
@@ -109,13 +109,13 @@ class UpdateBudgetPredictions(
                 interval = rule.budFrequencyCount.toLong(),
                 intervalTypeId = rule.budFrequencyTypeId,
                 dayOfWeekId = rule.budDayOfWeekId,
-                leadDays = rule.budLeadDays.toLong()
+                leadDays = rule.budLeadDays.toLong(),
             )
             for (date in payDates) {
                 val assignedPayDay = findPayDayForDate(date, payDays)
-                if (assignedPayDay != null) {
+                assignedPayDay?.let {
                     insertOrRewriteBudgetItem(
-                        rule, date.toString(), date.toString(), assignedPayDay, updateTime
+                        rule, date.toString(), date.toString(), it, updateTime
                     )
                 }
             }
@@ -192,7 +192,7 @@ class UpdateBudgetPredictions(
     ): ArrayList<BudgetRule> {
         val ruleList = ArrayList<BudgetRule>()
         for (rule in budgetRules) {
-            if (!rule.budIsPayDay && rule.budFrequencyTypeId != 3) {
+            if ((!rule.budIsPayDay) && (rule.budFrequencyTypeId != 3)) {
                 ruleList.add(rule)
             }
         }

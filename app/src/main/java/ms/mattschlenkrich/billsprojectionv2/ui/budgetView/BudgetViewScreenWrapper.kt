@@ -36,7 +36,7 @@ import java.time.LocalDate
 @Composable
 fun BudgetViewScreenWrapper(
     activity: MainActivity,
-    navController: NavHostController
+    navController: NavHostController,
 ) {
     val mainViewModel = activity.mainViewModel
     val accountViewModel = activity.accountViewModel
@@ -95,7 +95,7 @@ fun BudgetViewScreenWrapper(
     val pendingList by transactionViewModel.getPendingTransactionsDetailed(selectedAsset)
         .observeAsState(initial = emptyList())
 
-    var showAllBudgetItems by remember { mutableStateOf(false) }
+    var showAllBudgetItems by remember { mutableStateOf(value = false) }
 
     val allBudgetList by budgetItemViewModel.getBudgetItemsAll(selectedAsset, selectedPayDay)
         .observeAsState(initial = emptyList())
@@ -149,7 +149,7 @@ fun BudgetViewScreenWrapper(
             actionSheetState.show(
                 activity.getString(R.string.choose_an_action),
                 BudgetViewActionHelper.getAddOptions(
-                    activity,
+                    activity = activity,
                     onNewBudgetItem = {
                         mainViewModel.setCallingFragments(FRAG_BUDGET_VIEW)
                         navController.navigate(Screen.BudgetItemAdd.route)
@@ -200,18 +200,18 @@ fun BudgetViewScreenWrapper(
                                         activity.lifecycleScope.launch {
                                             accountUpdateViewModel.performTransaction(
                                                 Transactions(
-                                                    nf.generateId(),
-                                                    df.getCurrentDateAsString(),
-                                                    curBudget.biBudgetName,
-                                                    "",
-                                                    curBudget.biRuleId,
-                                                    curBudget.biToAccountId,
-                                                    toPending,
-                                                    curBudget.biFromAccountId,
-                                                    fromPending,
-                                                    curBudget.biProjectedAmount,
-                                                    false,
-                                                    df.getCurrentTimeAsString()
+                                                    transId = nf.generateId(),
+                                                    transDate = df.getCurrentDateAsString(),
+                                                    transName = curBudget.biBudgetName,
+                                                    transNote = "",
+                                                    transRuleId = curBudget.biRuleId,
+                                                    transToAccountId = curBudget.biToAccountId,
+                                                    transToAccountPending = toPending,
+                                                    transFromAccountId = curBudget.biFromAccountId,
+                                                    transFromAccountPending = fromPending,
+                                                    transAmount = curBudget.biProjectedAmount,
+                                                    transIsDeleted = false,
+                                                    transUpdateTime = df.getCurrentTimeAsString(),
                                                 )
                                             )
                                             budgetItemViewModel.updateBudgetItem(
@@ -275,7 +275,7 @@ fun BudgetViewScreenWrapper(
                                 }
                             }.setNegativeButton(activity.getString(R.string.ignore_this), null)
                             .show()
-                    }
+                    },
                 )
             )
         },
@@ -288,32 +288,32 @@ fun BudgetViewScreenWrapper(
                     budgetItemName = budgetItem.biBudgetName,
                     onLockItem = {
                         budgetItemViewModel.lockUnlockBudgetItem(
-                            true,
-                            budgetItem.biRuleId,
-                            budgetItem.biPayDay,
-                            df.getCurrentTimeAsString()
+                            lock = true,
+                            budgetRuleId = budgetItem.biRuleId,
+                            payDay = budgetItem.biPayDay,
+                            updateTime = df.getCurrentTimeAsString(),
                         )
                     },
                     onUnlockItem = {
                         budgetItemViewModel.lockUnlockBudgetItem(
-                            false,
-                            budgetItem.biRuleId,
-                            budgetItem.biPayDay,
-                            df.getCurrentTimeAsString()
+                            lock = false,
+                            budgetRuleId = budgetItem.biRuleId,
+                            payDay = budgetItem.biPayDay,
+                            updateTime = df.getCurrentTimeAsString(),
                         )
                     },
                     onLockPayDay = {
                         budgetItemViewModel.lockUnlockBudgetItem(
-                            true,
-                            budgetItem.biPayDay,
-                            df.getCurrentTimeAsString()
+                            lock = true,
+                            payDay = budgetItem.biPayDay,
+                            updateTime = df.getCurrentTimeAsString(),
                         )
                     },
                     onUnlockPayDay = {
                         budgetItemViewModel.lockUnlockBudgetItem(
-                            false,
-                            budgetItem.biPayDay,
-                            df.getCurrentTimeAsString()
+                            lock = false,
+                            payDay = budgetItem.biPayDay,
+                            updateTime = df.getCurrentTimeAsString(),
                         )
                     }
                 )
@@ -391,9 +391,8 @@ fun BudgetViewScreenWrapper(
         isShowingAll = showAllBudgetItems,
         sheetTitle = actionSheetState.title,
         sheetOptions = actionSheetState.options,
-        onSheetDismiss = {
-            actionSheetState.dismiss()
-        }
-    )
+    ) {
+        actionSheetState.dismiss()
+    }
     ManagedActionBottomSheet(actionSheetState)
 }

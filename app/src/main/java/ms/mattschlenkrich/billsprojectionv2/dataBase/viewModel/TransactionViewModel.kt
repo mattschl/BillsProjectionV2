@@ -9,7 +9,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.repository.TransactionRepos
 
 class TransactionViewModel(
     app: Application,
-    private val transactionRepository: TransactionRepository
+    private val transactionRepository: TransactionRepository,
 ) : AndroidViewModel(app) {
     suspend fun insertTransaction(transaction: Transactions) =
         transactionRepository.insertTransaction(transaction)
@@ -20,23 +20,23 @@ class TransactionViewModel(
         fromAccountID: Long,
     ) =
         transactionRepository.getTransactionFull(
-            transId, toAccountID, fromAccountID
+            transId, toAccountID, fromAccountID,
         )
 
     fun getSumTransactionByBudgetRuleSync(
         budgetRuleId: Long,
         startDate: String,
-        endDate: String
+        endDate: String,
     ) = transactionRepository.getSumTransactionByBudgetRuleSync(
-        budgetRuleId, startDate, endDate
+        budgetRuleId, startDate, endDate,
     )
 
     fun getCountTransactionByBudgetRuleSync(
         budgetRuleId: Long,
         startDate: String,
-        endDate: String
+        endDate: String,
     ) = transactionRepository.getCountTransactionByBudgetRuleSync(
-        budgetRuleId, startDate, endDate
+        budgetRuleId, startDate, endDate,
     )
 
     suspend fun getTransactionDetailed(transId: Long) =

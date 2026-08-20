@@ -106,8 +106,8 @@ class MainActivity : AppCompatActivity() {
 
     data class TopBarState(val title: String = "")
 
-    private var isUpdating = mutableStateOf(false)
-    private var isAuthenticated = mutableStateOf(false)
+    private var isUpdating = mutableStateOf(value = false)
+    private var isAuthenticated = mutableStateOf(value = false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -123,16 +123,18 @@ class MainActivity : AppCompatActivity() {
             settingsManager.saveSettings(settings.copy(isFirstRun = false))
         }
 
-        isAuthenticated.value = !settings.usePasswordProtection || settings.passwordHash == null
+        isAuthenticated.value = (!settings.usePasswordProtection) || (settings.passwordHash == null)
 
-        lifecycle.addObserver(LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_STOP) {
-                val s = SettingsManager(this).getSettings()
-                if (s.usePasswordProtection && s.passwordHash != null) {
-                    isAuthenticated.value = false
+        lifecycle.addObserver(
+            LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_STOP) {
+                    val s = SettingsManager(this).getSettings()
+                    if ((s.usePasswordProtection) && (s.passwordHash != null)) {
+                        isAuthenticated.value = false
+                    }
                 }
-            }
-        })
+            },
+        )
 
         setContent {
             val s = remember { SettingsManager(this).getSettings() }
@@ -146,11 +148,11 @@ class MainActivity : AppCompatActivity() {
                 CompositionLocalProvider(
                     LocalNumberFunctions provides NumberFunctions(),
                     LocalDateFunctions provides DateFunctions(),
-                    LocalVisualsFunctions provides VisualsFunctions()
+                    LocalVisualsFunctions provides VisualsFunctions(),
                 ) {
                     Surface(
                         modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.background
+                        color = MaterialTheme.colorScheme.background,
                     ) {
                         if (isAuthenticated.value) {
                             MainScreen(isFirstRun)
@@ -158,11 +160,10 @@ class MainActivity : AppCompatActivity() {
                             LoginScreen(
                                 passwordHash = s.passwordHash!!,
                                 onAuthenticated = { isAuthenticated.value = true },
-                                onPasswordChanged = { newHash ->
-                                    val currentSettings = settingsManager.getSettings()
-                                    settingsManager.saveSettings(currentSettings.copy(passwordHash = newHash))
-                                }
-                            )
+                            ) { newHash ->
+                                val currentSettings = settingsManager.getSettings()
+                                settingsManager.saveSettings(currentSettings.copy(passwordHash = newHash))
+                            }
                         }
                     }
                 }
@@ -180,7 +181,7 @@ class MainActivity : AppCompatActivity() {
         transactionViewModel = ViewModelHelper.setupTransactionViewModel(this)
         budgetItemViewModel = ViewModelHelper.setupBudgetItemViewModel(this)
         accountUpdateViewModel = ViewModelHelper.setupAccountUpdateViewModel(
-            this, transactionViewModel, accountViewModel
+            this, transactionViewModel, accountViewModel,
         )
     }
 
@@ -191,7 +192,7 @@ class MainActivity : AppCompatActivity() {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
 
-        val pagerState = rememberPagerState(pageCount = { 5 })
+        val pagerState = rememberPagerState { 5 }
         val coroutineScope = rememberCoroutineScope()
 
         LaunchedEffect(Unit) {
@@ -200,15 +201,15 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val isTopLevel = currentRoute == Screen.MainPager.route || currentRoute in listOf(
+        val isTopLevel = (currentRoute == Screen.MainPager.route) || (currentRoute in listOf(
             Screen.BudgetView.route,
             Screen.Transactions.route,
             Screen.Accounts.route,
             Screen.Analysis.route,
-            Screen.BudgetRules.route
-        )
+            Screen.BudgetRules.route,
+        ))
 
-        var shouldResetNavigation by remember { mutableStateOf(false) }
+        var shouldResetNavigation by remember { mutableStateOf(value = false) }
 
         val syncLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult()
@@ -238,32 +239,30 @@ class MainActivity : AppCompatActivity() {
                     title = topMenuBarState.value.title.ifEmpty { stringResource(R.string.app_name) },
                     showBackButton = !isTopLevel,
                     onBackClick = { navController.popBackStack() },
-                    onSyncClick = { syncLauncher.launch(Intent(this, SyncActivity::class.java)) },
-                    onMenuItemClick = { actionId ->
-                        handleMenuAction(actionId, navController)
-                    }
-                )
+                    onSyncClick = { syncLauncher.launch(Intent(this, SyncActivity::class.java)) }
+                ) { actionId ->
+                    handleMenuAction(actionId, navController)
+                }
             },
             bottomBar = {
                 if (isTopLevel) {
                     MainBottomBar(
                         pagerState = pagerState,
-                        currentRoute = currentRoute,
-                        onItemSelected = { pageIndex ->
-                            coroutineScope.launch {
-                                if (currentRoute != Screen.MainPager.route) {
-                                    navController.navigate(Screen.MainPager.route) {
-                                        popUpTo(navController.graph.startDestinationId) {
-                                            saveState = true
-                                        }
-                                        launchSingleTop = true
-                                        restoreState = true
+                        currentRoute = currentRoute
+                    ) { pageIndex ->
+                        coroutineScope.launch {
+                            if (currentRoute != Screen.MainPager.route) {
+                                navController.navigate(Screen.MainPager.route) {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true
                                     }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                                pagerState.animateScrollToPage(pageIndex)
                             }
+                            pagerState.animateScrollToPage(pageIndex)
                         }
-                    )
+                    }
                 }
             }
         ) { paddingValues ->
