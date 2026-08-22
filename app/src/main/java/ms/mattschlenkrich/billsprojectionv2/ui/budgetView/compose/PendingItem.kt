@@ -54,20 +54,21 @@ fun PendingItem(
                 .background(color)
         )
         Spacer(modifier = Modifier.width(8.dp))
+        val trans = pending.transaction ?: return
         Text(
-            text = df.getDisplayDate(pending.transaction!!.transDate),
+            text = df.getDisplayDate(trans.transDate),
             modifier = Modifier.width(100.dp),
             style = MaterialTheme.typography.bodySmall
         )
         Text(
-            text = nf.displayDollars(pending.transaction.transAmount),
+            text = nf.displayDollars(trans.transAmount),
             modifier = Modifier.width(90.dp),
             fontWeight = FontWeight.Bold,
             color = if (isCredit) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error,
             style = MaterialTheme.typography.bodySmall
         )
         Text(
-            text = pending.transaction.transName + if (pending.transaction.transNote.isNotBlank()) " - ${pending.transaction.transNote}" else "",
+            text = trans.transName + if (trans.transNote.isNotBlank()) " - ${trans.transNote}" else "",
             modifier = Modifier.weight(1f),
             fontWeight = FontWeight.Bold,
             color = if (isCredit) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error,

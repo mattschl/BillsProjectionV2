@@ -65,12 +65,13 @@ fun SummaryCard(
             }
 
             curAsset?.let { asset ->
+                val accountType = asset.accountType
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val label = if (asset.accountType!!.keepTotals) {
+                    val label = if (accountType?.keepTotals == true) {
                         stringResource(R.string.balance_in_account)
                     } else if (asset.account.accountOwing >= 0.0) {
                         stringResource(R.string.balance_owing)
@@ -78,7 +79,7 @@ fun SummaryCard(
                         stringResource(R.string.credit_of)
                     }
 
-                    val amount = if (asset.accountType.keepTotals) {
+                    val amount = if (accountType?.keepTotals == true) {
                         asset.account.accountBalance
                     } else if (asset.account.accountOwing >= 0.0) {
                         asset.account.accountOwing
@@ -96,7 +97,7 @@ fun SummaryCard(
                         text = nf.displayDollars(amount),
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.bodyLarge,
-                        color = if (!asset.accountType.keepTotals && asset.account.accountOwing >= 0.0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+                        color = if (accountType?.keepTotals != true && asset.account.accountOwing >= 0.0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.clickable { onAccountClick() }
                     )
 
@@ -108,7 +109,7 @@ fun SummaryCard(
                     )
                 }
 
-                if (asset.accountType!!.tallyOwing) {
+                if (accountType?.tallyOwing == true) {
                     HorizontalDivider(modifier = Modifier.padding(vertical = 1.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -211,7 +212,8 @@ fun SurplusDeficitInfo(
     val nf = LocalNumberFunctions.current
     var surplus = budgetTotals.credits - budgetTotals.debits
     if (asset != null && payDayList.isNotEmpty() && selectedPayDay == payDayList[0]) {
-        if (asset.accountType!!.keepTotals) {
+        val accountType = asset.accountType
+        if (accountType?.keepTotals == true) {
             surplus += asset.account.accountBalance
         } else {
             surplus -= asset.account.accountOwing

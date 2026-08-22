@@ -56,8 +56,9 @@ fun BudgetItemAddScreenWrapper(
             if (ruleChanged || item?.biBudgetName.isNullOrBlank()) {
                 nameState.value = rule?.budgetRuleName ?: ""
                 amountState.value = nf.displayDollars(
-                    if (mainViewModel.getTransferNum() != 0.0) mainViewModel.getTransferNum()!!
-                    else rule?.budgetAmount ?: 0.0
+                    (mainViewModel.getTransferNum() ?: 0.0).let {
+                        if (it != 0.0) it else rule?.budgetAmount ?: 0.0
+                    }
                 )
                 isFixedState.value = rule?.budFixedAmount ?: false
                 isPayDayItemState.value = rule?.budIsPayDay ?: false
@@ -65,8 +66,9 @@ fun BudgetItemAddScreenWrapper(
             } else {
                 nameState.value = item?.biBudgetName ?: ""
                 amountState.value = nf.displayDollars(
-                    if (mainViewModel.getTransferNum() != 0.0) mainViewModel.getTransferNum()!!
-                    else item?.biProjectedAmount ?: 0.0
+                    (mainViewModel.getTransferNum() ?: 0.0).let {
+                        if (it != 0.0) it else item?.biProjectedAmount ?: 0.0
+                    }
                 )
                 isFixedState.value = item?.biIsFixed ?: false
                 isPayDayItemState.value = item?.biIsPayDayItem ?: false
@@ -118,6 +120,7 @@ fun BudgetItemAddScreenWrapper(
     }
 
     fun validateBudgetItem(): String {
+        if (dateState.value.isBlank()) return mainActivity.getString(R.string.please_choose_a_date)
         if (nameState.value.isBlank()) return mainActivity.getString(R.string.please_enter_a_name_or_description)
         val cached = mainViewModel.getBudgetItemDetailed()
         if (cached?.toAccount == null) return mainActivity.getString(R.string.there_needs_to_be_an_account_money_will_go_to)

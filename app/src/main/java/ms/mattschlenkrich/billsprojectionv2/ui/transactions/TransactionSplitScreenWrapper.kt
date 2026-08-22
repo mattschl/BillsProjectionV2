@@ -61,13 +61,14 @@ fun TransactionSplitScreenWrapper(
     LaunchedEffect(Unit) {
         val mTransactionDetailed = mainViewModel.getTransactionDetailed()
         if (mTransactionDetailed != null) {
-            val transaction = mTransactionDetailed.transaction!!
+            val transaction = mTransactionDetailed.transaction ?: return@LaunchedEffect
             originalAmount = transaction.transAmount
             state.date = transaction.transDate
             state.fromAccount = mTransactionDetailed.fromAccount
             state.fromPending = transaction.transFromAccountPending
 
-            val accountWithType = accountViewModel.getAccountWithType(state.fromAccount!!.accountId)
+            val fromAccount = state.fromAccount ?: return@LaunchedEffect
+            val accountWithType = accountViewModel.getAccountWithType(fromAccount.accountId)
             state.fromAccountWithType = accountWithType
             updateAmountsDisplay()
         }
@@ -78,24 +79,28 @@ fun TransactionSplitScreenWrapper(
             updateAmountsDisplay()
 
             if (state.toAccount != null) {
+                val toAccount = state.toAccount ?: return@LaunchedEffect
                 val accountWithType =
-                    accountViewModel.getAccountWithType(state.toAccount!!.accountId)
+                    accountViewModel.getAccountWithType(toAccount.accountId)
                 state.toAccountWithType = accountWithType
             }
-            if (state.budgetRule != null) {
+            state.budgetRule?.let { rule ->
                 if (state.description.isBlank()) {
-                    state.description = state.budgetRule!!.budgetRuleName
+                    state.description = rule.budgetRuleName
                 }
                 if (state.toAccount == null) {
                     val ruleFull =
-                        budgetRuleViewModel.getBudgetRuleDetailed(state.budgetRule!!.ruleId)
+                        budgetRuleViewModel.getBudgetRuleDetailed(rule.ruleId)
                     if (ruleFull != null) {
                         state.toAccount = ruleFull.toAccount
-                        val accountWithType =
-                            accountViewModel.getAccountWithType(state.toAccount!!.accountId)
-                        state.toAccountWithType = accountWithType
-                        if (accountWithType.accountType!!.allowPending) {
-                            state.toPending = splitDetailed.transaction!!.transToAccountPending
+                        state.toAccount?.let { toAcc ->
+                            val accountWithType =
+                                accountViewModel.getAccountWithType(toAcc.accountId)
+                            state.toAccountWithType = accountWithType
+                            if (accountWithType.accountType?.allowPending == true) {
+                                state.toPending =
+                                    splitDetailed.transaction?.transToAccountPending ?: false
+                            }
                         }
                     }
                 }
@@ -158,9 +163,9 @@ fun TransactionSplitScreenWrapper(
             val amt = nf.getDoubleFromDollars(state.amount)
             val valid = state.validate()
 
-            val answer = if (state.amount.isBlank()) {
-                mainActivity.getString(R.string.please_enter_an_amount_for_this_transaction)
-            } else if (amt >= originalAmount) {
+            val answer = if (state.date.isBlank()) {
+                mainActivity.getString(R.string.please_choose_a_date)
+            } else if (state.amount.isBlank()) {
                 mainActivity.getString(R.string.the_amount_of_a_split_transaction_must_be_less_than_the_original)
             } else if (state.description.isBlank()) {
                 mainActivity.getString(R.string.please_enter_a_name_or_description)
@@ -192,8 +197,9 @@ fun TransactionSplitScreenWrapper(
                         val mTransaction = state.toTransactions()
                         mainActivity.lifecycleScope.launch {
                             accountUpdateViewModel.performTransaction(mTransaction)
-                            val cachedDetailed = mainViewModel.getTransactionDetailed()!!
-                            val oldTransaction = cachedDetailed.transaction!!
+                            val cachedDetailed =
+                                mainViewModel.getTransactionDetailed() ?: return@launch
+                            val oldTransaction = cachedDetailed.transaction ?: return@launch
                             oldTransaction.transAmount = originalAmount - amt
                             if (mainViewModel.getUpdatingTransaction()) {
                                 accountUpdateViewModel.updateTransactionWithoutAccountUpdate(

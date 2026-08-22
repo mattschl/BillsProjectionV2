@@ -173,26 +173,32 @@ fun BudgetSummary(
     var totalFixed = 0.0
 
     for (budget in rules) {
+        val budgetRule = budget.budgetRule ?: continue
+        val toAccount = budget.toAccount ?: continue
+        val fromAccount = budget.fromAccount ?: continue
+        val toAccountType = toAccount.accountType
+        val fromAccountType = fromAccount.accountType
+
         val amt = when (type) {
             "monthly", "occasional" -> {
-                when (budget.budgetRule!!.budFrequencyTypeId) {
-                    FREQ_WEEKLY -> budget.budgetRule!!.budgetAmount * 4 / budget.budgetRule!!.budFrequencyCount
-                    FREQ_MONTHLY -> budget.budgetRule!!.budgetAmount / budget.budgetRule!!.budFrequencyCount
+                when (budgetRule.budFrequencyTypeId) {
+                    FREQ_WEEKLY -> budgetRule.budgetAmount * 4 / budgetRule.budFrequencyCount
+                    FREQ_MONTHLY -> budgetRule.budgetAmount / budgetRule.budFrequencyCount
                     else -> 0.0
                 }
             }
 
-            "annual" -> budget.budgetRule!!.budgetAmount / 12 / budget.budgetRule!!.budFrequencyCount
+            "annual" -> budgetRule.budgetAmount / 12 / budgetRule.budFrequencyCount
             else -> 0.0
         }
 
-        if (budget.toAccount!!.accountType!!.displayAsAsset) {
+        if (toAccountType?.displayAsAsset == true) {
             totalCredits += amt
-            if (type == "monthly" && budget.budgetRule!!.budFixedAmount) totalFixed += amt
+            if (type == "monthly" && budgetRule.budFixedAmount) totalFixed += amt
         }
-        if (budget.fromAccount!!.accountType!!.displayAsAsset) {
+        if (fromAccountType?.displayAsAsset == true) {
             totalDebits += amt
-            if (type == "monthly" && budget.budgetRule!!.budFixedAmount) totalFixed -= amt
+            if (type == "monthly" && budgetRule.budFixedAmount) totalFixed -= amt
         }
     }
 
@@ -246,9 +252,11 @@ fun BudgetListItem(
     val df = LocalDateFunctions.current
     val nf = LocalNumberFunctions.current
     val vf = LocalVisualsFunctions.current
-    val budgetRule = curRule.budgetRule!!
-    val toAccount = curRule.toAccount!!
-    val fromAccount = curRule.fromAccount!!
+    val budgetRule = curRule.budgetRule ?: return
+    val toAccount = curRule.toAccount ?: return
+    val fromAccount = curRule.fromAccount ?: return
+    val toAccountType = toAccount.accountType
+    val fromAccountType = fromAccount.accountType
 
     var nameInfo = budgetRule.budgetRuleName + " - "
     nameInfo += when (budgetRule.budFrequencyTypeId) {
@@ -275,12 +283,12 @@ fun BudgetListItem(
     }
 
     val displayAmt =
-        if (toAccount.accountType!!.displayAsAsset && fromAccount.accountType!!.displayAsAsset) {
+        if (toAccountType?.displayAsAsset == true && fromAccountType?.displayAsAsset == true) {
             stringResource(R.string.na)
         } else nf.displayDollars(if (showFullDetails) budgetRule.budgetAmount else amt)
 
     val textColor =
-        if (fromAccount.accountType!!.isAsset || fromAccount.accountType.displayAsAsset) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+        if (fromAccountType?.isAsset == true || fromAccountType?.displayAsAsset == true) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
 
     Column(
         modifier = Modifier

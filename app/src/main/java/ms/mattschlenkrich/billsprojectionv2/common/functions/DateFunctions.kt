@@ -59,46 +59,84 @@ class DateFunctions {
     }
 
     fun getDisplayDate(date: String): String {
-        return displayDateString.format(
-            dateChecker.parse(date)!!
-        )
+        return try {
+            if (date.isBlank()) ""
+            else {
+                val parsed = dateChecker.parse(date)
+                if (parsed != null) displayDateString.format(parsed) else ""
+            }
+        } catch (e: Exception) {
+            ""
+        }
     }
 
     fun getDisplayDateWithYear(date: String): String {
-        return displayDateWithYear.format(
-            dateChecker.parse(date)!!
-        )
+        return try {
+            if (date.isBlank()) ""
+            else {
+                val parsed = dateChecker.parse(date)
+                if (parsed != null) displayDateWithYear.format(parsed) else ""
+            }
+        } catch (e: Exception) {
+            ""
+        }
     }
 
     fun getDisplayDateInComingYear(date: String): String {
-        var mDate = LocalDate.parse(date)
-//        Log.d(TAG, "FIRST date is $mDate")
-        while (mDate.toString() < getCurrentDateAsString()) {
-            mDate = mDate.plusYears(1)
-//            Log.d(TAG, "new date is $mDate")
+        return try {
+            if (date.isBlank()) ""
+            else {
+                var mDate = LocalDate.parse(date)
+                while (mDate.toString() < getCurrentDateAsString()) {
+                    mDate = mDate.plusYears(1)
+                }
+                getDisplayDateWithYear(mDate.toString())
+            }
+        } catch (e: Exception) {
+            ""
         }
-        return getDisplayDateWithYear(mDate.toString())
     }
 
     fun getDisplayDateInComingYear(date: String, count: Long): String {
-        val mDate = LocalDate.parse(date)
-        return getDisplayDateWithYear(mDate.plusYears(count).toString())
+        return try {
+            if (date.isBlank()) ""
+            else {
+                val mDate = LocalDate.parse(date)
+                getDisplayDateWithYear(mDate.plusYears(count).toString())
+            }
+        } catch (e: Exception) {
+            ""
+        }
     }
 
     fun getNextMonthlyDate(startDate: String, interval: Int): String {
-        var mDate = LocalDate.parse(startDate)
-        while (mDate.toString() < getCurrentDateAsString()) {
-            mDate = mDate.plusMonths(interval.toLong())
+        return try {
+            if (startDate.isBlank()) ""
+            else {
+                var mDate = LocalDate.parse(startDate)
+                while (mDate.toString() < getCurrentDateAsString()) {
+                    mDate = mDate.plusMonths(interval.toLong())
+                }
+                getDisplayDateWithYear(mDate.toString())
+            }
+        } catch (e: Exception) {
+            ""
         }
-        return getDisplayDateWithYear(mDate.toString())
     }
 
     fun getNextWeeklyDate(startDate: String, interval: Int): String {
-        var mDate = LocalDate.parse(startDate)
-        while (mDate.toString() < getCurrentDateAsString()) {
-            mDate = mDate.plusWeeks(interval.toLong())
+        return try {
+            if (startDate.isBlank()) ""
+            else {
+                var mDate = LocalDate.parse(startDate)
+                while (mDate.toString() < getCurrentDateAsString()) {
+                    mDate = mDate.plusWeeks(interval.toLong())
+                }
+                getDisplayDateWithYear(mDate.toString())
+            }
+        } catch (e: Exception) {
+            ""
         }
-        return getDisplayDateWithYear(mDate.toString())
     }
 
     fun getDateStringFromDate(date: Date): String {
@@ -136,7 +174,7 @@ class DateFunctions {
             val localFormatter = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
             // Uses system default timezone for parsing
             val date = localFormatter.parse(localTimestamp)
-            timeFormatter.format(date!!) // timeFormatter is UTC
+            if (date != null) timeFormatter.format(date) else localTimestamp
         } catch (e: Exception) {
             localTimestamp
         }
@@ -149,41 +187,80 @@ class DateFunctions {
         return try {
             val date = timeFormatter.parse(utcTimestamp)
             val localFormatter = SimpleDateFormat(SQLITE_TIME, Locale.getDefault())
-            localFormatter.format(date!!)
+            if (date != null) localFormatter.format(date) else utcTimestamp
         } catch (e: Exception) {
             utcTimestamp
         }
     }
 
     fun getMonthsBetween(startDate: String, endDate: String): Int {
-        val start = startDate.split("-")
-        val end = endDate.split("-")
-        val years = end[0].toInt() - start[0].toInt()
-        var months = end[1].toInt() - start[1].toInt()
-        months -= if (end[2].toInt() <= start[2].toInt()) 1 else 0
-        return months + (years * 12)
+        return try {
+            val start = startDate.split("-")
+            val end = endDate.split("-")
+            if (start.size < 3 || end.size < 3) 0
+            else {
+                val years = end[0].toInt() - start[0].toInt()
+                var months = end[1].toInt() - start[1].toInt()
+                months -= if (end[2].toInt() <= start[2].toInt()) 1 else 0
+                months + (years * 12)
+            }
+        } catch (e: Exception) {
+            0
+        }
     }
 
     fun getFirstOfMonth(date: String): String {
-        return date.dropLast(2) + "01"
+        return try {
+            if (date.length < 10) date
+            else date.dropLast(2) + "01"
+        } catch (e: Exception) {
+            date
+        }
     }
 
     private fun getLastOfMonth(date: String): String {
-        val mDate = LocalDate.parse(getFirstOfMonth(date))
-        return mDate.plusMonths(1).minusDays(1).toString()
+        return try {
+            val first = getFirstOfMonth(date)
+            if (first.isBlank()) ""
+            else {
+                val mDate = LocalDate.parse(first)
+                mDate.plusMonths(1).minusDays(1).toString()
+            }
+        } catch (e: Exception) {
+            ""
+        }
     }
 
     fun getFirstOfPreviousMonth(date: String): String {
-        val mDate = LocalDate.parse(date)
-        return getFirstOfMonth(mDate.minusMonths(1).toString())
+        return try {
+            if (date.isBlank()) ""
+            else {
+                val mDate = LocalDate.parse(date)
+                getFirstOfMonth(mDate.minusMonths(1).toString())
+            }
+        } catch (e: Exception) {
+            ""
+        }
     }
 
     fun getLastOfPreviousMonth(date: String): String {
-        val mDate = LocalDate.parse(date).minusMonths(1)
-        return getLastOfMonth(mDate.toString())
+        return try {
+            if (date.isBlank()) ""
+            else {
+                val mDate = LocalDate.parse(date).minusMonths(1)
+                getLastOfMonth(mDate.toString())
+            }
+        } catch (e: Exception) {
+            ""
+        }
     }
 
     fun getOneYearAgo(date: String): String {
-        return LocalDate.parse(date).minusYears(1).toString()
+        return try {
+            if (date.isBlank()) ""
+            else LocalDate.parse(date).minusYears(1).toString()
+        } catch (e: Exception) {
+            ""
+        }
     }
 }

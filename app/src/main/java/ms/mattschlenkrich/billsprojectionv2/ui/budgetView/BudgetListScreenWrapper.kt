@@ -59,9 +59,9 @@ fun BudgetListScreenWrapper(
                         Icons.Default.Edit
                     ) {
                         val budgetRule = BudgetRuleDetailed(
-                            curRule.budgetRule!!,
-                            curRule.toAccount!!.account,
-                            curRule.fromAccount!!.account
+                            curRule.budgetRule,
+                            curRule.toAccount?.account,
+                            curRule.fromAccount?.account
                         )
                         mainViewModel.setBudgetRuleDetailed(budgetRule)
                         mainViewModel.setCallingFragments(TAG)
@@ -71,9 +71,11 @@ fun BudgetListScreenWrapper(
                         mainActivity.getString(R.string.delete_this_budget_rule),
                         Icons.Default.Delete
                     ) {
-                        budgetRuleViewModel.deleteBudgetRule(
-                            curRule.budgetRule!!.ruleId, df.getCurrentTimeAsString()
-                        )
+                        curRule.budgetRule?.let {
+                            budgetRuleViewModel.deleteBudgetRule(
+                                it.ruleId, df.getCurrentTimeAsString()
+                            )
+                        }
                     },
                     ActionOption(
                         mainActivity.getString(R.string.view_a_summary_of_transactions_for_this_budget_rule),
@@ -82,9 +84,9 @@ fun BudgetListScreenWrapper(
                         mainViewModel.addCallingFragment(TAG)
                         mainViewModel.setBudgetRuleDetailed(
                             BudgetRuleDetailed(
-                                curRule.budgetRule!!,
-                                curRule.toAccount!!.account,
-                                curRule.fromAccount!!.account
+                                curRule.budgetRule,
+                                curRule.toAccount?.account,
+                                curRule.fromAccount?.account
                             )
                         )
                         mainViewModel.setAccountWithType(null)

@@ -56,8 +56,9 @@ fun BudgetItemUpdateScreenWrapper(
             if (ruleChanged || item?.biBudgetName.isNullOrBlank()) {
                 nameState.value = rule?.budgetRuleName ?: ""
                 amountState.value = nf.displayDollars(
-                    if (mainViewModel.getTransferNum() != 0.0) mainViewModel.getTransferNum()!!
-                    else rule?.budgetAmount ?: 0.0
+                    (mainViewModel.getTransferNum() ?: 0.0).let {
+                        if (it != 0.0) it else rule?.budgetAmount ?: 0.0
+                    }
                 )
                 isFixedState.value = rule?.budFixedAmount ?: false
                 isPayDayItemState.value = rule?.budIsPayDay ?: false
@@ -65,8 +66,9 @@ fun BudgetItemUpdateScreenWrapper(
             } else {
                 nameState.value = item?.biBudgetName ?: ""
                 amountState.value = nf.displayDollars(
-                    if (mainViewModel.getTransferNum() != 0.0) mainViewModel.getTransferNum()!!
-                    else item?.biProjectedAmount ?: 0.0
+                    (mainViewModel.getTransferNum() ?: 0.0).let {
+                        if (it != 0.0) it else item?.biProjectedAmount ?: 0.0
+                    }
                 )
                 isFixedState.value = item?.biIsFixed ?: false
                 isPayDayItemState.value = item?.biIsPayDayItem ?: false
@@ -79,11 +81,12 @@ fun BudgetItemUpdateScreenWrapper(
         }
     }
 
-    fun getCurrentBudgetItemForUpdating(): BudgetItem {
-        val cached = mainViewModel.getBudgetItemDetailed()!!
+    fun getCurrentBudgetItemForUpdating(): BudgetItem? {
+        val cached = mainViewModel.getBudgetItemDetailed() ?: return null
+        val item = cached.budgetItem ?: return null
         return BudgetItem(
             cached.budgetRule?.ruleId ?: 0L,
-            cached.budgetItem!!.biProjectedDate,
+            item.biProjectedDate,
             dateState.value,
             payDayState.value,
             nameState.value,
@@ -103,10 +106,11 @@ fun BudgetItemUpdateScreenWrapper(
         )
     }
 
-    fun getCurrentBudgetItemDetailed(): BudgetItemDetailed {
+    fun getCurrentBudgetItemDetailed(): BudgetItemDetailed? {
         val cached = mainViewModel.getBudgetItemDetailed()
+        val item = getCurrentBudgetItemForUpdating() ?: return null
         return BudgetItemDetailed(
-            getCurrentBudgetItemForUpdating(),
+            item,
             cached?.budgetRule,
             cached?.toAccount,
             cached?.fromAccount
@@ -114,6 +118,7 @@ fun BudgetItemUpdateScreenWrapper(
     }
 
     fun validateBudgetItem(): String {
+        if (dateState.value.isBlank()) return mainActivity.getString(R.string.please_choose_a_date)
         if (nameState.value.isBlank()) return mainActivity.getString(R.string.please_enter_a_name_or_description)
         val cached = mainViewModel.getBudgetItemDetailed()
         if (cached?.toAccount == null) return mainActivity.getString(R.string.there_needs_to_be_an_account_money_will_go_to)
@@ -131,8 +136,10 @@ fun BudgetItemUpdateScreenWrapper(
     fun updateBudgetItemIfValid() {
         val error = validateBudgetItem()
         if (error == ANSWER_OK) {
-            budgetItemViewModel.updateBudgetItem(getCurrentBudgetItemForUpdating())
-            gotoCallingFragment()
+            getCurrentBudgetItemForUpdating()?.let {
+                budgetItemViewModel.updateBudgetItem(it)
+                gotoCallingFragment()
+            }
         } else {
             Toast.makeText(
                 mainActivity,
@@ -147,7 +154,7 @@ fun BudgetItemUpdateScreenWrapper(
             setTitle(mainActivity.getString(R.string.delete_budget_item))
             setMessage(mainActivity.getString(R.string.are_you_sure_you_want_to_delete_this_budget_item))
             setPositiveButton(mainActivity.getString(R.string.delete)) { _, _ ->
-                val cached = mainViewModel.getBudgetItemDetailed()!!
+                val cached = mainViewModel.getBudgetItemDetailed() ?: return@LaunchedEffect
                 budgetItemViewModel.deleteBudgetItem(
                     cached.budgetItem!!.biRuleId,
                     cached.budgetItem!!.biProjectedDate,

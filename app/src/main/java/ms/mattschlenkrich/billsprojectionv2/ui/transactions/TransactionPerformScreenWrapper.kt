@@ -57,7 +57,7 @@ fun TransactionPerformScreenWrapper(
                 }
             }
         } else if (cachedBudgetItem != null) {
-            val budgetItem = cachedBudgetItem.budgetItem!!
+            val budgetItem = cachedBudgetItem.budgetItem ?: return@LaunchedEffect
             state.date = df.getCurrentDateAsString()
             state.description = budgetItem.biBudgetName
             state.amount = nf.displayDollars(0.0)
@@ -182,9 +182,17 @@ fun TransactionPerformScreenWrapper(
                     .setNegativeButton(mainActivity.getString(R.string.go_back), null)
                     .show()
             } else {
+                val errorMsg = when {
+                    state.dateError -> mainActivity.getString(R.string.please_choose_a_date)
+                    state.descriptionError -> mainActivity.getString(R.string.please_enter_a_name_or_description)
+                    state.toAccountError -> mainActivity.getString(R.string.there_needs_to_be_an_account_money_will_go_to)
+                    state.fromAccountError -> mainActivity.getString(R.string.there_needs_to_be_an_account_money_will_come_from)
+                    state.amountError -> mainActivity.getString(R.string.please_enter_an_amount_for_this_transaction)
+                    else -> mainActivity.getString(R.string.error)
+                }
                 Toast.makeText(
                     mainActivity,
-                    mainActivity.getString(R.string.error) + mainActivity.getString(R.string.please_enter_a_name_or_description),
+                    mainActivity.getString(R.string.error) + errorMsg,
                     Toast.LENGTH_LONG
                 ).show()
             }

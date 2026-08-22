@@ -33,6 +33,7 @@ class TransactionEditState(
 
     var transactionId by mutableLongStateOf(0L)
 
+    var dateError by mutableStateOf(false)
     var descriptionError by mutableStateOf(false)
     var amountError by mutableStateOf(false)
     var toAccountError by mutableStateOf(false)
@@ -99,12 +100,13 @@ class TransactionEditState(
     }
 
     fun validate(): Boolean {
+        dateError = date.isBlank()
         descriptionError = description.isBlank()
         toAccountError = toAccount == null
         fromAccountError = fromAccount == null
         amountError = amount.isBlank() || nf.getDoubleFromDollars(amount) == 0.0
 
-        return !descriptionError && !toAccountError && !fromAccountError && !amountError
+        return !dateError && !descriptionError && !toAccountError && !fromAccountError && !amountError
     }
 }
 

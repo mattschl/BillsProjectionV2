@@ -179,6 +179,7 @@
     <string name="perform_a_transaction">Perform a Transaction</string>
     <string name="perform_a_transaction_on_">Perform a TRANSACTION with a custom amount on </string>
     <string name="perform_action">"PERFORM ACTION "</string>
+    <string name="please_choose_a_date">Please choose a date</string>
     <string name="please_choose_an_account_type">Please choose an account Type</string>
     <string name="please_enter_a_budgeted_amount_including_zero">Please enter a budgeted amount (including zero)</string>
     <string name="please_enter_a_name">Please enter a name</string>

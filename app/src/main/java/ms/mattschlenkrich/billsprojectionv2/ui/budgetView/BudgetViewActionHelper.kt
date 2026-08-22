@@ -46,7 +46,7 @@ object BudgetViewActionHelper {
         onGoToRule: () -> Unit,
         onCancelItem: () -> Unit
     ): List<ActionOption> {
-        val curBudget = curBudgetDetailed.budgetItem!!
+        val curBudget = curBudgetDetailed.budgetItem ?: return emptyList()
         return listOf(
             ActionOption(
                 "${activity.getString(R.string.perform_a_transaction_on_)} \"${curBudget.biBudgetName}\" ",

@@ -60,7 +60,9 @@ class UpdateBudgetPredictions(
     ) {
         val updateTime = df.getCurrentTimeAsString()
         for (rule in payDayBudgetRuleList) {
-            val endDate = if (rule.budEndDate!! > stopDate) stopDate else rule.budEndDate
+            val endDate =
+                if (rule.budEndDate != null && rule.budEndDate > stopDate) stopDate else rule.budEndDate
+                    ?: stopDate
             val payDates = projectBudgetDates.projectDates(
                 startDate = rule.budStartDate,
                 endDate = endDate,
@@ -82,7 +84,9 @@ class UpdateBudgetPredictions(
     ) {
         val updateTime = df.getCurrentTimeAsString()
         for (rule in rulesOnPayDay) {
-            val endDate = if (rule.budEndDate!! > stopDate) stopDate else rule.budEndDate
+            val endDate =
+                if (rule.budEndDate != null && rule.budEndDate > stopDate) stopDate else rule.budEndDate
+                    ?: stopDate
             val payDates = projectBudgetDates.projectOnPayDay(
                 rule.budStartDate, rule.budFrequencyCount.toLong(), payDays, endDate,
             )
@@ -102,7 +106,9 @@ class UpdateBudgetPredictions(
         if (payDays.isEmpty()) return
 
         for (rule in rulesOther) {
-            val endDate = if (rule.budEndDate!! > stopDate) stopDate else rule.budEndDate
+            val endDate =
+                if (rule.budEndDate != null && rule.budEndDate > stopDate) stopDate else rule.budEndDate
+                    ?: stopDate
             val payDates = projectBudgetDates.projectDates(
                 startDate = rule.budStartDate,
                 endDate = endDate,

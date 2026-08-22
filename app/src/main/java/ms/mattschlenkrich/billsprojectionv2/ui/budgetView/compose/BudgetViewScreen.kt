@@ -105,6 +105,7 @@ fun BudgetViewScreen(
         var otherExpenses = 0.0
 
         budgetList.forEach { details ->
+            val budgetItem = details.budgetItem ?: return@forEach
             val isCredit = if (selectedAsset == ALL_ITEMS) {
                 assetList.contains(details.toAccount?.accountName)
             } else {
@@ -112,9 +113,9 @@ fun BudgetViewScreen(
             }
 
             if (isCredit) {
-                credits += details.budgetItem!!.biProjectedAmount
+                credits += budgetItem.biProjectedAmount
             } else {
-                debits += details.budgetItem!!.biProjectedAmount
+                debits += budgetItem.biProjectedAmount
             }
 
             val isAssetRelated = if (selectedAsset == ALL_ITEMS) {
@@ -124,10 +125,10 @@ fun BudgetViewScreen(
             }
 
             if (isAssetRelated) {
-                if (details.budgetItem!!.biIsFixed) {
-                    fixedExpenses += details.budgetItem!!.biProjectedAmount
+                if (budgetItem.biIsFixed) {
+                    fixedExpenses += budgetItem.biProjectedAmount
                 } else {
-                    otherExpenses += details.budgetItem!!.biProjectedAmount
+                    otherExpenses += budgetItem.biProjectedAmount
                 }
             }
         }
@@ -234,7 +235,11 @@ fun BudgetViewScreen(
                     ) {
                         items(
                             budgetList,
-                            key = { "${it.budgetItem?.biRuleId}_${it.budgetItem?.biProjectedDate}" }
+                            key = { details ->
+                                val item = details.budgetItem
+                                if (item != null) "${item.biRuleId}_${item.biProjectedDate}"
+                                else details.hashCode().toString()
+                            }
                         ) { budgetItem ->
                             BudgetItemDisplay(
                                 budgetItemDetailed = budgetItem,

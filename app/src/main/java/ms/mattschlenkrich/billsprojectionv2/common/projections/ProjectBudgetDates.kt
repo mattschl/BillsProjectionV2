@@ -174,15 +174,16 @@ class ProjectBudgetDates(
         leadDays: Long,
     ): ArrayList<LocalDate> {
         val datesToFix = ArrayList<LocalDate>()
-        if (LocalDate.now() < LocalDate.parse(endDate)) {
-            var workingDate: LocalDate
-            workingDate = LocalDate.parse(startDate)
+        val start = parseDateSafely(startDate) ?: return datesToFix
+        val end = parseDateSafely(endDate) ?: return datesToFix
+        if (LocalDate.now() < end) {
+            var workingDate = start
             do {
                 if (workingDate > LocalDate.now().minusMonths(interval).plusDays(1)) {
                     datesToFix.add(workingDate)
                 }
                 workingDate = workingDate.plusMonths(interval)
-            } while (workingDate <= LocalDate.parse(endDate))
+            } while (workingDate <= end)
         }
         return fixDates(datesToFix, dayOfWeek, leadDays)
     }
@@ -192,10 +193,11 @@ class ProjectBudgetDates(
         startDate: String, endDate: String, interval: Long
     ): ArrayList<LocalDate> {
         val dates = ArrayList<LocalDate>()
-        if (LocalDate.now() < LocalDate.parse(endDate)) {
-            var workingDate: LocalDate
-            workingDate = LocalDate.parse(startDate)
-            while (workingDate <= LocalDate.parse(endDate)) {
+        val start = parseDateSafely(startDate) ?: return dates
+        val end = parseDateSafely(endDate) ?: return dates
+        if (LocalDate.now() < end) {
+            var workingDate = start
+            while (workingDate <= end) {
                 if (workingDate > LocalDate.now().minusWeeks(interval)) {
                     dates.add(workingDate)
                 }
@@ -209,10 +211,11 @@ class ProjectBudgetDates(
         startDate: String, endDate: String, interval: Long, dayOfWeek: String, leadDays: Long
     ): ArrayList<LocalDate> {
         val datesToFix = ArrayList<LocalDate>()
-        if (LocalDate.now() < LocalDate.parse(endDate)) {
-            var workingDate: LocalDate
-            workingDate = LocalDate.parse(startDate)
-            while (workingDate <= LocalDate.parse(endDate)) {
+        val start = parseDateSafely(startDate) ?: return datesToFix
+        val end = parseDateSafely(endDate) ?: return datesToFix
+        if (LocalDate.now() < end) {
+            var workingDate = start
+            while (workingDate <= end) {
                 if (workingDate > LocalDate.now().minusWeeks(1)) {
                     datesToFix.add(workingDate)
                 }
@@ -228,7 +231,7 @@ class ProjectBudgetDates(
         leadDays: Long,
     ): ArrayList<LocalDate> {
         val dates = ArrayList<LocalDate>()
-        dates.add(LocalDate.parse(startDate))
+        parseDateSafely(startDate)?.let { dates.add(it) }
         return fixDates(dates, dayOfWeek, leadDays)
     }
 
@@ -240,9 +243,18 @@ class ProjectBudgetDates(
             if (payDayList[d] in startDate..endDate && (d + 1) % interval.toInt() == 0 && payDayList[d] >= LocalDate.now()
                     .toString()
             ) {
-                dates.add(LocalDate.parse(payDayList[d]))
+                parseDateSafely(payDayList[d])?.let { dates.add(it) }
             }
         }
         return dates
+    }
+
+    private fun parseDateSafely(dateString: String): LocalDate? {
+        return try {
+            if (dateString.isBlank()) null
+            else LocalDate.parse(dateString)
+        } catch (e: Exception) {
+            null
+        }
     }
 }

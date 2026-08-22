@@ -105,8 +105,10 @@ fun BudgetViewScreenWrapper(
             allBudgetList
         } else {
             allBudgetList.filter {
-                val item = it.budgetItem!!
-                !item.biIsCancelled && !item.biIsCompleted && !item.biIsDeleted
+                val item = it.budgetItem
+                if (item != null) {
+                    !item.biIsCancelled && !item.biIsCompleted && !item.biIsDeleted
+                } else false
             }
         }
     }
@@ -163,214 +165,221 @@ fun BudgetViewScreenWrapper(
             )
         },
         onBudgetItemClick = { curBudgetDetailed ->
-            val curBudget = curBudgetDetailed.budgetItem!!
-            actionSheetState.show(
-                "${activity.getString(R.string.choose_an_action_for)} ${curBudget.biBudgetName}",
-                BudgetViewActionHelper.getBudgetItemOptions(
-                    activity = activity,
-                    curBudgetDetailed = curBudgetDetailed,
-                    nf = nf,
-                    onPerformCustom = {
-                        mainViewModel.setBudgetItemDetailed(curBudgetDetailed)
-                        mainViewModel.setTransactionDetailed(null)
-                        mainViewModel.setCallingFragments(FRAG_BUDGET_VIEW)
-                        navController.navigate(Screen.TransactionPerform.route)
-                    },
-                    onPerformFull = {
-                        if (curBudget.biProjectedAmount > 0.0) {
-                            activity.lifecycleScope.launch {
-                                val toPending =
-                                    accountUpdateViewModel.isTransactionPending(curBudget.biToAccountId)
-                                val fromPending =
-                                    accountUpdateViewModel.isTransactionPending(curBudget.biFromAccountId)
+            curBudgetDetailed.budgetItem?.let { curBudget ->
+                actionSheetState.show(
+                    "${activity.getString(R.string.choose_an_action_for)} ${curBudget.biBudgetName}",
+                    BudgetViewActionHelper.getBudgetItemOptions(
+                        activity = activity,
+                        curBudgetDetailed = curBudgetDetailed,
+                        nf = nf,
+                        onPerformCustom = {
+                            mainViewModel.setBudgetItemDetailed(curBudgetDetailed)
+                            mainViewModel.setTransactionDetailed(null)
+                            mainViewModel.setCallingFragments(FRAG_BUDGET_VIEW)
+                            navController.navigate(Screen.TransactionPerform.route)
+                        },
+                        onPerformFull = {
+                            if (curBudget.biProjectedAmount > 0.0) {
+                                activity.lifecycleScope.launch {
+                                    val toPending =
+                                        accountUpdateViewModel.isTransactionPending(curBudget.biToAccountId)
+                                    val fromPending =
+                                        accountUpdateViewModel.isTransactionPending(curBudget.biFromAccountId)
 
-                                val display =
-                                    TransactionMessageHelper.buildConfirmationMessage(
-                                        activity,
-                                        activity.transactionViewModel.createTransactionDetailedFromBudgetItem(
-                                            curBudgetDetailed
-                                        ),
-                                        nf
-                                    )
+                                    val display =
+                                        TransactionMessageHelper.buildConfirmationMessage(
+                                            activity,
+                                            activity.transactionViewModel.createTransactionDetailedFromBudgetItem(
+                                                curBudgetDetailed
+                                            ),
+                                            nf
+                                        )
 
-                                AlertDialog.Builder(activity)
-                                    .setTitle(activity.getString(R.string.confirm_completing_transaction))
-                                    .setMessage(display)
-                                    .setPositiveButton(activity.getString(R.string.perform_action)) { _, _ ->
-                                        activity.lifecycleScope.launch {
-                                            accountUpdateViewModel.performTransaction(
-                                                Transactions(
-                                                    transId = nf.generateId(),
-                                                    transDate = df.getCurrentDateAsString(),
-                                                    transName = curBudget.biBudgetName,
-                                                    transNote = "",
-                                                    transRuleId = curBudget.biRuleId,
-                                                    transToAccountId = curBudget.biToAccountId,
-                                                    transToAccountPending = toPending,
-                                                    transFromAccountId = curBudget.biFromAccountId,
-                                                    transFromAccountPending = fromPending,
-                                                    transAmount = curBudget.biProjectedAmount,
-                                                    transIsDeleted = false,
-                                                    transUpdateTime = df.getCurrentTimeAsString(),
+                                    AlertDialog.Builder(activity)
+                                        .setTitle(activity.getString(R.string.confirm_completing_transaction))
+                                        .setMessage(display)
+                                        .setPositiveButton(activity.getString(R.string.perform_action)) { _, _ ->
+                                            activity.lifecycleScope.launch {
+                                                accountUpdateViewModel.performTransaction(
+                                                    Transactions(
+                                                        transId = nf.generateId(),
+                                                        transDate = df.getCurrentDateAsString(),
+                                                        transName = curBudget.biBudgetName,
+                                                        transNote = "",
+                                                        transRuleId = curBudget.biRuleId,
+                                                        transToAccountId = curBudget.biToAccountId,
+                                                        transToAccountPending = toPending,
+                                                        transFromAccountId = curBudget.biFromAccountId,
+                                                        transFromAccountPending = fromPending,
+                                                        transAmount = curBudget.biProjectedAmount,
+                                                        transIsDeleted = false,
+                                                        transUpdateTime = df.getCurrentTimeAsString(),
+                                                    )
                                                 )
-                                            )
-                                            budgetItemViewModel.updateBudgetItem(
-                                                curBudget.copy(
-                                                    biActualDate = df.getCurrentDateAsString(),
-                                                    biProjectedAmount = 0.0,
-                                                    biIsCompleted = true,
-                                                    biUpdateTime = df.getCurrentTimeAsString()
+                                                budgetItemViewModel.updateBudgetItem(
+                                                    curBudget.copy(
+                                                        biActualDate = df.getCurrentDateAsString(),
+                                                        biProjectedAmount = 0.0,
+                                                        biIsCompleted = true,
+                                                        biUpdateTime = df.getCurrentTimeAsString()
+                                                    )
                                                 )
-                                            )
+                                            }
                                         }
-                                    }
-                                    .setNegativeButton(activity.getString(R.string.cancel), null)
-                                    .show()
-                            }
-                        }
-                    },
-                    onAdjustProjection = {
-                        mainViewModel.setBudgetItemDetailed(curBudgetDetailed)
-                        mainViewModel.setCallingFragments(FRAG_BUDGET_VIEW)
-                        navController.navigate(Screen.BudgetItemUpdate.route)
-                    },
-                    onGoToRule = {
-                        mainViewModel.setBudgetRuleDetailed(
-                            BudgetRuleDetailed(
-                                curBudgetDetailed.budgetRule,
-                                curBudgetDetailed.toAccount,
-                                curBudgetDetailed.fromAccount
-                            )
-                        )
-                        mainViewModel.setCallingFragments(FRAG_BUDGET_VIEW)
-                        navController.navigate(Screen.BudgetRuleUpdate.route)
-                    },
-                    onCancelItem = {
-                        AlertDialog.Builder(activity)
-                            .setTitle(activity.getString(R.string.confirm_cancelling_budget_item))
-                            .setMessage(
-                                "${activity.getString(R.string.this_will_cancel)}${curBudget.biBudgetName}${
-                                    activity.getString(
-                                        R.string.with_the_amount_of
-                                    )
-                                }${nf.displayDollars(curBudget.biProjectedAmount)}${
-                                    activity.getString(
-                                        R.string._remaining
-                                    )
-                                }"
-                            ).setPositiveButton(activity.getString(R.string.cancel_now)) { _, _ ->
-                                budgetItemViewModel.cancelBudgetItem(
-                                    curBudget.biRuleId,
-                                    curBudget.biProjectedDate,
-                                    df.getCurrentTimeAsString()
-                                )
-                                CoroutineScope(Dispatchers.Main).launch {
-                                    if (budgetList.isEmpty()) {
-                                        withContext(Dispatchers.IO) {
-                                            UpdateBudgetPredictions(activity).updatePredictions(
-                                                LocalDate.now().plusMonths(2).toString()
-                                            )
-                                        }
-                                    }
+                                        .setNegativeButton(
+                                            activity.getString(R.string.cancel),
+                                            null
+                                        )
+                                        .show()
                                 }
-                            }.setNegativeButton(activity.getString(R.string.ignore_this), null)
-                            .show()
-                    },
+                            }
+                        },
+                        onAdjustProjection = {
+                            mainViewModel.setBudgetItemDetailed(curBudgetDetailed)
+                            mainViewModel.setCallingFragments(FRAG_BUDGET_VIEW)
+                            navController.navigate(Screen.BudgetItemUpdate.route)
+                        },
+                        onGoToRule = {
+                            mainViewModel.setBudgetRuleDetailed(
+                                BudgetRuleDetailed(
+                                    curBudgetDetailed.budgetRule,
+                                    curBudgetDetailed.toAccount,
+                                    curBudgetDetailed.fromAccount
+                                )
+                            )
+                            mainViewModel.setCallingFragments(FRAG_BUDGET_VIEW)
+                            navController.navigate(Screen.BudgetRuleUpdate.route)
+                        },
+                        onCancelItem = {
+                            AlertDialog.Builder(activity)
+                                .setTitle(activity.getString(R.string.confirm_cancelling_budget_item))
+                                .setMessage(
+                                    "${activity.getString(R.string.this_will_cancel)}${curBudget.biBudgetName}${
+                                        activity.getString(
+                                            R.string.with_the_amount_of
+                                        )
+                                    }${nf.displayDollars(curBudget.biProjectedAmount)}${
+                                        activity.getString(
+                                            R.string._remaining
+                                        )
+                                    }"
+                                )
+                                .setPositiveButton(activity.getString(R.string.cancel_now)) { _, _ ->
+                                    budgetItemViewModel.cancelBudgetItem(
+                                        curBudget.biRuleId,
+                                        curBudget.biProjectedDate,
+                                        df.getCurrentTimeAsString()
+                                    )
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        if (budgetList.isEmpty()) {
+                                            withContext(Dispatchers.IO) {
+                                                UpdateBudgetPredictions(activity).updatePredictions(
+                                                    LocalDate.now().plusMonths(2).toString()
+                                                )
+                                            }
+                                        }
+                                    }
+                                }.setNegativeButton(activity.getString(R.string.ignore_this), null)
+                                .show()
+                        }
+                    )
                 )
-            )
+            }
         },
         onBudgetItemLockClick = { budgetItemDetailed ->
-            val budgetItem = budgetItemDetailed.budgetItem!!
-            actionSheetState.show(
-                activity.getString(R.string.lock_or_unlock),
-                BudgetViewActionHelper.getLockOptions(
-                    activity = activity,
-                    budgetItemName = budgetItem.biBudgetName,
-                    onLockItem = {
-                        budgetItemViewModel.lockUnlockBudgetItem(
-                            lock = true,
-                            budgetRuleId = budgetItem.biRuleId,
-                            payDay = budgetItem.biPayDay,
-                            updateTime = df.getCurrentTimeAsString(),
-                        )
-                    },
-                    onUnlockItem = {
-                        budgetItemViewModel.lockUnlockBudgetItem(
-                            lock = false,
-                            budgetRuleId = budgetItem.biRuleId,
-                            payDay = budgetItem.biPayDay,
-                            updateTime = df.getCurrentTimeAsString(),
-                        )
-                    },
-                    onLockPayDay = {
-                        budgetItemViewModel.lockUnlockBudgetItem(
-                            lock = true,
-                            payDay = budgetItem.biPayDay,
-                            updateTime = df.getCurrentTimeAsString(),
-                        )
-                    },
-                    onUnlockPayDay = {
-                        budgetItemViewModel.lockUnlockBudgetItem(
-                            lock = false,
-                            payDay = budgetItem.biPayDay,
-                            updateTime = df.getCurrentTimeAsString(),
-                        )
-                    }
+            budgetItemDetailed.budgetItem?.let { budgetItem ->
+                actionSheetState.show(
+                    activity.getString(R.string.lock_or_unlock),
+                    BudgetViewActionHelper.getLockOptions(
+                        activity = activity,
+                        budgetItemName = budgetItem.biBudgetName,
+                        onLockItem = {
+                            budgetItemViewModel.lockUnlockBudgetItem(
+                                lock = true,
+                                budgetRuleId = budgetItem.biRuleId,
+                                payDay = budgetItem.biPayDay,
+                                updateTime = df.getCurrentTimeAsString(),
+                            )
+                        },
+                        onUnlockItem = {
+                            budgetItemViewModel.lockUnlockBudgetItem(
+                                lock = false,
+                                budgetRuleId = budgetItem.biRuleId,
+                                payDay = budgetItem.biPayDay,
+                                updateTime = df.getCurrentTimeAsString(),
+                            )
+                        },
+                        onLockPayDay = {
+                            budgetItemViewModel.lockUnlockBudgetItem(
+                                lock = true,
+                                payDay = budgetItem.biPayDay,
+                                updateTime = df.getCurrentTimeAsString(),
+                            )
+                        },
+                        onUnlockPayDay = {
+                            budgetItemViewModel.lockUnlockBudgetItem(
+                                lock = false,
+                                payDay = budgetItem.biPayDay,
+                                updateTime = df.getCurrentTimeAsString(),
+                            )
+                        }
+                    )
                 )
-            )
+            }
         },
         onTransactionClick = { pendingTransaction ->
-            val trans = pendingTransaction.transaction!!
-            actionSheetState.show(
-                "${activity.getString(R.string.choose_an_action_for)}${nf.displayDollars(trans.transAmount)}${
-                    activity.getString(R.string._to_)
-                }${trans.transName}",
-                BudgetViewActionHelper.getPendingTransactionOptions(
-                    activity = activity,
-                    onComplete = {
-                        val display = TransactionMessageHelper.buildPendingCompletionMessage(
-                            activity, pendingTransaction, nf
-                        )
-                        AlertDialog.Builder(activity)
-                            .setTitle(activity.getString(R.string.confirm_completing_transaction))
-                            .setMessage(display)
-                            .setPositiveButton(activity.getString(R.string.confirm)) { _, _ ->
-                                activity.lifecycleScope.launch {
-                                    val updatedTrans = trans.copy(
-                                        transToAccountPending = false,
-                                        transFromAccountPending = false,
-                                        transUpdateTime = df.getCurrentTimeAsString()
-                                    )
-                                    accountUpdateViewModel.updateTransaction(
-                                        trans, updatedTrans
-                                    )
+            pendingTransaction.transaction?.let { trans ->
+                actionSheetState.show(
+                    "${activity.getString(R.string.choose_an_action_for)}${nf.displayDollars(trans.transAmount)}${
+                        activity.getString(R.string._to_)
+                    }${trans.transName}",
+                    BudgetViewActionHelper.getPendingTransactionOptions(
+                        activity = activity,
+                        onComplete = {
+                            val display = TransactionMessageHelper.buildPendingCompletionMessage(
+                                activity, pendingTransaction, nf
+                            )
+                            AlertDialog.Builder(activity)
+                                .setTitle(activity.getString(R.string.confirm_completing_transaction))
+                                .setMessage(display)
+                                .setPositiveButton(activity.getString(R.string.confirm)) { _, _ ->
+                                    activity.lifecycleScope.launch {
+                                        val updatedTrans = trans.copy(
+                                            transToAccountPending = false,
+                                            transFromAccountPending = false,
+                                            transUpdateTime = df.getCurrentTimeAsString()
+                                        )
+                                        accountUpdateViewModel.updateTransaction(
+                                            trans, updatedTrans
+                                        )
+                                    }
                                 }
+                                .setNegativeButton(activity.getString(R.string.cancel), null).show()
+                        },
+                        onEdit = {
+                            mainViewModel.setCallingFragments(FRAG_BUDGET_VIEW)
+                            mainViewModel.setTransactionDetailed(pendingTransaction)
+                            activity.lifecycleScope.launch {
+                                val transId = pendingTransaction.transaction.transId
+                                val transactionFull = transactionViewModel.getTransactionFull(
+                                    transId,
+                                    pendingTransaction.transaction.transToAccountId,
+                                    pendingTransaction.transaction.transFromAccountId
+                                )
+                                mainViewModel.setOldTransaction(transactionFull)
+                                navController.navigate(Screen.TransactionUpdate.route)
                             }
-                            .setNegativeButton(activity.getString(R.string.cancel), null).show()
-                    },
-                    onEdit = {
-                        mainViewModel.setCallingFragments(FRAG_BUDGET_VIEW)
-                        mainViewModel.setTransactionDetailed(pendingTransaction)
-                        activity.lifecycleScope.launch {
-                            val transId = pendingTransaction.transaction.transId
-                            val transactionFull = transactionViewModel.getTransactionFull(
-                                transId,
-                                pendingTransaction.transaction.transToAccountId,
-                                pendingTransaction.transaction.transFromAccountId
-                            )
-                            mainViewModel.setOldTransaction(transactionFull)
-                            navController.navigate(Screen.TransactionUpdate.route)
+                        },
+                        onDelete = {
+                            activity.lifecycleScope.launch {
+                                accountUpdateViewModel.deleteTransaction(
+                                    pendingTransaction.transaction
+                                )
+                            }
                         }
-                    },
-                    onDelete = {
-                        activity.lifecycleScope.launch {
-                            accountUpdateViewModel.deleteTransaction(
-                                pendingTransaction.transaction
-                            )
-                        }
-                    }
+                    )
                 )
-            )
+            }
         },
         onAccountClick = {
             mainViewModel.setCallingFragments(FRAG_BUDGET_VIEW)

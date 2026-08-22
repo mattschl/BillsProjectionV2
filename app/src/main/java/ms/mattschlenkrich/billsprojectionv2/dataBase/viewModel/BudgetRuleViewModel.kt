@@ -76,8 +76,13 @@ class BudgetRuleViewModel(
             transactionViewModel.getCountTransactionByBudgetRuleSync(
                 rule.ruleId, calcStart, today.toString()
             )
+        val startDate = try {
+            LocalDate.parse(calcStart)
+        } catch (e: Exception) {
+            today
+        }
         val daysElapsed = ChronoUnit.DAYS.between(
-            LocalDate.parse(calcStart),
+            startDate,
             today
         )
 

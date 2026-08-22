@@ -41,7 +41,7 @@ fun TransactionAddScreenWrapper(
         if (cached != null) {
             state.updateFrom(cached, mainViewModel.getTransferNum())
             val ruleChanged =
-                cached.budgetRule != null && cached.budgetRule!!.ruleId != cached.transaction?.transRuleId
+                cached.budgetRule?.ruleId != cached.transaction?.transRuleId
 
             cached.toAccount?.let {
                 val awt = accountViewModel.getAccountWithType(it.accountId)
@@ -108,13 +108,13 @@ fun TransactionAddScreenWrapper(
             val valid = state.validate()
             val trans = state.toTransactions()
 
-            if (state.descriptionError) {
+            if (state.dateError) {
                 Toast.makeText(
                     mainActivity,
-                    mainActivity.getString(R.string.please_enter_a_name_or_description),
+                    mainActivity.getString(R.string.please_choose_a_date),
                     Toast.LENGTH_LONG
                 ).show()
-            } else if (state.toAccountError) {
+            } else if (state.descriptionError) {
                 Toast.makeText(
                     mainActivity,
                     mainActivity.getString(R.string.there_needs_to_be_an_account_money_will_go_to),

@@ -82,6 +82,14 @@ fun TransactionUpdateScreenWrapper(
     fun updateTransactionIfValid() {
         val valid = state.validate()
 
+        if (state.dateError) {
+            Toast.makeText(
+                mainActivity,
+                mainActivity.getString(R.string.error) + mainActivity.getString(R.string.please_choose_a_date),
+                Toast.LENGTH_LONG
+            ).show()
+            return
+        }
         if (state.descriptionError) {
             Toast.makeText(
                 mainActivity,
@@ -124,7 +132,7 @@ fun TransactionUpdateScreenWrapper(
     LaunchedEffect(Unit) {
         mainActivity.topMenuBar.title = mainActivity.getString(R.string.update_this_transaction)
         if (mainViewModel.getOldTransaction() != null && mainViewModel.getTransactionDetailed() == null) {
-            val transFull = mainViewModel.getOldTransaction()!!
+            val transFull = mainViewModel.getOldTransaction() ?: return@LaunchedEffect
             state.updateFrom(
                 TransactionDetailed(
                     transFull.transaction,
@@ -139,10 +147,10 @@ fun TransactionUpdateScreenWrapper(
             state.fromAccountWithType =
                 accountViewModel.getAccountWithType(transFull.transaction.transFromAccountId)
         } else if (mainViewModel.getTransactionDetailed() != null) {
-            val cached = mainViewModel.getTransactionDetailed()!!
+            val cached = mainViewModel.getTransactionDetailed() ?: return@LaunchedEffect
             state.updateFrom(cached, mainViewModel.getTransferNum())
             val ruleChanged =
-                cached.budgetRule != null && cached.budgetRule!!.ruleId != cached.transaction?.transRuleId
+                cached.budgetRule?.ruleId != cached.transaction?.transRuleId
 
             state.toAccount?.let {
                 val awt = accountViewModel.getAccountWithType(it.accountId)

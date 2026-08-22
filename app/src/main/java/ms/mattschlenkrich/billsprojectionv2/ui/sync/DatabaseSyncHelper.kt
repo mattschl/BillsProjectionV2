@@ -256,28 +256,20 @@ class DatabaseSyncHelper(
             getItemKey = { it.transId.toString() },
             getExistingById = { appDb.getTransactionDao().getTransaction(it.transId) },
             getExistingByName = { backupItem ->
-                val backupDate = LocalDate.parse(backupItem.transDate)
-                appDb.getTransactionDao().getAllTransactionsSync().find { localItem ->
-                    val localDate = LocalDate.parse(localItem.transDate)
-                    val daysDiff =
-                        java.time.temporal.ChronoUnit.DAYS.between(backupDate, localDate)
-
-                    localItem.transId != backupItem.transId &&
-                            kotlin.math.abs(daysDiff) <= 2 &&
-                            localItem.transAmount == backupItem.transAmount &&
-                            localItem.transToAccountId == backupItem.transToAccountId &&
-                            localItem.transFromAccountId == backupItem.transFromAccountId &&
-                            !localItem.transIsDeleted
+                val backupDate = try {
+                    LocalDate.parse(backupItem.transDate)
+                } catch (e: Exception) {
+                    null
                 }
-            },
-            getUpdateTime = { it.transUpdateTime },
-            getName = { it.transName },
-            getId = { it.transId },
-            insert = { backupItem ->
-                val backupDate = LocalDate.parse(backupItem.transDate)
-                val existingDuplicate =
-                    appDb.getTransactionDao().getAllTransactionsSync().find { localItem ->
-                        val localDate = LocalDate.parse(localItem.transDate)
+                if (backupDate == null) null
+                else appDb.getTransactionDao().getAllTransactionsSync().find { localItem ->
+                    val localDate = try {
+                        LocalDate.parse(localItem.transDate)
+                    } catch (e: Exception) {
+                        null
+                    }
+                    if (localDate == null) false
+                    else {
                         val daysDiff =
                             java.time.temporal.ChronoUnit.DAYS.between(backupDate, localDate)
 
@@ -288,6 +280,37 @@ class DatabaseSyncHelper(
                                 localItem.transFromAccountId == backupItem.transFromAccountId &&
                                 !localItem.transIsDeleted
                     }
+                }
+            },
+            getUpdateTime = { it.transUpdateTime },
+            getName = { it.transName },
+            getId = { it.transId },
+            insert = { backupItem ->
+                val backupDate = try {
+                    LocalDate.parse(backupItem.transDate)
+                } catch (e: Exception) {
+                    null
+                }
+                val existingDuplicate = if (backupDate == null) null
+                else appDb.getTransactionDao().getAllTransactionsSync().find { localItem ->
+                    val localDate = try {
+                        LocalDate.parse(localItem.transDate)
+                    } catch (e: Exception) {
+                        null
+                    }
+                    if (localDate == null) false
+                    else {
+                        val daysDiff =
+                            java.time.temporal.ChronoUnit.DAYS.between(backupDate, localDate)
+
+                        localItem.transId != backupItem.transId &&
+                                kotlin.math.abs(daysDiff) <= 2 &&
+                                localItem.transAmount == backupItem.transAmount &&
+                                localItem.transToAccountId == backupItem.transToAccountId &&
+                                localItem.transFromAccountId == backupItem.transFromAccountId &&
+                                !localItem.transIsDeleted
+                    }
+                }
 
                 if (existingDuplicate != null) {
                     val choice = onConflict(

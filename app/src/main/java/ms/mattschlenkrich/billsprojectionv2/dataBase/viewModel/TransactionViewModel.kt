@@ -233,7 +233,9 @@ class TransactionViewModel(
     )
 
     fun createTransactionDetailedFromBudgetItem(budgetItemDetailed: BudgetItemDetailed): TransactionDetailed {
-        val item = budgetItemDetailed.budgetItem!!
+        val item = budgetItemDetailed.budgetItem ?: return TransactionDetailed(
+            null, null, null, null
+        )
         return TransactionDetailed(
             transaction = Transactions(
                 transId = 0,

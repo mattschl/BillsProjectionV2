@@ -31,8 +31,8 @@ class AccountUpdateViewModel(
                     toAcc.account.accountId,
                     mTransaction.transAmount,
                     !reverse,
-                    toAcc.accountType!!.keepTotals,
-                    toAcc.accountType.tallyOwing
+                    toAcc.accountType?.keepTotals ?: true,
+                    toAcc.accountType?.tallyOwing ?: false
                 )
             }
 
@@ -43,8 +43,8 @@ class AccountUpdateViewModel(
                     fromAcc.account.accountId,
                     mTransaction.transAmount,
                     reverse,
-                    fromAcc.accountType!!.keepTotals,
-                    fromAcc.accountType.tallyOwing
+                    fromAcc.accountType?.keepTotals ?: true,
+                    fromAcc.accountType?.tallyOwing ?: false
                 )
             }
         }
@@ -77,8 +77,8 @@ class AccountUpdateViewModel(
     }
 
     suspend fun isTransactionPending(accountId: Long): Boolean {
-        val accType = accountViewModel.getAccountAndType(accountId).accountType!!
-        return accType.allowPending && accType.tallyOwing
+        val accType = accountViewModel.getAccountAndType(accountId).accountType
+        return accType?.allowPending == true && accType.tallyOwing == true
     }
 
 
@@ -113,8 +113,8 @@ class AccountUpdateViewModel(
                         oldTransaction.transToAccountId,
                         oldTransaction.transAmount,
                         false,
-                        oldToAcc.accountType!!.keepTotals,
-                        oldToAcc.accountType.tallyOwing
+                        oldToAcc.accountType?.keepTotals ?: true,
+                        oldToAcc.accountType?.tallyOwing ?: false
                     )
                 }
                 // Apply new To if it is not pending
@@ -125,8 +125,8 @@ class AccountUpdateViewModel(
                         newTransaction.transToAccountId,
                         newTransaction.transAmount,
                         true,
-                        newToAcc.accountType!!.keepTotals,
-                        newToAcc.accountType.tallyOwing
+                        newToAcc.accountType?.keepTotals ?: true,
+                        newToAcc.accountType?.tallyOwing ?: false
                     )
                 }
             }
@@ -144,8 +144,8 @@ class AccountUpdateViewModel(
                         oldTransaction.transFromAccountId,
                         oldTransaction.transAmount,
                         true,
-                        oldFromAcc.accountType!!.keepTotals,
-                        oldFromAcc.accountType.tallyOwing
+                        oldFromAcc.accountType?.keepTotals ?: true,
+                        oldFromAcc.accountType?.tallyOwing ?: false
                     )
                 }
                 // Apply new From if it is not pending
@@ -156,8 +156,8 @@ class AccountUpdateViewModel(
                         newTransaction.transFromAccountPendingId(),
                         newTransaction.transAmount,
                         false,
-                        newFromAcc.accountType!!.keepTotals,
-                        newFromAcc.accountType.tallyOwing
+                        newFromAcc.accountType?.keepTotals ?: true,
+                        newFromAcc.accountType?.tallyOwing ?: false
                     )
                 }
             }

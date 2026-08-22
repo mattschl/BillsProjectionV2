@@ -40,7 +40,7 @@ fun BudgetItemDisplay(
     val nf = LocalNumberFunctions.current
     val df = LocalDateFunctions.current
     val vf = LocalVisualsFunctions.current
-    val budgetItem = budgetItemDetailed.budgetItem!!
+    val budgetItem = budgetItemDetailed.budgetItem ?: return
     val color = remember(budgetItem.biRuleId, budgetItem.biProjectedDate) {
         Color(vf.getRandomColorInt())
     }
