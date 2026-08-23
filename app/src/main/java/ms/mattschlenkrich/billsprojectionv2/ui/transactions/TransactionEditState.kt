@@ -18,10 +18,10 @@ class TransactionEditState(
     val nf: NumberFunctions,
     val df: DateFunctions
 ) {
-    var date by mutableStateOf("")
+    var date by mutableStateOf(df.getCurrentDateAsString())
     var description by mutableStateOf("")
     var note by mutableStateOf("")
-    var amount by mutableStateOf("")
+    var amount by mutableStateOf(nf.displayDollars(0.0))
     var toAccount by mutableStateOf<Account?>(null)
     var fromAccount by mutableStateOf<Account?>(null)
     var budgetRule by mutableStateOf<BudgetRule?>(null)
