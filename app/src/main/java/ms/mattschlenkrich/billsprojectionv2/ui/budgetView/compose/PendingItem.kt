@@ -3,6 +3,7 @@ package ms.mattschlenkrich.billsprojectionv2.ui.budgetView.compose
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -57,22 +58,30 @@ fun PendingItem(
         val trans = pending.transaction ?: return
         Text(
             text = df.getDisplayDate(trans.transDate),
-            modifier = Modifier.width(100.dp),
+            modifier = Modifier.padding(end = 8.dp),
             style = MaterialTheme.typography.bodySmall
         )
         Text(
             text = nf.displayDollars(trans.transAmount),
-            modifier = Modifier.width(90.dp),
+            modifier = Modifier.padding(end = 8.dp),
             fontWeight = FontWeight.Bold,
             color = if (isCredit) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error,
             style = MaterialTheme.typography.bodySmall
         )
-        Text(
-            text = trans.transName + if (trans.transNote.isNotBlank()) " - ${trans.transNote}" else "",
-            modifier = Modifier.weight(1f),
-            fontWeight = FontWeight.Bold,
-            color = if (isCredit) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error,
-            style = MaterialTheme.typography.bodySmall,
-        )
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = trans.transName + if (trans.transNote.isNotBlank()) " - ${trans.transNote}" else "",
+                fontWeight = FontWeight.Bold,
+                color = if (isCredit) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+            )
+            Text(
+                text = "${pending.fromAccount?.accountName ?: "Unknown"} -> ${pending.toAccount?.accountName ?: "Unknown"}",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }
