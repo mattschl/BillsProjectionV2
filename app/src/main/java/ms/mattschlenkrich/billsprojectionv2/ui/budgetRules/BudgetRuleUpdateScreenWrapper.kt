@@ -493,7 +493,8 @@ fun BudgetRuleUpdateScreenWrapper(
                                 }
                             )
                         )
-                    }
+                    },
+                    onLongClick = {}
                 )
             }
         },

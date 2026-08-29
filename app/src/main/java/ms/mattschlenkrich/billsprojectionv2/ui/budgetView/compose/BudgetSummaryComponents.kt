@@ -36,6 +36,8 @@ fun SummaryCard(
     budgetTotals: BudgetTotals,
     pendingAmount: Double,
     onAccountClick: () -> Unit,
+    selectedSum: Double = 0.0,
+    showSelectedSum: Boolean = false,
 ) {
     val nf = LocalNumberFunctions.current
     val currentTag = stringResource(R.string.__current)
@@ -131,6 +133,25 @@ fun SummaryCard(
                             style = MaterialTheme.typography.bodyLarge
                         )
                     }
+                }
+            }
+
+            if (showSelectedSum) {
+                HorizontalDivider(modifier = Modifier.padding(vertical = 1.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "${stringResource(R.string.selected_)} ${
+                            nf.displayDollars(
+                                selectedSum
+                            )
+                        }",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 }
             }
 

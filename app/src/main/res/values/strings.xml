@@ -203,6 +203,7 @@
     <string name="schedule_a_new_budget_item">Schedule a new budget Item</string>
     <string name="scheduling_rules">Scheduling Rules</string>
     <string name="search">search</string>
+    <string name="selected_">"Selected: "</string>
     <string name="security">Security</string>
     <string name="set_password">Set Password</string>
     <string name="settings">Settings</string>

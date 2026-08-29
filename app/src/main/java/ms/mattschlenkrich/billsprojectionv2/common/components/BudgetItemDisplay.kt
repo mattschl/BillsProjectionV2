@@ -34,8 +34,9 @@ fun BudgetItemDisplay(
     budgetItemDetailed: BudgetItemDetailed,
     isCredit: Boolean,
     onClick: () -> Unit,
-    onLongClick: (() -> Unit)? = null,
+    onLongClick: () -> Unit,
     onLockClick: (() -> Unit)? = null,
+    isSelected: Boolean = false,
 ) {
     val nf = LocalNumberFunctions.current
     val df = LocalDateFunctions.current
@@ -61,6 +62,10 @@ fun BudgetItemDisplay(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .background(
+                if (isSelected) MaterialTheme.colorScheme.primaryContainer
+                else Color.Transparent
+            )
             .combinedClickable(
                 onClick = onClick,
                 onLongClick = onLongClick

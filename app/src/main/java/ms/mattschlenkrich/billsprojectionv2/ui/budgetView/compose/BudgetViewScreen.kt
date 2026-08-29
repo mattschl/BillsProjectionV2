@@ -64,6 +64,9 @@ fun BudgetViewScreen(
     onBudgetItemLockClick: (BudgetItemDetailed) -> Unit,
     onTransactionClick: (TransactionDetailed) -> Unit,
     onAccountClick: () -> Unit,
+    onBudgetItemLongClick: (BudgetItemDetailed) -> Unit = {},
+    selectedItems: Set<String> = emptySet(),
+    selectedSum: Double = 0.0,
     onScheduledExpensesLongClick: () -> Unit = {},
     isShowingAll: Boolean = false,
     sheetTitle: String = "",
@@ -173,6 +176,8 @@ fun BudgetViewScreen(
                 budgetTotals = budgetTotals,
                 pendingAmount = pendingAmount,
                 onAccountClick = onAccountClick,
+                selectedSum = selectedSum,
+                showSelectedSum = selectedItems.isNotEmpty(),
             )
 
             if (pendingList.isNotEmpty()) {
@@ -249,7 +254,14 @@ fun BudgetViewScreen(
                                     budgetItem.toAccount?.accountName == selectedAsset
                                 },
                                 onClick = { onBudgetItemClick(budgetItem) },
-                                onLockClick = { onBudgetItemLockClick(budgetItem) }
+                                onLongClick = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    onBudgetItemLongClick(budgetItem)
+                                },
+                                onLockClick = { onBudgetItemLockClick(budgetItem) },
+                                isSelected = selectedItems.contains(
+                                    "${budgetItem.budgetItem?.biRuleId}_${budgetItem.budgetItem?.biProjectedDate}"
+                                )
                             )
                         }
                     }

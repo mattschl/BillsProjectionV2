@@ -1,7 +1,7 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.transactions.compose
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,10 +29,13 @@ import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunction
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalVisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 fun TransactionHistoryItem(
     transactionDetailed: TransactionDetailed,
     onClick: (TransactionDetailed) -> Unit,
+    onLongClick: (TransactionDetailed) -> Unit = {},
+    isSelected: Boolean = false,
 ) {
     val nf = LocalNumberFunctions.current
     val df = LocalDateFunctions.current
@@ -42,7 +45,14 @@ fun TransactionHistoryItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick(transactionDetailed) }
+            .background(
+                if (isSelected) MaterialTheme.colorScheme.primaryContainer
+                else Color.Transparent
+            )
+            .combinedClickable(
+                onClick = { onClick(transactionDetailed) },
+                onLongClick = { onLongClick(transactionDetailed) }
+            )
             .padding(horizontal = 16.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

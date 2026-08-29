@@ -1,7 +1,9 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.transactions.compose
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,10 +45,14 @@ fun TransactionViewScreen(
     onSearchQueryChange: (String) -> Unit,
     onAddClick: () -> Unit,
     onTransactionClick: (TransactionDetailed) -> Unit,
+    onTransactionLongClick: (TransactionDetailed) -> Unit = {},
+    selectedItems: Set<Long> = emptySet(),
+    selectedSum: Double = 0.0,
     sheetTitle: String = "",
     sheetOptions: List<ActionOption> = emptyList(),
     onSheetDismiss: () -> Unit = {}
 ) {
+    val nf = ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions.current
     val sheetState = rememberModalBottomSheetState()
 
     if (sheetOptions.isNotEmpty()) {
@@ -89,6 +95,27 @@ fun TransactionViewScreen(
                 singleLine = true
             )
 
+            if (selectedItems.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "${stringResource(R.string.selected_)} ${
+                            nf.displayDollars(
+                                selectedSum
+                            )
+                        }",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                HorizontalDivider()
+            }
+
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -99,7 +126,9 @@ fun TransactionViewScreen(
                 } else {
                     TransactionList(
                         transactions = transactionList,
-                        onTransactionClick = onTransactionClick
+                        onTransactionClick = onTransactionClick,
+                        onTransactionLongClick = onTransactionLongClick,
+                        selectedItems = selectedItems
                     )
                 }
             }
@@ -140,8 +169,11 @@ private fun EmptyState() {
 @Composable
 private fun TransactionList(
     transactions: List<TransactionDetailed>,
-    onTransactionClick: (TransactionDetailed) -> Unit
+    onTransactionClick: (TransactionDetailed) -> Unit,
+    onTransactionLongClick: (TransactionDetailed) -> Unit = {},
+    selectedItems: Set<Long> = emptySet(),
 ) {
+    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
     LazyColumn(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -151,7 +183,12 @@ private fun TransactionList(
         ) { transactionDetailed ->
             TransactionHistoryItem(
                 transactionDetailed = transactionDetailed,
-                onClick = onTransactionClick
+                onClick = onTransactionClick,
+                onLongClick = {
+                    haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                    onTransactionLongClick(it)
+                },
+                isSelected = selectedItems.contains(transactionDetailed.transaction?.transId)
             )
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
         }

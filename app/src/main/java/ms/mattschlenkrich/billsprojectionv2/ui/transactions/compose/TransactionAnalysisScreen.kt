@@ -20,6 +20,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -77,6 +78,9 @@ fun TransactionAnalysisScreen(
     onBudgetRuleClick: () -> Unit,
     onAccountClick: () -> Unit,
     onTransactionClick: (TransactionDetailed) -> Unit,
+    onTransactionLongClick: (TransactionDetailed) -> Unit = {},
+    selectedItems: Set<Long> = emptySet(),
+    selectedSum: Double = 0.0,
     sheetTitle: String = "",
     sheetOptions: List<ActionOption> = emptyList(),
     onSheetDismiss: () -> Unit = {}
@@ -132,6 +136,8 @@ fun TransactionAnalysisScreen(
                     maxVal = maxVal,
                     minVal = minVal,
                     effectiveEndDate = effectiveEndDate,
+                    selectedSum = selectedSum,
+                    showSelectedSum = selectedItems.isNotEmpty()
                 )
             }
 
@@ -144,9 +150,15 @@ fun TransactionAnalysisScreen(
                     transactionList,
                     key = { it.transaction?.transId ?: it.hashCode() }
                 ) { transaction ->
+                    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
                     TransactionHistoryItem(
                         transactionDetailed = transaction,
                         onClick = onTransactionClick,
+                        onLongClick = {
+                            haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                            onTransactionLongClick(it)
+                        },
+                        isSelected = selectedItems.contains(transaction.transaction?.transId)
                     )
                 }
             }
@@ -163,6 +175,8 @@ fun AnalysisCard(
     maxVal: Double?,
     minVal: Double?,
     effectiveEndDate: String,
+    selectedSum: Double = 0.0,
+    showSelectedSum: Boolean = false
 ) {
     val nf = LocalNumberFunctions.current
     val df = LocalDateFunctions.current
@@ -246,6 +260,25 @@ fun AnalysisCard(
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
+                }
+            }
+
+            if (showSelectedSum) {
+                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "${stringResource(R.string.selected_)} ${
+                            nf.displayDollars(
+                                selectedSum
+                            )
+                        }",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 }
             }
         }

@@ -63,6 +63,11 @@ fun TransactionAnalysisScreenWrapper(
     var searchQueryActual by remember { mutableStateOf("") }
     var startDate by remember { mutableStateOf(df.getFirstOfMonth(df.getCurrentDateAsString())) }
     var endDate by remember { mutableStateOf(df.getCurrentDateAsString()) }
+    var selectedItems by remember { mutableStateOf(emptySet<Long>()) }
+
+    LaunchedEffect(timeRange, isSearchEnabled, searchQueryActual, startDate, endDate) {
+        selectedItems = emptySet()
+    }
 
     val budgetRuleDetailed = mainViewModel.getBudgetRuleDetailed()
     val accountWithType = mainViewModel.getAccountWithType()
@@ -191,6 +196,15 @@ fun TransactionAnalysisScreenWrapper(
         )
     }.observeAsState(null)
 
+    val selectedSum = remember(selectedItems, transactionList) {
+        if (selectedItems.isEmpty()) 0.0
+        else {
+            transactionList.filter {
+                selectedItems.contains(it.transaction?.transId)
+            }.sumOf { it.transaction?.transAmount ?: 0.0 }
+        }
+    }
+
     TransactionAnalysisScreen(
         timeRange = timeRange,
         onTimeRangeChange = { timeRange = it },
@@ -216,6 +230,17 @@ fun TransactionAnalysisScreenWrapper(
         maxVal = maxVal,
         minVal = minVal,
         effectiveEndDate = effectiveEndDate.ifBlank { df.getCurrentDateAsString() },
+        onTransactionLongClick = { transactionDetailed ->
+            transactionDetailed.transaction?.transId?.let { id ->
+                selectedItems = if (selectedItems.contains(id)) {
+                    selectedItems - id
+                } else {
+                    selectedItems + id
+                }
+            }
+        },
+        selectedItems = selectedItems,
+        selectedSum = selectedSum,
         onBudgetRuleClick = {
             mainViewModel.eraseAll()
             mainViewModel.setCallingFragments(TAG)
@@ -227,75 +252,79 @@ fun TransactionAnalysisScreenWrapper(
             navController.navigate(Screen.AccountChoose.route)
         },
         onTransactionClick = { transactionDetailed ->
-            state.updateFrom(transactionDetailed)
-            val display = TransactionMessageHelper.buildPendingCompletionMessage(
-                mainActivity, transactionDetailed, nf
-            )
+            if (selectedItems.isNotEmpty()) {
+                selectedItems = emptySet()
+            } else {
+                state.updateFrom(transactionDetailed)
+                val display = TransactionMessageHelper.buildPendingCompletionMessage(
+                    mainActivity, transactionDetailed, nf
+                )
 
-            val options = listOf(
-                ActionOption(
-                    mainActivity.getString(R.string.edit_this_transaction),
-                    Icons.Default.Edit
-                ) {
-                    mainViewModel.addCallingFragment(TAG)
-                    mainViewModel.setTransactionDetailed(transactionDetailed)
-                    coroutineScope.launch(Dispatchers.IO) {
-                        val oldTransactionFull = async {
-                            transactionViewModel.getTransactionFull(
-                                transactionDetailed.transaction!!.transId,
-                                transactionDetailed.transaction.transToAccountId,
-                                transactionDetailed.transaction.transFromAccountId
-                            )
-                        }
-                        mainViewModel.setOldTransaction(oldTransactionFull.await())
-                        launch(Dispatchers.Main) {
-                            navController.navigate(Screen.TransactionUpdate.route)
-                        }
-                    }
-                },
-                ActionOption(display, Icons.Default.Check) {
-                    val newTransaction = transactionDetailed.transaction!!.copy(
-                        transToAccountPending = false,
-                        transFromAccountPending = false
-                    )
-                    coroutineScope.launch(Dispatchers.IO) {
-                        accountUpdateViewModel.updateTransaction(
-                            transactionDetailed.transaction, newTransaction
-                        )
-                    }
-                },
-                ActionOption(
-                    mainActivity.getString(R.string.go_to_the_rules_for_future_budgets_of_this_kind),
-                    Icons.AutoMirrored.Filled.Rule
-                ) {
-                    mainViewModel.setCallingFragments(TAG)
-                    budgetRuleViewModel.getBudgetRuleFullLive(
-                        transactionDetailed.transaction!!.transRuleId
-                    ).observe(mainActivity) { bRuleDetailed ->
-                        mainViewModel.setBudgetRuleDetailed(bRuleDetailed)
-                        navController.navigate(Screen.BudgetRuleUpdate.route)
-                    }
-                },
-                ActionOption(
-                    mainActivity.getString(R.string.delete_this_transaction),
-                    Icons.Default.Delete
-                ) {
-                    AlertDialog.Builder(mainActivity).setTitle(
-                        "${mainActivity.getString(R.string.are_you_sure_you_want_to_delete)}${transactionDetailed.transaction!!.transName}"
-                    ).setPositiveButton(mainActivity.getString(R.string.delete)) { _, _ ->
+                val options = listOf(
+                    ActionOption(
+                        mainActivity.getString(R.string.edit_this_transaction),
+                        Icons.Default.Edit
+                    ) {
+                        mainViewModel.addCallingFragment(TAG)
+                        mainViewModel.setTransactionDetailed(transactionDetailed)
                         coroutineScope.launch(Dispatchers.IO) {
-                            accountUpdateViewModel.deleteTransaction(
-                                transactionDetailed.transaction
+                            val oldTransactionFull = async {
+                                transactionViewModel.getTransactionFull(
+                                    transactionDetailed.transaction!!.transId,
+                                    transactionDetailed.transaction.transToAccountId,
+                                    transactionDetailed.transaction.transFromAccountId
+                                )
+                            }
+                            mainViewModel.setOldTransaction(oldTransactionFull.await())
+                            launch(Dispatchers.Main) {
+                                navController.navigate(Screen.TransactionUpdate.route)
+                            }
+                        }
+                    },
+                    ActionOption(display, Icons.Default.Check) {
+                        val newTransaction = transactionDetailed.transaction!!.copy(
+                            transToAccountPending = false,
+                            transFromAccountPending = false
+                        )
+                        coroutineScope.launch(Dispatchers.IO) {
+                            accountUpdateViewModel.updateTransaction(
+                                transactionDetailed.transaction, newTransaction
                             )
                         }
-                    }.setNegativeButton(mainActivity.getString(R.string.cancel), null).show()
-                }
-            )
+                    },
+                    ActionOption(
+                        mainActivity.getString(R.string.go_to_the_rules_for_future_budgets_of_this_kind),
+                        Icons.AutoMirrored.Filled.Rule
+                    ) {
+                        mainViewModel.setCallingFragments(TAG)
+                        budgetRuleViewModel.getBudgetRuleFullLive(
+                            transactionDetailed.transaction!!.transRuleId
+                        ).observe(mainActivity) { bRuleDetailed ->
+                            mainViewModel.setBudgetRuleDetailed(bRuleDetailed)
+                            navController.navigate(Screen.BudgetRuleUpdate.route)
+                        }
+                    },
+                    ActionOption(
+                        mainActivity.getString(R.string.delete_this_transaction),
+                        Icons.Default.Delete
+                    ) {
+                        AlertDialog.Builder(mainActivity).setTitle(
+                            "${mainActivity.getString(R.string.are_you_sure_you_want_to_delete)}${transactionDetailed.transaction!!.transName}"
+                        ).setPositiveButton(mainActivity.getString(R.string.delete)) { _, _ ->
+                            coroutineScope.launch(Dispatchers.IO) {
+                                accountUpdateViewModel.deleteTransaction(
+                                    transactionDetailed.transaction
+                                )
+                            }
+                        }.setNegativeButton(mainActivity.getString(R.string.cancel), null).show()
+                    }
+                )
 
-            actionSheetState.show(
-                "${mainActivity.getString(R.string.choose_an_action_for)}${transactionDetailed.transaction!!.transName}",
-                options
-            )
+                actionSheetState.show(
+                    "${mainActivity.getString(R.string.choose_an_action_for)}${transactionDetailed.transaction!!.transName}",
+                    options
+                )
+            }
         },
         sheetTitle = actionSheetState.title,
         sheetOptions = actionSheetState.options,
