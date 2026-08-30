@@ -77,11 +77,29 @@ fun PendingItem(
                 color = if (isCredit) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall,
             )
-            Text(
-                text = "${pending.fromAccount?.accountName ?: "Unknown"} -> ${pending.toAccount?.accountName ?: "Unknown"}",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            val fromText =
+                if (trans.transFromAccountPending) pending.fromAccount?.accountName
+                    ?: "Unknown" else ""
+            val toText =
+                if (trans.transToAccountPending) pending.toAccount?.accountName ?: "Unknown" else ""
+
+            val accountDisplay = if (fromText.isNotBlank() && toText.isNotBlank()) {
+                "$fromText -> $toText"
+            } else if (fromText.isNotBlank()) {
+                "From: $fromText"
+            } else if (toText.isNotBlank()) {
+                "To: $toText"
+            } else {
+                ""
+            }
+
+            if (accountDisplay.isNotBlank()) {
+                Text(
+                    text = accountDisplay,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
     }
 }

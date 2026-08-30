@@ -20,7 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
@@ -98,6 +102,7 @@ fun BudgetItemDisplay(
                 fontWeight = FontWeight.Bold,
                 color = if (isCredit) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall,
+                textDecoration = if (budgetItem.biIsAutomatic) TextDecoration.Underline else null
             )
             Text(
                 text = "${budgetItemDetailed.fromAccount?.accountName ?: "Unknown"} -> ${budgetItemDetailed.toAccount?.accountName ?: "Unknown"}",
@@ -106,8 +111,18 @@ fun BudgetItemDisplay(
             )
             if (budgetItem.biIsFixed || budgetItem.biIsAutomatic) {
                 Text(
-                    text = (if (budgetItem.biIsFixed) "Fixed" else "Variable") +
-                            (if (budgetItem.biIsAutomatic) ", Automatic" else ""),
+                    text = buildAnnotatedString {
+                        if (budgetItem.biIsFixed) {
+                            withStyle(style = SpanStyle(color = Color.Red)) {
+                                append("Fixed")
+                            }
+                        } else {
+                            append("Variable")
+                        }
+                        if (budgetItem.biIsAutomatic) {
+                            append(", Automatic")
+                        }
+                    },
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.tertiary,
                 )
