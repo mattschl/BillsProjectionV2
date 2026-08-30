@@ -25,7 +25,7 @@ private const val TAG = FRAG_BUDGET_ITEM_UPDATE
 @Composable
 fun BudgetItemUpdateScreenWrapper(
     mainActivity: MainActivity,
-    navController: NavController
+    navController: NavController,
 ) {
     val mainViewModel = mainActivity.mainViewModel
     val budgetItemViewModel = mainActivity.budgetItemViewModel
@@ -36,7 +36,7 @@ fun BudgetItemUpdateScreenWrapper(
     val nameState = remember { mutableStateOf("") }
     val payDayState = remember { mutableStateOf("") }
     val amountState = remember { mutableStateOf("") }
-    val isFixedState = remember { mutableStateOf(false) }
+    val isFixedState = remember { mutableStateOf(value = false) }
     val isPayDayItemState = remember { mutableStateOf(false) }
     val isAutoState = remember { mutableStateOf(false) }
     val isLockedState = remember { mutableStateOf(true) }
@@ -49,7 +49,7 @@ fun BudgetItemUpdateScreenWrapper(
         if (budgetItemDetailedCached != null) {
             val item = budgetItemDetailedCached.budgetItem
             val rule = budgetItemDetailedCached.budgetRule
-            val ruleChanged = rule != null && rule.ruleId != item?.biRuleId
+            val ruleChanged = (rule != null) && (rule.ruleId != item?.biRuleId)
 
             dateState.value = item?.biActualDate ?: ""
 
@@ -64,7 +64,7 @@ fun BudgetItemUpdateScreenWrapper(
                 isPayDayItemState.value = rule?.budIsPayDay ?: false
                 isAutoState.value = rule?.budIsAutoPay ?: false
             } else {
-                nameState.value = item?.biBudgetName ?: ""
+                nameState.value = item.biBudgetName
                 amountState.value = nf.displayDollars(
                     (mainViewModel.getTransferNum() ?: 0.0).let {
                         if (it != 0.0) it else item?.biProjectedAmount ?: 0.0
@@ -207,6 +207,6 @@ fun BudgetItemUpdateScreenWrapper(
         onSaveClick = { updateBudgetItemIfValid() },
         onChooseBudgetRule = { chooseBudgetRule() },
         onChooseAccount = { chooseAccount(it) },
-        onGotoCalculator = { gotoCalculator() }
+        onGotoCalculator = { gotoCalculator() },
     )
 }

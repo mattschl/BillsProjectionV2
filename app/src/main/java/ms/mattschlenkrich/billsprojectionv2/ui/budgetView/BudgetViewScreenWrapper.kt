@@ -140,7 +140,7 @@ fun BudgetViewScreenWrapper(
     val selectedSum = remember(selectedItems, allBudgetList) {
         if (selectedItems.isEmpty()) 0.0
         else {
-            allBudgetList.filter {
+            allBudgetList.asSequence().filter {
                 val key = "${it.budgetItem?.biRuleId}_${it.budgetItem?.biProjectedDate}"
                 selectedItems.contains(key)
             }.sumOf { it.budgetItem?.biProjectedAmount ?: 0.0 }
@@ -200,7 +200,7 @@ fun BudgetViewScreenWrapper(
                         mainViewModel.setCallingFragments(FRAG_BUDGET_VIEW)
                         mainViewModel.setTransactionDetailed(null)
                         navController.navigate(Screen.TransactionAdd.route)
-                    }
+                    },
                 )
             )
         },

@@ -83,16 +83,16 @@ fun AccountChooseScreenWrapper(
 
 private fun populateSplitTransaction(mainActivity: MainActivity, curAccount: AccountWithType) {
     val mainViewModel = mainActivity.mainViewModel
-    val splitTrans = mainViewModel.getSplitTransactionDetailed()!!
+    val splitTrans = mainViewModel.getSplitTransactionDetailed() ?: return
     val requestedAccount = mainViewModel.getRequestedAccount()
     val isToAccount = requestedAccount == REQUEST_TO_ACCOUNT
     val isFromAccount = requestedAccount == REQUEST_FROM_ACCOUNT
 
-    val accountType = curAccount.accountType!!
+    val accountType = curAccount.accountType
     val updatedTransaction = splitTrans.transaction?.copy(
-        transToAccountPending = if (isToAccount) (accountType.allowPending && accountType.tallyOwing)
+        transToAccountPending = if (isToAccount) (accountType?.allowPending == true && accountType.tallyOwing)
         else splitTrans.transaction.transToAccountPending,
-        transFromAccountPending = if (isFromAccount) (accountType.allowPending && accountType.tallyOwing)
+        transFromAccountPending = if (isFromAccount) (accountType?.allowPending == true && accountType.tallyOwing)
         else splitTrans.transaction.transFromAccountPending
     )
     val splitTransactionDetailed = splitTrans.copy(
@@ -105,16 +105,16 @@ private fun populateSplitTransaction(mainActivity: MainActivity, curAccount: Acc
 
 private fun populateTransactionDetailed(mainActivity: MainActivity, curAccount: AccountWithType) {
     val mainViewModel = mainActivity.mainViewModel
-    val tempTrans = mainViewModel.getTransactionDetailed()!!
+    val tempTrans = mainViewModel.getTransactionDetailed() ?: return
     val requestedAccount = mainViewModel.getRequestedAccount()
     val isToAccount = requestedAccount == REQUEST_TO_ACCOUNT
     val isFromAccount = requestedAccount == REQUEST_FROM_ACCOUNT
 
-    val accountType = curAccount.accountType!!
+    val accountType = curAccount.accountType
     val updatedTransaction = tempTrans.transaction?.copy(
-        transToAccountPending = if (isToAccount) (accountType.allowPending && accountType.tallyOwing)
+        transToAccountPending = if (isToAccount) (accountType?.allowPending == true && accountType.tallyOwing)
         else tempTrans.transaction.transToAccountPending,
-        transFromAccountPending = if (isFromAccount) (accountType.allowPending && accountType.tallyOwing)
+        transFromAccountPending = if (isFromAccount) (accountType?.allowPending == true && accountType.tallyOwing)
         else tempTrans.transaction.transFromAccountPending
     )
 
@@ -128,7 +128,7 @@ private fun populateTransactionDetailed(mainActivity: MainActivity, curAccount: 
 
 private fun populateBudgetItemDetailed(mainActivity: MainActivity, curAccount: AccountWithType) {
     val mainViewModel = mainActivity.mainViewModel
-    val tempBudgetItem = mainViewModel.getBudgetItemDetailed()!!
+    val tempBudgetItem = mainViewModel.getBudgetItemDetailed() ?: return
     val isToAccount = mainViewModel.getRequestedAccount() == REQUEST_TO_ACCOUNT
     mainViewModel.setBudgetItemDetailed(
         tempBudgetItem.copy(
@@ -140,7 +140,7 @@ private fun populateBudgetItemDetailed(mainActivity: MainActivity, curAccount: A
 
 private fun populateBudgetRuleDetailed(mainActivity: MainActivity, curAccount: AccountWithType) {
     val mainViewModel = mainActivity.mainViewModel
-    val tempBudgetRule = mainViewModel.getBudgetRuleDetailed()!!
+    val tempBudgetRule = mainViewModel.getBudgetRuleDetailed() ?: return
     val isToAccount = mainViewModel.getRequestedAccount() == REQUEST_TO_ACCOUNT
     mainViewModel.setBudgetRuleDetailed(
         tempBudgetRule.copy(

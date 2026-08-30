@@ -47,15 +47,17 @@ class SyncManager(
             // Sync lock handling
             val lockFiles = fileList.filter { it.name == "sync.lock" }
             if (lockFiles.isNotEmpty()) {
-                val newestLock = lockFiles.maxByOrNull { it.modifiedTime.value }!!
-                val modifiedTime = newestLock.modifiedTime.value
-                val diffMinutes = (System.currentTimeMillis() - modifiedTime) / (60 * 1000)
-                if (diffMinutes < 5) {
-                    status = "Busy"
-                    return status to "Aborted: Sync already in progress on another device."
-                } else {
-                    for (lock in lockFiles) driveServiceHelper.deleteFile(lock.id)
-                    syncReport.append("\nRemoved stale lock file(s).\n")
+                val newestLock = lockFiles.maxByOrNull { it.modifiedTime.value }
+                if (newestLock != null) {
+                    val modifiedTime = newestLock.modifiedTime.value
+                    val diffMinutes = (System.currentTimeMillis() - modifiedTime) / (60 * 1000)
+                    if (diffMinutes < 5) {
+                        status = "Busy"
+                        return status to "Aborted: Sync already in progress on another device."
+                    } else {
+                        for (lock in lockFiles) driveServiceHelper.deleteFile(lock.id)
+                        syncReport.append("\nRemoved stale lock file(s).\n")
+                    }
                 }
             }
 
@@ -111,7 +113,8 @@ class SyncManager(
             throw e
         } finally {
             val finalSyncTime = if ((status == "Success") && (uploadTimestamp != null)) {
-                df.getDateTimeStringFromDate(df.parseFileTimestamp(uploadTimestamp)!!)
+                val date = df.parseFileTimestamp(uploadTimestamp)
+                if (date != null) df.getDateTimeStringFromDate(date) else startTime
             } else startTime
             logSyncHistory(finalSyncTime, status, syncReport.toString())
 

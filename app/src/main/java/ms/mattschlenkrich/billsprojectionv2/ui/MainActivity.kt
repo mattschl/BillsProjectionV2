@@ -158,7 +158,7 @@ class MainActivity : AppCompatActivity() {
                             MainScreen(isFirstRun)
                         } else {
                             LoginScreen(
-                                passwordHash = s.passwordHash!!,
+                                passwordHash = s.passwordHash ?: "",
                                 onAuthenticated = { isAuthenticated.value = true },
                             ) { newHash ->
                                 val currentSettings = settingsManager.getSettings()

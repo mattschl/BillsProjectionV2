@@ -107,7 +107,7 @@ fun LoginScreen(
 
                         if (error != null) {
                             Text(
-                                text = error!!,
+                                text = error ?: "",
                                 color = MaterialTheme.colorScheme.error,
                                 style = MaterialTheme.typography.bodySmall,
                                 modifier = Modifier.padding(top = 4.dp)
@@ -224,7 +224,7 @@ fun ResetPasswordContent(
 
         if (error != null) {
             Text(
-                text = error!!,
+                text = error ?: "",
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(top = 4.dp)

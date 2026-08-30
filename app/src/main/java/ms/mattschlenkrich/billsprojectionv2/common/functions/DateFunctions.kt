@@ -197,7 +197,7 @@ class DateFunctions {
         return try {
             val start = startDate.split("-")
             val end = endDate.split("-")
-            if (start.size < 3 || end.size < 3) 0
+            if ((start.size < 3) || (end.size < 3)) 0
             else {
                 val years = end[0].toInt() - start[0].toInt()
                 var months = end[1].toInt() - start[1].toInt()

@@ -88,8 +88,8 @@ fun AccountUpdateScreenWrapper(
         )
     }
 
-    fun getUpdatedAccount(): Account {
-        val currentAwt = mainViewModel.getAccountWithType()!!
+    fun getUpdatedAccount(): Account? {
+        val currentAwt = mainViewModel.getAccountWithType() ?: return null
         return state.toAccount(
             currentAwt.account.accountId,
             currentAwt.accountType?.typeId ?: 0L
@@ -213,12 +213,16 @@ fun AccountUpdateScreenWrapper(
         accountType = accountWithTypeState.value?.accountType,
         onAccountTypeClick = {
             mainViewModel.addCallingFragment(TAG)
-            mainViewModel.setAccountWithType(
-                AccountWithType(
-                    getUpdatedAccount(),
-                    mainViewModel.getAccountWithType()!!.accountType
+            val updatedAccount = getUpdatedAccount()
+            val currentAwt = mainViewModel.getAccountWithType()
+            if (updatedAccount != null && currentAwt != null) {
+                mainViewModel.setAccountWithType(
+                    AccountWithType(
+                        updatedAccount,
+                        currentAwt.accountType
+                    )
                 )
-            )
+            }
             navController.navigate(Screen.AccountTypes.route)
         },
         accountTypeDetails = "",
@@ -230,12 +234,16 @@ fun AccountUpdateScreenWrapper(
                     R.string.zero_double
                 )
             }))
-            mainViewModel.setAccountWithType(
-                AccountWithType(
-                    getUpdatedAccount(),
-                    mainViewModel.getAccountWithType()!!.accountType
+            val updatedAccount = getUpdatedAccount()
+            val currentAwt = mainViewModel.getAccountWithType()
+            if (updatedAccount != null && currentAwt != null) {
+                mainViewModel.setAccountWithType(
+                    AccountWithType(
+                        updatedAccount,
+                        currentAwt.accountType
+                    )
                 )
-            )
+            }
             navController.navigate(Screen.Calculator.route)
         },
         owing = state.owing,
@@ -246,12 +254,16 @@ fun AccountUpdateScreenWrapper(
                     R.string.zero_double
                 )
             }))
-            mainViewModel.setAccountWithType(
-                AccountWithType(
-                    getUpdatedAccount(),
-                    mainViewModel.getAccountWithType()!!.accountType
+            val updatedAccount = getUpdatedAccount()
+            val currentAwt = mainViewModel.getAccountWithType()
+            if (updatedAccount != null && currentAwt != null) {
+                mainViewModel.setAccountWithType(
+                    AccountWithType(
+                        updatedAccount,
+                        currentAwt.accountType
+                    )
                 )
-            )
+            }
             navController.navigate(Screen.Calculator.route)
         },
         budgeted = state.budgeted,
@@ -262,12 +274,16 @@ fun AccountUpdateScreenWrapper(
                     R.string.zero_double
                 )
             }))
-            mainViewModel.setAccountWithType(
-                AccountWithType(
-                    getUpdatedAccount(),
-                    mainViewModel.getAccountWithType()!!.accountType
+            val updatedAccount = getUpdatedAccount()
+            val currentAwt = mainViewModel.getAccountWithType()
+            if (updatedAccount != null && currentAwt != null) {
+                mainViewModel.setAccountWithType(
+                    AccountWithType(
+                        updatedAccount,
+                        currentAwt.accountType
+                    )
                 )
-            )
+            }
             navController.navigate(Screen.Calculator.route)
         },
         limit = state.limit,
@@ -278,7 +294,10 @@ fun AccountUpdateScreenWrapper(
         onSaveClick = {
             val answer = if (state.name.isBlank()) {
                 mainActivity.getString(R.string.please_enter_a_name)
-            } else if (accountNames.any { it == state.name && it != mainViewModel.getAccountWithType()!!.account.accountName }) {
+            } else if (accountNames.any { name ->
+                    val currentAwt = mainViewModel.getAccountWithType()
+                    name == state.name && (currentAwt == null || name != currentAwt.account.accountName)
+                }) {
                 mainActivity.getString(R.string.this_budget_rule_already_exists)
             } else if (mainViewModel.getAccountWithType()?.accountType == null) {
                 mainActivity.getString(R.string.please_choose_an_account_type)
@@ -287,9 +306,10 @@ fun AccountUpdateScreenWrapper(
             }
 
             if (answer == ANSWER_OK) {
-                val accountWithType = mainViewModel.getAccountWithType()!!
+                val accountWithType = mainViewModel.getAccountWithType() ?: return@AccountEditScreen
+                val updatedAccount = getUpdatedAccount() ?: return@AccountEditScreen
                 if (state.name.trim() == accountWithType.account.accountName.trim()) {
-                    accountViewModel.updateAccount(getUpdatedAccount())
+                    accountViewModel.updateAccount(updatedAccount)
                     mainViewModel.removeCallingFragment(TAG)
                     mainViewModel.setAccountWithType(null)
                     navController.popBackStack()
@@ -304,7 +324,7 @@ fun AccountUpdateScreenWrapper(
                             }${mainActivity.getString(R.string.this_will_not_replace_an_existing_account_type)}"
                         )
                         setPositiveButton(mainActivity.getString(R.string.update_account)) { _, _ ->
-                            accountViewModel.updateAccount(getUpdatedAccount())
+                            accountViewModel.updateAccount(updatedAccount)
                             mainViewModel.removeCallingFragment(TAG)
                             mainViewModel.setAccountWithType(null)
                             navController.popBackStack()

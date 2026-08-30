@@ -66,7 +66,7 @@ private const val TAG = FRAG_BUDGET_RULE_UPDATE
 @Composable
 fun BudgetRuleUpdateScreenWrapper(
     mainActivity: MainActivity,
-    navController: NavController
+    navController: NavController,
 ) {
     val mainViewModel = mainActivity.mainViewModel
     val budgetRuleViewModel = mainActivity.budgetRuleViewModel
@@ -135,9 +135,10 @@ fun BudgetRuleUpdateScreenWrapper(
         val detailed = mainViewModel.getBudgetRuleDetailed()
         budgetNameList?.let { list ->
             for (name in list) {
-                if (name == state.name.trim() &&
-                    detailed?.budgetRule != null &&
-                    name != detailed.budgetRule!!.budgetRuleName
+                val rule = detailed?.budgetRule
+                if ((name == state.name.trim()) &&
+                    (rule != null) &&
+                    (name != rule.budgetRuleName)
                 ) {
                     return mainActivity.getString(R.string.this_budget_rule_already_exists)
                 }
@@ -195,51 +196,58 @@ fun BudgetRuleUpdateScreenWrapper(
         }.create().show()
     }
 
-    fun createTransactionDetailed(detailed: BudgetRuleDetailed): TransactionDetailed {
+    fun createTransactionDetailed(detailed: BudgetRuleDetailed): TransactionDetailed? {
+        val rule = detailed.budgetRule ?: return null
         val tempTransaction = Transactions(
-            nf.generateId(),
-            df.getCurrentDateAsString(),
-            detailed.budgetRule!!.budgetRuleName,
-            "",
-            detailed.budgetRule!!.ruleId,
-            detailed.budgetRule!!.budToAccountId,
-            false,
-            detailed.budgetRule!!.budFromAccountId,
-            false,
-            detailed.budgetRule!!.budgetAmount,
-            false,
-            df.getCurrentTimeAsString()
+            transId = nf.generateId(),
+            transDate = df.getCurrentDateAsString(),
+            transName = rule.budgetRuleName,
+            transNote = "",
+            transRuleId = rule.ruleId,
+            transToAccountId = rule.budToAccountId,
+            transToAccountPending = false,
+            transFromAccountId = rule.budFromAccountId,
+            transFromAccountPending = false,
+            transAmount = rule.budgetAmount,
+            transIsDeleted = false,
+            transUpdateTime = df.getCurrentTimeAsString()
         )
         return TransactionDetailed(
             tempTransaction,
-            detailed.budgetRule!!,
-            toAccount = detailed.toAccount!!,
-            fromAccount = detailed.fromAccount!!,
+            rule,
+            toAccount = detailed.toAccount,
+            fromAccount = detailed.fromAccount,
         )
     }
 
     fun addNewTransaction() {
-        val detailed = mainViewModel.getBudgetRuleDetailed()!!
-        mainViewModel.setTransactionDetailed(createTransactionDetailed(detailed))
+        val detailed = mainViewModel.getBudgetRuleDetailed() ?: return
+        val transDetailed = createTransactionDetailed(detailed) ?: return
+        mainViewModel.setTransactionDetailed(transDetailed)
         mainViewModel.addCallingFragment(TAG)
         navController.navigate(Screen.TransactionAdd.route)
     }
 
-    suspend fun createBudgetItemDetailed(detailed: BudgetRuleDetailed): BudgetItemDetailed {
+    suspend fun createBudgetItemDetailed(detailed: BudgetRuleDetailed): BudgetItemDetailed? {
+        val rule = detailed.budgetRule ?: return null
+        val toAcc = detailed.toAccount ?: return null
+        val fromAcc = detailed.fromAccount ?: return null
+
         var curPayday: String
         withContext(Dispatchers.IO) {
-            curPayday = budgetItemViewModel.getPayDaysActive().first()
+            val payDays = budgetItemViewModel.getPayDaysActive()
+            curPayday = payDays.firstOrNull() ?: df.getCurrentDateAsString()
         }
         val tempBudgetItem = BudgetItem(
-            detailed.budgetRule!!.ruleId,
+            rule.ruleId,
             biProjectedDate = df.getCurrentDateAsString(),
             biActualDate = df.getCurrentDateAsString(),
             biPayDay = curPayday,
             biBudgetName = state.name,
             biIsPayDayItem = false,
-            biToAccountId = detailed.toAccount!!.accountId,
-            biFromAccountId = detailed.fromAccount!!.accountId,
-            biProjectedAmount = detailed.budgetRule!!.budgetAmount,
+            biToAccountId = toAcc.accountId,
+            biFromAccountId = fromAcc.accountId,
+            biProjectedAmount = rule.budgetAmount,
             biIsPending = true,
             biIsFixed = state.isFixed,
             biIsAutomatic = state.isAuto,
@@ -252,16 +260,17 @@ fun BudgetRuleUpdateScreenWrapper(
         )
         return BudgetItemDetailed(
             tempBudgetItem,
-            detailed.budgetRule!!,
-            detailed.toAccount!!,
-            detailed.fromAccount!!
+            rule,
+            toAcc,
+            fromAcc
         )
     }
 
     fun createNewBudgetItem() {
         scope.launch {
-            val detailed = mainViewModel.getBudgetRuleDetailed()!!
-            mainViewModel.setBudgetItemDetailed(createBudgetItemDetailed(detailed))
+            val detailed = mainViewModel.getBudgetRuleDetailed() ?: return@launch
+            val budgetDetailed = createBudgetItemDetailed(detailed) ?: return@launch
+            mainViewModel.setBudgetItemDetailed(budgetDetailed)
             mainViewModel.addCallingFragment(TAG)
             navController.navigate(Screen.BudgetItemAdd.route)
         }
@@ -274,9 +283,10 @@ fun BudgetRuleUpdateScreenWrapper(
     }
 
     fun chooseOptions() {
-        val detailed = mainViewModel.getBudgetRuleDetailed()!!
+        val detailed = mainViewModel.getBudgetRuleDetailed() ?: return
+        val rule = detailed.budgetRule ?: return
         actionSheetState.show(
-            "${mainActivity.getString(R.string.choose_an_action_for)} ${detailed.budgetRule!!.budgetRuleName}",
+            "${mainActivity.getString(R.string.choose_an_action_for)} ${rule.budgetRuleName}",
             listOf(
                 ActionOption(
                     mainActivity.getString(R.string.add_a_new_transaction_based_on_the_budget_rule),
@@ -353,7 +363,10 @@ fun BudgetRuleUpdateScreenWrapper(
     fun gotoCalculator() {
         mainViewModel.setTransferNum(
             nf.getDoubleFromDollars(
-                state.amount.ifBlank { mainActivity.getString(R.string.zero_double) })
+                state.amount.ifBlank {
+                    mainActivity.getString(R.string.zero_double)
+                },
+            )
         )
         mainViewModel.setBudgetRuleDetailed(getBudgetRuleDetailed())
         navController.navigate(Screen.Calculator.route)
@@ -476,33 +489,36 @@ fun BudgetRuleUpdateScreenWrapper(
             )
 
             budgetItems.forEach { item ->
-                BudgetItemDisplay(
-                    budgetItemDetailed = item,
-                    isCredit = item.toAccount?.accountId == detailedCached?.toAccount?.accountId,
-                    onClick = {
-                        actionSheetState.show(
-                            mainActivity.getString(R.string.would_you_like_to_go_to_this_budget_item_on) + " ${
-                                df.getDisplayDate(item.budgetItem!!.biActualDate)
-                            }?",
-                            listOf(
-                                ActionOption(
-                                    mainActivity.getString(R.string.yes),
-                                    Icons.Default.PlayArrow
-                                ) {
-                                    gotoBudgetItem(item)
-                                }
+                val budgetItem = item.budgetItem
+                if (budgetItem != null) {
+                    BudgetItemDisplay(
+                        budgetItemDetailed = item,
+                        isCredit = item.toAccount?.accountId == detailedCached?.toAccount?.accountId,
+                        onClick = {
+                            actionSheetState.show(
+                                mainActivity.getString(R.string.would_you_like_to_go_to_this_budget_item_on) + " ${
+                                    df.getDisplayDate(budgetItem.biActualDate)
+                                }?",
+                                listOf(
+                                    ActionOption(
+                                        mainActivity.getString(R.string.yes),
+                                        Icons.Default.PlayArrow
+                                    ) {
+                                        gotoBudgetItem(item)
+                                    }
+                                )
                             )
-                        )
-                    },
-                    onLongClick = {}
-                )
+                        },
+                        onLongClick = {}
+                    )
+                }
             }
         },
         sheetTitle = actionSheetState.title,
         sheetOptions = actionSheetState.options,
         onSheetDismiss = {
             actionSheetState.dismiss()
-        }
+        },
     )
     ManagedActionBottomSheet(actionSheetState)
 }
