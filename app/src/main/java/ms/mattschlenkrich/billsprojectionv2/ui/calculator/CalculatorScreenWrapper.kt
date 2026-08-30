@@ -75,23 +75,26 @@ fun CalculatorScreenWrapper(
     }
 
     fun performOperatorAction(operation: String) {
-        if (operatorList.isEmpty() || operatorList[currentCounter] == "") {
-            if (operatorList.isEmpty()) {
-                operatorList.add(operation)
-                prevNumberList.add(0.0)
-                formulaList.add("")
-                resultList.add(0.0)
-            } else {
-                operatorList[currentCounter] = operation
-            }
+        if (operatorList[currentCounter] == "") {
             prevNumberList[currentCounter] = if (displayValue == "0" || displayValue == "-0") {
                 0.0
             } else {
                 nf.getDoubleFromDollars(displayValue)
             }
+            operatorList[currentCounter] = operation
             displayValue = "0"
         } else {
-            operatorList[currentCounter] = operation
+            if (displayValue == "0" || displayValue == "-0") {
+                operatorList[currentCounter] = operation
+            } else {
+                val result = resultList[currentCounter]
+                currentCounter++
+                prevNumberList.add(result)
+                operatorList.add(operation)
+                formulaList.add("")
+                resultList.add(result)
+                displayValue = "0"
+            }
         }
         performMath()
     }
