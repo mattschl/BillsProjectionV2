@@ -12,9 +12,9 @@ import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_ADD
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_TYPES
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_ACCOUNT_ADD
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_ACCOUNT_TYPES
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType
@@ -24,7 +24,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.accounts.compose.AccountTypeFormS
 import ms.mattschlenkrich.billsprojectionv2.ui.accounts.compose.AccountTypeListScreen
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 
-private const val TAG = FRAG_ACCOUNT_TYPES
+private const val TAG = SCREEN_ACCOUNT_TYPES
 
 @Composable
 fun AccountTypesScreenWrapper(
@@ -62,11 +62,11 @@ fun AccountTypesScreenWrapper(
             }
             val mCallingFragment = mainViewModel.getCallingFragments() ?: ""
             when {
-                mCallingFragment.contains(FRAG_ACCOUNT_UPDATE) -> {
+                mCallingFragment.contains(SCREEN_ACCOUNT_UPDATE) -> {
                     navController.navigate(Screen.AccountUpdate.route)
                 }
 
-                mCallingFragment.contains(FRAG_ACCOUNT_ADD) -> {
+                mCallingFragment.contains(SCREEN_ACCOUNT_ADD) -> {
                     navController.navigate(Screen.AccountAdd.route)
                 }
 

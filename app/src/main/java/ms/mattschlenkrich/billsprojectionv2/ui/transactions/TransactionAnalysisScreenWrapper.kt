@@ -22,7 +22,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.AnalysisMode
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_TRANSACTION_ANALYSIS
 import ms.mattschlenkrich.billsprojectionv2.common.TimeRange
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.components.ManagedActionBottomSheet
@@ -34,7 +34,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 import ms.mattschlenkrich.billsprojectionv2.ui.transactions.compose.TransactionAnalysisScreen
 
-private const val TAG = FRAG_TRANSACTION_ANALYSIS
+private const val TAG = SCREEN_TRANSACTION_ANALYSIS
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

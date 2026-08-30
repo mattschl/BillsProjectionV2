@@ -10,7 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavController
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_ADD
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_BUDGET_ITEM_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
@@ -19,7 +19,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.compose.BudgetItemScreen
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 
-private const val TAG = FRAG_BUDGET_ITEM_ADD
+private const val TAG = SCREEN_BUDGET_ITEM_ADD
 
 @Composable
 fun BudgetItemAddScreenWrapper(

@@ -15,7 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULES
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.components.ManagedActionBottomSheet
 import ms.mattschlenkrich.billsprojectionv2.common.components.rememberActionSheetState
@@ -60,7 +60,7 @@ fun BudgetRuleScreenWrapper(
         budgetRulesDetailed = budgetRulesDetailed,
         onAddClick = {
             mainViewModel.setBudgetRuleDetailed(null)
-            mainViewModel.addCallingFragment(FRAG_BUDGET_RULES)
+            mainViewModel.addCallingFragment(SCREEN_BUDGET_RULES)
             navController.navigate(Screen.BudgetRuleAdd.route)
         },
         onItemClick = { budgetRuleDetailed ->
@@ -72,7 +72,7 @@ fun BudgetRuleScreenWrapper(
                         activity.getString(R.string.view_or_edit_this_budget_rule),
                         Icons.Default.Edit
                     ) {
-                        mainViewModel.addCallingFragment(FRAG_BUDGET_RULES)
+                        mainViewModel.addCallingFragment(SCREEN_BUDGET_RULES)
                         mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
                         navController.navigate(Screen.BudgetRuleUpdate.route)
                     },
@@ -102,7 +102,7 @@ fun BudgetRuleScreenWrapper(
                                 null,
                             )
                         )
-                        mainViewModel.addCallingFragment(FRAG_BUDGET_RULES)
+                        mainViewModel.addCallingFragment(SCREEN_BUDGET_RULES)
                         navController.navigate(Screen.TransactionAdd.route)
                     },
                     ActionOption(
@@ -110,7 +110,7 @@ fun BudgetRuleScreenWrapper(
                         Icons.Default.Add
                     ) {
                         mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
-                        mainViewModel.addCallingFragment(FRAG_BUDGET_RULES)
+                        mainViewModel.addCallingFragment(SCREEN_BUDGET_RULES)
                         mainViewModel.setBudgetItemDetailed(
                             BudgetItemDetailed(
                                 BudgetItem(
@@ -144,7 +144,7 @@ fun BudgetRuleScreenWrapper(
                         activity.getString(R.string.view_a_summary_of_transactions_for_this_budget_rule),
                         Icons.Default.History
                     ) {
-                        mainViewModel.addCallingFragment(FRAG_BUDGET_RULES)
+                        mainViewModel.addCallingFragment(SCREEN_BUDGET_RULES)
                         mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
                         mainViewModel.setAccountWithType(null)
                         navController.navigate(Screen.Analysis.route)

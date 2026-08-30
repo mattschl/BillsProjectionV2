@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_UPDATE
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_ACCOUNT_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.components.ManagedActionBottomSheet
 import ms.mattschlenkrich.billsprojectionv2.common.components.rememberActionSheetState
@@ -36,7 +36,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.accounts.compose.AccountEditScreen
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 
-private const val TAG = FRAG_ACCOUNT_UPDATE
+private const val TAG = SCREEN_ACCOUNT_UPDATE
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

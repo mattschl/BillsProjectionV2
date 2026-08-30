@@ -9,24 +9,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNT_CHOOSE
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_ADD
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_UPDATE
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_ADD
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_UPDATE
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_SPLIT
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_ADD
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_PERFORM
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANS_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_ACCOUNT_CHOOSE
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_BUDGET_ITEM_ADD
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_BUDGET_ITEM_UPDATE
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_BUDGET_RULE_ADD
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_BUDGET_RULE_UPDATE
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_TRANSACTION_ANALYSIS
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_TRANSACTION_SPLIT
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_TRANS_ADD
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_TRANS_PERFORM
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_TRANS_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.accounts.compose.AccountChooseScreen
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 
-private const val TAG = FRAG_ACCOUNT_CHOOSE
+private const val TAG = SCREEN_ACCOUNT_CHOOSE
 
 @Composable
 fun AccountChooseScreenWrapper(
@@ -53,22 +53,22 @@ fun AccountChooseScreenWrapper(
         accountsWithType = accountsWithType,
         onAccountClick = { curAccount ->
             val mCallingFragment = mainViewModel.getCallingFragments() ?: ""
-            if (mCallingFragment.contains(FRAG_BUDGET_RULE_ADD) ||
-                mCallingFragment.contains(FRAG_BUDGET_RULE_UPDATE)
+            if (mCallingFragment.contains(SCREEN_BUDGET_RULE_ADD) ||
+                mCallingFragment.contains(SCREEN_BUDGET_RULE_UPDATE)
             ) {
                 populateBudgetRuleDetailed(mainActivity, curAccount)
-            } else if (mCallingFragment.contains(FRAG_BUDGET_ITEM_ADD) ||
-                mCallingFragment.contains(FRAG_BUDGET_ITEM_UPDATE)
+            } else if (mCallingFragment.contains(SCREEN_BUDGET_ITEM_ADD) ||
+                mCallingFragment.contains(SCREEN_BUDGET_ITEM_UPDATE)
             ) {
                 populateBudgetItemDetailed(mainActivity, curAccount)
-            } else if (mCallingFragment.contains(FRAG_TRANSACTION_SPLIT)) {
+            } else if (mCallingFragment.contains(SCREEN_TRANSACTION_SPLIT)) {
                 populateSplitTransaction(mainActivity, curAccount)
-            } else if (mCallingFragment.contains(FRAG_TRANS_ADD) ||
-                mCallingFragment.contains(FRAG_TRANS_PERFORM) ||
-                mCallingFragment.contains(FRAG_TRANS_UPDATE)
+            } else if (mCallingFragment.contains(SCREEN_TRANS_ADD) ||
+                mCallingFragment.contains(SCREEN_TRANS_PERFORM) ||
+                mCallingFragment.contains(SCREEN_TRANS_UPDATE)
             ) {
                 populateTransactionDetailed(mainActivity, curAccount)
-            } else if (mCallingFragment.contains(FRAG_TRANSACTION_ANALYSIS)) {
+            } else if (mCallingFragment.contains(SCREEN_TRANSACTION_ANALYSIS)) {
                 mainViewModel.setAccountWithType(curAccount)
             }
             navController.popBackStack()

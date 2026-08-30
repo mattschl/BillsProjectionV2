@@ -14,7 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_ACCOUNTS
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.components.ManagedActionBottomSheet
 import ms.mattschlenkrich.billsprojectionv2.common.components.rememberActionSheetState
@@ -52,7 +52,7 @@ fun AccountViewScreenWrapper(
         onSearchQueryChange = { searchQuery = it },
         accountsWithType = accountsWithType,
         onAddAccountClick = {
-            mainViewModel.addCallingFragment(FRAG_ACCOUNTS)
+            mainViewModel.addCallingFragment(SCREEN_ACCOUNTS)
             mainViewModel.setAccountWithType(null)
             navController.navigate(Screen.AccountAdd.route)
         },
@@ -64,7 +64,7 @@ fun AccountViewScreenWrapper(
                         activity.getString(R.string.edit_this_account),
                         Icons.Default.Edit
                     ) {
-                        mainViewModel.addCallingFragment(FRAG_ACCOUNTS)
+                        mainViewModel.addCallingFragment(SCREEN_ACCOUNTS)
                         mainViewModel.setAccountWithType(accountWithType)
                         navController.navigate(Screen.AccountUpdate.route)
                     },
@@ -80,7 +80,7 @@ fun AccountViewScreenWrapper(
                         activity.getString(R.string.view_a_summary_of_transactions_using_this_account),
                         Icons.Default.History
                     ) {
-                        mainViewModel.addCallingFragment(FRAG_ACCOUNTS)
+                        mainViewModel.addCallingFragment(SCREEN_ACCOUNTS)
                         mainViewModel.setAccountWithType(accountWithType)
                         mainViewModel.setBudgetRuleDetailed(null)
                         navController.navigate(Screen.Analysis.route)

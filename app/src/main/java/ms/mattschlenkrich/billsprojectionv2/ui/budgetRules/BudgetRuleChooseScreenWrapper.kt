@@ -9,16 +9,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_ADD
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_ITEM_UPDATE
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_RULE_CHOOSE
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_ANALYSIS
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_SPLIT
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_BUDGET_ITEM_ADD
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_BUDGET_ITEM_UPDATE
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_BUDGET_RULE_CHOOSE
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_TRANSACTION_ANALYSIS
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_TRANSACTION_SPLIT
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.compose.BudgetRuleChooseScreen
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 
-private const val TAG = FRAG_BUDGET_RULE_CHOOSE
+private const val TAG = SCREEN_BUDGET_RULE_CHOOSE
 
 @Composable
 fun BudgetRuleChooseScreenWrapper(
@@ -52,13 +52,13 @@ fun BudgetRuleChooseScreenWrapper(
         onBudgetRuleClick = { budgetRuleDetailed ->
             val callingFragments = mainViewModel.getCallingFragments()
             if (callingFragments != null) {
-                if (callingFragments.contains(FRAG_TRANSACTION_ANALYSIS)) {
+                if (callingFragments.contains(SCREEN_TRANSACTION_ANALYSIS)) {
                     mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
                     navController.popBackStack()
                 } else {
                     mainViewModel.removeCallingFragment(TAG)
                     mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
-                    if (callingFragments.contains(FRAG_TRANSACTION_SPLIT)) {
+                    if (callingFragments.contains(SCREEN_TRANSACTION_SPLIT)) {
                         val mTransactionSplit = mainViewModel.getSplitTransactionDetailed()
                         mainViewModel.setSplitTransactionDetailed(
                             mTransactionSplit?.copy(
@@ -77,8 +77,8 @@ fun BudgetRuleChooseScreenWrapper(
                             )
                         )
                     }
-                    if (callingFragments.contains(FRAG_BUDGET_ITEM_ADD) || callingFragments.contains(
-                            FRAG_BUDGET_ITEM_UPDATE
+                    if (callingFragments.contains(SCREEN_BUDGET_ITEM_ADD) || callingFragments.contains(
+                            SCREEN_BUDGET_ITEM_UPDATE
                         )
                     ) {
                         val mBudgetDetailed = mainViewModel.getBudgetItemDetailed()

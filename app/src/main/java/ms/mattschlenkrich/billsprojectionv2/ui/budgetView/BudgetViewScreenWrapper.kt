@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ALL_ITEMS
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_BUDGET_VIEW
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_BUDGET_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.components.ManagedActionBottomSheet
 import ms.mattschlenkrich.billsprojectionv2.common.components.rememberActionSheetState
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
@@ -164,7 +164,7 @@ fun BudgetViewScreenWrapper(
         budgetList = budgetList,
         hasAnyBudgetItems = allBudgetList.isNotEmpty(),
         onAccountClick = {
-            mainViewModel.setCallingFragments(FRAG_BUDGET_VIEW)
+            mainViewModel.setCallingFragments(SCREEN_BUDGET_VIEW)
             val currentSelectedAsset = mainViewModel.getReturnToAsset()
             activity.lifecycleScope.launch {
                 if (currentSelectedAsset != null) {
@@ -193,11 +193,11 @@ fun BudgetViewScreenWrapper(
                 BudgetViewActionHelper.getAddOptions(
                     activity = activity,
                     onNewBudgetItem = {
-                        mainViewModel.setCallingFragments(FRAG_BUDGET_VIEW)
+                        mainViewModel.setCallingFragments(SCREEN_BUDGET_VIEW)
                         navController.navigate(Screen.BudgetItemAdd.route)
                     },
                     onUnscheduledTransaction = {
-                        mainViewModel.setCallingFragments(FRAG_BUDGET_VIEW)
+                        mainViewModel.setCallingFragments(SCREEN_BUDGET_VIEW)
                         mainViewModel.setTransactionDetailed(null)
                         navController.navigate(Screen.TransactionAdd.route)
                     },
@@ -218,7 +218,7 @@ fun BudgetViewScreenWrapper(
                             onPerformCustom = {
                                 mainViewModel.setBudgetItemDetailed(curBudgetDetailed)
                                 mainViewModel.setTransactionDetailed(null)
-                                mainViewModel.setCallingFragments(FRAG_BUDGET_VIEW)
+                                mainViewModel.setCallingFragments(SCREEN_BUDGET_VIEW)
                                 navController.navigate(Screen.TransactionPerform.route)
                             },
                             onPerformFull = {
@@ -279,7 +279,7 @@ fun BudgetViewScreenWrapper(
                             },
                             onAdjustProjection = {
                                 mainViewModel.setBudgetItemDetailed(curBudgetDetailed)
-                                mainViewModel.setCallingFragments(FRAG_BUDGET_VIEW)
+                                mainViewModel.setCallingFragments(SCREEN_BUDGET_VIEW)
                                 navController.navigate(Screen.BudgetItemUpdate.route)
                             },
                             onGoToRule = {
@@ -290,7 +290,7 @@ fun BudgetViewScreenWrapper(
                                         curBudgetDetailed.fromAccount
                                     )
                                 )
-                                mainViewModel.setCallingFragments(FRAG_BUDGET_VIEW)
+                                mainViewModel.setCallingFragments(SCREEN_BUDGET_VIEW)
                                 navController.navigate(Screen.BudgetRuleUpdate.route)
                             },
                             onCancelItem = {
@@ -413,7 +413,7 @@ fun BudgetViewScreenWrapper(
                                     .show()
                             },
                             onEdit = {
-                                mainViewModel.setCallingFragments(FRAG_BUDGET_VIEW)
+                                mainViewModel.setCallingFragments(SCREEN_BUDGET_VIEW)
                                 mainViewModel.setTransactionDetailed(pendingTransaction)
                                 activity.lifecycleScope.launch {
                                     val transId = pendingTransaction.transaction.transId

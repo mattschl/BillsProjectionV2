@@ -19,7 +19,7 @@ import androidx.navigation.NavHostController
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.FRAG_TRANSACTION_VIEW
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_TRANSACTION_VIEW
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.components.ManagedActionBottomSheet
 import ms.mattschlenkrich.billsprojectionv2.common.components.rememberActionSheetState
@@ -73,7 +73,7 @@ fun TransactionViewScreenWrapper(
         searchQuery = searchQuery,
         onSearchQueryChange = { searchQuery = it },
         onAddClick = {
-            mainViewModel.addCallingFragment(FRAG_TRANSACTION_VIEW)
+            mainViewModel.addCallingFragment(SCREEN_TRANSACTION_VIEW)
             mainViewModel.setTransactionDetailed(null)
             navController.navigate(Screen.TransactionAdd.route)
         },
@@ -103,7 +103,7 @@ fun TransactionViewScreenWrapper(
                             context.getString(R.string.edit_this_transaction),
                             Icons.Default.Edit
                         ) {
-                            mainViewModel.setCallingFragments(FRAG_TRANSACTION_VIEW)
+                            mainViewModel.setCallingFragments(SCREEN_TRANSACTION_VIEW)
                             mainViewModel.setTransactionDetailed(transactionDetailed)
                             activity.lifecycleScope.launch {
                                 val oldTransactionFull = async {
@@ -130,7 +130,7 @@ fun TransactionViewScreenWrapper(
                             context.getString(R.string.go_to_the_rules_for_future_budgets_of_this_kind),
                             Icons.AutoMirrored.Filled.Rule
                         ) {
-                            mainViewModel.setCallingFragments(FRAG_TRANSACTION_VIEW)
+                            mainViewModel.setCallingFragments(SCREEN_TRANSACTION_VIEW)
                             budgetRuleViewModel.getBudgetRuleFullLive(
                                 trans.transRuleId
                             ).observe(activity) { bRuleDetailed ->
