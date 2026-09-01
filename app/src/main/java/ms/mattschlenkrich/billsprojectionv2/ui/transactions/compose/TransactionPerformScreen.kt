@@ -92,7 +92,7 @@ fun TransactionPerformScreen(
             ) {
                 Icon(
                     Icons.Default.Done,
-                    contentDescription = stringResource(R.string.save)
+                    contentDescription = stringResource(R.string.action_save)
                 )
             }
         }
@@ -110,7 +110,7 @@ fun TransactionPerformScreen(
             ProjectTextField(
                 value = description,
                 onValueChange = onDescriptionChange,
-                label = stringResource(R.string.description),
+                label = stringResource(R.string.label_description),
                 isError = descriptionError
             )
 
@@ -118,12 +118,12 @@ fun TransactionPerformScreen(
                 ProjectDateField(
                     value = date,
                     onValueChange = onDateChange,
-                    label = stringResource(R.string.date),
+                    label = stringResource(R.string.label_date),
                     modifier = Modifier.weight(2f)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 ProjectBalanceField(
-                    label = stringResource(R.string.amount),
+                    label = stringResource(R.string.label_amount),
                     value = amount,
                     onValueChange = onAmountChange,
                     onIconClick = onGotoCalculator,
@@ -134,7 +134,7 @@ fun TransactionPerformScreen(
             }
 
             ProjectTextBox(
-                label = stringResource(R.string.rules),
+                label = stringResource(R.string.label_rules),
                 value = budgetRule?.budgetRuleName ?: "",
                 onClick = onChooseBudgetRule,
             )
@@ -149,7 +149,7 @@ fun TransactionPerformScreen(
                         ProjectBalanceField(
                             value = budgetedAmount,
                             onValueChange = onBudgetedAmountChange,
-                            label = stringResource(R.string.budgeted)
+                            label = stringResource(R.string.label_budgeted)
                         )
                     }
                     Column(
@@ -157,7 +157,7 @@ fun TransactionPerformScreen(
                         horizontalAlignment = Alignment.End
                     ) {
                         Text(
-                            text = stringResource(R.string.remainder),
+                            text = stringResource(R.string.label_remainder),
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -172,7 +172,7 @@ fun TransactionPerformScreen(
             }
 
             TransactionAccountField(
-                label = stringResource(R.string.from_this_account),
+                label = stringResource(R.string.label_from_this_account),
                 account = fromAccount,
                 isPending = fromPending,
                 onPendingChange = onFromPendingChange,
@@ -182,7 +182,7 @@ fun TransactionPerformScreen(
             )
 
             TransactionAccountField(
-                label = stringResource(R.string.to_this_account),
+                label = stringResource(R.string.label_to_this_account),
                 account = toAccount,
                 isPending = toPending,
                 onPendingChange = onToPendingChange,
@@ -194,7 +194,7 @@ fun TransactionPerformScreen(
             ProjectTextField(
                 value = note,
                 onValueChange = onNoteChange,
-                label = stringResource(R.string.notes)
+                label = stringResource(R.string.label_notes)
             )
 
             Button(
@@ -202,7 +202,7 @@ fun TransactionPerformScreen(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = isSplitEnabled
             ) {
-                Text(stringResource(R.string.split))
+                Text(stringResource(R.string.action_split))
             }
         }
     }

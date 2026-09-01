@@ -8,13 +8,13 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_RULE_DAY_OF_WEEK_ID
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_RULE_FREQUENCY_TYPE_ID
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_RULE_FROM_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_RULE_IS_DELETED
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_RULE_IS_PAY_DAY
 import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_RULE_NAME
-import ms.mattschlenkrich.billsprojectionv2.common.BUD_DAY_OF_WEEK_ID
-import ms.mattschlenkrich.billsprojectionv2.common.BUD_FREQUENCY_TYPE_ID
-import ms.mattschlenkrich.billsprojectionv2.common.BUD_FROM_ACCOUNT_ID
-import ms.mattschlenkrich.billsprojectionv2.common.BUD_IS_DELETED
-import ms.mattschlenkrich.billsprojectionv2.common.BUD_IS_PAY_DAY
-import ms.mattschlenkrich.billsprojectionv2.common.BUD_TO_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_RULE_TO_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 
@@ -24,21 +24,21 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
     tableName = TABLE_BUDGET_RULES,
     indices = [
         Index(value = [BUDGET_RULE_NAME], unique = true),
-        Index(value = [BUD_TO_ACCOUNT_ID]),
-        Index(value = [BUD_FROM_ACCOUNT_ID]),
-        Index(value = [BUD_DAY_OF_WEEK_ID]),
-        Index(value = [BUD_FREQUENCY_TYPE_ID]),
-        Index(value = [BUD_IS_PAY_DAY]),
-        Index(value = [BUD_IS_DELETED])
+        Index(value = [BUDGET_RULE_TO_ACCOUNT_ID]),
+        Index(value = [BUDGET_RULE_FROM_ACCOUNT_ID]),
+        Index(value = [BUDGET_RULE_DAY_OF_WEEK_ID]),
+        Index(value = [BUDGET_RULE_FREQUENCY_TYPE_ID]),
+        Index(value = [BUDGET_RULE_IS_PAY_DAY]),
+        Index(value = [BUDGET_RULE_IS_DELETED])
     ],
     foreignKeys = [ForeignKey(
         entity = Account::class,
         parentColumns = [ACCOUNT_ID],
-        childColumns = [BUD_TO_ACCOUNT_ID]
+        childColumns = [BUDGET_RULE_TO_ACCOUNT_ID]
     ), ForeignKey(
         entity = Account::class,
         parentColumns = [ACCOUNT_ID],
-        childColumns = [BUD_FROM_ACCOUNT_ID]
+        childColumns = [BUDGET_RULE_FROM_ACCOUNT_ID]
     )]
 )
 data class BudgetRule(

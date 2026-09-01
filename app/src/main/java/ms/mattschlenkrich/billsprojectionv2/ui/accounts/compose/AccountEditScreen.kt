@@ -91,7 +91,7 @@ fun AccountEditScreen(
                 ) {
                     Icon(
                         Icons.Default.Check,
-                        contentDescription = stringResource(R.string.save)
+                        contentDescription = stringResource(R.string.action_save)
                     )
                 }
             }
@@ -108,7 +108,7 @@ fun AccountEditScreen(
                 ProjectTextField(
                     value = name,
                     onValueChange = onNameChange,
-                    label = stringResource(R.string.account_name),
+                    label = stringResource(R.string.label_account_name),
                     modifier = Modifier.weight(1.5f),
                     textStyle = MaterialTheme.typography.bodyMedium,
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
@@ -118,7 +118,7 @@ fun AccountEditScreen(
                 ProjectTextField(
                     value = handle,
                     onValueChange = onHandleChange,
-                    label = stringResource(R.string.number),
+                    label = stringResource(R.string.label_number),
                     modifier = Modifier.weight(1f),
                     textStyle = MaterialTheme.typography.bodyMedium,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
@@ -129,7 +129,7 @@ fun AccountEditScreen(
             Spacer(modifier = Modifier.height(4.dp))
 
             ProjectTextBox(
-                label = stringResource(R.string.account_type),
+                label = stringResource(R.string.label_account_type),
                 value = accountType?.accountType ?: "",
                 onClick = onAccountTypeClick,
                 isError = accountType == null
@@ -147,14 +147,14 @@ fun AccountEditScreen(
 
             Row(modifier = Modifier.fillMaxWidth()) {
                 ProjectBalanceField(
-                    label = stringResource(R.string.balance),
+                    label = stringResource(R.string.label_balance),
                     value = balance,
                     onValueChange = onBalanceChange,
                     onIconClick = onBalanceIconClick,
                     modifier = Modifier.weight(1f)
                 )
                 ProjectBalanceField(
-                    label = stringResource(R.string.owing),
+                    label = stringResource(R.string.label_owing),
                     value = owing,
                     onValueChange = onOwingChange,
                     onIconClick = onOwingIconClick,
@@ -166,14 +166,14 @@ fun AccountEditScreen(
 
             Row(modifier = Modifier.fillMaxWidth()) {
                 ProjectBalanceField(
-                    label = stringResource(R.string.budgeted),
+                    label = stringResource(R.string.label_budgeted),
                     value = budgeted,
                     onValueChange = onBudgetedChange,
                     onIconClick = onBudgetedIconClick,
                     modifier = Modifier.weight(1f)
                 )
                 ProjectBalanceField(
-                    label = stringResource(R.string.credit_limit),
+                    label = stringResource(R.string.label_credit_limit),
                     value = limit,
                     onValueChange = onLimitChange,
                     modifier = Modifier.weight(1f)

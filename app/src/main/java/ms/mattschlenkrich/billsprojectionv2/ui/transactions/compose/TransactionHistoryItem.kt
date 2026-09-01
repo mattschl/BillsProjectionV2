@@ -108,7 +108,7 @@ fun TransactionHistoryItem(
             }
             if (trans.transToAccountPending || trans.transFromAccountPending) {
                 Text(
-                    text = stringResource(R.string.pending),
+                    text = stringResource(R.string.label_pending),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.error,
                     fontWeight = FontWeight.Bold

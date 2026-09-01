@@ -321,14 +321,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun chooseDeleteFuturePredictions() {
         AlertDialog.Builder(this).apply {
-            setTitle(getString(R.string.warning_confirm_delete))
+            setTitle(getString(R.string.title_warning_confirm_delete))
             setMessage(
-                getString(R.string.this_action_should_only_be_done_when_you_do_a_drastic_change)
+                getString(R.string.msg_warning_drastic_change)
             )
-            setPositiveButton(getString(R.string._continue)) { _, _ ->
+            setPositiveButton(getString(R.string.action_continue)) { _, _ ->
                 deleteFuturePredictions()
             }
-            setNegativeButton(getString(R.string.cancel)) { _, _ -> }
+            setNegativeButton(getString(R.string.action_cancel)) { _, _ -> }
             show()
         }
     }
@@ -345,7 +345,7 @@ class MainActivity : AppCompatActivity() {
             defaultDate.monthValue - 1,
             defaultDate.dayOfMonth
         )
-        picker.setTitle(getString(R.string.choose_a_date_to_project_bills_to))
+        picker.setTitle(getString(R.string.title_choose_projection_date))
         picker.show()
     }
 
@@ -355,14 +355,14 @@ class MainActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             updateBudgetPredictions.updatePredictions(stopDate)
             isUpdating.value = false
-            doTheUpdate(getString(R.string.budget_updated))
+            doTheUpdate(getString(R.string.msg_budget_updated))
         }
     }
 
     private fun doTheUpdate(msg: String) {
         runOnUiThread {
             AlertDialog.Builder(this).apply {
-                setTitle(getString(R.string.update_results))
+                setTitle(getString(R.string.title_update_results))
                 setMessage(msg)
                 setPositiveButton(getString(android.R.string.ok)) { _, _ -> }
                 show()

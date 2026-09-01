@@ -42,7 +42,7 @@ fun TransactionAccountField(
                     onCheckedChange = onPendingChange,
                 )
                 Text(
-                    text = stringResource(R.string.pending),
+                    text = stringResource(R.string.label_pending),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )

@@ -57,7 +57,7 @@ fun ProjectBalanceField(
                 IconButton(onClick = onIconClick) {
                     Icon(
                         imageVector = Icons.Default.Calculate,
-                        contentDescription = stringResource(R.string.calculator),
+                        contentDescription = stringResource(R.string.title_calculator),
                         modifier = Modifier.size(ProjectFieldDefaults.iconSize())
                     )
                 }

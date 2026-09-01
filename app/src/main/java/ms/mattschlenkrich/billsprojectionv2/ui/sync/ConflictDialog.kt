@@ -36,7 +36,7 @@ fun ConflictDialog(
             Column {
                 Text(
                     stringResource(
-                        info.messageResId ?: R.string.sync_conflict_message,
+                        info.messageResId ?: R.string.msg_sync_conflict,
                         info.tableName,
                         info.name,
                         info.localId,
@@ -57,7 +57,7 @@ fun ConflictDialog(
                         onCheckedChange = { applyToAll = it }
                     )
                     Text(
-                        text = stringResource(R.string.apply_to_all_conflicts),
+                        text = stringResource(R.string.action_apply_to_all_conflicts),
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(start = 8.dp)
                     )

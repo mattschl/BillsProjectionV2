@@ -87,7 +87,7 @@ fun TransactionSplitScreen(
             ) {
                 Icon(
                     Icons.Default.Done,
-                    contentDescription = stringResource(R.string.save)
+                    contentDescription = stringResource(R.string.action_save)
                 )
             }
         }
@@ -105,7 +105,7 @@ fun TransactionSplitScreen(
             ProjectTextField(
                 value = description,
                 onValueChange = onDescriptionChange,
-                label = stringResource(R.string.description),
+                label = stringResource(R.string.label_description),
                 isError = descriptionError
             )
 
@@ -113,12 +113,12 @@ fun TransactionSplitScreen(
                 ProjectDateField(
                     value = date,
                     onValueChange = onDateChange,
-                    label = stringResource(R.string.date),
+                    label = stringResource(R.string.label_date),
                     modifier = Modifier.weight(2f)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 ProjectBalanceField(
-                    label = stringResource(R.string.transaction_amount),
+                    label = stringResource(R.string.label_transaction_amount),
                     value = amount,
                     onValueChange = onAmountChange,
                     onIconClick = onGotoCalculator,
@@ -129,7 +129,7 @@ fun TransactionSplitScreen(
             }
 
             ProjectTextBox(
-                label = stringResource(R.string.rules),
+                label = stringResource(R.string.label_rules),
                 value = budgetRule?.budgetRuleName ?: "",
                 onClick = onChooseBudgetRule
             )
@@ -143,7 +143,7 @@ fun TransactionSplitScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = stringResource(R.string.original_amount),
+                            text = stringResource(R.string.label_original_amount),
                             style = MaterialTheme.typography.titleMedium
                         )
                         Text(
@@ -156,7 +156,7 @@ fun TransactionSplitScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = stringResource(R.string.remainder),
+                            text = stringResource(R.string.label_remainder),
                             style = MaterialTheme.typography.titleMedium
                         )
                         Text(
@@ -168,7 +168,7 @@ fun TransactionSplitScreen(
             }
 
             TransactionAccountField(
-                label = stringResource(R.string.from_this_account),
+                label = stringResource(R.string.label_from_this_account),
                 account = fromAccount,
                 isPending = fromPending,
                 onPendingChange = onFromPendingChange,
@@ -178,7 +178,7 @@ fun TransactionSplitScreen(
             )
 
             TransactionAccountField(
-                label = stringResource(R.string.to_this_account),
+                label = stringResource(R.string.label_to_this_account),
                 account = toAccount,
                 isPending = toPending,
                 onPendingChange = onToPendingChange,
@@ -190,7 +190,7 @@ fun TransactionSplitScreen(
             ProjectTextField(
                 value = note,
                 onValueChange = onNoteChange,
-                label = stringResource(R.string.notes)
+                label = stringResource(R.string.label_notes)
             )
         }
     }

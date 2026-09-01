@@ -57,25 +57,25 @@ fun AnalysisCard(
         Column(modifier = Modifier.padding(12.dp)) {
             if (mode == AnalysisMode.ACCOUNT) {
                 AnalysisRow(
-                    label1 = stringResource(R.string.credit_average),
+                    label1 = stringResource(R.string.label_credit_average),
                     value1 = nf.displayDollars((sumToAccount ?: 0.0) / months) + " / $months",
-                    label2 = stringResource(R.string.debit_average),
+                    label2 = stringResource(R.string.label_debit_average),
                     value2 = nf.displayDollars((sumFromAccount ?: 0.0) / months),
                     value2Color = MaterialTheme.colorScheme.error
                 )
             } else {
                 AnalysisRow(
-                    label1 = stringResource(R.string.average),
+                    label1 = stringResource(R.string.label_average),
                     value1 = nf.displayDollars(totals / months) + " / $months",
-                    label2 = stringResource(R.string.highest),
+                    label2 = stringResource(R.string.label_highest),
                     value2 = nf.displayDollars(maxVal ?: 0.0)
                 )
             }
 
             AnalysisRow(
-                label1 = stringResource(R.string.lowest),
+                label1 = stringResource(R.string.label_lowest),
                 value1 = nf.displayDollars(minVal ?: 0.0),
-                label2 = stringResource(R.string.most_recent),
+                label2 = stringResource(R.string.label_most_recent),
                 value2 = nf.displayDollars(
                     transactionList.firstOrNull()?.transaction?.transAmount ?: 0.0
                 )
@@ -83,9 +83,9 @@ fun AnalysisCard(
 
             if (mode == AnalysisMode.ACCOUNT) {
                 AnalysisRow(
-                    label1 = stringResource(R.string.total_credits),
+                    label1 = stringResource(R.string.label_total_credits),
                     value1 = nf.displayDollars(sumToAccount ?: 0.0),
-                    label2 = stringResource(R.string.total_debits),
+                    label2 = stringResource(R.string.label_total_debits),
                     value2 = nf.displayDollars(sumFromAccount ?: 0.0),
                     value2Color = MaterialTheme.colorScheme.error
                 )

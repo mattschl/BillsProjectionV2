@@ -65,7 +65,7 @@ fun AccountTypeListScreen(
             ) {
                 Icon(
                     Icons.Default.Add,
-                    contentDescription = stringResource(R.string.add_a_new_account_type)
+                    contentDescription = stringResource(R.string.title_add_account_type)
                 )
             }
         }
@@ -87,7 +87,7 @@ fun AccountTypeListScreen(
                     elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                 ) {
                     Text(
-                        text = stringResource(R.string.no_account_types_found),
+                        text = stringResource(R.string.msg_no_account_types),
                         modifier = Modifier.padding(32.dp),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
@@ -216,33 +216,33 @@ fun AccountTypeFormScreen(
             ProjectTextField(
                 value = name,
                 onValueChange = onNameChange,
-                label = stringResource(R.string.account_type),
+                label = stringResource(R.string.label_account_type),
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
                 singleLine = true
             )
 
             CheckboxRow(
-                text = stringResource(R.string.this_account_does_not_keep_a_balance_owing_amount),
+                text = stringResource(R.string.msg_account_no_balance),
                 checked = keepTotals,
                 onCheckedChange = onKeepTotalsChange
             )
             CheckboxRow(
-                text = stringResource(R.string.this_is_an_asset),
+                text = stringResource(R.string.msg_is_asset),
                 checked = isAsset,
                 onCheckedChange = onIsAssetChange
             )
             CheckboxRow(
-                text = stringResource(R.string.balance_owing_will_be_calculated),
+                text = stringResource(R.string.msg_balance_owing_calc),
                 checked = keepOwing,
                 onCheckedChange = onKeepOwingChange
             )
             CheckboxRow(
-                text = stringResource(R.string.this_will_be_used_for_the_budget),
+                text = stringResource(R.string.msg_used_for_budget),
                 checked = displayAsAsset,
                 onCheckedChange = onDisplayAsAssetChange
             )
             CheckboxRow(
-                text = stringResource(R.string.transactions_may_be_postponed),
+                text = stringResource(R.string.msg_transactions_postponed),
                 checked = allowPending,
                 onCheckedChange = onAllowPendingChange
             )

@@ -5,10 +5,10 @@ import androidx.room.Embedded
 import androidx.room.Relation
 import kotlinx.parcelize.Parcelize
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_ID
-import ms.mattschlenkrich.billsprojectionv2.common.RULE_ID
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_FROM_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_TO_ACCOUNT_ID
-import ms.mattschlenkrich.billsprojectionv2.common.TRANS_BUDGET_RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountAndType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
@@ -19,8 +19,8 @@ data class TransactionDetailed(
     @Embedded
     val transaction: Transactions?,
     @Relation(
-        parentColumn = TRANS_BUDGET_RULE_ID,
-        entityColumn = RULE_ID
+        parentColumn = TRANSACTION_RULE_ID,
+        entityColumn = BUDGET_RULE_ID
     )
     var budgetRule: BudgetRule?,
     @Relation(
@@ -41,8 +41,8 @@ data class TransactionFull(
     val transaction: Transactions,
     @Relation(
         entity = BudgetRule::class,
-        parentColumn = TRANS_BUDGET_RULE_ID,
-        entityColumn = RULE_ID
+        parentColumn = TRANSACTION_RULE_ID,
+        entityColumn = BUDGET_RULE_ID
     )
     var budgetRule: BudgetRule,
     @Relation(

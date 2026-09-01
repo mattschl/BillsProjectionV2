@@ -40,7 +40,7 @@ fun TransactionSplitScreenWrapper(
     val state = rememberTransactionEditState(nf, df)
 
     LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.splitting_transaction)
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.title_splitting_transaction)
     }
 
     var originalAmount by remember { mutableDoubleStateOf(0.0) }
@@ -51,7 +51,7 @@ fun TransactionSplitScreenWrapper(
         if (original < amt) {
             Toast.makeText(
                 mainActivity,
-                mainActivity.getString(R.string.error) + mainActivity.getString(R.string.new_amount_cannot_be_more_than_the_original_amount),
+                mainActivity.getString(R.string.label_error) + mainActivity.getString(R.string.msg_error_amount_too_high),
                 Toast.LENGTH_LONG
             ).show()
             state.amount = nf.displayDollars(0.0)
@@ -124,7 +124,7 @@ fun TransactionSplitScreenWrapper(
         onGotoCalculator = {
             mainViewModel.setTransferNum(nf.getDoubleFromDollars(state.amount.ifBlank {
                 mainActivity.getString(
-                    R.string.zero_double
+                    R.string.val_zero_double
                 )
             }))
             mainViewModel.setSplitTransactionDetailed(state.toTransactionDetailed())
@@ -164,21 +164,21 @@ fun TransactionSplitScreenWrapper(
             val valid = state.validate()
 
             val answer = if (state.date.isBlank()) {
-                mainActivity.getString(R.string.please_choose_a_date)
+                mainActivity.getString(R.string.msg_prompt_choose_date)
             } else if (state.amount.isBlank()) {
-                mainActivity.getString(R.string.the_amount_of_a_split_transaction_must_be_less_than_the_original)
+                mainActivity.getString(R.string.msg_error_split_amount_high)
             } else if (state.description.isBlank()) {
-                mainActivity.getString(R.string.please_enter_a_name_or_description)
+                mainActivity.getString(R.string.msg_prompt_enter_description)
             } else if (state.toAccount == null) {
-                mainActivity.getString(R.string.there_needs_to_be_an_account_money_will_go_to)
+                mainActivity.getString(R.string.msg_error_no_dest_account)
             } else if (state.budgetRule == null) {
                 AlertDialog.Builder(mainActivity).apply {
                     setMessage(
-                        mainActivity.getString(R.string.there_is_no_budget_rule) + mainActivity.getString(
-                            R.string.budget_rules_are_used_to_update_the_budget
+                        mainActivity.getString(R.string.msg_no_budget_rule) + mainActivity.getString(
+                            R.string.msg_budget_rules_purpose
                         )
                     )
-                    setNegativeButton(mainActivity.getString(R.string.retry), null)
+                    setNegativeButton(mainActivity.getString(R.string.action_retry), null)
                 }.create().show()
                 "" // Return empty to indicate not valid but handled
             } else {
@@ -191,9 +191,9 @@ fun TransactionSplitScreenWrapper(
                     mainActivity, transactionDetailed, nf
                 )
                 AlertDialog.Builder(mainActivity)
-                    .setTitle(mainActivity.getString(R.string.confirm_performing_transaction))
+                    .setTitle(mainActivity.getString(R.string.title_confirm_transaction))
                     .setMessage(display)
-                    .setPositiveButton(mainActivity.getString(R.string.confirm)) { _, _ ->
+                    .setPositiveButton(mainActivity.getString(R.string.action_confirm)) { _, _ ->
                         val mTransaction = state.toTransactions()
                         mainActivity.lifecycleScope.launch {
                             accountUpdateViewModel.performTransaction(mTransaction)
@@ -218,11 +218,12 @@ fun TransactionSplitScreenWrapper(
                             mainViewModel.removeCallingFragment(TAG)
                             navController.popBackStack()
                         }
-                    }.setNegativeButton(mainActivity.getString(R.string.go_back), null).show()
+                    }.setNegativeButton(mainActivity.getString(R.string.action_go_back), null)
+                    .show()
             } else if (answer.isNotEmpty()) {
                 Toast.makeText(
                     mainActivity,
-                    mainActivity.getString(R.string.error) + answer,
+                    mainActivity.getString(R.string.label_error) + answer,
                     Toast.LENGTH_LONG
                 ).show()
             }

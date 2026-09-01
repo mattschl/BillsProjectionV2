@@ -52,7 +52,7 @@ fun BudgetRuleChooseScreen(
             ) {
                 Icon(
                     Icons.Default.Add,
-                    contentDescription = stringResource(R.string.add_budget_rule),
+                    contentDescription = stringResource(R.string.action_add_budget_rule),
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
@@ -67,8 +67,8 @@ fun BudgetRuleChooseScreen(
             ProjectTextField(
                 value = searchQuery,
                 onValueChange = onSearchQueryChange,
-                label = stringResource(R.string.search),
-                placeholder = { Text(stringResource(R.string.enter_criteria)) },
+                label = stringResource(R.string.action_search),
+                placeholder = { Text(stringResource(R.string.label_enter_criteria)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
             )
@@ -90,7 +90,7 @@ fun BudgetRuleChooseScreen(
                         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                     ) {
                         Text(
-                            text = stringResource(R.string.no_budget_rules_to_view),
+                            text = stringResource(R.string.msg_no_budget_rules),
                             modifier = Modifier.padding(32.dp),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold

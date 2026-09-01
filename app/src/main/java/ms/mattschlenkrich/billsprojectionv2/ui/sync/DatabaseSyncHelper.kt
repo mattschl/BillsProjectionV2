@@ -321,7 +321,7 @@ class DatabaseSyncHelper(
                             existingDuplicate.transUpdateTime,
                             backupItem.transId,
                             backupItem.transUpdateTime,
-                            R.string.duplicate_transaction_message
+                            R.string.msg_duplicate_transaction
                         )
                     )
                     if (choice == ConflictChoice.KEEP_DRIVE) {

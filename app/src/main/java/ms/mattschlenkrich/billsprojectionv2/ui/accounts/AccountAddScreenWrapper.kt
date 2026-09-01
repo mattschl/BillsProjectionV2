@@ -28,7 +28,7 @@ fun AccountAddScreenWrapper(
     val state = rememberAccountEditState(nf, df)
 
     LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.add_a_new_account)
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.title_add_account)
     }
 
     // Initialize values from cache if they exist
@@ -72,12 +72,12 @@ fun AccountAddScreenWrapper(
         },
         accountTypeDetails = if (accountType != null) {
             val details = mutableListOf<String>()
-            if (accountType.keepTotals) details.add(mainActivity.getString(R.string.this_account_does_not_keep_a_balance_owing_amount))
-            if (accountType.isAsset) details.add(mainActivity.getString(R.string.this_is_an_asset))
-            if (accountType.displayAsAsset) details.add(mainActivity.getString(R.string.this_will_be_used_for_the_budget))
-            if (accountType.tallyOwing) details.add(mainActivity.getString(R.string.balance_owing_will_be_calculated))
-            if (accountType.allowPending) details.add(mainActivity.getString(R.string.transactions_may_be_postponed))
-            if (details.isEmpty()) mainActivity.getString(R.string.this_account_does_not_keep_a_balance_owing_amount)
+            if (accountType.keepTotals) details.add(mainActivity.getString(R.string.msg_account_no_balance))
+            if (accountType.isAsset) details.add(mainActivity.getString(R.string.msg_is_asset))
+            if (accountType.displayAsAsset) details.add(mainActivity.getString(R.string.msg_used_for_budget))
+            if (accountType.tallyOwing) details.add(mainActivity.getString(R.string.msg_balance_owing_calc))
+            if (accountType.allowPending) details.add(mainActivity.getString(R.string.msg_transactions_postponed))
+            if (details.isEmpty()) mainActivity.getString(R.string.msg_account_no_balance)
             else details.joinToString("\n")
         } else "",
         balance = state.balance,
@@ -85,7 +85,7 @@ fun AccountAddScreenWrapper(
         onBalanceIconClick = {
             mainViewModel.setTransferNum(nf.getDoubleFromDollars(state.balance.ifBlank {
                 mainActivity.getString(
-                    R.string.zero_double
+                    R.string.val_zero_double
                 )
             }))
             mainViewModel.setAccountWithType(
@@ -101,7 +101,7 @@ fun AccountAddScreenWrapper(
         onOwingIconClick = {
             mainViewModel.setTransferNum(nf.getDoubleFromDollars(state.owing.ifBlank {
                 mainActivity.getString(
-                    R.string.zero_double
+                    R.string.val_zero_double
                 )
             }))
             mainViewModel.setAccountWithType(
@@ -117,7 +117,7 @@ fun AccountAddScreenWrapper(
         onBudgetedIconClick = {
             mainViewModel.setTransferNum(nf.getDoubleFromDollars(state.budgeted.ifBlank {
                 mainActivity.getString(
-                    R.string.zero_double
+                    R.string.val_zero_double
                 )
             }))
             mainViewModel.setAccountWithType(
@@ -137,19 +137,19 @@ fun AccountAddScreenWrapper(
             if (curName.isEmpty()) {
                 Toast.makeText(
                     mainActivity,
-                    mainActivity.getString(R.string.please_enter_a_name_for_this_account),
+                    mainActivity.getString(R.string.msg_prompt_enter_account_name),
                     Toast.LENGTH_LONG
                 ).show()
             } else if (accountNames.contains(curName)) {
                 Toast.makeText(
                     mainActivity,
-                    mainActivity.getString(R.string.this_account_already_exists),
+                    mainActivity.getString(R.string.msg_error_account_exists),
                     Toast.LENGTH_LONG
                 ).show()
             } else if (accountType == null) {
                 Toast.makeText(
                     mainActivity,
-                    mainActivity.getString(R.string.this_account_must_have_an_account_type),
+                    mainActivity.getString(R.string.msg_error_account_type_required),
                     Toast.LENGTH_LONG
                 ).show()
             } else {

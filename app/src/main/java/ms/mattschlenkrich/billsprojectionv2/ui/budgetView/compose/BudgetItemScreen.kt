@@ -105,7 +105,7 @@ fun BudgetItemScreen(
             ProjectTextField(
                 value = name,
                 onValueChange = onNameChange,
-                label = stringResource(R.string.description),
+                label = stringResource(R.string.label_description),
             )
 
             Row(
@@ -115,14 +115,14 @@ fun BudgetItemScreen(
                 ProjectDateField(
                     value = date,
                     onValueChange = onDateChange,
-                    label = stringResource(R.string.projected_date),
+                    label = stringResource(R.string.label_projected_date),
                     modifier = Modifier.weight(1f),
                 )
 
                 ProjectBalanceField(
                     value = amount,
                     onValueChange = onAmountChange,
-                    label = stringResource(R.string.projected_amount),
+                    label = stringResource(R.string.label_projected_amount),
                     modifier = Modifier.weight(1f),
                     onIconClick = onGotoCalculator,
                     isHighlighted = true
@@ -130,19 +130,19 @@ fun BudgetItemScreen(
             }
 
             ProjectTextBox(
-                label = stringResource(R.string.rules),
+                label = stringResource(R.string.label_rules),
                 value = budgetRule?.budgetRuleName ?: "",
                 onClick = onChooseBudgetRule
             )
 
             ProjectTextBox(
-                label = stringResource(R.string.from_this_account),
+                label = stringResource(R.string.label_from_this_account),
                 value = fromAccount?.accountName ?: "",
                 onClick = { onChooseAccount(REQUEST_FROM_ACCOUNT) }
             )
 
             ProjectTextBox(
-                label = stringResource(R.string.to_this_account),
+                label = stringResource(R.string.label_to_this_account),
                 value = toAccount?.accountName ?: "",
                 onClick = { onChooseAccount(REQUEST_TO_ACCOUNT) }
             )
@@ -157,7 +157,7 @@ fun BudgetItemScreen(
                     value = payDay,
                     onValueChange = {},
                     readOnly = true,
-                    label = stringResource(R.string.pay_day),
+                    label = stringResource(R.string.label_pay_day),
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                     modifier = Modifier
                         .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
@@ -183,12 +183,12 @@ fun BudgetItemScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 LabeledCheckbox(
-                    label = stringResource(R.string.fixed),
+                    label = stringResource(R.string.label_fixed),
                     checked = isFixed,
                     onCheckedChange = onIsFixedChange
                 )
                 LabeledCheckbox(
-                    label = stringResource(R.string.pay_day),
+                    label = stringResource(R.string.label_pay_day),
                     checked = isPayDayItem,
                     onCheckedChange = onIsPayDayItemChange
                 )
@@ -199,12 +199,12 @@ fun BudgetItemScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 LabeledCheckbox(
-                    label = stringResource(R.string.automatic),
+                    label = stringResource(R.string.label_automatic),
                     checked = isAuto,
                     onCheckedChange = onIsAutoChange
                 )
                 LabeledCheckbox(
-                    label = stringResource(R.string.lock),
+                    label = stringResource(R.string.action_lock),
                     checked = isLocked,
                     onCheckedChange = onIsLockedChange
                 )

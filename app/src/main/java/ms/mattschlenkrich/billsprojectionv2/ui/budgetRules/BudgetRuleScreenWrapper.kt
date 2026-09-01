@@ -42,7 +42,7 @@ fun BudgetRuleScreenWrapper(
     val actionSheetState = rememberActionSheetState()
 
     LaunchedEffect(Unit) {
-        activity.topMenuBar.setTitle(R.string.budget_rules)
+        activity.topMenuBar.setTitle(R.string.title_budget_rules)
     }
 
     var searchQuery by remember { mutableStateOf("") }
@@ -66,10 +66,10 @@ fun BudgetRuleScreenWrapper(
         onItemClick = { budgetRuleDetailed ->
             val rule = budgetRuleDetailed.budgetRule!!
             actionSheetState.show(
-                "${activity.getString(R.string.choose_an_action_for)} ${rule.budgetRuleName}",
+                "${activity.getString(R.string.title_choose_action_for)} ${rule.budgetRuleName}",
                 listOf(
                     ActionOption(
-                        activity.getString(R.string.view_or_edit_this_budget_rule),
+                        activity.getString(R.string.action_view_edit_rule),
                         Icons.Default.Edit
                     ) {
                         mainViewModel.addCallingFragment(SCREEN_BUDGET_RULES)
@@ -77,7 +77,7 @@ fun BudgetRuleScreenWrapper(
                         navController.navigate(Screen.BudgetRuleUpdate.route)
                     },
                     ActionOption(
-                        activity.getString(R.string.add_a_new_transaction_based_on_the_budget_rule),
+                        activity.getString(R.string.action_add_transaction_from_rule),
                         Icons.Default.Add
                     ) {
                         val mTransaction = Transactions(
@@ -106,7 +106,7 @@ fun BudgetRuleScreenWrapper(
                         navController.navigate(Screen.TransactionAdd.route)
                     },
                     ActionOption(
-                        activity.getString(R.string.create_a_scheduled_item_with_this_budget_rule),
+                        activity.getString(R.string.action_create_scheduled_item),
                         Icons.Default.Add
                     ) {
                         mainViewModel.setBudgetRuleDetailed(budgetRuleDetailed)
@@ -141,7 +141,7 @@ fun BudgetRuleScreenWrapper(
                         navController.navigate(Screen.BudgetItemAdd.route)
                     },
                     ActionOption(
-                        activity.getString(R.string.view_a_summary_of_transactions_for_this_budget_rule),
+                        activity.getString(R.string.action_view_rule_summary),
                         Icons.Default.History
                     ) {
                         mainViewModel.addCallingFragment(SCREEN_BUDGET_RULES)
@@ -150,7 +150,7 @@ fun BudgetRuleScreenWrapper(
                         navController.navigate(Screen.Analysis.route)
                     },
                     ActionOption(
-                        activity.getString(R.string.delete_this_budget_rule),
+                        activity.getString(R.string.action_delete_budget_rule),
                         Icons.Default.Delete
                     ) {
                         budgetRuleViewModel.deleteBudgetRule(

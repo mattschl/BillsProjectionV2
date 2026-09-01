@@ -12,23 +12,23 @@ import androidx.room.Update
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_NAME
 import ms.mattschlenkrich.billsprojectionv2.common.ACCT_DISPLAY_AS_ASSET
-import ms.mattschlenkrich.billsprojectionv2.common.BI_ACTUAL_DATE
-import ms.mattschlenkrich.billsprojectionv2.common.BI_BUDGET_NAME
-import ms.mattschlenkrich.billsprojectionv2.common.BI_BUDGET_RULE_ID
-import ms.mattschlenkrich.billsprojectionv2.common.BI_FROM_ACCOUNT_ID
-import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_AUTOMATIC
-import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_CANCELLED
-import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_COMPLETED
-import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_DELETED
-import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_FIXED
-import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_MANUALLY_ENTERED
-import ms.mattschlenkrich.billsprojectionv2.common.BI_IS_PAY_DAY_ITEM
-import ms.mattschlenkrich.billsprojectionv2.common.BI_LOCKED
-import ms.mattschlenkrich.billsprojectionv2.common.BI_PAY_DAY
-import ms.mattschlenkrich.billsprojectionv2.common.BI_PROJECTED_AMOUNT
-import ms.mattschlenkrich.billsprojectionv2.common.BI_PROJECTED_DATE
-import ms.mattschlenkrich.billsprojectionv2.common.BI_TO_ACCOUNT_ID
-import ms.mattschlenkrich.billsprojectionv2.common.BI_UPDATE_TIME
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_ITEM_ACTUAL_DATE
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_ITEM_FROM_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_ITEM_IS_AUTOMATIC
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_ITEM_IS_CANCELLED
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_ITEM_IS_COMPLETED
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_ITEM_IS_DELETED
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_ITEM_IS_FIXED
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_ITEM_IS_MANUALLY_ENTERED
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_ITEM_IS_PAY_DAY_ITEM
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_ITEM_LOCKED
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_ITEM_NAME
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_ITEM_PAY_DAY
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_ITEM_PROJECTED_AMOUNT
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_ITEM_PROJECTED_DATE
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_ITEM_RULE_ID
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_ITEM_TO_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_ITEM_UPDATE_TIME
 import ms.mattschlenkrich.billsprojectionv2.common.IS_ASSET
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNT_TYPES
@@ -51,17 +51,17 @@ interface BudgetItemDao {
 
     @Query(
         "SELECT * FROM $TABLE_BUDGET_ITEMS " +
-                "WHERE $BI_BUDGET_RULE_ID = :ruleId " +
-                "AND $BI_PROJECTED_DATE = :projectedDate"
+                "WHERE $BUDGET_ITEM_RULE_ID = :ruleId " +
+                "AND $BUDGET_ITEM_PROJECTED_DATE = :projectedDate"
     )
     fun getBudgetItem(ruleId: Long, projectedDate: String): BudgetItem?
 
     @Query(
         "UPDATE $TABLE_BUDGET_ITEMS " +
-                "SET $BI_IS_DELETED = 1, " +
-                "$BI_UPDATE_TIME = :updateTime " +
-                "WHERE $BI_BUDGET_RULE_ID = :budgetRulId " +
-                "AND $BI_PROJECTED_DATE = :projectedDate"
+                "SET $BUDGET_ITEM_IS_DELETED = 1, " +
+                "$BUDGET_ITEM_UPDATE_TIME = :updateTime " +
+                "WHERE $BUDGET_ITEM_RULE_ID = :budgetRulId " +
+                "AND $BUDGET_ITEM_PROJECTED_DATE = :projectedDate"
     )
     suspend fun deleteBudgetItem(
         budgetRulId: Long, projectedDate: String,
@@ -69,65 +69,65 @@ interface BudgetItemDao {
     )
 
     @Query(
-        "SELECT DISTINCT $BI_PROJECTED_DATE FROM $TABLE_BUDGET_ITEMS " +
-                "WHERE $BI_IS_PAY_DAY_ITEM = 1 " +
-                "AND $BI_IS_DELETED = 0 " +
-                "AND $BI_IS_CANCELLED = 0 " +
-                "ORDER BY $BI_PROJECTED_DATE; "
+        "SELECT DISTINCT $BUDGET_ITEM_PROJECTED_DATE FROM $TABLE_BUDGET_ITEMS " +
+                "WHERE $BUDGET_ITEM_IS_PAY_DAY_ITEM = 1 " +
+                "AND $BUDGET_ITEM_IS_DELETED = 0 " +
+                "AND $BUDGET_ITEM_IS_CANCELLED = 0 " +
+                "ORDER BY $BUDGET_ITEM_PROJECTED_DATE; "
     )
     fun getPayDaysActive(): List<String>
 
     @Query(
-        "SELECT DISTINCT $BI_PAY_DAY FROM $TABLE_BUDGET_ITEMS " +
-                "WHERE $BI_IS_COMPLETED = 0 " +
-                "AND $BI_IS_DELETED = 0 " +
-                "AND $BI_IS_CANCELLED = 0 " +
-                "ORDER BY $BI_PAY_DAY;"
+        "SELECT DISTINCT $BUDGET_ITEM_PAY_DAY FROM $TABLE_BUDGET_ITEMS " +
+                "WHERE $BUDGET_ITEM_IS_COMPLETED = 0 " +
+                "AND $BUDGET_ITEM_IS_DELETED = 0 " +
+                "AND $BUDGET_ITEM_IS_CANCELLED = 0 " +
+                "ORDER BY $BUDGET_ITEM_PAY_DAY;"
     )
     fun getPayDays(): LiveData<List<String>>
 
     @Query(
-        "SELECT DISTINCT $BI_PAY_DAY FROM $TABLE_BUDGET_ITEMS " +
+        "SELECT DISTINCT $BUDGET_ITEM_PAY_DAY FROM $TABLE_BUDGET_ITEMS " +
                 "WHERE (:asset = 'All Items' OR " +
-                "($BI_FROM_ACCOUNT_ID = " +
+                "($BUDGET_ITEM_FROM_ACCOUNT_ID = " +
                 "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
                 "WHERE $ACCOUNT_NAME = :asset) " +
-                "OR $BI_TO_ACCOUNT_ID = " +
+                "OR $BUDGET_ITEM_TO_ACCOUNT_ID = " +
                 "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
                 "WHERE $ACCOUNT_NAME = :asset)" +
                 "))" +
-                "AND $BI_IS_DELETED = 0 " +
-                "AND $BI_IS_COMPLETED = 0 " +
-                "AND $BI_IS_CANCELLED = 0 " +
-                "ORDER BY $BI_PAY_DAY ASC"
+                "AND $BUDGET_ITEM_IS_DELETED = 0 " +
+                "AND $BUDGET_ITEM_IS_COMPLETED = 0 " +
+                "AND $BUDGET_ITEM_IS_CANCELLED = 0 " +
+                "ORDER BY $BUDGET_ITEM_PAY_DAY ASC"
     )
     fun getPayDays(asset: String): LiveData<List<String>>
 
 
     @Query(
         "UPDATE $TABLE_BUDGET_ITEMS " +
-                "SET $BI_IS_DELETED = 1, " +
-                "$BI_UPDATE_TIME = :updateTime " +
-                "WHERE $BI_ACTUAL_DATE > :currentDate " +
-                "AND $BI_IS_MANUALLY_ENTERED = 0 " +
-                "AND $BI_IS_COMPLETED = 0 " +
-                "AND $BI_IS_CANCELLED = 0 " +
-                "AND $BI_LOCKED = 0"
+                "SET $BUDGET_ITEM_IS_DELETED = 1, " +
+                "$BUDGET_ITEM_UPDATE_TIME = :updateTime " +
+                "WHERE $BUDGET_ITEM_ACTUAL_DATE > :currentDate " +
+                "AND $BUDGET_ITEM_IS_MANUALLY_ENTERED = 0 " +
+                "AND $BUDGET_ITEM_IS_COMPLETED = 0 " +
+                "AND $BUDGET_ITEM_IS_CANCELLED = 0 " +
+                "AND $BUDGET_ITEM_LOCKED = 0"
     )
     suspend fun deleteFutureItems(currentDate: String, updateTime: String)
 
 
     @Query(
         "UPDATE $TABLE_BUDGET_ITEMS " +
-                "SET $BI_IS_DELETED = 1, " +
-                "$BI_UPDATE_TIME = :updateTime, " +
-                "$BI_IS_FIXED = 0, " +
-                "$BI_LOCKED = 0, " +
-                "$BI_IS_MANUALLY_ENTERED = 0 " +
-                "WHERE $BI_ACTUAL_DATE >= :currentDate " +
-                "AND $BI_IS_COMPLETED = 0 " +
-                "AND $BI_IS_CANCELLED = 0 " +
-                "AND $BI_LOCKED = 0"
+                "SET $BUDGET_ITEM_IS_DELETED = 1, " +
+                "$BUDGET_ITEM_UPDATE_TIME = :updateTime, " +
+                "$BUDGET_ITEM_IS_FIXED = 0, " +
+                "$BUDGET_ITEM_LOCKED = 0, " +
+                "$BUDGET_ITEM_IS_MANUALLY_ENTERED = 0 " +
+                "WHERE $BUDGET_ITEM_ACTUAL_DATE >= :currentDate " +
+                "AND $BUDGET_ITEM_IS_COMPLETED = 0 " +
+                "AND $BUDGET_ITEM_IS_CANCELLED = 0 " +
+                "AND $BUDGET_ITEM_LOCKED = 0"
     )
     suspend fun killFutureBudgetItems(currentDate: String, updateTime: String)
 
@@ -150,29 +150,29 @@ interface BudgetItemDao {
         "SELECT * " +
                 "FROM $TABLE_BUDGET_ITEMS " +
                 "LEFT JOIN $TABLE_BUDGET_RULES as budgetRule ON " +
-                "$TABLE_BUDGET_ITEMS.$BI_BUDGET_RULE_ID = " +
+                "$TABLE_BUDGET_ITEMS.$BUDGET_ITEM_RULE_ID = " +
                 "budgetRule.ruleId " +
                 "LEFT JOIN $TABLE_ACCOUNTS as toAccount ON " +
-                "$TABLE_BUDGET_ITEMS.$BI_TO_ACCOUNT_ID = " +
+                "$TABLE_BUDGET_ITEMS.$BUDGET_ITEM_TO_ACCOUNT_ID = " +
                 "toAccount.accountId " +
                 "LEFT JOIN $TABLE_ACCOUNTS as fromAccount ON " +
-                "$TABLE_BUDGET_ITEMS.$BI_FROM_ACCOUNT_ID = " +
+                "$TABLE_BUDGET_ITEMS.$BUDGET_ITEM_FROM_ACCOUNT_ID = " +
                 "fromAccount.accountId " +
-                "WHERE $TABLE_BUDGET_ITEMS.$BI_PAY_DAY = :payDay " +
-                "AND $BI_IS_CANCELLED = 0 " +
-                "AND $BI_IS_DELETED = 0 " +
-                "AND $BI_IS_COMPLETED = 0 " +
+                "WHERE $TABLE_BUDGET_ITEMS.$BUDGET_ITEM_PAY_DAY = :payDay " +
+                "AND $BUDGET_ITEM_IS_CANCELLED = 0 " +
+                "AND $BUDGET_ITEM_IS_DELETED = 0 " +
+                "AND $BUDGET_ITEM_IS_COMPLETED = 0 " +
                 "AND (:asset = 'All Items' OR " +
-                "($TABLE_BUDGET_ITEMS.$BI_FROM_ACCOUNT_ID = " +
+                "($TABLE_BUDGET_ITEMS.$BUDGET_ITEM_FROM_ACCOUNT_ID = " +
                 "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
                 "WHERE $ACCOUNT_NAME = :asset) " +
-                "OR $TABLE_BUDGET_ITEMS.$BI_TO_ACCOUNT_ID = " +
+                "OR $TABLE_BUDGET_ITEMS.$BUDGET_ITEM_TO_ACCOUNT_ID = " +
                 "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS  " +
                 "WHERE $ACCOUNT_NAME = :asset) " +
                 " ))" +
-                "ORDER BY $TABLE_BUDGET_ITEMS.$BI_IS_PAY_DAY_ITEM DESC, " +
-                "$TABLE_BUDGET_ITEMS.$BI_ACTUAL_DATE , " +
-                "$TABLE_BUDGET_ITEMS.$BI_BUDGET_NAME ;"
+                "ORDER BY $TABLE_BUDGET_ITEMS.$BUDGET_ITEM_IS_PAY_DAY_ITEM DESC, " +
+                "$TABLE_BUDGET_ITEMS.$BUDGET_ITEM_ACTUAL_DATE , " +
+                "$TABLE_BUDGET_ITEMS.$BUDGET_ITEM_NAME ;"
     )
     fun getBudgetItems(asset: String, payDay: String)
             : LiveData<List<BudgetItemDetailed>>
@@ -185,27 +185,27 @@ interface BudgetItemDao {
         "SELECT * " +
                 "FROM $TABLE_BUDGET_ITEMS " +
                 "LEFT JOIN $TABLE_BUDGET_RULES as budgetRule ON " +
-                "$TABLE_BUDGET_ITEMS.$BI_BUDGET_RULE_ID = " +
+                "$TABLE_BUDGET_ITEMS.$BUDGET_ITEM_RULE_ID = " +
                 "budgetRule.ruleId " +
                 "LEFT JOIN $TABLE_ACCOUNTS as toAccount ON " +
-                "$TABLE_BUDGET_ITEMS.$BI_TO_ACCOUNT_ID = " +
+                "$TABLE_BUDGET_ITEMS.$BUDGET_ITEM_TO_ACCOUNT_ID = " +
                 "toAccount.accountId " +
                 "LEFT JOIN $TABLE_ACCOUNTS as fromAccount ON " +
-                "$TABLE_BUDGET_ITEMS.$BI_FROM_ACCOUNT_ID = " +
+                "$TABLE_BUDGET_ITEMS.$BUDGET_ITEM_FROM_ACCOUNT_ID = " +
                 "fromAccount.accountId " +
-                "WHERE $TABLE_BUDGET_ITEMS.$BI_PAY_DAY = :payDay " +
-                "AND $BI_IS_DELETED = 0 " +
+                "WHERE $TABLE_BUDGET_ITEMS.$BUDGET_ITEM_PAY_DAY = :payDay " +
+                "AND $BUDGET_ITEM_IS_DELETED = 0 " +
                 "AND (:asset = 'All Items' OR " +
-                "($TABLE_BUDGET_ITEMS.$BI_FROM_ACCOUNT_ID = " +
+                "($TABLE_BUDGET_ITEMS.$BUDGET_ITEM_FROM_ACCOUNT_ID = " +
                 "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
                 "WHERE $ACCOUNT_NAME = :asset) " +
-                "OR $TABLE_BUDGET_ITEMS.$BI_TO_ACCOUNT_ID = " +
+                "OR $TABLE_BUDGET_ITEMS.$BUDGET_ITEM_TO_ACCOUNT_ID = " +
                 "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS  " +
                 "WHERE $ACCOUNT_NAME = :asset) " +
                 " ))" +
-                "ORDER BY $TABLE_BUDGET_ITEMS.$BI_IS_PAY_DAY_ITEM DESC, " +
-                "$TABLE_BUDGET_ITEMS.$BI_ACTUAL_DATE , " +
-                "$TABLE_BUDGET_ITEMS.$BI_BUDGET_NAME ;"
+                "ORDER BY $TABLE_BUDGET_ITEMS.$BUDGET_ITEM_IS_PAY_DAY_ITEM DESC, " +
+                "$TABLE_BUDGET_ITEMS.$BUDGET_ITEM_ACTUAL_DATE , " +
+                "$TABLE_BUDGET_ITEMS.$BUDGET_ITEM_NAME ;"
     )
     fun getBudgetItemsAll(asset: String, payDay: String)
             : LiveData<List<BudgetItemDetailed>>
@@ -219,29 +219,29 @@ interface BudgetItemDao {
                 "toAccount.*, fromAccount.* " +
                 "FROM $TABLE_BUDGET_ITEMS " +
                 "LEFT JOIN $TABLE_BUDGET_RULES as budgetRule ON " +
-                "$TABLE_BUDGET_ITEMS.$BI_BUDGET_RULE_ID = " +
+                "$TABLE_BUDGET_ITEMS.$BUDGET_ITEM_RULE_ID = " +
                 "budgetRule.ruleId " +
                 "LEFT JOIN $TABLE_ACCOUNTS as toAccount ON " +
-                "$TABLE_BUDGET_ITEMS.$BI_TO_ACCOUNT_ID = " +
+                "$TABLE_BUDGET_ITEMS.$BUDGET_ITEM_TO_ACCOUNT_ID = " +
                 "toAccount.accountId " +
                 "LEFT JOIN $TABLE_ACCOUNTS as fromAccount ON " +
-                "$TABLE_BUDGET_ITEMS.$BI_FROM_ACCOUNT_ID = " +
+                "$TABLE_BUDGET_ITEMS.$BUDGET_ITEM_FROM_ACCOUNT_ID = " +
                 "fromAccount.accountId " +
-                "WHERE $TABLE_BUDGET_ITEMS.$BI_BUDGET_RULE_ID = :budgetRuleId " +
-                "AND $BI_IS_CANCELLED = 0 " +
-                "AND $BI_IS_DELETED = 0 " +
-                "AND $BI_IS_COMPLETED = 0 " +
-                "ORDER BY $TABLE_BUDGET_ITEMS.$BI_ACTUAL_DATE;"
+                "WHERE $TABLE_BUDGET_ITEMS.$BUDGET_ITEM_RULE_ID = :budgetRuleId " +
+                "AND $BUDGET_ITEM_IS_CANCELLED = 0 " +
+                "AND $BUDGET_ITEM_IS_DELETED = 0 " +
+                "AND $BUDGET_ITEM_IS_COMPLETED = 0 " +
+                "ORDER BY $TABLE_BUDGET_ITEMS.$BUDGET_ITEM_ACTUAL_DATE;"
     )
     fun getBudgetItems(budgetRuleId: Long)
             : LiveData<List<BudgetItemDetailed>>
 
     @Query(
         "UPDATE $TABLE_BUDGET_ITEMS " +
-                "SET $BI_IS_CANCELLED = 1, " +
-                "$BI_UPDATE_TIME = :updateTime " +
-                "WHERE $BI_PROJECTED_DATE = :projectedDate " +
-                "AND $BI_BUDGET_RULE_ID = :budgetRuleId"
+                "SET $BUDGET_ITEM_IS_CANCELLED = 1, " +
+                "$BUDGET_ITEM_UPDATE_TIME = :updateTime " +
+                "WHERE $BUDGET_ITEM_PROJECTED_DATE = :projectedDate " +
+                "AND $BUDGET_ITEM_RULE_ID = :budgetRuleId"
     )
     suspend fun cancelBudgetItem(
         budgetRuleId: Long, projectedDate: String, updateTime: String
@@ -249,23 +249,23 @@ interface BudgetItemDao {
 
     @Query(
         "UPDATE $TABLE_BUDGET_ITEMS " +
-                "SET $BI_ACTUAL_DATE = :actualDate ," +
-                "$BI_PAY_DAY = :payDay," +
-                "$BI_BUDGET_NAME = :budgetName, " +
-                "$BI_IS_PAY_DAY_ITEM = :isPayDay," +
-                "$BI_TO_ACCOUNT_ID = :toAccountId, " +
-                "$BI_FROM_ACCOUNT_ID = :fromAccountId, " +
-                "$BI_PROJECTED_AMOUNT = :projectedAmount, " +
-                "$BI_IS_FIXED = :isFixed, " +
-                "$BI_IS_AUTOMATIC = :isAutomatic, " +
-                "$BI_IS_DELETED = 0, " +
-                "$BI_UPDATE_TIME = :updateTime " +
-                "WHERE $BI_BUDGET_RULE_ID = :budgetRuleId " +
-                "AND $BI_PROJECTED_DATE = :projectedDate " +
-                "AND $BI_IS_MANUALLY_ENTERED = 0 " +
-                "AND $BI_IS_CANCELLED = 0 " +
-                "AND $BI_IS_COMPLETED = 0 " +
-                "AND $BI_LOCKED = 0;"
+                "SET $BUDGET_ITEM_ACTUAL_DATE = :actualDate ," +
+                "$BUDGET_ITEM_PAY_DAY = :payDay," +
+                "$BUDGET_ITEM_NAME = :budgetName, " +
+                "$BUDGET_ITEM_IS_PAY_DAY_ITEM = :isPayDay," +
+                "$BUDGET_ITEM_TO_ACCOUNT_ID = :toAccountId, " +
+                "$BUDGET_ITEM_FROM_ACCOUNT_ID = :fromAccountId, " +
+                "$BUDGET_ITEM_PROJECTED_AMOUNT = :projectedAmount, " +
+                "$BUDGET_ITEM_IS_FIXED = :isFixed, " +
+                "$BUDGET_ITEM_IS_AUTOMATIC = :isAutomatic, " +
+                "$BUDGET_ITEM_IS_DELETED = 0, " +
+                "$BUDGET_ITEM_UPDATE_TIME = :updateTime " +
+                "WHERE $BUDGET_ITEM_RULE_ID = :budgetRuleId " +
+                "AND $BUDGET_ITEM_PROJECTED_DATE = :projectedDate " +
+                "AND $BUDGET_ITEM_IS_MANUALLY_ENTERED = 0 " +
+                "AND $BUDGET_ITEM_IS_CANCELLED = 0 " +
+                "AND $BUDGET_ITEM_IS_COMPLETED = 0 " +
+                "AND $BUDGET_ITEM_LOCKED = 0;"
     )
     suspend fun rewriteBudgetItem(
         budgetRuleId: Long, projectedDate: String, actualDate: String, payDay: String,
@@ -275,8 +275,8 @@ interface BudgetItemDao {
 
     @Query(
         "DELETE FROM $TABLE_BUDGET_ITEMS " +
-                "WHERE $BI_PAY_DAY < :cutoffDate " +
-                "AND ($BI_IS_COMPLETED = 1 OR $BI_IS_CANCELLED = 1 OR $BI_IS_DELETED = 1)"
+                "WHERE $BUDGET_ITEM_PAY_DAY < :cutoffDate " +
+                "AND ($BUDGET_ITEM_IS_COMPLETED = 1 OR $BUDGET_ITEM_IS_CANCELLED = 1 OR $BUDGET_ITEM_IS_DELETED = 1)"
     )
     suspend fun purgeOldBudgetItems(cutoffDate: String)
 
@@ -285,10 +285,10 @@ interface BudgetItemDao {
 
     @Query(
         "UPDATE $TABLE_BUDGET_ITEMS " +
-                "SET $BI_LOCKED = :lock, " +
-                "$BI_UPDATE_TIME = :updateTime " +
-                "WHERE $BI_BUDGET_RULE_ID = :budgetRuleId " +
-                "AND $BI_PAY_DAY = :payDay"
+                "SET $BUDGET_ITEM_LOCKED = :lock, " +
+                "$BUDGET_ITEM_UPDATE_TIME = :updateTime " +
+                "WHERE $BUDGET_ITEM_RULE_ID = :budgetRuleId " +
+                "AND $BUDGET_ITEM_PAY_DAY = :payDay"
     )
     suspend fun lockUnlockBudgetItem(
         lock: Boolean, budgetRuleId: Long, payDay: String, updateTime: String
@@ -296,9 +296,9 @@ interface BudgetItemDao {
 
     @Query(
         "UPDATE $TABLE_BUDGET_ITEMS " +
-                "SET $BI_LOCKED = :lock," +
-                "$BI_UPDATE_TIME = :updateTime " +
-                "WHERE $BI_PAY_DAY = :payDay"
+                "SET $BUDGET_ITEM_LOCKED = :lock," +
+                "$BUDGET_ITEM_UPDATE_TIME = :updateTime " +
+                "WHERE $BUDGET_ITEM_PAY_DAY = :payDay"
     )
     suspend fun lockUnlockBudgetItem(
         lock: Boolean, payDay: String, updateTime: String

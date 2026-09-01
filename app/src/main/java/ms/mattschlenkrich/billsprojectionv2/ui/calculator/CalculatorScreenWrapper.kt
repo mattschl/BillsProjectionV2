@@ -23,7 +23,7 @@ fun CalculatorScreenWrapper(
     val mainViewModel = mainActivity.mainViewModel
     val nf = LocalNumberFunctions.current
     LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.setTitle(R.string.calculator)
+        mainActivity.topMenuBar.setTitle(R.string.title_calculator)
     }
 
     var displayValue by remember { mutableStateOf("0") }

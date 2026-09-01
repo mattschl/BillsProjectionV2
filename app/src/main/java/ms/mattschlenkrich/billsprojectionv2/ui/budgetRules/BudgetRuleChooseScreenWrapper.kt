@@ -28,7 +28,7 @@ fun BudgetRuleChooseScreenWrapper(
     val mainViewModel = mainActivity.mainViewModel
     val budgetRuleViewModel = mainActivity.budgetRuleViewModel
     LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.choose_a_budget_rule)
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.title_choose_budget_rule)
     }
 
     var searchQuery by remember { mutableStateOf("") }

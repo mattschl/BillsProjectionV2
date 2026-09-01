@@ -50,7 +50,7 @@ fun SettingsScreenWrapper(
     val state = rememberSettingsEditState(initialSettings)
 
     LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.setTitle(R.string.settings)
+        mainActivity.topMenuBar.setTitle(R.string.nav_settings)
     }
 
     val rawAssetList by mainActivity.budgetItemViewModel.getAssetsForBudget()
@@ -70,66 +70,66 @@ fun SettingsScreenWrapper(
             .verticalScroll(rememberScrollState())
     ) {
         Text(
-            text = stringResource(id = R.string.settings),
+            text = stringResource(id = R.string.nav_settings),
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold
         )
 
         Text(
-            text = stringResource(id = R.string.theme_mode),
+            text = stringResource(id = R.string.label_theme_mode),
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.padding(top = 24.dp)
         )
 
         Column(modifier = Modifier.padding(top = 8.dp)) {
-            ThemeOption("system", R.string.system_default, state.themeMode) {
+            ThemeOption("system", R.string.label_system_default, state.themeMode) {
                 updateThemeMode("system", settingsManager, mainActivity)
                 state.themeMode = "system"
             }
-            ThemeOption("light", R.string.light, state.themeMode) {
+            ThemeOption("light", R.string.label_theme_light, state.themeMode) {
                 updateThemeMode("light", settingsManager, mainActivity)
                 state.themeMode = "light"
             }
-            ThemeOption("dark", R.string.dark, state.themeMode) {
+            ThemeOption("dark", R.string.label_theme_dark, state.themeMode) {
                 updateThemeMode("dark", settingsManager, mainActivity)
                 state.themeMode = "dark"
             }
         }
 
         Text(
-            text = stringResource(id = R.string.font_size),
+            text = stringResource(id = R.string.label_font_size),
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.padding(top = 24.dp)
         )
 
         Column(modifier = Modifier.padding(top = 8.dp)) {
-            FontSizeOption("small", R.string.small, state.fontSize) {
+            FontSizeOption("small", R.string.label_font_small, state.fontSize) {
                 updateFontSize("small", settingsManager, mainActivity)
                 state.fontSize = "small"
             }
-            FontSizeOption("medium", R.string.medium, state.fontSize) {
+            FontSizeOption("medium", R.string.label_font_medium, state.fontSize) {
                 updateFontSize("medium", settingsManager, mainActivity)
                 state.fontSize = "medium"
             }
-            FontSizeOption("large", R.string.large, state.fontSize) {
+            FontSizeOption("large", R.string.label_font_large, state.fontSize) {
                 updateFontSize("large", settingsManager, mainActivity)
                 state.fontSize = "large"
             }
-            FontSizeOption("extra_large", R.string.extra_large, state.fontSize) {
+            FontSizeOption("extra_large", R.string.label_font_extra_large, state.fontSize) {
                 updateFontSize("extra_large", settingsManager, mainActivity)
                 state.fontSize = "extra_large"
             }
         }
 
         Text(
-            text = stringResource(id = R.string.general),
+            text = stringResource(id = R.string.title_general),
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.padding(top = 24.dp)
         )
 
         Column(modifier = Modifier.padding(top = 8.dp)) {
             DropdownSelector(
-                label = stringResource(R.string.default_startup_account),
+                label = stringResource(R.string.label_default_startup_account),
                 options = assetList,
                 selectedOption = if (assetList.contains(state.defaultAccount)) state.defaultAccount else ALL_ITEMS,
                 onOptionSelected = { selected ->
@@ -141,7 +141,7 @@ fun SettingsScreenWrapper(
         }
 
         Text(
-            text = stringResource(id = R.string.security),
+            text = stringResource(id = R.string.title_security),
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.padding(top = 24.dp)
         )
@@ -153,7 +153,7 @@ fun SettingsScreenWrapper(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = stringResource(R.string.password_protection),
+                    text = stringResource(R.string.label_password_protection),
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Switch(
@@ -178,7 +178,7 @@ fun SettingsScreenWrapper(
                     onClick = { showPasswordDialog = true },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(stringResource(R.string.change_password))
+                    Text(stringResource(R.string.title_change_password))
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedButton(
@@ -187,7 +187,7 @@ fun SettingsScreenWrapper(
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(stringResource(R.string.remove_password))
+                    Text(stringResource(R.string.action_remove_password))
                 }
             }
         }
@@ -240,11 +240,11 @@ fun ConfirmPasswordDialog(
 ) {
     var password by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
-    val incorrectPasswordMsg = stringResource(id = R.string.incorrect_password)
+    val incorrectPasswordMsg = stringResource(id = R.string.msg_error_incorrect_password)
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.enter_password)) },
+        title = { Text(stringResource(R.string.label_enter_password)) },
         text = {
             Column {
                 ProjectTextField(
@@ -253,7 +253,7 @@ fun ConfirmPasswordDialog(
                         password = it
                         error = null
                     },
-                    label = stringResource(R.string.enter_password),
+                    label = stringResource(R.string.label_enter_password),
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
@@ -280,12 +280,12 @@ fun ConfirmPasswordDialog(
                     }
                 }
             ) {
-                Text(stringResource(R.string.confirm))
+                Text(stringResource(R.string.action_confirm))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel))
+                Text(stringResource(R.string.action_cancel))
             }
         }
     )
@@ -300,12 +300,12 @@ fun SetPasswordDialog(
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
-    val emptyError = stringResource(id = R.string.password_must_not_be_empty)
-    val mismatchError = stringResource(id = R.string.passwords_do_not_match)
+    val emptyError = stringResource(id = R.string.msg_error_password_empty)
+    val mismatchError = stringResource(id = R.string.msg_error_passwords_mismatch)
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.set_password)) },
+        title = { Text(stringResource(R.string.action_set_password)) },
         text = {
             Column {
                 ProjectTextField(
@@ -314,7 +314,7 @@ fun SetPasswordDialog(
                         password = it
                         error = null
                     },
-                    label = stringResource(R.string.enter_new_password),
+                    label = stringResource(R.string.label_enter_new_password),
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
@@ -326,7 +326,7 @@ fun SetPasswordDialog(
                         confirmPassword = it
                         error = null
                     },
-                    label = stringResource(R.string.confirm_new_password),
+                    label = stringResource(R.string.label_confirm_new_password),
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
@@ -353,12 +353,12 @@ fun SetPasswordDialog(
                     }
                 }
             ) {
-                Text(stringResource(R.string.save))
+                Text(stringResource(R.string.action_save))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel))
+                Text(stringResource(R.string.action_cancel))
             }
         }
     )

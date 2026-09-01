@@ -14,9 +14,9 @@ import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_NAME
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_TYPE_ID
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_UPDATE_TIME
 import ms.mattschlenkrich.billsprojectionv2.common.ACCT_DISPLAY_AS_ASSET
-import ms.mattschlenkrich.billsprojectionv2.common.BUD_FROM_ACCOUNT_ID
-import ms.mattschlenkrich.billsprojectionv2.common.BUD_IS_DELETED
-import ms.mattschlenkrich.billsprojectionv2.common.BUD_TO_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_RULE_FROM_ACCOUNT_ID
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_RULE_IS_DELETED
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_RULE_TO_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.common.IS_ASSET
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNT_TYPES
@@ -125,9 +125,9 @@ interface AccountDao {
     @Query(
         "SELECT $TABLE_ACCOUNTS.*, $TABLE_ACCOUNT_TYPES.*, " +
                 "(SELECT COUNT(*) FROM $TABLE_BUDGET_RULES " +
-                " WHERE ($BUD_TO_ACCOUNT_ID = $TABLE_ACCOUNTS.$ACCOUNT_ID " +
-                " OR $BUD_FROM_ACCOUNT_ID = $TABLE_ACCOUNTS.$ACCOUNT_ID) " +
-                " AND $BUD_IS_DELETED = 0) as usedInBudget " +
+                " WHERE ($BUDGET_RULE_TO_ACCOUNT_ID = $TABLE_ACCOUNTS.$ACCOUNT_ID " +
+                " OR $BUDGET_RULE_FROM_ACCOUNT_ID = $TABLE_ACCOUNTS.$ACCOUNT_ID) " +
+                " AND $BUDGET_RULE_IS_DELETED = 0) as usedInBudget " +
                 "FROM $TABLE_ACCOUNTS " +
                 "LEFT JOIN $TABLE_ACCOUNT_TYPES ON " +
                 "$TABLE_ACCOUNT_TYPES.$TYPE_ID = $TABLE_ACCOUNTS.$ACCOUNT_TYPE_ID " +
@@ -162,9 +162,9 @@ interface AccountDao {
     @Query(
         "SELECT $TABLE_ACCOUNTS.*, $TABLE_ACCOUNT_TYPES.*, " +
                 "(SELECT COUNT(*) FROM $TABLE_BUDGET_RULES " +
-                " WHERE ($BUD_TO_ACCOUNT_ID = $TABLE_ACCOUNTS.$ACCOUNT_ID " +
-                " OR $BUD_FROM_ACCOUNT_ID = $TABLE_ACCOUNTS.$ACCOUNT_ID) " +
-                " AND $BUD_IS_DELETED = 0) as usedInBudget " +
+                " WHERE ($BUDGET_RULE_TO_ACCOUNT_ID = $TABLE_ACCOUNTS.$ACCOUNT_ID " +
+                " OR $BUDGET_RULE_FROM_ACCOUNT_ID = $TABLE_ACCOUNTS.$ACCOUNT_ID) " +
+                " AND $BUDGET_RULE_IS_DELETED = 0) as usedInBudget " +
                 "FROM $TABLE_ACCOUNTS " +
                 "LEFT JOIN $TABLE_ACCOUNT_TYPES ON " +
                 "$TABLE_ACCOUNT_TYPES.$TYPE_ID = " +

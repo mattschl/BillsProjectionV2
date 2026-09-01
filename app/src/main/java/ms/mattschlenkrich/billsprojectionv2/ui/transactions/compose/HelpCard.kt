@@ -38,9 +38,9 @@ fun HelpCard(mode: AnalysisMode) {
         ) {
             Text(
                 text = if (mode == AnalysisMode.NONE)
-                    stringResource(R.string.analysis_view_help)
+                    stringResource(R.string.title_analysis_help)
                 else
-                    stringResource(R.string.nothing_to_view_choose),
+                    stringResource(R.string.msg_nothing_to_view),
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Bold,
@@ -58,7 +58,7 @@ fun HelpCard(mode: AnalysisMode) {
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = stringResource(R.string.nothing_to_view_choose),
+                    text = stringResource(R.string.msg_nothing_to_view),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,

@@ -22,12 +22,12 @@ fun MainPagerScreen(
 ) {
     LaunchedEffect(pagerState.currentPage) {
         val titleResId = when (pagerState.currentPage) {
-            0 -> R.string.view_the_budget
-            1 -> R.string.view_transaction_history
-            2 -> R.string.accounts
-            3 -> R.string.transaction_analysis
-            4 -> R.string.budget_rules
-            else -> R.string.view_the_budget
+            0 -> R.string.title_view_budget
+            1 -> R.string.title_view_transaction_history
+            2 -> R.string.title_accounts
+            3 -> R.string.title_transaction_analysis
+            4 -> R.string.title_budget_rules
+            else -> R.string.title_view_budget
         }
         activity.topMenuBar.setTitle(titleResId)
     }

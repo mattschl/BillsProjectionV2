@@ -22,7 +22,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 @Composable
 fun HelpScreenWrapper(activity: MainActivity) {
     LaunchedEffect(Unit) {
-        activity.topMenuBar.setTitle(R.string.help)
+        activity.topMenuBar.setTitle(R.string.label_help)
     }
     Column(
         modifier = Modifier
@@ -31,7 +31,7 @@ fun HelpScreenWrapper(activity: MainActivity) {
             .padding(16.dp)
     ) {
         Text(
-            text = stringResource(id = R.string.help_text),
+            text = stringResource(id = R.string.label_help_text),
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurface,
@@ -48,35 +48,35 @@ fun HelpScreenWrapper(activity: MainActivity) {
         )
 
         HelpSection(
-            titleRes = R.string.general,
+            titleRes = R.string.title_general,
             contentRes = R.string.instructions_general
         )
         HelpSection(
-            titleRes = R.string.budget_view_help,
+            titleRes = R.string.title_budget_view_help,
             contentRes = R.string.instructions_budget_view
         )
         HelpSection(
-            titleRes = R.string.transaction_view_help,
+            titleRes = R.string.title_transaction_view_help,
             contentRes = R.string.instructions_transaction_view
         )
         HelpSection(
-            titleRes = R.string.accounts_help,
+            titleRes = R.string.title_accounts_help,
             contentRes = R.string.instruction_accounts
         )
         HelpSection(
-            titleRes = R.string.analysis_view_help,
+            titleRes = R.string.title_analysis_help,
             contentRes = R.string.instructions_transactions_analysis_view
         )
         HelpSection(
-            titleRes = R.string.budget_rule_help,
+            titleRes = R.string.title_budget_rule_help,
             contentRes = R.string.instructions_budget_rules
         )
         HelpSection(
-            titleRes = R.string.current_budget_summary,
+            titleRes = R.string.title_current_budget_summary,
             contentRes = R.string.instructions_budget_list
         )
         HelpSection(
-            titleRes = R.string.sync_screen,
+            titleRes = R.string.title_sync_screen,
             contentRes = R.string.sync_help_text
         )
     }

@@ -46,8 +46,8 @@ fun LoginScreen(
     onPasswordChanged: (String) -> Unit
 ) {
     var password by remember { mutableStateOf("") }
-    val incorrectPasswordMsg = stringResource(id = R.string.incorrect_password)
-    val emptyPasswordMsg = stringResource(id = R.string.password_must_not_be_empty)
+    val incorrectPasswordMsg = stringResource(id = R.string.msg_error_incorrect_password)
+    val emptyPasswordMsg = stringResource(id = R.string.msg_error_password_empty)
     var error by remember { mutableStateOf<String?>(null) }
     var failedAttempts by remember { mutableIntStateOf(0) }
     var showResetMode by remember { mutableStateOf(false) }
@@ -98,7 +98,7 @@ fun LoginScreen(
                                 password = it
                                 error = null
                             },
-                            label = stringResource(id = R.string.enter_password),
+                            label = stringResource(id = R.string.label_enter_password),
                             singleLine = true,
                             isError = error != null,
                             visualTransformation = PasswordVisualTransformation(),
@@ -116,7 +116,7 @@ fun LoginScreen(
 
                         if (failedAttempts >= 3) {
                             Text(
-                                text = stringResource(id = R.string.password_recovery_note),
+                                text = stringResource(id = R.string.msg_password_recovery),
                                 color = MaterialTheme.colorScheme.primary,
                                 style = MaterialTheme.typography.bodySmall,
                                 modifier = Modifier.padding(top = 16.dp),
@@ -154,7 +154,7 @@ fun LoginScreen(
                             },
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(stringResource(id = R.string.login))
+                            Text(stringResource(id = R.string.action_login))
                         }
                     }
                 } else {
@@ -178,8 +178,8 @@ fun ResetPasswordContent(
     var newPassword by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
-    val emptyError = stringResource(id = R.string.password_must_not_be_empty)
-    val mismatchError = stringResource(id = R.string.passwords_do_not_match)
+    val emptyError = stringResource(id = R.string.msg_error_password_empty)
+    val mismatchError = stringResource(id = R.string.msg_error_passwords_mismatch)
 
     Column(
         modifier = Modifier
@@ -189,7 +189,7 @@ fun ResetPasswordContent(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = stringResource(id = R.string.change_password),
+            text = stringResource(id = R.string.title_change_password),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold
         )
@@ -202,7 +202,7 @@ fun ResetPasswordContent(
                 newPassword = it
                 error = null
             },
-            label = stringResource(id = R.string.enter_new_password),
+            label = stringResource(id = R.string.label_enter_new_password),
             singleLine = true,
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
@@ -216,7 +216,7 @@ fun ResetPasswordContent(
                 confirmPassword = it
                 error = null
             },
-            label = stringResource(id = R.string.confirm_new_password),
+            label = stringResource(id = R.string.label_confirm_new_password),
             singleLine = true,
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
@@ -245,7 +245,7 @@ fun ResetPasswordContent(
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(stringResource(id = R.string.save))
+            Text(stringResource(id = R.string.action_save))
         }
     }
 }

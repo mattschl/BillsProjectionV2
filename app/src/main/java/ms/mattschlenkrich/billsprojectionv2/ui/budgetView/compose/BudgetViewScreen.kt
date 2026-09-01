@@ -152,7 +152,7 @@ fun BudgetViewScreen(
             ) {
                 Icon(
                     Icons.Default.Add,
-                    contentDescription = stringResource(R.string.add),
+                    contentDescription = stringResource(R.string.action_add),
                     tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(ProjectFieldDefaults.iconSize())
                 )
@@ -182,7 +182,7 @@ fun BudgetViewScreen(
 
             if (pendingList.isNotEmpty()) {
                 Text(
-                    text = "${stringResource(R.string.pending_items)} ${
+                    text = "${stringResource(R.string.title_pending_items)} ${
                         nf.displayDollars(
                             pendingAmount
                         )
@@ -216,7 +216,7 @@ fun BudgetViewScreen(
 
             if (hasAnyBudgetItems) {
                 Text(
-                    text = stringResource(R.string.budgeted_expenses),
+                    text = stringResource(R.string.title_scheduled_expenses),
                     modifier = Modifier
                         .fillMaxWidth()
                         .combinedClickable(

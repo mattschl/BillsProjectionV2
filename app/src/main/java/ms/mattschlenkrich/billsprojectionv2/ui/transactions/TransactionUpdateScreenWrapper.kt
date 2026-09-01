@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
-import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_TRANS_UPDATE
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_TRANSACTION_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.TransactionMessageHelper
@@ -20,7 +20,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 import ms.mattschlenkrich.billsprojectionv2.ui.transactions.compose.TransactionEditScreen
 
-private const val TAG = SCREEN_TRANS_UPDATE
+private const val TAG = SCREEN_TRANSACTION_UPDATE
 
 @Composable
 fun TransactionUpdateScreenWrapper(
@@ -58,24 +58,24 @@ fun TransactionUpdateScreenWrapper(
         )
 
         AlertDialog.Builder(mainActivity)
-            .setTitle(mainActivity.getString(R.string.confirm_performing_transaction))
+            .setTitle(mainActivity.getString(R.string.title_confirm_transaction))
             .setMessage(display)
-            .setPositiveButton(mainActivity.getString(R.string.confirm)) { _, _ ->
+            .setPositiveButton(mainActivity.getString(R.string.action_confirm)) { _, _ ->
                 updateTransaction()
             }
-            .setNegativeButton(mainActivity.getString(R.string.go_back), null)
+            .setNegativeButton(mainActivity.getString(R.string.action_go_back), null)
             .show()
     }
 
     fun updateWithoutBudget() {
         AlertDialog.Builder(mainActivity).apply {
             setMessage(
-                mainActivity.getString(R.string.there_is_no_budget_rule) + mainActivity.getString(R.string.budget_rules_are_used_to_update_the_budget)
+                mainActivity.getString(R.string.msg_no_budget_rule) + mainActivity.getString(R.string.msg_budget_rules_purpose)
             )
-            setPositiveButton(mainActivity.getString(R.string.save_anyway)) { _, _ ->
+            setPositiveButton(mainActivity.getString(R.string.action_save_anyway)) { _, _ ->
                 confirmUpdateTransaction()
             }
-            setNegativeButton(mainActivity.getString(R.string.retry), null)
+            setNegativeButton(mainActivity.getString(R.string.action_retry), null)
         }.create().show()
     }
 
@@ -85,7 +85,7 @@ fun TransactionUpdateScreenWrapper(
         if (state.dateError) {
             Toast.makeText(
                 mainActivity,
-                mainActivity.getString(R.string.error) + mainActivity.getString(R.string.please_choose_a_date),
+                mainActivity.getString(R.string.label_error) + mainActivity.getString(R.string.msg_prompt_choose_date),
                 Toast.LENGTH_LONG
             ).show()
             return
@@ -93,7 +93,7 @@ fun TransactionUpdateScreenWrapper(
         if (state.descriptionError) {
             Toast.makeText(
                 mainActivity,
-                mainActivity.getString(R.string.error) + mainActivity.getString(R.string.please_enter_a_name_or_description),
+                mainActivity.getString(R.string.label_error) + mainActivity.getString(R.string.msg_prompt_enter_description),
                 Toast.LENGTH_LONG
             ).show()
             return
@@ -101,7 +101,7 @@ fun TransactionUpdateScreenWrapper(
         if (state.toAccountError) {
             Toast.makeText(
                 mainActivity,
-                mainActivity.getString(R.string.error) + mainActivity.getString(R.string.there_needs_to_be_an_account_money_will_go_to),
+                mainActivity.getString(R.string.label_error) + mainActivity.getString(R.string.msg_error_no_dest_account),
                 Toast.LENGTH_LONG
             ).show()
             return
@@ -109,7 +109,7 @@ fun TransactionUpdateScreenWrapper(
         if (state.fromAccountError) {
             Toast.makeText(
                 mainActivity,
-                mainActivity.getString(R.string.error) + mainActivity.getString(R.string.there_needs_to_be_an_account_money_will_come_from),
+                mainActivity.getString(R.string.label_error) + mainActivity.getString(R.string.msg_error_no_source_account),
                 Toast.LENGTH_LONG
             ).show()
             return
@@ -117,7 +117,7 @@ fun TransactionUpdateScreenWrapper(
         if (state.amountError) {
             Toast.makeText(
                 mainActivity,
-                mainActivity.getString(R.string.error) + mainActivity.getString(R.string.please_enter_an_amount_for_this_transaction),
+                mainActivity.getString(R.string.label_error) + mainActivity.getString(R.string.msg_prompt_enter_trans_amount),
                 Toast.LENGTH_LONG
             ).show()
             return
@@ -130,7 +130,7 @@ fun TransactionUpdateScreenWrapper(
     }
 
     LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.update_this_transaction)
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.action_update_transaction)
         if (mainViewModel.getOldTransaction() != null && mainViewModel.getTransactionDetailed() == null) {
             val transFull = mainViewModel.getOldTransaction() ?: return@LaunchedEffect
             state.updateFrom(
@@ -234,6 +234,6 @@ fun TransactionUpdateScreenWrapper(
             navController.navigate(Screen.Calculator.route)
         },
         isSplitEnabled = state.fromAccount != null && nf.getDoubleFromDollars(state.amount) > 2.0,
-        splitButtonText = stringResource(R.string.split)
+        splitButtonText = stringResource(R.string.action_split)
     )
 }

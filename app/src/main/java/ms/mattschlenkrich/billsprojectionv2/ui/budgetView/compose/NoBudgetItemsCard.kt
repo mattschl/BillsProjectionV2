@@ -27,7 +27,7 @@ fun NoBudgetItemsCard() {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = stringResource(R.string.no_budget_items),
+                text = stringResource(R.string.msg_no_budget_items),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
@@ -40,7 +40,7 @@ fun NoBudgetItemsCard() {
 
             )
             Text(
-                text = stringResource(R.string.please_see_help_in_the_options_menu_for_fist_time_instructions),
+                text = stringResource(R.string.msg_first_time_help),
                 style = MaterialTheme.typography.bodyMedium
             )
         }

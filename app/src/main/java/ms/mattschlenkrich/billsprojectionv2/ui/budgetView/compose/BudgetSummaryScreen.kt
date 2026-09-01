@@ -80,7 +80,7 @@ fun BudgetSummaryScreen(
     ) {
         item {
             BudgetSectionHeader(
-                title = stringResource(R.string.regular_monthly_budget),
+                title = stringResource(R.string.label_regular_monthly_budget),
                 isExpanded = monthlyExpanded,
                 onToggle = { monthlyExpanded = !monthlyExpanded }
             )
@@ -99,7 +99,7 @@ fun BudgetSummaryScreen(
 
         item {
             BudgetSectionHeader(
-                title = stringResource(R.string.occasional_budget),
+                title = stringResource(R.string.label_occasional_budget),
                 isExpanded = occasionalExpanded,
                 onToggle = { occasionalExpanded = !occasionalExpanded }
             )
@@ -118,7 +118,7 @@ fun BudgetSummaryScreen(
 
         item {
             BudgetSectionHeader(
-                title = stringResource(R.string.annual_budget),
+                title = stringResource(R.string.label_annual_budget),
                 isExpanded = annualExpanded,
                 onToggle = { annualExpanded = !annualExpanded }
             )
@@ -214,26 +214,32 @@ fun BudgetSummary(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = stringResource(R.string.credits_) + nf.displayDollars(totalCredits),
+                    text = stringResource(R.string.label_credits_colon) + nf.displayDollars(
+                        totalCredits
+                    ),
                     style = MaterialTheme.typography.bodySmall
                 )
                 Text(
-                    text = stringResource(R.string.debits_) + nf.displayDollars(totalDebits),
+                    text = stringResource(R.string.label_debits_colon) + nf.displayDollars(
+                        totalDebits
+                    ),
                     style = MaterialTheme.typography.bodySmall
                 )
                 if (type == "monthly") {
                     Text(
-                        text = stringResource(R.string.fixed_) + nf.displayDollars(totalFixed),
+                        text = stringResource(R.string.label_fixed_colon) + nf.displayDollars(
+                            totalFixed
+                        ),
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
             }
             val diff = totalCredits - totalDebits
             Text(
-                text = if (diff >= 0) stringResource(R.string.surplus_of) + nf.displayDollars(
+                text = if (diff >= 0) stringResource(R.string.label_surplus_of) + nf.displayDollars(
                     diff
                 )
-                else stringResource(R.string.deficit_of) + nf.displayDollars(-diff),
+                else stringResource(R.string.label_deficit_of) + nf.displayDollars(-diff),
                 style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.Bold,
                 color = if (diff >= 0) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error,
@@ -265,12 +271,12 @@ fun BudgetListItem(
                 budgetRule.budStartDate,
                 budgetRule.budFrequencyCount.toLong()
             )
-            else stringResource(R.string.weekly_x) + budgetRule.budFrequencyCount
+            else stringResource(R.string.label_weekly_x) + budgetRule.budFrequencyCount
         }
 
         FREQ_MONTHLY -> {
             if (showFullDetails) df.getDisplayDateInComingYear(budgetRule.budStartDate)
-            else stringResource(R.string.monthly)
+            else stringResource(R.string.label_monthly)
         }
 
         else -> ""
@@ -284,7 +290,7 @@ fun BudgetListItem(
 
     val displayAmt =
         if (toAccountType?.displayAsAsset == true && fromAccountType?.displayAsAsset == true) {
-            stringResource(R.string.na)
+            stringResource(R.string.label_na)
         } else nf.displayDollars(if (showFullDetails) budgetRule.budgetAmount else amt)
 
     val textColor =
@@ -326,13 +332,13 @@ fun BudgetListItem(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = stringResource(R.string.annually_every) + budgetRule.budFrequencyCount + stringResource(
-                        R.string._years
+                    text = stringResource(R.string.label_annually_every) + budgetRule.budFrequencyCount + stringResource(
+                        R.string.text_years_suffix
                     ),
                     style = MaterialTheme.typography.bodySmall
                 )
                 Text(
-                    text = stringResource(R.string.average_per_month) + nf.displayDollars(
+                    text = stringResource(R.string.label_average_per_month) + nf.displayDollars(
                         budgetRule.budgetAmount / 12 / budgetRule.budFrequencyCount
                     ),
                     style = MaterialTheme.typography.bodySmall
@@ -344,7 +350,7 @@ fun BudgetListItem(
                     FREQ_WEEKLY -> "Weekly x " + budgetRule.budFrequencyCount
                     FREQ_MONTHLY -> "Monthly x " + budgetRule.budFrequencyCount
                     else -> ""
-                } + " " + stringResource(R.string.average_per_month) + nf.displayDollars(amt),
+                } + " " + stringResource(R.string.label_average_per_month) + nf.displayDollars(amt),
                 style = MaterialTheme.typography.bodySmall
             )
         }

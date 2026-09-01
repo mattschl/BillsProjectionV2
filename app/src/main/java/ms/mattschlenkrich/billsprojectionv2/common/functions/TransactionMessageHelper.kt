@@ -14,18 +14,18 @@ object TransactionMessageHelper {
         val toAccountName = transactionDetailed.toAccount?.accountName ?: ""
         val fromAccountName = transactionDetailed.fromAccount?.accountName ?: ""
 
-        var display = "${context.getString(R.string.this_will_perform)}${trans.transName}${
-            context.getString(R.string._for_)
-        }${nf.getDollarsFromDouble(trans.transAmount)}${context.getString(R.string.__from)}${fromAccountName}"
+        var display = "${context.getString(R.string.msg_will_perform)}${trans.transName}${
+            context.getString(R.string.text_for_padded)
+        }${nf.getDollarsFromDouble(trans.transAmount)}${context.getString(R.string.text_from_header)}${fromAccountName}"
 
         if (trans.transFromAccountPending) {
-            display += context.getString(R.string._pending)
+            display += context.getString(R.string.text_pending_suffix)
         }
 
-        display += "${context.getString(R.string._to)}${toAccountName}"
+        display += "${context.getString(R.string.text_to_header)}${toAccountName}"
 
         if (trans.transToAccountPending) {
-            display += context.getString(R.string._pending)
+            display += context.getString(R.string.text_pending_suffix)
         }
 
         return display
@@ -42,20 +42,20 @@ object TransactionMessageHelper {
         val toAccountName = transactionDetailed.toAccount?.accountName ?: ""
         val fromAccountName = transactionDetailed.fromAccount?.accountName ?: ""
 
-        var display = "${context.getString(R.string.this_will_apply_the_amount_of)}${
+        var display = "${context.getString(R.string.msg_will_apply_amount)}${
             nf.displayDollars(trans.transAmount)
         }"
 
         if (trans.transToAccountPending) {
-            display += "${context.getString(R.string.to_)}${toAccountName}"
+            display += "${context.getString(R.string.label_to_colon)}${toAccountName}"
         }
 
         if (trans.transToAccountPending && trans.transFromAccountPending) {
-            display += context.getString(R.string._and)
+            display += context.getString(R.string.text_and_header)
         }
 
         if (trans.transFromAccountPending) {
-            display += "${context.getString(R.string.from)}${fromAccountName}"
+            display += "${context.getString(R.string.label_from_header)}${fromAccountName}"
         }
 
         return display

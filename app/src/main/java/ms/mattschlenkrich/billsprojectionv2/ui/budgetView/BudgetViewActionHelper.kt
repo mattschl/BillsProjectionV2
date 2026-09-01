@@ -26,11 +26,11 @@ object BudgetViewActionHelper {
     ): List<ActionOption> {
         return listOf(
             ActionOption(
-                activity.getString(R.string.schedule_a_new_budget_item),
+                activity.getString(R.string.action_schedule_budget_item),
                 Icons.Default.Add
             ) { onNewBudgetItem() },
             ActionOption(
-                activity.getString(R.string.add_an_unscheduled_transaction),
+                activity.getString(R.string.action_add_unscheduled_transaction),
                 Icons.Default.Receipt
             ) { onUnscheduledTransaction() }
         )
@@ -49,32 +49,32 @@ object BudgetViewActionHelper {
         val curBudget = curBudgetDetailed.budgetItem ?: return emptyList()
         return listOf(
             ActionOption(
-                "${activity.getString(R.string.perform_a_transaction_on_)} \"${curBudget.biBudgetName}\" ",
+                "${activity.getString(R.string.msg_perform_transaction_on)} \"${curBudget.biBudgetName}\" ",
                 Icons.Default.Edit
             ) { onPerformCustom() },
             ActionOption(
                 if (curBudget.biProjectedAmount == 0.0) ""
-                else "${activity.getString(R.string.perform_action)}\"${curBudget.biBudgetName}\" ${
+                else "${activity.getString(R.string.action_perform)}\"${curBudget.biBudgetName}\" ${
                     activity.getString(
-                        R.string.for_amount_of_the_full_amount_
+                        R.string.msg_for_full_amount
                     )
                 }${nf.displayDollars(curBudget.biProjectedAmount)}",
                 Icons.Default.Check
             ) { onPerformFull() },
             ActionOption(
-                activity.getString(R.string.adjust_the_projections_for_this_item),
+                activity.getString(R.string.action_adjust_projection),
                 Icons.Default.PlayArrow
             ) { onAdjustProjection() },
             ActionOption(
-                activity.getString(R.string.go_to_the_rules_for_future_budgets_of_this_kind),
+                activity.getString(R.string.action_go_to_rules),
                 Icons.AutoMirrored.Filled.Rule
             ) { onGoToRule() },
             ActionOption(
-                "${activity.getString(R.string.this_will_cancel)}${curBudget.biBudgetName}${
+                "${activity.getString(R.string.msg_will_cancel)}${curBudget.biBudgetName}${
                     activity.getString(
-                        R.string.with_the_amount_of
+                        R.string.msg_with_amount
                     )
-                }${nf.displayDollars(curBudget.biProjectedAmount)}${activity.getString(R.string._remaining)}",
+                }${nf.displayDollars(curBudget.biProjectedAmount)}${activity.getString(R.string.text_remaining_suffix)}",
                 Icons.Default.Cancel
             ) { onCancelItem() }
         )
@@ -90,19 +90,19 @@ object BudgetViewActionHelper {
     ): List<ActionOption> {
         return listOf(
             ActionOption(
-                "${activity.getString(R.string.lock)}$budgetItemName",
+                "${activity.getString(R.string.action_lock)}$budgetItemName",
                 Icons.Default.Lock
             ) { onLockItem() },
             ActionOption(
-                "${activity.getString(R.string.un_lock)}$budgetItemName",
+                "${activity.getString(R.string.action_unlock)}$budgetItemName",
                 Icons.Default.LockOpen
             ) { onUnlockItem() },
             ActionOption(
-                activity.getString(R.string.lock_all_items_for_this_payday),
+                activity.getString(R.string.action_lock_payday_items),
                 Icons.Default.Lock
             ) { onLockPayDay() },
             ActionOption(
-                activity.getString(R.string.un_lock_all_items_for_this_payday),
+                activity.getString(R.string.action_unlock_payday_items),
                 Icons.Default.LockOpen
             ) { onUnlockPayDay() }
         )
@@ -116,15 +116,15 @@ object BudgetViewActionHelper {
     ): List<ActionOption> {
         return listOf(
             ActionOption(
-                activity.getString(R.string.complete_this_pending_transaction),
+                activity.getString(R.string.action_complete_pending_transaction),
                 Icons.Default.Check
             ) { onComplete() },
             ActionOption(
-                activity.getString(R.string.open_the_transaction_to_edit_it),
+                activity.getString(R.string.action_open_transaction_to_edit),
                 Icons.Default.Edit
             ) { onEdit() },
             ActionOption(
-                activity.getString(R.string.delete_this_pending_transaction),
+                activity.getString(R.string.action_delete_pending_transaction),
                 Icons.Default.Delete
             ) { onDelete() }
         )

@@ -88,7 +88,7 @@ fun BudgetRuleUpdateScreenWrapper(
     }.observeAsState(emptyList())
 
     LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.update_budget_rule)
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.action_update_budget_rule)
         scope.launch(Dispatchers.IO) {
             budgetNameList = budgetRuleViewModel.getBudgetRuleNameList()
         }
@@ -130,7 +130,7 @@ fun BudgetRuleUpdateScreenWrapper(
 
     fun validateBudgetRule(): String {
         if (state.name.isBlank()) {
-            return mainActivity.getString(R.string.please_enter_a_name)
+            return mainActivity.getString(R.string.msg_prompt_enter_name)
         }
         val detailed = mainViewModel.getBudgetRuleDetailed()
         budgetNameList?.let { list ->
@@ -140,18 +140,18 @@ fun BudgetRuleUpdateScreenWrapper(
                     (rule != null) &&
                     (name != rule.budgetRuleName)
                 ) {
-                    return mainActivity.getString(R.string.this_budget_rule_already_exists)
+                    return mainActivity.getString(R.string.msg_error_budget_rule_exists)
                 }
             }
         }
         if (detailed?.toAccount == null) {
-            return mainActivity.getString(R.string.there_needs_to_be_an_account_money_will_go_to)
+            return mainActivity.getString(R.string.msg_error_no_dest_account)
         }
         if (detailed.fromAccount == null) {
-            return mainActivity.getString(R.string.there_needs_to_be_an_account_money_will_come_from)
+            return mainActivity.getString(R.string.msg_error_no_source_account)
         }
         if (state.amount.isEmpty()) {
-            return mainActivity.getString(R.string.please_enter_a_budgeted_amount_including_zero)
+            return mainActivity.getString(R.string.msg_prompt_enter_amount)
         }
         return ANSWER_OK
     }
@@ -170,7 +170,7 @@ fun BudgetRuleUpdateScreenWrapper(
         } else {
             Toast.makeText(
                 mainActivity,
-                mainActivity.getString(R.string.error) + message,
+                mainActivity.getString(R.string.label_error) + message,
                 Toast.LENGTH_LONG
             ).show()
         }
@@ -186,13 +186,13 @@ fun BudgetRuleUpdateScreenWrapper(
 
     fun confirmDeleteBudgetRule() {
         AlertDialog.Builder(mainActivity).apply {
-            setTitle(mainActivity.getString(R.string.delete_budget_rule))
-            setMessage(mainActivity.getString(R.string.are_you_sure_you_want_to_delete_this_budget_rule))
-            setPositiveButton(mainActivity.getString(R.string.delete)) { _, _ ->
+            setTitle(mainActivity.getString(R.string.title_delete_budget_rule))
+            setMessage(mainActivity.getString(R.string.prompt_delete_budget_rule))
+            setPositiveButton(mainActivity.getString(R.string.action_delete)) { _, _ ->
                 deleteBudgeRule()
                 gotoCallingFragment()
             }
-            setNegativeButton(mainActivity.getString(R.string.cancel), null)
+            setNegativeButton(mainActivity.getString(R.string.action_cancel), null)
         }.create().show()
     }
 
@@ -286,18 +286,18 @@ fun BudgetRuleUpdateScreenWrapper(
         val detailed = mainViewModel.getBudgetRuleDetailed() ?: return
         val rule = detailed.budgetRule ?: return
         actionSheetState.show(
-            "${mainActivity.getString(R.string.choose_an_action_for)} ${rule.budgetRuleName}",
+            "${mainActivity.getString(R.string.title_choose_action_for)} ${rule.budgetRuleName}",
             listOf(
                 ActionOption(
-                    mainActivity.getString(R.string.add_a_new_transaction_based_on_the_budget_rule),
+                    mainActivity.getString(R.string.action_add_transaction_from_rule),
                     Icons.Default.Add
                 ) { addNewTransaction() },
                 ActionOption(
-                    mainActivity.getString(R.string.create_a_scheduled_item_with_this_budget_rule),
+                    mainActivity.getString(R.string.action_create_scheduled_item),
                     Icons.Default.Add
                 ) { createNewBudgetItem() },
                 ActionOption(
-                    mainActivity.getString(R.string.view_a_summary_of_transactions_for_this_budget_rule),
+                    mainActivity.getString(R.string.action_view_rule_summary),
                     Icons.Default.History
                 ) { gotoAnalysis() }
             )
@@ -327,9 +327,9 @@ fun BudgetRuleUpdateScreenWrapper(
             chooseOptions()
         } else {
             AlertDialog.Builder(mainActivity)
-                .setTitle(mainActivity.getString(R.string.this_budget_rule_has_not_been_saved))
-                .setMessage(mainActivity.getString(R.string.would_you_like_to_save_this_budget_rule_and_continue))
-                .setPositiveButton(mainActivity.getString(R.string.yes)) { _, _ ->
+                .setTitle(mainActivity.getString(R.string.msg_warning_rule_not_saved))
+                .setMessage(mainActivity.getString(R.string.prompt_save_and_continue))
+                .setPositiveButton(mainActivity.getString(R.string.action_yes)) { _, _ ->
                     val message = validateBudgetRule()
                     if (message == ANSWER_OK) {
                         updateBudgetRule()
@@ -337,12 +337,12 @@ fun BudgetRuleUpdateScreenWrapper(
                     } else {
                         Toast.makeText(
                             mainActivity,
-                            mainActivity.getString(R.string.error) + message,
+                            mainActivity.getString(R.string.label_error) + message,
                             Toast.LENGTH_LONG
                         ).show()
                     }
                 }
-                .setNegativeButton(mainActivity.getString(R.string.cancel), null)
+                .setNegativeButton(mainActivity.getString(R.string.action_cancel), null)
                 .show()
         }
     }
@@ -364,7 +364,7 @@ fun BudgetRuleUpdateScreenWrapper(
         mainViewModel.setTransferNum(
             nf.getDoubleFromDollars(
                 state.amount.ifBlank {
-                    mainActivity.getString(R.string.zero_double)
+                    mainActivity.getString(R.string.val_zero_double)
                 },
             )
         )
@@ -436,7 +436,7 @@ fun BudgetRuleUpdateScreenWrapper(
                 IconButton(onClick = { confirmDeleteBudgetRule() }) {
                     Icon(
                         Icons.Default.Delete,
-                        contentDescription = stringResource(R.string.delete),
+                        contentDescription = stringResource(R.string.action_delete),
                         modifier = Modifier.size(ProjectFieldDefaults.iconSize())
                     )
                 }
@@ -467,7 +467,7 @@ fun BudgetRuleUpdateScreenWrapper(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = stringResource(R.string.pending),
+                            text = stringResource(R.string.label_pending),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary
@@ -483,7 +483,7 @@ fun BudgetRuleUpdateScreenWrapper(
             }
 
             Text(
-                text = stringResource(R.string.projected_date),
+                text = stringResource(R.string.label_projected_date),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -496,12 +496,12 @@ fun BudgetRuleUpdateScreenWrapper(
                         isCredit = item.toAccount?.accountId == detailedCached?.toAccount?.accountId,
                         onClick = {
                             actionSheetState.show(
-                                mainActivity.getString(R.string.would_you_like_to_go_to_this_budget_item_on) + " ${
+                                mainActivity.getString(R.string.prompt_goto_budget_item) + " ${
                                     df.getDisplayDate(budgetItem.biActualDate)
                                 }?",
                                 listOf(
                                     ActionOption(
-                                        mainActivity.getString(R.string.yes),
+                                        mainActivity.getString(R.string.action_yes),
                                         Icons.Default.PlayArrow
                                     ) {
                                         gotoBudgetItem(item)

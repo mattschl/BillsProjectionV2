@@ -27,7 +27,7 @@ class DateFunctionsTest {
 
     @Test
     fun getDisplayDate_isCorrect() {
-        // SQLITE_DATE is yyyy-MM-dd (wait, Constants said yyyy-LL-dd for SQLITE_DATE but DATE_CHECK is yyyy-MM-dd)
+        // DATE_FORMAT_SQL is yyyy-MM-dd (wait, Constants said yyyy-LL-dd for DATE_FORMAT_SQL but DATE_CHECK is yyyy-MM-dd)
         // DateFunctions uses dateChecker (DATE_CHECK) for parsing in getDisplayDate
         val result = dateFunctions.getDisplayDate("2023-10-27")
         // Locale.CANADA: EEE dd LLL

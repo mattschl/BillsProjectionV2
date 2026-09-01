@@ -170,13 +170,13 @@ fun BudgetRuleItem(
             }
 
             Text(
-                text = stringResource(R.string.to_) + (budgetRuleDetailed.toAccount?.accountName
+                text = stringResource(R.string.label_to_colon) + (budgetRuleDetailed.toAccount?.accountName
                     ?: ""),
                 style = MaterialTheme.typography.labelMedium,
                 color = contentColor.copy(alpha = 0.8f)
             )
             Text(
-                text = stringResource(R.string.from_) + (budgetRuleDetailed.fromAccount?.accountName
+                text = stringResource(R.string.label_from_colon) + (budgetRuleDetailed.fromAccount?.accountName
                     ?: ""),
                 style = MaterialTheme.typography.labelMedium,
                 color = contentColor.copy(alpha = 0.8f)
@@ -197,7 +197,7 @@ fun BudgetRuleItem(
             )
             if (isDeleted) {
                 Text(
-                    text = stringResource(R.string.deleted),
+                    text = stringResource(R.string.label_deleted_suffix),
                     style = MaterialTheme.typography.labelMedium,
                     color = contentColor,
                     fontWeight = FontWeight.Bold
@@ -244,7 +244,7 @@ fun BudgetRuleChooseItem(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = rule.budgetRuleName + if (isDeleted) " " + stringResource(R.string.deleted) else "",
+                text = rule.budgetRuleName + if (isDeleted) " " + stringResource(R.string.label_deleted_suffix) else "",
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.bodySmall,
                 color = contentColor,

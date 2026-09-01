@@ -45,7 +45,7 @@ fun BudgetItemUpdateScreenWrapper(
     val budgetItemDetailedCached = mainViewModel.getBudgetItemDetailed()
 
     LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.update_this_budget_item)
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.action_update_budget_item)
         if (budgetItemDetailedCached != null) {
             val item = budgetItemDetailedCached.budgetItem
             val rule = budgetItemDetailedCached.budgetRule
@@ -118,12 +118,12 @@ fun BudgetItemUpdateScreenWrapper(
     }
 
     fun validateBudgetItem(): String {
-        if (dateState.value.isBlank()) return mainActivity.getString(R.string.please_choose_a_date)
-        if (nameState.value.isBlank()) return mainActivity.getString(R.string.please_enter_a_name_or_description)
+        if (dateState.value.isBlank()) return mainActivity.getString(R.string.msg_prompt_choose_date)
+        if (nameState.value.isBlank()) return mainActivity.getString(R.string.msg_prompt_enter_description)
         val cached = mainViewModel.getBudgetItemDetailed()
-        if (cached?.toAccount == null) return mainActivity.getString(R.string.there_needs_to_be_an_account_money_will_go_to)
-        if (cached.fromAccount == null) return mainActivity.getString(R.string.there_needs_to_be_an_account_money_will_come_from)
-        if (amountState.value.isEmpty()) return mainActivity.getString(R.string.please_enter_a_budgeted_amount_including_zero)
+        if (cached?.toAccount == null) return mainActivity.getString(R.string.msg_error_no_dest_account)
+        if (cached.fromAccount == null) return mainActivity.getString(R.string.msg_error_no_source_account)
+        if (amountState.value.isEmpty()) return mainActivity.getString(R.string.msg_prompt_enter_amount)
         return ANSWER_OK
     }
 
@@ -143,7 +143,7 @@ fun BudgetItemUpdateScreenWrapper(
         } else {
             Toast.makeText(
                 mainActivity,
-                mainActivity.getString(R.string.error) + error,
+                mainActivity.getString(R.string.label_error) + error,
                 Toast.LENGTH_LONG
             ).show()
         }

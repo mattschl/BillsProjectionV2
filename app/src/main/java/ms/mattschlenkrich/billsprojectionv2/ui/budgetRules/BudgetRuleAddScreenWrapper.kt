@@ -44,7 +44,7 @@ fun BudgetRuleAddScreenWrapper(
     var budgetNameList by remember { mutableStateOf<List<String>>(emptyList()) }
 
     LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.add_budget_rule)
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.action_add_budget_rule)
         scope.launch(Dispatchers.IO) {
             budgetNameList = budgetRuleViewModel.getBudgetRuleNameList()
         }
@@ -77,13 +77,13 @@ fun BudgetRuleAddScreenWrapper(
 
     fun validateBudgetRule(): String {
         val name = state.name.trim()
-        if (name.isBlank()) return mainActivity.getString(R.string.please_enter_a_name)
-        if (budgetNameList.contains(name)) return mainActivity.getString(R.string.this_budget_rule_already_exists)
+        if (name.isBlank()) return mainActivity.getString(R.string.msg_prompt_enter_name)
+        if (budgetNameList.contains(name)) return mainActivity.getString(R.string.msg_error_budget_rule_exists)
 
         val cached = mainViewModel.getBudgetRuleDetailed()
-        if (cached?.toAccount == null) return mainActivity.getString(R.string.there_needs_to_be_an_account_money_will_go_to)
-        if (cached.fromAccount == null) return mainActivity.getString(R.string.there_needs_to_be_an_account_money_will_come_from)
-        if (state.amount.isEmpty()) return mainActivity.getString(R.string.please_enter_a_budgeted_amount_including_zero)
+        if (cached?.toAccount == null) return mainActivity.getString(R.string.msg_error_no_dest_account)
+        if (cached.fromAccount == null) return mainActivity.getString(R.string.msg_error_no_source_account)
+        if (state.amount.isEmpty()) return mainActivity.getString(R.string.msg_prompt_enter_amount)
         return ANSWER_OK
     }
 
@@ -97,7 +97,7 @@ fun BudgetRuleAddScreenWrapper(
         } else {
             Toast.makeText(
                 mainActivity,
-                mainActivity.getString(R.string.error) + message,
+                mainActivity.getString(R.string.label_error) + message,
                 Toast.LENGTH_LONG
             ).show()
         }

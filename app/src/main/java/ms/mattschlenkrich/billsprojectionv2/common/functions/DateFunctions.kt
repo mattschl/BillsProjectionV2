@@ -1,10 +1,10 @@
 package ms.mattschlenkrich.billsprojectionv2.common.functions
 
 import ms.mattschlenkrich.billsprojectionv2.common.DATE_CHECK
-import ms.mattschlenkrich.billsprojectionv2.common.DISPLAY_DATE
-import ms.mattschlenkrich.billsprojectionv2.common.DISPLAY_DATE_WITH_YEAR
-import ms.mattschlenkrich.billsprojectionv2.common.SQLITE_DATE
-import ms.mattschlenkrich.billsprojectionv2.common.SQLITE_TIME
+import ms.mattschlenkrich.billsprojectionv2.common.DATE_FORMAT_DISPLAY
+import ms.mattschlenkrich.billsprojectionv2.common.DATE_FORMAT_DISPLAY_WITH_YEAR
+import ms.mattschlenkrich.billsprojectionv2.common.DATE_FORMAT_SQL
+import ms.mattschlenkrich.billsprojectionv2.common.TIME_FORMAT_SQL
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Calendar
@@ -18,20 +18,20 @@ import java.util.TimeZone
 class DateFunctions {
     private val utcTimeZone = TimeZone.getTimeZone("UTC")
     private val localTimeZone = TimeZone.getDefault()
-    private val dateFormat = SimpleDateFormat(SQLITE_DATE, Locale.CANADA).apply {
+    private val dateFormat = SimpleDateFormat(DATE_FORMAT_SQL, Locale.CANADA).apply {
         timeZone = localTimeZone
     }
-    private val timeFormatter = SimpleDateFormat(SQLITE_TIME, Locale.CANADA).apply {
+    private val timeFormatter = SimpleDateFormat(TIME_FORMAT_SQL, Locale.CANADA).apply {
         timeZone = utcTimeZone
     }
     private val dateChecker = SimpleDateFormat(DATE_CHECK, Locale.CANADA).apply {
         timeZone = localTimeZone
     }
-    private val displayDateString = SimpleDateFormat(DISPLAY_DATE, Locale.CANADA).apply {
+    private val displayDateString = SimpleDateFormat(DATE_FORMAT_DISPLAY, Locale.CANADA).apply {
         timeZone = localTimeZone
     }
     private val displayDateWithYear =
-        SimpleDateFormat(DISPLAY_DATE_WITH_YEAR, Locale.CANADA).apply {
+        SimpleDateFormat(DATE_FORMAT_DISPLAY_WITH_YEAR, Locale.CANADA).apply {
             timeZone = localTimeZone
         }
     private val fileTimestampFormat = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.CANADA).apply {
@@ -171,7 +171,7 @@ class DateFunctions {
      */
     fun getUtcFromLegacyLocal(localTimestamp: String): String {
         return try {
-            val localFormatter = SimpleDateFormat(SQLITE_TIME, Locale.CANADA)
+            val localFormatter = SimpleDateFormat(TIME_FORMAT_SQL, Locale.CANADA)
             // Uses system default timezone for parsing
             val date = localFormatter.parse(localTimestamp)
             if (date != null) timeFormatter.format(date) else localTimestamp
@@ -186,7 +186,7 @@ class DateFunctions {
     fun getLocalDisplayTime(utcTimestamp: String): String {
         return try {
             val date = timeFormatter.parse(utcTimestamp)
-            val localFormatter = SimpleDateFormat(SQLITE_TIME, Locale.getDefault())
+            val localFormatter = SimpleDateFormat(TIME_FORMAT_SQL, Locale.getDefault())
             if (date != null) localFormatter.format(date) else utcTimestamp
         } catch (e: Exception) {
             utcTimestamp

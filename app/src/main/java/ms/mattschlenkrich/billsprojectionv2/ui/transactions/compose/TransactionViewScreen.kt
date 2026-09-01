@@ -75,7 +75,7 @@ fun TransactionViewScreen(
             ) {
                 Icon(
                     Icons.Default.Add,
-                    contentDescription = stringResource(R.string.add)
+                    contentDescription = stringResource(R.string.action_add)
                 )
             }
         }
@@ -88,7 +88,7 @@ fun TransactionViewScreen(
             ProjectTextField(
                 value = searchQuery,
                 onValueChange = onSearchQueryChange,
-                label = stringResource(R.string.search),
+                label = stringResource(R.string.action_search),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
@@ -103,7 +103,7 @@ fun TransactionViewScreen(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "${stringResource(R.string.selected_)} ${
+                        text = "${stringResource(R.string.label_selected_colon)} ${
                             nf.displayDollars(
                                 selectedSum
                             )
@@ -150,7 +150,7 @@ private fun EmptyState() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = stringResource(R.string.no_transactions_to_view),
+                    text = stringResource(R.string.msg_no_transactions),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center

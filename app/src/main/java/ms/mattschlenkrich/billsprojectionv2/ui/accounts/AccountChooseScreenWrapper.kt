@@ -16,11 +16,11 @@ import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_BUDGET_ITEM_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_BUDGET_ITEM_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_BUDGET_RULE_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_BUDGET_RULE_UPDATE
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_TRANSACTION_ADD
 import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_TRANSACTION_ANALYSIS
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_TRANSACTION_PERFORM
 import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_TRANSACTION_SPLIT
-import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_TRANS_ADD
-import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_TRANS_PERFORM
-import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_TRANS_UPDATE
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_TRANSACTION_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.accounts.compose.AccountChooseScreen
@@ -36,7 +36,7 @@ fun AccountChooseScreenWrapper(
     val mainViewModel = mainActivity.mainViewModel
     val accountViewModel = mainActivity.accountViewModel
     LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.choose_an_account)
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.title_choose_account)
     }
 
     var searchQuery by remember { mutableStateOf("") }
@@ -63,9 +63,9 @@ fun AccountChooseScreenWrapper(
                 populateBudgetItemDetailed(mainActivity, curAccount)
             } else if (mCallingFragment.contains(SCREEN_TRANSACTION_SPLIT)) {
                 populateSplitTransaction(mainActivity, curAccount)
-            } else if (mCallingFragment.contains(SCREEN_TRANS_ADD) ||
-                mCallingFragment.contains(SCREEN_TRANS_PERFORM) ||
-                mCallingFragment.contains(SCREEN_TRANS_UPDATE)
+            } else if (mCallingFragment.contains(SCREEN_TRANSACTION_ADD) ||
+                mCallingFragment.contains(SCREEN_TRANSACTION_PERFORM) ||
+                mCallingFragment.contains(SCREEN_TRANSACTION_UPDATE)
             ) {
                 populateTransactionDetailed(mainActivity, curAccount)
             } else if (mCallingFragment.contains(SCREEN_TRANSACTION_ANALYSIS)) {

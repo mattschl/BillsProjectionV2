@@ -59,12 +59,12 @@ fun SyncScreen(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(id = R.string.sync)) },
+                title = { Text(stringResource(id = R.string.title_sync)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.go_back),
+                            contentDescription = stringResource(R.string.action_go_back),
                             modifier = Modifier.size(ProjectFieldDefaults.iconSize())
                         )
                     }
@@ -103,7 +103,7 @@ fun SyncScreen(
                             viewModel.docContent = it.text
                         }
                     },
-                    label = stringResource(R.string.document_content),
+                    label = stringResource(R.string.label_document_content),
                     modifier = Modifier.fillMaxHeight(.75f)
                 )
 
@@ -119,20 +119,20 @@ fun SyncScreen(
                             Button(
                                 onClick = onConnect,
                                 modifier = Modifier.weight(1f)
-                            ) { Text(stringResource(R.string.connect_to_drive)) }
+                            ) { Text(stringResource(R.string.action_connect_to_drive)) }
                             Button(
                                 onClick = onConnectLegacy,
                                 modifier = Modifier.weight(1f)
-                            ) { Text(stringResource(R.string.connect_to_drive_legacy)) }
+                            ) { Text(stringResource(R.string.action_connect_to_drive_legacy)) }
                         } else {
                             Button(
                                 onClick = onSync,
                                 modifier = Modifier.weight(1f)
-                            ) { Text(stringResource(R.string.sync)) }
+                            ) { Text(stringResource(R.string.title_sync)) }
                             Button(
                                 onClick = onQuery,
                                 modifier = Modifier.weight(1f)
-                            ) { Text(stringResource(R.string.query_drive)) }
+                            ) { Text(stringResource(R.string.action_query_drive)) }
                         }
                     }
 
@@ -144,12 +144,12 @@ fun SyncScreen(
                             Button(
                                 onClick = onDisconnect,
                                 modifier = Modifier.weight(1f)
-                            ) { Text(stringResource(R.string.disconnect)) }
+                            ) { Text(stringResource(R.string.action_disconnect)) }
                         }
                         Button(
                             onClick = onBack,
                             modifier = Modifier.weight(1f)
-                        ) { Text(stringResource(R.string.done_button)) }
+                        ) { Text(stringResource(R.string.action_done)) }
                     }
                 }
             }
@@ -184,8 +184,8 @@ fun SyncScreen(
             if (viewModel.showTransactionWarning) {
                 AlertDialog(
                     onDismissRequest = { viewModel.showTransactionWarning = false },
-                    title = { Text(stringResource(R.string.transaction_sync_warning_title)) },
-                    text = { Text(stringResource(R.string.transaction_sync_warning_message)) },
+                    title = { Text(stringResource(R.string.title_sync_transaction_warning)) },
+                    text = { Text(stringResource(R.string.msg_sync_transaction_warning)) },
                     confirmButton = {
                         TextButton(onClick = { viewModel.showTransactionWarning = false }) {
                             Text(stringResource(android.R.string.ok))

@@ -37,7 +37,7 @@ fun AccountViewScreenWrapper(
     val actionSheetState = rememberActionSheetState()
 
     LaunchedEffect(Unit) {
-        activity.topMenuBar.setTitle(R.string.accounts)
+        activity.topMenuBar.setTitle(R.string.title_accounts)
     }
 
     var searchQuery by remember { mutableStateOf("") }
@@ -58,10 +58,10 @@ fun AccountViewScreenWrapper(
         },
         onAccountClick = { accountWithType ->
             actionSheetState.show(
-                activity.getString(R.string.choose_an_action_for) + accountWithType.account.accountName,
+                activity.getString(R.string.title_choose_action_for) + accountWithType.account.accountName,
                 listOf(
                     ActionOption(
-                        activity.getString(R.string.edit_this_account),
+                        activity.getString(R.string.action_edit_account),
                         Icons.Default.Edit
                     ) {
                         mainViewModel.addCallingFragment(SCREEN_ACCOUNTS)
@@ -69,7 +69,7 @@ fun AccountViewScreenWrapper(
                         navController.navigate(Screen.AccountUpdate.route)
                     },
                     ActionOption(
-                        activity.getString(R.string.delete_this_account),
+                        activity.getString(R.string.action_delete_account),
                         Icons.Default.Delete
                     ) {
                         accountViewModel.deleteAccount(
@@ -77,7 +77,7 @@ fun AccountViewScreenWrapper(
                         )
                     },
                     ActionOption(
-                        activity.getString(R.string.view_a_summary_of_transactions_using_this_account),
+                        activity.getString(R.string.action_view_account_summary),
                         Icons.Default.History
                     ) {
                         mainViewModel.addCallingFragment(SCREEN_ACCOUNTS)
@@ -95,19 +95,23 @@ fun AccountViewScreenWrapper(
                 parts.add("# ${account.accountNumber}")
             }
             if (account.accountBalance != 0.0) {
-                parts.add(activity.getString(R.string.balance) + cf.displayDollars(account.accountBalance))
+                parts.add(activity.getString(R.string.label_balance) + cf.displayDollars(account.accountBalance))
             }
             if (account.accountOwing != 0.0) {
-                parts.add(activity.getString(R.string.owing) + cf.displayDollars(account.accountOwing))
+                parts.add(activity.getString(R.string.label_owing) + cf.displayDollars(account.accountOwing))
             }
             if (account.accBudgetedAmount != 0.0) {
-                parts.add(activity.getString(R.string.budgeted) + cf.displayDollars(account.accBudgetedAmount))
+                parts.add(activity.getString(R.string.label_budgeted) + cf.displayDollars(account.accBudgetedAmount))
             }
             if (account.accountCreditLimit != 0.0) {
-                parts.add(activity.getString(R.string.credit_limit) + cf.displayDollars(account.accountCreditLimit))
+                parts.add(
+                    activity.getString(R.string.label_credit_limit) + cf.displayDollars(
+                        account.accountCreditLimit
+                    )
+                )
             }
             if (account.accIsDeleted) {
-                parts.add(activity.getString(R.string.deleted))
+                parts.add(activity.getString(R.string.label_deleted_suffix))
             }
             parts.joinToString("\n")
         },

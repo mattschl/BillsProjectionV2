@@ -59,7 +59,7 @@ fun TransactionEditScreen(
     onSplitClick: () -> Unit,
     onGotoCalculator: () -> Unit,
     isSplitEnabled: Boolean,
-    splitButtonText: String = stringResource(R.string.splitting_transaction),
+    splitButtonText: String = stringResource(R.string.title_splitting_transaction),
     descriptionError: Boolean = false,
     amountError: Boolean = false,
     toAccountError: Boolean = false,
@@ -77,7 +77,7 @@ fun TransactionEditScreen(
             ) {
                 Icon(
                     Icons.Default.Done,
-                    contentDescription = stringResource(R.string.save)
+                    contentDescription = stringResource(R.string.action_save)
                 )
             }
         }
@@ -94,7 +94,7 @@ fun TransactionEditScreen(
             ProjectTextField(
                 value = description,
                 onValueChange = onDescriptionChange,
-                label = stringResource(R.string.description),
+                label = stringResource(R.string.label_description),
                 isError = descriptionError
             )
 
@@ -102,12 +102,12 @@ fun TransactionEditScreen(
                 ProjectDateField(
                     value = date,
                     onValueChange = onDateChange,
-                    label = stringResource(R.string.date),
+                    label = stringResource(R.string.label_date),
                     modifier = Modifier.weight(2f)
                 )
                 Spacer(modifier = Modifier.width(2.dp))
                 ProjectBalanceField(
-                    label = stringResource(R.string.amount),
+                    label = stringResource(R.string.label_amount),
                     value = amount,
                     onValueChange = onAmountChange,
                     onIconClick = onGotoCalculator,
@@ -118,13 +118,13 @@ fun TransactionEditScreen(
             }
 
             ProjectTextBox(
-                label = stringResource(R.string.rules),
+                label = stringResource(R.string.label_rules),
                 value = budgetRule?.budgetRuleName ?: "",
                 onClick = onChooseBudgetRule
             )
 
             TransactionAccountField(
-                label = stringResource(R.string.from_account_name),
+                label = stringResource(R.string.label_from_account_name),
                 account = fromAccount,
                 isPending = fromPending,
                 onPendingChange = onFromPendingChange,
@@ -134,7 +134,7 @@ fun TransactionEditScreen(
             )
 
             TransactionAccountField(
-                label = stringResource(R.string.to_account_name),
+                label = stringResource(R.string.label_to_account_name),
                 account = toAccount,
                 isPending = toPending,
                 onPendingChange = onToPendingChange,
@@ -146,7 +146,7 @@ fun TransactionEditScreen(
             ProjectTextField(
                 value = note,
                 onValueChange = onNoteChange,
-                label = stringResource(R.string.note)
+                label = stringResource(R.string.label_notes)
             )
 
             Button(

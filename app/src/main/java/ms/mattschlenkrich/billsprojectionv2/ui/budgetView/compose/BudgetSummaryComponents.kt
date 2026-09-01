@@ -40,14 +40,14 @@ fun SummaryCard(
     showSelectedSum: Boolean = false,
 ) {
     val nf = LocalNumberFunctions.current
-    val currentTag = stringResource(R.string.__current)
+    val currentTag = stringResource(R.string.text_current_suffix)
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(2.dp)) {
             DropdownSelector(
-                label = stringResource(R.string.asset_account),
+                label = stringResource(R.string.label_asset_account),
                 options = assetList,
                 selectedOption = selectedAsset,
                 onOptionSelected = onAssetSelected,
@@ -55,7 +55,7 @@ fun SummaryCard(
 
             if (payDayList.isNotEmpty()) {
                 DropdownSelector(
-                    label = stringResource(R.string.pay_day),
+                    label = stringResource(R.string.label_pay_day),
                     options = payDayList.mapIndexed { index, s ->
                         if (index == 0) "$s$currentTag" else s
                     },
@@ -74,11 +74,11 @@ fun SummaryCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     val label = if (accountType?.keepTotals == true) {
-                        stringResource(R.string.balance_in_account)
+                        stringResource(R.string.label_balance_in_account)
                     } else if (asset.account.accountOwing >= 0.0) {
-                        stringResource(R.string.balance_owing)
+                        stringResource(R.string.label_balance_owing)
                     } else {
-                        stringResource(R.string.credit_of)
+                        stringResource(R.string.label_credit_of)
                     }
 
                     val amount = if (accountType?.keepTotals == true) {
@@ -124,7 +124,7 @@ fun SummaryCard(
                             if (available > creditLimit) creditLimit else available
 
                         Text(
-                            text = stringResource(R.string.available_credit),
+                            text = stringResource(R.string.label_available_credit),
                             style = MaterialTheme.typography.bodyLarge
                         )
                         Text(
@@ -143,7 +143,7 @@ fun SummaryCard(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "${stringResource(R.string.selected_)} ${
+                        text = "${stringResource(R.string.label_selected_colon)} ${
                             nf.displayDollars(
                                 selectedSum
                             )
@@ -175,22 +175,22 @@ fun TotalsSection(
     val nf = LocalNumberFunctions.current
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         Text(
-            text = if (budgetTotals.credits > 0.0) "${stringResource(R.string.credits_)}${
+            text = if (budgetTotals.credits > 0.0) "${stringResource(R.string.label_credits_colon)}${
                 nf.displayDollars(
                     budgetTotals.credits
                 )
-            }" else stringResource(R.string.no_credits),
+            }" else stringResource(R.string.msg_no_credits),
             color = if (budgetTotals.credits > 0.0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(
                 alpha = 0.4f
             ),
             style = MaterialTheme.typography.bodySmall
         )
         Text(
-            text = if (budgetTotals.debits > 0.0) "${stringResource(R.string.debits_)}${
+            text = if (budgetTotals.debits > 0.0) "${stringResource(R.string.label_debits_colon)}${
                 nf.displayDollars(
                     budgetTotals.debits
                 )
-            }" else stringResource(R.string.no_debits),
+            }" else stringResource(R.string.msg_no_debits),
             color = if (budgetTotals.debits > 0.0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface.copy(
                 alpha = 0.4f
             ),
@@ -199,22 +199,22 @@ fun TotalsSection(
     }
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         Text(
-            text = if (budgetTotals.fixedExpenses > 0.0) "${stringResource(R.string.fixed_expenses)}${
+            text = if (budgetTotals.fixedExpenses > 0.0) "${stringResource(R.string.title_fixed_expenses)}${
                 nf.displayDollars(
                     budgetTotals.fixedExpenses
                 )
-            }" else stringResource(R.string.no_fixed_expenses),
+            }" else stringResource(R.string.msg_no_fixed),
             color = if (budgetTotals.fixedExpenses > 0.0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface.copy(
                 alpha = 0.4f
             ),
             style = MaterialTheme.typography.bodySmall
         )
         Text(
-            text = if (budgetTotals.otherExpenses > 0.0) "${stringResource(R.string.discretionary_)}${
+            text = if (budgetTotals.otherExpenses > 0.0) "${stringResource(R.string.label_discretionary_colon)}${
                 nf.displayDollars(
                     budgetTotals.otherExpenses
                 )
-            }" else stringResource(R.string.no_discretionary_expenses),
+            }" else stringResource(R.string.msg_no_discretionary),
             color = if (budgetTotals.otherExpenses > 0.0) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurface.copy(
                 alpha = 0.4f
             ),
@@ -242,12 +242,12 @@ fun SurplusDeficitInfo(
     }
 
     Text(
-        text = if (surplus >= 0.0) "${stringResource(R.string.surplus_of)}${
+        text = if (surplus >= 0.0) "${stringResource(R.string.label_surplus_of)}${
             nf.displayDollars(
                 surplus
             )
         }"
-        else "${stringResource(R.string.deficit_of)}${nf.displayDollars(-surplus)}",
+        else "${stringResource(R.string.label_deficit_of)}${nf.displayDollars(-surplus)}",
         fontWeight = FontWeight.Bold,
         color = if (surplus >= 0.0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error,
         textAlign = TextAlign.Center,

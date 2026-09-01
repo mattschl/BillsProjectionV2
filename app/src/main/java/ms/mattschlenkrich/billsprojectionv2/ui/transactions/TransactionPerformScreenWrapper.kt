@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
-import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_TRANS_PERFORM
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_TRANSACTION_PERFORM
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.TransactionMessageHelper
@@ -19,7 +19,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 import ms.mattschlenkrich.billsprojectionv2.ui.transactions.compose.TransactionPerformScreen
 
-private const val TAG = SCREEN_TRANS_PERFORM
+private const val TAG = SCREEN_TRANSACTION_PERFORM
 
 @Composable
 fun TransactionPerformScreenWrapper(
@@ -36,7 +36,7 @@ fun TransactionPerformScreenWrapper(
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.perform_a_transaction)
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.title_perform_transaction)
 
         val cachedTrans = mainViewModel.getTransactionDetailed()
         val cachedBudgetItem = mainViewModel.getBudgetItemDetailed()
@@ -149,9 +149,9 @@ fun TransactionPerformScreenWrapper(
                 )
 
                 AlertDialog.Builder(mainActivity)
-                    .setTitle(mainActivity.getString(R.string.confirm_performing_transaction))
+                    .setTitle(mainActivity.getString(R.string.title_confirm_transaction))
                     .setMessage(display)
-                    .setPositiveButton(mainActivity.getString(R.string.confirm)) { _, _ ->
+                    .setPositiveButton(mainActivity.getString(R.string.action_confirm)) { _, _ ->
                         val mTransaction = state.toTransactions()
                         mainActivity.lifecycleScope.launch {
                             accountUpdateViewModel.performTransaction(mTransaction)
@@ -179,20 +179,20 @@ fun TransactionPerformScreenWrapper(
                             navController.popBackStack()
                         }
                     }
-                    .setNegativeButton(mainActivity.getString(R.string.go_back), null)
+                    .setNegativeButton(mainActivity.getString(R.string.action_go_back), null)
                     .show()
             } else {
                 val errorMsg = when {
-                    state.dateError -> mainActivity.getString(R.string.please_choose_a_date)
-                    state.descriptionError -> mainActivity.getString(R.string.please_enter_a_name_or_description)
-                    state.toAccountError -> mainActivity.getString(R.string.there_needs_to_be_an_account_money_will_go_to)
-                    state.fromAccountError -> mainActivity.getString(R.string.there_needs_to_be_an_account_money_will_come_from)
-                    state.amountError -> mainActivity.getString(R.string.please_enter_an_amount_for_this_transaction)
-                    else -> mainActivity.getString(R.string.error)
+                    state.dateError -> mainActivity.getString(R.string.msg_prompt_choose_date)
+                    state.descriptionError -> mainActivity.getString(R.string.msg_prompt_enter_description)
+                    state.toAccountError -> mainActivity.getString(R.string.msg_error_no_dest_account)
+                    state.fromAccountError -> mainActivity.getString(R.string.msg_error_no_source_account)
+                    state.amountError -> mainActivity.getString(R.string.msg_prompt_enter_trans_amount)
+                    else -> mainActivity.getString(R.string.label_error)
                 }
                 Toast.makeText(
                     mainActivity,
-                    mainActivity.getString(R.string.error) + errorMsg,
+                    mainActivity.getString(R.string.label_error) + errorMsg,
                     Toast.LENGTH_LONG
                 ).show()
             }

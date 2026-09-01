@@ -54,7 +54,7 @@ fun AccountUpdateScreenWrapper(
     val state = rememberAccountEditState(nf, df)
 
     LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.update_account)
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.action_update_account)
     }
 
     val accountWithTypeState = remember { mutableStateOf(mainViewModel.getAccountWithType()) }
@@ -127,12 +127,12 @@ fun AccountUpdateScreenWrapper(
         )
 
         AlertDialog.Builder(mainActivity)
-            .setTitle(mainActivity.getString(R.string.confirm_completing_transaction))
+            .setTitle(mainActivity.getString(R.string.title_confirm_complete_transaction))
             .setMessage(display)
-            .setPositiveButton(mainActivity.getString(R.string.confirm)) { _, _ ->
+            .setPositiveButton(mainActivity.getString(R.string.action_confirm)) { _, _ ->
                 completePendingTransactions(transactionDetailed)
             }
-            .setNegativeButton(mainActivity.getString(R.string.cancel), null).show()
+            .setNegativeButton(mainActivity.getString(R.string.action_cancel), null).show()
     }
 
     fun deleteTransaction(transaction: Transactions) {
@@ -144,10 +144,10 @@ fun AccountUpdateScreenWrapper(
     fun confirmDeleteTransaction(transactionDetailed: TransactionDetailed) {
         val transaction = transactionDetailed.transaction ?: return
         AlertDialog.Builder(mainActivity).setTitle(
-            "${mainActivity.getString(R.string.are_you_sure_you_want_to_delete)}${transaction.transName}"
-        ).setPositiveButton(mainActivity.getString(R.string.delete)) { _, _ ->
+            "${mainActivity.getString(R.string.prompt_delete_confirm)}${transaction.transName}"
+        ).setPositiveButton(mainActivity.getString(R.string.action_delete)) { _, _ ->
             deleteTransaction(transaction)
-        }.setNegativeButton(mainActivity.getString(R.string.cancel), null).show()
+        }.setNegativeButton(mainActivity.getString(R.string.action_cancel), null).show()
     }
 
     fun showTransactionOptions(transactionDetailed: TransactionDetailed) {
@@ -158,7 +158,7 @@ fun AccountUpdateScreenWrapper(
 
         val options = mutableListOf(
             ActionOption(
-                mainActivity.getString(R.string.edit_this_transaction),
+                mainActivity.getString(R.string.action_edit_transaction),
                 Icons.Default.Edit
             ) {
                 mainViewModel.setCallingFragments(TAG)
@@ -179,7 +179,7 @@ fun AccountUpdateScreenWrapper(
                 confirmCompletePendingTransactions(transactionDetailed)
             },
             ActionOption(
-                mainActivity.getString(R.string.go_to_the_rules_for_future_budgets_of_this_kind),
+                mainActivity.getString(R.string.action_go_to_rules),
                 Icons.AutoMirrored.Filled.Rule
             ) {
                 mainViewModel.setCallingFragments(TAG)
@@ -192,7 +192,7 @@ fun AccountUpdateScreenWrapper(
                 }
             },
             ActionOption(
-                mainActivity.getString(R.string.delete_this_transaction),
+                mainActivity.getString(R.string.action_delete_transaction),
                 Icons.Default.Delete
             ) {
                 confirmDeleteTransaction(transactionDetailed)
@@ -200,7 +200,7 @@ fun AccountUpdateScreenWrapper(
         )
 
         actionSheetState.show(
-            "${mainActivity.getString(R.string.choose_an_action_for)}${transaction.transName}",
+            "${mainActivity.getString(R.string.title_choose_action_for)}${transaction.transName}",
             options
         )
     }
@@ -231,7 +231,7 @@ fun AccountUpdateScreenWrapper(
         onBalanceIconClick = {
             mainViewModel.setTransferNum(nf.getDoubleFromDollars(state.balance.ifBlank {
                 mainActivity.getString(
-                    R.string.zero_double
+                    R.string.val_zero_double
                 )
             }))
             val updatedAccount = getUpdatedAccount()
@@ -251,7 +251,7 @@ fun AccountUpdateScreenWrapper(
         onOwingIconClick = {
             mainViewModel.setTransferNum(nf.getDoubleFromDollars(state.owing.ifBlank {
                 mainActivity.getString(
-                    R.string.zero_double
+                    R.string.val_zero_double
                 )
             }))
             val updatedAccount = getUpdatedAccount()
@@ -271,7 +271,7 @@ fun AccountUpdateScreenWrapper(
         onBudgetedIconClick = {
             mainViewModel.setTransferNum(nf.getDoubleFromDollars(state.budgeted.ifBlank {
                 mainActivity.getString(
-                    R.string.zero_double
+                    R.string.val_zero_double
                 )
             }))
             val updatedAccount = getUpdatedAccount()
@@ -293,14 +293,14 @@ fun AccountUpdateScreenWrapper(
         onHistoryItemClick = { showTransactionOptions(it) },
         onSaveClick = {
             val answer = if (state.name.isBlank()) {
-                mainActivity.getString(R.string.please_enter_a_name)
+                mainActivity.getString(R.string.msg_prompt_enter_name)
             } else if (accountNames.any { name ->
                     val currentAwt = mainViewModel.getAccountWithType()
                     name == state.name && (currentAwt == null || name != currentAwt.account.accountName)
                 }) {
-                mainActivity.getString(R.string.this_budget_rule_already_exists)
+                mainActivity.getString(R.string.msg_error_budget_rule_exists)
             } else if (mainViewModel.getAccountWithType()?.accountType == null) {
-                mainActivity.getString(R.string.please_choose_an_account_type)
+                mainActivity.getString(R.string.msg_prompt_choose_account_type)
             } else {
                 ANSWER_OK
             }
@@ -315,27 +315,27 @@ fun AccountUpdateScreenWrapper(
                     navController.popBackStack()
                 } else {
                     AlertDialog.Builder(mainActivity).apply {
-                        setTitle(mainActivity.getString(R.string.rename_account))
+                        setTitle(mainActivity.getString(R.string.title_rename_account))
                         setMessage(
-                            "${mainActivity.getString(R.string.are_you_sure_you_want_to_rename_this_account)}${
+                            "${mainActivity.getString(R.string.prompt_rename_account)}${
                                 mainActivity.getString(
-                                    R.string.note
+                                    R.string.label_note_header
                                 )
-                            }${mainActivity.getString(R.string.this_will_not_replace_an_existing_account_type)}"
+                            }${mainActivity.getString(R.string.msg_wont_replace_account_type)}"
                         )
-                        setPositiveButton(mainActivity.getString(R.string.update_account)) { _, _ ->
+                        setPositiveButton(mainActivity.getString(R.string.action_update_account)) { _, _ ->
                             accountViewModel.updateAccount(updatedAccount)
                             mainViewModel.removeCallingFragment(TAG)
                             mainViewModel.setAccountWithType(null)
                             navController.popBackStack()
                         }
-                        setNegativeButton(mainActivity.getString(R.string.cancel), null)
+                        setNegativeButton(mainActivity.getString(R.string.action_cancel), null)
                     }.create().show()
                 }
             } else {
                 Toast.makeText(
                     mainActivity,
-                    mainActivity.getString(R.string.error) + answer,
+                    mainActivity.getString(R.string.label_error) + answer,
                     Toast.LENGTH_LONG
                 ).show()
             }

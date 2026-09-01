@@ -12,7 +12,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_BALANCE
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_OWING
 import ms.mattschlenkrich.billsprojectionv2.common.ACCOUNT_UPDATE_TIME
-import ms.mattschlenkrich.billsprojectionv2.common.RULE_ID
+import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_TRANSACTION
@@ -22,8 +22,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_FROM_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_ID
 import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_NAME
 import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_NOTE
+import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.common.TRANSACTION_TO_ACCOUNT_ID
-import ms.mattschlenkrich.billsprojectionv2.common.TRANS_BUDGET_RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.common.TRANS_IS_DELETED
 import ms.mattschlenkrich.billsprojectionv2.common.TRANS_UPDATE_TIME
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
@@ -77,8 +77,8 @@ interface TransactionDao {
                 "fromAccount.* " +
                 "FROM $TABLE_TRANSACTION " +
                 "LEFT JOIN $TABLE_BUDGET_RULES as budgetRule on " +
-                "$TABLE_TRANSACTION.$TRANS_BUDGET_RULE_ID = " +
-                "budgetRule.$RULE_ID " +
+                "$TABLE_TRANSACTION.$TRANSACTION_RULE_ID = " +
+                "budgetRule.$BUDGET_RULE_ID " +
                 "LEFT JOIN AccountAndType as toAccount on " +
                 "toAccount.accountId = " +
                 ":toAccountID " +
@@ -116,7 +116,7 @@ interface TransactionDao {
 
     @Query(
         "SELECT SUM($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
-                "WHERE $TRANS_BUDGET_RULE_ID = :budgetRuleId " +
+                "WHERE $TRANSACTION_RULE_ID = :budgetRuleId " +
                 "AND $TRANSACTION_DATE >= :startDate " +
                 "AND $TRANSACTION_DATE <= :endDate " +
                 "AND $TRANS_IS_DELETED = 0"
@@ -129,7 +129,7 @@ interface TransactionDao {
 
     @Query(
         "SELECT COUNT($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
-                "WHERE $TRANS_BUDGET_RULE_ID = :budgetRuleId " +
+                "WHERE $TRANSACTION_RULE_ID = :budgetRuleId " +
                 "AND $TRANSACTION_DATE >= :startDate " +
                 "AND $TRANSACTION_DATE <= :endDate " +
                 "AND $TRANS_IS_DELETED = 0"
@@ -188,13 +188,13 @@ interface TransactionDao {
                 "fromAccount.* " +
                 "FROM $TABLE_TRANSACTION AS trans " +
                 "LEFT JOIN $TABLE_BUDGET_RULES AS budgetRule ON " +
-                "trans.$TRANS_BUDGET_RULE_ID = budgetRule.$RULE_ID " +
+                "trans.$TRANSACTION_RULE_ID = budgetRule.$BUDGET_RULE_ID " +
                 "LEFT JOIN $TABLE_ACCOUNTS AS toAccount ON " +
                 "trans.$TRANSACTION_TO_ACCOUNT_ID = toAccount.$ACCOUNT_ID " +
                 "LEFT JOIN $TABLE_ACCOUNTS AS fromAccount ON " +
                 "trans.$TRANSACTION_FROM_ACCOUNT_ID = fromAccount.$ACCOUNT_ID " +
                 "WHERE trans.$TRANS_IS_DELETED = 0 " +
-                "AND (:budgetRuleId = -1 OR trans.$TRANS_BUDGET_RULE_ID = :budgetRuleId) " +
+                "AND (:budgetRuleId = -1 OR trans.$TRANSACTION_RULE_ID = :budgetRuleId) " +
                 "AND (:accountId = -1 OR (trans.$TRANSACTION_TO_ACCOUNT_ID = :accountId OR trans.$TRANSACTION_FROM_ACCOUNT_ID = :accountId)) " +
                 "AND (:query = '' OR (trans.$TRANSACTION_NAME LIKE :query OR trans.$TRANSACTION_NOTE LIKE :query)) " +
                 "AND (:startDate = '' OR trans.$TRANSACTION_DATE >= :startDate) " +
@@ -212,7 +212,7 @@ interface TransactionDao {
     @Query(
         "SELECT SUM($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
                 "WHERE $TRANS_IS_DELETED = 0 " +
-                "AND (:budgetRuleId = -1 OR $TRANS_BUDGET_RULE_ID = :budgetRuleId) " +
+                "AND (:budgetRuleId = -1 OR $TRANSACTION_RULE_ID = :budgetRuleId) " +
                 "AND (:accountId = -1 OR ($TRANSACTION_TO_ACCOUNT_ID = :accountId OR $TRANSACTION_FROM_ACCOUNT_ID = :accountId)) " +
                 "AND (:query = '' OR ($TRANSACTION_NAME LIKE :query OR $TRANSACTION_NOTE LIKE :query)) " +
                 "AND (:startDate = '' OR $TRANSACTION_DATE >= :startDate) " +
@@ -259,7 +259,7 @@ interface TransactionDao {
     @Query(
         "SELECT MAX($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
                 "WHERE $TRANS_IS_DELETED = 0 " +
-                "AND (:budgetRuleId = -1 OR $TRANS_BUDGET_RULE_ID = :budgetRuleId) " +
+                "AND (:budgetRuleId = -1 OR $TRANSACTION_RULE_ID = :budgetRuleId) " +
                 "AND (:accountId = -1 OR ($TRANSACTION_TO_ACCOUNT_ID = :accountId OR $TRANSACTION_FROM_ACCOUNT_ID = :accountId)) " +
                 "AND (:query = '' OR ($TRANSACTION_NAME LIKE :query OR $TRANSACTION_NOTE LIKE :query)) " +
                 "AND (:startDate = '' OR $TRANSACTION_DATE >= :startDate) " +
@@ -276,7 +276,7 @@ interface TransactionDao {
     @Query(
         "SELECT MIN($TRANSACTION_AMOUNT) FROM $TABLE_TRANSACTION " +
                 "WHERE $TRANS_IS_DELETED = 0 " +
-                "AND (:budgetRuleId = -1 OR $TRANS_BUDGET_RULE_ID = :budgetRuleId) " +
+                "AND (:budgetRuleId = -1 OR $TRANSACTION_RULE_ID = :budgetRuleId) " +
                 "AND (:accountId = -1 OR ($TRANSACTION_TO_ACCOUNT_ID = :accountId OR $TRANSACTION_FROM_ACCOUNT_ID = :accountId)) " +
                 "AND (:query = '' OR ($TRANSACTION_NAME LIKE :query OR $TRANSACTION_NOTE LIKE :query)) " +
                 "AND (:startDate = '' OR $TRANSACTION_DATE >= :startDate) " +

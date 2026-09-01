@@ -54,7 +54,7 @@ fun TransactionAnalysisScreenWrapper(
     val state = rememberTransactionEditState(nf, df)
 
     LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.transaction_analysis)
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.title_transaction_analysis)
     }
 
     var timeRange by remember { mutableStateOf(TimeRange.LAST_YEAR) }
@@ -219,9 +219,9 @@ fun TransactionAnalysisScreenWrapper(
         onEndDateChange = { endDate = it },
         onDateRangeGo = { /* State update triggers re-observation */ },
         budgetRuleName = budgetRuleDetailed?.budgetRule?.budgetRuleName
-            ?: mainActivity.getString(R.string.no_budget_rule_selected),
+            ?: mainActivity.getString(R.string.msg_no_budget_rule_selected),
         accountName = accountWithType?.account?.accountName
-            ?: mainActivity.getString(R.string.no_account_selected),
+            ?: mainActivity.getString(R.string.msg_no_account_selected),
         mode = mode,
         transactionList = transactionList,
         sumToAccount = sumToAccount,
@@ -263,7 +263,7 @@ fun TransactionAnalysisScreenWrapper(
 
                     val options = listOf(
                         ActionOption(
-                            mainActivity.getString(R.string.edit_this_transaction),
+                            mainActivity.getString(R.string.action_edit_transaction),
                             Icons.Default.Edit
                         ) {
                             mainViewModel.addCallingFragment(TAG)
@@ -294,7 +294,7 @@ fun TransactionAnalysisScreenWrapper(
                             }
                         },
                         ActionOption(
-                            mainActivity.getString(R.string.go_to_the_rules_for_future_budgets_of_this_kind),
+                            mainActivity.getString(R.string.action_go_to_rules),
                             Icons.AutoMirrored.Filled.Rule
                         ) {
                             mainViewModel.setCallingFragments(TAG)
@@ -306,24 +306,28 @@ fun TransactionAnalysisScreenWrapper(
                             }
                         },
                         ActionOption(
-                            mainActivity.getString(R.string.delete_this_transaction),
+                            mainActivity.getString(R.string.action_delete_transaction),
                             Icons.Default.Delete
                         ) {
                             AlertDialog.Builder(mainActivity).setTitle(
-                                "${mainActivity.getString(R.string.are_you_sure_you_want_to_delete)}${trans.transName}"
-                            ).setPositiveButton(mainActivity.getString(R.string.delete)) { _, _ ->
-                                coroutineScope.launch(Dispatchers.IO) {
-                                    accountUpdateViewModel.deleteTransaction(
-                                        trans
-                                    )
-                                }
-                            }.setNegativeButton(mainActivity.getString(R.string.cancel), null)
+                                "${mainActivity.getString(R.string.prompt_delete_confirm)}${trans.transName}"
+                            )
+                                .setPositiveButton(mainActivity.getString(R.string.action_delete)) { _, _ ->
+                                    coroutineScope.launch(Dispatchers.IO) {
+                                        accountUpdateViewModel.deleteTransaction(
+                                            trans
+                                        )
+                                    }
+                                }.setNegativeButton(
+                                    mainActivity.getString(R.string.action_cancel),
+                                    null
+                                )
                                 .show()
                         }
                     )
 
                     actionSheetState.show(
-                        "${mainActivity.getString(R.string.choose_an_action_for)}${trans.transName}",
+                        "${mainActivity.getString(R.string.title_choose_action_for)}${trans.transName}",
                         options
                     )
                 }

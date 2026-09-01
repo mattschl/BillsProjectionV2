@@ -35,7 +35,7 @@ fun AccountTypesScreenWrapper(
     val accountViewModel = mainActivity.accountViewModel
 
     LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.account_type)
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.label_account_type)
     }
 
     var searchQuery by remember { mutableStateOf("") }
@@ -82,13 +82,13 @@ fun AccountTypesScreenWrapper(
         },
         getAccountTypeInfo = { type ->
             val parts = mutableListOf<String>()
-            if (type.keepTotals) parts.add(mainActivity.getString(R.string.balance_will_be_updated))
-            if (type.tallyOwing) parts.add(mainActivity.getString(R.string.will_calculate_amount_owing))
-            if (type.isAsset) parts.add(mainActivity.getString(R.string.this_is_an_asset))
-            if (type.displayAsAsset) parts.add(mainActivity.getString(R.string.this_will_be_used_for_the_budget))
-            if (type.allowPending) parts.add(mainActivity.getString(R.string.allow_transactions_pending))
-            if (type.acctIsDeleted) parts.add(mainActivity.getString(R.string.deleted))
-            if (parts.isEmpty()) mainActivity.getString(R.string.this_account_does_not_keep_a_balance_owing_amount)
+            if (type.keepTotals) parts.add(mainActivity.getString(R.string.msg_balance_updated))
+            if (type.tallyOwing) parts.add(mainActivity.getString(R.string.msg_will_calc_owing))
+            if (type.isAsset) parts.add(mainActivity.getString(R.string.msg_is_asset))
+            if (type.displayAsAsset) parts.add(mainActivity.getString(R.string.msg_used_for_budget))
+            if (type.allowPending) parts.add(mainActivity.getString(R.string.label_allow_pending))
+            if (type.acctIsDeleted) parts.add(mainActivity.getString(R.string.label_deleted_suffix))
+            if (parts.isEmpty()) mainActivity.getString(R.string.msg_account_no_balance)
             else parts.joinToString("\n")
         }
     )
@@ -104,7 +104,7 @@ fun AccountTypeAddScreenWrapper(
     val df = remember { DateFunctions() }
 
     LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.add_account_type)
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.action_add_account_type)
     }
 
     var name by remember { mutableStateOf("") }
@@ -133,13 +133,13 @@ fun AccountTypeAddScreenWrapper(
             if (name.trim().isEmpty()) {
                 Toast.makeText(
                     mainActivity,
-                    mainActivity.getString(R.string.please_enter_a_name),
+                    mainActivity.getString(R.string.msg_prompt_enter_name),
                     Toast.LENGTH_LONG
                 ).show()
             } else if (accountTypeNames.contains(name.trim())) {
                 Toast.makeText(
                     mainActivity,
-                    mainActivity.getString(R.string.this_account_rule_already_exists),
+                    mainActivity.getString(R.string.msg_error_account_rule_exists),
                     Toast.LENGTH_LONG
                 ).show()
             } else {
@@ -160,7 +160,7 @@ fun AccountTypeAddScreenWrapper(
                 navController.popBackStack()
             }
         },
-        fabContentDescription = mainActivity.getString(R.string.add_account_type)
+        fabContentDescription = mainActivity.getString(R.string.action_add_account_type)
     )
 }
 
@@ -176,7 +176,7 @@ fun AccountTypeUpdateScreenWrapper(
     val accountType = mainViewModel.getAccountType() ?: return
 
     LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.update_account_type)
+        mainActivity.topMenuBar.title = mainActivity.getString(R.string.action_update_account_type)
     }
 
     var name by remember { mutableStateOf(accountType.accountType) }
@@ -203,9 +203,9 @@ fun AccountTypeUpdateScreenWrapper(
         onAllowPendingChange = { allowPending = it },
         onSaveClick = {
             val answer = if (name.trim().isEmpty()) {
-                mainActivity.getString(R.string.please_enter_a_name)
+                mainActivity.getString(R.string.msg_prompt_enter_name)
             } else if (accountTypeNames.any { it == name.trim() && it != accountType.accountType }) {
-                mainActivity.getString(R.string.this_account_rule_already_exists)
+                mainActivity.getString(R.string.msg_error_account_rule_exists)
             } else {
                 ANSWER_OK
             }
@@ -226,27 +226,27 @@ fun AccountTypeUpdateScreenWrapper(
                     navController.popBackStack()
                 } else {
                     AlertDialog.Builder(mainActivity).apply {
-                        setTitle(mainActivity.getString(R.string.rename_account_type))
+                        setTitle(mainActivity.getString(R.string.title_rename_account_type))
                         setMessage(
-                            mainActivity.getString(R.string.are_you_sure_you_want_to_rename_this_account_type) +
-                                    mainActivity.getString(R.string.note) +
-                                    mainActivity.getString(R.string.this_will_not_replace_an_existing_account_type)
+                            mainActivity.getString(R.string.prompt_rename_account_type) +
+                                    mainActivity.getString(R.string.label_note_header) +
+                                    mainActivity.getString(R.string.msg_wont_replace_account_type)
                         )
-                        setPositiveButton(mainActivity.getString(R.string.update_account_type)) { _, _ ->
+                        setPositiveButton(mainActivity.getString(R.string.action_update_account_type)) { _, _ ->
                             accountViewModel.updateAccountType(updatedType)
                             navController.popBackStack()
                         }
-                        setNegativeButton(mainActivity.getString(R.string.cancel), null)
+                        setNegativeButton(mainActivity.getString(R.string.action_cancel), null)
                     }.create().show()
                 }
             } else {
                 Toast.makeText(
                     mainActivity,
-                    mainActivity.getString(R.string.error) + answer,
+                    mainActivity.getString(R.string.label_error) + answer,
                     Toast.LENGTH_LONG
                 ).show()
             }
         },
-        fabContentDescription = mainActivity.getString(R.string.update_account_type)
+        fabContentDescription = mainActivity.getString(R.string.action_update_account_type)
     )
 }

@@ -86,7 +86,7 @@ fun BudgetRulesListScreen(
             ) {
                 Icon(
                     Icons.Default.Add,
-                    contentDescription = stringResource(R.string.add_budget_rule),
+                    contentDescription = stringResource(R.string.action_add_budget_rule),
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
@@ -101,8 +101,8 @@ fun BudgetRulesListScreen(
             ProjectTextField(
                 value = searchQuery,
                 onValueChange = onSearchQueryChange,
-                label = stringResource(R.string.search),
-                placeholder = { Text(stringResource(R.string.enter_criteria)) },
+                label = stringResource(R.string.action_search),
+                placeholder = { Text(stringResource(R.string.label_enter_criteria)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
             )
@@ -124,7 +124,7 @@ fun BudgetRulesListScreen(
                         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                     ) {
                         Text(
-                            text = stringResource(R.string.no_budget_rules_to_view),
+                            text = stringResource(R.string.msg_no_budget_rules),
                             modifier = Modifier.padding(32.dp),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold
@@ -217,7 +217,7 @@ fun BudgetRuleScreen(
             ProjectTextField(
                 value = name,
                 onValueChange = onNameChange,
-                label = stringResource(R.string.budget_rule_name),
+                label = stringResource(R.string.label_budget_rule_name),
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
             )
 
@@ -228,7 +228,7 @@ fun BudgetRuleScreen(
                 ProjectDateField(
                     value = startDate,
                     onValueChange = onStartDateChange,
-                    label = stringResource(R.string.start_date),
+                    label = stringResource(R.string.label_start_date),
                     modifier = Modifier.weight(1f)
                 )
 
@@ -236,7 +236,7 @@ fun BudgetRuleScreen(
                     ProjectBalanceField(
                         value = amount,
                         onValueChange = onAmountChange,
-                        label = stringResource(R.string.amount),
+                        label = stringResource(R.string.label_amount),
                         modifier = Modifier.fillMaxWidth(),
                         onIconClick = onGotoCalculator,
                         isHighlighted = true
@@ -244,7 +244,11 @@ fun BudgetRuleScreen(
                     suggestedAmount?.let {
                         val nf = LocalNumberFunctions.current
                         Text(
-                            text = "${stringResource(R.string.average)}: ${nf.displayDollars(it)}",
+                            text = "${stringResource(R.string.label_average)}: ${
+                                nf.displayDollars(
+                                    it
+                                )
+                            }",
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.secondary,
                             modifier = Modifier.padding(start = 8.dp)
@@ -256,19 +260,19 @@ fun BudgetRuleScreen(
             ProjectDateField(
                 value = endDate,
                 onValueChange = onEndDateChange,
-                label = stringResource(R.string.end_date),
+                label = stringResource(R.string.label_end_date),
                 modifier = Modifier.fillMaxWidth()
             )
 
             ProjectTextBox(
-                label = stringResource(R.string.from_this_account),
+                label = stringResource(R.string.label_from_this_account),
                 value = fromAccount?.accountName ?: "",
                 onClick = { onChooseAccount(REQUEST_FROM_ACCOUNT) },
                 modifier = Modifier.fillMaxWidth()
             )
 
             ProjectTextBox(
-                label = stringResource(R.string.to_this_account),
+                label = stringResource(R.string.label_to_this_account),
                 value = toAccount?.accountName ?: "",
                 onClick = { onChooseAccount(REQUEST_TO_ACCOUNT) },
                 modifier = Modifier.fillMaxWidth()
@@ -277,7 +281,7 @@ fun BudgetRuleScreen(
             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
 
             Text(
-                text = stringResource(R.string.scheduling_rules),
+                text = stringResource(R.string.title_scheduling_rules),
                 style = MaterialTheme.typography.labelLarge,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
@@ -288,7 +292,7 @@ fun BudgetRuleScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 ExposedDropdown(
-                    label = stringResource(R.string.budget_rules),
+                    label = stringResource(R.string.title_budget_rules),
                     options = frequencyTypes.toList(),
                     selectedIndex = frequencyType,
                     onItemSelected = onFrequencyTypeChange,
@@ -298,7 +302,7 @@ fun BudgetRuleScreen(
                 ProjectIntField(
                     value = frequencyCount,
                     onValueChange = onFrequencyCountChange,
-                    label = stringResource(R.string.times),
+                    label = stringResource(R.string.label_times),
                     modifier = Modifier.weight(1f),
                 )
             }
@@ -309,7 +313,7 @@ fun BudgetRuleScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 ExposedDropdown(
-                    label = stringResource(R.string.on_day),
+                    label = stringResource(R.string.label_on_day),
                     options = daysOfWeek.toList(),
                     selectedIndex = dayOfWeek,
                     onItemSelected = onDayOfWeekChange,
@@ -319,7 +323,7 @@ fun BudgetRuleScreen(
                 ProjectIntField(
                     value = leadDays,
                     onValueChange = onLeadDaysChange,
-                    label = stringResource(R.string.lead_days),
+                    label = stringResource(R.string.label_lead_days),
                     modifier = Modifier.weight(1f),
                 )
             }
@@ -329,12 +333,12 @@ fun BudgetRuleScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 LabeledCheckbox(
-                    label = stringResource(R.string.fixed),
+                    label = stringResource(R.string.label_fixed),
                     checked = isFixed,
                     onCheckedChange = onIsFixedChange
                 )
                 LabeledCheckbox(
-                    label = stringResource(R.string.pay_day),
+                    label = stringResource(R.string.label_pay_day),
                     checked = isPayDay,
                     onCheckedChange = onIsPayDayChange
                 )
@@ -345,7 +349,7 @@ fun BudgetRuleScreen(
                 horizontalArrangement = Arrangement.Start
             ) {
                 LabeledCheckbox(
-                    label = stringResource(R.string.automatic),
+                    label = stringResource(R.string.label_automatic),
                     checked = isAuto,
                     onCheckedChange = onIsAutoChange
                 )

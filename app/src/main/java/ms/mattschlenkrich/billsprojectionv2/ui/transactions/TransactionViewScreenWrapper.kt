@@ -19,7 +19,7 @@ import androidx.navigation.NavHostController
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_TRANSACTION_VIEW
+import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_TRANSACTION_HISTORY
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.components.ManagedActionBottomSheet
 import ms.mattschlenkrich.billsprojectionv2.common.components.rememberActionSheetState
@@ -43,7 +43,7 @@ fun TransactionViewScreenWrapper(
     val actionSheetState = rememberActionSheetState()
 
     LaunchedEffect(Unit) {
-        activity.topMenuBar.title = activity.getString(R.string.view_transaction_history)
+        activity.topMenuBar.title = activity.getString(R.string.title_view_transaction_history)
     }
 
     var searchQuery by remember { mutableStateOf("") }
@@ -73,7 +73,7 @@ fun TransactionViewScreenWrapper(
         searchQuery = searchQuery,
         onSearchQueryChange = { searchQuery = it },
         onAddClick = {
-            mainViewModel.addCallingFragment(SCREEN_TRANSACTION_VIEW)
+            mainViewModel.addCallingFragment(SCREEN_TRANSACTION_HISTORY)
             mainViewModel.setTransactionDetailed(null)
             navController.navigate(Screen.TransactionAdd.route)
         },
@@ -100,10 +100,10 @@ fun TransactionViewScreenWrapper(
 
                     val options = listOf(
                         ActionOption(
-                            context.getString(R.string.edit_this_transaction),
+                            context.getString(R.string.action_edit_transaction),
                             Icons.Default.Edit
                         ) {
-                            mainViewModel.setCallingFragments(SCREEN_TRANSACTION_VIEW)
+                            mainViewModel.setCallingFragments(SCREEN_TRANSACTION_HISTORY)
                             mainViewModel.setTransactionDetailed(transactionDetailed)
                             activity.lifecycleScope.launch {
                                 val oldTransactionFull = async {
@@ -127,10 +127,10 @@ fun TransactionViewScreenWrapper(
                             }
                         },
                         ActionOption(
-                            context.getString(R.string.go_to_the_rules_for_future_budgets_of_this_kind),
+                            context.getString(R.string.action_go_to_rules),
                             Icons.AutoMirrored.Filled.Rule
                         ) {
-                            mainViewModel.setCallingFragments(SCREEN_TRANSACTION_VIEW)
+                            mainViewModel.setCallingFragments(SCREEN_TRANSACTION_HISTORY)
                             budgetRuleViewModel.getBudgetRuleFullLive(
                                 trans.transRuleId
                             ).observe(activity) { bRuleDetailed ->
@@ -141,23 +141,23 @@ fun TransactionViewScreenWrapper(
                             }
                         },
                         ActionOption(
-                            context.getString(R.string.delete_this_transaction),
+                            context.getString(R.string.action_delete_transaction),
                             Icons.Default.Delete
                         ) {
                             AlertDialog.Builder(activity)
-                                .setTitle("${activity.getString(R.string.are_you_sure_you_want_to_delete)} ${trans.transName}")
-                                .setPositiveButton(activity.getString(R.string.delete)) { _, _ ->
+                                .setTitle("${activity.getString(R.string.prompt_delete_confirm)} ${trans.transName}")
+                                .setPositiveButton(activity.getString(R.string.action_delete)) { _, _ ->
                                     activity.lifecycleScope.launch {
                                         accountUpdateViewModel.deleteTransaction(trans)
                                     }
                                 }
-                                .setNegativeButton(activity.getString(R.string.cancel), null)
+                                .setNegativeButton(activity.getString(R.string.action_cancel), null)
                                 .show()
                         }
                     )
 
                     actionSheetState.show(
-                        "${context.getString(R.string.choose_an_action_for)} ${trans.transName}",
+                        "${context.getString(R.string.title_choose_action_for)} ${trans.transName}",
                         options
                     )
                 }

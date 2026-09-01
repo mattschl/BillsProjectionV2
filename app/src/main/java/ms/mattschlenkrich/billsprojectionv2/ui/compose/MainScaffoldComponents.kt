@@ -47,7 +47,7 @@ fun MainTopBar(
                 IconButton(onClick = onBackClick) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.go_back),
+                        contentDescription = stringResource(R.string.action_go_back),
                         modifier = Modifier.size(ProjectFieldDefaults.iconSize())
                     )
                 }
@@ -57,7 +57,7 @@ fun MainTopBar(
             IconButton(onClick = { showMenu = true }) {
                 Icon(
                     imageVector = Icons.Default.Settings,
-                    contentDescription = stringResource(R.string.more_options),
+                    contentDescription = stringResource(R.string.label_more_options),
                     modifier = Modifier.size(ProjectFieldDefaults.iconSize())
                 )
             }
@@ -66,49 +66,49 @@ fun MainTopBar(
                 onDismissRequest = { showMenu = false }
             ) {
                 DropdownMenuItem(
-                    text = { Text(stringResource(R.string.update_budget_predictions)) },
+                    text = { Text(stringResource(R.string.action_update_budget_predictions)) },
                     onClick = {
                         onMenuItemClick(R.id.action_update_predictions)
                         showMenu = false
                     }
                 )
                 DropdownMenuItem(
-                    text = { Text(stringResource(R.string.view_budget_summary)) },
+                    text = { Text(stringResource(R.string.title_budget_summary)) },
                     onClick = {
                         onMenuItemClick(R.id.action_view_summary)
                         showMenu = false
                     }
                 )
                 DropdownMenuItem(
-                    text = { Text(stringResource(R.string.delete_future_predictions)) },
+                    text = { Text(stringResource(R.string.action_clear_future_predictions)) },
                     onClick = {
                         onMenuItemClick(R.id.action_delete_predictions)
                         showMenu = false
                     }
                 )
                 DropdownMenuItem(
-                    text = { Text(stringResource(R.string.sync)) },
+                    text = { Text(stringResource(R.string.title_sync)) },
                     onClick = {
                         onSyncClick()
                         showMenu = false
                     }
                 )
                 DropdownMenuItem(
-                    text = { Text(stringResource(R.string.settings)) },
+                    text = { Text(stringResource(R.string.nav_settings)) },
                     onClick = {
                         onMenuItemClick(R.id.action_settings)
                         showMenu = false
                     }
                 )
                 DropdownMenuItem(
-                    text = { Text(stringResource(R.string.help)) },
+                    text = { Text(stringResource(R.string.label_help)) },
                     onClick = {
                         onMenuItemClick(R.id.action_help)
                         showMenu = false
                     }
                 )
                 DropdownMenuItem(
-                    text = { Text(stringResource(R.string.privacy_policy)) },
+                    text = { Text(stringResource(R.string.label_privacy_policy)) },
                     onClick = {
                         onMenuItemClick(R.id.action_privacy_policy)
                         showMenu = false
@@ -132,11 +132,11 @@ fun MainBottomBar(
     onItemSelected: (Int) -> Unit
 ) {
     val items = listOf(
-        Triple(R.string.budget_view, R.drawable.ic_budget_view, Screen.BudgetView.route),
-        Triple(R.string.transactions, R.drawable.ic_transactions, Screen.Transactions.route),
-        Triple(R.string.accounts, R.drawable.ic_accounts, Screen.Accounts.route),
-        Triple(R.string.analysis, R.drawable.ic_analysis, Screen.Analysis.route),
-        Triple(R.string.budget_rules, R.drawable.ic_budget_rules, Screen.BudgetRules.route),
+        Triple(R.string.title_budget_view, R.drawable.ic_budget_view, Screen.BudgetView.route),
+        Triple(R.string.title_transactions, R.drawable.ic_transactions, Screen.Transactions.route),
+        Triple(R.string.title_accounts, R.drawable.ic_accounts, Screen.Accounts.route),
+        Triple(R.string.title_analysis, R.drawable.ic_analysis, Screen.Analysis.route),
+        Triple(R.string.title_budget_rules, R.drawable.ic_budget_rules, Screen.BudgetRules.route),
     )
 
     NavigationBar {

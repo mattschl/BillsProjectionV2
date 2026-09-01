@@ -189,7 +189,7 @@ fun AnalysisCard(
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Text(
-                text = stringResource(R.string.analysis_view_help),
+                text = stringResource(R.string.title_analysis_help),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
@@ -199,11 +199,11 @@ fun AnalysisCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "${stringResource(R.string.add)} ${transactionList.size}", // Reusing 'add' if count is missing
+                    text = "${stringResource(R.string.action_add)} ${transactionList.size}", // Reusing 'add' if count is missing
                     style = MaterialTheme.typography.bodySmall
                 )
                 Text(
-                    text = "${stringResource(R.string.end_date)} ${
+                    text = "${stringResource(R.string.label_end_date)} ${
                         df.getDisplayDate(
                             effectiveEndDate
                         )
@@ -214,7 +214,11 @@ fun AnalysisCard(
 
             if (sumCredits != null) {
                 Text(
-                    text = "${stringResource(R.string.total_credits)} ${nf.displayDollars(sumCredits)}",
+                    text = "${stringResource(R.string.label_total_credits)} ${
+                        nf.displayDollars(
+                            sumCredits
+                        )
+                    }",
                     style = MaterialTheme.typography.bodySmall
                 )
             }
@@ -226,13 +230,17 @@ fun AnalysisCard(
                 ) {
                     if (sumToAccount != null) {
                         Text(
-                            text = "${stringResource(R.string.to_)} ${nf.displayDollars(sumToAccount)}",
+                            text = "${stringResource(R.string.label_to_colon)} ${
+                                nf.displayDollars(
+                                    sumToAccount
+                                )
+                            }",
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
                     if (sumFromAccount != null) {
                         Text(
-                            text = "${stringResource(R.string.from_)} ${
+                            text = "${stringResource(R.string.label_from_colon)} ${
                                 nf.displayDollars(
                                     sumFromAccount
                                 )
@@ -250,13 +258,21 @@ fun AnalysisCard(
                 ) {
                     if (maxVal != null) {
                         Text(
-                            text = "${stringResource(R.string.highest)} ${nf.displayDollars(maxVal)}",
+                            text = "${stringResource(R.string.label_highest)} ${
+                                nf.displayDollars(
+                                    maxVal
+                                )
+                            }",
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
                     if (minVal != null) {
                         Text(
-                            text = "${stringResource(R.string.lowest)} ${nf.displayDollars(minVal)}",
+                            text = "${stringResource(R.string.label_lowest)} ${
+                                nf.displayDollars(
+                                    minVal
+                                )
+                            }",
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
@@ -270,7 +286,7 @@ fun AnalysisCard(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "${stringResource(R.string.selected_)} ${
+                        text = "${stringResource(R.string.label_selected_colon)} ${
                             nf.displayDollars(
                                 selectedSum
                             )
@@ -313,13 +329,13 @@ fun CriteriaCard(
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             ProjectTextBox(
-                label = stringResource(R.string.rules),
+                label = stringResource(R.string.label_rules),
                 value = budgetRuleName,
                 onClick = onBudgetRuleClick
             )
             Spacer(modifier = Modifier.height(8.dp))
             ProjectTextBox(
-                label = stringResource(R.string.account_name),
+                label = stringResource(R.string.label_account_name),
                 value = accountName,
                 onClick = onAccountClick
             )
@@ -334,7 +350,7 @@ fun CriteriaCard(
                 ) {
                     Checkbox(checked = isSearchEnabled, onCheckedChange = onSearchToggle)
                     Text(
-                        text = stringResource(R.string.use_search_criteria),
+                        text = stringResource(R.string.label_use_search_criteria),
                         style = MaterialTheme.typography.bodySmall,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
@@ -347,7 +363,7 @@ fun CriteriaCard(
                         modifier = Modifier.weight(1f),
                         placeholder = {
                             Text(
-                                stringResource(R.string.enter_criteria),
+                                stringResource(R.string.label_enter_criteria),
                                 style = MaterialTheme.typography.bodySmall
                             )
                         },
@@ -363,7 +379,7 @@ fun CriteriaCard(
                         )
                     ) {
                         Text(
-                            stringResource(R.string.go),
+                            stringResource(R.string.action_go),
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
@@ -375,25 +391,25 @@ fun CriteriaCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 TimeRangeOption(
-                    text = stringResource(R.string.all),
+                    text = stringResource(R.string.label_all),
                     selected = timeRange == TimeRange.SHOW_ALL,
                     onSelect = { onTimeRangeChange(TimeRange.SHOW_ALL) },
                     modifier = Modifier.weight(1f)
                 )
                 TimeRangeOption(
-                    text = stringResource(R.string.month),
+                    text = stringResource(R.string.label_month),
                     selected = timeRange == TimeRange.LAST_MONTH,
                     onSelect = { onTimeRangeChange(TimeRange.LAST_MONTH) },
                     modifier = Modifier.weight(1f)
                 )
                 TimeRangeOption(
-                    text = stringResource(R.string.year),
+                    text = stringResource(R.string.label_year),
                     selected = timeRange == TimeRange.LAST_YEAR,
                     onSelect = { onTimeRangeChange(TimeRange.LAST_YEAR) },
                     modifier = Modifier.weight(1f)
                 )
                 TimeRangeOption(
-                    text = stringResource(R.string.custom),
+                    text = stringResource(R.string.label_custom),
                     selected = timeRange == TimeRange.DATE_RANGE,
                     onSelect = { onTimeRangeChange(TimeRange.DATE_RANGE) },
                     modifier = Modifier.weight(1f)
@@ -408,18 +424,18 @@ fun CriteriaCard(
                 ) {
                     ProjectDateField(
                         value = startDate,
-                        label = stringResource(R.string.start_date),
+                        label = stringResource(R.string.label_start_date),
                         onValueChange = onStartDateChange,
                         modifier = Modifier.weight(1f)
                     )
                     ProjectDateField(
                         value = endDate,
-                        label = stringResource(R.string.end_date),
+                        label = stringResource(R.string.label_end_date),
                         onValueChange = onEndDateChange,
                         modifier = Modifier.weight(1f)
                     )
                     Button(onClick = onDateRangeGo) {
-                        Text(stringResource(R.string.go))
+                        Text(stringResource(R.string.action_go))
                     }
                 }
             }

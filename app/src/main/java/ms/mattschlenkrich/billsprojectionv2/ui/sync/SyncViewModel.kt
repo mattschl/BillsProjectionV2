@@ -99,7 +99,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                 if (result.first == "Busy") {
                     android.widget.Toast.makeText(
                         getApplication(),
-                        R.string.sync_already_in_progress,
+                        R.string.msg_sync_in_progress,
                         android.widget.Toast.LENGTH_LONG
                     ).show()
                 }

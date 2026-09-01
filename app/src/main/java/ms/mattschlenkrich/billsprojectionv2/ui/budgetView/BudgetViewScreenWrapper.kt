@@ -48,7 +48,7 @@ fun BudgetViewScreenWrapper(
     val actionSheetState = rememberActionSheetState()
 
     LaunchedEffect(Unit) {
-        activity.topMenuBar.title = activity.getString(R.string.view_the_budget)
+        activity.topMenuBar.title = activity.getString(R.string.title_view_budget)
     }
 
     val rawAssetList by budgetItemViewModel.getAssetsForBudget()
@@ -189,7 +189,7 @@ fun BudgetViewScreenWrapper(
         selectedSum = selectedSum,
         onAddClick = {
             actionSheetState.show(
-                activity.getString(R.string.choose_an_action),
+                activity.getString(R.string.title_choose_action),
                 BudgetViewActionHelper.getAddOptions(
                     activity = activity,
                     onNewBudgetItem = {
@@ -210,7 +210,7 @@ fun BudgetViewScreenWrapper(
             } else {
                 curBudgetDetailed.budgetItem?.let { curBudget ->
                     actionSheetState.show(
-                        "${activity.getString(R.string.choose_an_action_for)} ${curBudget.biBudgetName}",
+                        "${activity.getString(R.string.title_choose_action_for)} ${curBudget.biBudgetName}",
                         BudgetViewActionHelper.getBudgetItemOptions(
                             activity = activity,
                             curBudgetDetailed = curBudgetDetailed,
@@ -239,9 +239,9 @@ fun BudgetViewScreenWrapper(
                                             )
 
                                         AlertDialog.Builder(activity)
-                                            .setTitle(activity.getString(R.string.confirm_completing_transaction))
+                                            .setTitle(activity.getString(R.string.title_confirm_complete_transaction))
                                             .setMessage(display)
-                                            .setPositiveButton(activity.getString(R.string.perform_action)) { _, _ ->
+                                            .setPositiveButton(activity.getString(R.string.action_perform)) { _, _ ->
                                                 activity.lifecycleScope.launch {
                                                     accountUpdateViewModel.performTransaction(
                                                         Transactions(
@@ -270,7 +270,7 @@ fun BudgetViewScreenWrapper(
                                                 }
                                             }
                                             .setNegativeButton(
-                                                activity.getString(R.string.cancel),
+                                                activity.getString(R.string.action_cancel),
                                                 null
                                             )
                                             .show()
@@ -295,19 +295,19 @@ fun BudgetViewScreenWrapper(
                             },
                             onCancelItem = {
                                 AlertDialog.Builder(activity)
-                                    .setTitle(activity.getString(R.string.confirm_cancelling_budget_item))
+                                    .setTitle(activity.getString(R.string.title_confirm_cancel_budget_item))
                                     .setMessage(
-                                        "${activity.getString(R.string.this_will_cancel)}${curBudget.biBudgetName}${
+                                        "${activity.getString(R.string.msg_will_cancel)}${curBudget.biBudgetName}${
                                             activity.getString(
-                                                R.string.with_the_amount_of
+                                                R.string.msg_with_amount
                                             )
                                         }${nf.displayDollars(curBudget.biProjectedAmount)}${
                                             activity.getString(
-                                                R.string._remaining
+                                                R.string.text_remaining_suffix
                                             )
                                         }"
                                     )
-                                    .setPositiveButton(activity.getString(R.string.cancel_now)) { _, _ ->
+                                    .setPositiveButton(activity.getString(R.string.action_cancel_now)) { _, _ ->
                                         budgetItemViewModel.cancelBudgetItem(
                                             curBudget.biRuleId,
                                             curBudget.biProjectedDate,
@@ -323,7 +323,7 @@ fun BudgetViewScreenWrapper(
                                             }
                                         }
                                     }.setNegativeButton(
-                                        activity.getString(R.string.ignore_this),
+                                        activity.getString(R.string.action_ignore),
                                         null
                                     )
                                     .show()
@@ -336,7 +336,7 @@ fun BudgetViewScreenWrapper(
         onBudgetItemLockClick = { budgetItemDetailed ->
             budgetItemDetailed.budgetItem?.let { budgetItem ->
                 actionSheetState.show(
-                    activity.getString(R.string.lock_or_unlock),
+                    activity.getString(R.string.title_lock_unlock),
                     BudgetViewActionHelper.getLockOptions(
                         activity = activity,
                         budgetItemName = budgetItem.biBudgetName,
@@ -380,12 +380,12 @@ fun BudgetViewScreenWrapper(
             } else {
                 pendingTransaction.transaction?.let { trans ->
                     actionSheetState.show(
-                        "${activity.getString(R.string.choose_an_action_for)}${
+                        "${activity.getString(R.string.title_choose_action_for)}${
                             nf.displayDollars(
                                 trans.transAmount
                             )
                         }${
-                            activity.getString(R.string._to_)
+                            activity.getString(R.string.text_to_padded)
                         }${trans.transName}",
                         BudgetViewActionHelper.getPendingTransactionOptions(
                             activity = activity,
@@ -395,9 +395,9 @@ fun BudgetViewScreenWrapper(
                                         activity, pendingTransaction, nf
                                     )
                                 AlertDialog.Builder(activity)
-                                    .setTitle(activity.getString(R.string.confirm_completing_transaction))
+                                    .setTitle(activity.getString(R.string.title_confirm_complete_transaction))
                                     .setMessage(display)
-                                    .setPositiveButton(activity.getString(R.string.confirm)) { _, _ ->
+                                    .setPositiveButton(activity.getString(R.string.action_confirm)) { _, _ ->
                                         activity.lifecycleScope.launch {
                                             val updatedTrans = trans.copy(
                                                 transToAccountPending = false,
@@ -409,7 +409,10 @@ fun BudgetViewScreenWrapper(
                                             )
                                         }
                                     }
-                                    .setNegativeButton(activity.getString(R.string.cancel), null)
+                                    .setNegativeButton(
+                                        activity.getString(R.string.action_cancel),
+                                        null
+                                    )
                                     .show()
                             },
                             onEdit = {

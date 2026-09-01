@@ -35,7 +35,7 @@ fun BudgetListScreenWrapper(
     val actionSheetState = rememberActionSheetState()
 
     LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.setTitle(R.string.view_budget_summary)
+        mainActivity.topMenuBar.setTitle(R.string.title_budget_summary)
     }
 
     val budgetDate = df.getCurrentDateAsString()
@@ -52,10 +52,10 @@ fun BudgetListScreenWrapper(
         annualRules = annualRules,
         onRuleClick = { curRule ->
             actionSheetState.show(
-                "${mainActivity.getString(R.string.choose_an_action_for)} ${(curRule.budgetRule?.budgetRuleName ?: "")}",
+                "${mainActivity.getString(R.string.title_choose_action_for)} ${(curRule.budgetRule?.budgetRuleName ?: "")}",
                 listOf(
                     ActionOption(
-                        mainActivity.getString(R.string.view_or_edit_this_budget_rule),
+                        mainActivity.getString(R.string.action_view_edit_rule),
                         Icons.Default.Edit
                     ) {
                         val budgetRule = BudgetRuleDetailed(
@@ -68,7 +68,7 @@ fun BudgetListScreenWrapper(
                         navController.navigate(Screen.BudgetRuleUpdate.route)
                     },
                     ActionOption(
-                        mainActivity.getString(R.string.delete_this_budget_rule),
+                        mainActivity.getString(R.string.action_delete_budget_rule),
                         Icons.Default.Delete
                     ) {
                         curRule.budgetRule?.let {
@@ -78,7 +78,7 @@ fun BudgetListScreenWrapper(
                         }
                     },
                     ActionOption(
-                        mainActivity.getString(R.string.view_a_summary_of_transactions_for_this_budget_rule),
+                        mainActivity.getString(R.string.action_view_rule_summary),
                         Icons.Default.History
                     ) {
                         mainViewModel.addCallingFragment(TAG)

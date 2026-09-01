@@ -77,7 +77,7 @@ fun AccountsListScreen(
             ) {
                 Icon(
                     Icons.Default.Add,
-                    contentDescription = stringResource(R.string.add_a_new_account),
+                    contentDescription = stringResource(R.string.title_add_account),
                     tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(ProjectFieldDefaults.iconSize())
                 )
@@ -93,8 +93,8 @@ fun AccountsListScreen(
             ProjectTextField(
                 value = searchQuery,
                 onValueChange = onSearchQueryChange,
-                label = stringResource(R.string.search),
-                placeholder = { Text(stringResource(R.string.enter_criteria)) },
+                label = stringResource(R.string.action_search),
+                placeholder = { Text(stringResource(R.string.label_enter_criteria)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
             )
@@ -116,7 +116,7 @@ fun AccountsListScreen(
                         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                     ) {
                         Text(
-                            text = stringResource(R.string.no_accounts_to_view),
+                            text = stringResource(R.string.msg_no_accounts),
                             modifier = Modifier.padding(32.dp),
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold
@@ -165,7 +165,7 @@ fun AccountChooseScreen(
             ) {
                 Icon(
                     Icons.Default.Add,
-                    contentDescription = stringResource(R.string.add_a_new_account),
+                    contentDescription = stringResource(R.string.title_add_account),
                     tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(ProjectFieldDefaults.iconSize())
                 )
@@ -181,8 +181,8 @@ fun AccountChooseScreen(
             ProjectTextField(
                 value = searchQuery,
                 onValueChange = onSearchQueryChange,
-                label = stringResource(R.string.search),
-                placeholder = { Text(stringResource(R.string.enter_criteria)) },
+                label = stringResource(R.string.action_search),
+                placeholder = { Text(stringResource(R.string.label_enter_criteria)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
             )
@@ -204,7 +204,7 @@ fun AccountChooseScreen(
                         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                     ) {
                         Text(
-                            text = stringResource(R.string.no_accounts_to_view),
+                            text = stringResource(R.string.msg_no_accounts),
                             modifier = Modifier.padding(32.dp),
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold
