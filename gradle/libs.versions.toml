@@ -1,6 +1,7 @@
 [versions]
 activity = "1.13.0"
 agp = "9.3.2"
+androidxArchCore = "2.2.0"
 androidxComposeUi = "1.12.0"
 apiClient = "2.9.0"
 appcompat = "1.8.0"
@@ -16,15 +17,18 @@ jetbrainsKotlinPluginCompose = "2.4.10"
 junit = "4.13.2"
 junitVersion = "1.3.0"
 kotlinxCoroutinesAndroid = "1.11.0"
+kotlinxCoroutinesTest = "1.11.0"
 lifecycle = "2.11.0"
 material = "1.14.0"
 material3 = "1.4.0"
 materialIconsExtended = "1.7.8"
+mockk = "1.13.17"
 navigationCompose = "2.10.0"
 room = "2.8.4"
 
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
+androidx-arch-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "androidxArchCore" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "composeRuntime" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "composeUi" }
@@ -50,7 +54,9 @@ google-api-services-drive = { group = "com.google.apis", name = "google-api-serv
 googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleid" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
