@@ -54,8 +54,12 @@ class DateFunctions {
         return date.toString()
     }
 
-    fun convertStringToDate(dateString: String): LocalDate {
-        return LocalDate.parse(dateString)
+    fun convertStringToDate(dateString: String): LocalDate? {
+        return try {
+            LocalDate.parse(dateString)
+        } catch (e: Exception) {
+            null
+        }
     }
 
     fun getDisplayDate(date: String): String {

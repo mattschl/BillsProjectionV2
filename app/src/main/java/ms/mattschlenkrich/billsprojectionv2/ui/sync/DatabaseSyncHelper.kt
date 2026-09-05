@@ -23,8 +23,18 @@ class DatabaseSyncHelper(
     private val appDb: BillsDatabase,
     private val df: DateFunctions,
     private val deviceId: Long,
-    private val onConflict: suspend (ConflictInfo) -> ConflictChoice
+    private val onConflict: suspend (ConflictInfo) -> ConflictChoice,
+    private val onSyncError: (String) -> Unit
 ) {
+
+    private fun getStringSafe(cursor: android.database.Cursor, columnName: String): String {
+        return try {
+            val index = cursor.getColumnIndexOrThrow(columnName)
+            if (cursor.isNull(index)) "" else cursor.getString(index)
+        } catch (e: Exception) {
+            ""
+        }
+    }
 
     suspend fun <T> syncTable(
         backupDb: SQLiteDatabase,
@@ -46,9 +56,17 @@ class DatabaseSyncHelper(
         var updates = 0
         val localMap = getExistingLocalMap?.invoke() ?: emptyMap()
 
+        Log.d(TAG, "Syncing table: $tableName")
+
         backupDb.query(tableName, null, null, null, null, null, null).use { cursor ->
             while (cursor.moveToNext()) {
-                val backupItem = mapCursorToItem(cursor)
+                val backupItem = try {
+                    mapCursorToItem(cursor)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error mapping cursor to item in $tableName", e)
+                    onSyncError("Skipped a record in $tableName due to data error: ${e.message}")
+                    continue
+                }
                 val existingById =
                     localMap[getItemKey(backupItem)] ?: getExistingById(backupItem)
                 val backupTime = getUpdateTime(backupItem)
@@ -117,7 +135,7 @@ class DatabaseSyncHelper(
             mapCursorToItem = { cursor ->
                 AccountType(
                     typeId = cursor.getLong(cursor.getColumnIndexOrThrow("typeId")),
-                    accountType = cursor.getString(cursor.getColumnIndexOrThrow("accountType")),
+                    accountType = getStringSafe(cursor, "accountType"),
                     keepTotals = cursor.getInt(cursor.getColumnIndexOrThrow("keepTotals")) != 0,
                     isAsset = cursor.getInt(cursor.getColumnIndexOrThrow("isAsset")) != 0,
                     tallyOwing = cursor.getInt(cursor.getColumnIndexOrThrow("tallyOwing")) != 0,
@@ -125,7 +143,7 @@ class DatabaseSyncHelper(
                     allowPending = cursor.getInt(cursor.getColumnIndexOrThrow("allowPending")) != 0,
                     displayAsAsset = cursor.getInt(cursor.getColumnIndexOrThrow("displayAsAsset")) != 0,
                     acctIsDeleted = cursor.getInt(cursor.getColumnIndexOrThrow("acctIsDeleted")) != 0,
-                    acctUpdateTime = cursor.getString(cursor.getColumnIndexOrThrow("acctUpdateTime"))
+                    acctUpdateTime = getStringSafe(cursor, "acctUpdateTime")
                 )
             },
             getItemKey = { it.typeId.toString() },
@@ -154,15 +172,15 @@ class DatabaseSyncHelper(
             mapCursorToItem = { cursor ->
                 Account(
                     accountId = cursor.getLong(cursor.getColumnIndexOrThrow("accountId")),
-                    accountName = cursor.getString(cursor.getColumnIndexOrThrow("accountName")),
-                    accountNumber = cursor.getString(cursor.getColumnIndexOrThrow("accountNumber")),
+                    accountName = getStringSafe(cursor, "accountName"),
+                    accountNumber = getStringSafe(cursor, "accountNumber"),
                     accountTypeId = cursor.getLong(cursor.getColumnIndexOrThrow("accountTypeId")),
                     accBudgetedAmount = cursor.getDouble(cursor.getColumnIndexOrThrow("accBudgetedAmount")),
                     accountBalance = cursor.getDouble(cursor.getColumnIndexOrThrow("accountBalance")),
                     accountOwing = cursor.getDouble(cursor.getColumnIndexOrThrow("accountOwing")),
                     accountCreditLimit = cursor.getDouble(cursor.getColumnIndexOrThrow("accountCreditLimit")),
                     accIsDeleted = cursor.getInt(cursor.getColumnIndexOrThrow("accIsDeleted")) != 0,
-                    accUpdateTime = cursor.getString(cursor.getColumnIndexOrThrow("accUpdateTime"))
+                    accUpdateTime = getStringSafe(cursor, "accUpdateTime")
                 )
             },
             getItemKey = { it.accountId.toString() },
@@ -195,21 +213,23 @@ class DatabaseSyncHelper(
             mapCursorToItem = { cursor ->
                 BudgetRule(
                     ruleId = cursor.getLong(cursor.getColumnIndexOrThrow("ruleId")),
-                    budgetRuleName = cursor.getString(cursor.getColumnIndexOrThrow("budgetRuleName")),
+                    budgetRuleName = getStringSafe(cursor, "budgetRuleName"),
                     budToAccountId = cursor.getLong(cursor.getColumnIndexOrThrow("budToAccountId")),
                     budFromAccountId = cursor.getLong(cursor.getColumnIndexOrThrow("budFromAccountId")),
                     budgetAmount = cursor.getDouble(cursor.getColumnIndexOrThrow("budgetAmount")),
                     budFixedAmount = cursor.getInt(cursor.getColumnIndexOrThrow("budFixedAmount")) != 0,
                     budIsPayDay = cursor.getInt(cursor.getColumnIndexOrThrow("budIsPayDay")) != 0,
                     budIsAutoPay = cursor.getInt(cursor.getColumnIndexOrThrow("budIsAutoPay")) != 0,
-                    budStartDate = cursor.getString(cursor.getColumnIndexOrThrow("budStartDate")),
-                    budEndDate = cursor.getString(cursor.getColumnIndexOrThrow("budEndDate")),
+                    budStartDate = getStringSafe(cursor, "budStartDate"),
+                    budEndDate = if (cursor.isNull(cursor.getColumnIndexOrThrow("budEndDate"))) null else cursor.getString(
+                        cursor.getColumnIndexOrThrow("budEndDate")
+                    ),
                     budDayOfWeekId = cursor.getInt(cursor.getColumnIndexOrThrow("budDayOfWeekId")),
                     budFrequencyTypeId = cursor.getInt(cursor.getColumnIndexOrThrow("budFrequencyTypeId")),
                     budFrequencyCount = cursor.getInt(cursor.getColumnIndexOrThrow("budFrequencyCount")),
                     budLeadDays = cursor.getInt(cursor.getColumnIndexOrThrow("budLeadDays")),
                     budIsDeleted = cursor.getInt(cursor.getColumnIndexOrThrow("budIsDeleted")) != 0,
-                    budUpdateTime = cursor.getString(cursor.getColumnIndexOrThrow("budUpdateTime"))
+                    budUpdateTime = getStringSafe(cursor, "budUpdateTime")
                 )
             },
             getItemKey = { it.ruleId.toString() },
@@ -236,9 +256,9 @@ class DatabaseSyncHelper(
             mapCursorToItem = { cursor ->
                 Transactions(
                     transId = cursor.getLong(cursor.getColumnIndexOrThrow("transId")),
-                    transDate = cursor.getString(cursor.getColumnIndexOrThrow("transDate")),
-                    transName = cursor.getString(cursor.getColumnIndexOrThrow("transName")),
-                    transNote = cursor.getString(cursor.getColumnIndexOrThrow("transNote")),
+                    transDate = getStringSafe(cursor, "transDate"),
+                    transName = getStringSafe(cursor, "transName"),
+                    transNote = getStringSafe(cursor, "transNote"),
                     transRuleId = cursor.getLong(cursor.getColumnIndexOrThrow("transRuleId")),
                     transToAccountId = cursor.getLong(cursor.getColumnIndexOrThrow("transToAccountId")),
                     transToAccountPending = cursor.getInt(cursor.getColumnIndexOrThrow("transToAccountPending")) != 0,
@@ -246,7 +266,7 @@ class DatabaseSyncHelper(
                     transFromAccountPending = cursor.getInt(cursor.getColumnIndexOrThrow("transFromAccountPending")) != 0,
                     transAmount = cursor.getDouble(cursor.getColumnIndexOrThrow("transAmount")),
                     transIsDeleted = cursor.getInt(cursor.getColumnIndexOrThrow("transIsDeleted")) != 0,
-                    transUpdateTime = cursor.getString(cursor.getColumnIndexOrThrow("transUpdateTime"))
+                    transUpdateTime = getStringSafe(cursor, "transUpdateTime")
                 )
             },
             getExistingLocalMap = {
@@ -347,10 +367,10 @@ class DatabaseSyncHelper(
             mapCursorToItem = { cursor ->
                 BudgetItem(
                     biRuleId = cursor.getLong(cursor.getColumnIndexOrThrow("biRuleId")),
-                    biProjectedDate = cursor.getString(cursor.getColumnIndexOrThrow("biProjectedDate")),
-                    biActualDate = cursor.getString(cursor.getColumnIndexOrThrow("biActualDate")),
-                    biPayDay = cursor.getString(cursor.getColumnIndexOrThrow("biPayDay")),
-                    biBudgetName = cursor.getString(cursor.getColumnIndexOrThrow("biBudgetName")),
+                    biProjectedDate = getStringSafe(cursor, "biProjectedDate"),
+                    biActualDate = getStringSafe(cursor, "biActualDate"),
+                    biPayDay = getStringSafe(cursor, "biPayDay"),
+                    biBudgetName = getStringSafe(cursor, "biBudgetName"),
                     biIsPayDayItem = cursor.getInt(cursor.getColumnIndexOrThrow("biIsPayDayItem")) != 0,
                     biToAccountId = cursor.getLong(cursor.getColumnIndexOrThrow("biToAccountId")),
                     biFromAccountId = cursor.getLong(cursor.getColumnIndexOrThrow("biFromAccountId")),
@@ -362,7 +382,7 @@ class DatabaseSyncHelper(
                     biIsCompleted = cursor.getInt(cursor.getColumnIndexOrThrow("biIsCompleted")) != 0,
                     biIsCancelled = cursor.getInt(cursor.getColumnIndexOrThrow("biIsCancelled")) != 0,
                     biIsDeleted = cursor.getInt(cursor.getColumnIndexOrThrow("biIsDeleted")) != 0,
-                    biUpdateTime = cursor.getString(cursor.getColumnIndexOrThrow("biUpdateTime")),
+                    biUpdateTime = getStringSafe(cursor, "biUpdateTime"),
                     biLocked = cursor.getInt(cursor.getColumnIndexOrThrow("biLocked")) != 0
                 )
             },
@@ -387,11 +407,11 @@ class DatabaseSyncHelper(
             mapCursorToItem = { cursor ->
                 SyncHistory(
                     syncId = cursor.getLong(cursor.getColumnIndexOrThrow("syncId")),
-                    syncTime = cursor.getString(cursor.getColumnIndexOrThrow("syncTime")),
-                    syncSourceName = cursor.getString(cursor.getColumnIndexOrThrow("syncSourceName")),
+                    syncTime = getStringSafe(cursor, "syncTime"),
+                    syncSourceName = getStringSafe(cursor, "syncSourceName"),
                     syncDeviceId = cursor.getLong(cursor.getColumnIndexOrThrow("syncDeviceId")),
-                    syncStatus = cursor.getString(cursor.getColumnIndexOrThrow("syncStatus")),
-                    syncRecordsProcessed = cursor.getString(cursor.getColumnIndexOrThrow("syncRecordsProcessed"))
+                    syncStatus = getStringSafe(cursor, "syncStatus"),
+                    syncRecordsProcessed = getStringSafe(cursor, "syncRecordsProcessed")
                 )
             },
             getItemKey = { it.syncId.toString() },

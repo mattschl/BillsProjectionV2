@@ -24,6 +24,7 @@ class SyncManager(
     private val onProgressUpdate: (String) -> Unit,
     private val onConflict: suspend (ConflictInfo) -> ConflictChoice,
     private val onTransactionWarning: () -> Unit,
+    private val onSyncError: (String) -> Unit,
 ) {
     private var transactionWarningShownThisSync = false
 
@@ -86,8 +87,15 @@ class SyncManager(
                 syncReport.append("Found ${driveFiles.size} backups to evaluate.\n")
                 for ((file, _) in driveFiles) {
                     onProgressUpdate("Syncing ${file.name}...")
-                    val result = processBackupFile(file, allFiles)
-                    syncReport.append("- ${file.name}: $result\n")
+                    try {
+                        val result = processBackupFile(file, allFiles)
+                        syncReport.append("- ${file.name}: $result\n")
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error processing backup file ${file.name}", e)
+                        val errorMsg = "Failed to sync ${file.name}: ${e.message}"
+                        onSyncError(errorMsg)
+                        syncReport.append("- ${file.name}: FAILED\n")
+                    }
                 }
             }
 
@@ -144,33 +152,38 @@ class SyncManager(
         }
 
         val result = withContext(Dispatchers.IO) {
-            val backupDb = SQLiteDatabase.openDatabase(
-                localBackupFile.absolutePath,
-                null,
-                SQLiteDatabase.OPEN_READONLY,
-            )
-            val appDb = BillsDatabase(application)
-            val syncHelper = DatabaseSyncHelper(appDb, df, deviceId, onConflict)
+            try {
+                val backupDb = SQLiteDatabase.openDatabase(
+                    localBackupFile.absolutePath,
+                    null,
+                    SQLiteDatabase.OPEN_READONLY,
+                )
+                val appDb = BillsDatabase(application)
+                val syncHelper = DatabaseSyncHelper(appDb, df, deviceId, onConflict, onSyncError)
 
-            var totalCount = 0
+                var totalCount = 0
 
-            val at = syncHelper.syncAccountTypes(backupDb); totalCount += at.first + at.second
-            val acc = syncHelper.syncAccounts(backupDb); totalCount += acc.first + acc.second
-            val br = syncHelper.syncBudgetRules(backupDb); totalCount += br.first + br.second
-            val trans = syncHelper.syncTransactions(backupDb)
-            if ((trans.first > 0) || (trans.second > 0)) {
-                if (!transactionWarningShownThisSync) {
-                    onTransactionWarning()
-                    transactionWarningShownThisSync = true
+                val at = syncHelper.syncAccountTypes(backupDb); totalCount += at.first + at.second
+                val acc = syncHelper.syncAccounts(backupDb); totalCount += acc.first + acc.second
+                val br = syncHelper.syncBudgetRules(backupDb); totalCount += br.first + br.second
+                val trans = syncHelper.syncTransactions(backupDb)
+                if ((trans.first > 0) || (trans.second > 0)) {
+                    if (!transactionWarningShownThisSync) {
+                        onTransactionWarning()
+                        transactionWarningShownThisSync = true
+                    }
                 }
-            }
-            totalCount += trans.first + trans.second
-            val bi = syncHelper.syncBudgetItems(backupDb); totalCount += bi.first + bi.second
-            val sh = syncHelper.syncSyncHistory(backupDb); totalCount += sh.first + sh.second
+                totalCount += trans.first + trans.second
+                val bi = syncHelper.syncBudgetItems(backupDb); totalCount += bi.first + bi.second
+                val sh = syncHelper.syncSyncHistory(backupDb); totalCount += sh.first + sh.second
 
-            backupDb.close()
-            if (totalCount == 0) "All local tables were already up to date."
-            else "Total records synchronized: $totalCount"
+                backupDb.close()
+                if (totalCount == 0) "All local tables were already up to date."
+                else "Total records synchronized: $totalCount"
+            } catch (e: Exception) {
+                Log.e(TAG, "Error processing backup file ${file.name}", e)
+                throw Exception("Failed to sync ${file.name}: ${e.message}", e)
+            }
         }
 
         if (localBackupFile.exists()) localBackupFile.delete()

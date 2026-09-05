@@ -33,6 +33,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
 
     var showConflictDialog by mutableStateOf<ConflictInfo?>(null)
     var showTransactionWarning by mutableStateOf(false)
+    var syncErrors by mutableStateOf<List<String>>(emptyList())
     private var conflictDeferred: CompletableDeferred<ConflictChoice>? = null
 
     fun onConflictChoice(choice: ConflictChoice, applyToAll: Boolean) {
@@ -80,6 +81,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
         progressMessage = "Synchronizing..."
         val helper = driveServiceHelper ?: return
         applyToAllChoice = null
+        syncErrors = emptyList()
 
         val manager = SyncManager(
             application = getApplication(),
@@ -89,7 +91,8 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             nf = NumberFunctions(),
             onProgressUpdate = { progressMessage = it },
             onConflict = { info -> showConflictDialogWrapper(info) },
-            onTransactionWarning = { showTransactionWarning = true }
+            onTransactionWarning = { showTransactionWarning = true },
+            onSyncError = { error -> syncErrors = syncErrors + error }
         )
 
         viewModelScope.launch {

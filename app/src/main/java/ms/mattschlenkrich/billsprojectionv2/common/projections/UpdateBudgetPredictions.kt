@@ -131,7 +131,11 @@ class UpdateBudgetPredictions(
     private fun findPayDayForDate(date: LocalDate, payDays: List<String>): String? {
         var lastPayDay: String? = null
         for (payDayStr in payDays) {
-            val payDay = LocalDate.parse(payDayStr)
+            val payDay = try {
+                LocalDate.parse(payDayStr)
+            } catch (e: Exception) {
+                null
+            } ?: continue
             if (date.isBefore(payDay)) {
                 return lastPayDay
             }
