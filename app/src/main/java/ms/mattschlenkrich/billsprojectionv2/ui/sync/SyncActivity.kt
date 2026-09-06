@@ -2,6 +2,7 @@ package ms.mattschlenkrich.billsprojectionv2.ui.sync
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.content.Intent
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
@@ -43,6 +44,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 import ms.mattschlenkrich.billsprojectionv2.common.theme.BillsProjectionTheme
+import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import java.security.SecureRandom
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -100,7 +102,83 @@ class SyncActivity : ComponentActivity() {
                             onConnectLegacy = { signInWithAccountPicker() },
                             onDisconnect = { disconnectAccount() },
                             onSync = { viewModel.sync(::handleError) },
-                            onQuery = { viewModel.queryDriveFiles() }
+                            onRestore = { fileName ->
+                                viewModel.restore(
+                                    fileName = fileName,
+                                    onSuccess = {
+                                        Toast.makeText(
+                                            this,
+                                            "Restore successful! Restarting...",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                        val intent = Intent(this, MainActivity::class.java)
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                                        startActivity(intent)
+                                        finish()
+                                    },
+                                    onError = { msg, e ->
+                                        handleError(msg, e) { }
+                                    }
+                                )
+                            },
+                            onRestoreLocal = { file ->
+                                viewModel.restoreLocal(
+                                    file = file,
+                                    onSuccess = {
+                                        Toast.makeText(
+                                            this,
+                                            "Local restore successful! Restarting...",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                        val intent = Intent(this, MainActivity::class.java)
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                                        startActivity(intent)
+                                        finish()
+                                    },
+                                    onError = { msg, e ->
+                                        handleError(msg, e) { }
+                                    }
+                                )
+                            },
+                            onRepairLocal = {
+                                viewModel.repairDatabase(
+                                    onSuccess = {
+                                        Toast.makeText(
+                                            this,
+                                            "Local database repaired! Restarting...",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                        val intent = Intent(this, MainActivity::class.java)
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                                        startActivity(intent)
+                                        finish()
+                                    }
+                                )
+                            },
+                            onDeleteBackup = { meta ->
+                                viewModel.deleteBackup(
+                                    file = meta,
+                                    onError = { msg, e ->
+                                        handleError(msg, e) { }
+                                    }
+                                )
+                            },
+                            onDeleteOtherBackups = { exceptList ->
+                                viewModel.deleteOtherBackups(
+                                    exceptFileNames = exceptList,
+                                    onError = { msg, e ->
+                                        handleError(msg, e) { }
+                                    }
+                                )
+                            },
+                            onDownloadBackups = { list ->
+                                viewModel.downloadBackups(
+                                    fileNames = list,
+                                    onError = { msg, e ->
+                                        handleError(msg, e) { }
+                                    }
+                                )
+                            }
                         )
                     }
                 }
@@ -112,7 +190,7 @@ class SyncActivity : ComponentActivity() {
         val settingsManager = SettingsManager(this)
         val settings = settingsManager.getSettings()
         settingsManager.saveSettings(settings.copy(driveAccount = null))
-        viewModel.driveServiceHelper = null
+        viewModel.disconnect()
         mCurrentAccount = null
         Toast.makeText(this, "Disconnected from Google account", Toast.LENGTH_SHORT).show()
     }

@@ -137,13 +137,35 @@ fun BudgetViewScreenWrapper(
         amount
     }
 
-    val selectedSum = remember(selectedItems, allBudgetList) {
+    val selectedSum = remember(selectedItems, allBudgetList, selectedAsset, assetList) {
         if (selectedItems.isEmpty()) 0.0
         else {
-            allBudgetList.asSequence().filter {
-                val key = "${it.budgetItem?.biRuleId}_${it.budgetItem?.biProjectedDate}"
-                selectedItems.contains(key)
-            }.sumOf { it.budgetItem?.biProjectedAmount ?: 0.0 }
+            var netChange = 0.0
+            allBudgetList.forEach { details ->
+                val item = details.budgetItem ?: return@forEach
+                val key = "${item.biRuleId}_${item.biProjectedDate}"
+                if (selectedItems.contains(key)) {
+                    val isCredit = if (selectedAsset == ALL_ITEMS) {
+                        assetList.contains(details.toAccount?.accountName)
+                    } else {
+                        details.toAccount?.accountName == selectedAsset
+                    }
+
+                    if (isCredit) {
+                        netChange += item.biProjectedAmount
+                    } else {
+                        val isDebit = if (selectedAsset == ALL_ITEMS) {
+                            assetList.contains(details.fromAccount?.accountName)
+                        } else {
+                            details.fromAccount?.accountName == selectedAsset
+                        }
+                        if (isDebit) {
+                            netChange -= item.biProjectedAmount
+                        }
+                    }
+                }
+            }
+            netChange
         }
     }
 

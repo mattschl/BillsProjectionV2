@@ -11,3 +11,8 @@ data class ConflictInfo(
 )
 
 enum class ConflictChoice { KEEP_LOCAL, KEEP_DRIVE }
+
+data class DriveFileMeta(
+    val id: String,
+    val name: String,
+)

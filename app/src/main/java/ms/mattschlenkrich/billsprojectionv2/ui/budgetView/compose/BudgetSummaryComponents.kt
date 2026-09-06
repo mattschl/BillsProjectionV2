@@ -23,6 +23,7 @@ import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.components.DropdownSelector
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
+import kotlin.math.abs
 
 @Composable
 fun SummaryCard(
@@ -140,18 +141,41 @@ fun SummaryCard(
                 HorizontalDivider(modifier = Modifier.padding(vertical = 1.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = "${stringResource(R.string.label_selected_colon)} ${
                             nf.displayDollars(
-                                selectedSum
+                                abs(selectedSum)
                             )
                         }",
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.primary
                     )
+
+                    curAsset?.let { asset ->
+                        val isAsset = asset.accountType?.keepTotals == true
+                        val label = if (isAsset) stringResource(R.string.label_remainder)
+                        else stringResource(R.string.label_owing)
+                        val projected = if (isAsset) asset.account.accountBalance + selectedSum
+                        else asset.account.accountOwing - selectedSum
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "$label: ",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Text(
+                                text = nf.displayDollars(projected),
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = if (!isAsset && projected > 0) MaterialTheme.colorScheme.error
+                                else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
                 }
             }
 

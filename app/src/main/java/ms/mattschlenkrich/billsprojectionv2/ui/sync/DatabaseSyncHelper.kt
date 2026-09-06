@@ -3,10 +3,12 @@ package ms.mattschlenkrich.billsprojectionv2.ui.sync
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_ITEMS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_RULES
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_SYNC_HISTORY
+import ms.mattschlenkrich.billsprojectionv2.common.TABLE_TRANSACTION
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.BillsDatabase
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
@@ -24,7 +26,8 @@ class DatabaseSyncHelper(
     private val df: DateFunctions,
     private val deviceId: Long,
     private val onConflict: suspend (ConflictInfo) -> ConflictChoice,
-    private val onSyncError: (String) -> Unit
+    private val onSyncError: (String) -> Unit,
+    private val isRestore: Boolean = false
 ) {
 
     private fun getStringSafe(cursor: android.database.Cursor, columnName: String): String {
@@ -72,7 +75,8 @@ class DatabaseSyncHelper(
                 val backupTime = getUpdateTime(backupItem)
 
                 if (existingById == null) {
-                    val existingByName = getExistingByName?.invoke(backupItem)
+                    val existingByName =
+                        if (isRestore) null else getExistingByName?.invoke(backupItem)
                     if ((existingByName != null) && (getName != null) && (getId != null) && (rename != null)) {
                         val localName = getName(existingByName)
                         val localId = getId(existingByName)
@@ -113,7 +117,7 @@ class DatabaseSyncHelper(
                     }
                 } else {
                     val localTime = getUpdateTime(existingById)
-                    if (backupTime > localTime) {
+                    if (isRestore || backupTime > localTime) {
                         update(backupItem)
                         updates++
                     }
@@ -168,7 +172,7 @@ class DatabaseSyncHelper(
     suspend fun syncAccounts(backupDb: SQLiteDatabase): Pair<Int, Int> {
         return syncTable(
             backupDb = backupDb,
-            tableName = "Accounts",
+            tableName = TABLE_ACCOUNTS,
             mapCursorToItem = { cursor ->
                 Account(
                     accountId = cursor.getLong(cursor.getColumnIndexOrThrow("accountId")),
@@ -190,15 +194,7 @@ class DatabaseSyncHelper(
             getName = { it.accountName },
             getId = { it.accountId },
             insert = { appDb.getAccountDao().insertAccount(it) },
-            update = { backupAccount ->
-                val localAccount =
-                    appDb.getAccountDao().getAccountSync(backupAccount.accountId)
-                if (localAccount != null && backupAccount.accUpdateTime > localAccount.accUpdateTime) {
-                    appDb.getAccountDao().updateAccount(backupAccount)
-                } else if (localAccount == null) {
-                    appDb.getAccountDao().insertAccount(backupAccount)
-                }
-            },
+            update = { appDb.getAccountDao().updateAccount(it) },
             rename = { id, name, time ->
                 appDb.getAccountDao().renameAccount(id, name, time)
             },
@@ -252,7 +248,7 @@ class DatabaseSyncHelper(
     suspend fun syncTransactions(backupDb: SQLiteDatabase): Pair<Int, Int> {
         return syncTable(
             backupDb = backupDb,
-            tableName = "Transactions",
+            tableName = TABLE_TRANSACTION,
             mapCursorToItem = { cursor ->
                 Transactions(
                     transId = cursor.getLong(cursor.getColumnIndexOrThrow("transId")),

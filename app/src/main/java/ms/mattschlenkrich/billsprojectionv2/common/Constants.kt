@@ -254,3 +254,6 @@ const val WAIT_250 = 250L
 const val WAIT_500 = 500L
 const val WAIT_1000 = 1000L
 const val WAIT_1500 = 1500L
+
+const val DB_IDENTITY_HASH = "7cbb36c380a8082a753c58c18c25d569"
+const val DB_LEGACY_HASH = "ce8a8e817581f5ebe84ffbe6b5be2c67"
