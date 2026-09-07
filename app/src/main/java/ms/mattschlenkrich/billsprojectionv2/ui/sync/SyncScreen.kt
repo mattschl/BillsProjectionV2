@@ -65,6 +65,7 @@ fun SyncScreen(
     onRestore: (String) -> Unit,
     onRestoreLocal: (File) -> Unit,
     onRepairLocal: () -> Unit,
+    onUploadNow: () -> Unit,
     onDeleteBackup: (DriveFileMeta) -> Unit,
     onDeleteOtherBackups: (List<String>) -> Unit,
     onDownloadBackups: (List<String>) -> Unit,
@@ -232,6 +233,14 @@ fun SyncScreen(
                                 },
                                 modifier = Modifier.fillMaxWidth()
                             ) { Text("Query Drive / Download") }
+
+                            Button(
+                                onClick = {
+                                    showAdvancedOptions = false
+                                    onUploadNow()
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) { Text("Upload Current State") }
 
                             Button(
                                 onClick = {

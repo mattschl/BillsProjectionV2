@@ -417,6 +417,33 @@ class SyncManager(
         return result
     }
 
+    suspend fun manualUpload(): String {
+        Log.d(TAG, "Starting manual upload of current database.")
+        onProgressUpdate("Preparing database...")
+        return withContext(Dispatchers.IO) {
+            try {
+                val appDb = BillsDatabase(application)
+                // Force a full checkpoint before upload to merge WAL into DB file.
+                try {
+                    val db = appDb.openHelper.writableDatabase
+                    db.execSQL("PRAGMA wal_checkpoint(FULL)")
+                    Log.d(TAG, "Checkpoint successful before manual upload.")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Checkpoint failed before manual upload", e)
+                }
+
+                onProgressUpdate("Uploading...")
+                val timestamp = df.getCurrentFileTimestamp()
+                val uploadedFile = performUpload(timestamp)
+
+                "Successfully uploaded current state as $uploadedFile"
+            } catch (e: Exception) {
+                Log.e(TAG, "Manual upload failed", e)
+                throw e
+            }
+        }
+    }
+
     private suspend fun performUpload(timestamp: String): String {
         return withContext(Dispatchers.IO) {
             val dbName = "bills2.db"

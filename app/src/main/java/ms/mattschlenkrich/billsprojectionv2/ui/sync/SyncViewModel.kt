@@ -398,6 +398,33 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun uploadNow(onSuccess: (String) -> Unit, onError: (String, Exception) -> Unit) {
+        val helper = driveServiceHelper ?: return
+        progressMessage = "Uploading current database..."
+        viewModelScope.launch {
+            try {
+                val manager = SyncManager(
+                    application = getApplication(),
+                    deviceId = deviceId,
+                    driveServiceHelper = helper,
+                    df = df,
+                    nf = NumberFunctions(),
+                    onProgressUpdate = { progressMessage = it },
+                    onConflict = { ConflictChoice.KEEP_DRIVE },
+                    onTransactionWarning = { },
+                    onSyncError = { }
+                )
+                val result = manager.manualUpload()
+                docContent = result
+                onSuccess(result)
+            } catch (e: Exception) {
+                onError("Upload failed", e)
+            } finally {
+                progressMessage = null
+            }
+        }
+    }
+
     private suspend fun showConflictDialogWrapper(info: ConflictInfo): ConflictChoice {
         applyToAllChoice?.let { return it }
         val deferred = CompletableDeferred<ConflictChoice>()

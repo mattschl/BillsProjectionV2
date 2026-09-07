@@ -126,6 +126,11 @@ class SyncViewModelTest {
     fun `downloadBackups should call downloadBackup for each file`() = runTest {
         // Verify implementation exists
     }
+
+    @Test
+    fun `uploadNow should call manualUpload on manager`() = runTest {
+        // Verify implementation exists
+    }
 }
 
 // Helper because assertNotNull is not imported

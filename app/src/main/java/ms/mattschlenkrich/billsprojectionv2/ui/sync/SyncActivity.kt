@@ -171,6 +171,16 @@ class SyncActivity : ComponentActivity() {
                                     }
                                 )
                             },
+                            onUploadNow = {
+                                viewModel.uploadNow(
+                                    onSuccess = { msg ->
+                                        Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+                                    },
+                                    onError = { msg, e ->
+                                        handleError(msg, e) { }
+                                    }
+                                )
+                            },
                             onDeleteBackup = { meta ->
                                 viewModel.deleteBackup(
                                     file = meta,
