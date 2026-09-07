@@ -45,6 +45,12 @@ abstract class BillsDatabase : RoomDatabase() {
         @Volatile
         private var instance: BillsDatabase? = null
         private val LOCK = Any()
+        private var useInMemory = false
+
+        fun setUseInMemory(inMemory: Boolean) {
+            useInMemory = inMemory
+            resetInstance()
+        }
 
         fun resetInstance() {
             instance?.close()
@@ -87,6 +93,13 @@ abstract class BillsDatabase : RoomDatabase() {
             }
 
         private fun createDataBase(context: Context): BillsDatabase {
+            if (useInMemory || isRunningTest()) {
+                return Room.inMemoryDatabaseBuilder(
+                    context.applicationContext,
+                    BillsDatabase::class.java
+                ).build()
+            }
+
             return Room.databaseBuilder(
                 context.applicationContext,
                 BillsDatabase::class.java,
@@ -96,6 +109,15 @@ abstract class BillsDatabase : RoomDatabase() {
                 .createFromAsset(DB_NAME)
                 .fallbackToDestructiveMigration(true)
                 .build()
+        }
+
+        private fun isRunningTest(): Boolean {
+            return try {
+                Class.forName("androidx.test.espresso.Espresso")
+                true
+            } catch (e: ClassNotFoundException) {
+                false
+            }
         }
     }
 }

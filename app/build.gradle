@@ -42,6 +42,7 @@ android {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments clearPackageData: 'false'
         versionNameSuffix '- view updates'
         signingConfig signingConfigs.debug
         buildConfigField "String", "FAILSAFE_PASSWORD", "\"${localProperties.getProperty('FAILSAFE_PASSWORD')}\""

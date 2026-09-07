@@ -101,7 +101,24 @@ class SyncActivity : ComponentActivity() {
                             onConnect = { signInWithCredentialManager() },
                             onConnectLegacy = { signInWithAccountPicker() },
                             onDisconnect = { disconnectAccount() },
-                            onSync = { viewModel.sync(::handleError) },
+                            onSync = {
+                                viewModel.sync(
+                                    onSuccess = {
+                                        Toast.makeText(
+                                            this,
+                                            "Sync successful! Restarting to refresh data...",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                        val intent = Intent(this, MainActivity::class.java)
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                                        startActivity(intent)
+                                        finish()
+                                    },
+                                    onError = { msg, e, retry ->
+                                        handleError(msg, e, retry)
+                                    }
+                                )
+                            },
                             onRestore = { fileName ->
                                 viewModel.restore(
                                     fileName = fileName,

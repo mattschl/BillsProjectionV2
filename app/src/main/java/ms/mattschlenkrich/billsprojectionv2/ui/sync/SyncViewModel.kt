@@ -152,7 +152,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun sync(onError: (String, Exception, (() -> Unit)) -> Unit) {
+    fun sync(onSuccess: () -> Unit, onError: (String, Exception, (() -> Unit)) -> Unit) {
         progressMessage = "Synchronizing..."
         val helper = driveServiceHelper ?: return
         applyToAllChoice = null
@@ -174,7 +174,9 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 val result = manager.performSync()
                 docContent = result.second
-                if (result.first == "Busy") {
+                if (result.first == "Success") {
+                    onSuccess()
+                } else if (result.first == "Busy") {
                     android.widget.Toast.makeText(
                         getApplication(),
                         R.string.msg_sync_in_progress,
@@ -182,7 +184,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                     ).show()
                 }
             } catch (e: Exception) {
-                onError("Sync failed", e) { sync(onError) }
+                onError("Sync failed", e) { sync(onSuccess, onError) }
             } finally {
                 progressMessage = null
             }

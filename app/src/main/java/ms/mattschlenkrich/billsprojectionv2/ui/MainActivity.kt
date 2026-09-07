@@ -213,12 +213,10 @@ class MainActivity : AppCompatActivity() {
 
         val syncLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult()
-        ) { result ->
-            if (result.resultCode == RESULT_OK) {
-                mainViewModel.eraseAll()
-                setupViewModels(clearExisting = true)
-                shouldResetNavigation = true
-            }
+        ) { _ ->
+            // Re-setup view models just in case of simple connection changes,
+            // but full data refreshes are handled by activity restarts in SyncActivity.
+            setupViewModels(clearExisting = false)
         }
 
         if (shouldResetNavigation) {

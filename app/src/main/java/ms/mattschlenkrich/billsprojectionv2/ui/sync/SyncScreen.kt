@@ -73,6 +73,7 @@ fun SyncScreen(
     var showRestoreLocalConfirm by remember { mutableStateOf<File?>(null) }
     var showRepairConfirm by remember { mutableStateOf(false) }
     var showBackupList by remember { mutableStateOf(false) }
+    var showAdvancedOptions by remember { mutableStateOf(false) }
     var isDownloadMode by remember { mutableStateOf(false) }
     var selectedBackups by remember { mutableStateOf(setOf<String>()) }
     var showDeleteConfirm by remember { mutableStateOf<DriveFileMeta?>(null) }
@@ -174,17 +175,9 @@ fun SyncScreen(
                                 modifier = Modifier.weight(1f)
                             ) { Text(stringResource(R.string.title_sync)) }
                             Button(
-                                onClick = {
-                                    isDownloadMode = false
-                                    viewModel.fetchAvailableBackups()
-                                    showBackupList = true
-                                },
-                                modifier = Modifier.weight(1f),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                                    contentColor = MaterialTheme.colorScheme.onErrorContainer
-                                )
-                            ) { Text("Restore") }
+                                onClick = { showAdvancedOptions = true },
+                                modifier = Modifier.weight(1f)
+                            ) { Text("Advanced") }
                         }
                     }
 
@@ -194,22 +187,9 @@ fun SyncScreen(
                     ) {
                         if (viewModel.driveServiceHelper != null) {
                             Button(
-                                onClick = {
-                                    isDownloadMode = true
-                                    selectedBackups = emptySet()
-                                    viewModel.fetchAvailableBackups()
-                                    showBackupList = true
-                                },
-                                modifier = Modifier.weight(1f)
-                            ) { Text(stringResource(R.string.action_query_drive)) }
-                            Button(
                                 onClick = onDisconnect,
                                 modifier = Modifier.weight(1f)
                             ) { Text(stringResource(R.string.action_disconnect)) }
-                            Button(
-                                onClick = { showRepairConfirm = true },
-                                modifier = Modifier.weight(1f)
-                            ) { Text("Repair") }
                         }
                         Button(
                             onClick = onBack,
@@ -217,6 +197,57 @@ fun SyncScreen(
                         ) { Text(stringResource(R.string.action_done)) }
                     }
                 }
+            }
+
+            if (showAdvancedOptions) {
+                AlertDialog(
+                    onDismissRequest = { showAdvancedOptions = false },
+                    title = { Text("Advanced Options") },
+                    text = {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Button(
+                                onClick = {
+                                    showAdvancedOptions = false
+                                    isDownloadMode = false
+                                    viewModel.fetchAvailableBackups()
+                                    showBackupList = true
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                                    contentColor = MaterialTheme.colorScheme.onErrorContainer
+                                )
+                            ) { Text("Restore") }
+
+                            Button(
+                                onClick = {
+                                    showAdvancedOptions = false
+                                    isDownloadMode = true
+                                    selectedBackups = emptySet()
+                                    viewModel.fetchAvailableBackups()
+                                    showBackupList = true
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) { Text("Query Drive / Download") }
+
+                            Button(
+                                onClick = {
+                                    showAdvancedOptions = false
+                                    showRepairConfirm = true
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) { Text("Repair Local Database") }
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { showAdvancedOptions = false }) {
+                            Text("Close")
+                        }
+                    }
+                )
             }
 
             if (showRepairConfirm) {
