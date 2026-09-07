@@ -22,7 +22,7 @@ import java.time.LocalDate
 
 class ProjectBudgetDates(
     private val frequencyTypes: Array<String>,
-    private val daysOfWeek: Array<String>
+    private val daysOfWeek: Array<String>,
 ) {
 
     constructor(mainActivity: MainActivity) : this(
@@ -240,8 +240,8 @@ class ProjectBudgetDates(
     ): ArrayList<LocalDate> {
         val dates = ArrayList<LocalDate>()
         for (d in payDayList.indices) {
-            if (payDayList[d] in startDate..endDate && (d + 1) % interval.toInt() == 0 && payDayList[d] >= LocalDate.now()
-                    .toString()
+            if ((payDayList[d] in startDate..endDate) && ((d + 1) % interval.toInt() == 0) && (payDayList[d] >= LocalDate.now()
+                    .toString())
             ) {
                 parseDateSafely(payDayList[d])?.let { dates.add(it) }
             }
@@ -253,7 +253,7 @@ class ProjectBudgetDates(
         return try {
             if (dateString.isBlank()) null
             else LocalDate.parse(dateString)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
     }

@@ -27,7 +27,7 @@ class MainViewModel(
     private val _returnToAsset = mutableStateOf<String?>(null)
     private val _returnToPayDay = mutableStateOf<String?>(null)
     private val _transferNum = mutableStateOf<Double?>(0.0)
-    private val _updatingTransaction = mutableStateOf(false)
+    private val _updatingTransaction = mutableStateOf(value = false)
 
     fun setReturnToAsset(newAsset: String?) {
         if (_returnToAsset.value != newAsset) {

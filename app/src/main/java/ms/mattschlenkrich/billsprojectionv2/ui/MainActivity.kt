@@ -212,7 +212,7 @@ class MainActivity : AppCompatActivity() {
         var shouldResetNavigation by remember { mutableStateOf(value = false) }
 
         val syncLauncher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.StartActivityForResult()
+            contract = ActivityResultContracts.StartActivityForResult(),
         ) { _ ->
             // Re-setup view models just in case of simple connection changes,
             // but full data refreshes are handled by activity restarts in SyncActivity.

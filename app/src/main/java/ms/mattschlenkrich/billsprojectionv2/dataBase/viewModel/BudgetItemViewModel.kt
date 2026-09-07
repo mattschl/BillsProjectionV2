@@ -10,7 +10,8 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.dataBase.repository.BudgetItemRepository
 
 class BudgetItemViewModel(
-    app: Application, private val budgetItemRepository: BudgetItemRepository
+    app: Application,
+    private val budgetItemRepository: BudgetItemRepository,
 ) : AndroidViewModel(app) {
 
     suspend fun insertBudgetItemSync(budgetItem: BudgetItem) =

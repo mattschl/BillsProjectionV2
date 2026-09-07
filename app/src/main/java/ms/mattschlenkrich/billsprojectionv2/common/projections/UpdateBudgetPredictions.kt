@@ -24,8 +24,8 @@ class UpdateBudgetPredictions(
             budgetItemViewModel.killFutureBudgetItemsSync(
                 startDate, df.getCurrentTimeAsString(),
             )
-        } catch (e: Exception) {
-            Log.e(TAG, "An unknown error occurred", e)
+        } catch (_: Exception) {
+            Log.e(TAG, "An unknown error occurred")
             return false
         }
         return true
@@ -61,7 +61,7 @@ class UpdateBudgetPredictions(
         val updateTime = df.getCurrentTimeAsString()
         for (rule in payDayBudgetRuleList) {
             val endDate =
-                if (rule.budEndDate != null && rule.budEndDate > stopDate) stopDate else rule.budEndDate
+                if ((rule.budEndDate != null) && (rule.budEndDate > stopDate)) stopDate else rule.budEndDate
                     ?: stopDate
             val payDates = projectBudgetDates.projectDates(
                 startDate = rule.budStartDate,
@@ -73,7 +73,11 @@ class UpdateBudgetPredictions(
             )
             for (date in payDates) {
                 insertOrRewriteBudgetItem(
-                    rule, date.toString(), date.toString(), date.toString(), updateTime
+                    rule,
+                    date.toString(),
+                    date.toString(),
+                    date.toString(),
+                    updateTime,
                 )
             }
         }
@@ -85,7 +89,7 @@ class UpdateBudgetPredictions(
         val updateTime = df.getCurrentTimeAsString()
         for (rule in rulesOnPayDay) {
             val endDate =
-                if (rule.budEndDate != null && rule.budEndDate > stopDate) stopDate else rule.budEndDate
+                if ((rule.budEndDate != null) && (rule.budEndDate > stopDate)) stopDate else rule.budEndDate
                     ?: stopDate
             val payDates = projectBudgetDates.projectOnPayDay(
                 rule.budStartDate, rule.budFrequencyCount.toLong(), payDays, endDate,
@@ -107,7 +111,7 @@ class UpdateBudgetPredictions(
 
         for (rule in rulesOther) {
             val endDate =
-                if (rule.budEndDate != null && rule.budEndDate > stopDate) stopDate else rule.budEndDate
+                if ((rule.budEndDate != null) && (rule.budEndDate > stopDate)) stopDate else rule.budEndDate
                     ?: stopDate
             val payDates = projectBudgetDates.projectDates(
                 startDate = rule.budStartDate,
@@ -234,8 +238,8 @@ class UpdateBudgetPredictions(
             budgetItemViewModel.deleteFutureItemsSync(
                 df.getCurrentDateAsString(), df.getCurrentTimeAsString()
             )
-        } catch (e: Exception) {
-            Log.e(TAG, "An unknown error occurred", e)
+        } catch (_: Exception) {
+            Log.e(TAG, "An unknown error occurred")
             return false
         }
         return true
@@ -245,8 +249,8 @@ class UpdateBudgetPredictions(
         try {
             val cutoffDate = LocalDate.now().minusMonths(2).toString()
             budgetItemViewModel.purgeOldBudgetItems(cutoffDate)
-        } catch (e: Exception) {
-            Log.e(TAG, "An unknown error occurred", e)
+        } catch (_: Exception) {
+            Log.e(TAG, "An unknown error occurred")
             return false
         }
         return true

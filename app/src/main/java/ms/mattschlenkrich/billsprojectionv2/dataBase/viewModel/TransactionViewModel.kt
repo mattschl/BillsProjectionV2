@@ -47,7 +47,8 @@ class TransactionViewModel(
 
     suspend fun deleteTransaction(transId: Long, updateTime: String) =
         transactionRepository.deleteTransaction(
-            transId, updateTime
+            transId,
+            updateTime,
         )
 
     fun getActiveTransactionsDetailed() =

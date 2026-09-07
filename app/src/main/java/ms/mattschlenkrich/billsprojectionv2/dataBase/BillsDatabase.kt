@@ -31,7 +31,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transact
         BudgetItem::class,
         SyncHistory::class,
     ], version = DB_VERSION,
-    views = [AccountAndType::class]
+    views = [AccountAndType::class],
 )
 abstract class BillsDatabase : RoomDatabase() {
     abstract fun getAccountTypesDao(): AccountTypeDao
@@ -107,7 +107,7 @@ abstract class BillsDatabase : RoomDatabase() {
             )
                 .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_1_3)
                 .createFromAsset(DB_NAME)
-                .fallbackToDestructiveMigration(true)
+                .fallbackToDestructiveMigration(dropAllTables = true)
                 .build()
         }
 
@@ -115,7 +115,7 @@ abstract class BillsDatabase : RoomDatabase() {
             return try {
                 Class.forName("androidx.test.espresso.Espresso")
                 true
-            } catch (e: ClassNotFoundException) {
+            } catch (_: ClassNotFoundException) {
                 false
             }
         }

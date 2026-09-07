@@ -160,9 +160,9 @@ class SyncManager(
     }
 
     fun getLocalBackups(): List<File> {
-        return backupDir.listFiles()?.filter {
+        return backupDir.listFiles()?.asSequence()?.filter {
             it.name.startsWith("bills2_") && it.name.endsWith(".db")
-        }?.sortedByDescending { it.name } ?: emptyList()
+        }?.sortedByDescending { it.name }?.toList() ?: emptyList()
     }
 
     suspend fun deleteBackup(file: DriveFileMeta): String {
@@ -173,7 +173,7 @@ class SyncManager(
 
             // Try to find and delete associated WAL/SHM files
             val allFiles = driveServiceHelper.queryFiles()
-            allFiles.files?.filter { it.name == "${file.name}-wal" || it.name == "${file.name}-shm" }
+            allFiles.files?.filter { (it.name == "${file.name}-wal") || (it.name == "${file.name}-shm") }
                 ?.forEach { auxFile ->
                     driveServiceHelper.deleteFile(auxFile.id)
                 }
@@ -226,7 +226,7 @@ class SyncManager(
                 driveServiceHelper.downloadBinaryFile(it.name, localTempShm, allFiles)
             }
 
-            return restoreFromFile(localTempFile, localTempWal, localTempShm, fileName)
+            return restoreFromFile(localTempFile, fileName)
         } catch (e: Exception) {
             Log.e(TAG, "Restore failed", e)
             throw e
@@ -239,9 +239,7 @@ class SyncManager(
 
     suspend fun restoreLocal(file: File): String {
         Log.d(TAG, "Starting record-level restore of local file: ${file.name}")
-        val wal = File(file.parent, "${file.name}-wal")
-        val shm = File(file.parent, "${file.name}-shm")
-        return restoreFromFile(file, wal, shm, file.name)
+        return restoreFromFile(file, file.name)
     }
 
     suspend fun repairLocalDatabase(): String {
@@ -258,7 +256,7 @@ class SyncManager(
                 val db = SQLiteDatabase.openDatabase(
                     dbPath.absolutePath,
                     null,
-                    SQLiteDatabase.OPEN_READWRITE
+                    SQLiteDatabase.OPEN_READWRITE,
                 )
 
                 Log.d(TAG, "Forcing identity hash...")
@@ -283,8 +281,6 @@ class SyncManager(
 
     private suspend fun restoreFromFile(
         dbFile: File,
-        walFile: File,
-        shmFile: File,
         displayName: String
     ): String {
         Log.d(TAG, "Starting robust record-level restore of $displayName")

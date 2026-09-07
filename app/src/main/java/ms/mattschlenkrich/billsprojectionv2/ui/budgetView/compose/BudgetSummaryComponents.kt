@@ -44,7 +44,7 @@ fun SummaryCard(
     val currentTag = stringResource(R.string.text_current_suffix)
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Column(modifier = Modifier.padding(2.dp)) {
             DropdownSelector(
@@ -72,7 +72,7 @@ fun SummaryCard(
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     val label = if (accountType?.keepTotals == true) {
                         stringResource(R.string.label_balance_in_account)
@@ -100,7 +100,7 @@ fun SummaryCard(
                         text = nf.displayDollars(amount),
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.bodyLarge,
-                        color = if (accountType?.keepTotals != true && asset.account.accountOwing >= 0.0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+                        color = if ((accountType?.keepTotals != true) && (asset.account.accountOwing >= 0.0)) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.clickable { onAccountClick() }
                     )
 
@@ -119,8 +119,7 @@ fun SummaryCard(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         val creditLimit = asset.account.accountCreditLimit
-                        val available =
-                            creditLimit + pendingAmount - asset.account.accountOwing
+                        val available = (creditLimit + pendingAmount) - asset.account.accountOwing
                         val availableReal =
                             if (available > creditLimit) creditLimit else available
 
@@ -142,7 +141,7 @@ fun SummaryCard(
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         text = "${stringResource(R.string.label_selected_colon)} ${

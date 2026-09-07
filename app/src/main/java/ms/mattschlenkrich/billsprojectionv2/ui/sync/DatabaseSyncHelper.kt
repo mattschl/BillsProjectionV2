@@ -27,7 +27,7 @@ class DatabaseSyncHelper(
     private val deviceId: Long,
     private val onConflict: suspend (ConflictInfo) -> ConflictChoice,
     private val onSyncError: (String) -> Unit,
-    private val isRestore: Boolean = false
+    private val isRestore: Boolean = false,
 ) {
 
     private fun getStringSafe(cursor: android.database.Cursor, columnName: String): String {
@@ -117,7 +117,7 @@ class DatabaseSyncHelper(
                     }
                 } else {
                     val localTime = getUpdateTime(existingById)
-                    if (isRestore || backupTime > localTime) {
+                    if (isRestore || (backupTime > localTime)) {
                         update(backupItem)
                         updates++
                     }
@@ -126,8 +126,8 @@ class DatabaseSyncHelper(
         }
         try {
             appDb.openHelper.writableDatabase.query("PRAGMA checkpoint(FULL)").close()
-        } catch (e: Exception) {
-            Log.e(TAG, "Checkpoint failed for $tableName", e)
+        } catch (_: Exception) {
+            Log.e(TAG, "Checkpoint failed for $tableName")
         }
         return Pair(inserts, updates)
     }
@@ -165,8 +165,7 @@ class DatabaseSyncHelper(
             rename = { id, name, time ->
                 appDb.getAccountTypesDao().renameAccountType(id, name, time)
             },
-            copyWithName = { item, name -> item.copy(accountType = name) }
-        )
+        ) { item, name -> item.copy(accountType = name) }
     }
 
     suspend fun syncAccounts(backupDb: SQLiteDatabase): Pair<Int, Int> {

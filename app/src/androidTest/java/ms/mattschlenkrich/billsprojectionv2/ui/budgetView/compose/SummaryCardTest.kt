@@ -2,7 +2,7 @@ package ms.mattschlenkrich.billsprojectionv2.ui.budgetView.compose
 
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
@@ -32,7 +32,7 @@ class SummaryCardTest {
                 accountOwing = 0.0,
                 accountCreditLimit = 0.0,
                 accIsDeleted = false,
-                accUpdateTime = ""
+                accUpdateTime = "",
             ),
             accountType = AccountType(
                 typeId = 1L,
@@ -129,7 +129,7 @@ class SummaryCardTest {
                 accountOwing = 500.0,
                 accountCreditLimit = 5000.0,
                 accIsDeleted = false,
-                accUpdateTime = ""
+                accUpdateTime = "",
             ),
             accountType = AccountType(
                 typeId = 2L,
@@ -181,7 +181,18 @@ class SummaryCardTest {
     @Test
     fun summaryCard_hidesSelectionRow_whenNoItemsSelected() {
         val assetAccount = AccountWithType(
-            account = Account(1L, "Checking", "123", 1L, 0.0, 1000.0, 0.0, 0.0, false, ""),
+            account = Account(
+                1L,
+                "Checking",
+                "123",
+                1L,
+                0.0,
+                1000.0,
+                0.0,
+                0.0,
+                accIsDeleted = false,
+                ""
+            ),
             accountType = AccountType(1L, "Asset", true, true, false, false, true, true, false, "")
         )
 

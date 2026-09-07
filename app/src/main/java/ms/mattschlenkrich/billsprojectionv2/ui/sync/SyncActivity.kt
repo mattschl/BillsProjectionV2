@@ -86,7 +86,7 @@ class SyncActivity : ComponentActivity() {
                 CompositionLocalProvider(
                     LocalNumberFunctions provides NumberFunctions(),
                     LocalDateFunctions provides DateFunctions(),
-                    LocalVisualsFunctions provides VisualsFunctions()
+                    LocalVisualsFunctions provides VisualsFunctions(),
                 ) {
                     Surface(
                         modifier = Modifier.fillMaxSize(),
@@ -113,11 +113,10 @@ class SyncActivity : ComponentActivity() {
                                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                                         startActivity(intent)
                                         finish()
-                                    },
-                                    onError = { msg, e, retry ->
-                                        handleError(msg, e, retry)
                                     }
-                                )
+                                ) { msg, e, retry ->
+                                    handleError(msg, e, retry)
+                                }
                             },
                             onRestore = { fileName ->
                                 viewModel.restore(

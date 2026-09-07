@@ -39,7 +39,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
     private var applyToAllChoice: ConflictChoice? = null
 
     var showConflictDialog by mutableStateOf<ConflictInfo?>(null)
-    var showTransactionWarning by mutableStateOf(false)
+    var showTransactionWarning by mutableStateOf(value = false)
     var syncErrors by mutableStateOf<List<String>>(emptyList())
     private var conflictDeferred: CompletableDeferred<ConflictChoice>? = null
 
@@ -167,7 +167,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             onProgressUpdate = { progressMessage = it },
             onConflict = { info -> showConflictDialogWrapper(info) },
             onTransactionWarning = { showTransactionWarning = true },
-            onSyncError = { error -> syncErrors = syncErrors + error }
+            onSyncError = { error -> syncErrors += error },
         )
 
         viewModelScope.launch {

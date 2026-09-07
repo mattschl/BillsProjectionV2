@@ -67,15 +67,15 @@ fun SyncScreen(
     onRepairLocal: () -> Unit,
     onDeleteBackup: (DriveFileMeta) -> Unit,
     onDeleteOtherBackups: (List<String>) -> Unit,
-    onDownloadBackups: (List<String>) -> Unit
+    onDownloadBackups: (List<String>) -> Unit,
 ) {
     var showRestoreConfirm by remember { mutableStateOf<String?>(null) }
     var showRestoreLocalConfirm by remember { mutableStateOf<File?>(null) }
-    var showRepairConfirm by remember { mutableStateOf(false) }
-    var showBackupList by remember { mutableStateOf(false) }
-    var showAdvancedOptions by remember { mutableStateOf(false) }
-    var isDownloadMode by remember { mutableStateOf(false) }
-    var selectedBackups by remember { mutableStateOf(setOf<String>()) }
+    var showRepairConfirm by remember { mutableStateOf(value = false) }
+    var showBackupList by remember { mutableStateOf(value = false) }
+    var showAdvancedOptions by remember { mutableStateOf(value = false) }
+    var isDownloadMode by remember { mutableStateOf(value = false) }
+    var selectedBackups by remember { mutableStateOf(emptySet<String>()) }
     var showDeleteConfirm by remember { mutableStateOf<DriveFileMeta?>(null) }
     var showDeleteOthersConfirm by remember { mutableStateOf<String?>(null) }
 
@@ -94,7 +94,7 @@ fun SyncScreen(
                     Column {
                         Text(
                             stringResource(id = R.string.title_sync),
-                            style = MaterialTheme.typography.titleLarge
+                            style = MaterialTheme.typography.titleLarge,
                         )
                         viewModel.lastBackupTime?.let {
                             Text(
@@ -256,10 +256,12 @@ fun SyncScreen(
                     title = { Text("Repair Local Database") },
                     text = { Text("This will attempt to fix metadata errors in your current local database file. Use this if you have manually replaced the database file but the app isn't recognizing it.") },
                     confirmButton = {
-                        TextButton(onClick = {
-                            showRepairConfirm = false
-                            onRepairLocal()
-                        }) {
+                        TextButton(
+                            onClick = {
+                                showRepairConfirm = false
+                                onRepairLocal()
+                            }
+                        ) {
                             Text("Repair Now")
                         }
                     },
@@ -379,7 +381,7 @@ fun SyncScreen(
                         }
                     }
                 )
-            } else if (showBackupList && viewModel.progressMessage == null) {
+            } else if (showBackupList && (viewModel.progressMessage == null)) {
                 // If list is empty and not loading, show a message
                 AlertDialog(
                     onDismissRequest = { showBackupList = false },
@@ -513,10 +515,9 @@ fun SyncScreen(
             viewModel.showConflictDialog?.let { info ->
                 ConflictDialog(
                     info = info,
-                    onChoice = { choice, applyToAll ->
-                        viewModel.onConflictChoice(choice, applyToAll)
-                    }
-                )
+                ) { choice, applyToAll ->
+                    viewModel.onConflictChoice(choice, applyToAll)
+                }
             }
 
             if (viewModel.showTransactionWarning) {

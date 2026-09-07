@@ -12,7 +12,7 @@ import java.time.temporal.ChronoUnit
 
 class BudgetRuleViewModel(
     app: Application,
-    private val budgetRuleRepository: BudgetRuleRepository
+    private val budgetRuleRepository: BudgetRuleRepository,
 ) : AndroidViewModel(app) {
 
     fun insertBudgetRule(budgetRule: BudgetRule) =
@@ -78,7 +78,7 @@ class BudgetRuleViewModel(
             )
         val startDate = try {
             LocalDate.parse(calcStart)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             today
         }
         val daysElapsed = ChronoUnit.DAYS.between(
