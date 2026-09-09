@@ -125,7 +125,11 @@ class UpdateBudgetPredictions(
                 val assignedPayDay = findPayDayForDate(date, payDays)
                 assignedPayDay?.let {
                     insertOrRewriteBudgetItem(
-                        rule, date.toString(), date.toString(), it, updateTime
+                        rule,
+                        date.toString(),
+                        date.toString(),
+                        it,
+                        updateTime,
                     )
                 }
             }
@@ -137,7 +141,7 @@ class UpdateBudgetPredictions(
         for (payDayStr in payDays) {
             val payDay = try {
                 LocalDate.parse(payDayStr)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 null
             } ?: continue
             if (date.isBefore(payDay)) {

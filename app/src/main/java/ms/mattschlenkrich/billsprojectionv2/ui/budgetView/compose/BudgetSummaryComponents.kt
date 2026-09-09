@@ -93,7 +93,7 @@ fun SummaryCard(
                     Text(
                         text = label,
                         style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.clickable { onAccountClick() }
+                        modifier = Modifier.clickable { onAccountClick() },
                     )
 
                     Text(
@@ -101,7 +101,7 @@ fun SummaryCard(
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.bodyLarge,
                         color = if ((accountType?.keepTotals != true) && (asset.account.accountOwing >= 0.0)) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.clickable { onAccountClick() }
+                        modifier = Modifier.clickable { onAccountClick() },
                     )
 
                     SurplusDeficitInfo(
@@ -170,8 +170,8 @@ fun SummaryCard(
                                 text = nf.displayDollars(projected),
                                 fontWeight = FontWeight.Bold,
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = if (!isAsset && projected > 0) MaterialTheme.colorScheme.error
-                                else MaterialTheme.colorScheme.onSurface
+                                color = if (!isAsset && (projected > 0)) MaterialTheme.colorScheme.error
+                                else MaterialTheme.colorScheme.onSurface,
                             )
                         }
                     }

@@ -281,7 +281,7 @@ class SyncManager(
 
     private suspend fun restoreFromFile(
         dbFile: File,
-        displayName: String
+        displayName: String,
     ): String {
         Log.d(TAG, "Starting robust record-level restore of $displayName")
         onProgressUpdate("Clearing local data...")
@@ -453,11 +453,11 @@ class SyncManager(
 
             val driveBaseName = "bills2_$timestamp.db"
             val filesToUpload = mutableListOf(dbPath to driveBaseName)
-            if (walPath.exists() && walPath.length() > 0) {
+            if (walPath.exists() && (walPath.length() > 0)) {
                 Log.d(TAG, "Including WAL file in upload: ${walPath.length()} bytes")
                 filesToUpload.add(walPath to "$driveBaseName-wal")
             }
-            if (shmPath.exists() && shmPath.length() > 0) {
+            if (shmPath.exists() && (shmPath.length() > 0)) {
                 filesToUpload.add(shmPath to "$driveBaseName-shm")
             }
 

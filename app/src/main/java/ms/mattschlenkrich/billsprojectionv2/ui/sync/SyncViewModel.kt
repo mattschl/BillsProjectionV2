@@ -2,6 +2,7 @@ package ms.mattschlenkrich.billsprojectionv2.ui.sync
 
 import android.app.Application
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -167,7 +168,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             onProgressUpdate = { progressMessage = it },
             onConflict = { info -> showConflictDialogWrapper(info) },
             onTransactionWarning = { showTransactionWarning = true },
-            onSyncError = { error -> syncErrors += error },
+            onSyncError = { error -> syncErrors += error }
         )
 
         viewModelScope.launch {
@@ -177,10 +178,10 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
                 if (result.first == "Success") {
                     onSuccess()
                 } else if (result.first == "Busy") {
-                    android.widget.Toast.makeText(
+                    Toast.makeText(
                         getApplication(),
                         R.string.msg_sync_in_progress,
-                        android.widget.Toast.LENGTH_LONG
+                        Toast.LENGTH_LONG,
                     ).show()
                 }
             } catch (e: Exception) {

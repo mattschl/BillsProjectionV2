@@ -101,7 +101,7 @@ fun SyncScreen(
                             Text(
                                 "Last Backup: $it",
                                 style = MaterialTheme.typography.labelSmall,
-                                color = Color.DarkGray
+                                color = Color.DarkGray,
                             )
                         }
                     }
@@ -356,9 +356,11 @@ fun SyncScreen(
                                             )
                                         }
                                     }
-                                    IconButton(onClick = {
-                                        showDeleteConfirm = meta
-                                    }) {
+                                    IconButton(
+                                        onClick = {
+                                            showDeleteConfirm = meta
+                                        },
+                                    ) {
                                         Icon(
                                             Icons.Default.Delete,
                                             contentDescription = "Delete backup",

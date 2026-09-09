@@ -18,6 +18,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.sync.SyncHistory
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import java.time.LocalDate
+import kotlin.math.abs
 
 private const val TAG = "DatabaseSyncHelper"
 
@@ -34,7 +35,7 @@ class DatabaseSyncHelper(
         return try {
             val index = cursor.getColumnIndexOrThrow(columnName)
             if (cursor.isNull(index)) "" else cursor.getString(index)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             ""
         }
     }
@@ -53,7 +54,7 @@ class DatabaseSyncHelper(
         insert: suspend (T) -> Unit,
         update: suspend (T) -> Unit,
         rename: (suspend (Long, String, String) -> Unit)? = null,
-        copyWithName: ((T, String) -> T)? = null
+        copyWithName: ((T, String) -> T)? = null,
     ): Pair<Int, Int> {
         var inserts = 0
         var updates = 0
@@ -197,8 +198,7 @@ class DatabaseSyncHelper(
             rename = { id, name, time ->
                 appDb.getAccountDao().renameAccount(id, name, time)
             },
-            copyWithName = { item, name -> item.copy(accountName = name) }
-        )
+        ) { item, name -> item.copy(accountName = name) }
     }
 
     suspend fun syncBudgetRules(backupDb: SQLiteDatabase): Pair<Int, Int> {
@@ -288,12 +288,12 @@ class DatabaseSyncHelper(
                         val daysDiff =
                             java.time.temporal.ChronoUnit.DAYS.between(backupDate, localDate)
 
-                        localItem.transId != backupItem.transId &&
-                                kotlin.math.abs(daysDiff) <= 2 &&
-                                localItem.transAmount == backupItem.transAmount &&
-                                localItem.transToAccountId == backupItem.transToAccountId &&
-                                localItem.transFromAccountId == backupItem.transFromAccountId &&
-                                !localItem.transIsDeleted
+                        (localItem.transId != backupItem.transId) &&
+                                (abs(daysDiff) <= 2) &&
+                                (localItem.transAmount == backupItem.transAmount) &&
+                                (localItem.transToAccountId == backupItem.transToAccountId) &&
+                                (localItem.transFromAccountId == backupItem.transFromAccountId) &&
+                                (!localItem.transIsDeleted)
                     }
                 }
             },
@@ -318,12 +318,12 @@ class DatabaseSyncHelper(
                         val daysDiff =
                             java.time.temporal.ChronoUnit.DAYS.between(backupDate, localDate)
 
-                        localItem.transId != backupItem.transId &&
-                                kotlin.math.abs(daysDiff) <= 2 &&
-                                localItem.transAmount == backupItem.transAmount &&
-                                localItem.transToAccountId == backupItem.transToAccountId &&
-                                localItem.transFromAccountId == backupItem.transFromAccountId &&
-                                !localItem.transIsDeleted
+                        (localItem.transId != backupItem.transId) &&
+                                (abs(daysDiff) <= 2) &&
+                                (localItem.transAmount == backupItem.transAmount) &&
+                                (localItem.transToAccountId == backupItem.transToAccountId) &&
+                                (localItem.transFromAccountId == backupItem.transFromAccountId) &&
+                                (!localItem.transIsDeleted)
                     }
                 }
 
