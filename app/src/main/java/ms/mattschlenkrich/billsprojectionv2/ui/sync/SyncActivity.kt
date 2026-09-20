@@ -90,7 +90,7 @@ class SyncActivity : ComponentActivity() {
                 ) {
                     Surface(
                         modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.background
+                        color = MaterialTheme.colorScheme.background,
                     ) {
                         SyncScreen(
                             viewModel = viewModel,
@@ -131,11 +131,10 @@ class SyncActivity : ComponentActivity() {
                                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                                         startActivity(intent)
                                         finish()
-                                    },
-                                    onError = { msg, e ->
-                                        handleError(msg, e) { }
                                     }
-                                )
+                                ) { msg, e ->
+                                    handleError(msg, e) { }
+                                }
                             },
                             onRestoreLocal = { file ->
                                 viewModel.restoreLocal(
@@ -150,11 +149,10 @@ class SyncActivity : ComponentActivity() {
                                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                                         startActivity(intent)
                                         finish()
-                                    },
-                                    onError = { msg, e ->
-                                        handleError(msg, e) { }
                                     }
-                                )
+                                ) { msg, e ->
+                                    handleError(msg, e) { }
+                                }
                             },
                             onRepairLocal = {
                                 viewModel.repairDatabase(
@@ -260,7 +258,7 @@ class SyncActivity : ComponentActivity() {
     private fun signInWithCredentialManager() {
         lifecycleScope.launch {
             val googleIdOption = GetGoogleIdOption.Builder()
-                .setFilterByAuthorizedAccounts(false)
+                .setFilterByAuthorizedAccounts(filterByAuthorizedAccounts = false)
                 .setServerClientId(getString(R.string.default_web_client_id))
                 .setAutoSelectEnabled(false)
                 .setNonce(generateNonce())

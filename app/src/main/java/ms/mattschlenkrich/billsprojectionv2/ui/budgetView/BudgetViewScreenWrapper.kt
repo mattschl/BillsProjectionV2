@@ -96,14 +96,17 @@ fun BudgetViewScreenWrapper(
         .observeAsState(initial = emptyList())
 
     var selectedItems by remember { mutableStateOf(emptySet<String>()) }
+    var selectedPendingItems by remember { mutableStateOf(emptySet<Long>()) }
 
     var showAllBudgetItems by remember { mutableStateOf(value = false) }
+    var showAllPendingItems by remember { mutableStateOf(value = false) }
 
     val allBudgetList by budgetItemViewModel.getBudgetItemsAll(selectedAsset, selectedPayDay)
         .observeAsState(initial = emptyList())
 
     LaunchedEffect(selectedAsset, selectedPayDay) {
         selectedItems = emptySet()
+        selectedPendingItems = emptySet()
     }
 
     val budgetList = remember(allBudgetList, showAllBudgetItems) {
@@ -169,6 +172,37 @@ fun BudgetViewScreenWrapper(
         }
     }
 
+    val selectedPendingSum = remember(selectedPendingItems, pendingList, selectedAsset, assetList) {
+        if (selectedPendingItems.isEmpty()) 0.0
+        else {
+            var netChange = 0.0
+            pendingList.forEach { details ->
+                val trans = details.transaction ?: return@forEach
+                if (selectedPendingItems.contains(trans.transId)) {
+                    val isCredit = if (selectedAsset == ALL_ITEMS) {
+                        assetList.contains(details.toAccount?.accountName)
+                    } else {
+                        details.toAccount?.accountName == selectedAsset
+                    }
+
+                    if (isCredit) {
+                        netChange += trans.transAmount
+                    } else {
+                        val isDebit = if (selectedAsset == ALL_ITEMS) {
+                            assetList.contains(details.fromAccount?.accountName)
+                        } else {
+                            details.fromAccount?.accountName == selectedAsset
+                        }
+                        if (isDebit) {
+                            netChange -= trans.transAmount
+                        }
+                    }
+                }
+            }
+            netChange
+        }
+    }
+
     BudgetViewScreen(
         assetList = assetList,
         selectedAsset = selectedAsset,
@@ -209,6 +243,17 @@ fun BudgetViewScreenWrapper(
         },
         selectedItems = selectedItems,
         selectedSum = selectedSum,
+        onPendingItemLongClick = { pendingDetailed ->
+            pendingDetailed.transaction?.transId?.let { id ->
+                selectedPendingItems = if (selectedPendingItems.contains(id)) {
+                    selectedPendingItems - id
+                } else {
+                    selectedPendingItems + id
+                }
+            }
+        },
+        selectedPendingItems = selectedPendingItems,
+        selectedPendingSum = selectedPendingSum,
         onAddClick = {
             actionSheetState.show(
                 activity.getString(R.string.title_choose_action),
@@ -227,8 +272,9 @@ fun BudgetViewScreenWrapper(
             )
         },
         onBudgetItemClick = { curBudgetDetailed ->
-            if (selectedItems.isNotEmpty()) {
+            if (selectedItems.isNotEmpty() || selectedPendingItems.isNotEmpty()) {
                 selectedItems = emptySet()
+                selectedPendingItems = emptySet()
             } else {
                 curBudgetDetailed.budgetItem?.let { curBudget ->
                     actionSheetState.show(
@@ -397,8 +443,9 @@ fun BudgetViewScreenWrapper(
             }
         },
         onTransactionClick = { pendingTransaction ->
-            if (selectedItems.isNotEmpty()) {
+            if (selectedItems.isNotEmpty() || selectedPendingItems.isNotEmpty()) {
                 selectedItems = emptySet()
+                selectedPendingItems = emptySet()
             } else {
                 pendingTransaction.transaction?.let { trans ->
                     actionSheetState.show(
@@ -466,6 +513,10 @@ fun BudgetViewScreenWrapper(
         onScheduledExpensesLongClick = {
             showAllBudgetItems = !showAllBudgetItems
         },
+        onPendingHeaderLongClick = {
+            showAllPendingItems = !showAllPendingItems
+        },
+        isShowingAllPending = showAllPendingItems,
         isShowingAll = showAllBudgetItems,
         sheetTitle = actionSheetState.title,
         sheetOptions = actionSheetState.options,

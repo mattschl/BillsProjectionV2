@@ -90,7 +90,7 @@ class DatabaseSyncHelper(
                                 localId,
                                 localTime,
                                 getId(backupItem),
-                                backupTime
+                                backupTime,
                             )
                         )
 
@@ -240,8 +240,7 @@ class DatabaseSyncHelper(
             rename = { id, name, time ->
                 appDb.getBudgetRuleDao().renameBudgetRule(id, name, time)
             },
-            copyWithName = { item, name -> item.copy(budgetRuleName = name) }
-        )
+        ) { item, name -> item.copy(budgetRuleName = name) }
     }
 
     suspend fun syncTransactions(backupDb: SQLiteDatabase): Pair<Int, Int> {
@@ -273,7 +272,7 @@ class DatabaseSyncHelper(
             getExistingByName = { backupItem ->
                 val backupDate = try {
                     LocalDate.parse(backupItem.transDate)
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     null
                 }
                 if (backupDate == null) null
@@ -303,7 +302,7 @@ class DatabaseSyncHelper(
             insert = { backupItem ->
                 val backupDate = try {
                     LocalDate.parse(backupItem.transDate)
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     null
                 }
                 val existingDuplicate = if (backupDate == null) null

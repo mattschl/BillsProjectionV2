@@ -69,7 +69,12 @@ fun BudgetViewScreen(
     onBudgetItemLongClick: (BudgetItemDetailed) -> Unit = {},
     selectedItems: Set<String> = emptySet(),
     selectedSum: Double = 0.0,
+    onPendingItemLongClick: (TransactionDetailed) -> Unit = {},
+    selectedPendingItems: Set<Long> = emptySet(),
+    selectedPendingSum: Double = 0.0,
     onScheduledExpensesLongClick: () -> Unit = {},
+    onPendingHeaderLongClick: () -> Unit = {},
+    isShowingAllPending: Boolean = false,
     isShowingAll: Boolean = false,
     sheetTitle: String = "",
     sheetOptions: List<ActionOption> = emptyList(),
@@ -93,7 +98,7 @@ fun BudgetViewScreen(
             title = sheetTitle,
             options = sheetOptions,
             sheetState = sheetState,
-            onDismissRequest = onSheetDismiss
+            onDismissRequest = onSheetDismiss,
         )
     }
 
@@ -189,9 +194,20 @@ fun BudgetViewScreen(
                         nf.displayDollars(
                             pendingAmount
                         )
-                    }",
+                    }" + if (selectedPendingItems.isNotEmpty()) " (${stringResource(R.string.label_selected_colon)} ${
+                        nf.displayDollars(
+                            selectedPendingSum
+                        )
+                    })" else "",
                     modifier = Modifier
                         .fillMaxWidth()
+                        .combinedClickable(
+                            onClick = {},
+                            onLongClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                onPendingHeaderLongClick()
+                            }
+                        )
                         .padding(vertical = 4.dp),
                     textAlign = TextAlign.Center,
                     color = if (pendingAmount < 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
@@ -201,7 +217,7 @@ fun BudgetViewScreen(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(max = if (isTablet) 150.dp else 100.dp)
+                        .heightIn(max = if (isShowingAllPending) 1000.dp else if (isTablet) 150.dp else 100.dp)
                 ) {
                     items(
                         pendingList,
@@ -212,6 +228,8 @@ fun BudgetViewScreen(
                             selectedAsset = selectedAsset,
                             assetList = assetList,
                             onTransactionClick = onTransactionClick,
+                            onLongClick = { onPendingItemLongClick(pending) },
+                            isSelected = selectedPendingItems.contains(pending.transaction?.transId)
                         )
                     }
                 }

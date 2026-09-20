@@ -35,7 +35,7 @@ interface AccountDao {
     suspend fun updateAccount(account: Account)
 
     @Query(
-        "SELECT $ACCOUNT_NAME FROM $TABLE_ACCOUNTS"
+        "SELECT $ACCOUNT_NAME FROM $TABLE_ACCOUNTS",
     )
     fun getAccountNameList(): LiveData<List<String>>
 

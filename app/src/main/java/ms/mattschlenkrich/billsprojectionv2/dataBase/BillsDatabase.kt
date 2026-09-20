@@ -47,6 +47,7 @@ abstract class BillsDatabase : RoomDatabase() {
         private val LOCK = Any()
         private var useInMemory = false
 
+        @Suppress("unused")
         fun setUseInMemory(inMemory: Boolean) {
             useInMemory = inMemory
             resetInstance()

@@ -37,7 +37,7 @@ fun NavGraph(
     navController: NavHostController,
     activity: MainActivity,
     pagerState: PagerState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     NavHost(
         navController = navController,

@@ -1,7 +1,8 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.budgetView.compose
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.common.ALL_ITEMS
@@ -25,16 +28,20 @@ import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunction
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalVisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PendingItem(
     pending: TransactionDetailed,
     selectedAsset: String,
     assetList: List<String>,
     onTransactionClick: (TransactionDetailed) -> Unit,
+    onLongClick: () -> Unit = {},
+    isSelected: Boolean = false,
 ) {
     val df = LocalDateFunctions.current
     val nf = LocalNumberFunctions.current
     val vf = LocalVisualsFunctions.current
+    val haptic = LocalHapticFeedback.current
     val color = remember { Color(vf.getRandomColorInt()) }
     val isCredit = if (pending.toAccount?.accountName == selectedAsset) true
     else if (pending.fromAccount?.accountName == selectedAsset) false
@@ -45,7 +52,14 @@ fun PendingItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onTransactionClick(pending) }
+            .background(if (isSelected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent)
+            .combinedClickable(
+                onClick = { onTransactionClick(pending) },
+                onLongClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    onLongClick()
+                }
+            )
             .padding(vertical = 1.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

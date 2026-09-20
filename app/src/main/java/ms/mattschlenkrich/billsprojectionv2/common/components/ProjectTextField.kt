@@ -50,7 +50,7 @@ fun ProjectTextField(
     minLines: Int = 1,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = ProjectFieldDefaults.shape(),
-    colors: TextFieldColors = ProjectFieldDefaults.colors()
+    colors: TextFieldColors = ProjectFieldDefaults.colors(),
 ) {
     val isFocused by interactionSource.collectIsFocusedAsState()
     var textFieldValueState by remember {
@@ -160,7 +160,7 @@ fun ProjectTextField(
     minLines: Int = 1,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = ProjectFieldDefaults.shape(),
-    colors: TextFieldColors = ProjectFieldDefaults.colors()
+    colors: TextFieldColors = ProjectFieldDefaults.colors(),
 ) {
     val isFocused by interactionSource.collectIsFocusedAsState()
 

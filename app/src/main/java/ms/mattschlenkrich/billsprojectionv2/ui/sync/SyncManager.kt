@@ -312,7 +312,7 @@ class SyncManager(
                     deviceId,
                     onConflict,
                     onSyncError,
-                    isRestore = true
+                    isRestore = true,
                 )
 
                 onProgressUpdate("Copying records...")

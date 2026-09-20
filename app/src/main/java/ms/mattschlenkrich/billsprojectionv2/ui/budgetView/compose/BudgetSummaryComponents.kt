@@ -61,10 +61,9 @@ fun SummaryCard(
                         if (index == 0) "$s$currentTag" else s
                     },
                     selectedOption = if (payDayList.indexOf(selectedPayDay) == 0) "$selectedPayDay$currentTag" else selectedPayDay,
-                    onOptionSelected = { selected ->
-                        onPayDaySelected(selected.replace(currentTag, ""))
-                    },
-                )
+                ) { selected ->
+                    onPayDaySelected(selected.replace(currentTag, ""))
+                }
             }
 
             curAsset?.let { asset ->
@@ -116,7 +115,7 @@ fun SummaryCard(
                     HorizontalDivider(modifier = Modifier.padding(vertical = 1.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         val creditLimit = asset.account.accountCreditLimit
                         val available = (creditLimit + pendingAmount) - asset.account.accountOwing
@@ -255,7 +254,7 @@ fun SurplusDeficitInfo(
 ) {
     val nf = LocalNumberFunctions.current
     var surplus = budgetTotals.credits - budgetTotals.debits
-    if (asset != null && payDayList.isNotEmpty() && selectedPayDay == payDayList[0]) {
+    if ((asset != null) && payDayList.isNotEmpty() && (selectedPayDay == payDayList[0])) {
         val accountType = asset.accountType
         if (accountType?.keepTotals == true) {
             surplus += asset.account.accountBalance
