@@ -36,16 +36,16 @@ android {
         minSdk 28
         targetSdk 37
         //noinspection EditedTargetSdkVersion
-        versionCode 24
-        versionName 'v2'
+        versionCode 25
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: 'false'
-        versionNameSuffix '- view updates'
+        versionNameSuffix '- tweaks'
         signingConfig signingConfigs.debug
         buildConfigField "String", "FAILSAFE_PASSWORD", "\"${localProperties.getProperty('FAILSAFE_PASSWORD')}\""
+        versionName 'BPv2'
     }
 
     buildTypes {

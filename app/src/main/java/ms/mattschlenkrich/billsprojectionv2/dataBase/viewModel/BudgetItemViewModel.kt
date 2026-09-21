@@ -137,4 +137,9 @@ class BudgetItemViewModel(
                 lock, payDay, updateTime
             )
         }
+
+    fun cancelAllRegularItemsForPayDay(payDay: String, updateTime: String) =
+        viewModelScope.launch {
+            budgetItemRepository.cancelAllRegularItemsForPayDay(payDay, updateTime)
+        }
 }

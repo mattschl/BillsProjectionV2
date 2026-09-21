@@ -253,7 +253,7 @@ fun SyncScreen(
                     },
                     confirmButton = {
                         TextButton(onClick = { showAdvancedOptions = false }) {
-                            Text("Close")
+                            Text(stringResource(R.string.action_ok))
                         }
                     }
                 )
@@ -271,12 +271,12 @@ fun SyncScreen(
                                 onRepairLocal()
                             }
                         ) {
-                            Text("Repair Now")
+                            Text(stringResource(R.string.action_confirm))
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { showRepairConfirm = false }) {
-                            Text("Cancel")
+                            Text(stringResource(R.string.action_cancel))
                         }
                     }
                 )
@@ -388,7 +388,7 @@ fun SyncScreen(
                     },
                     dismissButton = {
                         TextButton(onClick = { showBackupList = false }) {
-                            Text("Cancel")
+                            Text(stringResource(R.string.action_cancel))
                         }
                     }
                 )
@@ -400,7 +400,7 @@ fun SyncScreen(
                     text = { Text("No database backups were found in your Google Drive App Data folder.") },
                     confirmButton = {
                         TextButton(onClick = { showBackupList = false }) {
-                            Text("OK")
+                            Text(stringResource(R.string.action_ok))
                         }
                     }
                 )
@@ -416,12 +416,15 @@ fun SyncScreen(
                             showDeleteConfirm = null
                             onDeleteBackup(meta)
                         }) {
-                            Text("Delete", color = MaterialTheme.colorScheme.error)
+                            Text(
+                                stringResource(R.string.action_delete),
+                                color = MaterialTheme.colorScheme.error
+                            )
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { showDeleteConfirm = null }) {
-                            Text("Cancel")
+                            Text(stringResource(R.string.action_cancel))
                         }
                     }
                 )
@@ -438,12 +441,15 @@ fun SyncScreen(
                             showRestoreLocalConfirm = null
                             onRestoreLocal(target)
                         }) {
-                            Text("Restore Now", color = MaterialTheme.colorScheme.error)
+                            Text(
+                                stringResource(R.string.action_confirm),
+                                color = MaterialTheme.colorScheme.error
+                            )
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { showRestoreLocalConfirm = null }) {
-                            Text("Cancel")
+                            Text(stringResource(R.string.action_cancel))
                         }
                     }
                 )
@@ -461,7 +467,10 @@ fun SyncScreen(
                                 showRestoreConfirm = null
                                 onRestore(target)
                             }) {
-                                Text("Restore Now", color = MaterialTheme.colorScheme.error)
+                                Text(
+                                    stringResource(R.string.action_confirm),
+                                    color = MaterialTheme.colorScheme.error
+                                )
                             }
                             TextButton(onClick = {
                                 showDeleteOthersConfirm = fileName
@@ -476,7 +485,7 @@ fun SyncScreen(
                     },
                     dismissButton = {
                         TextButton(onClick = { showRestoreConfirm = null }) {
-                            Text("Cancel")
+                            Text(stringResource(R.string.action_cancel))
                         }
                     }
                 )
@@ -494,12 +503,15 @@ fun SyncScreen(
                             onRestore(target)
                             onDeleteOtherBackups(listOf(target))
                         }) {
-                            Text("Confirm & Purge", color = MaterialTheme.colorScheme.error)
+                            Text(
+                                stringResource(R.string.action_confirm),
+                                color = MaterialTheme.colorScheme.error
+                            )
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { showDeleteOthersConfirm = null }) {
-                            Text("Cancel")
+                            Text(stringResource(R.string.action_cancel))
                         }
                     }
                 )
@@ -538,7 +550,7 @@ fun SyncScreen(
                     text = { Text(stringResource(R.string.msg_sync_transaction_warning)) },
                     confirmButton = {
                         TextButton(onClick = { viewModel.showTransactionWarning = false }) {
-                            Text(stringResource(android.R.string.ok))
+                            Text(stringResource(R.string.action_ok))
                         }
                     }
                 )
@@ -559,7 +571,7 @@ fun SyncScreen(
                     },
                     confirmButton = {
                         TextButton(onClick = { viewModel.syncErrors = emptyList() }) {
-                            Text(stringResource(android.R.string.ok))
+                            Text(stringResource(R.string.action_ok))
                         }
                     }
                 )

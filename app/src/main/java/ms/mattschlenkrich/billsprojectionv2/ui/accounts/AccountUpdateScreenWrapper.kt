@@ -317,13 +317,11 @@ fun AccountUpdateScreenWrapper(
                     AlertDialog.Builder(mainActivity).apply {
                         setTitle(mainActivity.getString(R.string.title_rename_account))
                         setMessage(
-                            "${mainActivity.getString(R.string.prompt_rename_account)}${
-                                mainActivity.getString(
-                                    R.string.label_note_header
-                                )
-                            }${mainActivity.getString(R.string.msg_wont_replace_account_type)}"
+                            mainActivity.getString(R.string.prompt_rename_account) + "\n\n" +
+                                    mainActivity.getString(R.string.label_note_header) +
+                                    mainActivity.getString(R.string.msg_wont_replace_account_type)
                         )
-                        setPositiveButton(mainActivity.getString(R.string.action_update_account)) { _, _ ->
+                        setPositiveButton(mainActivity.getString(R.string.action_confirm)) { _, _ ->
                             accountViewModel.updateAccount(updatedAccount)
                             mainViewModel.removeCallingFragment(TAG)
                             mainViewModel.setAccountWithType(null)

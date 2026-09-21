@@ -3,6 +3,7 @@ package ms.mattschlenkrich.billsprojectionv2.ui.budgetView
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Rule
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
@@ -11,6 +12,8 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Receipt
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
@@ -127,6 +130,25 @@ object BudgetViewActionHelper {
                 activity.getString(R.string.action_delete_pending_transaction),
                 Icons.Default.Delete
             ) { onDelete() }
+        )
+    }
+
+    fun getScheduledHeaderOptions(
+        activity: MainActivity,
+        isShowingAll: Boolean,
+        onToggleShowAll: () -> Unit,
+        onCancelAllRegular: () -> Unit
+    ): List<ActionOption> {
+        return listOf(
+            ActionOption(
+                if (isShowingAll) activity.getString(R.string.action_hide_completed_cancelled)
+                else activity.getString(R.string.action_show_all_items),
+                if (isShowingAll) Icons.Default.VisibilityOff else Icons.Default.Visibility
+            ) { onToggleShowAll() },
+            ActionOption(
+                activity.getString(R.string.action_cancel_all_regular_items),
+                Icons.Default.Block
+            ) { onCancelAllRegular() }
         )
     }
 }

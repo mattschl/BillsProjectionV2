@@ -323,7 +323,7 @@ class MainActivity : AppCompatActivity() {
             setMessage(
                 getString(R.string.msg_warning_drastic_change)
             )
-            setPositiveButton(getString(R.string.action_continue)) { _, _ ->
+            setPositiveButton(getString(R.string.action_confirm)) { _, _ ->
                 deleteFuturePredictions()
             }
             setNegativeButton(getString(R.string.action_cancel)) { _, _ -> }
@@ -362,7 +362,7 @@ class MainActivity : AppCompatActivity() {
             AlertDialog.Builder(this).apply {
                 setTitle(getString(R.string.title_update_results))
                 setMessage(msg)
-                setPositiveButton(getString(android.R.string.ok)) { _, _ -> }
+                setPositiveButton(getString(R.string.action_ok)) { _, _ -> }
                 show()
             }
         }

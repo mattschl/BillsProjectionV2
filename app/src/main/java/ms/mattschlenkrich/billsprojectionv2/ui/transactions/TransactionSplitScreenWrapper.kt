@@ -178,7 +178,7 @@ fun TransactionSplitScreenWrapper(
                             R.string.msg_budget_rules_purpose
                         )
                     )
-                    setNegativeButton(mainActivity.getString(R.string.action_retry), null)
+                    setNegativeButton(mainActivity.getString(R.string.action_cancel), null)
                 }.create().show()
                 "" // Return empty to indicate not valid but handled
             } else {
@@ -218,7 +218,7 @@ fun TransactionSplitScreenWrapper(
                             mainViewModel.removeCallingFragment(TAG)
                             navController.popBackStack()
                         }
-                    }.setNegativeButton(mainActivity.getString(R.string.action_go_back), null)
+                    }.setNegativeButton(mainActivity.getString(R.string.action_cancel), null)
                     .show()
             } else if (answer.isNotEmpty()) {
                 Toast.makeText(

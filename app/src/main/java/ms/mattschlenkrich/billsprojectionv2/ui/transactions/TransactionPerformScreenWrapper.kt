@@ -179,7 +179,7 @@ fun TransactionPerformScreenWrapper(
                             navController.popBackStack()
                         }
                     }
-                    .setNegativeButton(mainActivity.getString(R.string.action_go_back), null)
+                    .setNegativeButton(mainActivity.getString(R.string.action_cancel), null)
                     .show()
             } else {
                 val errorMsg = when {

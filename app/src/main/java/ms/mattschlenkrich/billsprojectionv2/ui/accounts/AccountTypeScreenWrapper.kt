@@ -228,11 +228,11 @@ fun AccountTypeUpdateScreenWrapper(
                     AlertDialog.Builder(mainActivity).apply {
                         setTitle(mainActivity.getString(R.string.title_rename_account_type))
                         setMessage(
-                            mainActivity.getString(R.string.prompt_rename_account_type) +
+                            mainActivity.getString(R.string.prompt_rename_account_type) + "\n\n" +
                                     mainActivity.getString(R.string.label_note_header) +
                                     mainActivity.getString(R.string.msg_wont_replace_account_type)
                         )
-                        setPositiveButton(mainActivity.getString(R.string.action_update_account_type)) { _, _ ->
+                        setPositiveButton(mainActivity.getString(R.string.action_confirm)) { _, _ ->
                             accountViewModel.updateAccountType(updatedType)
                             navController.popBackStack()
                         }

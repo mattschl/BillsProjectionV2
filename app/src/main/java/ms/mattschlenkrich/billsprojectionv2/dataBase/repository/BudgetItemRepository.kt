@@ -93,4 +93,7 @@ class BudgetItemRepository(private val db: BillsDatabase) {
     ) = db.getBudgetItemDao().lockUnlockBudgetItem(
         lock, payDay, updateTime
     )
+
+    suspend fun cancelAllRegularItemsForPayDay(payDay: String, updateTime: String) =
+        db.getBudgetItemDao().cancelAllRegularItemsForPayDay(payDay, updateTime)
 }

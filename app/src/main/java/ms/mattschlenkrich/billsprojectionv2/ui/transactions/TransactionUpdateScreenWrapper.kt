@@ -63,7 +63,7 @@ fun TransactionUpdateScreenWrapper(
             .setPositiveButton(mainActivity.getString(R.string.action_confirm)) { _, _ ->
                 updateTransaction()
             }
-            .setNegativeButton(mainActivity.getString(R.string.action_go_back), null)
+            .setNegativeButton(mainActivity.getString(R.string.action_cancel), null)
             .show()
     }
 
@@ -72,7 +72,7 @@ fun TransactionUpdateScreenWrapper(
             setMessage(
                 mainActivity.getString(R.string.msg_no_budget_rule) + mainActivity.getString(R.string.msg_budget_rules_purpose)
             )
-            setPositiveButton(mainActivity.getString(R.string.action_save_anyway)) { _, _ ->
+            setPositiveButton(mainActivity.getString(R.string.action_confirm)) { _, _ ->
                 confirmUpdateTransaction()
             }
             setNegativeButton(mainActivity.getString(R.string.action_retry), null)

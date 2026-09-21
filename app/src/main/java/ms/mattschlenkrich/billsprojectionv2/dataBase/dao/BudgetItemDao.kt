@@ -303,4 +303,15 @@ interface BudgetItemDao {
     suspend fun lockUnlockBudgetItem(
         lock: Boolean, payDay: String, updateTime: String
     )
+
+    @Query(
+        "UPDATE $TABLE_BUDGET_ITEMS " +
+                "SET $BUDGET_ITEM_IS_CANCELLED = 1, " +
+                "$BUDGET_ITEM_UPDATE_TIME = :updateTime " +
+                "WHERE $BUDGET_ITEM_PAY_DAY = :payDay " +
+                "AND $BUDGET_ITEM_IS_PAY_DAY_ITEM = 0 " +
+                "AND $BUDGET_ITEM_IS_COMPLETED = 0 " +
+                "AND $BUDGET_ITEM_IS_DELETED = 0"
+    )
+    suspend fun cancelAllRegularItemsForPayDay(payDay: String, updateTime: String)
 }

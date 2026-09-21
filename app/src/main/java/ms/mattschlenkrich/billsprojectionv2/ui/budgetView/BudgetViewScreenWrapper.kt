@@ -309,7 +309,7 @@ fun BudgetViewScreenWrapper(
                                         AlertDialog.Builder(activity)
                                             .setTitle(activity.getString(R.string.title_confirm_complete_transaction))
                                             .setMessage(display)
-                                            .setPositiveButton(activity.getString(R.string.action_perform)) { _, _ ->
+                                            .setPositiveButton(activity.getString(R.string.action_confirm)) { _, _ ->
                                                 activity.lifecycleScope.launch {
                                                     accountUpdateViewModel.performTransaction(
                                                         Transactions(
@@ -375,7 +375,7 @@ fun BudgetViewScreenWrapper(
                                             )
                                         }"
                                     )
-                                    .setPositiveButton(activity.getString(R.string.action_cancel_now)) { _, _ ->
+                                    .setPositiveButton(activity.getString(R.string.action_confirm)) { _, _ ->
                                         budgetItemViewModel.cancelBudgetItem(
                                             curBudget.biRuleId,
                                             curBudget.biProjectedDate,
@@ -391,7 +391,7 @@ fun BudgetViewScreenWrapper(
                                             }
                                         }
                                     }.setNegativeButton(
-                                        activity.getString(R.string.action_ignore),
+                                        activity.getString(R.string.action_cancel),
                                         null
                                     )
                                     .show()
@@ -511,7 +511,29 @@ fun BudgetViewScreenWrapper(
             }
         },
         onScheduledExpensesLongClick = {
-            showAllBudgetItems = !showAllBudgetItems
+            actionSheetState.show(
+                activity.getString(R.string.title_choose_action),
+                BudgetViewActionHelper.getScheduledHeaderOptions(
+                    activity = activity,
+                    isShowingAll = showAllBudgetItems,
+                    onToggleShowAll = {
+                        showAllBudgetItems = !showAllBudgetItems
+                    },
+                    onCancelAllRegular = {
+                        AlertDialog.Builder(activity)
+                            .setTitle(activity.getString(R.string.title_confirm_cancel_all))
+                            .setMessage(activity.getString(R.string.msg_confirm_cancel_all_regular))
+                            .setPositiveButton(activity.getString(R.string.action_confirm)) { _, _ ->
+                                budgetItemViewModel.cancelAllRegularItemsForPayDay(
+                                    selectedPayDay,
+                                    df.getCurrentTimeAsString()
+                                )
+                            }
+                            .setNegativeButton(activity.getString(R.string.action_cancel), null)
+                            .show()
+                    }
+                )
+            )
         },
         onPendingHeaderLongClick = {
             showAllPendingItems = !showAllPendingItems
