@@ -201,6 +201,48 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        LaunchedEffect(currentRoute, pagerState.currentPage) {
+            val titleResId = when (currentRoute) {
+                Screen.MainPager.route -> when (pagerState.currentPage) {
+                    0 -> R.string.title_view_budget
+                    1 -> R.string.title_view_transaction_history
+                    2 -> R.string.title_accounts
+                    3 -> R.string.title_transaction_analysis
+                    4 -> R.string.title_budget_rules
+                    else -> R.string.title_view_budget
+                }
+
+                Screen.BudgetView.route -> R.string.title_view_budget
+                Screen.Transactions.route -> R.string.title_view_transaction_history
+                Screen.Accounts.route -> R.string.title_accounts
+                Screen.Analysis.route -> R.string.title_transaction_analysis
+                Screen.BudgetRules.route -> R.string.title_budget_rules
+                Screen.Help.route -> R.string.label_help
+                Screen.Settings.route -> R.string.nav_settings
+                Screen.BudgetList.route -> R.string.title_budget_summary
+                Screen.AccountAdd.route -> R.string.title_add_account
+                Screen.AccountUpdate.route -> R.string.action_update_account
+                Screen.TransactionAdd.route -> R.string.title_add_transaction
+                Screen.TransactionUpdate.route -> R.string.action_update_transaction
+                Screen.TransactionPerform.route -> R.string.title_perform_transaction
+                Screen.TransactionSplit.route -> R.string.title_splitting_transaction
+                Screen.BudgetItemAdd.route -> R.string.title_add_budget_item
+                Screen.BudgetItemUpdate.route -> R.string.action_update_budget_item
+                Screen.BudgetRuleAdd.route -> R.string.action_add_budget_rule
+                Screen.BudgetRuleUpdate.route -> R.string.action_update_budget_rule
+                Screen.AccountTypes.route -> R.string.label_account_type
+                Screen.AccountTypeAdd.route -> R.string.action_add_account_type
+                Screen.AccountTypeUpdate.route -> R.string.action_update_account_type
+                Screen.AccountChoose.route -> R.string.title_choose_account
+                Screen.BudgetRuleChoose.route -> R.string.title_choose_budget_rule
+                Screen.Calculator.route -> R.string.title_calculator
+                else -> null
+            }
+            if (titleResId != null) {
+                topMenuBar.setTitle(titleResId)
+            }
+        }
+
         val isTopLevel = (currentRoute == Screen.MainPager.route) || (currentRoute in listOf(
             Screen.BudgetView.route,
             Screen.Transactions.route,

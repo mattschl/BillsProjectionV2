@@ -33,10 +33,6 @@ fun TransactionAddScreenWrapper(
     val state = rememberTransactionEditState(nf, df)
 
     LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.title_add_transaction)
-    }
-
-    LaunchedEffect(Unit) {
         val cached = mainViewModel.getTransactionDetailed()
         if (cached != null) {
             state.updateFrom(cached, mainViewModel.getTransferNum())

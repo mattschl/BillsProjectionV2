@@ -9,7 +9,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -21,9 +20,6 @@ import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 
 @Composable
 fun HelpScreenWrapper(activity: MainActivity) {
-    LaunchedEffect(Unit) {
-        activity.topMenuBar.setTitle(R.string.label_help)
-    }
     Column(
         modifier = Modifier
             .fillMaxSize()

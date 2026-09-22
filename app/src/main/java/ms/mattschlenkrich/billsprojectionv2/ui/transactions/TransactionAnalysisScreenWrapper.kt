@@ -53,10 +53,6 @@ fun TransactionAnalysisScreenWrapper(
     val actionSheetState = rememberActionSheetState()
     val state = rememberTransactionEditState(nf, df)
 
-    LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.title_transaction_analysis)
-    }
-
     var timeRange by remember { mutableStateOf(TimeRange.LAST_YEAR) }
     var isSearchEnabled by remember { mutableStateOf(value = false) }
     var searchQueryInput by remember { mutableStateOf("") }

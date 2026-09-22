@@ -10,7 +10,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
-import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.functions.CalculatorLogic
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
@@ -22,9 +21,6 @@ fun CalculatorScreenWrapper(
 ) {
     val mainViewModel = mainActivity.mainViewModel
     val nf = LocalNumberFunctions.current
-    LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.setTitle(R.string.title_calculator)
-    }
 
     var displayValue by remember { mutableStateOf("0") }
     val formulaList = remember { mutableStateListOf("") }

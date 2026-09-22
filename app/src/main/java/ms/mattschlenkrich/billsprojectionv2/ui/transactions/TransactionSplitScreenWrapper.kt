@@ -39,10 +39,6 @@ fun TransactionSplitScreenWrapper(
     val df = LocalDateFunctions.current
     val state = rememberTransactionEditState(nf, df)
 
-    LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.title_splitting_transaction)
-    }
-
     var originalAmount by remember { mutableDoubleStateOf(0.0) }
 
     fun updateAmountsDisplay() {

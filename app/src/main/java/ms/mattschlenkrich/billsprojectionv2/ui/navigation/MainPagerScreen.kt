@@ -4,9 +4,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountViewScreenWrapper
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.BudgetRuleScreenWrapper
@@ -20,18 +18,6 @@ fun MainPagerScreen(
     navController: NavHostControllerWrapper,
     pagerState: PagerState
 ) {
-    LaunchedEffect(pagerState.currentPage) {
-        val titleResId = when (pagerState.currentPage) {
-            0 -> R.string.title_view_budget
-            1 -> R.string.title_view_transaction_history
-            2 -> R.string.title_accounts
-            3 -> R.string.title_transaction_analysis
-            4 -> R.string.title_budget_rules
-            else -> R.string.title_view_budget
-        }
-        activity.topMenuBar.setTitle(titleResId)
-    }
-
     HorizontalPager(
         state = pagerState,
         modifier = Modifier.fillMaxSize(),

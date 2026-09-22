@@ -42,10 +42,6 @@ fun TransactionViewScreenWrapper(
     val nf = LocalNumberFunctions.current
     val actionSheetState = rememberActionSheetState()
 
-    LaunchedEffect(Unit) {
-        activity.topMenuBar.title = activity.getString(R.string.title_view_transaction_history)
-    }
-
     var searchQuery by remember { mutableStateOf("") }
     var selectedItems by remember { mutableStateOf(emptySet<Long>()) }
 

@@ -7,7 +7,6 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -40,10 +39,6 @@ fun BudgetRuleScreenWrapper(
     val nf = LocalNumberFunctions.current
     val df = LocalDateFunctions.current
     val actionSheetState = rememberActionSheetState()
-
-    LaunchedEffect(Unit) {
-        activity.topMenuBar.setTitle(R.string.title_budget_rules)
-    }
 
     var searchQuery by remember { mutableStateOf("") }
     val budgetRulesDetailed by if (searchQuery.isEmpty()) {

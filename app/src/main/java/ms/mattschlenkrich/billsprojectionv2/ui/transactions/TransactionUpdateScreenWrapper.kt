@@ -130,7 +130,6 @@ fun TransactionUpdateScreenWrapper(
     }
 
     LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.action_update_transaction)
         if (mainViewModel.getOldTransaction() != null && mainViewModel.getTransactionDetailed() == null) {
             val transFull = mainViewModel.getOldTransaction() ?: return@LaunchedEffect
             state.updateFrom(

@@ -3,7 +3,6 @@ package ms.mattschlenkrich.billsprojectionv2.ui.accounts
 import android.app.AlertDialog
 import android.widget.Toast
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -34,10 +33,6 @@ fun AccountTypesScreenWrapper(
     val mainViewModel = mainActivity.mainViewModel
     val accountViewModel = mainActivity.accountViewModel
 
-    LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.label_account_type)
-    }
-
     var searchQuery by remember { mutableStateOf("") }
 
     val accountTypes by if (searchQuery.isEmpty()) {
@@ -60,13 +55,18 @@ fun AccountTypesScreenWrapper(
                     AccountWithType(accountWithType.account, accountType)
                 )
             }
-            val mCallingFragment = mainViewModel.getCallingFragments() ?: ""
-            when {
-                mCallingFragment.contains(SCREEN_ACCOUNT_UPDATE) -> {
+            val callingFragments = mainViewModel.getCallingFragments() ?: ""
+            val callerTags = callingFragments.split(",")
+                .map { it.trim() }
+                .filter { it.isNotEmpty() && it != TAG }
+            val lastCaller = callerTags.lastOrNull() ?: ""
+
+            when (lastCaller) {
+                SCREEN_ACCOUNT_UPDATE -> {
                     navController.navigate(Screen.AccountUpdate.route)
                 }
 
-                mCallingFragment.contains(SCREEN_ACCOUNT_ADD) -> {
+                SCREEN_ACCOUNT_ADD -> {
                     navController.navigate(Screen.AccountAdd.route)
                 }
 
@@ -102,10 +102,6 @@ fun AccountTypeAddScreenWrapper(
     val accountViewModel = mainActivity.accountViewModel
     val nf = remember { NumberFunctions() }
     val df = remember { DateFunctions() }
-
-    LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.action_add_account_type)
-    }
 
     var name by remember { mutableStateOf("") }
     var keepTotals by remember { mutableStateOf(false) }
@@ -174,10 +170,6 @@ fun AccountTypeUpdateScreenWrapper(
     val df = remember { DateFunctions() }
 
     val accountType = mainViewModel.getAccountType() ?: return
-
-    LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.action_update_account_type)
-    }
 
     var name by remember { mutableStateOf(accountType.accountType) }
     var keepTotals by remember { mutableStateOf(accountType.keepTotals) }

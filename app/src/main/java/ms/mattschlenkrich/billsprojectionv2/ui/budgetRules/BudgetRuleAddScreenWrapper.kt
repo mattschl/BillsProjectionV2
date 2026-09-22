@@ -44,7 +44,6 @@ fun BudgetRuleAddScreenWrapper(
     var budgetNameList by remember { mutableStateOf<List<String>>(emptyList()) }
 
     LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.action_add_budget_rule)
         scope.launch(Dispatchers.IO) {
             budgetNameList = budgetRuleViewModel.getBudgetRuleNameList()
         }

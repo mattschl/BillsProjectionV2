@@ -1,14 +1,12 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.accounts
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
-import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_TO_ACCOUNT
 import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_ACCOUNT_CHOOSE
@@ -35,9 +33,6 @@ fun AccountChooseScreenWrapper(
 ) {
     val mainViewModel = mainActivity.mainViewModel
     val accountViewModel = mainActivity.accountViewModel
-    LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.title_choose_account)
-    }
 
     var searchQuery by remember { mutableStateOf("") }
     val accountsWithType by if (searchQuery.isEmpty()) {
@@ -52,24 +47,36 @@ fun AccountChooseScreenWrapper(
         onSearchQueryChange = { searchQuery = it },
         accountsWithType = accountsWithType,
         onAccountClick = { curAccount ->
-            val mCallingFragment = mainViewModel.getCallingFragments() ?: ""
-            if (mCallingFragment.contains(SCREEN_TRANSACTION_ADD) ||
-                mCallingFragment.contains(SCREEN_TRANSACTION_PERFORM) ||
-                mCallingFragment.contains(SCREEN_TRANSACTION_UPDATE)
-            ) {
-                populateTransactionDetailed(mainActivity, curAccount)
-            } else if (mCallingFragment.contains(SCREEN_BUDGET_RULE_ADD) ||
-                mCallingFragment.contains(SCREEN_BUDGET_RULE_UPDATE)
-            ) {
-                populateBudgetRuleDetailed(mainActivity, curAccount)
-            } else if (mCallingFragment.contains(SCREEN_BUDGET_ITEM_ADD) ||
-                mCallingFragment.contains(SCREEN_BUDGET_ITEM_UPDATE)
-            ) {
-                populateBudgetItemDetailed(mainActivity, curAccount)
-            } else if (mCallingFragment.contains(SCREEN_TRANSACTION_SPLIT)) {
-                populateSplitTransaction(mainActivity, curAccount)
-            } else if (mCallingFragment.contains(SCREEN_TRANSACTION_ANALYSIS)) {
-                mainViewModel.setAccountWithType(curAccount)
+            val callingFragments = mainViewModel.getCallingFragments() ?: ""
+            val callerTags = callingFragments.split(",")
+                .map { it.trim() }
+                .filter { it.isNotEmpty() && it != TAG }
+            val lastCaller = callerTags.lastOrNull() ?: ""
+
+            when (lastCaller) {
+                SCREEN_TRANSACTION_ADD,
+                SCREEN_TRANSACTION_PERFORM,
+                SCREEN_TRANSACTION_UPDATE -> {
+                    populateTransactionDetailed(mainActivity, curAccount)
+                }
+
+                SCREEN_BUDGET_RULE_ADD,
+                SCREEN_BUDGET_RULE_UPDATE -> {
+                    populateBudgetRuleDetailed(mainActivity, curAccount)
+                }
+
+                SCREEN_BUDGET_ITEM_ADD,
+                SCREEN_BUDGET_ITEM_UPDATE -> {
+                    populateBudgetItemDetailed(mainActivity, curAccount)
+                }
+
+                SCREEN_TRANSACTION_SPLIT -> {
+                    populateSplitTransaction(mainActivity, curAccount)
+                }
+
+                SCREEN_TRANSACTION_ANALYSIS -> {
+                    mainViewModel.setAccountWithType(curAccount)
+                }
             }
             navController.popBackStack()
         },

@@ -19,7 +19,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -48,10 +47,6 @@ fun SettingsScreenWrapper(
     val settingsManager = remember { SettingsManager(mainActivity) }
     val initialSettings = remember { settingsManager.getSettings() }
     val state = rememberSettingsEditState(initialSettings)
-
-    LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.setTitle(R.string.nav_settings)
-    }
 
     val rawAssetList by mainActivity.budgetItemViewModel.getAssetsForBudget()
         .observeAsState(initial = emptyList())

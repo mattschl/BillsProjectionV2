@@ -53,10 +53,6 @@ fun AccountUpdateScreenWrapper(
     val actionSheetState = rememberActionSheetState()
     val state = rememberAccountEditState(nf, df)
 
-    LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.action_update_account)
-    }
-
     val accountWithTypeState = remember { mutableStateOf(mainViewModel.getAccountWithType()) }
     val accountNames by accountViewModel.getAccountNameList().observeAsState(emptyList())
 

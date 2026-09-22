@@ -34,8 +34,6 @@ fun TransactionPerformScreenWrapper(
     val state = rememberTransactionEditState(nf, df)
 
     LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.title_perform_transaction)
-
         val cachedTrans = mainViewModel.getTransactionDetailed()
         val cachedBudgetItem = mainViewModel.getBudgetItemDetailed()
 

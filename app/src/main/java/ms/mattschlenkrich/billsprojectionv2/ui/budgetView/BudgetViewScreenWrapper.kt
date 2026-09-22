@@ -47,10 +47,6 @@ fun BudgetViewScreenWrapper(
     val nf = LocalNumberFunctions.current
     val actionSheetState = rememberActionSheetState()
 
-    LaunchedEffect(Unit) {
-        activity.topMenuBar.title = activity.getString(R.string.title_view_budget)
-    }
-
     val rawAssetList by budgetItemViewModel.getAssetsForBudget()
         .observeAsState(initial = emptyList())
     val assetList = remember(rawAssetList) {

@@ -44,8 +44,7 @@ fun BudgetItemUpdateScreenWrapper(
     val payDays by budgetItemViewModel.getPayDays().observeAsState(emptyList())
     val budgetItemDetailedCached = mainViewModel.getBudgetItemDetailed()
 
-    LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.action_update_budget_item)
+    LaunchedEffect(budgetItemDetailedCached) {
         if (budgetItemDetailedCached != null) {
             val item = budgetItemDetailedCached.budgetItem
             val rule = budgetItemDetailedCached.budgetRule

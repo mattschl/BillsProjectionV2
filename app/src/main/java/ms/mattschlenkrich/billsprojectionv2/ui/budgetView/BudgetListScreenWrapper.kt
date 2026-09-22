@@ -6,7 +6,6 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.NavHostController
@@ -33,10 +32,6 @@ fun BudgetListScreenWrapper(
     val budgetRuleViewModel = mainActivity.budgetRuleViewModel
     val df = LocalDateFunctions.current
     val actionSheetState = rememberActionSheetState()
-
-    LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.setTitle(R.string.title_budget_summary)
-    }
 
     val budgetDate = df.getCurrentDateAsString()
     val monthlyRules by budgetRuleViewModel.getBudgetRulesCompleteMonthly(budgetDate)

@@ -27,10 +27,6 @@ fun AccountAddScreenWrapper(
     val df = LocalDateFunctions.current
     val state = rememberAccountEditState(nf, df)
 
-    LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.title_add_account)
-    }
-
     // Initialize values from cache if they exist
     val cached = mainViewModel.getAccountWithType()
     LaunchedEffect(Unit) {

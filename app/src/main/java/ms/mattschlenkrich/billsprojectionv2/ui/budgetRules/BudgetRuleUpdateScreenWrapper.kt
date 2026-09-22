@@ -87,7 +87,6 @@ fun BudgetRuleUpdateScreenWrapper(
     }.observeAsState(emptyList())
 
     LaunchedEffect(Unit) {
-        mainActivity.topMenuBar.title = mainActivity.getString(R.string.action_update_budget_rule)
         scope.launch(Dispatchers.IO) {
             budgetNameList = budgetRuleViewModel.getBudgetRuleNameList()
         }
