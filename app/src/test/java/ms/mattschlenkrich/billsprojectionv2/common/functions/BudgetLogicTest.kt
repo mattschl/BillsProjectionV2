@@ -17,7 +17,7 @@ class BudgetLogicTest {
             totalCount = 4,
             daysElapsed = 28,
             frequencyTypeId = FREQ_WEEKLY,
-            frequencyCount = 1
+            frequencyCount = 1,
         )
         assertEquals(25.0, result!!, 0.001)
     }

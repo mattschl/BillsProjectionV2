@@ -64,10 +64,21 @@ class AccountUpdateViewModelTest {
             transFromAccountPending = false,
             transAmount = amount,
             transIsDeleted = false,
-            transUpdateTime = ""
+            transUpdateTime = "",
         )
 
-        val toAccount = Account(toAccountId, "To", "123", 1L, 0.0, 500.0, 0.0, 0.0, false, "")
+        val toAccount = Account(
+            toAccountId,
+            "To",
+            "123",
+            1L,
+            0.0,
+            500.0,
+            0.0,
+            0.0,
+            accIsDeleted = false,
+            accUpdateTime = ""
+        )
         val fromAccount =
             Account(fromAccountId, "From", "456", 2L, 0.0, 1000.0, 0.0, 0.0, false, "")
         val toAccountType =

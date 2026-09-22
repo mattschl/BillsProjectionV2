@@ -16,13 +16,13 @@ object TransactionMessageHelper {
 
         var display = "${context.getString(R.string.msg_will_perform)}${trans.transName}${
             context.getString(R.string.text_for_padded)
-        }${nf.getDollarsFromDouble(trans.transAmount)}${context.getString(R.string.text_from_header)}${fromAccountName}"
+        }${nf.getDollarsFromDouble(trans.transAmount)}${context.getString(R.string.text_from_header)}$fromAccountName"
 
         if (trans.transFromAccountPending) {
             display += context.getString(R.string.text_pending_suffix)
         }
 
-        display += "${context.getString(R.string.text_to_header)}${toAccountName}"
+        display += "${context.getString(R.string.text_to_header)}$toAccountName"
 
         if (trans.transToAccountPending) {
             display += context.getString(R.string.text_pending_suffix)
@@ -47,7 +47,7 @@ object TransactionMessageHelper {
         }"
 
         if (trans.transToAccountPending) {
-            display += "${context.getString(R.string.label_to_colon)}${toAccountName}"
+            display += "${context.getString(R.string.label_to_colon)}$toAccountName"
         }
 
         if (trans.transToAccountPending && trans.transFromAccountPending) {
@@ -55,7 +55,7 @@ object TransactionMessageHelper {
         }
 
         if (trans.transFromAccountPending) {
-            display += "${context.getString(R.string.label_from_header)}${fromAccountName}"
+            display += "${context.getString(R.string.label_from_header)}$fromAccountName"
         }
 
         return display

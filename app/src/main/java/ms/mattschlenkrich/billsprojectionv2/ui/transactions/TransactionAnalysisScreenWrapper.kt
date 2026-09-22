@@ -100,7 +100,7 @@ fun TransactionAnalysisScreenWrapper(
         accountId,
         query,
         effectiveStartDate,
-        effectiveEndDate
+        effectiveEndDate,
     ) {
         transactionViewModel.getTransactionsFiltered(
             budgetRuleId,

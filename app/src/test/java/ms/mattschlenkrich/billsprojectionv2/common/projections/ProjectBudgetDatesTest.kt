@@ -9,7 +9,7 @@ import java.time.LocalDate
 class ProjectBudgetDatesTest {
 
     private val frequencyTypes = arrayOf(
-        "Monthly", "Weekly", "Yearly", "On Payday", "Manually", "Special"
+        "Monthly", "Weekly", "Yearly", "On Payday", "Manually", "Special",
     )
     private val daysOfWeek = arrayOf(
         "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
@@ -25,7 +25,7 @@ class ProjectBudgetDatesTest {
         val result = projectBudgetDates.projectWeekly(startDate, endDate, 1)
 
         assertTrue("Should have at least 3 future dates", result.size >= 3)
-        for (i in 0 until result.size - 1) {
+        for (i in 0 until (result.size - 1)) {
             assertEquals(
                 "Dates should be exactly 1 week apart",
                 result[i].plusWeeks(1),

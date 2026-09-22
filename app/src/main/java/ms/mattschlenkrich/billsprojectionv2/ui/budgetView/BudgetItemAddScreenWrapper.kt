@@ -24,7 +24,7 @@ private const val TAG = SCREEN_BUDGET_ITEM_ADD
 @Composable
 fun BudgetItemAddScreenWrapper(
     mainActivity: MainActivity,
-    navController: NavController
+    navController: NavController,
 ) {
     val mainViewModel = mainActivity.mainViewModel
     val budgetItemViewModel = mainActivity.budgetItemViewModel
@@ -35,10 +35,10 @@ fun BudgetItemAddScreenWrapper(
     val nameState = remember { mutableStateOf("") }
     val payDayState = remember { mutableStateOf("") }
     val amountState = remember { mutableStateOf("") }
-    val isFixedState = remember { mutableStateOf(false) }
-    val isPayDayItemState = remember { mutableStateOf(false) }
-    val isAutoState = remember { mutableStateOf(false) }
-    val isLockedState = remember { mutableStateOf(true) }
+    val isFixedState = remember { mutableStateOf(value = false) }
+    val isPayDayItemState = remember { mutableStateOf(value = false) }
+    val isAutoState = remember { mutableStateOf(value = false) }
+    val isLockedState = remember { mutableStateOf(value = true) }
 
     val payDays by budgetItemViewModel.getPayDays().observeAsState(emptyList())
     val budgetItemDetailedCached = mainViewModel.getBudgetItemDetailed()
@@ -48,10 +48,11 @@ fun BudgetItemAddScreenWrapper(
         if (budgetItemDetailedCached != null) {
             val item = budgetItemDetailedCached.budgetItem
             val rule = budgetItemDetailedCached.budgetRule
-            val ruleChanged = rule != null && rule.ruleId != item?.biRuleId
+            val ruleChanged = rule != null && (rule.ruleId != item?.biRuleId)
 
             dateState.value =
-                item?.biProjectedDate ?: df.getCurrentDateAsString()
+                item?.biProjectedDate?.ifEmpty { df.getCurrentDateAsString() }
+                    ?: df.getCurrentDateAsString()
 
             if (ruleChanged || item?.biBudgetName.isNullOrBlank()) {
                 nameState.value = rule?.budgetRuleName ?: ""
@@ -64,15 +65,15 @@ fun BudgetItemAddScreenWrapper(
                 isPayDayItemState.value = rule?.budIsPayDay ?: false
                 isAutoState.value = rule?.budIsAutoPay ?: false
             } else {
-                nameState.value = item?.biBudgetName ?: ""
+                nameState.value = item.biBudgetName
                 amountState.value = nf.displayDollars(
                     (mainViewModel.getTransferNum() ?: 0.0).let {
-                        if (it != 0.0) it else item?.biProjectedAmount ?: 0.0
+                        if (it != 0.0) it else item.biProjectedAmount
                     }
                 )
-                isFixedState.value = item?.biIsFixed ?: false
-                isPayDayItemState.value = item?.biIsPayDayItem ?: false
-                isAutoState.value = item?.biIsAutomatic ?: false
+                isFixedState.value = item.biIsFixed
+                isPayDayItemState.value = item.biIsPayDayItem
+                isAutoState.value = item.biIsAutomatic
             }
 
             payDayState.value = item?.biPayDay ?: mainViewModel.getReturnToPayDay() ?: ""

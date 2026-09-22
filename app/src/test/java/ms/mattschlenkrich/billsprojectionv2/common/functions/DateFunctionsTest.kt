@@ -89,9 +89,9 @@ class DateFunctionsTest {
         assertNotNull(date)
         val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
         calendar.time = date!!
-        assertEquals(2023, calendar.get(Calendar.YEAR))
-        assertEquals(Calendar.OCTOBER, calendar.get(Calendar.MONTH))
-        assertEquals(27, calendar.get(Calendar.DAY_OF_MONTH))
+        assertEquals(2023, calendar[Calendar.YEAR])
+        assertEquals(Calendar.OCTOBER, calendar[Calendar.MONTH])
+        assertEquals(27, calendar[Calendar.DAY_OF_MONTH])
     }
 
     @Test

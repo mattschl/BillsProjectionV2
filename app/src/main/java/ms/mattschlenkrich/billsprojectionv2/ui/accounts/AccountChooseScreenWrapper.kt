@@ -31,7 +31,7 @@ private const val TAG = SCREEN_ACCOUNT_CHOOSE
 @Composable
 fun AccountChooseScreenWrapper(
     mainActivity: MainActivity,
-    navController: NavController
+    navController: NavController,
 ) {
     val mainViewModel = mainActivity.mainViewModel
     val accountViewModel = mainActivity.accountViewModel
@@ -53,7 +53,12 @@ fun AccountChooseScreenWrapper(
         accountsWithType = accountsWithType,
         onAccountClick = { curAccount ->
             val mCallingFragment = mainViewModel.getCallingFragments() ?: ""
-            if (mCallingFragment.contains(SCREEN_BUDGET_RULE_ADD) ||
+            if (mCallingFragment.contains(SCREEN_TRANSACTION_ADD) ||
+                mCallingFragment.contains(SCREEN_TRANSACTION_PERFORM) ||
+                mCallingFragment.contains(SCREEN_TRANSACTION_UPDATE)
+            ) {
+                populateTransactionDetailed(mainActivity, curAccount)
+            } else if (mCallingFragment.contains(SCREEN_BUDGET_RULE_ADD) ||
                 mCallingFragment.contains(SCREEN_BUDGET_RULE_UPDATE)
             ) {
                 populateBudgetRuleDetailed(mainActivity, curAccount)
@@ -63,11 +68,6 @@ fun AccountChooseScreenWrapper(
                 populateBudgetItemDetailed(mainActivity, curAccount)
             } else if (mCallingFragment.contains(SCREEN_TRANSACTION_SPLIT)) {
                 populateSplitTransaction(mainActivity, curAccount)
-            } else if (mCallingFragment.contains(SCREEN_TRANSACTION_ADD) ||
-                mCallingFragment.contains(SCREEN_TRANSACTION_PERFORM) ||
-                mCallingFragment.contains(SCREEN_TRANSACTION_UPDATE)
-            ) {
-                populateTransactionDetailed(mainActivity, curAccount)
             } else if (mCallingFragment.contains(SCREEN_TRANSACTION_ANALYSIS)) {
                 mainViewModel.setAccountWithType(curAccount)
             }
@@ -90,9 +90,9 @@ private fun populateSplitTransaction(mainActivity: MainActivity, curAccount: Acc
 
     val accountType = curAccount.accountType
     val updatedTransaction = splitTrans.transaction?.copy(
-        transToAccountPending = if (isToAccount) (accountType?.allowPending == true && accountType.tallyOwing)
+        transToAccountPending = if (isToAccount) ((accountType?.allowPending == true) && accountType.tallyOwing)
         else splitTrans.transaction.transToAccountPending,
-        transFromAccountPending = if (isFromAccount) (accountType?.allowPending == true && accountType.tallyOwing)
+        transFromAccountPending = if (isFromAccount) ((accountType?.allowPending == true) && accountType.tallyOwing)
         else splitTrans.transaction.transFromAccountPending
     )
     val splitTransactionDetailed = splitTrans.copy(

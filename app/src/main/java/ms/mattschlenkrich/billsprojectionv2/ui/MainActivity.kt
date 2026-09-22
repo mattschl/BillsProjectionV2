@@ -237,7 +237,7 @@ class MainActivity : AppCompatActivity() {
                     title = topMenuBarState.value.title.ifEmpty { stringResource(R.string.app_name) },
                     showBackButton = !isTopLevel,
                     onBackClick = { navController.popBackStack() },
-                    onSyncClick = { syncLauncher.launch(Intent(this, SyncActivity::class.java)) }
+                    onSyncClick = { syncLauncher.launch(Intent(this, SyncActivity::class.java)) },
                 ) { actionId ->
                     handleMenuAction(actionId, navController)
                 }

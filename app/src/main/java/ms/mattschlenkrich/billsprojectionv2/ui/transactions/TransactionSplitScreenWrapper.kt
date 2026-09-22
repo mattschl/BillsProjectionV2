@@ -29,7 +29,7 @@ private const val TAG = SCREEN_TRANSACTION_SPLIT
 @Composable
 fun TransactionSplitScreenWrapper(
     mainActivity: MainActivity,
-    navController: NavHostController
+    navController: NavHostController,
 ) {
     val mainViewModel = mainActivity.mainViewModel
     val accountViewModel = mainActivity.accountViewModel
@@ -122,11 +122,11 @@ fun TransactionSplitScreenWrapper(
             state.amount = it
         },
         onGotoCalculator = {
-            mainViewModel.setTransferNum(nf.getDoubleFromDollars(state.amount.ifBlank {
-                mainActivity.getString(
-                    R.string.val_zero_double
+            mainViewModel.setTransferNum(
+                nf.getDoubleFromDollars(
+                    state.amount.ifBlank { mainActivity.getString(R.string.val_zero_double) }
                 )
-            }))
+            )
             mainViewModel.setSplitTransactionDetailed(state.toTransactionDetailed())
             navController.navigate(Screen.Calculator.route)
         },
@@ -161,7 +161,7 @@ fun TransactionSplitScreenWrapper(
         fromAccountError = state.fromAccountError,
         onSaveClick = {
             val amt = nf.getDoubleFromDollars(state.amount)
-            val valid = state.validate()
+            state.validate()
 
             val answer = if (state.date.isBlank()) {
                 mainActivity.getString(R.string.msg_prompt_choose_date)

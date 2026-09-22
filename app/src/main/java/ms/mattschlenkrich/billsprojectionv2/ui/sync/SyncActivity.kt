@@ -107,7 +107,7 @@ class SyncActivity : ComponentActivity() {
                                         Toast.makeText(
                                             this,
                                             "Sync successful! Restarting to refresh data...",
-                                            Toast.LENGTH_LONG
+                                            Toast.LENGTH_LONG,
                                         ).show()
                                         val intent = Intent(this, MainActivity::class.java)
                                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -260,7 +260,7 @@ class SyncActivity : ComponentActivity() {
             val googleIdOption = GetGoogleIdOption.Builder()
                 .setFilterByAuthorizedAccounts(filterByAuthorizedAccounts = false)
                 .setServerClientId(getString(R.string.default_web_client_id))
-                .setAutoSelectEnabled(false)
+                .setAutoSelectEnabled(autoSelectEnabled = false)
                 .setNonce(generateNonce())
                 .build()
 

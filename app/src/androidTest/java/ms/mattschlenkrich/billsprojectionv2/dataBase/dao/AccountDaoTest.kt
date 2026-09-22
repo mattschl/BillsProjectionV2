@@ -22,12 +22,30 @@ class AccountDaoTest : BaseDaoTest() {
     @Test
     fun insertAndGetAccount() = runBlocking {
         val accountType = AccountType(
-            1L, "Bank", true, true, false, false, true, false, false, "2023-01-01"
+            1L,
+            "Bank",
+            keepTotals = true,
+            isAsset = true,
+            tallyOwing = false,
+            keepMileage = false,
+            displayAsAsset = true,
+            allowPending = false,
+            acctIsDeleted = false,
+            acctUpdateTime = "2023-01-01",
         )
         accountTypeDao.insertAccountType(accountType)
 
         val account = Account(
-            1L, "Checking", "12345", 1L, 0.0, 100.0, 0.0, 0.0, false, "2023-01-01"
+            1L,
+            "Checking",
+            "12345",
+            1L,
+            0.0,
+            100.0,
+            0.0,
+            0.0,
+            accIsDeleted = false,
+            accUpdateTime = "2023-01-01",
         )
         accountDao.insertAccount(account)
 

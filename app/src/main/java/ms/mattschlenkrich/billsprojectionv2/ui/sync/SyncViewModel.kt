@@ -168,7 +168,7 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
             onProgressUpdate = { progressMessage = it },
             onConflict = { info -> showConflictDialogWrapper(info) },
             onTransactionWarning = { showTransactionWarning = true },
-            onSyncError = { error -> syncErrors += error }
+            onSyncError = { error -> syncErrors += error },
         )
 
         viewModelScope.launch {

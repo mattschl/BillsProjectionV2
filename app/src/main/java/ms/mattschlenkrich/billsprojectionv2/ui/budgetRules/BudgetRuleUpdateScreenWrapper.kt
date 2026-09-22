@@ -55,7 +55,6 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
-import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.compose.BudgetRuleScreen
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
@@ -198,22 +197,8 @@ fun BudgetRuleUpdateScreenWrapper(
 
     fun createTransactionDetailed(detailed: BudgetRuleDetailed): TransactionDetailed? {
         val rule = detailed.budgetRule ?: return null
-        val tempTransaction = Transactions(
-            transId = nf.generateId(),
-            transDate = df.getCurrentDateAsString(),
-            transName = rule.budgetRuleName,
-            transNote = "",
-            transRuleId = rule.ruleId,
-            transToAccountId = rule.budToAccountId,
-            transToAccountPending = false,
-            transFromAccountId = rule.budFromAccountId,
-            transFromAccountPending = false,
-            transAmount = rule.budgetAmount,
-            transIsDeleted = false,
-            transUpdateTime = df.getCurrentTimeAsString()
-        )
         return TransactionDetailed(
-            tempTransaction,
+            null,
             rule,
             toAccount = detailed.toAccount,
             fromAccount = detailed.fromAccount,

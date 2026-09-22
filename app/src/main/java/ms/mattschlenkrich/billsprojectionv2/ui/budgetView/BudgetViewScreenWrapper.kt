@@ -268,7 +268,7 @@ fun BudgetViewScreenWrapper(
                         mainViewModel.setTransactionDetailed(null)
                         navController.navigate(Screen.TransactionAdd.route)
                     },
-                )
+                ),
             )
         },
         onBudgetItemClick = { curBudgetDetailed ->

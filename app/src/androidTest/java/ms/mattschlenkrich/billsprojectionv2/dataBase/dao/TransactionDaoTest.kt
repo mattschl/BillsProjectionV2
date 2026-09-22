@@ -36,18 +36,44 @@ class TransactionDaoTest : BaseDaoTest() {
             AccountType(
                 1L,
                 "Type",
-                true,
-                true,
-                false,
-                false,
-                true,
-                false,
-                false,
-                ""
+                keepTotals = true,
+                isAsset = true,
+                tallyOwing = false,
+                keepMileage = false,
+                displayAsAsset = true,
+                allowPending = false,
+                acctIsDeleted = false,
+                acctUpdateTime = "",
             )
         )
-        accountDao.insertAccount(Account(10L, "ToAcc", "1", 1L, 0.0, 0.0, 0.0, 0.0, false, ""))
-        accountDao.insertAccount(Account(20L, "FromAcc", "2", 1L, 0.0, 0.0, 0.0, 0.0, false, ""))
+        accountDao.insertAccount(
+            Account(
+                10L,
+                "ToAcc",
+                "1",
+                1L,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                accIsDeleted = false,
+                accUpdateTime = ""
+            )
+        )
+        accountDao.insertAccount(
+            Account(
+                20L,
+                "FromAcc",
+                "2",
+                1L,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                accIsDeleted = false,
+                accUpdateTime = ""
+            )
+        )
 
         budgetRuleDao.insertBudgetRule(
             BudgetRule(
@@ -244,7 +270,7 @@ class TransactionDaoTest : BaseDaoTest() {
         val full = transactionDao.getTransactionFull(1L, 10L, 20L)
         assertNotNull(full)
         assertEquals("JoinTest", full.transaction.transName)
-        assertEquals("Rent", full.budgetRule?.budgetRuleName)
+        assertEquals("Rent", full.budgetRule.budgetRuleName)
         assertEquals("ToAcc", full.toAccountAndType.account.accountName)
         assertEquals("FromAcc", full.fromAccountAndType.account.accountName)
     }

@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 data class ActionOption(
     val text: String,
     val icon: ImageVector? = null,
-    val onClick: () -> Unit
+    val onClick: () -> Unit,
 )
 
 class ActionSheetState {
@@ -56,7 +56,7 @@ fun rememberActionSheetState(): ActionSheetState {
 @Composable
 fun ManagedActionBottomSheet(
     state: ActionSheetState,
-    sheetState: SheetState = rememberModalBottomSheetState()
+    sheetState: SheetState = rememberModalBottomSheetState(),
 ) {
     if (state.isVisible()) {
         ActionBottomSheet(
@@ -74,7 +74,7 @@ fun ActionBottomSheet(
     title: String,
     options: List<ActionOption>,
     sheetState: SheetState,
-    onDismissRequest: () -> Unit
+    onDismissRequest: () -> Unit,
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,

@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
@@ -33,7 +32,6 @@ fun TransactionPerformScreenWrapper(
     val nf = LocalNumberFunctions.current
     val df = LocalDateFunctions.current
     val state = rememberTransactionEditState(nf, df)
-    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         mainActivity.topMenuBar.title = mainActivity.getString(R.string.title_perform_transaction)

@@ -36,9 +36,9 @@ fun MainTopBar(
     showBackButton: Boolean = false,
     onBackClick: () -> Unit = {},
     onSyncClick: () -> Unit,
-    onMenuItemClick: (Int) -> Unit
+    onMenuItemClick: (Int) -> Unit,
 ) {
-    var showMenu by remember { mutableStateOf(false) }
+    var showMenu by remember { mutableStateOf(value = false) }
 
     TopAppBar(
         title = { Text(title) },
@@ -150,7 +150,7 @@ fun MainBottomBar(
                     )
                 },
                 label = { Text(stringResource(labelRes), softWrap = false) },
-                selected = currentRoute == route || (currentRoute == Screen.MainPager.route && pagerState.currentPage == index),
+                selected = (currentRoute == route) || (currentRoute == Screen.MainPager.route && pagerState.currentPage == index),
                 onClick = { onItemSelected(index) }
             )
         }

@@ -67,12 +67,12 @@ fun BudgetItemUpdateScreenWrapper(
                 nameState.value = item.biBudgetName
                 amountState.value = nf.displayDollars(
                     (mainViewModel.getTransferNum() ?: 0.0).let {
-                        if (it != 0.0) it else item?.biProjectedAmount ?: 0.0
+                        if (it != 0.0) it else item.biProjectedAmount
                     }
                 )
-                isFixedState.value = item?.biIsFixed ?: false
-                isPayDayItemState.value = item?.biIsPayDayItem ?: false
-                isAutoState.value = item?.biIsAutomatic ?: false
+                isFixedState.value = item.biIsFixed
+                isPayDayItemState.value = item.biIsPayDayItem
+                isAutoState.value = item.biIsAutomatic
             }
 
             payDayState.value = item?.biPayDay ?: ""

@@ -111,7 +111,7 @@ fun SyncScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.action_go_back),
-                            modifier = Modifier.size(ProjectFieldDefaults.iconSize())
+                            modifier = Modifier.size(ProjectFieldDefaults.iconSize()),
                         )
                     }
                 },
@@ -412,10 +412,12 @@ fun SyncScreen(
                     title = { Text("Confirm Delete") },
                     text = { Text("Are you sure you want to delete '${meta.name}' from Google Drive? This will also remove associated temporary files and cannot be undone.") },
                     confirmButton = {
-                        TextButton(onClick = {
-                            showDeleteConfirm = null
-                            onDeleteBackup(meta)
-                        }) {
+                        TextButton(
+                            onClick = {
+                                showDeleteConfirm = null
+                                onDeleteBackup(meta)
+                            }
+                        ) {
                             Text(
                                 stringResource(R.string.action_delete),
                                 color = MaterialTheme.colorScheme.error

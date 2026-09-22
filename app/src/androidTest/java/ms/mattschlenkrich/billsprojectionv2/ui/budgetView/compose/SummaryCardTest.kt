@@ -44,7 +44,7 @@ class SummaryCardTest {
                 displayAsAsset = true,
                 allowPending = true,
                 acctIsDeleted = false,
-                acctUpdateTime = ""
+                acctUpdateTime = "",
             )
         )
 
@@ -84,8 +84,30 @@ class SummaryCardTest {
     @Test
     fun summaryCard_showsIncreasedBalance_whenAssetAccountAndDepositSelected() {
         val assetAccount = AccountWithType(
-            account = Account(1L, "Checking", "123", 1L, 0.0, 1000.0, 0.0, 0.0, false, ""),
-            accountType = AccountType(1L, "Asset", true, true, false, false, true, true, false, "")
+            account = Account(
+                1L,
+                "Checking",
+                "123",
+                1L,
+                0.0,
+                1000.0,
+                0.0,
+                0.0,
+                accIsDeleted = false,
+                accUpdateTime = ""
+            ),
+            accountType = AccountType(
+                1L,
+                "Asset",
+                keepTotals = true,
+                isAsset = true,
+                tallyOwing = false,
+                keepMileage = false,
+                displayAsAsset = true,
+                allowPending = true,
+                acctIsDeleted = false,
+                acctUpdateTime = ""
+            )
         )
 
         val selectedSum = 100.0 // Representing a credit of 100

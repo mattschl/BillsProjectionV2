@@ -95,7 +95,7 @@ fun TransactionViewScreenWrapper(
                 transactionDetailed.transaction?.let { trans ->
                     val context = activity
                     val display = TransactionMessageHelper.buildPendingCompletionMessage(
-                        activity, transactionDetailed, nf
+                        activity, transactionDetailed, nf,
                     )
 
                     val options = listOf(

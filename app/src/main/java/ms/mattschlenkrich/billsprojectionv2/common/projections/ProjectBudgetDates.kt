@@ -27,7 +27,7 @@ class ProjectBudgetDates(
 
     constructor(mainActivity: MainActivity) : this(
         mainActivity.baseContext.resources.getStringArray(R.array.frequency_types),
-        mainActivity.baseContext.resources.getStringArray(R.array.days_of_week)
+        mainActivity.baseContext.resources.getStringArray(R.array.days_of_week),
     )
 
     fun projectDates(
@@ -240,10 +240,12 @@ class ProjectBudgetDates(
     ): ArrayList<LocalDate> {
         val dates = ArrayList<LocalDate>()
         for (d in payDayList.indices) {
-            if ((payDayList[d] in startDate..endDate) && ((d + 1) % interval.toInt() == 0) && (payDayList[d] >= LocalDate.now()
-                    .toString())
-            ) {
-                parseDateSafely(payDayList[d])?.let { dates.add(it) }
+            val dateStr = payDayList[d]
+            val inRange = dateStr in startDate..endDate
+            val isIntervalMatch = (d + 1) % interval.toInt() == 0
+            val isNotPast = dateStr >= LocalDate.now().toString()
+            if (inRange && isIntervalMatch && isNotPast) {
+                parseDateSafely(dateStr)?.let { dates.add(it) }
             }
         }
         return dates

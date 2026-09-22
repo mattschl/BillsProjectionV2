@@ -45,10 +45,32 @@ class TransactionMessageHelperTest {
             transFromAccountPending = false,
             transAmount = 5.50,
             transIsDeleted = false,
-            transUpdateTime = ""
+            transUpdateTime = "",
         )
-        val toAccount = Account(10L, "Food", "", 1L, 0.0, 0.0, 0.0, 0.0, false, "")
-        val fromAccount = Account(20L, "Bank", "", 1L, 0.0, 0.0, 0.0, 0.0, false, "")
+        val toAccount = Account(
+            10L,
+            "Food",
+            "",
+            1L,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            accIsDeleted = false,
+            accUpdateTime = ""
+        )
+        val fromAccount = Account(
+            20L,
+            "Bank",
+            "",
+            1L,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            accIsDeleted = false,
+            accUpdateTime = ""
+        )
         val detailed = TransactionDetailed(transaction, null, toAccount, fromAccount)
 
         // When
