@@ -93,6 +93,7 @@
     <string name="label_enter_new_password">Enter New Password</string>
     <string name="label_enter_password">Enter Password</string>
     <string name="label_error">Error: </string>
+    <string name="label_last_sync_this_device">Last sync on this device: %1$s</string>
     <string name="label_fixed">Fixed</string>
     <string name="label_fixed_colon">"Fixed: "</string>
     <string name="label_font_extra_large">Extra Large</string>
@@ -214,6 +215,7 @@
     <string name="text_current_suffix">" - (Current)"</string>
     <string name="text_for_padded">" for "</string>
     <string name="text_from_header">"\n\nFROM:   "</string>
+    <string name="text_never">Never</string>
     <string name="text_pending_suffix">" *pending*"</string>
     <string name="text_remaining_suffix">" remaining"</string>
     <string name="text_to_header">"\nTO:   "</string>

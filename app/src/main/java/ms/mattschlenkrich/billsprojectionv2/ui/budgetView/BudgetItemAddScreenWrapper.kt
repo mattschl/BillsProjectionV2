@@ -47,7 +47,7 @@ fun BudgetItemAddScreenWrapper(
         if (budgetItemDetailedCached != null) {
             val item = budgetItemDetailedCached.budgetItem
             val rule = budgetItemDetailedCached.budgetRule
-            val ruleChanged = rule != null && (rule.ruleId != item?.biRuleId)
+            val ruleChanged = (rule != null) && (rule.ruleId != item?.biRuleId)
 
             dateState.value =
                 item?.biProjectedDate?.ifEmpty { df.getCurrentDateAsString() }

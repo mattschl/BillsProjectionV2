@@ -91,7 +91,7 @@ class DatabaseSyncHelper(
                                 localTime,
                                 getId(backupItem),
                                 backupTime,
-                            )
+                            ),
                         )
 
                         when (choice) {
@@ -279,7 +279,7 @@ class DatabaseSyncHelper(
                 else appDb.getTransactionDao().getAllTransactionsSync().find { localItem ->
                     val localDate = try {
                         LocalDate.parse(localItem.transDate)
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         null
                     }
                     if (localDate == null) false

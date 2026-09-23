@@ -24,7 +24,7 @@ private const val TAG = SCREEN_TRANSACTION_ADD
 @Composable
 fun TransactionAddScreenWrapper(
     mainActivity: MainActivity,
-    navController: NavHostController
+    navController: NavHostController,
 ) {
     val mainViewModel = mainActivity.mainViewModel
     val accountViewModel = mainActivity.accountViewModel
@@ -43,8 +43,8 @@ fun TransactionAddScreenWrapper(
                 val awt = accountViewModel.getAccountWithType(it.accountId)
                 state.toAccountWithType = awt
                 if (ruleChanged) {
-                    state.toPending = awt.accountType?.allowPending == true &&
-                            awt.accountType.tallyOwing == true
+                    state.toPending = (awt.accountType?.allowPending == true) &&
+                            (awt.accountType.tallyOwing == true)
                 }
             }
             cached.fromAccount?.let {

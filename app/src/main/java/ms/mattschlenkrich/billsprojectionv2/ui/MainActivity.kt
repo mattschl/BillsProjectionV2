@@ -238,9 +238,7 @@ class MainActivity : AppCompatActivity() {
                 Screen.Calculator.route -> R.string.title_calculator
                 else -> null
             }
-            if (titleResId != null) {
-                topMenuBar.setTitle(titleResId)
-            }
+            titleResId?.let { topMenuBar.setTitle(it) }
         }
 
         val isTopLevel = (currentRoute == Screen.MainPager.route) || (currentRoute in listOf(
@@ -285,21 +283,21 @@ class MainActivity : AppCompatActivity() {
                 }
             },
             bottomBar = {
-                if (isTopLevel) {
-                    MainBottomBar(
-                        pagerState = pagerState,
-                        currentRoute = currentRoute
-                    ) { pageIndex ->
-                        coroutineScope.launch {
-                            if (currentRoute != Screen.MainPager.route) {
-                                navController.navigate(Screen.MainPager.route) {
-                                    popUpTo(navController.graph.startDestinationId) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
+                MainBottomBar(
+                    pagerState = pagerState,
+                    currentRoute = currentRoute,
+                ) { pageIndex ->
+                    coroutineScope.launch {
+                        if (currentRoute != Screen.MainPager.route) {
+                            mainViewModel.eraseAll()
+                            pagerState.scrollToPage(pageIndex)
+                            navController.navigate(Screen.MainPager.route) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    inclusive = false
                                 }
+                                launchSingleTop = true
                             }
+                        } else {
                             pagerState.animateScrollToPage(pageIndex)
                         }
                     }

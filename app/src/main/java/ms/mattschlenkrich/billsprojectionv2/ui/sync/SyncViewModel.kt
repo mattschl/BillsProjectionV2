@@ -44,6 +44,49 @@ class SyncViewModel(application: Application) : AndroidViewModel(application) {
     var syncErrors by mutableStateOf<List<String>>(emptyList())
     private var conflictDeferred: CompletableDeferred<ConflictChoice>? = null
 
+    fun loadInitialDocContent() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val lastSyncUtc = try {
+                val db = BillsDatabase(getApplication())
+                db.getSyncHistoryDao().getLastSyncTime(deviceId)
+            } catch (_: Exception) {
+                null
+            }
+
+            val lastSyncDisplay = if (!lastSyncUtc.isNullOrBlank()) {
+                df.getLocalDisplayTime(lastSyncUtc)
+            } else {
+                try {
+                    getApplication<Application>().getString(R.string.text_never)
+                } catch (_: Exception) {
+                    "Never"
+                }
+            }
+
+            val lastSyncText = try {
+                getApplication<Application>().getString(
+                    R.string.label_last_sync_this_device,
+                    lastSyncDisplay,
+                )
+            } catch (_: Exception) {
+                "Last sync on this device: $lastSyncDisplay"
+            }
+
+            val helpText = try {
+                getApplication<Application>().getString(R.string.sync_help_text)
+            } catch (_: Exception) {
+                ""
+            }
+
+            withContext(Dispatchers.Main) {
+                docContent =
+                    "Version: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n" +
+                            "$lastSyncText\n\n" +
+                            helpText
+            }
+        }
+    }
+
     fun onConflictChoice(choice: ConflictChoice, applyToAll: Boolean) {
         if (applyToAll) {
             applyToAllChoice = choice

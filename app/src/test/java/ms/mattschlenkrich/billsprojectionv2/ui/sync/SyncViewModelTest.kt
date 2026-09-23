@@ -37,6 +37,15 @@ class SyncViewModelTest {
         every { Dispatchers.IO } returns testDispatcher
 
         every { application.getString(R.string.sync_help_text) } returns "Help"
+        every { application.getString(R.string.text_never) } returns "Never"
+        every {
+            application.getString(
+                R.string.label_last_sync_this_device,
+                *anyVararg()
+            )
+        } answers {
+            "Last sync on this device: ${args[1]}"
+        }
 
         viewModel = SyncViewModel(application)
         viewModel.driveServiceHelper = driveServiceHelper

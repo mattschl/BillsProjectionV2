@@ -86,6 +86,12 @@ fun SyncScreen(
         }
     }
 
+    LaunchedEffect(viewModel.deviceId) {
+        if (viewModel.deviceId != 0L) {
+            viewModel.loadInitialDocContent()
+        }
+    }
+
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         modifier = Modifier.fillMaxSize(),
@@ -118,7 +124,7 @@ fun SyncScreen(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = colorResource(id = R.color.ic_bills_projection_background),
                     titleContentColor = Color.Black,
-                    navigationIconContentColor = Color.Black
+                    navigationIconContentColor = Color.Black,
                 )
             )
         }

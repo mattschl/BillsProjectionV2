@@ -174,12 +174,28 @@ class DateFunctions {
      * are correctly interpreted and converted to UTC for the new sync logic.
      */
     fun getUtcFromLegacyLocal(localTimestamp: String): String {
+        if (localTimestamp.isBlank()) return localTimestamp
         return try {
-            val localFormatter = SimpleDateFormat(TIME_FORMAT_SQL, Locale.CANADA)
-            // Uses system default timezone for parsing
-            val date = localFormatter.parse(localTimestamp)
-            if (date != null) timeFormatter.format(date) else localTimestamp
-        } catch (e: Exception) {
+            val cleanTs = localTimestamp.trim()
+            val patterns = listOf(
+                "yyyy-MM-dd HH:mm:ss",
+                "yyyy-MM-dd'T'HH:mm:ss",
+                "yyyy-LL-dd HH:mm:ss"
+            )
+            for (pattern in patterns) {
+                try {
+                    val localSdf = SimpleDateFormat(pattern, Locale.getDefault()).apply {
+                        timeZone = TimeZone.getDefault()
+                    }
+                    val date = localSdf.parse(cleanTs)
+                    if (date != null) {
+                        return timeFormatter.format(date)
+                    }
+                } catch (_: Exception) {
+                }
+            }
+            localTimestamp
+        } catch (_: Exception) {
             localTimestamp
         }
     }
@@ -188,13 +204,42 @@ class DateFunctions {
      * Converts a UTC timestamp from the database to a local time string for UI display.
      */
     fun getLocalDisplayTime(utcTimestamp: String): String {
+        if (utcTimestamp.isBlank()) return utcTimestamp
         return try {
-            val date = timeFormatter.parse(utcTimestamp)
-            val localFormatter = SimpleDateFormat(TIME_FORMAT_SQL, Locale.getDefault())
-            if (date != null) localFormatter.format(date) else utcTimestamp
-        } catch (e: Exception) {
+            val date = parseUtcTimestamp(utcTimestamp)
+            if (date != null) {
+                val localFormatter =
+                    SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).apply {
+                        timeZone = TimeZone.getDefault()
+                    }
+                localFormatter.format(date)
+            } else {
+                utcTimestamp
+            }
+        } catch (_: Exception) {
             utcTimestamp
         }
+    }
+
+    fun parseUtcTimestamp(timestamp: String): Date? {
+        val cleanTs = timestamp.trim()
+        val patterns = listOf(
+            "yyyy-MM-dd HH:mm:ss",
+            "yyyy-MM-dd'T'HH:mm:ss",
+            "yyyy-LL-dd HH:mm:ss",
+            "yyyyMMdd_HHmmss"
+        )
+        for (pattern in patterns) {
+            try {
+                val sdf = SimpleDateFormat(pattern, Locale.US).apply {
+                    timeZone = utcTimeZone
+                }
+                val parsed = sdf.parse(cleanTs)
+                if (parsed != null) return parsed
+            } catch (_: Exception) {
+            }
+        }
+        return null
     }
 
     fun getMonthsBetween(startDate: String, endDate: String): Int {

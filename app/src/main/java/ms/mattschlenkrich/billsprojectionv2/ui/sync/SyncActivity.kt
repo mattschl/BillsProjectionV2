@@ -66,6 +66,7 @@ class SyncActivity : ComponentActivity() {
 
         val settings = SettingsManager(this).getSettings()
         viewModel.deviceId = settings.deviceId
+        viewModel.loadInitialDocContent()
 
         lifecycleScope.launch {
             delay(WAIT_250.milliseconds) // Small delay to ensure Credential Manager is ready
@@ -113,7 +114,7 @@ class SyncActivity : ComponentActivity() {
                                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                                         startActivity(intent)
                                         finish()
-                                    }
+                                    },
                                 ) { msg, e, retry ->
                                     handleError(msg, e, retry)
                                 }

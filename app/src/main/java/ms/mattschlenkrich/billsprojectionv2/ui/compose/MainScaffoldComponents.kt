@@ -48,7 +48,7 @@ fun MainTopBar(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = stringResource(R.string.action_go_back),
-                        modifier = Modifier.size(ProjectFieldDefaults.iconSize())
+                        modifier = Modifier.size(ProjectFieldDefaults.iconSize()),
                     )
                 }
             }

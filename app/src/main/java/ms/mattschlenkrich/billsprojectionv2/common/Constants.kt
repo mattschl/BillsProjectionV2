@@ -6,8 +6,8 @@ const val DB_NAME = "bills2.db"
 const val DB_VERSION = 3
 const val BILLS_DATABASE = "BillsDatabase"
 
-const val DATE_FORMAT_SQL = "yyyy-LL-dd"
-const val TIME_FORMAT_SQL = "yyyy-LL-dd HH:mm:ss"
+const val DATE_FORMAT_SQL = "yyyy-MM-dd"
+const val TIME_FORMAT_SQL = "yyyy-MM-dd HH:mm:ss"
 const val DATE_CHECK = "yyyy-MM-dd"
 const val DATE_CHECK_WITH_YEAR = "?"
 const val DATE_FORMAT_DISPLAY = "EEE dd LLL"
