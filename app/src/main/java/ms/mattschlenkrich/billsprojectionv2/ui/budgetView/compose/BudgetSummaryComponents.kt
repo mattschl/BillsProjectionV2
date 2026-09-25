@@ -39,6 +39,7 @@ fun SummaryCard(
     onAccountClick: () -> Unit,
     selectedSum: Double = 0.0,
     showSelectedSum: Boolean = false,
+    earliestPayDay: String? = null,
 ) {
     val nf = LocalNumberFunctions.current
     val currentTag = stringResource(R.string.text_current_suffix)
@@ -57,10 +58,10 @@ fun SummaryCard(
             if (payDayList.isNotEmpty()) {
                 DropdownSelector(
                     label = stringResource(R.string.label_pay_day),
-                    options = payDayList.mapIndexed { index, s ->
-                        if (index == 0) "$s$currentTag" else s
+                    options = payDayList.map { s ->
+                        if ((earliestPayDay != null) && (s == earliestPayDay)) "$s$currentTag" else s
                     },
-                    selectedOption = if (payDayList.indexOf(selectedPayDay) == 0) "$selectedPayDay$currentTag" else selectedPayDay,
+                    selectedOption = if ((earliestPayDay != null) && (selectedPayDay == earliestPayDay)) "$selectedPayDay$currentTag" else selectedPayDay,
                 ) { selected ->
                     onPayDaySelected(selected.replace(currentTag, ""))
                 }

@@ -36,13 +36,13 @@ android {
         minSdk 28
         targetSdk 37
         //noinspection EditedTargetSdkVersion
-        versionCode 25
+        versionCode 26
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: 'false'
-        versionNameSuffix '- tweaks'
+        versionNameSuffix '- bug fixes'
         signingConfig signingConfigs.debug
         buildConfigField "String", "FAILSAFE_PASSWORD", "\"${localProperties.getProperty('FAILSAFE_PASSWORD')}\""
         versionName 'BPv2'
@@ -84,22 +84,9 @@ android {
             excludes += '/META-INF/*.kotlin_module'
         }
     }
-
-//    productFlavors {
-//        'Full display' {
-//            dimension 'Full'
-//        }
-//    }
 }
 
 dependencies {
-
-//    def nav_version = '2.9.7'
-//    def room_version = "2.8.4"
-//    def lifecycle_version = "2.10.0"
-//    def material3_version = '1.4.0'
-//    def credential_version = '1.6.0'
-
     implementation libs.androidx.appcompat
     implementation libs.androidx.core.ktx
     implementation libs.material

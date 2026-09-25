@@ -72,6 +72,12 @@ fun BudgetViewScreenWrapper(
         .observeAsState(initial = emptyList())
     val selectedPayDay = mainViewModel.getReturnToPayDay() ?: ""
 
+    val allPayDaysList by budgetItemViewModel.getPayDays(ALL_ITEMS)
+        .observeAsState(initial = emptyList())
+    val earliestPayDay = remember(allPayDaysList) {
+        allPayDaysList.firstOrNull()
+    }
+
     LaunchedEffect(payDayList, selectedAsset) {
         if (payDayList.isNotEmpty()) {
             val currentPayDay = mainViewModel.getReturnToPayDay()
@@ -119,84 +125,25 @@ fun BudgetViewScreenWrapper(
     }
 
     val pendingAmount = remember(pendingList, selectedAsset, assetList) {
-        var amount = 0.0
-        pendingList.forEach {
-            if (it.toAccount?.accountName == selectedAsset) {
-                amount += it.transaction?.transAmount ?: 0.0
-            } else if (it.fromAccount?.accountName == selectedAsset) {
-                amount -= it.transaction?.transAmount ?: 0.0
-            } else if (selectedAsset == ALL_ITEMS) {
-                if (assetList.contains(it.toAccount?.accountName)) {
-                    amount += it.transaction?.transAmount ?: 0.0
-                } else if (assetList.contains(it.fromAccount?.accountName)) {
-                    amount -= it.transaction?.transAmount ?: 0.0
-                }
-            }
-        }
-        amount
+        BudgetViewCalculations.calculatePendingAmount(pendingList, selectedAsset, assetList)
     }
 
     val selectedSum = remember(selectedItems, allBudgetList, selectedAsset, assetList) {
-        if (selectedItems.isEmpty()) 0.0
-        else {
-            var netChange = 0.0
-            allBudgetList.forEach { details ->
-                val item = details.budgetItem ?: return@forEach
-                val key = "${item.biRuleId}_${item.biProjectedDate}"
-                if (selectedItems.contains(key)) {
-                    val isCredit = if (selectedAsset == ALL_ITEMS) {
-                        assetList.contains(details.toAccount?.accountName)
-                    } else {
-                        details.toAccount?.accountName == selectedAsset
-                    }
-
-                    if (isCredit) {
-                        netChange += item.biProjectedAmount
-                    } else {
-                        val isDebit = if (selectedAsset == ALL_ITEMS) {
-                            assetList.contains(details.fromAccount?.accountName)
-                        } else {
-                            details.fromAccount?.accountName == selectedAsset
-                        }
-                        if (isDebit) {
-                            netChange -= item.biProjectedAmount
-                        }
-                    }
-                }
-            }
-            netChange
-        }
+        BudgetViewCalculations.calculateSelectedSum(
+            selectedItems,
+            allBudgetList,
+            selectedAsset,
+            assetList
+        )
     }
 
     val selectedPendingSum = remember(selectedPendingItems, pendingList, selectedAsset, assetList) {
-        if (selectedPendingItems.isEmpty()) 0.0
-        else {
-            var netChange = 0.0
-            pendingList.forEach { details ->
-                val trans = details.transaction ?: return@forEach
-                if (selectedPendingItems.contains(trans.transId)) {
-                    val isCredit = if (selectedAsset == ALL_ITEMS) {
-                        assetList.contains(details.toAccount?.accountName)
-                    } else {
-                        details.toAccount?.accountName == selectedAsset
-                    }
-
-                    if (isCredit) {
-                        netChange += trans.transAmount
-                    } else {
-                        val isDebit = if (selectedAsset == ALL_ITEMS) {
-                            assetList.contains(details.fromAccount?.accountName)
-                        } else {
-                            details.fromAccount?.accountName == selectedAsset
-                        }
-                        if (isDebit) {
-                            netChange -= trans.transAmount
-                        }
-                    }
-                }
-            }
-            netChange
-        }
+        BudgetViewCalculations.calculateSelectedPendingSum(
+            selectedPendingItems,
+            pendingList,
+            selectedAsset,
+            assetList
+        )
     }
 
     BudgetViewScreen(
@@ -210,6 +157,7 @@ fun BudgetViewScreenWrapper(
         onPayDaySelected = {
             mainViewModel.setReturnToPayDay(it)
         },
+        earliestPayDay = earliestPayDay,
         curAsset = curAsset,
         pendingList = pendingList,
         pendingAmount = pendingAmount,
@@ -297,9 +245,9 @@ fun BudgetViewScreenWrapper(
                                             TransactionMessageHelper.buildConfirmationMessage(
                                                 activity,
                                                 activity.transactionViewModel.createTransactionDetailedFromBudgetItem(
-                                                    curBudgetDetailed
+                                                    curBudgetDetailed,
                                                 ),
-                                                nf
+                                                nf,
                                             )
 
                                         AlertDialog.Builder(activity)

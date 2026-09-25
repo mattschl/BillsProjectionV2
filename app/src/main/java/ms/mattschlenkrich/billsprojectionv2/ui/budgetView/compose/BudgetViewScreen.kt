@@ -78,6 +78,7 @@ fun BudgetViewScreen(
     isShowingAll: Boolean = false,
     sheetTitle: String = "",
     sheetOptions: List<ActionOption> = emptyList(),
+    earliestPayDay: String? = null,
     onSheetDismiss: () -> Unit = {},
 ) {
     val nf = LocalNumberFunctions.current
@@ -185,6 +186,7 @@ fun BudgetViewScreen(
                 onAccountClick = onAccountClick,
                 selectedSum = selectedSum,
                 showSelectedSum = selectedItems.isNotEmpty(),
+                earliestPayDay = earliestPayDay,
             )
 
             if (pendingList.isNotEmpty()) {
