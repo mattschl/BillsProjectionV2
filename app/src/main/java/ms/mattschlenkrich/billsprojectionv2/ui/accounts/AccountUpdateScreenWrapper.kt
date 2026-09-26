@@ -42,7 +42,7 @@ private const val TAG = SCREEN_ACCOUNT_UPDATE
 @Composable
 fun AccountUpdateScreenWrapper(
     mainActivity: MainActivity,
-    navController: NavHostController
+    navController: NavHostController,
 ) {
     val mainViewModel = mainActivity.mainViewModel
     val accountViewModel = mainActivity.accountViewModel
@@ -102,9 +102,9 @@ fun AccountUpdateScreenWrapper(
                 transaction.transNote,
                 transaction.transRuleId,
                 transaction.transToAccountId,
-                false,
+                transToAccountPending = false,
                 transaction.transFromAccountId,
-                false,
+                transFromAccountPending = false,
                 transaction.transAmount,
                 transaction.transIsDeleted,
                 df.getCurrentTimeAsString()
@@ -211,7 +211,7 @@ fun AccountUpdateScreenWrapper(
             mainViewModel.addCallingFragment(TAG)
             val updatedAccount = getUpdatedAccount()
             val currentAwt = mainViewModel.getAccountWithType()
-            if (updatedAccount != null && currentAwt != null) {
+            if ((updatedAccount != null) && (currentAwt != null)) {
                 mainViewModel.setAccountWithType(
                     AccountWithType(
                         updatedAccount,
@@ -288,18 +288,12 @@ fun AccountUpdateScreenWrapper(
         history = history,
         onHistoryItemClick = { showTransactionOptions(it) },
         onSaveClick = {
-            val answer = if (state.name.isBlank()) {
-                mainActivity.getString(R.string.msg_prompt_enter_name)
-            } else if (accountNames.any { name ->
-                    val currentAwt = mainViewModel.getAccountWithType()
-                    name == state.name && (currentAwt == null || name != currentAwt.account.accountName)
-                }) {
-                mainActivity.getString(R.string.msg_error_budget_rule_exists)
-            } else if (mainViewModel.getAccountWithType()?.accountType == null) {
-                mainActivity.getString(R.string.msg_prompt_choose_account_type)
-            } else {
-                ANSWER_OK
-            }
+            val answer = AccountActionHelper.validateAccountUpdate(
+                mainActivity,
+                state.name,
+                accountNames,
+                mainViewModel.getAccountWithType()
+            )
 
             if (answer == ANSWER_OK) {
                 val accountWithType = mainViewModel.getAccountWithType() ?: return@AccountEditScreen
@@ -310,21 +304,12 @@ fun AccountUpdateScreenWrapper(
                     mainViewModel.setAccountWithType(null)
                     navController.popBackStack()
                 } else {
-                    AlertDialog.Builder(mainActivity).apply {
-                        setTitle(mainActivity.getString(R.string.title_rename_account))
-                        setMessage(
-                            mainActivity.getString(R.string.prompt_rename_account) + "\n\n" +
-                                    mainActivity.getString(R.string.label_note_header) +
-                                    mainActivity.getString(R.string.msg_wont_replace_account_type)
-                        )
-                        setPositiveButton(mainActivity.getString(R.string.action_confirm)) { _, _ ->
-                            accountViewModel.updateAccount(updatedAccount)
-                            mainViewModel.removeCallingFragment(TAG)
-                            mainViewModel.setAccountWithType(null)
-                            navController.popBackStack()
-                        }
-                        setNegativeButton(mainActivity.getString(R.string.action_cancel), null)
-                    }.create().show()
+                    AccountActionHelper.showRenameAccountDialog(mainActivity) {
+                        accountViewModel.updateAccount(updatedAccount)
+                        mainViewModel.removeCallingFragment(TAG)
+                        mainViewModel.setAccountWithType(null)
+                        navController.popBackStack()
+                    }
                 }
             } else {
                 Toast.makeText(

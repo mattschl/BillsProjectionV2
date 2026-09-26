@@ -12,7 +12,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -101,7 +100,7 @@ fun BudgetRuleUpdateScreenWrapper(
                 scope.launch(Dispatchers.IO) {
                     suggestedAmountState = budgetRuleViewModel.calculateSuggestedAmount(
                         rule,
-                        mainActivity.transactionViewModel
+                        mainActivity.transactionViewModel,
                     )
                 }
             }
@@ -269,23 +268,14 @@ fun BudgetRuleUpdateScreenWrapper(
     fun chooseOptions() {
         val detailed = mainViewModel.getBudgetRuleDetailed() ?: return
         val rule = detailed.budgetRule ?: return
-        actionSheetState.show(
-            "${mainActivity.getString(R.string.title_choose_action_for)} ${rule.budgetRuleName}",
-            listOf(
-                ActionOption(
-                    mainActivity.getString(R.string.action_add_transaction_from_rule),
-                    Icons.Default.Add
-                ) { addNewTransaction() },
-                ActionOption(
-                    mainActivity.getString(R.string.action_create_scheduled_item),
-                    Icons.Default.Add
-                ) { createNewBudgetItem() },
-                ActionOption(
-                    mainActivity.getString(R.string.action_view_rule_summary),
-                    Icons.Default.History
-                ) { gotoAnalysis() }
-            )
+        val (title, options) = BudgetRuleActionHelper.getRuleOptions(
+            mainActivity,
+            rule.budgetRuleName,
+            onAddTransaction = { addNewTransaction() },
+            onCreateBudgetItem = { createNewBudgetItem() },
+            onGotoAnalysis = { gotoAnalysis() }
         )
+        actionSheetState.show(title, options)
     }
 
     fun chooseAddOptionsOrUpdateBudgetRuleToContinue() {
@@ -293,41 +283,22 @@ fun BudgetRuleUpdateScreenWrapper(
         val detailed = mainViewModel.getBudgetRuleDetailed()
         val cachedBudgetRule = detailed?.budgetRule
 
-        if (cachedBudgetRule != null &&
-            curBudgetRule.budgetRuleName == cachedBudgetRule.budgetRuleName &&
-            curBudgetRule.budToAccountId == cachedBudgetRule.budToAccountId &&
-            curBudgetRule.budFromAccountId == cachedBudgetRule.budFromAccountId &&
-            curBudgetRule.budgetAmount == cachedBudgetRule.budgetAmount &&
-            curBudgetRule.budFixedAmount == cachedBudgetRule.budFixedAmount &&
-            curBudgetRule.budIsPayDay == cachedBudgetRule.budIsPayDay &&
-            curBudgetRule.budIsAutoPay == cachedBudgetRule.budIsAutoPay &&
-            curBudgetRule.budStartDate == cachedBudgetRule.budStartDate &&
-            curBudgetRule.budEndDate == cachedBudgetRule.budEndDate &&
-            curBudgetRule.budDayOfWeekId == cachedBudgetRule.budDayOfWeekId &&
-            curBudgetRule.budFrequencyTypeId == cachedBudgetRule.budFrequencyTypeId &&
-            curBudgetRule.budFrequencyCount == cachedBudgetRule.budFrequencyCount &&
-            curBudgetRule.budLeadDays == cachedBudgetRule.budLeadDays
-        ) {
+        if (BudgetRuleActionHelper.isRuleUnchanged(curBudgetRule, cachedBudgetRule)) {
             chooseOptions()
         } else {
-            AlertDialog.Builder(mainActivity)
-                .setTitle(mainActivity.getString(R.string.msg_warning_rule_not_saved))
-                .setMessage(mainActivity.getString(R.string.prompt_save_and_continue))
-                .setPositiveButton(mainActivity.getString(R.string.action_yes)) { _, _ ->
-                    val message = validateBudgetRule()
-                    if (message == ANSWER_OK) {
-                        updateBudgetRule()
-                        chooseOptions()
-                    } else {
-                        Toast.makeText(
-                            mainActivity,
-                            mainActivity.getString(R.string.label_error) + message,
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
+            BudgetRuleActionHelper.showUnsavedWarningDialog(mainActivity) {
+                val message = validateBudgetRule()
+                if (message == ANSWER_OK) {
+                    updateBudgetRule()
+                    chooseOptions()
+                } else {
+                    Toast.makeText(
+                        mainActivity,
+                        mainActivity.getString(R.string.label_error) + message,
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
-                .setNegativeButton(mainActivity.getString(R.string.action_cancel), null)
-                .show()
+            }
         }
     }
 
