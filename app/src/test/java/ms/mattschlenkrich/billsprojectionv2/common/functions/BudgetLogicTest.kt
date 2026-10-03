@@ -33,7 +33,7 @@ class BudgetLogicTest {
             totalCount = 2,
             daysElapsed = days,
             frequencyTypeId = FREQ_MONTHLY,
-            frequencyCount = 1
+            frequencyCount = 1,
         )
         // expectedOccurrences = 60 / 30.4375 = 1.97125...
         // suggestion = 120 / 1.97125... = 60.875

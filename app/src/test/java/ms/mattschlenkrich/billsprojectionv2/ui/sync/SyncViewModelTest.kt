@@ -41,7 +41,7 @@ class SyncViewModelTest {
         every {
             application.getString(
                 R.string.label_last_sync_this_device,
-                *anyVararg()
+                *anyVararg(),
             )
         } answers {
             "Last sync on this device: ${args[1]}"

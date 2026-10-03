@@ -57,7 +57,7 @@ class TransactionMessageHelperTest {
             0.0,
             0.0,
             accIsDeleted = false,
-            accUpdateTime = ""
+            accUpdateTime = "",
         )
         val fromAccount = Account(
             20L,
@@ -101,8 +101,8 @@ class TransactionMessageHelperTest {
             transIsDeleted = false,
             transUpdateTime = ""
         )
-        val toAccount = Account(10L, "Travel", "", 1L, 0.0, 0.0, 0.0, 0.0, false, "")
-        val fromAccount = Account(20L, "Visa", "", 1L, 0.0, 0.0, 0.0, 0.0, false, "")
+        val toAccount = Account(10L, "Travel", "", 1L, 0.0, 0.0, 0.0, 0.0, accIsDeleted = false, "")
+        val fromAccount = Account(20L, "Visa", "", 1L, 0.0, 0.0, 0.0, 0.0, accIsDeleted = false, "")
         val detailed = TransactionDetailed(transaction, null, toAccount, fromAccount)
 
         // When

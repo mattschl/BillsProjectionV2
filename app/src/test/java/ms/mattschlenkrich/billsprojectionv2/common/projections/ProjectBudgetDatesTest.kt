@@ -13,7 +13,7 @@ class ProjectBudgetDatesTest {
     )
     private val daysOfWeek = arrayOf(
         "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
-        "Saturday", "Sunday", "Week Day", "Week End", "Any Day"
+        "Saturday", "Sunday", "Week Day", "Week End", "Any Day",
     )
 
     private val projectBudgetDates = ProjectBudgetDates(frequencyTypes, daysOfWeek)

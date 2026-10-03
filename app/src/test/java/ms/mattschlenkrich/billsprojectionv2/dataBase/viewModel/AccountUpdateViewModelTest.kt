@@ -77,10 +77,21 @@ class AccountUpdateViewModelTest {
             0.0,
             0.0,
             accIsDeleted = false,
-            accUpdateTime = ""
+            accUpdateTime = "",
         )
         val fromAccount =
-            Account(fromAccountId, "From", "456", 2L, 0.0, 1000.0, 0.0, 0.0, false, "")
+            Account(
+                fromAccountId,
+                "From",
+                "456",
+                2L,
+                0.0,
+                1000.0,
+                0.0,
+                0.0,
+                accIsDeleted = false,
+                ""
+            )
         val toAccountType =
             AccountType(1L, "Type1", true, true, false, false, true, true, false, "")
         val fromAccountType =
