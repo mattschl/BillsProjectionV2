@@ -8,5 +8,6 @@ data class AppSettings(
     val themeMode: String? = "system",
     val passwordHash: String? = null,
     val usePasswordProtection: Boolean = false,
-    val defaultAccount: String? = null
+    val defaultAccount: String? = null,
+    val syncWarningDays: Int = 3,
 )

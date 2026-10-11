@@ -2,6 +2,7 @@ package ms.mattschlenkrich.billsprojectionv2.ui.settings
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -14,6 +15,7 @@ class SettingsEditState(initialSettings: AppSettings) {
     var usePasswordProtection by mutableStateOf(initialSettings.usePasswordProtection)
     var isPasswordSet by mutableStateOf(initialSettings.passwordHash != null)
     var defaultAccount by mutableStateOf(initialSettings.defaultAccount ?: ALL_ITEMS)
+    var syncWarningDays by mutableIntStateOf(initialSettings.syncWarningDays)
 
     fun updateFrom(settings: AppSettings) {
         fontSize = settings.fontSize ?: "medium"
@@ -21,6 +23,7 @@ class SettingsEditState(initialSettings: AppSettings) {
         usePasswordProtection = settings.usePasswordProtection
         isPasswordSet = settings.passwordHash != null
         defaultAccount = settings.defaultAccount ?: ALL_ITEMS
+        syncWarningDays = settings.syncWarningDays
     }
 }
 

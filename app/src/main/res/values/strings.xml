@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="action_add">Add</string>
     <string name="action_add_account_type">Add Account Type</string>
     <string name="action_add_budget_rule">Add Budget Rule</string>
@@ -26,6 +26,7 @@
     <string name="action_go">GO</string>
     <string name="action_go_back">Go back</string>
     <string name="action_go_to_rules">Go to the RULES for future budgets of this kind.</string>
+    <string name="action_go_to_sync">Go to Sync Screen</string>
     <string name="action_hide_completed_cancelled">Hide completed/cancelled items</string>
     <string name="action_lock">Lock</string>
     <string name="action_lock_payday_items">LOCK all items for this payday</string>
@@ -33,6 +34,7 @@
     <string name="action_ok">OK</string>
     <string name="action_open_transaction_to_edit">Open the transaction to edit it</string>
     <string name="action_perform">Perform</string>
+    <string name="action_remind_later">Remind Me Later</string>
     <string name="action_remove_password">Remove Password</string>
     <string name="action_retry">Retry</string>
     <string name="action_save">Save</string>
@@ -41,6 +43,7 @@
     <string name="action_set_password">Set Password</string>
     <string name="action_show_all_items">Show all items</string>
     <string name="action_split">Split</string>
+    <string name="action_start_fresh">Start Fresh</string>
     <string name="action_unlock">"UN Lock "</string>
     <string name="action_unlock_payday_items">UN Lock all items for this payday</string>
     <string name="action_update_account">Update Account</string>
@@ -134,6 +137,7 @@
     <string name="label_selected_colon">"Selected: "</string>
     <string name="label_start_date">Start Date</string>
     <string name="label_surplus_of">"Surplus of "</string>
+    <string name="label_sync_reminder_interval">Sync Reminder Interval</string>
     <string name="label_system_default">System Default</string>
     <string name="label_theme_dark">Dark</string>
     <string name="label_theme_light">Light</string>
@@ -195,6 +199,8 @@
     <string name="msg_sync_in_progress">A sync is already in progress on another device (or a previous sync attempt was interrupted). Please try again in 10 minutes.</string>
     <string name="msg_sync_transaction_warning">New or updated transactions were found during the sync process. Please verify your account balances and owing values to ensure everything was recorded correctly.</string>
     <string name="msg_transactions_postponed">Transactions may be postponed\n</string>
+    <string name="msg_sync_warning_days" tools:ignore="PluralsCandidate">It has been %1$d days since your last data sync on this device. Would you like to go to the Sync screen now?</string>
+    <string name="msg_sync_warning_never">You are starting with a blank database on this device. Would you like to connect and sync with your Google Drive database to restore your accounts and transactions?</string>
     <string name="msg_used_for_budget">This will be used for the budget\n</string>
     <string name="msg_warning_drastic_change">This action should only be done when you do a drastic change. Such as a change in payday source or schedule.\nAny manually entered items will be overwritten!! \nThis action cannot be undone!!</string>
     <string name="msg_warning_rule_not_saved">This Budget Rule has not been saved!</string>
@@ -259,6 +265,7 @@
     <string name="title_security">Security</string>
     <string name="title_splitting_transaction">Splitting Transaction</string>
     <string name="title_sync">Sync Data</string>
+    <string name="title_sync_reminder">Sync Reminder</string>
     <string name="title_sync_screen">Sync screen</string>
     <string name="title_sync_transaction_warning">New Transactions Detected</string>
     <string name="title_transaction_analysis">Transaction analysis</string>

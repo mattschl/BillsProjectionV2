@@ -133,6 +133,35 @@ fun SettingsScreenWrapper(
                     settingsManager.saveSettings(currentSettings.copy(defaultAccount = selected))
                 }
             )
+
+            val syncOptionsMap = mapOf(
+                "Disabled" to 0,
+                "1 Day" to 1,
+                "2 Days" to 2,
+                "3 Days (Default)" to 3,
+                "5 Days" to 5,
+                "7 Days (1 Week)" to 7,
+                "14 Days (2 Weeks)" to 14,
+                "30 Days (1 Month)" to 30,
+            )
+            val syncOptions = syncOptionsMap.keys.toList()
+            val currentSyncSelectedOption =
+                syncOptionsMap.entries.find { it.value == state.syncWarningDays }?.key
+                    ?: "3 Days (Default)"
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            DropdownSelector(
+                label = stringResource(R.string.label_sync_reminder_interval),
+                options = syncOptions,
+                selectedOption = currentSyncSelectedOption,
+                onOptionSelected = { selected ->
+                    val days = syncOptionsMap[selected] ?: 3
+                    state.syncWarningDays = days
+                    val currentSettings = settingsManager.getSettings()
+                    settingsManager.saveSettings(currentSettings.copy(syncWarningDays = days))
+                }
+            )
         }
 
         Text(

@@ -15,9 +15,18 @@ class SettingsManager(private val context: Context) {
             return AppSettings(deviceId = NumberFunctions().generateId())
         }
         return try {
-            val settings = file.readText().let { gson.fromJson(it, AppSettings::class.java) }
-            settings ?: AppSettings(deviceId = NumberFunctions().generateId())
-        } catch (e: Exception) {
+            val jsonText = file.readText()
+            val settings = gson.fromJson(jsonText, AppSettings::class.java)
+            if (settings != null) {
+                if (!jsonText.contains("syncWarningDays")) {
+                    settings.copy(syncWarningDays = 3)
+                } else {
+                    settings
+                }
+            } else {
+                AppSettings(deviceId = NumberFunctions().generateId())
+            }
+        } catch (_: Exception) {
             val newSettings = AppSettings(deviceId = NumberFunctions().generateId())
             saveSettings(newSettings)
             newSettings

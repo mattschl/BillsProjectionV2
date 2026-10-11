@@ -16,15 +16,19 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -46,6 +50,7 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
@@ -201,6 +206,37 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        val settings = remember { SettingsManager(this).getSettings() }
+        var showSyncWarningDialog by remember { mutableStateOf(value = false) }
+        var daysSinceLastSync by remember { mutableIntStateOf(0) }
+        var hasDismissedSyncWarning by remember { mutableStateOf(value = false) }
+
+        LaunchedEffect(Unit) {
+            if ((settings.syncWarningDays > 0) && !hasDismissedSyncWarning) {
+                withContext(Dispatchers.IO) {
+                    try {
+                        val db = BillsDatabase(applicationContext)
+                        val lastSyncUtc = db.getSyncHistoryDao().getLastSyncTime(settings.deviceId)
+                        if (lastSyncUtc.isNullOrBlank()) {
+                            daysSinceLastSync = -1
+                            showSyncWarningDialog = true
+                        } else if (!isFirstRun) {
+                            val date = DateFunctions().parseUtcTimestamp(lastSyncUtc)
+                            if (date != null) {
+                                val diffMs = System.currentTimeMillis() - date.time
+                                val diffDays = (diffMs / (1000L * 60 * 60 * 24)).toInt()
+                                if (diffDays >= settings.syncWarningDays) {
+                                    daysSinceLastSync = diffDays
+                                    showSyncWarningDialog = true
+                                }
+                            }
+                        }
+                    } catch (_: Exception) {
+                    }
+                }
+            }
+        }
+
         LaunchedEffect(currentRoute, pagerState.currentPage) {
             val titleResId = when (currentRoute) {
                 Screen.MainPager.route -> when (pagerState.currentPage) {
@@ -336,6 +372,55 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
                     }
+                }
+
+                if (showSyncWarningDialog) {
+                    AlertDialog(
+                        onDismissRequest = {
+                            showSyncWarningDialog = false
+                            hasDismissedSyncWarning = true
+                        },
+                        title = { Text(stringResource(R.string.title_sync_reminder)) },
+                        text = {
+                            val msg = if (daysSinceLastSync < 0) {
+                                stringResource(R.string.msg_sync_warning_never)
+                            } else {
+                                stringResource(R.string.msg_sync_warning_days, daysSinceLastSync)
+                            }
+                            Text(msg)
+                        },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    showSyncWarningDialog = false
+                                    hasDismissedSyncWarning = true
+                                    syncLauncher.launch(
+                                        Intent(
+                                            this@MainActivity,
+                                            SyncActivity::class.java
+                                        )
+                                    )
+                                }
+                            ) {
+                                Text(stringResource(R.string.action_go_to_sync))
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(
+                                onClick = {
+                                    showSyncWarningDialog = false
+                                    hasDismissedSyncWarning = true
+                                }
+                            ) {
+                                val labelRes = if (daysSinceLastSync < 0) {
+                                    R.string.action_start_fresh
+                                } else {
+                                    R.string.action_remind_later
+                                }
+                                Text(stringResource(labelRes))
+                            }
+                        }
+                    )
                 }
             }
         }
