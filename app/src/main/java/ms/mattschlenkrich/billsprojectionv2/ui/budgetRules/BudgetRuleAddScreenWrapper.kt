@@ -78,6 +78,16 @@ fun BudgetRuleAddScreenWrapper(
         val name = state.name.trim()
         if (name.isBlank()) return mainActivity.getString(R.string.msg_prompt_enter_name)
         if (budgetNameList.contains(name)) return mainActivity.getString(R.string.msg_error_budget_rule_exists)
+        if (!df.isValidDate(
+                state.startDate,
+                allowZero = true
+            )
+        ) return mainActivity.getString(R.string.msg_prompt_choose_date)
+        if (!df.isValidDate(
+                state.endDate,
+                allowZero = true
+            )
+        ) return mainActivity.getString(R.string.msg_prompt_choose_date)
 
         val cached = mainViewModel.getBudgetRuleDetailed()
         if (cached?.toAccount == null) return mainActivity.getString(R.string.msg_error_no_dest_account)

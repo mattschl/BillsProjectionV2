@@ -166,6 +166,24 @@ class ProjectBudgetDates(
         return fixedDates
     }
 
+    private fun isNoDate(dateStr: String?): Boolean {
+        return dateStr.isNullOrBlank() || dateStr == "0" || dateStr == "0000-00-00" || dateStr.trim() == "0"
+    }
+
+    private fun parseStartDateSafely(startDate: String): LocalDate? {
+        if (isNoDate(startDate)) {
+            return LocalDate.now().minusMonths(1)
+        }
+        return parseDateSafely(startDate)
+    }
+
+    private fun parseEndDateSafely(endDate: String): LocalDate? {
+        if (isNoDate(endDate)) {
+            return LocalDate.now().plusYears(1)
+        }
+        return parseDateSafely(endDate)
+    }
+
     internal fun projectMonthly(
         startDate: String,
         endDate: String,
@@ -174,9 +192,9 @@ class ProjectBudgetDates(
         leadDays: Long,
     ): ArrayList<LocalDate> {
         val datesToFix = ArrayList<LocalDate>()
-        val start = parseDateSafely(startDate) ?: return datesToFix
-        val end = parseDateSafely(endDate) ?: return datesToFix
-        if (LocalDate.now() < end) {
+        val start = parseStartDateSafely(startDate) ?: return datesToFix
+        val end = parseEndDateSafely(endDate) ?: return datesToFix
+        if (LocalDate.now() <= end) {
             var workingDate = start
             do {
                 if (workingDate > LocalDate.now().minusMonths(interval).plusDays(1)) {
@@ -188,14 +206,13 @@ class ProjectBudgetDates(
         return fixDates(datesToFix, dayOfWeek, leadDays)
     }
 
-
     internal fun projectWeekly(
         startDate: String, endDate: String, interval: Long
     ): ArrayList<LocalDate> {
         val dates = ArrayList<LocalDate>()
-        val start = parseDateSafely(startDate) ?: return dates
-        val end = parseDateSafely(endDate) ?: return dates
-        if (LocalDate.now() < end) {
+        val start = parseStartDateSafely(startDate) ?: return dates
+        val end = parseEndDateSafely(endDate) ?: return dates
+        if (LocalDate.now() <= end) {
             var workingDate = start
             while (workingDate <= end) {
                 if (workingDate > LocalDate.now().minusWeeks(interval)) {
@@ -211,9 +228,9 @@ class ProjectBudgetDates(
         startDate: String, endDate: String, interval: Long, dayOfWeek: String, leadDays: Long
     ): ArrayList<LocalDate> {
         val datesToFix = ArrayList<LocalDate>()
-        val start = parseDateSafely(startDate) ?: return datesToFix
-        val end = parseDateSafely(endDate) ?: return datesToFix
-        if (LocalDate.now() < end) {
+        val start = parseStartDateSafely(startDate) ?: return datesToFix
+        val end = parseEndDateSafely(endDate) ?: return datesToFix
+        if (LocalDate.now() <= end) {
             var workingDate = start
             while (workingDate <= end) {
                 if (workingDate > LocalDate.now().minusWeeks(1)) {
@@ -231,7 +248,8 @@ class ProjectBudgetDates(
         leadDays: Long,
     ): ArrayList<LocalDate> {
         val dates = ArrayList<LocalDate>()
-        parseDateSafely(startDate)?.let { dates.add(it) }
+        val startStr = if (isNoDate(startDate)) LocalDate.now().toString() else startDate
+        parseDateSafely(startStr)?.let { dates.add(it) }
         return fixDates(dates, dayOfWeek, leadDays)
     }
 
@@ -239,9 +257,11 @@ class ProjectBudgetDates(
         startDate: String, interval: Long, payDayList: List<String>, endDate: String
     ): ArrayList<LocalDate> {
         val dates = ArrayList<LocalDate>()
+        val effectiveStart = if (isNoDate(startDate)) "1970-01-01" else startDate
+        val effectiveEnd = if (isNoDate(endDate)) "2099-12-31" else endDate
         for (d in payDayList.indices) {
             val dateStr = payDayList[d]
-            val inRange = dateStr in startDate..endDate
+            val inRange = dateStr in effectiveStart..effectiveEnd
             val isIntervalMatch = (d + 1) % interval.toInt() == 0
             val isNotPast = dateStr >= LocalDate.now().toString()
             if (inRange && isIntervalMatch && isNotPast) {
@@ -253,7 +273,7 @@ class ProjectBudgetDates(
 
     private fun parseDateSafely(dateString: String): LocalDate? {
         return try {
-            if (dateString.isBlank()) null
+            if (isNoDate(dateString)) null
             else LocalDate.parse(dateString)
         } catch (_: Exception) {
             null

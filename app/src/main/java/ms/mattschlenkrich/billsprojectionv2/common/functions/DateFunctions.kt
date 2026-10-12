@@ -62,6 +62,20 @@ class DateFunctions {
         }
     }
 
+    fun isValidDate(dateString: String, allowZero: Boolean = false): Boolean {
+        val trimmed = dateString.trim()
+        if (allowZero && (trimmed == "0" || trimmed == "0000-00-00" || trimmed.isBlank())) {
+            return true
+        }
+        if (trimmed.length != 10) return false
+        return try {
+            val parsed = LocalDate.parse(trimmed)
+            parsed.toString() == trimmed
+        } catch (_: Exception) {
+            false
+        }
+    }
+
     fun getDisplayDate(date: String): String {
         return try {
             if (date.isBlank()) ""

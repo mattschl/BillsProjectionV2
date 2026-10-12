@@ -120,7 +120,7 @@ fun BudgetItemAddScreenWrapper(
     }
 
     fun validateBudgetItem(): String {
-        if (dateState.value.isBlank()) return mainActivity.getString(R.string.msg_prompt_choose_date)
+        if (!df.isValidDate(dateState.value)) return mainActivity.getString(R.string.msg_prompt_choose_date)
         if (nameState.value.isBlank()) return mainActivity.getString(R.string.msg_prompt_enter_description)
         val cached = mainViewModel.getBudgetItemDetailed()
         if (cached?.toAccount == null) return mainActivity.getString(R.string.msg_error_no_dest_account)

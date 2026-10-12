@@ -1,18 +1,19 @@
 package ms.mattschlenkrich.billsprojectionv2.common.components
 
 import android.app.DatePickerDialog
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ProjectDateField(
     value: String,
@@ -23,54 +24,66 @@ fun ProjectDateField(
     val context = LocalContext.current
     val df = remember { DateFunctions() }
 
-    val displayValue = remember(value) {
-        if (value.isNotEmpty() && value.contains("-")) {
-            try {
-                df.getDisplayDateWithYear(value)
-            } catch (e: Exception) {
-                value
-            }
-        } else {
-            value
-        }
-    }
-
     val showDatePicker = {
-        val curDate = if (value.contains("-")) value else df.getCurrentDateAsString()
+        val curDate = if (value.contains("-") && value.split("-").size == 3) {
+            value
+        } else {
+            df.getCurrentDateAsString()
+        }
         val curDateAll = curDate.split("-")
+        val year = curDateAll.getOrNull(0)?.toIntOrNull() ?: 2026
+        val month = (curDateAll.getOrNull(1)?.toIntOrNull() ?: 1) - 1
+        val day = curDateAll.getOrNull(2)?.toIntOrNull() ?: 1
+
         DatePickerDialog(
             context,
-            { _, year, monthOfYear, dayOfMonth ->
-                val month = monthOfYear + 1
+            { _, pickedYear, monthOfYear, dayOfMonth ->
+                val pickedMonth = monthOfYear + 1
                 onValueChange(
-                    "$year-${month.toString().padStart(2, '0')}-${
+                    "$pickedYear-${pickedMonth.toString().padStart(2, '0')}-${
                         dayOfMonth.toString().padStart(2, '0')
                     }"
                 )
             },
-            curDateAll[0].toInt(),
-            curDateAll[1].toInt() - 1,
-            curDateAll[2].toInt()
+            year,
+            month,
+            day
         ).apply {
             setTitle(label)
             show()
         }
     }
 
-    ProjectTextBox(
-        value = displayValue,
-        onValueChange = onValueChange,
+    ProjectTextField(
+        value = value,
+        onValueChange = { input ->
+            val formatted = formatDateInput(input)
+            onValueChange(formatted)
+        },
         modifier = modifier,
         label = label,
-        readOnly = true,
-        onClick = { showDatePicker() },
-        onLongClick = { showDatePicker() },
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         trailingIcon = {
-            Icon(
-                imageVector = Icons.Default.CalendarMonth,
-                contentDescription = label,
-                modifier = Modifier.size(ProjectFieldDefaults.iconSize())
-            )
+            IconButton(onClick = { showDatePicker() }) {
+                Icon(
+                    imageVector = Icons.Default.CalendarMonth,
+                    contentDescription = label,
+                    modifier = Modifier.size(ProjectFieldDefaults.iconSize())
+                )
+            }
         }
     )
+}
+
+private fun formatDateInput(input: String): String {
+    val trimmed = input.trim()
+    if (trimmed == "0" || trimmed == "0000-00-00") return "0"
+
+    val digits = input.filter { it.isDigit() }.take(8)
+    return when {
+        digits.length <= 4 -> digits
+        digits.length <= 6 -> "${digits.substring(0, 4)}-${digits.substring(4)}"
+        else -> "${digits.substring(0, 4)}-${digits.substring(4, 6)}-${digits.substring(6)}"
+    }
 }

@@ -100,7 +100,7 @@ class TransactionEditState(
     }
 
     fun validate(): Boolean {
-        dateError = date.isBlank()
+        dateError = !df.isValidDate(date)
         descriptionError = description.isBlank()
         toAccountError = toAccount == null
         fromAccountError = fromAccount == null

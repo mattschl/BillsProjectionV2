@@ -81,15 +81,25 @@ class UpdateBudgetPredictions(
         }
     }
 
+    private fun isNoDate(dateStr: String?): Boolean {
+        return dateStr.isNullOrBlank() || dateStr == "0" || dateStr == "0000-00-00" || dateStr.trim() == "0"
+    }
+
+    private fun getEffectiveEndDate(ruleEndDate: String?, stopDate: String): String {
+        return if (isNoDate(ruleEndDate) || ruleEndDate!! > stopDate) {
+            stopDate
+        } else {
+            ruleEndDate
+        }
+    }
+
     private suspend fun updatePayDayBudgetItemPredictions(
         payDayBudgetRuleList: List<BudgetRule>,
         stopDate: String,
     ) {
         val updateTime = df.getCurrentTimeAsString()
         for (rule in payDayBudgetRuleList) {
-            val endDate =
-                if ((rule.budEndDate != null) && (rule.budEndDate > stopDate)) stopDate else rule.budEndDate
-                    ?: stopDate
+            val endDate = getEffectiveEndDate(rule.budEndDate, stopDate)
             val payDates = projectBudgetDates.projectDates(
                 startDate = rule.budStartDate,
                 endDate = endDate,
@@ -115,9 +125,7 @@ class UpdateBudgetPredictions(
     ) {
         val updateTime = df.getCurrentTimeAsString()
         for (rule in rulesOnPayDay) {
-            val endDate =
-                if ((rule.budEndDate != null) && (rule.budEndDate > stopDate)) stopDate else rule.budEndDate
-                    ?: stopDate
+            val endDate = getEffectiveEndDate(rule.budEndDate, stopDate)
             val payDates = projectBudgetDates.projectOnPayDay(
                 rule.budStartDate, rule.budFrequencyCount.toLong(), payDays, endDate,
             )
@@ -137,9 +145,7 @@ class UpdateBudgetPredictions(
         if (payDays.isEmpty()) return
 
         for (rule in rulesOther) {
-            val endDate =
-                if ((rule.budEndDate != null) && (rule.budEndDate > stopDate)) stopDate else rule.budEndDate
-                    ?: stopDate
+            val endDate = getEffectiveEndDate(rule.budEndDate, stopDate)
             val payDates = projectBudgetDates.projectDates(
                 startDate = rule.budStartDate,
                 endDate = endDate,

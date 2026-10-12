@@ -150,6 +150,12 @@ fun BudgetRuleUpdateScreenWrapper(
         if (state.amount.isEmpty()) {
             return mainActivity.getString(R.string.msg_prompt_enter_amount)
         }
+        if (!df.isValidDate(state.startDate, allowZero = true)) {
+            return mainActivity.getString(R.string.msg_prompt_choose_date)
+        }
+        if (!df.isValidDate(state.endDate, allowZero = true)) {
+            return mainActivity.getString(R.string.msg_prompt_choose_date)
+        }
         return ANSWER_OK
     }
 

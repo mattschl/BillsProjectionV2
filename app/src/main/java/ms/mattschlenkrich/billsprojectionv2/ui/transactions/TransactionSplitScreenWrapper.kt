@@ -159,7 +159,7 @@ fun TransactionSplitScreenWrapper(
             val amt = nf.getDoubleFromDollars(state.amount)
             state.validate()
 
-            val answer = if (state.date.isBlank()) {
+            val answer = if (!df.isValidDate(state.date)) {
                 mainActivity.getString(R.string.msg_prompt_choose_date)
             } else if (state.amount.isBlank()) {
                 mainActivity.getString(R.string.msg_error_split_amount_high)
