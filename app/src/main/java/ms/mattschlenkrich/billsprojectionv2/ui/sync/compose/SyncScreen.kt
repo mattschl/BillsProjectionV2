@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.ui.sync
+package ms.mattschlenkrich.billsprojectionv2.ui.sync.compose
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -44,6 +44,8 @@ import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectFieldDefaults
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
+import ms.mattschlenkrich.billsprojectionv2.ui.sync.DriveFileMeta
+import ms.mattschlenkrich.billsprojectionv2.ui.sync.SyncViewModel
 import java.io.File
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)

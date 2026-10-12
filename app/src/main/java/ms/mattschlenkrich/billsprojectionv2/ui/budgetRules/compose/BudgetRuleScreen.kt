@@ -214,33 +214,26 @@ fun BudgetRuleScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Spacer(modifier = Modifier.height(4.dp))
-            ProjectTextField(
-                value = name,
-                onValueChange = onNameChange,
-                label = stringResource(R.string.label_budget_rule_name),
-                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
-            )
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                ProjectDateField(
-                    value = startDate,
-                    onValueChange = onStartDateChange,
-                    label = stringResource(R.string.label_start_date),
+                ProjectTextField(
+                    value = name,
+                    onValueChange = onNameChange,
+                    label = stringResource(R.string.label_budget_rule_name),
+                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
                     modifier = Modifier.weight(1f)
-                )
-
+                ) //budget rule name}
                 Column(modifier = Modifier.weight(1f)) {
                     ProjectBalanceField(
                         value = amount,
                         onValueChange = onAmountChange,
-                        label = stringResource(R.string.label_amount),
+                        label = stringResource(R.string.label_default_amount),
                         modifier = Modifier.fillMaxWidth(),
                         onIconClick = onGotoCalculator,
                         isHighlighted = true
-                    )
+                    ) //default amount
                     suggestedAmount?.let {
                         val nf = LocalNumberFunctions.current
                         Text(
@@ -257,26 +250,24 @@ fun BudgetRuleScreen(
                 }
             }
 
-            ProjectDateField(
-                value = endDate,
-                onValueChange = onEndDateChange,
-                label = stringResource(R.string.label_end_date),
-                modifier = Modifier.fillMaxWidth()
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ProjectTextBox(
+                    label = stringResource(R.string.label_from_this_account),
+                    value = fromAccount?.accountName ?: "",
+                    onClick = { onChooseAccount(REQUEST_FROM_ACCOUNT) },
+                    modifier = Modifier.weight(1f)
+                )
 
-            ProjectTextBox(
-                label = stringResource(R.string.label_from_this_account),
-                value = fromAccount?.accountName ?: "",
-                onClick = { onChooseAccount(REQUEST_FROM_ACCOUNT) },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            ProjectTextBox(
-                label = stringResource(R.string.label_to_this_account),
-                value = toAccount?.accountName ?: "",
-                onClick = { onChooseAccount(REQUEST_TO_ACCOUNT) },
-                modifier = Modifier.fillMaxWidth()
-            )
+                ProjectTextBox(
+                    label = stringResource(R.string.label_to_this_account),
+                    value = toAccount?.accountName ?: "",
+                    onClick = { onChooseAccount(REQUEST_TO_ACCOUNT) },
+                    modifier = Modifier.weight(1f)
+                )
+            }
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
 
@@ -289,6 +280,24 @@ fun BudgetRuleScreen(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ProjectDateField(
+                    value = startDate,
+                    onValueChange = onStartDateChange,
+                    label = stringResource(R.string.label_start_date),
+                    modifier = Modifier.weight(1f)
+                )  // start date
+
+                ProjectDateField(
+                    value = endDate,
+                    onValueChange = onEndDateChange,
+                    label = stringResource(R.string.label_end_date),
+                    modifier = Modifier.weight(1f)
+                ) //end date
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 ExposedDropdown(
@@ -342,12 +351,6 @@ fun BudgetRuleScreen(
                     checked = isPayDay,
                     onCheckedChange = onIsPayDayChange
                 )
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start
-            ) {
                 LabeledCheckbox(
                     label = stringResource(R.string.label_automatic),
                     checked = isAuto,

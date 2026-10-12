@@ -45,6 +45,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 import ms.mattschlenkrich.billsprojectionv2.common.theme.BillsProjectionTheme
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.ui.sync.compose.SyncScreen
 import java.security.SecureRandom
 import kotlin.time.Duration.Companion.milliseconds
 

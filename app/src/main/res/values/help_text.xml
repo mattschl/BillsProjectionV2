@@ -29,8 +29,8 @@
         This will schedule the Pay days accordingly.\n\n
         \"Automatic Payment\" is not used at this time.\n\n
         SCHEDULING: \n
-        This is the important part of the Budget Rule!\n
-        Fill in the start date and do not forget an end date.\n
+        This is the important part of the Budget Rule!
+        Fill in the start date and do not forget an end date.
         Fill in the frequency and the frequency count with a day of week.
         (Note: If weekly is used the day of week is ignored.)\n\n
         The last item is the \"Days Before Due Date\".
@@ -47,14 +47,14 @@
         *It is important to have one Budget Rule and only one Budget Rule that is a pay day
         to create pay day periods for the budget!\n\n
         This view will help you to plan where your money will go for each pay period.
-        Budget item can be edited or acted upon by tapping on them.\n
-        You can add new transactions not budgeted or new budget items by tapping on the \"+\" button.\n
+        Budget item can be edited or acted upon by tapping on them.
+        You can add new transactions not budgeted or new budget items by tapping on the \"+\" button.
         If you consistently keep track you will see trends that could be changed to
-        better use your resources.\n
+        better use your resources.
         Be sure to include annual and occasional expenses so you are not caught by surprise.\n\n
         When you feel your budget rules are correct,
-        update budget predictions from the options menu \"Manage Budget\" -> \"Update Budget Predictions\"
-        on the top right to populate this view.
+        update budget predictions from the options menu \"Manage Budget\" ->
+        \"Update Budget Predictions\" on the top right to populate this view.
         It is a good idea to \"lock\" items for the current pay period to prevent losing any
         changes you have made.\n\n
         If you accidentally cancel a budget item, you can view all canceled and completed
@@ -103,9 +103,10 @@
         This gives you a place to view how your monthly income and expenses look.
         tap on an item to some options to adjust the budget.\n\n
     </string>
-    <string name="sync_help_text">This allows you to sync your data between 2 or 3 devices.\n\n
+    <string name="sync_help_text">This allows you to sync your data between 2 or 3 devices.
         This can simply be used to back up and restore data. Or to share the current financial situation between
-        members of a household. While the data will be stored on Google Drive, it is only visible to the app itself.
+        members of a household. \n\n
+        While the data will be stored on Google Drive, it is only visible to the app itself.
         If you are concerned with security, protect your app with a password in the settings.\n\n
     *Warning* If more than one device is entering transactions that use the same account,
         there may be some problems  account balances and budgetItems not displaying accurate info.\n\n

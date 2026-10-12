@@ -66,6 +66,7 @@
     <string name="label_all">All</string>
     <string name="label_allow_pending">Allow transactions pending</string>
     <string name="label_amount">Amount</string>
+    <string name="label_default_amount">Default Amount</string>
     <string name="label_annual_budget">Annual Budget</string>
     <string name="label_annually_every">"Annually every "</string>
     <string name="label_asset_account">Asset Account</string>

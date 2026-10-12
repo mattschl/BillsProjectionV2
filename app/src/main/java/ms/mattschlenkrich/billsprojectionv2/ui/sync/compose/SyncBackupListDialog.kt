@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.ui.sync
+package ms.mattschlenkrich.billsprojectionv2.ui.sync.compose
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,8 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,78 +27,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.ui.sync.DriveFileMeta
 import java.io.File
-
-@Composable
-fun SyncAdvancedDialog(
-    onDismiss: () -> Unit,
-    onRestore: () -> Unit,
-    onQueryDownload: () -> Unit,
-    onUploadNow: () -> Unit,
-    onRepairLocal: () -> Unit,
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Advanced Options") },
-        text = {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Button(
-                    onClick = onRestore,
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                        contentColor = MaterialTheme.colorScheme.onErrorContainer
-                    )
-                ) { Text("Restore") }
-
-                Button(
-                    onClick = onQueryDownload,
-                    modifier = Modifier.fillMaxWidth()
-                ) { Text("Query Drive / Download") }
-
-                Button(
-                    onClick = onUploadNow,
-                    modifier = Modifier.fillMaxWidth()
-                ) { Text("Upload Current State") }
-
-                Button(
-                    onClick = onRepairLocal,
-                    modifier = Modifier.fillMaxWidth()
-                ) { Text("Repair Local Database") }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.action_ok))
-            }
-        }
-    )
-}
-
-@Composable
-fun SyncRepairConfirmDialog(
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit,
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Repair Local Database") },
-        text = { Text("This will attempt to fix metadata errors in your current local database file. Use this if you have manually replaced the database file but the app isn't recognizing it.") },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text(stringResource(R.string.action_confirm))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.action_cancel))
-            }
-        }
-    )
-}
 
 @Composable
 fun SyncBackupListDialog(
@@ -203,67 +131,6 @@ fun SyncBackupListDialog(
                     Icon(Icons.Default.Download, contentDescription = null)
                     Spacer(Modifier.size(4.dp))
                     Text("Download")
-                }
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.action_cancel))
-            }
-        }
-    )
-}
-
-@Composable
-fun SyncDeleteConfirmDialog(
-    meta: DriveFileMeta,
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit,
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Confirm Delete") },
-        text = { Text("Are you sure you want to delete '${meta.name}' from Google Drive? This will also remove associated temporary files and cannot be undone.") },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text(
-                    stringResource(R.string.action_delete),
-                    color = MaterialTheme.colorScheme.error
-                )
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.action_cancel))
-            }
-        }
-    )
-}
-
-@Composable
-fun SyncRestoreConfirmDialog(
-    fileName: String,
-    onDismiss: () -> Unit,
-    onRestoreOnly: () -> Unit,
-    onRestoreAndDeleteOthers: () -> Unit,
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Confirm Restore") },
-        text = { Text("This will overwrite your local records with '$fileName'. This cannot be undone.") },
-        confirmButton = {
-            Column {
-                TextButton(onClick = onRestoreOnly) {
-                    Text(
-                        stringResource(R.string.action_confirm),
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
-                TextButton(onClick = onRestoreAndDeleteOthers) {
-                    Text(
-                        "Restore & Delete Others",
-                        color = MaterialTheme.colorScheme.error
-                    )
                 }
             }
         },
