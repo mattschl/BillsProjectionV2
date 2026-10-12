@@ -3,7 +3,7 @@
 package ms.mattschlenkrich.billsprojectionv2.common
 
 const val DB_NAME = "bills2.db"
-const val DB_VERSION = 3
+const val DB_VERSION = 4
 const val BILLS_DATABASE = "BillsDatabase"
 
 const val DATE_FORMAT_SQL = "yyyy-MM-dd"
@@ -46,6 +46,13 @@ const val SYNC_SOURCE = "syncSourceName"
 const val SYNC_DEVICE_ID = "syncDeviceId"
 const val SYNC_STATUS = "syncStatus"
 const val SYNC_RECORDS_PROCESSED = "syncRecordsProcessed"
+
+const val TABLE_PREDICTION_UPDATE_HISTORY = "precitionUpdateHistory"
+const val PREDICTION_UPDATE_ID = "predictionUpdateId"
+const val PUH_TIME = "puhTime"
+const val PUH_LAST_PREDICTION_DATE = "puhLastPredictionDate"
+const val PUH_PREDICTION_LENGTH = "puhPredictionLength"
+const val PUH_DEVICE_ID = "puhDeviceId"
 
 const val TABLE_ACCOUNT_TYPES = "accountTypes"
 const val TYPE_ID = "typeId"

@@ -14,6 +14,15 @@ class BudgetItemRepository(private val db: BillsDatabase) {
     suspend fun insertOrReplaceBudgetItem(budgetItem: BudgetItem) =
         db.getBudgetItemDao().insertOrReplaceBudgetItem(budgetItem)
 
+    suspend fun insertPredictionUpdateHistory(history: ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.PredictionUpdateHistory) =
+        db.getBudgetItemDao().insertPredictionUpdateHistory(history)
+
+    suspend fun deletePredictionUpdateHistory(id: Long) =
+        db.getBudgetItemDao().deletePredictionUpdateHistory(id)
+
+    suspend fun getLatestPredictionUpdateHistory() =
+        db.getBudgetItemDao().getLatestPredictionUpdateHistory()
+
     /*suspend fun deleteBudgetItem(
         budgetRulId: Long, projectedDate: String, updateTime: String
     ) = db.getBudgetItemDao().deleteBudgetItem(

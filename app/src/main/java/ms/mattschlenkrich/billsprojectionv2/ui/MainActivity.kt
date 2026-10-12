@@ -237,6 +237,39 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        var showBudgetUpdateWarningDialog by remember { mutableStateOf(value = false) }
+        var latestProjectedDate by remember { mutableStateOf<String?>(null) }
+        var weeksRemaining by remember { mutableIntStateOf(0) }
+        var hasDismissedBudgetUpdateWarning by remember { mutableStateOf(value = false) }
+
+        LaunchedEffect(Unit) {
+            if (!isFirstRun && (settings.budgetUpdateWarningWeeks > 0) && !hasDismissedBudgetUpdateWarning) {
+                withContext(Dispatchers.IO) {
+                    try {
+                        val latestHistory = budgetItemViewModel.getLatestPredictionUpdateHistory()
+                        if (latestHistory == null) {
+                            latestProjectedDate = null
+                            weeksRemaining = -1
+                            showBudgetUpdateWarningDialog = true
+                        } else {
+                            val updateDate =
+                                DateFunctions().parseUtcTimestamp(latestHistory.puhTime)
+                            if (updateDate != null) {
+                                val diffMs = System.currentTimeMillis() - updateDate.time
+                                val diffWeeks = (diffMs / (1000L * 60 * 60 * 24 * 7)).toInt()
+                                if (diffWeeks >= settings.budgetUpdateWarningWeeks) {
+                                    latestProjectedDate = latestHistory.puhLastPredictionDate
+                                    weeksRemaining = diffWeeks
+                                    showBudgetUpdateWarningDialog = true
+                                }
+                            }
+                        }
+                    } catch (_: Exception) {
+                    }
+                }
+            }
+        }
+
         LaunchedEffect(currentRoute, pagerState.currentPage) {
             val titleResId = when (currentRoute) {
                 Screen.MainPager.route -> when (pagerState.currentPage) {
@@ -422,6 +455,49 @@ class MainActivity : AppCompatActivity() {
                         }
                     )
                 }
+
+                if (showBudgetUpdateWarningDialog) {
+                    AlertDialog(
+                        onDismissRequest = {
+                            showBudgetUpdateWarningDialog = false
+                            hasDismissedBudgetUpdateWarning = true
+                        },
+                        title = { Text(stringResource(R.string.title_budget_update_reminder)) },
+                        text = {
+                            val msg = if (latestProjectedDate == null) {
+                                stringResource(R.string.msg_budget_update_warning_never)
+                            } else {
+                                stringResource(
+                                    R.string.msg_budget_update_warning_weeks,
+                                    latestProjectedDate!!,
+                                    weeksRemaining,
+                                )
+                            }
+                            Text(msg)
+                        },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    showBudgetUpdateWarningDialog = false
+                                    hasDismissedBudgetUpdateWarning = true
+                                    updateBudget()
+                                }
+                            ) {
+                                Text(stringResource(R.string.action_update_now))
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(
+                                onClick = {
+                                    showBudgetUpdateWarningDialog = false
+                                    hasDismissedBudgetUpdateWarning = true
+                                }
+                            ) {
+                                Text(stringResource(R.string.action_remind_later))
+                            }
+                        }
+                    )
+                }
             }
         }
     }
@@ -484,11 +560,24 @@ class MainActivity : AppCompatActivity() {
 
     private fun doTheUpdate(msg: String) {
         runOnUiThread {
-            AlertDialog.Builder(this).apply {
-                setTitle(getString(R.string.title_update_results))
-                setMessage(msg)
-                setPositiveButton(getString(R.string.action_ok)) { _, _ -> }
-                show()
+            val settings = SettingsManager(this).getSettings()
+            if (!settings.driveAccount.isNullOrEmpty()) {
+                AlertDialog.Builder(this).apply {
+                    setTitle(getString(R.string.title_update_results))
+                    setMessage("$msg\n\n${getString(R.string.prompt_sync_after_update)}")
+                    setPositiveButton(getString(R.string.title_sync)) { _, _ ->
+                        startActivity(Intent(this@MainActivity, SyncActivity::class.java))
+                    }
+                    setNegativeButton(getString(R.string.action_cancel), null)
+                    show()
+                }
+            } else {
+                AlertDialog.Builder(this).apply {
+                    setTitle(getString(R.string.title_update_results))
+                    setMessage(msg)
+                    setPositiveButton(getString(R.string.action_ok)) { _, _ -> }
+                    show()
+                }
             }
         }
     }

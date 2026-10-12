@@ -30,12 +30,16 @@ import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_ITEM_RULE_ID
 import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_ITEM_TO_ACCOUNT_ID
 import ms.mattschlenkrich.billsprojectionv2.common.BUDGET_ITEM_UPDATE_TIME
 import ms.mattschlenkrich.billsprojectionv2.common.IS_ASSET
+import ms.mattschlenkrich.billsprojectionv2.common.PREDICTION_UPDATE_ID
+import ms.mattschlenkrich.billsprojectionv2.common.PUH_TIME
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_ITEMS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_RULES
+import ms.mattschlenkrich.billsprojectionv2.common.TABLE_PREDICTION_UPDATE_HISTORY
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
+import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.PredictionUpdateHistory
 
 @Dao
 interface BudgetItemDao {
@@ -55,6 +59,15 @@ interface BudgetItemDao {
                 "AND $BUDGET_ITEM_PROJECTED_DATE = :projectedDate"
     )
     fun getBudgetItem(ruleId: Long, projectedDate: String): BudgetItem?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertPredictionUpdateHistory(history: PredictionUpdateHistory)
+
+    @Query("DELETE FROM $TABLE_PREDICTION_UPDATE_HISTORY WHERE $PREDICTION_UPDATE_ID = :id")
+    suspend fun deletePredictionUpdateHistory(id: Long)
+
+    @Query("SELECT * FROM $TABLE_PREDICTION_UPDATE_HISTORY ORDER BY $PUH_TIME DESC LIMIT 1")
+    suspend fun getLatestPredictionUpdateHistory(): PredictionUpdateHistory?
 
     @Query(
         "UPDATE $TABLE_BUDGET_ITEMS " +

@@ -18,11 +18,14 @@ class SettingsManager(private val context: Context) {
             val jsonText = file.readText()
             val settings = gson.fromJson(jsonText, AppSettings::class.java)
             if (settings != null) {
+                var updated = settings
                 if (!jsonText.contains("syncWarningDays")) {
-                    settings.copy(syncWarningDays = 3)
-                } else {
-                    settings
+                    updated = updated.copy(syncWarningDays = 3)
                 }
+                if (!jsonText.contains("budgetUpdateWarningWeeks")) {
+                    updated = updated.copy(budgetUpdateWarningWeeks = 3)
+                }
+                updated
             } else {
                 AppSettings(deviceId = NumberFunctions().generateId())
             }

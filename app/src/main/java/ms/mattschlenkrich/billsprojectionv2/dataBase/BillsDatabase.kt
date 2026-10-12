@@ -18,6 +18,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountAndType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
+import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.PredictionUpdateHistory
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.sync.SyncHistory
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
@@ -30,6 +31,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transact
         Transactions::class,
         BudgetItem::class,
         SyncHistory::class,
+        PredictionUpdateHistory::class,
     ], version = DB_VERSION,
     views = [AccountAndType::class],
 )
@@ -86,6 +88,21 @@ abstract class BillsDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `precitionUpdateHistory` (" +
+                            "`predictionUpdateId` INTEGER NOT NULL, " +
+                            "`puhTime` TEXT NOT NULL, " +
+                            "`puhLastPredictionDate` TEXT NOT NULL, " +
+                            "`puhPredictionLength` INTEGER NOT NULL, " +
+                            "`puhDeviceId` INTEGER NOT NULL, " +
+                            "PRIMARY KEY(`predictionUpdateId`)" +
+                            ")"
+                )
+            }
+        }
+
         operator fun invoke(context: Context) =
             instance ?: synchronized(LOCK) {
                 instance ?: createDataBase(context).also {
@@ -106,7 +123,7 @@ abstract class BillsDatabase : RoomDatabase() {
                 BillsDatabase::class.java,
                 DB_NAME
             )
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_1_3)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_1_3, MIGRATION_3_4)
                 .createFromAsset(DB_NAME)
                 .fallbackToDestructiveMigration(dropAllTables = true)
                 .build()

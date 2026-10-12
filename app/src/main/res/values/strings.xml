@@ -8,7 +8,7 @@
     <string name="action_apply_to_all_conflicts">Apply to all remaining conflicts</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_cancel_all_regular_items">Cancel all regular items for this payday</string>
-    <string name="action_clear_future_predictions">Clear future predictions</string>
+    <string name="action_clear_future_predictions">CLEAR *ALL* future predictions</string>
     <string name="action_complete_pending_transaction">Complete this pending transaction</string>
     <string name="action_confirm">Confirm</string>
     <string name="action_connect_to_drive">Connect to Drive</string>
@@ -31,6 +31,7 @@
     <string name="action_lock">Lock</string>
     <string name="action_lock_payday_items">LOCK all items for this payday</string>
     <string name="action_login">Login</string>
+    <string name="action_manage_budget">Manage Budget</string>
     <string name="action_ok">OK</string>
     <string name="action_open_transaction_to_edit">Open the transaction to edit it</string>
     <string name="action_perform">Perform</string>
@@ -50,6 +51,7 @@
     <string name="action_update_account_type">Update Account Type</string>
     <string name="action_update_budget_item">Update this Budget Item</string>
     <string name="action_update_budget_predictions">Update Budget Predictions</string>
+    <string name="action_update_now">Update Predictions Now</string>
     <string name="action_update_budget_rule">Update Budget Rule</string>
     <string name="action_update_transaction">Update this Transaction</string>
     <string name="action_view_account_summary">View a summary of Transactions using this Account</string>
@@ -136,6 +138,7 @@
     <string name="label_rules">Rule</string>
     <string name="label_selected_colon">"Selected: "</string>
     <string name="label_start_date">Start Date</string>
+    <string name="label_budget_update_reminder_interval">Budget Update Reminder Interval</string>
     <string name="label_surplus_of">"Surplus of "</string>
     <string name="label_sync_reminder_interval">Sync Reminder Interval</string>
     <string name="label_system_default">System Default</string>
@@ -195,6 +198,8 @@
     <string name="msg_prompt_enter_description">Please enter a name or description</string>
     <string name="msg_prompt_enter_name">Please enter a name</string>
     <string name="msg_prompt_enter_trans_amount">Please enter an amount for this transaction</string>
+    <string name="msg_budget_update_warning_never">There are no future budget predictions. Updating budget predictions projects your upcoming bills and balances.</string>
+    <string name="msg_budget_update_warning_weeks" tools:ignore="PluralsCandidate">Your budget predictions currently extend to %1$s (%2$d weeks remaining). Updating predictions keeps your upcoming bills and projected balances accurate.</string>
     <string name="msg_sync_conflict">Table: %1$s\nName: %2$s\n\nLocal:\nID: %3$d\nUpdated: %4$s\n\nDrive:\nID: %5$d\nUpdated: %6$s\n\nThere is a name conflict but IDs are different. Which version would you like to keep as the primary for this name? The other will be renamed.</string>
     <string name="msg_sync_in_progress">A sync is already in progress on another device (or a previous sync attempt was interrupted). Please try again in 10 minutes.</string>
     <string name="msg_sync_transaction_warning">New or updated transactions were found during the sync process. Please verify your account balances and owing values to ensure everything was recorded correctly.</string>
@@ -217,6 +222,7 @@
     <string name="prompt_rename_account">Are you sure you want to rename this account?</string>
     <string name="prompt_rename_account_type">Are you sure you want to rename this account type?</string>
     <string name="prompt_save_and_continue">Would you like to save this Budget Rule and continue?</string>
+    <string name="prompt_sync_after_update">Would you like to sync your updated budget data with Google Drive now?</string>
     <string name="text_and_header">"\n and "</string>
     <string name="text_current_suffix">" - (Current)"</string>
     <string name="text_for_padded">" for "</string>
@@ -238,6 +244,7 @@
     <string name="title_budget_rule_help">Budget Rule Help</string>
     <string name="title_budget_rules">Budget Rules</string>
     <string name="title_budget_summary">View Budget Summary</string>
+    <string name="title_budget_update_reminder">Budget Update Reminder</string>
     <string name="title_budget_view">Budget</string>
     <string name="title_budget_view_help">Budget View Help</string>
     <string name="title_calculator">Calculator</string>

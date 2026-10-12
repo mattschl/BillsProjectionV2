@@ -16,6 +16,7 @@ class SettingsEditState(initialSettings: AppSettings) {
     var isPasswordSet by mutableStateOf(initialSettings.passwordHash != null)
     var defaultAccount by mutableStateOf(initialSettings.defaultAccount ?: ALL_ITEMS)
     var syncWarningDays by mutableIntStateOf(initialSettings.syncWarningDays)
+    var budgetUpdateWarningWeeks by mutableIntStateOf(initialSettings.budgetUpdateWarningWeeks)
 
     fun updateFrom(settings: AppSettings) {
         fontSize = settings.fontSize ?: "medium"
@@ -24,6 +25,7 @@ class SettingsEditState(initialSettings: AppSettings) {
         isPasswordSet = settings.passwordHash != null
         defaultAccount = settings.defaultAccount ?: ALL_ITEMS
         syncWarningDays = settings.syncWarningDays
+        budgetUpdateWarningWeeks = settings.budgetUpdateWarningWeeks
     }
 }
 

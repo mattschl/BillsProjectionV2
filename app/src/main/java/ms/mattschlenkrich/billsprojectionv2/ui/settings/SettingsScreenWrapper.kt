@@ -162,6 +162,34 @@ fun SettingsScreenWrapper(
                     settingsManager.saveSettings(currentSettings.copy(syncWarningDays = days))
                 }
             )
+
+            val budgetUpdateOptionsMap = mapOf(
+                "Disabled" to 0,
+                "1 Week" to 1,
+                "2 Weeks" to 2,
+                "3 Weeks (Default)" to 3,
+                "4 Weeks (1 Month)" to 4,
+                "6 Weeks" to 6,
+                "8 Weeks (2 Months)" to 8,
+            )
+            val budgetUpdateOptions = budgetUpdateOptionsMap.keys.toList()
+            val currentBudgetUpdateSelectedOption =
+                budgetUpdateOptionsMap.entries.find { it.value == state.budgetUpdateWarningWeeks }?.key
+                    ?: "3 Weeks (Default)"
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            DropdownSelector(
+                label = stringResource(R.string.label_budget_update_reminder_interval),
+                options = budgetUpdateOptions,
+                selectedOption = currentBudgetUpdateSelectedOption,
+                onOptionSelected = { selected ->
+                    val weeks = budgetUpdateOptionsMap[selected] ?: 3
+                    state.budgetUpdateWarningWeeks = weeks
+                    val currentSettings = settingsManager.getSettings()
+                    settingsManager.saveSettings(currentSettings.copy(budgetUpdateWarningWeeks = weeks))
+                }
+            )
         }
 
         Text(

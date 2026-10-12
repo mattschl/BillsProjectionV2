@@ -3,15 +3,19 @@ package ms.mattschlenkrich.billsprojectionv2.common.projections
 import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
+import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.PredictionUpdateHistory
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 private const val TAG = "UpdateBudgetPredictions"
 
 class UpdateBudgetPredictions(
-    mainActivity: MainActivity,
+    private val mainActivity: MainActivity,
 ) {
     private val budgetRuleViewModel = mainActivity.budgetRuleViewModel
     private val budgetItemViewModel = mainActivity.budgetItemViewModel
@@ -51,6 +55,29 @@ class UpdateBudgetPredictions(
             if (rulesOther.isNotEmpty()) {
                 updateAllOtherBudgetItems(rulesOther, stopDate)
             }
+        }
+
+        try {
+            val settings = SettingsManager(mainActivity).getSettings()
+            val today = LocalDate.now()
+            val stopLocalDate = try {
+                LocalDate.parse(stopDate)
+            } catch (_: Exception) {
+                today.plusMonths(3)
+            }
+            val monthsLength =
+                (ChronoUnit.MONTHS.between(today, stopLocalDate)).toInt().coerceAtLeast(1)
+
+            val history = PredictionUpdateHistory(
+                predictionUpdateId = NumberFunctions().generateId(),
+                puhTime = df.getCurrentTimeAsString(),
+                puhLastPredictionDate = stopDate,
+                puhPredictionLength = monthsLength,
+                puhDeviceId = settings.deviceId,
+            )
+            budgetItemViewModel.insertPredictionUpdateHistory(history)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error recording prediction update history", e)
         }
     }
 

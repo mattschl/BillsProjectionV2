@@ -328,8 +328,10 @@ fun BudgetViewScreenWrapper(
                                         CoroutineScope(Dispatchers.Main).launch {
                                             if (budgetList.isEmpty()) {
                                                 withContext(Dispatchers.IO) {
-                                                    UpdateBudgetPredictions(activity).updatePredictions(
+                                                    val stopDate =
                                                         LocalDate.now().plusMonths(2).toString()
+                                                    UpdateBudgetPredictions(activity).updatePredictions(
+                                                        stopDate
                                                     )
                                                 }
                                             }

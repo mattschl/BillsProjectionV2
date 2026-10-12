@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -39,6 +40,7 @@ fun MainTopBar(
     onMenuItemClick: (Int) -> Unit,
 ) {
     var showMenu by remember { mutableStateOf(value = false) }
+    var showManageBudgetSubMenu by remember { mutableStateOf(value = false) }
 
     TopAppBar(
         title = { Text(title) },
@@ -63,34 +65,59 @@ fun MainTopBar(
             }
             DropdownMenu(
                 expanded = showMenu,
-                onDismissRequest = { showMenu = false }
+                onDismissRequest = {
+                    showMenu = false
+                    showManageBudgetSubMenu = false
+                }
             ) {
                 DropdownMenuItem(
-                    text = { Text(stringResource(R.string.action_update_budget_predictions)) },
+                    text = { Text(stringResource(R.string.action_manage_budget)) },
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            modifier = Modifier.size(ProjectFieldDefaults.iconSize())
+                        )
+                    },
                     onClick = {
-                        onMenuItemClick(R.id.action_update_predictions)
-                        showMenu = false
+                        showManageBudgetSubMenu = !showManageBudgetSubMenu
                     }
                 )
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.title_budget_summary)) },
-                    onClick = {
-                        onMenuItemClick(R.id.action_view_summary)
-                        showMenu = false
-                    }
-                )
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.action_clear_future_predictions)) },
-                    onClick = {
-                        onMenuItemClick(R.id.action_delete_predictions)
-                        showMenu = false
-                    }
-                )
+                DropdownMenu(
+                    expanded = showManageBudgetSubMenu,
+                    onDismissRequest = { showManageBudgetSubMenu = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.action_update_budget_predictions)) },
+                        onClick = {
+                            onMenuItemClick(R.id.action_update_predictions)
+                            showManageBudgetSubMenu = false
+                            showMenu = false
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.title_budget_summary)) },
+                        onClick = {
+                            onMenuItemClick(R.id.action_view_summary)
+                            showManageBudgetSubMenu = false
+                            showMenu = false
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.action_clear_future_predictions)) },
+                        onClick = {
+                            onMenuItemClick(R.id.action_delete_predictions)
+                            showManageBudgetSubMenu = false
+                            showMenu = false
+                        }
+                    )
+                }
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.title_sync)) },
                     onClick = {
                         onSyncClick()
                         showMenu = false
+                        showManageBudgetSubMenu = false
                     }
                 )
                 DropdownMenuItem(

@@ -20,6 +20,15 @@ class BudgetItemViewModel(
     suspend fun insertOrReplaceBudgetItemSync(budgetItem: BudgetItem) =
         budgetItemRepository.insertOrReplaceBudgetItem(budgetItem)
 
+    suspend fun insertPredictionUpdateHistory(history: ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.PredictionUpdateHistory) =
+        budgetItemRepository.insertPredictionUpdateHistory(history)
+
+    suspend fun deletePredictionUpdateHistory(id: Long) =
+        budgetItemRepository.deletePredictionUpdateHistory(id)
+
+    suspend fun getLatestPredictionUpdateHistory() =
+        budgetItemRepository.getLatestPredictionUpdateHistory()
+
     /*suspend fun updateBudgetItemSync(budgetItem: BudgetItem) =
         budgetItemRepository.updateBudgetItem(budgetItem)*/
 

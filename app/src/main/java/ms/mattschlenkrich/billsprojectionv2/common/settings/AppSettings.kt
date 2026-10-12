@@ -10,4 +10,5 @@ data class AppSettings(
     val usePasswordProtection: Boolean = false,
     val defaultAccount: String? = null,
     val syncWarningDays: Int = 3,
+    val budgetUpdateWarningWeeks: Int = 3,
 )
