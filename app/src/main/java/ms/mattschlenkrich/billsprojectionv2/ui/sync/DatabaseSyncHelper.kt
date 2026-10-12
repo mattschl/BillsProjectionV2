@@ -3,10 +3,16 @@ package ms.mattschlenkrich.billsprojectionv2.ui.sync
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.PREDICTION_UPDATE_ID
+import ms.mattschlenkrich.billsprojectionv2.common.PUH_DEVICE_ID
+import ms.mattschlenkrich.billsprojectionv2.common.PUH_LAST_PREDICTION_DATE
+import ms.mattschlenkrich.billsprojectionv2.common.PUH_PREDICTION_LENGTH
+import ms.mattschlenkrich.billsprojectionv2.common.PUH_TIME
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNTS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_ACCOUNT_TYPES
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_ITEMS
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_BUDGET_RULES
+import ms.mattschlenkrich.billsprojectionv2.common.TABLE_PREDICTION_UPDATE_HISTORY
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_SYNC_HISTORY
 import ms.mattschlenkrich.billsprojectionv2.common.TABLE_TRANSACTION
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
@@ -14,6 +20,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.BillsDatabase
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
+import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.PredictionUpdateHistory
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.sync.SyncHistory
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
@@ -25,7 +32,6 @@ private const val TAG = "DatabaseSyncHelper"
 class DatabaseSyncHelper(
     private val appDb: BillsDatabase,
     private val df: DateFunctions,
-    private val deviceId: Long,
     private val onConflict: suspend (ConflictInfo) -> ConflictChoice,
     private val onSyncError: (String) -> Unit,
     private val isRestore: Boolean = false,
@@ -309,7 +315,7 @@ class DatabaseSyncHelper(
                 else appDb.getTransactionDao().getAllTransactionsSync().find { localItem ->
                     val localDate = try {
                         LocalDate.parse(localItem.transDate)
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         null
                     }
                     if (localDate == null) false
@@ -412,14 +418,45 @@ class DatabaseSyncHelper(
             getExistingById = { appDb.getSyncHistoryDao().getSyncHistory(it.syncId) },
             getUpdateTime = { it.syncTime },
             insert = {
-                if (it.syncDeviceId != deviceId) {
-                    appDb.getSyncHistoryDao().insertSyncHistory(it)
-                }
+                appDb.getSyncHistoryDao().insertSyncHistory(it)
             },
             update = {
-                if (it.syncDeviceId != deviceId) {
-                    appDb.getSyncHistoryDao().updateSyncHistory(it)
-                }
+                appDb.getSyncHistoryDao().updateSyncHistory(it)
+            }
+        )
+    }
+
+    suspend fun syncPredictionUpdateHistory(backupDb: SQLiteDatabase): Pair<Int, Int> {
+        return syncTable(
+            backupDb = backupDb,
+            tableName = TABLE_PREDICTION_UPDATE_HISTORY,
+            mapCursorToItem = { cursor ->
+                PredictionUpdateHistory(
+                    predictionUpdateId = cursor.getLong(
+                        cursor.getColumnIndexOrThrow(
+                            PREDICTION_UPDATE_ID
+                        )
+                    ),
+                    puhTime = getStringSafe(cursor, PUH_TIME),
+                    puhLastPredictionDate = getStringSafe(cursor, PUH_LAST_PREDICTION_DATE),
+                    puhPredictionLength = cursor.getInt(
+                        cursor.getColumnIndexOrThrow(
+                            PUH_PREDICTION_LENGTH
+                        )
+                    ),
+                    puhDeviceId = cursor.getLong(cursor.getColumnIndexOrThrow(PUH_DEVICE_ID)),
+                )
+            },
+            getItemKey = { it.predictionUpdateId.toString() },
+            getExistingById = {
+                appDb.getBudgetItemDao().getPredictionUpdateHistory(it.predictionUpdateId)
+            },
+            getUpdateTime = { it.puhTime },
+            insert = {
+                appDb.getBudgetItemDao().insertPredictionUpdateHistory(it)
+            },
+            update = {
+                appDb.getBudgetItemDao().updatePredictionUpdateHistory(it)
             }
         )
     }

@@ -60,14 +60,6 @@ interface BudgetItemDao {
     )
     fun getBudgetItem(ruleId: Long, projectedDate: String): BudgetItem?
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPredictionUpdateHistory(history: PredictionUpdateHistory)
-
-    @Query("DELETE FROM $TABLE_PREDICTION_UPDATE_HISTORY WHERE $PREDICTION_UPDATE_ID = :id")
-    suspend fun deletePredictionUpdateHistory(id: Long)
-
-    @Query("SELECT * FROM $TABLE_PREDICTION_UPDATE_HISTORY ORDER BY $PUH_TIME DESC LIMIT 1")
-    suspend fun getLatestPredictionUpdateHistory(): PredictionUpdateHistory?
 
     @Query(
         "UPDATE $TABLE_BUDGET_ITEMS " +
@@ -128,7 +120,6 @@ interface BudgetItemDao {
                 "AND $BUDGET_ITEM_LOCKED = 0"
     )
     suspend fun deleteFutureItems(currentDate: String, updateTime: String)
-
 
     @Query(
         "UPDATE $TABLE_BUDGET_ITEMS " +
@@ -327,4 +318,19 @@ interface BudgetItemDao {
                 "AND $BUDGET_ITEM_IS_DELETED = 0"
     )
     suspend fun cancelAllRegularItemsForPayDay(payDay: String, updateTime: String)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertPredictionUpdateHistory(history: PredictionUpdateHistory)
+
+    @Query("DELETE FROM $TABLE_PREDICTION_UPDATE_HISTORY WHERE $PREDICTION_UPDATE_ID = :id")
+    suspend fun deletePredictionUpdateHistory(id: Long)
+
+    @Query("SELECT * FROM $TABLE_PREDICTION_UPDATE_HISTORY ORDER BY $PUH_TIME DESC LIMIT 1")
+    suspend fun getLatestPredictionUpdateHistory(): PredictionUpdateHistory?
+
+    @Query("SELECT * FROM precitionUpdateHistory WHERE predictionUpdateId = :predictionUpdateId")
+    fun getPredictionUpdateHistory(predictionUpdateId: Long): PredictionUpdateHistory?
+
+    @Update
+    suspend fun updatePredictionUpdateHistory(it: PredictionUpdateHistory)
 }

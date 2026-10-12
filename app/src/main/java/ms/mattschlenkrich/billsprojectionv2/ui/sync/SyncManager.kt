@@ -309,7 +309,6 @@ class SyncManager(
                 val syncHelper = DatabaseSyncHelper(
                     appDb,
                     df,
-                    deviceId,
                     onConflict,
                     onSyncError,
                     isRestore = true,
@@ -339,7 +338,13 @@ class SyncManager(
                 totalCount += bi.first + bi.second
 
                 val sh = syncHelper.syncSyncHistory(backupDb)
+                Log.d(TAG, "Restore: Copied ${sh.first + sh.second} sync history")
                 totalCount += sh.first + sh.second
+
+                val puh = syncHelper.syncPredictionUpdateHistory(backupDb)
+                Log.d(TAG, "Restore: Copied ${puh.first + puh.second} prediction update history")
+                totalCount += puh.first + puh.second
+
 
                 backupDb.close()
 
@@ -383,7 +388,7 @@ class SyncManager(
                     SQLiteDatabase.OPEN_READONLY,
                 )
                 val appDb = BillsDatabase(application)
-                val syncHelper = DatabaseSyncHelper(appDb, df, deviceId, onConflict, onSyncError)
+                val syncHelper = DatabaseSyncHelper(appDb, df, onConflict, onSyncError)
 
                 var totalCount = 0
 
@@ -400,6 +405,8 @@ class SyncManager(
                 totalCount += trans.first + trans.second
                 val bi = syncHelper.syncBudgetItems(backupDb); totalCount += bi.first + bi.second
                 val sh = syncHelper.syncSyncHistory(backupDb); totalCount += sh.first + sh.second
+                val puh =
+                    syncHelper.syncPredictionUpdateHistory(backupDb); totalCount += puh.first + puh.second
 
                 backupDb.close()
                 if (totalCount == 0) "All local tables were already up to date."
