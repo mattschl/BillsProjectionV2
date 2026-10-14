@@ -4,6 +4,10 @@ import android.app.AlertDialog
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
@@ -32,10 +36,16 @@ fun TransactionPerformScreenWrapper(
     val nf = LocalNumberFunctions.current
     val df = LocalDateFunctions.current
     val state = rememberTransactionEditState(nf, df)
+    var budgetedAmountState by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         val cachedTrans = mainViewModel.getTransactionDetailed()
         val cachedBudgetItem = mainViewModel.getBudgetItemDetailed()
+
+        if (cachedBudgetItem != null && budgetedAmountState.isEmpty()) {
+            budgetedAmountState =
+                nf.displayDollars(cachedBudgetItem.budgetItem?.biProjectedAmount ?: 0.0)
+        }
 
         if (cachedTrans != null) {
             state.updateFrom(cachedTrans, mainViewModel.getTransferNum())
@@ -86,7 +96,9 @@ fun TransactionPerformScreenWrapper(
         onDateChange = { state.date = it },
         budgetRule = state.budgetRule,
         amount = state.amount,
-        onAmountChange = { state.amount = it },
+        onAmountChange = {
+            state.amount = it
+        },
         onSplitClick = {
             mainViewModel.setSplitTransactionDetailed(null)
             mainViewModel.setTransferNum(0.0)
@@ -96,16 +108,13 @@ fun TransactionPerformScreenWrapper(
                 navController.navigate(Screen.TransactionSplit.route)
             }
         },
-        budgetedAmount = nf.displayDollars(
-            mainViewModel.getBudgetItemDetailed()?.budgetItem?.biProjectedAmount ?: 0.0
-        ),
-        onBudgetedAmountChange = {
-            val amt = nf.getDoubleFromDollars(it)
+        budgetedAmount = budgetedAmountState,
+        onBudgetedAmountChange = { newBudgeted ->
+            budgetedAmountState = newBudgeted
+            val amt = nf.getDoubleFromDollars(newBudgeted)
             mainViewModel.getBudgetItemDetailed()?.let { detailed ->
-                if (amt != detailed.budgetItem?.biProjectedAmount) {
-                    detailed.budgetItem?.biProjectedAmount = amt
-                    mainViewModel.setBudgetItemDetailed(detailed)
-                }
+                detailed.budgetItem?.biProjectedAmount = amt
+                mainViewModel.setBudgetItemDetailed(detailed)
             }
         },
         toAccount = state.toAccount,

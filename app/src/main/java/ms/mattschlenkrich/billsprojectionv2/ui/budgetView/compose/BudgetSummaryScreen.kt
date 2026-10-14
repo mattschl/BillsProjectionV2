@@ -1,48 +1,24 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.budgetView.compose
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.FREQ_MONTHLY
-import ms.mattschlenkrich.billsprojectionv2.common.FREQ_WEEKLY
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionBottomSheet
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalVisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleComplete
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -134,225 +110,6 @@ fun BudgetSummaryScreen(
                     onRuleClick = onRuleClick,
                 )
             }
-        }
-    }
-}
-
-@Composable
-fun BudgetSectionHeader(title: String, isExpanded: Boolean, onToggle: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onToggle() }
-            .padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
-        )
-        Icon(
-            imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-            contentDescription = null,
-            modifier = Modifier.size(32.dp)
-        )
-    }
-    HorizontalDivider()
-}
-
-@Composable
-fun BudgetSummary(
-    rules: List<BudgetRuleComplete>,
-    type: String,
-) {
-    val nf = LocalNumberFunctions.current
-    var totalCredits = 0.0
-    var totalDebits = 0.0
-    var totalFixed = 0.0
-
-    for (budget in rules) {
-        val budgetRule = budget.budgetRule ?: continue
-        val toAccount = budget.toAccount ?: continue
-        val fromAccount = budget.fromAccount ?: continue
-        val toAccountType = toAccount.accountType
-        val fromAccountType = fromAccount.accountType
-
-        val amt = when (type) {
-            "monthly", "occasional" -> {
-                when (budgetRule.budFrequencyTypeId) {
-                    FREQ_WEEKLY -> budgetRule.budgetAmount * 4 / budgetRule.budFrequencyCount
-                    FREQ_MONTHLY -> budgetRule.budgetAmount / budgetRule.budFrequencyCount
-                    else -> 0.0
-                }
-            }
-
-            "annual" -> budgetRule.budgetAmount / 12 / budgetRule.budFrequencyCount
-            else -> 0.0
-        }
-
-        if (toAccountType?.displayAsAsset == true) {
-            totalCredits += amt
-            if (type == "monthly" && budgetRule.budFixedAmount) totalFixed += amt
-        }
-        if (fromAccountType?.displayAsAsset == true) {
-            totalDebits += amt
-            if (type == "monthly" && budgetRule.budFixedAmount) totalFixed -= amt
-        }
-    }
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-    ) {
-        Column(modifier = Modifier.padding(8.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(R.string.label_credits_colon) + nf.displayDollars(
-                        totalCredits
-                    ),
-                    style = MaterialTheme.typography.bodySmall
-                )
-                Text(
-                    text = stringResource(R.string.label_debits_colon) + nf.displayDollars(
-                        totalDebits
-                    ),
-                    style = MaterialTheme.typography.bodySmall
-                )
-                if (type == "monthly") {
-                    Text(
-                        text = stringResource(R.string.label_fixed_colon) + nf.displayDollars(
-                            totalFixed
-                        ),
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-            }
-            val diff = totalCredits - totalDebits
-            Text(
-                text = if (diff >= 0) stringResource(R.string.label_surplus_of) + nf.displayDollars(
-                    diff
-                )
-                else stringResource(R.string.label_deficit_of) + nf.displayDollars(-diff),
-                style = MaterialTheme.typography.bodySmall,
-                fontWeight = FontWeight.Bold,
-                color = if (diff >= 0) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-        }
-    }
-}
-
-@Composable
-fun BudgetListItem(
-    curRule: BudgetRuleComplete,
-    showFullDetails: Boolean = false,
-    onRuleClick: (BudgetRuleComplete) -> Unit,
-) {
-    val df = LocalDateFunctions.current
-    val nf = LocalNumberFunctions.current
-    val vf = LocalVisualsFunctions.current
-    val budgetRule = curRule.budgetRule ?: return
-    val toAccount = curRule.toAccount ?: return
-    val fromAccount = curRule.fromAccount ?: return
-    val toAccountType = toAccount.accountType
-    val fromAccountType = fromAccount.accountType
-
-    var nameInfo = budgetRule.budgetRuleName + " - "
-    nameInfo += when (budgetRule.budFrequencyTypeId) {
-        FREQ_WEEKLY -> {
-            if (showFullDetails) df.getDisplayDateInComingYear(
-                budgetRule.budStartDate,
-                budgetRule.budFrequencyCount.toLong()
-            )
-            else stringResource(R.string.label_weekly_x) + budgetRule.budFrequencyCount
-        }
-
-        FREQ_MONTHLY -> {
-            if (showFullDetails) df.getDisplayDateInComingYear(budgetRule.budStartDate)
-            else stringResource(R.string.label_monthly)
-        }
-
-        else -> ""
-    }
-
-    val amt = when (budgetRule.budFrequencyTypeId) {
-        FREQ_WEEKLY -> budgetRule.budgetAmount * 4 / budgetRule.budFrequencyCount
-        FREQ_MONTHLY -> budgetRule.budgetAmount / budgetRule.budFrequencyCount
-        else -> budgetRule.budgetAmount
-    }
-
-    val displayAmt =
-        if (toAccountType?.displayAsAsset == true && fromAccountType?.displayAsAsset == true) {
-            stringResource(R.string.label_na)
-        } else nf.displayDollars(if (showFullDetails) budgetRule.budgetAmount else amt)
-
-    val textColor =
-        if (fromAccountType?.isAsset == true || fromAccountType?.displayAsAsset == true) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onRuleClick(curRule) }
-            .padding(vertical = 4.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(4.dp)
-                .background(Color(vf.getRandomColorInt()))
-        )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = nameInfo,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.weight(1f)
-            )
-            Text(
-                text = if (budgetRule.budFixedAmount) "(f) $displayAmt" else displayAmt,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.bodyLarge,
-                color = textColor
-            )
-        }
-        if (showFullDetails) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(R.string.label_annually_every) + budgetRule.budFrequencyCount + stringResource(
-                        R.string.text_years_suffix
-                    ),
-                    style = MaterialTheme.typography.bodySmall
-                )
-                Text(
-                    text = stringResource(R.string.label_average_per_month) + nf.displayDollars(
-                        budgetRule.budgetAmount / 12 / budgetRule.budFrequencyCount
-                    ),
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
-        } else if (budgetRule.budFrequencyTypeId != FREQ_MONTHLY || budgetRule.budFrequencyCount > 1) {
-            Text(
-                text = when (budgetRule.budFrequencyTypeId) {
-                    FREQ_WEEKLY -> "Weekly x " + budgetRule.budFrequencyCount
-                    FREQ_MONTHLY -> "Monthly x " + budgetRule.budFrequencyCount
-                    else -> ""
-                } + " " + stringResource(R.string.label_average_per_month) + nf.displayDollars(amt),
-                style = MaterialTheme.typography.bodySmall
-            )
         }
     }
 }

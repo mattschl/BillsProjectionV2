@@ -1,9 +1,7 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.compose
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -12,20 +10,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -35,9 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
@@ -51,105 +38,6 @@ import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextBox
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.Account
-import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun BudgetRulesListScreen(
-    searchQuery: String,
-    onSearchQueryChange: (String) -> Unit,
-    budgetRulesDetailed: List<BudgetRuleDetailed>,
-    onAddClick: () -> Unit,
-    onItemClick: (BudgetRuleDetailed) -> Unit,
-    sheetTitle: String = "",
-    sheetOptions: List<ActionOption> = emptyList(),
-    onSheetDismiss: () -> Unit = {}
-) {
-    val sheetState = rememberModalBottomSheetState()
-
-    if (sheetOptions.isNotEmpty()) {
-        ActionBottomSheet(
-            title = sheetTitle,
-            options = sheetOptions,
-            sheetState = sheetState,
-            onDismissRequest = onSheetDismiss
-        )
-    }
-
-    Scaffold(
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        modifier = Modifier.imePadding(),
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = onAddClick,
-                containerColor = MaterialTheme.colorScheme.primary
-            ) {
-                Icon(
-                    Icons.Default.Add,
-                    contentDescription = stringResource(R.string.action_add_budget_rule),
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
-            }
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(8.dp)
-        ) {
-            ProjectTextField(
-                value = searchQuery,
-                onValueChange = onSearchQueryChange,
-                label = stringResource(R.string.action_search),
-                placeholder = { Text(stringResource(R.string.label_enter_criteria)) },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Box(
-                modifier = Modifier.weight(1f)
-            ) {
-                if (budgetRulesDetailed.isEmpty()) {
-                    Card(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .padding(32.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                        ),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-                    ) {
-                        Text(
-                            text = stringResource(R.string.msg_no_budget_rules),
-                            modifier = Modifier.padding(32.dp),
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                } else {
-                    LazyVerticalStaggeredGrid(
-                        columns = StaggeredGridCells.Fixed(2),
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(bottom = 80.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalItemSpacing = 8.dp
-                    ) {
-                        items(budgetRulesDetailed) { budgetRuleDetailed ->
-                            BudgetRuleItem(
-                                budgetRuleDetailed = budgetRuleDetailed,
-                                onClick = { onItemClick(budgetRuleDetailed) }
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -223,9 +111,9 @@ fun BudgetRuleScreen(
                     onValueChange = onNameChange,
                     label = stringResource(R.string.label_budget_rule_name),
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
-                    modifier = Modifier.weight(1f)
-                ) //budget rule name}
-                Column(modifier = Modifier.weight(1f)) {
+                    modifier = Modifier.weight(2f)
+                ) //budget rule name
+                Column(modifier = Modifier.weight(3f)) {
                     ProjectBalanceField(
                         value = amount,
                         onValueChange = onAmountChange,
@@ -277,6 +165,8 @@ fun BudgetRuleScreen(
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
 
+            val isStartZero = startDate.trim() == "0" || startDate.trim() == "0000-00-00"
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -286,76 +176,81 @@ fun BudgetRuleScreen(
                     value = startDate,
                     onValueChange = onStartDateChange,
                     label = stringResource(R.string.label_start_date),
-                    modifier = Modifier.weight(1f)
+                    modifier = if (isStartZero) Modifier.fillMaxWidth() else Modifier.weight(1f)
                 )  // start date
 
-                ProjectDateField(
-                    value = endDate,
-                    onValueChange = onEndDateChange,
-                    label = stringResource(R.string.label_end_date),
-                    modifier = Modifier.weight(1f)
-                ) //end date
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                ExposedDropdown(
-                    label = stringResource(R.string.title_budget_rules),
-                    options = frequencyTypes.toList(),
-                    selectedIndex = frequencyType,
-                    onItemSelected = onFrequencyTypeChange,
-                    modifier = Modifier.weight(1.5f)
-                )
-
-                ProjectIntField(
-                    value = frequencyCount,
-                    onValueChange = onFrequencyCountChange,
-                    label = stringResource(R.string.label_times),
-                    modifier = Modifier.weight(1f),
-                )
+                if (!isStartZero) {
+                    ProjectDateField(
+                        value = endDate,
+                        onValueChange = onEndDateChange,
+                        label = stringResource(R.string.label_end_date),
+                        modifier = Modifier.weight(1f)
+                    ) //end date
+                }
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                ExposedDropdown(
-                    label = stringResource(R.string.label_on_day),
-                    options = daysOfWeek.toList(),
-                    selectedIndex = dayOfWeek,
-                    onItemSelected = onDayOfWeekChange,
-                    modifier = Modifier.weight(1.5f)
-                )
+            if (!isStartZero) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    ExposedDropdown(
+                        label = stringResource(R.string.title_budget_rules),
+                        options = frequencyTypes.toList(),
+                        selectedIndex = frequencyType,
+                        onItemSelected = onFrequencyTypeChange,
+                        modifier = Modifier.weight(1.5f)
+                    )
 
-                ProjectIntField(
-                    value = leadDays,
-                    onValueChange = onLeadDaysChange,
-                    label = stringResource(R.string.label_lead_days),
-                    modifier = Modifier.weight(1f),
-                )
-            }
+                    ProjectIntField(
+                        value = frequencyCount,
+                        onValueChange = onFrequencyCountChange,
+                        label = stringResource(R.string.label_times),
+                        modifier = Modifier.weight(1f),
+                    )
+                }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                LabeledCheckbox(
-                    label = stringResource(R.string.label_fixed),
-                    checked = isFixed,
-                    onCheckedChange = onIsFixedChange
-                )
-                LabeledCheckbox(
-                    label = stringResource(R.string.label_pay_day),
-                    checked = isPayDay,
-                    onCheckedChange = onIsPayDayChange
-                )
-                LabeledCheckbox(
-                    label = stringResource(R.string.label_automatic),
-                    checked = isAuto,
-                    onCheckedChange = onIsAutoChange
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    ExposedDropdown(
+                        label = stringResource(R.string.label_on_day),
+                        options = daysOfWeek.toList(),
+                        selectedIndex = dayOfWeek,
+                        onItemSelected = onDayOfWeekChange,
+                        modifier = Modifier.weight(1.5f)
+                    )
+
+                    ProjectIntField(
+                        value = leadDays,
+                        onValueChange = onLeadDaysChange,
+                        label = stringResource(R.string.label_lead_days),
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    LabeledCheckbox(
+                        label = stringResource(R.string.label_fixed),
+                        checked = isFixed,
+                        onCheckedChange = onIsFixedChange
+                    )
+                    LabeledCheckbox(
+                        label = stringResource(R.string.label_pay_day),
+                        checked = isPayDay,
+                        onCheckedChange = onIsPayDayChange
+                    )
+                    LabeledCheckbox(
+                        label = stringResource(R.string.label_automatic),
+                        checked = isAuto,
+                        onCheckedChange = onIsAutoChange
+                    )
+                }
             }
 
             bottomContent()

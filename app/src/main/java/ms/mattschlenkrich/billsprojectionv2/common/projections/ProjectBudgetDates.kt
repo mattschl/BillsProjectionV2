@@ -171,9 +171,7 @@ class ProjectBudgetDates(
     }
 
     private fun parseStartDateSafely(startDate: String): LocalDate? {
-        if (isNoDate(startDate)) {
-            return LocalDate.now().minusMonths(1)
-        }
+        if (isNoDate(startDate)) return null
         return parseDateSafely(startDate)
     }
 
@@ -257,7 +255,8 @@ class ProjectBudgetDates(
         startDate: String, interval: Long, payDayList: List<String>, endDate: String
     ): ArrayList<LocalDate> {
         val dates = ArrayList<LocalDate>()
-        val effectiveStart = if (isNoDate(startDate)) "1970-01-01" else startDate
+        if (isNoDate(startDate)) return dates
+        val effectiveStart = startDate
         val effectiveEnd = if (isNoDate(endDate)) "2099-12-31" else endDate
         for (d in payDayList.indices) {
             val dateStr = payDayList[d]
@@ -269,6 +268,42 @@ class ProjectBudgetDates(
             }
         }
         return dates
+    }
+
+    fun getNextScheduledDate(
+        rule: ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule,
+        payDays: List<String> = emptyList()
+    ): String? {
+        if (isNoDate(rule.budStartDate)) return null
+
+        val today = LocalDate.now()
+        val endDateStr = if (isNoDate(rule.budEndDate)) {
+            today.plusYears(2).toString()
+        } else {
+            rule.budEndDate!!
+        }
+
+        val intervalType = frequencyTypes.getOrNull(rule.budFrequencyTypeId) ?: ""
+        val dates = if (intervalType == INTERVAL_ON_PAY_DAY) {
+            projectOnPayDay(
+                startDate = rule.budStartDate,
+                interval = rule.budFrequencyCount.toLong(),
+                payDayList = payDays,
+                endDate = endDateStr
+            )
+        } else {
+            projectDates(
+                startDate = rule.budStartDate,
+                endDate = endDateStr,
+                interval = rule.budFrequencyCount.toLong(),
+                intervalTypeId = rule.budFrequencyTypeId,
+                dayOfWeekId = rule.budDayOfWeekId,
+                leadDays = rule.budLeadDays.toLong()
+            )
+        }
+
+        val nextDate = dates.firstOrNull { it >= today }
+        return nextDate?.toString()
     }
 
     private fun parseDateSafely(dateString: String): LocalDate? {

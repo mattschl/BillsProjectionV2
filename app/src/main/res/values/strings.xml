@@ -121,6 +121,8 @@
     <string name="label_more_options">More Options</string>
     <string name="label_most_recent">Most Recent</string>
     <string name="label_na">NA</string>
+    <string name="label_next_scheduled">Next Scheduled</string>
+    <string name="label_not_scheduled">Not Scheduled</string>
     <string name="label_note_header">Note: </string>
     <string name="label_notes">Notes</string>
     <string name="label_number">Number</string>

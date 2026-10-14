@@ -65,35 +65,3 @@ fun ProjectBalanceField(
         } else null
     )
 }
-
-/*
-@Composable
-fun ProjectBalanceField(
-    value: TextFieldValue,
-    onValueChange: (TextFieldValue) -> Unit,
-    label: String,
-    modifier: Modifier = Modifier,
-    onIconClick: (() -> Unit)? = null
-) {
-    ProjectTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = label,
-        modifier = modifier,
-        textStyle = ProjectFieldDefaults.titleStyle().copy(
-            textAlign = TextAlign.Center,
-        ),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-        singleLine = true,
-        trailingIcon = if (onIconClick != null) {
-            {
-                IconButton(onClick = onIconClick) {
-                    Icon(
-                        imageVector = Icons.Default.Calculate,
-                        contentDescription = stringResource(R.string.calculator)
-                    )
-                }
-            }
-        } else null
-    )
-}*/

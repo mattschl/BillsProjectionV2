@@ -3,7 +3,6 @@ package ms.mattschlenkrich.billsprojectionv2.ui.transactions.compose
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,10 +21,11 @@ fun TransactionAccountField(
     isPending: Boolean,
     onPendingChange: (Boolean) -> Unit,
     allowPending: Boolean,
+    modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     isError: Boolean = false,
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = modifier) {
         ProjectTextBox(
             label = label,
             value = account?.accountName ?: "",

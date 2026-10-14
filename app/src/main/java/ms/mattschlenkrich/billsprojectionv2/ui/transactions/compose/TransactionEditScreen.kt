@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -91,21 +90,38 @@ fun TransactionEditScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Spacer(modifier = Modifier.height(4.dp))
-            ProjectTextField(
-                value = description,
-                onValueChange = onDescriptionChange,
-                label = stringResource(R.string.label_description),
-                isError = descriptionError
-            )
 
-            Row(modifier = Modifier.fillMaxWidth()) {
+            // Row 1: Budget Rule -> Description
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ProjectTextBox(
+                    label = stringResource(R.string.label_rules),
+                    value = budgetRule?.budgetRuleName ?: "",
+                    onClick = onChooseBudgetRule,
+                    modifier = Modifier.weight(1f)
+                )
+                ProjectTextField(
+                    value = description,
+                    onValueChange = onDescriptionChange,
+                    label = stringResource(R.string.label_description),
+                    isError = descriptionError,
+                    modifier = Modifier.weight(1.33f)
+                )
+            }
+
+            // Row 2: Date -> Amount
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 ProjectDateField(
                     value = date,
                     onValueChange = onDateChange,
                     label = stringResource(R.string.label_date),
                     modifier = Modifier.weight(2f)
                 )
-                Spacer(modifier = Modifier.width(2.dp))
                 ProjectBalanceField(
                     label = stringResource(R.string.label_amount),
                     value = amount,
@@ -117,38 +133,41 @@ fun TransactionEditScreen(
                 )
             }
 
-            ProjectTextBox(
-                label = stringResource(R.string.label_rules),
-                value = budgetRule?.budgetRuleName ?: "",
-                onClick = onChooseBudgetRule
-            )
+            // Row 3: From Account -> To Account
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                TransactionAccountField(
+                    label = stringResource(R.string.label_from_account_name),
+                    account = fromAccount,
+                    isPending = fromPending,
+                    onPendingChange = onFromPendingChange,
+                    allowPending = allowFromPending,
+                    onClick = onChooseFromAccount,
+                    isError = fromAccountError,
+                    modifier = Modifier.weight(1f)
+                )
+                TransactionAccountField(
+                    label = stringResource(R.string.label_to_account_name),
+                    account = toAccount,
+                    isPending = toPending,
+                    onPendingChange = onToPendingChange,
+                    allowPending = allowToPending,
+                    onClick = onChooseToAccount,
+                    isError = toAccountError,
+                    modifier = Modifier.weight(1f)
+                )
+            }
 
-            TransactionAccountField(
-                label = stringResource(R.string.label_from_account_name),
-                account = fromAccount,
-                isPending = fromPending,
-                onPendingChange = onFromPendingChange,
-                allowPending = allowFromPending,
-                onClick = onChooseFromAccount,
-                isError = fromAccountError
-            )
-
-            TransactionAccountField(
-                label = stringResource(R.string.label_to_account_name),
-                account = toAccount,
-                isPending = toPending,
-                onPendingChange = onToPendingChange,
-                allowPending = allowToPending,
-                onClick = onChooseToAccount,
-                isError = toAccountError
-            )
-
+            // Row 4: Note
             ProjectTextField(
                 value = note,
                 onValueChange = onNoteChange,
                 label = stringResource(R.string.label_notes)
             )
 
+            // Row 5: Split Button
             Button(
                 onClick = onSplitClick,
                 modifier = Modifier.fillMaxWidth(),

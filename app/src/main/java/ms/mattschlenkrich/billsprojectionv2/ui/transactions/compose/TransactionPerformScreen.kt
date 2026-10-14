@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -29,7 +28,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectBalanceField
@@ -107,99 +105,108 @@ fun TransactionPerformScreen(
         ) {
             Spacer(modifier = Modifier.height(4.dp))
 
-            ProjectTextField(
-                value = description,
-                onValueChange = onDescriptionChange,
-                label = stringResource(R.string.label_description),
-                isError = descriptionError
-            )
+            // Row 1: Budget Rule -> Description
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ProjectTextBox(
+                    label = stringResource(R.string.label_rules),
+                    value = budgetRule?.budgetRuleName ?: "",
+                    onClick = onChooseBudgetRule,
+                    modifier = Modifier.weight(1f)
+                )
+                ProjectTextField(
+                    value = description,
+                    onValueChange = onDescriptionChange,
+                    label = stringResource(R.string.label_description),
+                    isError = descriptionError,
+                    modifier = Modifier.weight(1f)
+                )
+            }
 
-            Row(modifier = Modifier.fillMaxWidth()) {
+            // Row 2: Date -> Amount
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 ProjectDateField(
                     value = date,
                     onValueChange = onDateChange,
                     label = stringResource(R.string.label_date),
                     modifier = Modifier.weight(2f)
                 )
-                Spacer(modifier = Modifier.width(8.dp))
                 ProjectBalanceField(
                     label = stringResource(R.string.label_amount),
                     value = amount,
                     onValueChange = onAmountChange,
                     onIconClick = onGotoCalculator,
-                    modifier = Modifier.weight(3f),
+                    modifier = Modifier.weight(4f),
                     isError = amountError,
                     isHighlighted = true
                 )
             }
 
-            ProjectTextBox(
-                label = stringResource(R.string.label_rules),
-                value = budgetRule?.budgetRuleName ?: "",
-                onClick = onChooseBudgetRule,
-            )
-
-            OutlinedCard(modifier = Modifier.fillMaxWidth()) {
-                Row(
-                    modifier = Modifier.padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column(modifier = Modifier.weight(3f)) {
-                        ProjectBalanceField(
-                            value = budgetedAmount,
-                            onValueChange = onBudgetedAmountChange,
-                            label = stringResource(R.string.label_budgeted)
-                        )
-                    }
-                    Column(
-                        modifier = Modifier.weight(2f),
-                        horizontalAlignment = Alignment.End
-                    ) {
-                        Text(
-                            text = stringResource(R.string.label_remainder),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Text(
-                            text = nf.displayDollars(remainder),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = if (remainder >= 0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error
-                        )
-                    }
-                }
+            // Row 3: From Account -> To Account
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                TransactionAccountField(
+                    label = stringResource(R.string.label_from_this_account),
+                    account = fromAccount,
+                    isPending = fromPending,
+                    onPendingChange = onFromPendingChange,
+                    allowPending = allowFromPending,
+                    onClick = onFromAccountClick,
+                    isError = fromAccountError,
+                    modifier = Modifier.weight(1f)
+                )
+                TransactionAccountField(
+                    label = stringResource(R.string.label_to_this_account),
+                    account = toAccount,
+                    isPending = toPending,
+                    onPendingChange = onToPendingChange,
+                    allowPending = allowToPending,
+                    onClick = onToAccountClick,
+                    isError = toAccountError,
+                    modifier = Modifier.weight(1f)
+                )
             }
 
-            TransactionAccountField(
-                label = stringResource(R.string.label_from_this_account),
-                account = fromAccount,
-                isPending = fromPending,
-                onPendingChange = onFromPendingChange,
-                allowPending = allowFromPending,
-                onClick = onFromAccountClick,
-                isError = fromAccountError
-            )
-
-            TransactionAccountField(
-                label = stringResource(R.string.label_to_this_account),
-                account = toAccount,
-                isPending = toPending,
-                onPendingChange = onToPendingChange,
-                allowPending = allowToPending,
-                onClick = onToAccountClick,
-                isError = toAccountError
-            )
-
+            // Row 4: Note
             ProjectTextField(
                 value = note,
                 onValueChange = onNoteChange,
                 label = stringResource(R.string.label_notes)
             )
 
+            // Row 5: Projected amount -> Remainder
+            OutlinedCard(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier.padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+
+                    ProjectBalanceField(
+                        value = budgetedAmount,
+                        label = stringResource(R.string.label_projected_amount),
+                        modifier = Modifier.weight(1f),
+                        onValueChange = onBudgetedAmountChange,
+                        isHighlighted = true
+                    )
+                    ProjectTextBox(
+                        value = nf.displayDollars(remainder),
+                        label = stringResource(R.string.label_remainder),
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+            }
+
+            // Row 6: Split Button
             Button(
                 onClick = onSplitClick,
-                modifier = Modifier.fillMaxWidth(),
                 enabled = isSplitEnabled
             ) {
                 Text(stringResource(R.string.action_split))
