@@ -100,7 +100,7 @@ fun BudgetRuleChooseScreen(
                     LazyVerticalStaggeredGrid(
                         columns = StaggeredGridCells.Fixed(3),
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(bottom = 40.dp),
+                        contentPadding = PaddingValues(bottom = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
                         verticalItemSpacing = 4.dp
                     ) {

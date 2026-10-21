@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -77,7 +76,6 @@ fun BudgetItemScreen(
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        modifier = Modifier.imePadding(),
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onSaveClick,
@@ -95,19 +93,33 @@ fun BudgetItemScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .padding(top = paddingValues.calculateTopPadding(), bottom = 16.dp)
+                .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Spacer(modifier = Modifier.height(4.dp))
 
-            ProjectTextField(
-                value = name,
-                onValueChange = onNameChange,
-                label = stringResource(R.string.label_description),
-            )
+            // Row 1: Budget Rule -> Description
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ProjectTextBox(
+                    label = stringResource(R.string.label_rules),
+                    value = budgetRule?.budgetRuleName ?: "",
+                    onClick = onChooseBudgetRule,
+                    modifier = Modifier.weight(1f)
+                )
+                ProjectTextField(
+                    value = name,
+                    onValueChange = onNameChange,
+                    label = stringResource(R.string.label_description),
+                    modifier = Modifier.weight(1.33f)
+                )
+            }
 
+            // Row 2: Date -> Amount
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -116,37 +128,38 @@ fun BudgetItemScreen(
                     value = date,
                     onValueChange = onDateChange,
                     label = stringResource(R.string.label_projected_date),
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(2f)
                 )
-
                 ProjectBalanceField(
                     value = amount,
                     onValueChange = onAmountChange,
                     label = stringResource(R.string.label_projected_amount),
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(3f),
                     onIconClick = onGotoCalculator,
                     isHighlighted = true
                 )
             }
 
-            ProjectTextBox(
-                label = stringResource(R.string.label_rules),
-                value = budgetRule?.budgetRuleName ?: "",
-                onClick = onChooseBudgetRule
-            )
+            // Row 3: From Account -> To Account
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ProjectTextBox(
+                    label = stringResource(R.string.label_from_this_account),
+                    value = fromAccount?.accountName ?: "",
+                    onClick = { onChooseAccount(REQUEST_FROM_ACCOUNT) },
+                    modifier = Modifier.weight(1f)
+                )
+                ProjectTextBox(
+                    label = stringResource(R.string.label_to_this_account),
+                    value = toAccount?.accountName ?: "",
+                    onClick = { onChooseAccount(REQUEST_TO_ACCOUNT) },
+                    modifier = Modifier.weight(1f)
+                )
+            }
 
-            ProjectTextBox(
-                label = stringResource(R.string.label_from_this_account),
-                value = fromAccount?.accountName ?: "",
-                onClick = { onChooseAccount(REQUEST_FROM_ACCOUNT) }
-            )
-
-            ProjectTextBox(
-                label = stringResource(R.string.label_to_this_account),
-                value = toAccount?.accountName ?: "",
-                onClick = { onChooseAccount(REQUEST_TO_ACCOUNT) }
-            )
-
+            // Row 4: Pay Day
             var expanded by remember { mutableStateOf(false) }
             ExposedDropdownMenuBox(
                 expanded = expanded,
@@ -178,6 +191,7 @@ fun BudgetItemScreen(
                 }
             }
 
+            // Row 5: Checkboxes
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -192,12 +206,6 @@ fun BudgetItemScreen(
                     checked = isPayDayItem,
                     onCheckedChange = onIsPayDayItemChange
                 )
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
                 LabeledCheckbox(
                     label = stringResource(R.string.label_automatic),
                     checked = isAuto,
