@@ -32,6 +32,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -74,6 +76,12 @@ fun BudgetItemScreen(
     val fromAccount = budgetItemDetailed?.fromAccount
     val budgetRule = budgetItemDetailed?.budgetRule
 
+    val density = LocalDensity.current
+    val windowInfo = LocalWindowInfo.current
+    val fontScale = density.fontScale.coerceAtLeast(0.8f)
+    val effectiveWidthDp = with(density) { windowInfo.containerSize.width.toDp() } / fontScale
+    val useTwoColumns = effectiveWidthDp >= 450.dp
+
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
@@ -101,61 +109,108 @@ fun BudgetItemScreen(
             Spacer(modifier = Modifier.height(4.dp))
 
             // Row 1: Budget Rule -> Description
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+            if (useTwoColumns) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    ProjectTextBox(
+                        label = stringResource(R.string.label_rules),
+                        value = budgetRule?.budgetRuleName ?: "",
+                        onClick = onChooseBudgetRule,
+                        modifier = Modifier.weight(1f)
+                    )
+                    ProjectTextField(
+                        value = name,
+                        onValueChange = onNameChange,
+                        label = stringResource(R.string.label_description),
+                        modifier = Modifier.weight(1.33f)
+                    )
+                }
+            } else {
                 ProjectTextBox(
                     label = stringResource(R.string.label_rules),
                     value = budgetRule?.budgetRuleName ?: "",
                     onClick = onChooseBudgetRule,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.fillMaxWidth()
                 )
                 ProjectTextField(
                     value = name,
                     onValueChange = onNameChange,
                     label = stringResource(R.string.label_description),
-                    modifier = Modifier.weight(1.33f)
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
 
             // Row 2: Date -> Amount
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+            if (useTwoColumns) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    ProjectDateField(
+                        value = date,
+                        onValueChange = onDateChange,
+                        label = stringResource(R.string.label_projected_date),
+                        modifier = Modifier.weight(2f)
+                    )
+                    ProjectBalanceField(
+                        value = amount,
+                        onValueChange = onAmountChange,
+                        label = stringResource(R.string.label_projected_amount),
+                        modifier = Modifier.weight(3f),
+                        onIconClick = onGotoCalculator,
+                        isHighlighted = true
+                    )
+                }
+            } else {
                 ProjectDateField(
                     value = date,
                     onValueChange = onDateChange,
                     label = stringResource(R.string.label_projected_date),
-                    modifier = Modifier.weight(2f)
+                    modifier = Modifier.fillMaxWidth()
                 )
                 ProjectBalanceField(
                     value = amount,
                     onValueChange = onAmountChange,
                     label = stringResource(R.string.label_projected_amount),
-                    modifier = Modifier.weight(3f),
+                    modifier = Modifier.fillMaxWidth(),
                     onIconClick = onGotoCalculator,
                     isHighlighted = true
                 )
             }
 
             // Row 3: From Account -> To Account
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+            if (useTwoColumns) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    ProjectTextBox(
+                        label = stringResource(R.string.label_from_this_account),
+                        value = fromAccount?.accountName ?: "",
+                        onClick = { onChooseAccount(REQUEST_FROM_ACCOUNT) },
+                        modifier = Modifier.weight(1f)
+                    )
+                    ProjectTextBox(
+                        label = stringResource(R.string.label_to_this_account),
+                        value = toAccount?.accountName ?: "",
+                        onClick = { onChooseAccount(REQUEST_TO_ACCOUNT) },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            } else {
                 ProjectTextBox(
                     label = stringResource(R.string.label_from_this_account),
                     value = fromAccount?.accountName ?: "",
                     onClick = { onChooseAccount(REQUEST_FROM_ACCOUNT) },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.fillMaxWidth()
                 )
                 ProjectTextBox(
                     label = stringResource(R.string.label_to_this_account),
                     value = toAccount?.accountName ?: "",
                     onClick = { onChooseAccount(REQUEST_TO_ACCOUNT) },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
 

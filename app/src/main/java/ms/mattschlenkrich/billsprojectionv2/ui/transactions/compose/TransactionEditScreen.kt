@@ -21,6 +21,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -63,6 +65,12 @@ fun TransactionEditScreen(
     toAccountError: Boolean = false,
     fromAccountError: Boolean = false,
 ) {
+    val density = LocalDensity.current
+    val windowInfo = LocalWindowInfo.current
+    val fontScale = density.fontScale.coerceAtLeast(0.8f)
+    val effectiveWidthDp = with(density) { windowInfo.containerSize.width.toDp() } / fontScale
+    val useTwoColumns = effectiveWidthDp >= 450.dp
+
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
@@ -90,52 +98,109 @@ fun TransactionEditScreen(
             Spacer(modifier = Modifier.height(4.dp))
 
             // Row 1: Budget Rule -> Description
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+            if (useTwoColumns) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    ProjectTextBox(
+                        label = stringResource(R.string.label_rules),
+                        value = budgetRule?.budgetRuleName ?: "",
+                        onClick = onChooseBudgetRule,
+                        modifier = Modifier.weight(1f)
+                    )
+                    ProjectTextField(
+                        value = description,
+                        onValueChange = onDescriptionChange,
+                        label = stringResource(R.string.label_description),
+                        isError = descriptionError,
+                        modifier = Modifier.weight(1.33f)
+                    )
+                }
+            } else {
                 ProjectTextBox(
                     label = stringResource(R.string.label_rules),
                     value = budgetRule?.budgetRuleName ?: "",
                     onClick = onChooseBudgetRule,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.fillMaxWidth()
                 )
                 ProjectTextField(
                     value = description,
                     onValueChange = onDescriptionChange,
                     label = stringResource(R.string.label_description),
                     isError = descriptionError,
-                    modifier = Modifier.weight(1.33f)
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
 
             // Row 2: Date -> Amount
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+            if (useTwoColumns) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    ProjectDateField(
+                        value = date,
+                        onValueChange = onDateChange,
+                        label = stringResource(R.string.label_date),
+                        modifier = Modifier.weight(2f)
+                    )
+                    ProjectBalanceField(
+                        label = stringResource(R.string.label_amount),
+                        value = amount,
+                        onValueChange = onAmountChange,
+                        onIconClick = onGotoCalculator,
+                        modifier = Modifier.weight(3f),
+                        isError = amountError,
+                        isHighlighted = true
+                    )
+                }
+            } else {
                 ProjectDateField(
                     value = date,
                     onValueChange = onDateChange,
                     label = stringResource(R.string.label_date),
-                    modifier = Modifier.weight(2f)
+                    modifier = Modifier.fillMaxWidth()
                 )
                 ProjectBalanceField(
                     label = stringResource(R.string.label_amount),
                     value = amount,
                     onValueChange = onAmountChange,
                     onIconClick = onGotoCalculator,
-                    modifier = Modifier.weight(3f),
+                    modifier = Modifier.fillMaxWidth(),
                     isError = amountError,
                     isHighlighted = true
                 )
             }
 
             // Row 3: From Account -> To Account
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+            if (useTwoColumns) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    TransactionAccountField(
+                        label = stringResource(R.string.label_from_account_name),
+                        account = fromAccount,
+                        isPending = fromPending,
+                        onPendingChange = onFromPendingChange,
+                        allowPending = allowFromPending,
+                        onClick = onChooseFromAccount,
+                        isError = fromAccountError,
+                        modifier = Modifier.weight(1f)
+                    )
+                    TransactionAccountField(
+                        label = stringResource(R.string.label_to_account_name),
+                        account = toAccount,
+                        isPending = toPending,
+                        onPendingChange = onToPendingChange,
+                        allowPending = allowToPending,
+                        onClick = onChooseToAccount,
+                        isError = toAccountError,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            } else {
                 TransactionAccountField(
                     label = stringResource(R.string.label_from_account_name),
                     account = fromAccount,
@@ -144,7 +209,7 @@ fun TransactionEditScreen(
                     allowPending = allowFromPending,
                     onClick = onChooseFromAccount,
                     isError = fromAccountError,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.fillMaxWidth()
                 )
                 TransactionAccountField(
                     label = stringResource(R.string.label_to_account_name),
@@ -154,7 +219,7 @@ fun TransactionEditScreen(
                     allowPending = allowToPending,
                     onClick = onChooseToAccount,
                     isError = toAccountError,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
 

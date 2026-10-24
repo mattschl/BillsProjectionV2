@@ -24,6 +24,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -79,6 +81,12 @@ fun AccountEditScreen(
         )
     }
 
+    val density = LocalDensity.current
+    val windowInfo = LocalWindowInfo.current
+    val fontScale = density.fontScale.coerceAtLeast(0.8f)
+    val effectiveWidthDp = with(density) { windowInfo.containerSize.width.toDp() } / fontScale
+    val useTwoColumns = effectiveWidthDp >= 450.dp
+
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         modifier = Modifier.imePadding(),
@@ -104,22 +112,44 @@ fun AccountEditScreen(
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             Spacer(modifier = Modifier.height(4.dp))
-            Row(modifier = Modifier.fillMaxWidth()) {
+            if (useTwoColumns) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    ProjectTextField(
+                        value = name,
+                        onValueChange = onNameChange,
+                        label = stringResource(R.string.label_account_name),
+                        modifier = Modifier.weight(1.5f),
+                        textStyle = MaterialTheme.typography.bodyMedium,
+                        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
+                        singleLine = true
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    ProjectTextField(
+                        value = handle,
+                        onValueChange = onHandleChange,
+                        label = stringResource(R.string.label_number),
+                        modifier = Modifier.weight(1f),
+                        textStyle = MaterialTheme.typography.bodyMedium,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                        singleLine = true
+                    )
+                }
+            } else {
                 ProjectTextField(
                     value = name,
                     onValueChange = onNameChange,
                     label = stringResource(R.string.label_account_name),
-                    modifier = Modifier.weight(1.5f),
+                    modifier = Modifier.fillMaxWidth(),
                     textStyle = MaterialTheme.typography.bodyMedium,
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
                     singleLine = true
                 )
-                Spacer(modifier = Modifier.width(4.dp))
+                Spacer(modifier = Modifier.height(4.dp))
                 ProjectTextField(
                     value = handle,
                     onValueChange = onHandleChange,
                     label = stringResource(R.string.label_number),
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.fillMaxWidth(),
                     textStyle = MaterialTheme.typography.bodyMedium,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                     singleLine = true
@@ -145,38 +175,73 @@ fun AccountEditScreen(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            Row(modifier = Modifier.fillMaxWidth()) {
+            if (useTwoColumns) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    ProjectBalanceField(
+                        label = stringResource(R.string.label_balance),
+                        value = balance,
+                        onValueChange = onBalanceChange,
+                        onIconClick = onBalanceIconClick,
+                        modifier = Modifier.weight(1f)
+                    )
+                    ProjectBalanceField(
+                        label = stringResource(R.string.label_owing),
+                        value = owing,
+                        onValueChange = onOwingChange,
+                        onIconClick = onOwingIconClick,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            } else {
                 ProjectBalanceField(
                     label = stringResource(R.string.label_balance),
                     value = balance,
                     onValueChange = onBalanceChange,
                     onIconClick = onBalanceIconClick,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.fillMaxWidth()
                 )
+                Spacer(modifier = Modifier.height(4.dp))
                 ProjectBalanceField(
                     label = stringResource(R.string.label_owing),
                     value = owing,
                     onValueChange = onOwingChange,
                     onIconClick = onOwingIconClick,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            Row(modifier = Modifier.fillMaxWidth()) {
+            if (useTwoColumns) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    ProjectBalanceField(
+                        label = stringResource(R.string.label_budgeted),
+                        value = budgeted,
+                        onValueChange = onBudgetedChange,
+                        onIconClick = onBudgetedIconClick,
+                        modifier = Modifier.weight(1f)
+                    )
+                    ProjectBalanceField(
+                        label = stringResource(R.string.label_credit_limit),
+                        value = limit,
+                        onValueChange = onLimitChange,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            } else {
                 ProjectBalanceField(
                     label = stringResource(R.string.label_budgeted),
                     value = budgeted,
                     onValueChange = onBudgetedChange,
                     onIconClick = onBudgetedIconClick,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.fillMaxWidth()
                 )
+                Spacer(modifier = Modifier.height(4.dp))
                 ProjectBalanceField(
                     label = stringResource(R.string.label_credit_limit),
                     value = limit,
                     onValueChange = onLimitChange,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
 

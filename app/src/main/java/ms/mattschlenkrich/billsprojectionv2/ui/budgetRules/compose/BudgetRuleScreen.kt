@@ -21,6 +21,8 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -87,6 +89,12 @@ fun BudgetRuleScreen(
         )
     }
 
+    val density = LocalDensity.current
+    val windowInfo = LocalWindowInfo.current
+    val fontScale = density.fontScale.coerceAtLeast(0.8f)
+    val effectiveWidthDp = with(density) { windowInfo.containerSize.width.toDp() } / fontScale
+    val useTwoColumns = effectiveWidthDp >= 450.dp
+
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = floatingActionButton
@@ -100,18 +108,51 @@ fun BudgetRuleScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Spacer(modifier = Modifier.height(4.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+            if (useTwoColumns) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    ProjectTextField(
+                        value = name,
+                        onValueChange = onNameChange,
+                        label = stringResource(R.string.label_budget_rule_name),
+                        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
+                        modifier = Modifier.weight(2f)
+                    )
+                    Column(modifier = Modifier.weight(3f)) {
+                        ProjectBalanceField(
+                            value = amount,
+                            onValueChange = onAmountChange,
+                            label = stringResource(R.string.label_default_amount),
+                            modifier = Modifier.fillMaxWidth(),
+                            onIconClick = onGotoCalculator,
+                            isHighlighted = true
+                        )
+                        suggestedAmount?.let {
+                            val nf = LocalNumberFunctions.current
+                            Text(
+                                text = "${stringResource(R.string.label_average)}: ${
+                                    nf.displayDollars(
+                                        it
+                                    )
+                                }",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                        }
+                    }
+                }
+            } else {
                 ProjectTextField(
                     value = name,
                     onValueChange = onNameChange,
                     label = stringResource(R.string.label_budget_rule_name),
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
-                    modifier = Modifier.weight(2f)
-                ) //budget rule name
-                Column(modifier = Modifier.weight(3f)) {
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Column(modifier = Modifier.fillMaxWidth()) {
                     ProjectBalanceField(
                         value = amount,
                         onValueChange = onAmountChange,
@@ -119,7 +160,7 @@ fun BudgetRuleScreen(
                         modifier = Modifier.fillMaxWidth(),
                         onIconClick = onGotoCalculator,
                         isHighlighted = true
-                    ) //default amount
+                    )
                     suggestedAmount?.let {
                         val nf = LocalNumberFunctions.current
                         Text(
@@ -136,22 +177,38 @@ fun BudgetRuleScreen(
                 }
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+            if (useTwoColumns) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    ProjectTextBox(
+                        label = stringResource(R.string.label_from_this_account),
+                        value = fromAccount?.accountName ?: "",
+                        onClick = { onChooseAccount(REQUEST_FROM_ACCOUNT) },
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    ProjectTextBox(
+                        label = stringResource(R.string.label_to_this_account),
+                        value = toAccount?.accountName ?: "",
+                        onClick = { onChooseAccount(REQUEST_TO_ACCOUNT) },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            } else {
                 ProjectTextBox(
                     label = stringResource(R.string.label_from_this_account),
                     value = fromAccount?.accountName ?: "",
                     onClick = { onChooseAccount(REQUEST_FROM_ACCOUNT) },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 ProjectTextBox(
                     label = stringResource(R.string.label_to_this_account),
                     value = toAccount?.accountName ?: "",
                     onClick = { onChooseAccount(REQUEST_TO_ACCOUNT) },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
 
@@ -165,67 +222,116 @@ fun BudgetRuleScreen(
 
             val isStartZero = startDate.trim() == "0" || startDate.trim() == "0000-00-00"
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+            if (useTwoColumns || isStartZero) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    ProjectDateField(
+                        value = startDate,
+                        onValueChange = onStartDateChange,
+                        label = stringResource(R.string.label_start_date),
+                        modifier = if (isStartZero) Modifier.fillMaxWidth() else Modifier.weight(1f)
+                    )
+
+                    if (!isStartZero) {
+                        ProjectDateField(
+                            value = endDate,
+                            onValueChange = onEndDateChange,
+                            label = stringResource(R.string.label_end_date),
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+            } else {
                 ProjectDateField(
                     value = startDate,
                     onValueChange = onStartDateChange,
                     label = stringResource(R.string.label_start_date),
-                    modifier = if (isStartZero) Modifier.fillMaxWidth() else Modifier.weight(1f)
-                )  // start date
-
-                if (!isStartZero) {
-                    ProjectDateField(
-                        value = endDate,
-                        onValueChange = onEndDateChange,
-                        label = stringResource(R.string.label_end_date),
-                        modifier = Modifier.weight(1f)
-                    ) //end date
-                }
+                    modifier = Modifier.fillMaxWidth()
+                )
+                ProjectDateField(
+                    value = endDate,
+                    onValueChange = onEndDateChange,
+                    label = stringResource(R.string.label_end_date),
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
 
             if (!isStartZero) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
+                if (useTwoColumns) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        ExposedDropdown(
+                            label = stringResource(R.string.title_budget_rules),
+                            options = frequencyTypes.toList(),
+                            selectedIndex = frequencyType,
+                            onItemSelected = onFrequencyTypeChange,
+                            modifier = Modifier.weight(1.5f)
+                        )
+
+                        ProjectIntField(
+                            value = frequencyCount,
+                            onValueChange = onFrequencyCountChange,
+                            label = stringResource(R.string.label_times),
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                } else {
                     ExposedDropdown(
                         label = stringResource(R.string.title_budget_rules),
                         options = frequencyTypes.toList(),
                         selectedIndex = frequencyType,
                         onItemSelected = onFrequencyTypeChange,
-                        modifier = Modifier.weight(1.5f)
+                        modifier = Modifier.fillMaxWidth()
                     )
 
                     ProjectIntField(
                         value = frequencyCount,
                         onValueChange = onFrequencyCountChange,
                         label = stringResource(R.string.label_times),
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 }
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
+                if (useTwoColumns) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        ExposedDropdown(
+                            label = stringResource(R.string.label_on_day),
+                            options = daysOfWeek.toList(),
+                            selectedIndex = dayOfWeek,
+                            onItemSelected = onDayOfWeekChange,
+                            modifier = Modifier.weight(1.5f)
+                        )
+
+                        ProjectIntField(
+                            value = leadDays,
+                            onValueChange = onLeadDaysChange,
+                            label = stringResource(R.string.label_lead_days),
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                } else {
                     ExposedDropdown(
                         label = stringResource(R.string.label_on_day),
                         options = daysOfWeek.toList(),
                         selectedIndex = dayOfWeek,
                         onItemSelected = onDayOfWeekChange,
-                        modifier = Modifier.weight(1.5f)
+                        modifier = Modifier.fillMaxWidth()
                     )
 
                     ProjectIntField(
                         value = leadDays,
                         onValueChange = onLeadDaysChange,
                         label = stringResource(R.string.label_lead_days),
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 }
 
