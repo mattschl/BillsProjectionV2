@@ -272,7 +272,7 @@ class SyncActivity : ComponentActivity() {
                 val result = credentialManager.getCredential(this@SyncActivity, request)
                 val googleIdTokenCredential =
                     GoogleIdTokenCredential.createFrom(result.credential.data)
-                initializeDriveService(googleIdTokenCredential.id)
+                initializeDriveService(googleIdTokenCredential.uniqueId)
             } catch (e: Exception) {
                 Log.e(TAG, "Sign-in error", e)
             } catch (noCred: NoCredentialException) {

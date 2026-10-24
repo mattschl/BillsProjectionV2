@@ -10,6 +10,7 @@ class TransactionViewModelFactory(
     private val transactionRepository: TransactionRepository
 ) : ViewModelProvider.Factory {
 
+    @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return TransactionViewModel(app, transactionRepository) as T
     }

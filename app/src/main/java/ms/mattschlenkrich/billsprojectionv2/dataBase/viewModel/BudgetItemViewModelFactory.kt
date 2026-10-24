@@ -9,6 +9,7 @@ class BudgetItemViewModelFactory(
     val app: Application,
     private val budgetItemRepository: BudgetItemRepository
 ) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return BudgetItemViewModel(app, budgetItemRepository) as T
     }
