@@ -19,6 +19,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
@@ -48,6 +50,12 @@ fun CriteriaCard(
     onBudgetRuleClick: () -> Unit,
     onAccountClick: () -> Unit,
 ) {
+    val density = LocalDensity.current
+    val windowInfo = LocalWindowInfo.current
+    val fontScale = density.fontScale.coerceAtLeast(0.8f)
+    val effectiveWidthDp = with(density) { windowInfo.containerSize.width.toDp() } / fontScale
+    val useTwoColumns = effectiveWidthDp >= 450.dp
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -56,17 +64,37 @@ fun CriteriaCard(
         shape = RoundedCornerShape(10.dp),
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
-            ProjectTextBox(
-                label = stringResource(R.string.label_rules),
-                value = budgetRuleName,
-                onClick = onBudgetRuleClick
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            ProjectTextBox(
-                label = stringResource(R.string.label_account_name),
-                value = accountName,
-                onClick = onAccountClick
-            )
+            if (useTwoColumns) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    ProjectTextBox(
+                        label = stringResource(R.string.label_rules),
+                        value = budgetRuleName,
+                        onClick = onBudgetRuleClick,
+                        modifier = Modifier.weight(1f)
+                    )
+                    ProjectTextBox(
+                        label = stringResource(R.string.label_account_name),
+                        value = accountName,
+                        onClick = onAccountClick,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            } else {
+                ProjectTextBox(
+                    label = stringResource(R.string.label_rules),
+                    value = budgetRuleName,
+                    onClick = onBudgetRuleClick
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                ProjectTextBox(
+                    label = stringResource(R.string.label_account_name),
+                    value = accountName,
+                    onClick = onAccountClick
+                )
+            }
             Spacer(modifier = Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -145,25 +173,51 @@ fun CriteriaCard(
             }
 
             if (timeRange == TimeRange.DATE_RANGE) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    ProjectDateField(
-                        value = startDate,
-                        label = stringResource(R.string.label_start_date),
-                        onValueChange = onStartDateChange,
-                        modifier = Modifier.weight(1f)
-                    )
-                    ProjectDateField(
-                        value = endDate,
-                        label = stringResource(R.string.label_end_date),
-                        onValueChange = onEndDateChange,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Button(onClick = onDateRangeGo) {
-                        Text(stringResource(R.string.action_go))
+                if (useTwoColumns) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        ProjectDateField(
+                            value = startDate,
+                            label = stringResource(R.string.label_start_date),
+                            onValueChange = onStartDateChange,
+                            modifier = Modifier.weight(1f)
+                        )
+                        ProjectDateField(
+                            value = endDate,
+                            label = stringResource(R.string.label_end_date),
+                            onValueChange = onEndDateChange,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Button(onClick = onDateRangeGo) {
+                            Text(stringResource(R.string.action_go))
+                        }
+                    }
+                } else {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        ProjectDateField(
+                            value = startDate,
+                            label = stringResource(R.string.label_start_date),
+                            onValueChange = onStartDateChange,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        ProjectDateField(
+                            value = endDate,
+                            label = stringResource(R.string.label_end_date),
+                            onValueChange = onEndDateChange,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Button(
+                            onClick = onDateRangeGo,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(stringResource(R.string.action_go))
+                        }
                     }
                 }
             }

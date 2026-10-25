@@ -10,9 +10,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -110,6 +110,7 @@ fun AccountEditScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             Spacer(modifier = Modifier.height(4.dp))
             if (useTwoColumns) {
@@ -257,8 +258,8 @@ fun AccountEditScreen(
                     style = MaterialTheme.typography.labelSmall
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(history) { transaction ->
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    history.forEach { transaction ->
                         TransactionHistoryItem(
                             transactionDetailed = transaction,
                             onClick = onHistoryItemClick,
