@@ -77,23 +77,3 @@ fun HelpScreenWrapper(activity: MainActivity) {
         )
     }
 }
-
-@Composable
-fun HelpSection(titleRes: Int, contentRes: Int) {
-    Column(modifier = Modifier.padding(top = 16.dp)) {
-        Text(
-            text = stringResource(id = titleRes),
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.primary,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(start = 8.dp)
-        )
-        Text(
-            text = stringResource(id = contentRes),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(8.dp),
-            textAlign = TextAlign.Start
-        )
-    }
-}

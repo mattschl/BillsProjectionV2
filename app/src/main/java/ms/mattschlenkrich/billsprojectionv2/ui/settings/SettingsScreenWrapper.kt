@@ -9,15 +9,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -28,14 +24,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import ms.mattschlenkrich.billsprojectionv2.BuildConfig
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ALL_ITEMS
 import ms.mattschlenkrich.billsprojectionv2.common.components.DropdownSelector
-import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 import ms.mattschlenkrich.billsprojectionv2.common.functions.SecurityUtils
 import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
@@ -280,184 +272,6 @@ fun SettingsScreenWrapper(
                 state.usePasswordProtection = false
                 showConfirmRemovalDialog = false
             }
-        )
-    }
-}
-
-@Composable
-fun ConfirmPasswordDialog(
-    passwordHash: String,
-    onDismiss: () -> Unit,
-    onConfirmed: () -> Unit
-) {
-    var password by remember { mutableStateOf("") }
-    var error by remember { mutableStateOf<String?>(null) }
-    val incorrectPasswordMsg = stringResource(id = R.string.msg_error_incorrect_password)
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.label_enter_password)) },
-        text = {
-            Column {
-                ProjectTextField(
-                    value = password,
-                    onValueChange = {
-                        password = it
-                        error = null
-                    },
-                    label = stringResource(R.string.label_enter_password),
-                    singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-                )
-                if (error != null) {
-                    Text(
-                        text = error!!,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    val inputHash = SecurityUtils().hashPassword(password)
-                    val failsafeHash = SecurityUtils().hashPassword(BuildConfig.FAILSAFE_PASSWORD)
-                    if (inputHash == passwordHash || inputHash == failsafeHash) {
-                        onConfirmed()
-                    } else {
-                        error = incorrectPasswordMsg
-                    }
-                }
-            ) {
-                Text(stringResource(R.string.action_confirm))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.action_cancel))
-            }
-        }
-    )
-}
-
-
-@Composable
-fun SetPasswordDialog(
-    onDismiss: () -> Unit,
-    onPasswordSet: (String) -> Unit
-) {
-    var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
-    var error by remember { mutableStateOf<String?>(null) }
-    val emptyError = stringResource(id = R.string.msg_error_password_empty)
-    val mismatchError = stringResource(id = R.string.msg_error_passwords_mismatch)
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.action_set_password)) },
-        text = {
-            Column {
-                ProjectTextField(
-                    value = password,
-                    onValueChange = {
-                        password = it
-                        error = null
-                    },
-                    label = stringResource(R.string.label_enter_new_password),
-                    singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                ProjectTextField(
-                    value = confirmPassword,
-                    onValueChange = {
-                        confirmPassword = it
-                        error = null
-                    },
-                    label = stringResource(R.string.label_confirm_new_password),
-                    singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-                )
-                if (error != null) {
-                    Text(
-                        text = error!!,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    if (password.isEmpty()) {
-                        error = emptyError
-                    } else if (password != confirmPassword) {
-                        error = mismatchError
-                    } else {
-                        onPasswordSet(password)
-                    }
-                }
-            ) {
-                Text(stringResource(R.string.action_save))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.action_cancel))
-            }
-        }
-    )
-}
-
-@Composable
-fun ThemeOption(
-    value: String,
-    labelRes: Int,
-    selectedThemeMode: String,
-    onSelect: () -> Unit
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(vertical = 4.dp)
-    ) {
-        RadioButton(
-            selected = (selectedThemeMode == value),
-            onClick = onSelect
-        )
-        Text(
-            text = stringResource(id = labelRes),
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(start = 8.dp)
-        )
-    }
-}
-
-@Composable
-fun FontSizeOption(
-    value: String,
-    labelRes: Int,
-    selectedFontSize: String,
-    onSelect: () -> Unit
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(vertical = 4.dp)
-    ) {
-        RadioButton(
-            selected = (selectedFontSize == value),
-            onClick = onSelect
-        )
-        Text(
-            text = stringResource(id = labelRes),
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(start = 8.dp)
         )
     }
 }
