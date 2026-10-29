@@ -76,11 +76,25 @@ fun TransactionSplitScreen(
         }
     }
 
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val configuration = androidx.compose.ui.platform.LocalConfiguration.current
+    val isLandscape =
+        configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+    val columnPreference = remember {
+        ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager(context)
+            .getSettings().columnPreference
+    }
+    val thresholdDp =
+        ms.mattschlenkrich.billsprojectionv2.common.settings.ColumnSettingsHelper.getThresholdDp(
+            columnPreference,
+            isLandscape
+        )
+
     val density = LocalDensity.current
     val windowInfo = LocalWindowInfo.current
     val fontScale = density.fontScale.coerceAtLeast(0.8f)
     val effectiveWidthDp = with(density) { windowInfo.containerSize.width.toDp() } / fontScale
-    val useTwoColumns = effectiveWidthDp >= 450.dp
+    val useTwoColumns = effectiveWidthDp >= thresholdDp
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),

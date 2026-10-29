@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.budgetView
 
 import android.app.AlertDialog
+import android.util.Log
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,6 +32,8 @@ import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.compose.BudgetViewScreen
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 import java.time.LocalDate
+
+private const val TAG = "BudgetViewScreenWrapper"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -165,14 +168,25 @@ fun BudgetViewScreenWrapper(
         hasAnyBudgetItems = allBudgetList.isNotEmpty(),
         onAccountClick = {
             mainViewModel.setCallingFragments(SCREEN_BUDGET_VIEW)
-            val currentSelectedAsset = mainViewModel.getReturnToAsset()
-            activity.lifecycleScope.launch {
-                if (currentSelectedAsset != null) {
-                    val account = withContext(Dispatchers.IO) {
-                        accountViewModel.getAccountWithType(currentSelectedAsset)
+            if (curAsset != null) {
+                mainViewModel.setAccountWithType(curAsset)
+                navController.navigate(Screen.AccountUpdate.route)
+            } else {
+                val currentSelectedAsset = mainViewModel.getReturnToAsset()
+                if (!currentSelectedAsset.isNullOrBlank()) {
+                    activity.lifecycleScope.launch {
+                        try {
+                            val account = withContext(Dispatchers.IO) {
+                                accountViewModel.getAccountWithType(currentSelectedAsset)
+                            }
+                            if (account != null) {
+                                mainViewModel.setAccountWithType(account)
+                                navController.navigate(Screen.AccountUpdate.route)
+                            }
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Error fetching account for $currentSelectedAsset", e)
+                        }
                     }
-                    mainViewModel.setAccountWithType(account)
-                    navController.navigate(Screen.AccountUpdate.route)
                 }
             }
         },

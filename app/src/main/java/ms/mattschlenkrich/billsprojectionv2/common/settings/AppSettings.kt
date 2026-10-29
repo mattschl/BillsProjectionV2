@@ -11,4 +11,5 @@ data class AppSettings(
     val defaultAccount: String? = null,
     val syncWarningDays: Int = 3,
     val budgetUpdateWarningWeeks: Int = 3,
+    val columnPreference: String? = "medium",
 )

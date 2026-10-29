@@ -1,18 +1,16 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.accounts.compose
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,6 +21,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -81,11 +80,25 @@ fun AccountEditScreen(
         )
     }
 
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val configuration = androidx.compose.ui.platform.LocalConfiguration.current
+    val isLandscape =
+        configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+    val columnPreference = remember {
+        ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager(context)
+            .getSettings().columnPreference
+    }
+    val thresholdDp =
+        ms.mattschlenkrich.billsprojectionv2.common.settings.ColumnSettingsHelper.getThresholdDp(
+            columnPreference,
+            isLandscape
+        )
+
     val density = LocalDensity.current
     val windowInfo = LocalWindowInfo.current
     val fontScale = density.fontScale.coerceAtLeast(0.8f)
     val effectiveWidthDp = with(density) { windowInfo.containerSize.width.toDp() } / fontScale
-    val useTwoColumns = effectiveWidthDp >= 450.dp
+    val useTwoColumns = effectiveWidthDp >= thresholdDp
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -105,166 +118,170 @@ fun AccountEditScreen(
             }
         }
     ) { paddingValues ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Spacer(modifier = Modifier.height(4.dp))
-            if (useTwoColumns) {
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    ProjectTextField(
-                        value = name,
-                        onValueChange = onNameChange,
-                        label = stringResource(R.string.label_account_name),
-                        modifier = Modifier.weight(1.5f),
-                        textStyle = MaterialTheme.typography.bodyMedium,
-                        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
-                        singleLine = true
+            item {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    if (useTwoColumns) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            ProjectTextField(
+                                value = name,
+                                onValueChange = onNameChange,
+                                label = stringResource(R.string.label_account_name),
+                                modifier = Modifier.weight(1.5f),
+                                textStyle = MaterialTheme.typography.bodyMedium,
+                                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
+                                singleLine = true
+                            )
+                            ProjectTextField(
+                                value = handle,
+                                onValueChange = onHandleChange,
+                                label = stringResource(R.string.label_number),
+                                modifier = Modifier.weight(1f),
+                                textStyle = MaterialTheme.typography.bodyMedium,
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                                singleLine = true
+                            )
+                        }
+                    } else {
+                        ProjectTextField(
+                            value = name,
+                            onValueChange = onNameChange,
+                            label = stringResource(R.string.label_account_name),
+                            modifier = Modifier.fillMaxWidth(),
+                            textStyle = MaterialTheme.typography.bodyMedium,
+                            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
+                            singleLine = true
+                        )
+                        ProjectTextField(
+                            value = handle,
+                            onValueChange = onHandleChange,
+                            label = stringResource(R.string.label_number),
+                            modifier = Modifier.fillMaxWidth(),
+                            textStyle = MaterialTheme.typography.bodyMedium,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                            singleLine = true
+                        )
+                    }
+
+                    ProjectTextBox(
+                        label = stringResource(R.string.label_account_type),
+                        value = accountType?.accountType ?: "",
+                        onClick = onAccountTypeClick,
+                        isError = accountType == null
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    ProjectTextField(
-                        value = handle,
-                        onValueChange = onHandleChange,
-                        label = stringResource(R.string.label_number),
-                        modifier = Modifier.weight(1f),
-                        textStyle = MaterialTheme.typography.bodyMedium,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                        singleLine = true
-                    )
+                    if (accountType != null && accountTypeDetails.isNotEmpty()) {
+                        Text(
+                            text = accountTypeDetails,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(start = 4.dp)
+                        )
+                    }
+
+                    if (useTwoColumns) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            ProjectBalanceField(
+                                label = stringResource(R.string.label_balance),
+                                value = balance,
+                                onValueChange = onBalanceChange,
+                                onIconClick = onBalanceIconClick,
+                                modifier = Modifier.weight(1f)
+                            )
+                            ProjectBalanceField(
+                                label = stringResource(R.string.label_owing),
+                                value = owing,
+                                onValueChange = onOwingChange,
+                                onIconClick = onOwingIconClick,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    } else {
+                        ProjectBalanceField(
+                            label = stringResource(R.string.label_balance),
+                            value = balance,
+                            onValueChange = onBalanceChange,
+                            onIconClick = onBalanceIconClick,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        ProjectBalanceField(
+                            label = stringResource(R.string.label_owing),
+                            value = owing,
+                            onValueChange = onOwingChange,
+                            onIconClick = onOwingIconClick,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+
+                    if (useTwoColumns) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            ProjectBalanceField(
+                                label = stringResource(R.string.label_budgeted),
+                                value = budgeted,
+                                onValueChange = onBudgetedChange,
+                                onIconClick = onBudgetedIconClick,
+                                modifier = Modifier.weight(1f)
+                            )
+                            ProjectBalanceField(
+                                label = stringResource(R.string.label_credit_limit),
+                                value = limit,
+                                onValueChange = onLimitChange,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    } else {
+                        ProjectBalanceField(
+                            label = stringResource(R.string.label_budgeted),
+                            value = budgeted,
+                            onValueChange = onBudgetedChange,
+                            onIconClick = onBudgetedIconClick,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        ProjectBalanceField(
+                            label = stringResource(R.string.label_credit_limit),
+                            value = limit,
+                            onValueChange = onLimitChange,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
-            } else {
-                ProjectTextField(
-                    value = name,
-                    onValueChange = onNameChange,
-                    label = stringResource(R.string.label_account_name),
-                    modifier = Modifier.fillMaxWidth(),
-                    textStyle = MaterialTheme.typography.bodyMedium,
-                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
-                    singleLine = true
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                ProjectTextField(
-                    value = handle,
-                    onValueChange = onHandleChange,
-                    label = stringResource(R.string.label_number),
-                    modifier = Modifier.fillMaxWidth(),
-                    textStyle = MaterialTheme.typography.bodyMedium,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                    singleLine = true
-                )
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            ProjectTextBox(
-                label = stringResource(R.string.label_account_type),
-                value = accountType?.accountType ?: "",
-                onClick = onAccountTypeClick,
-                isError = accountType == null
-            )
-            if (accountType != null && accountTypeDetails.isNotEmpty()) {
-                Text(
-                    text = accountTypeDetails,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(start = 4.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            if (useTwoColumns) {
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    ProjectBalanceField(
-                        label = stringResource(R.string.label_balance),
-                        value = balance,
-                        onValueChange = onBalanceChange,
-                        onIconClick = onBalanceIconClick,
-                        modifier = Modifier.weight(1f)
-                    )
-                    ProjectBalanceField(
-                        label = stringResource(R.string.label_owing),
-                        value = owing,
-                        onValueChange = onOwingChange,
-                        onIconClick = onOwingIconClick,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            } else {
-                ProjectBalanceField(
-                    label = stringResource(R.string.label_balance),
-                    value = balance,
-                    onValueChange = onBalanceChange,
-                    onIconClick = onBalanceIconClick,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                ProjectBalanceField(
-                    label = stringResource(R.string.label_owing),
-                    value = owing,
-                    onValueChange = onOwingChange,
-                    onIconClick = onOwingIconClick,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            if (useTwoColumns) {
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    ProjectBalanceField(
-                        label = stringResource(R.string.label_budgeted),
-                        value = budgeted,
-                        onValueChange = onBudgetedChange,
-                        onIconClick = onBudgetedIconClick,
-                        modifier = Modifier.weight(1f)
-                    )
-                    ProjectBalanceField(
-                        label = stringResource(R.string.label_credit_limit),
-                        value = limit,
-                        onValueChange = onLimitChange,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            } else {
-                ProjectBalanceField(
-                    label = stringResource(R.string.label_budgeted),
-                    value = budgeted,
-                    onValueChange = onBudgetedChange,
-                    onIconClick = onBudgetedIconClick,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                ProjectBalanceField(
-                    label = stringResource(R.string.label_credit_limit),
-                    value = limit,
-                    onValueChange = onLimitChange,
-                    modifier = Modifier.fillMaxWidth()
-                )
             }
 
             if (accountId != 0L) {
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "ID: $accountId",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 4.dp),
-                    textAlign = TextAlign.End,
-                    style = MaterialTheme.typography.labelSmall
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    history.forEach { transaction ->
-                        TransactionHistoryItem(
-                            transactionDetailed = transaction,
-                            onClick = onHistoryItemClick,
-                        )
-                    }
+                item {
+                    Text(
+                        text = "ID: $accountId",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 4.dp),
+                        textAlign = TextAlign.End,
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                }
+
+                items(
+                    history,
+                    key = { it.transaction?.transId ?: it.hashCode() }
+                ) { transaction ->
+                    TransactionHistoryItem(
+                        transactionDetailed = transaction,
+                        onClick = onHistoryItemClick,
+                    )
                 }
             }
         }

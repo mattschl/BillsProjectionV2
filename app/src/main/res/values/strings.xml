@@ -102,6 +102,12 @@
     <string name="label_last_sync_this_device">Last sync on this device: %1$s</string>
     <string name="label_fixed">Fixed</string>
     <string name="label_fixed_colon">"Fixed: "</string>
+    <string name="label_column_count">Number of Columns</string>
+    <string name="label_columns_very_few">Very Few (Single Column)</string>
+    <string name="label_columns_few">Few</string>
+    <string name="label_columns_medium">Default / Medium</string>
+    <string name="label_columns_many">Many</string>
+    <string name="label_columns_very_many">Very Many</string>
     <string name="label_font_extra_large">Extra Large</string>
     <string name="label_font_large">Large</string>
     <string name="label_font_medium">Medium</string>

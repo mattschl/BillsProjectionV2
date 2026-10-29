@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -66,11 +67,25 @@ fun TransactionEditScreen(
     toAccountError: Boolean = false,
     fromAccountError: Boolean = false,
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val configuration = androidx.compose.ui.platform.LocalConfiguration.current
+    val isLandscape =
+        configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+    val columnPreference = remember {
+        ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager(context)
+            .getSettings().columnPreference
+    }
+    val thresholdDp =
+        ms.mattschlenkrich.billsprojectionv2.common.settings.ColumnSettingsHelper.getThresholdDp(
+            columnPreference,
+            isLandscape
+        )
+
     val density = LocalDensity.current
     val windowInfo = LocalWindowInfo.current
     val fontScale = density.fontScale.coerceAtLeast(0.8f)
     val effectiveWidthDp = with(density) { windowInfo.containerSize.width.toDp() } / fontScale
-    val useTwoColumns = effectiveWidthDp >= 450.dp
+    val useTwoColumns = effectiveWidthDp >= thresholdDp
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),

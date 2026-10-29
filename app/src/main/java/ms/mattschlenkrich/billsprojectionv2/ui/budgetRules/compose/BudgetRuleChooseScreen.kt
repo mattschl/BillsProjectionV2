@@ -42,6 +42,21 @@ fun BudgetRuleChooseScreen(
     onBudgetRuleClick: (BudgetRuleDetailed) -> Unit,
     onAddBudgetRule: () -> Unit
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val configuration = androidx.compose.ui.platform.LocalConfiguration.current
+    val isLandscape =
+        configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+    val columnPreference = androidx.compose.runtime.remember {
+        ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager(context)
+            .getSettings().columnPreference
+    }
+    val gridColumnCount =
+        ms.mattschlenkrich.billsprojectionv2.common.settings.ColumnSettingsHelper.getGridColumnCount(
+            columnPreference,
+            3,
+            isLandscape
+        )
+
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         modifier = Modifier.imePadding(),
@@ -98,7 +113,7 @@ fun BudgetRuleChooseScreen(
                     }
                 } else {
                     LazyVerticalStaggeredGrid(
-                        columns = StaggeredGridCells.Fixed(3),
+                        columns = StaggeredGridCells.Fixed(gridColumnCount),
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(bottom = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(4.dp),

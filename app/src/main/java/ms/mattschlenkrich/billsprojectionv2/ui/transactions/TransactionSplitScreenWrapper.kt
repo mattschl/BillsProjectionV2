@@ -93,7 +93,7 @@ fun TransactionSplitScreenWrapper(
                             val accountWithType =
                                 accountViewModel.getAccountWithType(toAcc.accountId)
                             state.toAccountWithType = accountWithType
-                            if (accountWithType.accountType?.allowPending == true) {
+                            if (accountWithType?.accountType?.allowPending == true) {
                                 state.toPending =
                                     splitDetailed.transaction?.transToAccountPending ?: false
                             }

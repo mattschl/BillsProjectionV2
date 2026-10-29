@@ -25,6 +25,9 @@ class SettingsManager(private val context: Context) {
                 if (!jsonText.contains("budgetUpdateWarningWeeks")) {
                     updated = updated.copy(budgetUpdateWarningWeeks = 3)
                 }
+                if (!jsonText.contains("columnPreference")) {
+                    updated = updated.copy(columnPreference = "medium")
+                }
                 updated
             } else {
                 AppSettings(deviceId = NumberFunctions().generateId())

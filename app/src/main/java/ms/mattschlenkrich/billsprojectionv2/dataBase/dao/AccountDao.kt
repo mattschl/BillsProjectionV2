@@ -64,7 +64,7 @@ interface AccountDao {
     )
     fun getActiveAccounts(): LiveData<List<Account>>
 
-        @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -106,7 +106,7 @@ interface AccountDao {
     )
     fun searchAccounts(query: String?): LiveData<List<Account>>
 
-        @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -139,7 +139,7 @@ interface AccountDao {
     )
     fun searchAccountsWithTypeBudgetFirst(query: String?): LiveData<List<AccountWithType>>
 
-        @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -177,7 +177,7 @@ interface AccountDao {
     )
     fun getAccountsWithTypeBudgetFirst(): LiveData<List<AccountWithType>>
 
-        @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
@@ -188,7 +188,7 @@ interface AccountDao {
                 "$TABLE_ACCOUNTS.$ACCOUNT_TYPE_ID " +
                 "WHERE $TABLE_ACCOUNTS.$ACCOUNT_ID = :accountId  "
     )
-    suspend fun getAccountWithType(accountId: Long): AccountWithType
+    suspend fun getAccountWithType(accountId: Long): AccountWithType?
 
     @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @RewriteQueriesToDropUnusedColumns
@@ -201,7 +201,7 @@ interface AccountDao {
                 "$TABLE_ACCOUNTS.$ACCOUNT_TYPE_ID " +
                 "WHERE $TABLE_ACCOUNTS.$ACCOUNT_ID = :accountId  "
     )
-    fun getAccountWithTypeLive(accountId: Long): LiveData<AccountWithType>
+    fun getAccountWithTypeLive(accountId: Long): LiveData<AccountWithType?>
 
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
@@ -231,7 +231,7 @@ interface AccountDao {
                 "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
                 "WHERE $ACCOUNT_NAME = :accountName)"
     )
-    suspend fun getAccountWithType(accountName: String): AccountWithType
+    suspend fun getAccountWithType(accountName: String): AccountWithType?
 
     //    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)

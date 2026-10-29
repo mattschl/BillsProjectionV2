@@ -109,6 +109,35 @@ fun SettingsScreenWrapper(
         }
 
         Text(
+            text = stringResource(id = R.string.label_column_count),
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(top = 24.dp)
+        )
+
+        Column(modifier = Modifier.padding(top = 8.dp)) {
+            FontSizeOption("very_few", R.string.label_columns_very_few, state.columnPreference) {
+                updateColumnPreference("very_few", settingsManager)
+                state.columnPreference = "very_few"
+            }
+            FontSizeOption("few", R.string.label_columns_few, state.columnPreference) {
+                updateColumnPreference("few", settingsManager)
+                state.columnPreference = "few"
+            }
+            FontSizeOption("medium", R.string.label_columns_medium, state.columnPreference) {
+                updateColumnPreference("medium", settingsManager)
+                state.columnPreference = "medium"
+            }
+            FontSizeOption("many", R.string.label_columns_many, state.columnPreference) {
+                updateColumnPreference("many", settingsManager)
+                state.columnPreference = "many"
+            }
+            FontSizeOption("very_many", R.string.label_columns_very_many, state.columnPreference) {
+                updateColumnPreference("very_many", settingsManager)
+                state.columnPreference = "very_many"
+            }
+        }
+
+        Text(
             text = stringResource(id = R.string.title_general),
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.padding(top = 24.dp)
@@ -274,6 +303,14 @@ fun SettingsScreenWrapper(
             }
         )
     }
+}
+
+private fun updateColumnPreference(
+    columnPref: String,
+    settingsManager: SettingsManager
+) {
+    val settings = settingsManager.getSettings()
+    settingsManager.saveSettings(settings.copy(columnPreference = columnPref))
 }
 
 private fun updateFontSize(

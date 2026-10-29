@@ -155,16 +155,16 @@ fun TransactionUpdateScreenWrapper(
                 val awt = accountViewModel.getAccountWithType(it.accountId)
                 state.toAccountWithType = awt
                 if (ruleChanged) {
-                    state.toPending = awt.accountType?.allowPending == true &&
-                            awt.accountType.tallyOwing == true
+                    state.toPending = awt?.accountType?.allowPending == true &&
+                            awt?.accountType?.tallyOwing == true
                 }
             }
             state.fromAccount?.let {
                 val awt = accountViewModel.getAccountWithType(it.accountId)
                 state.fromAccountWithType = awt
                 if (ruleChanged) {
-                    state.fromPending = awt.accountType?.allowPending == true &&
-                            awt.accountType.tallyOwing == true
+                    state.fromPending = awt?.accountType?.allowPending == true &&
+                            awt?.accountType?.tallyOwing == true
                 }
             }
             mainViewModel.setRequestedAccount("")

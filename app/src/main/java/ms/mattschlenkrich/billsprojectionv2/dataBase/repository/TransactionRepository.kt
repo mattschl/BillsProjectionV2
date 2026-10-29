@@ -1,6 +1,9 @@
 package ms.mattschlenkrich.billsprojectionv2.dataBase.repository
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import ms.mattschlenkrich.billsprojectionv2.dataBase.BillsDatabase
+import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.Transactions
 
 class TransactionRepository(private val db: BillsDatabase) {
@@ -105,8 +108,9 @@ class TransactionRepository(private val db: BillsDatabase) {
         budgetRuleId, startDate, endDate
     )*/
 
-    fun getActiveTransactionByAccount(accountId: Long) =
-        db.getTransactionDao().getTransactionsFiltered(-1L, accountId, "", "", "")
+    fun getActiveTransactionByAccount(accountId: Long): LiveData<List<TransactionDetailed>> =
+        if (accountId <= 0L) MutableLiveData(emptyList())
+        else db.getTransactionDao().getTransactionsFiltered(-1L, accountId, "", "", "")
 
     /* fun getActiveTransactionByAccount(
          accountId: Long, startDate: String, endDate: String

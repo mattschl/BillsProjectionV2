@@ -43,16 +43,16 @@ fun TransactionAddScreenWrapper(
                 val awt = accountViewModel.getAccountWithType(it.accountId)
                 state.toAccountWithType = awt
                 if (ruleChanged) {
-                    state.toPending = (awt.accountType?.allowPending == true) &&
-                            (awt.accountType.tallyOwing == true)
+                    state.toPending = (awt?.accountType?.allowPending == true) &&
+                            (awt?.accountType?.tallyOwing == true)
                 }
             }
             cached.fromAccount?.let {
                 val awt = accountViewModel.getAccountWithType(it.accountId)
                 state.fromAccountWithType = awt
                 if (ruleChanged) {
-                    state.fromPending = awt.accountType?.allowPending == true &&
-                            awt.accountType.tallyOwing == true
+                    state.fromPending = awt?.accountType?.allowPending == true &&
+                            awt?.accountType?.tallyOwing == true
                 }
             }
 
@@ -62,16 +62,16 @@ fun TransactionAddScreenWrapper(
                 state.toAccount = acc
                 val awt = accountViewModel.getAccountWithType(acc.accountId)
                 state.toAccountWithType = awt
-                state.toPending = awt.accountType?.allowPending == true &&
-                        awt.accountType.tallyOwing == true
+                state.toPending = awt?.accountType?.allowPending == true &&
+                        awt?.accountType?.tallyOwing == true
             }
             if (state.fromAccount == null && rule?.budFromAccountId != 0L && rule != null) {
                 val acc = accountViewModel.getAccount(rule.budFromAccountId)
                 state.fromAccount = acc
                 val awt = accountViewModel.getAccountWithType(acc.accountId)
                 state.fromAccountWithType = awt
-                state.fromPending = awt.accountType?.allowPending == true &&
-                        awt.accountType.tallyOwing == true
+                state.fromPending = awt?.accountType?.allowPending == true &&
+                        awt?.accountType?.tallyOwing == true
             }
             mainViewModel.setRequestedAccount("")
             mainViewModel.setTransferNum(0.0)

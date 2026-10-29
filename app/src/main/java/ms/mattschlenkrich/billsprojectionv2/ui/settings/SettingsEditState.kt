@@ -17,6 +17,7 @@ class SettingsEditState(initialSettings: AppSettings) {
     var defaultAccount by mutableStateOf(initialSettings.defaultAccount ?: ALL_ITEMS)
     var syncWarningDays by mutableIntStateOf(initialSettings.syncWarningDays)
     var budgetUpdateWarningWeeks by mutableIntStateOf(initialSettings.budgetUpdateWarningWeeks)
+    var columnPreference by mutableStateOf(initialSettings.columnPreference ?: "medium")
 
     fun updateFrom(settings: AppSettings) {
         fontSize = settings.fontSize ?: "medium"
@@ -26,6 +27,7 @@ class SettingsEditState(initialSettings: AppSettings) {
         defaultAccount = settings.defaultAccount ?: ALL_ITEMS
         syncWarningDays = settings.syncWarningDays
         budgetUpdateWarningWeeks = settings.budgetUpdateWarningWeeks
+        columnPreference = settings.columnPreference ?: "medium"
     }
 }
 
