@@ -12,8 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.Dispatchers
@@ -53,11 +51,10 @@ fun AccountUpdateScreenWrapper(
     val actionSheetState = rememberActionSheetState()
     val state = rememberAccountEditState(nf, df)
 
-    val accountWithTypeState = remember { mutableStateOf(mainViewModel.getAccountWithType()) }
+    val currentAwt = mainViewModel.getAccountWithType()
     val accountNames by accountViewModel.getAccountNameList().observeAsState(emptyList())
 
-    val initialAccount = accountWithTypeState.value?.account
-    val accountId = initialAccount?.accountId ?: 0L
+    val accountId = currentAwt?.account?.accountId ?: 0L
 
     val history by transactionViewModel.getActiveTransactionByAccount(accountId)
         .observeAsState(emptyList())
@@ -75,10 +72,10 @@ fun AccountUpdateScreenWrapper(
         }
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(currentAwt) {
         mainViewModel.setTransferNum(0.0)
         state.updateFrom(
-            accountWithTypeState.value,
+            currentAwt,
             mainViewModel.getTransferNum(),
             mainViewModel.getReturnTo()
         )
@@ -206,7 +203,7 @@ fun AccountUpdateScreenWrapper(
         onNameChange = { state.name = it },
         handle = state.handle,
         onHandleChange = { state.handle = it },
-        accountType = accountWithTypeState.value?.accountType,
+        accountType = currentAwt?.accountType,
         onAccountTypeClick = {
             mainViewModel.addCallingFragment(TAG)
             val updatedAccount = getUpdatedAccount()

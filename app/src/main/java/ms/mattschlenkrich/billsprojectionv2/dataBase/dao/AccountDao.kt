@@ -87,7 +87,7 @@ interface AccountDao {
 
     @Query(
         "SELECT * FROM $TABLE_ACCOUNTS " +
-                "WHERE $ACCOUNT_NAME = :accountName "
+                "WHERE LOWER(TRIM($ACCOUNT_NAME)) = LOWER(TRIM(:accountName)) "
     )
     suspend fun findAccountByName(accountName: String): Account?
 
@@ -229,7 +229,7 @@ interface AccountDao {
                 "$TABLE_ACCOUNTS.$ACCOUNT_TYPE_ID " +
                 "WHERE $TABLE_ACCOUNTS.$ACCOUNT_ID = " +
                 "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
-                "WHERE $ACCOUNT_NAME = :accountName)"
+                "WHERE LOWER(TRIM($ACCOUNT_NAME)) = LOWER(TRIM(:accountName)))"
     )
     suspend fun getAccountWithType(accountName: String): AccountWithType?
 
@@ -259,7 +259,7 @@ interface AccountDao {
                 "$TABLE_ACCOUNTS.$ACCOUNT_TYPE_ID " +
                 "WHERE $TABLE_ACCOUNTS.$ACCOUNT_ID = " +
                 "(SELECT $ACCOUNT_ID FROM $TABLE_ACCOUNTS " +
-                "WHERE $ACCOUNT_NAME = :accountName)"
+                "WHERE LOWER(TRIM($ACCOUNT_NAME)) = LOWER(TRIM(:accountName)))"
     )
     fun getAccountDetailed(accountName: String): LiveData<AccountWithType>
 

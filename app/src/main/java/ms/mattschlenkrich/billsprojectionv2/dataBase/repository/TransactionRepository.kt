@@ -109,8 +109,8 @@ class TransactionRepository(private val db: BillsDatabase) {
     )*/
 
     fun getActiveTransactionByAccount(accountId: Long): LiveData<List<TransactionDetailed>> =
-        if (accountId <= 0L) MutableLiveData(emptyList())
-        else db.getTransactionDao().getTransactionsFiltered(-1L, accountId, "", "", "")
+        if (accountId == 0L) MutableLiveData(emptyList())
+        else db.getTransactionDao().getTransactionsByAccount(accountId)
 
     /* fun getActiveTransactionByAccount(
          accountId: Long, startDate: String, endDate: String
