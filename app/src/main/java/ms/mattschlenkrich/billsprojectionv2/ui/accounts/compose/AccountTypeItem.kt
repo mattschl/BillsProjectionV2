@@ -1,6 +1,5 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.accounts.compose
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.common.functions.VisualsFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AccountTypeItem(
     accountType: AccountType,
@@ -31,6 +29,20 @@ fun AccountTypeItem(
     onLongClick: () -> Unit,
     infoText: String
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val densityPref = androidx.compose.runtime.remember {
+        ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager(context)
+            .getSettings().listDensityPreference
+    }
+    val verticalPadding =
+        ms.mattschlenkrich.billsprojectionv2.common.settings.ListItemDensityHelper.getVerticalPadding(
+            densityPref
+        )
+    val cardSpacing =
+        ms.mattschlenkrich.billsprojectionv2.common.settings.ListItemDensityHelper.getCardVerticalSpacing(
+            densityPref
+        )
+
     val isDeleted = accountType.acctIsDeleted
     val bgColor =
         if (isDeleted) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surface
@@ -41,6 +53,7 @@ fun AccountTypeItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(vertical = cardSpacing)
             .combinedClickable(
                 onClick = onClick,
                 onLongClick = onLongClick
@@ -48,7 +61,7 @@ fun AccountTypeItem(
         colors = CardDefaults.cardColors(containerColor = bgColor),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(modifier = Modifier.padding(8.dp)) {
+        Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = verticalPadding)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,

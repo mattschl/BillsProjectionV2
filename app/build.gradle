@@ -37,10 +37,10 @@ android {
         minSdk = 28
         targetSdk = 37
         //noinspection EditedTargetSdkVersion
-        versionCode = 27
+        versionCode = 28
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: 'false'
-        versionNameSuffix = '- reminders'
+        versionNameSuffix = '- stability'
         signingConfig = signingConfigs.debug
         buildConfigField "String", "FAILSAFE_PASSWORD", "\"${localProperties.getProperty('FAILSAFE_PASSWORD')}\""
         versionName = 'BP-v2'

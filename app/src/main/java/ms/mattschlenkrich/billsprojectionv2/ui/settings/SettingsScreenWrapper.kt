@@ -138,6 +138,43 @@ fun SettingsScreenWrapper(
         }
 
         Text(
+            text = stringResource(id = R.string.label_list_item_density),
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(top = 24.dp)
+        )
+
+        Column(modifier = Modifier.padding(top = 8.dp)) {
+            FontSizeOption(
+                "very_tight",
+                R.string.label_density_very_tight,
+                state.listDensityPreference
+            ) {
+                updateListDensityPreference("very_tight", settingsManager)
+                state.listDensityPreference = "very_tight"
+            }
+            FontSizeOption("tight", R.string.label_density_tight, state.listDensityPreference) {
+                updateListDensityPreference("tight", settingsManager)
+                state.listDensityPreference = "tight"
+            }
+            FontSizeOption("medium", R.string.label_density_medium, state.listDensityPreference) {
+                updateListDensityPreference("medium", settingsManager)
+                state.listDensityPreference = "medium"
+            }
+            FontSizeOption("loose", R.string.label_density_loose, state.listDensityPreference) {
+                updateListDensityPreference("loose", settingsManager)
+                state.listDensityPreference = "loose"
+            }
+            FontSizeOption(
+                "very_loose",
+                R.string.label_density_very_loose,
+                state.listDensityPreference
+            ) {
+                updateListDensityPreference("very_loose", settingsManager)
+                state.listDensityPreference = "very_loose"
+            }
+        }
+
+        Text(
             text = stringResource(id = R.string.title_general),
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.padding(top = 24.dp)
@@ -303,6 +340,14 @@ fun SettingsScreenWrapper(
             }
         )
     }
+}
+
+private fun updateListDensityPreference(
+    densityPref: String,
+    settingsManager: SettingsManager
+) {
+    val settings = settingsManager.getSettings()
+    settingsManager.saveSettings(settings.copy(listDensityPreference = densityPref))
 }
 
 private fun updateColumnPreference(

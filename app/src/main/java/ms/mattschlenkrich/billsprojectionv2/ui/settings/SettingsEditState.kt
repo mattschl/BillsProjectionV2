@@ -18,6 +18,7 @@ class SettingsEditState(initialSettings: AppSettings) {
     var syncWarningDays by mutableIntStateOf(initialSettings.syncWarningDays)
     var budgetUpdateWarningWeeks by mutableIntStateOf(initialSettings.budgetUpdateWarningWeeks)
     var columnPreference by mutableStateOf(initialSettings.columnPreference ?: "medium")
+    var listDensityPreference by mutableStateOf(initialSettings.listDensityPreference ?: "medium")
 
     fun updateFrom(settings: AppSettings) {
         fontSize = settings.fontSize ?: "medium"
@@ -28,6 +29,7 @@ class SettingsEditState(initialSettings: AppSettings) {
         syncWarningDays = settings.syncWarningDays
         budgetUpdateWarningWeeks = settings.budgetUpdateWarningWeeks
         columnPreference = settings.columnPreference ?: "medium"
+        listDensityPreference = settings.listDensityPreference ?: "medium"
     }
 }
 

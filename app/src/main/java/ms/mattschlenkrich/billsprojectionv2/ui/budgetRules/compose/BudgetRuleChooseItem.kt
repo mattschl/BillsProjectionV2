@@ -42,9 +42,24 @@ fun BudgetRuleChooseItem(
     }
     val vf = LocalVisualsFunctions.current
 
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val densityPref = androidx.compose.runtime.remember {
+        ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager(context)
+            .getSettings().listDensityPreference
+    }
+    val verticalPadding =
+        ms.mattschlenkrich.billsprojectionv2.common.settings.ListItemDensityHelper.getVerticalPadding(
+            densityPref
+        )
+    val cardSpacing =
+        ms.mattschlenkrich.billsprojectionv2.common.settings.ListItemDensityHelper.getCardVerticalSpacing(
+            densityPref
+        )
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(vertical = cardSpacing)
             .clickable { onClick() },
         colors = CardDefaults.cardColors(
             containerColor = containerColor,
@@ -54,7 +69,7 @@ fun BudgetRuleChooseItem(
     ) {
         Row(
             modifier = Modifier
-                .padding(8.dp)
+                .padding(horizontal = 8.dp, vertical = verticalPadding)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween

@@ -108,6 +108,12 @@
     <string name="label_columns_medium">Default / Medium</string>
     <string name="label_columns_many">Many</string>
     <string name="label_columns_very_many">Very Many</string>
+    <string name="label_list_item_density">List Item Spacing &amp; Padding</string>
+    <string name="label_density_very_tight">Very Tight</string>
+    <string name="label_density_tight">Tight</string>
+    <string name="label_density_medium">Medium / Default</string>
+    <string name="label_density_loose">Loose</string>
+    <string name="label_density_very_loose">Very Loose</string>
     <string name="label_font_extra_large">Extra Large</string>
     <string name="label_font_large">Large</string>
     <string name="label_font_medium">Medium</string>

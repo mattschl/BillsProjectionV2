@@ -28,6 +28,9 @@ class SettingsManager(private val context: Context) {
                 if (!jsonText.contains("columnPreference")) {
                     updated = updated.copy(columnPreference = "medium")
                 }
+                if (!jsonText.contains("listDensityPreference")) {
+                    updated = updated.copy(listDensityPreference = "medium")
+                }
                 updated
             } else {
                 AppSettings(deviceId = NumberFunctions().generateId())

@@ -12,4 +12,5 @@ data class AppSettings(
     val syncWarningDays: Int = 3,
     val budgetUpdateWarningWeeks: Int = 3,
     val columnPreference: String? = "medium",
+    val listDensityPreference: String? = "medium",
 )

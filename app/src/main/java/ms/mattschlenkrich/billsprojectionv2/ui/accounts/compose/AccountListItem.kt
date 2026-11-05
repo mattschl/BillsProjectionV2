@@ -43,9 +43,24 @@ fun AccountListItem(
         MaterialTheme.colorScheme.onSurface
     }
 
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val densityPref = androidx.compose.runtime.remember {
+        ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager(context)
+            .getSettings().listDensityPreference
+    }
+    val verticalPadding =
+        ms.mattschlenkrich.billsprojectionv2.common.settings.ListItemDensityHelper.getVerticalPadding(
+            densityPref
+        )
+    val cardSpacing =
+        ms.mattschlenkrich.billsprojectionv2.common.settings.ListItemDensityHelper.getCardVerticalSpacing(
+            densityPref
+        )
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(vertical = cardSpacing)
             .clickable { onClick(accountWithType) },
         colors = CardDefaults.cardColors(
             containerColor = containerColor,
@@ -53,7 +68,7 @@ fun AccountListItem(
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = verticalPadding)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
