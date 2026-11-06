@@ -13,6 +13,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -36,6 +37,25 @@ fun TransactionAnalysisSummaryCard(
 ) {
     val nf = LocalNumberFunctions.current
     val df = LocalDateFunctions.current
+
+    val monthsCount = remember(transactionList, effectiveEndDate) {
+        if (transactionList.isNotEmpty()) {
+            val earliestDate =
+                transactionList.lastOrNull()?.transaction?.transDate ?: effectiveEndDate
+            val latestDate =
+                transactionList.firstOrNull()?.transaction?.transDate ?: effectiveEndDate
+            (df.getMonthsBetween(earliestDate, latestDate) + 1).coerceAtLeast(1)
+        } else 1
+    }
+
+    val totalSum = sumCredits ?: ((sumToAccount ?: 0.0) + (sumFromAccount ?: 0.0)).let {
+        if (it != 0.0) it else transactionList.sumOf { item ->
+            item.transaction?.transAmount ?: 0.0
+        }
+    }
+    val monthlyAvg = totalSum / monthsCount
+    val toMonthlyAvg = (sumToAccount ?: 0.0) / monthsCount
+    val fromMonthlyAvg = (sumFromAccount ?: 0.0) / monthsCount
 
     Card(
         modifier = Modifier
@@ -69,14 +89,28 @@ fun TransactionAnalysisSummaryCard(
             }
 
             if (sumCredits != null) {
-                Text(
-                    text = "${stringResource(R.string.label_total_credits)} ${
-                        nf.displayDollars(
-                            sumCredits
-                        )
-                    }",
-                    style = MaterialTheme.typography.bodySmall
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "${stringResource(R.string.label_total_credits)} ${
+                            nf.displayDollars(
+                                sumCredits
+                            )
+                        }",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Text(
+                        text = "${stringResource(R.string.label_average_per_month)} ${
+                            nf.displayDollars(
+                                monthlyAvg
+                            )
+                        }",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
 
             if (sumToAccount != null || sumFromAccount != null) {
@@ -90,7 +124,11 @@ fun TransactionAnalysisSummaryCard(
                                 nf.displayDollars(
                                     sumToAccount
                                 )
-                            }",
+                            } (${stringResource(R.string.label_credit_average)} ${
+                                nf.displayDollars(
+                                    toMonthlyAvg
+                                )
+                            })",
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
@@ -100,10 +138,35 @@ fun TransactionAnalysisSummaryCard(
                                 nf.displayDollars(
                                     sumFromAccount
                                 )
-                            }",
+                            } (${stringResource(R.string.label_debit_average)} ${
+                                nf.displayDollars(
+                                    fromMonthlyAvg
+                                )
+                            })",
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
+                }
+            }
+
+            if (sumCredits == null && sumToAccount == null && sumFromAccount == null && transactionList.isNotEmpty()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Total: ${nf.displayDollars(totalSum)}",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Text(
+                        text = "${stringResource(R.string.label_average_per_month)} ${
+                            nf.displayDollars(
+                                monthlyAvg
+                            )
+                        }",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
 
