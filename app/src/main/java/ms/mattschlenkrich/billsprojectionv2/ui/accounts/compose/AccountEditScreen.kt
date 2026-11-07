@@ -1,6 +1,7 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.accounts.compose
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -274,14 +275,46 @@ fun AccountEditScreen(
                     )
                 }
 
-                items(
-                    history,
-                    key = { it.transaction?.transId ?: it.hashCode() }
-                ) { transaction ->
-                    TransactionHistoryItem(
-                        transactionDetailed = transaction,
-                        onClick = onHistoryItemClick,
-                    )
+                if (useTwoColumns) {
+                    val pairs = history.chunked(2)
+                    items(
+                        pairs,
+                        key = { pair ->
+                            pair.firstOrNull()?.transaction?.transId ?: pair.hashCode()
+                        }
+                    ) { pair ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Box(modifier = Modifier.weight(1f)) {
+                                TransactionHistoryItem(
+                                    transactionDetailed = pair[0],
+                                    onClick = onHistoryItemClick,
+                                )
+                            }
+                            if (pair.size > 1) {
+                                Box(modifier = Modifier.weight(1f)) {
+                                    TransactionHistoryItem(
+                                        transactionDetailed = pair[1],
+                                        onClick = onHistoryItemClick,
+                                    )
+                                }
+                            } else {
+                                Box(modifier = Modifier.weight(1f))
+                            }
+                        }
+                    }
+                } else {
+                    items(
+                        history,
+                        key = { it.transaction?.transId ?: it.hashCode() }
+                    ) { transaction ->
+                        TransactionHistoryItem(
+                            transactionDetailed = transaction,
+                            onClick = onHistoryItemClick,
+                        )
+                    }
                 }
             }
         }

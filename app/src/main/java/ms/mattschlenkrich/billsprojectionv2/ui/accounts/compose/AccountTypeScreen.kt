@@ -43,10 +43,10 @@ fun AccountTypeListScreen(
         ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager(context)
             .getSettings().columnPreference
     }
-    val gridColumnCount =
-        ms.mattschlenkrich.billsprojectionv2.common.settings.ColumnSettingsHelper.getGridColumnCount(
+    val columnCount =
+        ms.mattschlenkrich.billsprojectionv2.common.settings.ColumnSettingsHelper.calculateColumnCount(
+            accountTypes.size,
             columnPreference,
-            2,
             isLandscape
         )
 
@@ -90,7 +90,7 @@ fun AccountTypeListScreen(
                 }
             } else {
                 LazyVerticalStaggeredGrid(
-                    columns = StaggeredGridCells.Fixed(gridColumnCount),
+                    columns = StaggeredGridCells.Fixed(columnCount),
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),

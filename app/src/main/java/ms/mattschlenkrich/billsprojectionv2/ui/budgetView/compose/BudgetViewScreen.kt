@@ -2,6 +2,7 @@ package ms.mattschlenkrich.billsprojectionv2.ui.budgetView.compose
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -12,9 +13,10 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,6 +31,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -43,6 +47,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.components.BudgetItemDisplay
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectFieldDefaults
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.settings.ColumnSettingsHelper
+import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
@@ -61,30 +67,52 @@ fun BudgetViewScreen(
     pendingAmount: Double,
     budgetList: List<BudgetItemDetailed>,
     hasAnyBudgetItems: Boolean,
+    onAccountClick: () -> Unit,
     onAddClick: () -> Unit,
+    onTransactionClick: (TransactionDetailed) -> Unit,
     onBudgetItemClick: (BudgetItemDetailed) -> Unit,
     onBudgetItemLockClick: (BudgetItemDetailed) -> Unit,
-    onTransactionClick: (TransactionDetailed) -> Unit,
-    onAccountClick: () -> Unit,
+    onPendingHeaderLongClick: () -> Unit = {},
+    onScheduledExpensesLongClick: () -> Unit = {},
+    onPendingItemLongClick: (TransactionDetailed) -> Unit = {},
     onBudgetItemLongClick: (BudgetItemDetailed) -> Unit = {},
     selectedItems: Set<String> = emptySet(),
     selectedSum: Double = 0.0,
-    onPendingItemLongClick: (TransactionDetailed) -> Unit = {},
     selectedPendingItems: Set<Long> = emptySet(),
     selectedPendingSum: Double = 0.0,
-    onScheduledExpensesLongClick: () -> Unit = {},
-    onPendingHeaderLongClick: () -> Unit = {},
-    isShowingAllPending: Boolean = false,
+    earliestPayDay: String? = null,
     isShowingAll: Boolean = false,
+    isShowingAllPending: Boolean = false,
     sheetTitle: String = "",
     sheetOptions: List<ActionOption> = emptyList(),
-    earliestPayDay: String? = null,
     onSheetDismiss: () -> Unit = {},
 ) {
+    val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val isLandscape =
+        configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+    val columnPreference = remember { SettingsManager(context).getSettings().columnPreference }
+    val pendingColumnCount = ColumnSettingsHelper.calculateColumnCount(
+        pendingList.size,
+        columnPreference,
+        isLandscape
+    )
+    val budgetColumnCount = ColumnSettingsHelper.calculateColumnCount(
+        budgetList.size,
+        columnPreference,
+        isLandscape
+    )
+
+    val density = LocalDensity.current
+    val windowInfo = LocalWindowInfo.current
+    val fontScale = density.fontScale.coerceAtLeast(0.8f)
+    val effectiveWidthDp = with(density) { windowInfo.containerSize.width.toDp() } / fontScale
+    val isTablet = effectiveWidthDp >= 600.dp
     val nf = LocalNumberFunctions.current
     val haptic = LocalHapticFeedback.current
-    val lazyListState = rememberLazyListState()
+
     val sheetState = rememberModalBottomSheetState()
+    val lazyListState = rememberLazyListState()
 
     LaunchedEffect(sheetOptions) {
         if (sheetOptions.isNotEmpty()) {
@@ -122,33 +150,19 @@ fun BudgetViewScreen(
             } else {
                 details.toAccount?.accountName == selectedAsset
             }
-
             if (isCredit) {
                 credits += budgetItem.biProjectedAmount
             } else {
                 debits += budgetItem.biProjectedAmount
             }
-
-            val isAssetRelated = if (selectedAsset == ALL_ITEMS) {
-                assetList.contains(details.fromAccount?.accountName)
+            if (budgetItem.biIsFixed) {
+                fixedExpenses += budgetItem.biProjectedAmount
             } else {
-                details.fromAccount?.accountName == selectedAsset
-            }
-
-            if (isAssetRelated) {
-                if (budgetItem.biIsFixed) {
-                    fixedExpenses += budgetItem.biProjectedAmount
-                } else {
-                    otherExpenses += budgetItem.biProjectedAmount
-                }
+                otherExpenses += budgetItem.biProjectedAmount
             }
         }
         BudgetTotals(credits, debits, fixedExpenses, otherExpenses)
     }
-
-    val windowInfo = LocalWindowInfo.current
-    val density = LocalDensity.current
-    val isTablet = with(density) { windowInfo.containerSize.width.toDp() >= 600.dp }
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -156,13 +170,13 @@ fun BudgetViewScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onAddClick() },
-                containerColor = MaterialTheme.colorScheme.primary
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Icon(
                     Icons.Default.Add,
-                    contentDescription = stringResource(R.string.action_add),
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(ProjectFieldDefaults.iconSize())
+                    contentDescription = stringResource(R.string.action_schedule_budget_item),
+                    modifier = Modifier.size(ProjectFieldDefaults.iconSize() * 2f)
                 )
             }
         }
@@ -171,7 +185,7 @@ fun BudgetViewScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(if (isTablet) 8.dp else 4.dp)
+                .padding(horizontal = 8.dp, vertical = 2.dp)
         ) {
             SummaryCard(
                 assetList = assetList,
@@ -190,13 +204,11 @@ fun BudgetViewScreen(
             )
 
             if (pendingList.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "${stringResource(R.string.title_pending_items)} ${
-                        nf.displayDollars(
-                            pendingAmount
-                        )
-                    }" + if (selectedPendingItems.isNotEmpty()) " (${stringResource(R.string.label_selected_colon)} ${
+                    text = stringResource(R.string.title_pending_items) + if (selectedPendingSum != 0.0) " (${
+                        stringResource(R.string.label_selected_colon)
+                    }${
                         nf.displayDollars(
                             selectedPendingSum
                         )
@@ -216,10 +228,13 @@ fun BudgetViewScreen(
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleMedium
                 )
-                LazyColumn(
+                LazyVerticalStaggeredGrid(
+                    columns = StaggeredGridCells.Fixed(pendingColumnCount),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(max = if (isShowingAllPending) 1000.dp else if (isTablet) 150.dp else 100.dp)
+                        .heightIn(max = if (isShowingAllPending) 1000.dp else if (isTablet) 150.dp else 100.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalItemSpacing = 2.dp
                 ) {
                     items(
                         pendingList,
@@ -256,11 +271,13 @@ fun BudgetViewScreen(
                     style = MaterialTheme.typography.titleLarge
                 )
                 if (budgetList.isNotEmpty()) {
-                    LazyColumn(
-                        state = lazyListState,
+                    LazyVerticalStaggeredGrid(
+                        columns = StaggeredGridCells.Fixed(budgetColumnCount),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .weight(1f)
+                            .weight(1f),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalItemSpacing = 2.dp
                     ) {
                         items(
                             budgetList,

@@ -1,6 +1,10 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.budgetView.compose
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,13 +16,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionBottomSheet
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
-import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
-import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
+import ms.mattschlenkrich.billsprojectionv2.common.settings.ColumnSettingsHelper
+import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleComplete
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,8 +38,28 @@ fun BudgetSummaryScreen(
     sheetOptions: List<ActionOption> = emptyList(),
     onSheetDismiss: () -> Unit = {}
 ) {
-    val df = LocalDateFunctions.current
-    val nf = LocalNumberFunctions.current
+    val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val isLandscape =
+        configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+    val columnPreference = remember { SettingsManager(context).getSettings().columnPreference }
+
+    val monthlyColumnCount = ColumnSettingsHelper.calculateColumnCount(
+        monthlyRules.size,
+        columnPreference,
+        isLandscape
+    )
+    val occasionalColumnCount = ColumnSettingsHelper.calculateColumnCount(
+        occasionalRules.size,
+        columnPreference,
+        isLandscape
+    )
+    val annualColumnCount = ColumnSettingsHelper.calculateColumnCount(
+        annualRules.size,
+        columnPreference,
+        isLandscape
+    )
+
     val sheetState = rememberModalBottomSheetState()
 
     if (sheetOptions.isNotEmpty()) {
@@ -65,11 +91,30 @@ fun BudgetSummaryScreen(
             item {
                 BudgetSummary(monthlyRules, type = "monthly")
             }
-            items(monthlyRules) { rule ->
-                BudgetListItem(
-                    curRule = rule,
-                    onRuleClick = onRuleClick,
-                )
+            if (monthlyColumnCount > 1) {
+                items(monthlyRules.chunked(monthlyColumnCount)) { chunk ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        for (i in 0 until monthlyColumnCount) {
+                            if (i < chunk.size) {
+                                Box(modifier = Modifier.weight(1f)) {
+                                    BudgetListItem(curRule = chunk[i], onRuleClick = onRuleClick)
+                                }
+                            } else {
+                                Box(modifier = Modifier.weight(1f))
+                            }
+                        }
+                    }
+                }
+            } else {
+                items(monthlyRules) { rule ->
+                    BudgetListItem(
+                        curRule = rule,
+                        onRuleClick = onRuleClick,
+                    )
+                }
             }
         }
 
@@ -84,11 +129,30 @@ fun BudgetSummaryScreen(
             item {
                 BudgetSummary(occasionalRules, type = "occasional")
             }
-            items(occasionalRules) { rule ->
-                BudgetListItem(
-                    curRule = rule,
-                    onRuleClick = onRuleClick,
-                )
+            if (occasionalColumnCount > 1) {
+                items(occasionalRules.chunked(occasionalColumnCount)) { chunk ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        for (i in 0 until occasionalColumnCount) {
+                            if (i < chunk.size) {
+                                Box(modifier = Modifier.weight(1f)) {
+                                    BudgetListItem(curRule = chunk[i], onRuleClick = onRuleClick)
+                                }
+                            } else {
+                                Box(modifier = Modifier.weight(1f))
+                            }
+                        }
+                    }
+                }
+            } else {
+                items(occasionalRules) { rule ->
+                    BudgetListItem(
+                        curRule = rule,
+                        onRuleClick = onRuleClick,
+                    )
+                }
             }
         }
 
@@ -103,12 +167,35 @@ fun BudgetSummaryScreen(
             item {
                 BudgetSummary(annualRules, type = "annual")
             }
-            items(annualRules) { rule ->
-                BudgetListItem(
-                    curRule = rule,
-                    showFullDetails = true,
-                    onRuleClick = onRuleClick,
-                )
+            if (annualColumnCount > 1) {
+                items(annualRules.chunked(annualColumnCount)) { chunk ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        for (i in 0 until annualColumnCount) {
+                            if (i < chunk.size) {
+                                Box(modifier = Modifier.weight(1f)) {
+                                    BudgetListItem(
+                                        curRule = chunk[i],
+                                        showFullDetails = true,
+                                        onRuleClick = onRuleClick,
+                                    )
+                                }
+                            } else {
+                                Box(modifier = Modifier.weight(1f))
+                            }
+                        }
+                    }
+                }
+            } else {
+                items(annualRules) { rule ->
+                    BudgetListItem(
+                        curRule = rule,
+                        showFullDetails = true,
+                        onRuleClick = onRuleClick,
+                    )
+                }
             }
         }
     }

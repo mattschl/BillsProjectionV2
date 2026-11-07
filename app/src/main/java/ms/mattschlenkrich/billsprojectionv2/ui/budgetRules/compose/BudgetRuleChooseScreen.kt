@@ -50,10 +50,10 @@ fun BudgetRuleChooseScreen(
         ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager(context)
             .getSettings().columnPreference
     }
-    val gridColumnCount =
-        ms.mattschlenkrich.billsprojectionv2.common.settings.ColumnSettingsHelper.getGridColumnCount(
+    val columnCount =
+        ms.mattschlenkrich.billsprojectionv2.common.settings.ColumnSettingsHelper.calculateColumnCount(
+            budgetRulesDetailed.size,
             columnPreference,
-            3,
             isLandscape
         )
 
@@ -113,7 +113,7 @@ fun BudgetRuleChooseScreen(
                     }
                 } else {
                     LazyVerticalStaggeredGrid(
-                        columns = StaggeredGridCells.Fixed(gridColumnCount),
+                        columns = StaggeredGridCells.Fixed(columnCount),
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(bottom = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
