@@ -31,9 +31,9 @@ fun TransactionViewList(
         configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
     val columnPreference = remember { SettingsManager(context).getSettings().columnPreference }
     val columnCount = ColumnSettingsHelper.calculateColumnCount(
-        transactions.size,
-        columnPreference,
-        isLandscape
+        widthFactor = TransactionHistoryItemDefaults.WIDTH_FACTOR,
+        columnPreference = columnPreference,
+        isLandscape = isLandscape
     )
     val haptic = LocalHapticFeedback.current
 

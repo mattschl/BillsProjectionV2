@@ -27,8 +27,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -72,6 +70,7 @@ fun TransactionPerformScreen(
     amountError: Boolean = false,
     toAccountError: Boolean = false,
     fromAccountError: Boolean = false,
+    widthFactor: Int = 4,
 ) {
     val nf = LocalNumberFunctions.current
     val remainder by remember(amount, budgetedAmount) {
@@ -88,17 +87,13 @@ fun TransactionPerformScreen(
         ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager(context)
             .getSettings().columnPreference
     }
-    val thresholdDp =
-        ms.mattschlenkrich.billsprojectionv2.common.settings.ColumnSettingsHelper.getThresholdDp(
-            columnPreference,
-            isLandscape
+    val columnCount =
+        ms.mattschlenkrich.billsprojectionv2.common.settings.ColumnSettingsHelper.calculateColumnCount(
+            widthFactor = widthFactor,
+            columnPreference = columnPreference,
+            isLandscape = isLandscape
         )
-
-    val density = LocalDensity.current
-    val windowInfo = LocalWindowInfo.current
-    val fontScale = density.fontScale.coerceAtLeast(0.8f)
-    val effectiveWidthDp = with(density) { windowInfo.containerSize.width.toDp() } / fontScale
-    val useTwoColumns = effectiveWidthDp >= thresholdDp
+    val useTwoColumns = columnCount > 1
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -144,7 +139,7 @@ fun TransactionPerformScreen(
                         onValueChange = onDescriptionChange,
                         label = stringResource(R.string.label_description),
                         isError = descriptionError,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1.5f)
                     )
                 }
             } else {
@@ -173,7 +168,7 @@ fun TransactionPerformScreen(
                         value = date,
                         onValueChange = onDateChange,
                         label = stringResource(R.string.label_date),
-                        modifier = Modifier.weight(2f)
+                        modifier = Modifier.weight(1f)
                     )
                     ProjectBalanceField(
                         label = stringResource(R.string.label_amount),

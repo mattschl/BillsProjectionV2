@@ -45,9 +45,9 @@ fun AccountTypeListScreen(
     }
     val columnCount =
         ms.mattschlenkrich.billsprojectionv2.common.settings.ColumnSettingsHelper.calculateColumnCount(
-            accountTypes.size,
-            columnPreference,
-            isLandscape
+            widthFactor = AccountTypeItemDefaults.WIDTH_FACTOR,
+            columnPreference = columnPreference,
+            isLandscape = isLandscape
         )
 
     Scaffold(

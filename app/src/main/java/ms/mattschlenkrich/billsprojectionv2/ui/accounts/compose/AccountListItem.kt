@@ -107,3 +107,7 @@ fun AccountListItem(
         }
     }
 }
+
+object AccountListItemDefaults {
+    const val WIDTH_FACTOR = 4
+}

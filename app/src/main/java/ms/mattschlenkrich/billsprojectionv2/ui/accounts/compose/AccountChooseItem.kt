@@ -89,3 +89,7 @@ fun AccountChooseItem(
         }
     }
 }
+
+object AccountChooseItemDefaults {
+    const val WIDTH_FACTOR = 2
+}

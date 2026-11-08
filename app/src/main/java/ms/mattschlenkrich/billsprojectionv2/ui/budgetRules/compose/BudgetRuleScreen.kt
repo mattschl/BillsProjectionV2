@@ -23,8 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -76,7 +74,8 @@ fun BudgetRuleScreen(
     bottomContent: @Composable () -> Unit = {},
     sheetTitle: String = "",
     sheetOptions: List<ActionOption> = emptyList(),
-    onSheetDismiss: () -> Unit = {}
+    onSheetDismiss: () -> Unit = {},
+    widthFactor: Int = 4,
 ) {
     val frequencyTypes = stringArrayResource(R.array.frequency_types)
     val daysOfWeek = stringArrayResource(R.array.days_of_week)
@@ -99,17 +98,13 @@ fun BudgetRuleScreen(
         ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager(context)
             .getSettings().columnPreference
     }
-    val thresholdDp =
-        ms.mattschlenkrich.billsprojectionv2.common.settings.ColumnSettingsHelper.getThresholdDp(
-            columnPreference,
-            isLandscape
+    val columnCount =
+        ms.mattschlenkrich.billsprojectionv2.common.settings.ColumnSettingsHelper.calculateColumnCount(
+            widthFactor = widthFactor,
+            columnPreference = columnPreference,
+            isLandscape = isLandscape
         )
-
-    val density = LocalDensity.current
-    val windowInfo = LocalWindowInfo.current
-    val fontScale = density.fontScale.coerceAtLeast(0.8f)
-    val effectiveWidthDp = with(density) { windowInfo.containerSize.width.toDp() } / fontScale
-    val useTwoColumns = effectiveWidthDp >= thresholdDp
+    val useTwoColumns = columnCount > 1
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -135,9 +130,9 @@ fun BudgetRuleScreen(
                         onValueChange = onNameChange,
                         label = stringResource(R.string.label_budget_rule_name),
                         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
-                        modifier = Modifier.weight(2f)
+                        modifier = Modifier.weight(1f)
                     )
-                    Column(modifier = Modifier.weight(3f)) {
+                    Column(modifier = Modifier.weight(1.5f)) {
                         ProjectBalanceField(
                             value = amount,
                             onValueChange = onAmountChange,

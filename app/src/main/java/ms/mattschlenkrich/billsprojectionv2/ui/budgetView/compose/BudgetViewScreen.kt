@@ -93,14 +93,14 @@ fun BudgetViewScreen(
         configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
     val columnPreference = remember { SettingsManager(context).getSettings().columnPreference }
     val pendingColumnCount = ColumnSettingsHelper.calculateColumnCount(
-        pendingList.size,
-        columnPreference,
-        isLandscape
+        widthFactor = PendingItemDefaults.WIDTH_FACTOR,
+        columnPreference = columnPreference,
+        isLandscape = isLandscape
     )
     val budgetColumnCount = ColumnSettingsHelper.calculateColumnCount(
-        budgetList.size,
-        columnPreference,
-        isLandscape
+        widthFactor = BudgetListItemDefaults.WIDTH_FACTOR,
+        columnPreference = columnPreference,
+        isLandscape = isLandscape
     )
 
     val density = LocalDensity.current

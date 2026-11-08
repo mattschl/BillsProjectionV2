@@ -45,19 +45,19 @@ fun BudgetSummaryScreen(
     val columnPreference = remember { SettingsManager(context).getSettings().columnPreference }
 
     val monthlyColumnCount = ColumnSettingsHelper.calculateColumnCount(
-        monthlyRules.size,
-        columnPreference,
-        isLandscape
+        widthFactor = BudgetListItemDefaults.WIDTH_FACTOR,
+        columnPreference = columnPreference,
+        isLandscape = isLandscape
     )
     val occasionalColumnCount = ColumnSettingsHelper.calculateColumnCount(
-        occasionalRules.size,
-        columnPreference,
-        isLandscape
+        widthFactor = BudgetListItemDefaults.WIDTH_FACTOR,
+        columnPreference = columnPreference,
+        isLandscape = isLandscape
     )
     val annualColumnCount = ColumnSettingsHelper.calculateColumnCount(
-        annualRules.size,
-        columnPreference,
-        isLandscape
+        widthFactor = BudgetListItemDefaults.FULL_DETAILS_WIDTH_FACTOR,
+        columnPreference = columnPreference,
+        isLandscape = isLandscape
     )
 
     val sheetState = rememberModalBottomSheetState()

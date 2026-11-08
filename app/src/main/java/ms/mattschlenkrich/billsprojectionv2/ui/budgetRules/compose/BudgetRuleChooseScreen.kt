@@ -52,9 +52,9 @@ fun BudgetRuleChooseScreen(
     }
     val columnCount =
         ms.mattschlenkrich.billsprojectionv2.common.settings.ColumnSettingsHelper.calculateColumnCount(
-            budgetRulesDetailed.size,
-            columnPreference,
-            isLandscape
+            widthFactor = BudgetRuleChooseItemDefaults.WIDTH_FACTOR,
+            columnPreference = columnPreference,
+            isLandscape = isLandscape
         )
 
     Scaffold(

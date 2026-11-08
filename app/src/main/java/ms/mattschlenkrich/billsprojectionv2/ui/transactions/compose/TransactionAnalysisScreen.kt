@@ -1,7 +1,11 @@
 package ms.mattschlenkrich.billsprojectionv2.ui.transactions.compose
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -9,12 +13,17 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.common.AnalysisMode
 import ms.mattschlenkrich.billsprojectionv2.common.TimeRange
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionBottomSheet
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
+import ms.mattschlenkrich.billsprojectionv2.common.settings.ColumnSettingsHelper
+import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,6 +66,16 @@ fun TransactionAnalysisScreen(
     sheetOptions: List<ActionOption> = emptyList(),
     onSheetDismiss: () -> Unit = {},
 ) {
+    val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val isLandscape =
+        configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+    val columnPreference = remember { SettingsManager(context).getSettings().columnPreference }
+    val columnCount = ColumnSettingsHelper.calculateColumnCount(
+        widthFactor = TransactionHistoryItemDefaults.WIDTH_FACTOR,
+        columnPreference = columnPreference,
+        isLandscape = isLandscape
+    )
     val sheetState = rememberModalBottomSheetState()
 
     if (sheetOptions.isNotEmpty()) {
@@ -115,6 +134,36 @@ fun TransactionAnalysisScreen(
             if (mode == AnalysisMode.NONE || transactionList.isEmpty()) {
                 item {
                     HelpCard(mode = mode)
+                }
+            } else if (columnCount > 1) {
+                items(
+                    transactionList.chunked(columnCount)
+                ) { chunk ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        for (i in 0 until columnCount) {
+                            if (i < chunk.size) {
+                                val transaction = chunk[i]
+                                val haptic =
+                                    androidx.compose.ui.platform.LocalHapticFeedback.current
+                                Box(modifier = Modifier.weight(1f)) {
+                                    TransactionHistoryItem(
+                                        transactionDetailed = transaction,
+                                        onClick = onTransactionClick,
+                                        onLongClick = {
+                                            haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                                            onTransactionLongClick(it)
+                                        },
+                                        isSelected = selectedItems.contains(transaction.transaction?.transId)
+                                    )
+                                }
+                            } else {
+                                Box(modifier = Modifier.weight(1f))
+                            }
+                        }
+                    }
                 }
             } else {
                 items(

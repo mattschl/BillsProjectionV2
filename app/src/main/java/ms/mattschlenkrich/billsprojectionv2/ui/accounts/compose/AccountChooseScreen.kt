@@ -54,9 +54,9 @@ fun AccountChooseScreen(
     }
     val columnCount =
         ms.mattschlenkrich.billsprojectionv2.common.settings.ColumnSettingsHelper.calculateColumnCount(
-            accountsWithType.size,
-            columnPreference,
-            isLandscape
+            widthFactor = AccountChooseItemDefaults.WIDTH_FACTOR,
+            columnPreference = columnPreference,
+            isLandscape = isLandscape
         )
 
     val vf = LocalVisualsFunctions.current

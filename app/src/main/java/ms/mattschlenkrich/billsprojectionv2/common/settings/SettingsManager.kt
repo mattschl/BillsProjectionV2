@@ -49,4 +49,13 @@ class SettingsManager(private val context: Context) {
         val file = File(context.filesDir, fileName)
         file.writeText(gson.toJson(settings))
     }
+
+    fun getColumnCountForList(widthFactor: Int, isLandscape: Boolean = false): Int {
+        val preference = getSettings().columnPreference
+        return ColumnSettingsHelper.calculateColumnCount(
+            widthFactor = widthFactor,
+            columnPreference = preference,
+            isLandscape = isLandscape
+        )
+    }
 }

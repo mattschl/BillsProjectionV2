@@ -60,9 +60,9 @@ fun BudgetRulesListScreen(
     }
     val columnCount =
         ms.mattschlenkrich.billsprojectionv2.common.settings.ColumnSettingsHelper.calculateColumnCount(
-            budgetRulesDetailed.size,
-            columnPreference,
-            isLandscape
+            widthFactor = BudgetRuleItemDefaults.WIDTH_FACTOR,
+            columnPreference = columnPreference,
+            isLandscape = isLandscape
         )
 
     val sheetState = rememberModalBottomSheetState()
