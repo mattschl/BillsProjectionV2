@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 
 @Composable
@@ -64,8 +65,12 @@ fun ProjectDateField(
         label = label,
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        contentPadding = ProjectFieldDefaults.compactContentPadding(),
         trailingIcon = {
-            IconButton(onClick = { showDatePicker() }) {
+            IconButton(
+                onClick = { showDatePicker() },
+                modifier = Modifier.size(ProjectFieldDefaults.iconSize() + 4.dp)
+            ) {
                 Icon(
                     imageVector = Icons.Default.CalendarMonth,
                     contentDescription = label,

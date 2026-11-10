@@ -14,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
 
 @Composable
@@ -52,9 +53,13 @@ fun ProjectBalanceField(
         isError = isError,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
         singleLine = true,
+        contentPadding = ProjectFieldDefaults.compactContentPadding(),
         trailingIcon = if (onIconClick != null) {
             {
-                IconButton(onClick = onIconClick) {
+                IconButton(
+                    onClick = onIconClick,
+                    modifier = Modifier.size(ProjectFieldDefaults.iconSize() + 4.dp)
+                ) {
                     Icon(
                         imageVector = Icons.Default.Calculate,
                         contentDescription = stringResource(R.string.title_calculator),

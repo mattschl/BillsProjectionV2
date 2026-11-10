@@ -51,6 +51,7 @@ fun ProjectTextField(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = ProjectFieldDefaults.shape(),
     colors: TextFieldColors = ProjectFieldDefaults.colors(),
+    contentPadding: androidx.compose.foundation.layout.PaddingValues = ProjectFieldDefaults.contentPadding(),
 ) {
     val isFocused by interactionSource.collectIsFocusedAsState()
     var textFieldValueState by remember {
@@ -120,7 +121,7 @@ fun ProjectTextField(
                 supportingText = supportingText,
                 isError = isError,
                 colors = colors,
-                contentPadding = ProjectFieldDefaults.contentPadding(),
+                contentPadding = contentPadding,
                 container = {
                     OutlinedTextFieldDefaults.Container(
                         enabled = enabled,
@@ -161,6 +162,7 @@ fun ProjectTextField(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = ProjectFieldDefaults.shape(),
     colors: TextFieldColors = ProjectFieldDefaults.colors(),
+    contentPadding: androidx.compose.foundation.layout.PaddingValues = ProjectFieldDefaults.contentPadding(),
 ) {
     val isFocused by interactionSource.collectIsFocusedAsState()
 
@@ -213,7 +215,7 @@ fun ProjectTextField(
                 supportingText = supportingText,
                 isError = isError,
                 colors = colors,
-                contentPadding = ProjectFieldDefaults.contentPadding(),
+                contentPadding = contentPadding,
                 container = {
                     OutlinedTextFieldDefaults.Container(
                         enabled = enabled,

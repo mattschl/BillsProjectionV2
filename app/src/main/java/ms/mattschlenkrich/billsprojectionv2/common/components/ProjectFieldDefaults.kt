@@ -46,6 +46,14 @@ object ProjectFieldDefaults {
     )
 
     @Composable
+    fun compactContentPadding(): PaddingValues = OutlinedTextFieldDefaults.contentPadding(
+        start = 8.dp,
+        top = 4.dp,
+        end = 2.dp,
+        bottom = 4.dp,
+    )
+
+    @Composable
     fun textStyle(): TextStyle = MaterialTheme.typography.bodyMedium.copy(
         color = MaterialTheme.colorScheme.onSurface
     )

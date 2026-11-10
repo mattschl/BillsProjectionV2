@@ -31,6 +31,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -90,6 +92,13 @@ fun BudgetItemScreen(
             isLandscape = isLandscape
         )
     val useTwoColumns = columnCount > 1
+
+    val density = LocalDensity.current
+    val windowInfo = LocalWindowInfo.current
+    val fontScale = density.fontScale.coerceAtLeast(0.8f)
+    val effectiveWidthDp = with(density) { windowInfo.containerSize.width.toDp() } / fontScale
+    val isVeryWideScreen = effectiveWidthDp >= 600.dp
+    val useTwoColumnsForDateAndAmount = isLandscape || isVeryWideScreen
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -153,7 +162,7 @@ fun BudgetItemScreen(
             }
 
             // Row 2: Date -> Amount
-            if (useTwoColumns) {
+            if (useTwoColumnsForDateAndAmount) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -168,7 +177,7 @@ fun BudgetItemScreen(
                         value = amount,
                         onValueChange = onAmountChange,
                         label = stringResource(R.string.label_projected_amount),
-                        modifier = Modifier.weight(1.5f),
+                        modifier = Modifier.weight(1.25f),
                         onIconClick = onGotoCalculator,
                         isHighlighted = true
                     )

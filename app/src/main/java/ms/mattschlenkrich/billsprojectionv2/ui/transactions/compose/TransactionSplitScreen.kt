@@ -25,6 +25,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
@@ -91,6 +93,13 @@ fun TransactionSplitScreen(
         )
     val useTwoColumns = columnCount > 1
 
+    val density = LocalDensity.current
+    val windowInfo = LocalWindowInfo.current
+    val fontScale = density.fontScale.coerceAtLeast(0.8f)
+    val effectiveWidthDp = with(density) { windowInfo.containerSize.width.toDp() } / fontScale
+    val isVeryWideScreen = effectiveWidthDp >= 600.dp
+    val useTwoColumnsForDateAndAmount = isLandscape || isVeryWideScreen
+
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         modifier = Modifier.imePadding(),
@@ -155,7 +164,7 @@ fun TransactionSplitScreen(
             }
 
             // Row 2: Date -> Amount
-            if (useTwoColumns) {
+            if (useTwoColumnsForDateAndAmount) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -171,7 +180,7 @@ fun TransactionSplitScreen(
                         value = amount,
                         onValueChange = onAmountChange,
                         onIconClick = onGotoCalculator,
-                        modifier = Modifier.weight(1.5f),
+                        modifier = Modifier.weight(1.25f),
                         isError = amountError,
                         isHighlighted = true
                     )

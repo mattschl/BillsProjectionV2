@@ -152,5 +152,5 @@ fun TransactionHistoryItem(
 }
 
 object TransactionHistoryItemDefaults {
-    const val WIDTH_FACTOR = 4
+    const val WIDTH_FACTOR = 6
 }

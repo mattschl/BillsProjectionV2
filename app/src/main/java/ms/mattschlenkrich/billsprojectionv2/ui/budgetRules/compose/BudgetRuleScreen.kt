@@ -23,6 +23,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -106,6 +108,13 @@ fun BudgetRuleScreen(
         )
     val useTwoColumns = columnCount > 1
 
+    val density = LocalDensity.current
+    val windowInfo = LocalWindowInfo.current
+    val fontScale = density.fontScale.coerceAtLeast(0.8f)
+    val effectiveWidthDp = with(density) { windowInfo.containerSize.width.toDp() } / fontScale
+    val isVeryWideScreen = effectiveWidthDp >= 600.dp
+    val useTwoColumnsForDateAndAmount = isLandscape || isVeryWideScreen
+
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         modifier = Modifier.imePadding(),
@@ -120,7 +129,7 @@ fun BudgetRuleScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Spacer(modifier = Modifier.height(4.dp))
-            if (useTwoColumns) {
+            if (useTwoColumnsForDateAndAmount) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -234,7 +243,7 @@ fun BudgetRuleScreen(
 
             val isStartZero = startDate.trim() == "0" || startDate.trim() == "0000-00-00"
 
-            if (useTwoColumns || isStartZero) {
+            if (useTwoColumnsForDateAndAmount || isStartZero) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
