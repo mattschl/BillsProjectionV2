@@ -67,7 +67,7 @@ fun AccountEditScreen(
     sheetTitle: String = "",
     sheetOptions: List<ActionOption> = emptyList(),
     onSheetDismiss: () -> Unit = {},
-    widthFactor: Int = 3,
+    widthFactor: Int = AccountEditScreenDefaults.WIDTH_FACTOR,
 ) {
     val sheetState = rememberModalBottomSheetState()
 
@@ -314,4 +314,8 @@ fun AccountEditScreen(
             }
         }
     }
+}
+
+object AccountEditScreenDefaults {
+    const val WIDTH_FACTOR = 3
 }

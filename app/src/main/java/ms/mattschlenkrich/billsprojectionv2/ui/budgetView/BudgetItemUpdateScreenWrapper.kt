@@ -101,7 +101,7 @@ fun BudgetItemUpdateScreenWrapper(
             biIsCancelled = false,
             biIsDeleted = false,
             biUpdateTime = df.getCurrentTimeAsString(),
-            biLocked = isLockedState.value,
+            biLocked = true,
         )
     }
 

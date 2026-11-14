@@ -25,23 +25,32 @@ fun ProjectBalanceField(
     modifier: Modifier = Modifier,
     onIconClick: (() -> Unit)? = null,
     isError: Boolean = false,
-    isHighlighted: Boolean = false
+    isHighlighted: Boolean = false,
+    textColor: androidx.compose.ui.graphics.Color = androidx.compose.ui.graphics.Color.Unspecified,
+    textStyle: androidx.compose.ui.text.TextStyle? = null
 ) {
+    val baseStyle = textStyle ?: if (isHighlighted) {
+        MaterialTheme.typography.titleLarge.copy(
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold
+        )
+    } else {
+        ProjectFieldDefaults.titleStyle().copy(
+            textAlign = TextAlign.Center,
+        )
+    }
+    val effectiveTextStyle = if (textColor != androidx.compose.ui.graphics.Color.Unspecified) {
+        baseStyle.copy(color = textColor)
+    } else {
+        baseStyle
+    }
+
     ProjectTextField(
         value = value,
         onValueChange = onValueChange,
         label = label,
         modifier = modifier,
-        textStyle = if (isHighlighted) {
-            MaterialTheme.typography.headlineSmall.copy(
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold
-            )
-        } else {
-            ProjectFieldDefaults.titleStyle().copy(
-                textAlign = TextAlign.Center,
-            )
-        },
+        textStyle = effectiveTextStyle,
         colors = if (isHighlighted) {
             OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),

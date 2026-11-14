@@ -52,7 +52,7 @@ class BudgetItemViewModel(
         budgetItemRepository.killFutureBudgetItems(currentDate, updateTime)
 
     fun insertBudgetItem(budgetItem: BudgetItem) = viewModelScope.launch {
-        budgetItemRepository.insertBudgetItem(budgetItem)
+        budgetItemRepository.insertBudgetItem(budgetItem.copy(biLocked = true))
     }
 
     /*fun insertOrReplaceBudgetItem(budgetItem: BudgetItem) = viewModelScope.launch {
@@ -60,7 +60,7 @@ class BudgetItemViewModel(
     }*/
 
     fun updateBudgetItem(budgetItem: BudgetItem) = viewModelScope.launch {
-        budgetItemRepository.updateBudgetItem(budgetItem)
+        budgetItemRepository.updateBudgetItem(budgetItem.copy(biLocked = true))
     }
 
     /* fun deleteBudgetItem(

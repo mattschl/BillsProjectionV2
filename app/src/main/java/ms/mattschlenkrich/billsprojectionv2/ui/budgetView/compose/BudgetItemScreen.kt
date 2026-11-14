@@ -34,6 +34,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.REQUEST_FROM_ACCOUNT
@@ -71,7 +73,7 @@ fun BudgetItemScreen(
     onChooseBudgetRule: () -> Unit,
     onChooseAccount: (String) -> Unit,
     onGotoCalculator: () -> Unit,
-    widthFactor: Int = 4,
+    widthFactor: Int = BudgetItemScreenDefaults.WIDTH_FACTOR,
 ) {
     val toAccount = budgetItemDetailed?.toAccount
     val fromAccount = budgetItemDetailed?.fromAccount
@@ -179,7 +181,12 @@ fun BudgetItemScreen(
                         label = stringResource(R.string.label_projected_amount),
                         modifier = Modifier.weight(1.25f),
                         onIconClick = onGotoCalculator,
-                        isHighlighted = true
+                        isHighlighted = true,
+                        textColor = MaterialTheme.colorScheme.error,
+                        textStyle = MaterialTheme.typography.titleMedium.copy(
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Bold
+                        )
                     )
                 }
             } else {
@@ -195,7 +202,12 @@ fun BudgetItemScreen(
                     label = stringResource(R.string.label_projected_amount),
                     modifier = Modifier.fillMaxWidth(),
                     onIconClick = onGotoCalculator,
-                    isHighlighted = true
+                    isHighlighted = true,
+                    textColor = MaterialTheme.colorScheme.error,
+                    textStyle = MaterialTheme.typography.titleMedium.copy(
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Bold
+                    )
                 )
             }
 
@@ -293,4 +305,8 @@ fun BudgetItemScreen(
             }
         }
     }
+}
+
+object BudgetItemScreenDefaults {
+    const val WIDTH_FACTOR = 4
 }

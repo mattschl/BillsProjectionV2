@@ -101,3 +101,7 @@ fun AccountTypeFormScreen(
         }
     }
 }
+
+object AccountTypeFormScreenDefaults {
+    const val WIDTH_FACTOR = 2
+}

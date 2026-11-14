@@ -77,7 +77,7 @@ fun BudgetRuleScreen(
     sheetTitle: String = "",
     sheetOptions: List<ActionOption> = emptyList(),
     onSheetDismiss: () -> Unit = {},
-    widthFactor: Int = 4,
+    widthFactor: Int = BudgetRuleScreenDefaults.WIDTH_FACTOR,
 ) {
     val frequencyTypes = stringArrayResource(R.array.frequency_types)
     val daysOfWeek = stringArrayResource(R.array.days_of_week)
@@ -381,4 +381,8 @@ fun BudgetRuleScreen(
             bottomContent()
         }
     }
+}
+
+object BudgetRuleScreenDefaults {
+    const val WIDTH_FACTOR = 4
 }

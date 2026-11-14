@@ -290,7 +290,8 @@ fun BudgetViewScreenWrapper(
                                                             biActualDate = df.getCurrentDateAsString(),
                                                             biProjectedAmount = 0.0,
                                                             biIsCompleted = true,
-                                                            biUpdateTime = df.getCurrentTimeAsString()
+                                                            biUpdateTime = df.getCurrentTimeAsString(),
+                                                            biLocked = true
                                                         )
                                                     )
                                                 }

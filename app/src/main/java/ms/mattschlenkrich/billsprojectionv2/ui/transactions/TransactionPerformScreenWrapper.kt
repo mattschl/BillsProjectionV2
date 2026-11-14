@@ -173,7 +173,8 @@ fun TransactionPerformScreenWrapper(
                                         mBudget.copy(
                                             biProjectedAmount = rem,
                                             biIsCompleted = completed,
-                                            biUpdateTime = df.getCurrentTimeAsString()
+                                            biUpdateTime = df.getCurrentTimeAsString(),
+                                            biLocked = true
                                         )
                                     )
                                 }

@@ -78,38 +78,4 @@ object ColumnSettingsHelper {
 
         return (baseColumns + settingDelta).coerceIn(1, maxColumnsAllowed)
     }
-
-    fun getGridMinSizeDp(
-        columnPreference: String?,
-        isLandscape: Boolean = false
-    ): Dp {
-        val baseMinSize = when (columnPreference) {
-            "very_few" -> 380.dp
-            "few" -> 300.dp
-            "many" -> 200.dp
-            "very_many" -> 160.dp
-            else -> 240.dp
-        }
-        return if (isLandscape) {
-            (baseMinSize.value * 0.95f).dp
-        } else {
-            baseMinSize
-        }
-    }
-
-    fun getGridColumnCount(
-        columnPreference: String?,
-        defaultCount: Int = 2,
-        isLandscape: Boolean = false
-    ): Int {
-        val landscapeBonus = if (isLandscape) 1 else 0
-        val delta = when (columnPreference) {
-            "very_few" -> -1
-            "few" -> 0
-            "many" -> +1
-            "very_many" -> +2
-            else -> 0
-        }
-        return (defaultCount + delta + landscapeBonus).coerceIn(1, 6)
-    }
 }

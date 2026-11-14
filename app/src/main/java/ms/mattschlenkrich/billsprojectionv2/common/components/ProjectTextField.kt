@@ -89,7 +89,9 @@ fun ProjectTextField(
             .fillMaxWidth(),
         enabled = enabled,
         readOnly = readOnly,
-        textStyle = textStyle.copy(color = MaterialTheme.colorScheme.onSurface),
+        textStyle = textStyle.copy(
+            color = if (textStyle.color != androidx.compose.ui.graphics.Color.Unspecified) textStyle.color else MaterialTheme.colorScheme.onSurface
+        ),
         visualTransformation = visualTransformation,
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
@@ -183,7 +185,9 @@ fun ProjectTextField(
             .fillMaxWidth(),
         enabled = enabled,
         readOnly = readOnly,
-        textStyle = textStyle.copy(color = MaterialTheme.colorScheme.onSurface),
+        textStyle = textStyle.copy(
+            color = if (textStyle.color != androidx.compose.ui.graphics.Color.Unspecified) textStyle.color else MaterialTheme.colorScheme.onSurface
+        ),
         visualTransformation = visualTransformation,
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,

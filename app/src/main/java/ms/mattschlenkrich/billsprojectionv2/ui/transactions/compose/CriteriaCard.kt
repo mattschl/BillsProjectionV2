@@ -47,7 +47,7 @@ fun CriteriaCard(
     onDateRangeGo: () -> Unit,
     onBudgetRuleClick: () -> Unit,
     onAccountClick: () -> Unit,
-    widthFactor: Int = 4,
+    widthFactor: Int = CriteriaCardDefaults.WIDTH_FACTOR,
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val configuration = androidx.compose.ui.platform.LocalConfiguration.current
@@ -232,4 +232,8 @@ fun CriteriaCard(
             }
         }
     }
+}
+
+object CriteriaCardDefaults {
+    const val WIDTH_FACTOR = 4
 }
