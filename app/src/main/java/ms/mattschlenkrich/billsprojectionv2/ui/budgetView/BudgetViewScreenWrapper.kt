@@ -97,6 +97,9 @@ fun BudgetViewScreenWrapper(
     val curAsset by accountViewModel.getAccountDetailed(selectedAsset)
         .observeAsState(initial = null)
 
+    val allAccounts by accountViewModel.getAccountsWithType()
+        .observeAsState(initial = emptyList())
+
     val pendingList by transactionViewModel.getPendingTransactionsDetailed(selectedAsset)
         .observeAsState(initial = emptyList())
 
@@ -162,6 +165,7 @@ fun BudgetViewScreenWrapper(
         },
         earliestPayDay = earliestPayDay,
         curAsset = curAsset,
+        allAccounts = allAccounts,
         pendingList = pendingList,
         pendingAmount = pendingAmount,
         budgetList = budgetList,

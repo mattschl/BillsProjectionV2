@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.ui.compose
+package ms.mattschlenkrich.billsprojectionv2.ui.main
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons

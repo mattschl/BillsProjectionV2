@@ -150,7 +150,3 @@ fun TransactionHistoryItem(
         }
     }
 }
-
-object TransactionHistoryItemDefaults {
-    const val WIDTH_FACTOR = 6
-}

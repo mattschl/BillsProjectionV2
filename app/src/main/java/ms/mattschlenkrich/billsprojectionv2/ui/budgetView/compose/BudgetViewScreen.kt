@@ -85,6 +85,7 @@ fun BudgetViewScreen(
     isShowingAllPending: Boolean = false,
     sheetTitle: String = "",
     sheetOptions: List<ActionOption> = emptyList(),
+    allAccounts: List<AccountWithType> = emptyList(),
     onSheetDismiss: () -> Unit = {},
 ) {
     val context = LocalContext.current
@@ -201,6 +202,7 @@ fun BudgetViewScreen(
                 selectedSum = selectedSum,
                 showSelectedSum = selectedItems.isNotEmpty(),
                 earliestPayDay = earliestPayDay,
+                allAccounts = allAccounts,
             )
 
             if (pendingList.isNotEmpty()) {

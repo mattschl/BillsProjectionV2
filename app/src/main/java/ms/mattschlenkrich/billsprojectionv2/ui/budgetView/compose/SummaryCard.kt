@@ -12,12 +12,14 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.ALL_ITEMS
 import ms.mattschlenkrich.billsprojectionv2.common.components.DropdownSelector
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
@@ -38,6 +40,7 @@ fun SummaryCard(
     selectedSum: Double = 0.0,
     showSelectedSum: Boolean = false,
     earliestPayDay: String? = null,
+    allAccounts: List<AccountWithType> = emptyList(),
 ) {
     val nf = LocalNumberFunctions.current
     val currentTag = stringResource(R.string.text_current_suffix)
@@ -65,71 +68,162 @@ fun SummaryCard(
                 }
             }
 
-            curAsset?.let { asset ->
-                val accountType = asset.accountType
+            if (selectedAsset == ALL_ITEMS && allAccounts.isNotEmpty()) {
+                val (totalAssets, totalOwing) = remember(allAccounts) {
+                    var assets = 0.0
+                    var owing = 0.0
+                    allAccounts.forEach { awt ->
+                        val type = awt.accountType
+                        val acc = awt.account
+                        val isAssetAccount =
+                            type?.isAsset == true || type?.keepTotals == true || type?.displayAsAsset == true
+                        val isOwingAccount = type?.tallyOwing == true
+
+                        if (isAssetAccount) {
+                            assets += acc.accountBalance
+                        }
+                        if (isOwingAccount || (!isAssetAccount && acc.accountOwing != 0.0)) {
+                            owing += acc.accountOwing
+                        }
+                    }
+                    Pair(assets, owing)
+                }
+                val netWorth = totalAssets - totalOwing
+
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp, vertical = 2.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    val label = if (accountType?.keepTotals == true) {
-                        stringResource(R.string.label_balance_in_account)
-                    } else if (asset.account.accountOwing >= 0.0) {
-                        stringResource(R.string.label_balance_owing)
-                    } else {
-                        stringResource(R.string.label_credit_of)
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = stringResource(R.string.label_total_assets),
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                            Text(
+                                text = nf.displayDollars(totalAssets),
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = stringResource(R.string.label_total_owing),
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                            Text(
+                                text = nf.displayDollars(-totalOwing),
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = if (totalOwing > 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = stringResource(R.string.label_net_worth),
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Bold,
+                            )
+                            Text(
+                                text = nf.displayDollars(netWorth),
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = if (netWorth < 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     }
-
-                    val amount = if (accountType?.keepTotals == true) {
-                        asset.account.accountBalance
-                    } else if (asset.account.accountOwing >= 0.0) {
-                        asset.account.accountOwing
-                    } else {
-                        -asset.account.accountOwing
-                    }
-
-                    Text(
-                        text = label,
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.clickable { onAccountClick() },
-                    )
-
-                    Text(
-                        text = nf.displayDollars(amount),
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = if ((accountType?.keepTotals != true) && (asset.account.accountOwing >= 0.0)) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.clickable { onAccountClick() },
-                    )
 
                     SurplusDeficitInfo(
-                        asset = asset,
+                        asset = null,
                         payDayList = payDayList,
                         selectedPayDay = selectedPayDay,
                         budgetTotals = budgetTotals,
+                        allAccounts = allAccounts,
                     )
                 }
-
-                if (accountType?.tallyOwing == true) {
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 1.dp))
+            } else {
+                curAsset?.let { asset ->
+                    val accountType = asset.accountType
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        val creditLimit = asset.account.accountCreditLimit
-                        val available = (creditLimit + pendingAmount) - asset.account.accountOwing
-                        val availableReal =
-                            if (available > creditLimit) creditLimit else available
+                        val label = if (accountType?.keepTotals == true) {
+                            stringResource(R.string.label_balance_in_account)
+                        } else if (asset.account.accountOwing >= 0.0) {
+                            stringResource(R.string.label_balance_owing)
+                        } else {
+                            stringResource(R.string.label_credit_of)
+                        }
+
+                        val amount = if (accountType?.keepTotals == true) {
+                            asset.account.accountBalance
+                        } else if (asset.account.accountOwing >= 0.0) {
+                            asset.account.accountOwing
+                        } else {
+                            -asset.account.accountOwing
+                        }
 
                         Text(
-                            text = stringResource(R.string.label_available_credit),
-                            style = MaterialTheme.typography.bodyLarge
+                            text = label,
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.clickable { onAccountClick() },
                         )
+
                         Text(
-                            text = nf.displayDollars(availableReal),
+                            text = nf.displayDollars(amount),
                             fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.bodyLarge
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = if ((accountType?.keepTotals != true) && (asset.account.accountOwing >= 0.0)) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.clickable { onAccountClick() },
                         )
+
+                        SurplusDeficitInfo(
+                            asset = asset,
+                            payDayList = payDayList,
+                            selectedPayDay = selectedPayDay,
+                            budgetTotals = budgetTotals,
+                        )
+                    }
+
+                    if (accountType?.tallyOwing == true) {
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 1.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            val creditLimit = asset.account.accountCreditLimit
+                            val available =
+                                (creditLimit + pendingAmount) - asset.account.accountOwing
+                            val availableReal =
+                                if (available > creditLimit) creditLimit else available
+
+                            Text(
+                                text = stringResource(R.string.label_available_credit),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = nf.displayDollars(availableReal),
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
                     }
                 }
             }

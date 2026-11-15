@@ -41,7 +41,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewMod
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.TransactionViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.ViewModelHelper
 import ms.mattschlenkrich.billsprojectionv2.ui.auth.LoginScreen
-import ms.mattschlenkrich.billsprojectionv2.ui.compose.MainScreen
+import ms.mattschlenkrich.billsprojectionv2.ui.main.MainScreen
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 import ms.mattschlenkrich.billsprojectionv2.ui.sync.SyncActivity
 import java.time.LocalDate

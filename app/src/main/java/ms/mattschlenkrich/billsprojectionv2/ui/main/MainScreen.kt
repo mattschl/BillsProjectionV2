@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.ui.compose
+package ms.mattschlenkrich.billsprojectionv2.ui.main
 
 import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult

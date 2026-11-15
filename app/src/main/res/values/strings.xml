@@ -166,6 +166,9 @@
     <string name="label_to_this_account">To this account</string>
     <string name="label_total_credits">Total Credits</string>
     <string name="label_total_debits">Total Debits</string>
+    <string name="label_total_assets">Total Assets</string>
+    <string name="label_total_owing">Total Owing</string>
+    <string name="label_net_worth">Net Worth</string>
     <string name="label_transaction_amount">Transaction Amount</string>
     <string name="label_use_search_criteria">Use Search Criteria</string>
     <string name="label_weekly_x">" weekly x "</string>

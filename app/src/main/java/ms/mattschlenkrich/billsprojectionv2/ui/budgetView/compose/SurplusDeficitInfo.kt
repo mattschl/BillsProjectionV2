@@ -19,15 +19,31 @@ fun SurplusDeficitInfo(
     payDayList: List<String>,
     selectedPayDay: String,
     budgetTotals: BudgetTotals,
+    allAccounts: List<AccountWithType> = emptyList(),
 ) {
     val nf = LocalNumberFunctions.current
     var surplus = budgetTotals.credits - budgetTotals.debits
-    if ((asset != null) && payDayList.isNotEmpty() && (selectedPayDay == payDayList[0])) {
-        val accountType = asset.accountType
-        if (accountType?.keepTotals == true) {
-            surplus += asset.account.accountBalance
-        } else {
-            surplus -= asset.account.accountOwing
+    if (payDayList.isNotEmpty() && (selectedPayDay == payDayList[0])) {
+        if (asset != null) {
+            val accountType = asset.accountType
+            if (accountType?.keepTotals == true) {
+                surplus += asset.account.accountBalance
+            } else {
+                surplus -= asset.account.accountOwing
+            }
+        } else if (allAccounts.isNotEmpty()) {
+            val netWorth = allAccounts.sumOf { awt ->
+                val type = awt.accountType
+                val acc = awt.account
+                val isAssetAccount =
+                    type?.isAsset == true || type?.keepTotals == true || type?.displayAsAsset == true
+                val isOwingAccount = type?.tallyOwing == true
+                var net = 0.0
+                if (isAssetAccount) net += acc.accountBalance
+                if (isOwingAccount || (!isAssetAccount && acc.accountOwing != 0.0)) net -= acc.accountOwing
+                net
+            }
+            surplus += netWorth
         }
     }
 

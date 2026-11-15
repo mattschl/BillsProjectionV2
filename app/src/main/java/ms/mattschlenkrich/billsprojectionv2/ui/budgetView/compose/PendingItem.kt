@@ -147,7 +147,3 @@ fun PendingItem(
         }
     }
 }
-
-object PendingItemDefaults {
-    const val WIDTH_FACTOR = 6
-}

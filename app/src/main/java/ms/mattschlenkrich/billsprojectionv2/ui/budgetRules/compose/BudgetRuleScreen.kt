@@ -2,6 +2,8 @@ package ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.compose
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -356,9 +358,11 @@ fun BudgetRuleScreen(
                     )
                 }
 
-                Row(
+                @OptIn(ExperimentalLayoutApi::class)
+                FlowRow(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     LabeledCheckbox(
                         label = stringResource(R.string.label_fixed),
@@ -381,8 +385,4 @@ fun BudgetRuleScreen(
             bottomContent()
         }
     }
-}
-
-object BudgetRuleScreenDefaults {
-    const val WIDTH_FACTOR = 4
 }

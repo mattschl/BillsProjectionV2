@@ -164,7 +164,3 @@ fun BudgetRuleItem(
         }
     }
 }
-
-object BudgetRuleItemDefaults {
-    const val WIDTH_FACTOR = 4
-}

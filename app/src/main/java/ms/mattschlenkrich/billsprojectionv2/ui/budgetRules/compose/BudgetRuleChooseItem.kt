@@ -89,7 +89,3 @@ fun BudgetRuleChooseItem(
         }
     }
 }
-
-object BudgetRuleChooseItemDefaults {
-    const val WIDTH_FACTOR = 2
-}
