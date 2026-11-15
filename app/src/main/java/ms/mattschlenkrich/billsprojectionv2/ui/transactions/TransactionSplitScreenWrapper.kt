@@ -20,7 +20,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.TransactionMessageHelper
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
-import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.ui.main.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 import ms.mattschlenkrich.billsprojectionv2.ui.transactions.compose.TransactionSplitScreen
 

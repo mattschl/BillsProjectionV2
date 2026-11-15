@@ -19,8 +19,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.components.ManagedActionBotto
 import ms.mattschlenkrich.billsprojectionv2.common.components.rememberActionSheetState
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
-import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.accounts.compose.AccountsListScreen
+import ms.mattschlenkrich.billsprojectionv2.ui.main.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)

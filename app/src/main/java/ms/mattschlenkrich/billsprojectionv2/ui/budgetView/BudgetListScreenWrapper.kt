@@ -16,8 +16,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.components.ManagedActionBotto
 import ms.mattschlenkrich.billsprojectionv2.common.components.rememberActionSheetState
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalDateFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRuleDetailed
-import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.compose.BudgetSummaryScreen
+import ms.mattschlenkrich.billsprojectionv2.ui.main.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 
 private const val TAG = SCREEN_BUDGET_LIST

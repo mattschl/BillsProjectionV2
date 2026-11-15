@@ -12,8 +12,8 @@ import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
 import ms.mattschlenkrich.billsprojectionv2.common.functions.NumberFunctions
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType
-import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.accounts.compose.AccountTypeFormScreen
+import ms.mattschlenkrich.billsprojectionv2.ui.main.MainActivity
 
 @Composable
 fun AccountTypeAddScreenWrapper(

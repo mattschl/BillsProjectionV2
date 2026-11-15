@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.ui
+package ms.mattschlenkrich.billsprojectionv2.ui.main
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.net.toUri
@@ -41,7 +42,6 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.BudgetRuleViewMod
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.TransactionViewModel
 import ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel.ViewModelHelper
 import ms.mattschlenkrich.billsprojectionv2.ui.auth.LoginScreen
-import ms.mattschlenkrich.billsprojectionv2.ui.main.MainScreen
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 import ms.mattschlenkrich.billsprojectionv2.ui.sync.SyncActivity
 import java.time.LocalDate
@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var budgetItemViewModel: BudgetItemViewModel
     lateinit var accountUpdateViewModel: AccountUpdateViewModel
 
-    val topMenuBarState = androidx.compose.runtime.mutableStateOf(TopBarState())
+    val topMenuBarState = mutableStateOf(TopBarState())
 
     interface MenuHostProxy {
         var title: String
@@ -80,8 +80,8 @@ class MainActivity : AppCompatActivity() {
 
     data class TopBarState(val title: String = "")
 
-    var isUpdating = androidx.compose.runtime.mutableStateOf(value = false)
-    private var isAuthenticated = androidx.compose.runtime.mutableStateOf(value = false)
+    var isUpdating = mutableStateOf(value = false)
+    private var isAuthenticated = mutableStateOf(value = false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()

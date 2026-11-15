@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.compose
+package ms.mattschlenkrich.billsprojectionv2.common.components
 
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -12,8 +12,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectFieldDefaults
-import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

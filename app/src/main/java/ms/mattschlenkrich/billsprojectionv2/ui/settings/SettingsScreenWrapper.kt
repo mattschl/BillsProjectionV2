@@ -30,7 +30,11 @@ import ms.mattschlenkrich.billsprojectionv2.common.ALL_ITEMS
 import ms.mattschlenkrich.billsprojectionv2.common.components.DropdownSelector
 import ms.mattschlenkrich.billsprojectionv2.common.functions.SecurityUtils
 import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
-import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.ui.main.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.ui.settings.compose.ConfirmPasswordDialog
+import ms.mattschlenkrich.billsprojectionv2.ui.settings.compose.FontSizeOption
+import ms.mattschlenkrich.billsprojectionv2.ui.settings.compose.SetPasswordDialog
+import ms.mattschlenkrich.billsprojectionv2.ui.settings.compose.ThemeOption
 
 @Composable
 fun SettingsScreenWrapper(

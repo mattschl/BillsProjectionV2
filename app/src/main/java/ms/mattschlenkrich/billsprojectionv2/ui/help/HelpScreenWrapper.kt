@@ -16,7 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.BuildConfig
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.ui.main.MainActivity
 
 @Composable
 fun HelpScreenWrapper(activity: MainActivity) {

@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.ui.accounts.compose
+package ms.mattschlenkrich.billsprojectionv2.common.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth

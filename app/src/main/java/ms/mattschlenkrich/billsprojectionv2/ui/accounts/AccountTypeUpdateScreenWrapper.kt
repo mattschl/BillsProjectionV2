@@ -12,8 +12,8 @@ import androidx.navigation.NavHostController
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ANSWER_OK
 import ms.mattschlenkrich.billsprojectionv2.common.functions.DateFunctions
-import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.accounts.compose.AccountTypeFormScreen
+import ms.mattschlenkrich.billsprojectionv2.ui.main.MainActivity
 
 @Composable
 fun AccountTypeUpdateScreenWrapper(

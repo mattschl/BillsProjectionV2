@@ -3,7 +3,7 @@ package ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.ui.main.MainActivity
 
 class AccountUpdateViewModelFactory(
     val mainActivity: MainActivity,

@@ -20,8 +20,8 @@ import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_TRANSACTION_PERFORM
 import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_TRANSACTION_SPLIT
 import ms.mattschlenkrich.billsprojectionv2.common.SCREEN_TRANSACTION_UPDATE
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
-import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.accounts.compose.AccountChooseScreen
+import ms.mattschlenkrich.billsprojectionv2.ui.main.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 
 private const val TAG = SCREEN_ACCOUNT_CHOOSE

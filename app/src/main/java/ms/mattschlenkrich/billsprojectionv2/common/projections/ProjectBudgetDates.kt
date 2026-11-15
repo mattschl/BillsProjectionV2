@@ -16,7 +16,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.INTERVAL_ON_PAY_DAY
 import ms.mattschlenkrich.billsprojectionv2.common.INTERVAL_SPECIAL
 import ms.mattschlenkrich.billsprojectionv2.common.INTERVAL_WEEKLY
 import ms.mattschlenkrich.billsprojectionv2.common.INTERVAL_YEARLY
-import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.ui.main.MainActivity
 import java.time.DayOfWeek
 import java.time.LocalDate
 

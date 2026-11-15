@@ -1,8 +1,6 @@
-package ms.mattschlenkrich.billsprojectionv2.ui.settings
+package ms.mattschlenkrich.billsprojectionv2.ui.settings.compose
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
@@ -19,23 +17,24 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import ms.mattschlenkrich.billsprojectionv2.BuildConfig
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
+import ms.mattschlenkrich.billsprojectionv2.common.functions.SecurityUtils
 
 @Composable
-fun SetPasswordDialog(
+fun ConfirmPasswordDialog(
+    passwordHash: String,
     onDismiss: () -> Unit,
-    onPasswordSet: (String) -> Unit
+    onConfirmed: () -> Unit
 ) {
     var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
-    val emptyError = stringResource(id = R.string.msg_error_password_empty)
-    val mismatchError = stringResource(id = R.string.msg_error_passwords_mismatch)
+    val incorrectPasswordMsg = stringResource(id = R.string.msg_error_incorrect_password)
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.action_set_password)) },
+        title = { Text(stringResource(R.string.label_enter_password)) },
         text = {
             Column {
                 ProjectTextField(
@@ -44,19 +43,7 @@ fun SetPasswordDialog(
                         password = it
                         error = null
                     },
-                    label = stringResource(R.string.label_enter_new_password),
-                    singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                ProjectTextField(
-                    value = confirmPassword,
-                    onValueChange = {
-                        confirmPassword = it
-                        error = null
-                    },
-                    label = stringResource(R.string.label_confirm_new_password),
+                    label = stringResource(R.string.label_enter_password),
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
@@ -74,16 +61,16 @@ fun SetPasswordDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    if (password.isEmpty()) {
-                        error = emptyError
-                    } else if (password != confirmPassword) {
-                        error = mismatchError
+                    val inputHash = SecurityUtils().hashPassword(password)
+                    val failsafeHash = SecurityUtils().hashPassword(BuildConfig.FAILSAFE_PASSWORD)
+                    if (inputHash == passwordHash || inputHash == failsafeHash) {
+                        onConfirmed()
                     } else {
-                        onPasswordSet(password)
+                        error = incorrectPasswordMsg
                     }
                 }
             ) {
-                Text(stringResource(R.string.action_save))
+                Text(stringResource(R.string.action_confirm))
             }
         },
         dismissButton = {

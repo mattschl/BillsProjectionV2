@@ -8,7 +8,7 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.repository.AccountRepositor
 import ms.mattschlenkrich.billsprojectionv2.dataBase.repository.BudgetItemRepository
 import ms.mattschlenkrich.billsprojectionv2.dataBase.repository.BudgetRuleRepository
 import ms.mattschlenkrich.billsprojectionv2.dataBase.repository.TransactionRepository
-import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.ui.main.MainActivity
 
 object ViewModelHelper {
     fun setupMainViewModel(activity: MainActivity): MainViewModel {

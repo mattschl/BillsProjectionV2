@@ -6,7 +6,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountAddScreenWrapper
 import ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountChooseScreenWrapper
 import ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountTypeAddScreenWrapper
@@ -24,6 +23,7 @@ import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetListScreenWrappe
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetViewScreenWrapper
 import ms.mattschlenkrich.billsprojectionv2.ui.calculator.CalculatorScreenWrapper
 import ms.mattschlenkrich.billsprojectionv2.ui.help.HelpScreenWrapper
+import ms.mattschlenkrich.billsprojectionv2.ui.main.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.settings.SettingsScreenWrapper
 import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionAddScreenWrapper
 import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionAnalysisScreenWrapper

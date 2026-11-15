@@ -12,7 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import ms.mattschlenkrich.billsprojectionv2.common.functions.CalculatorLogic
 import ms.mattschlenkrich.billsprojectionv2.common.functions.LocalNumberFunctions
-import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.ui.main.MainActivity
 
 @Composable
 fun CalculatorScreenWrapper(

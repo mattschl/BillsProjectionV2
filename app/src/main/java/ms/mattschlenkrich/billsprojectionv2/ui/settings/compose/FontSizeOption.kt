@@ -1,4 +1,4 @@
-package ms.mattschlenkrich.billsprojectionv2.ui.settings
+package ms.mattschlenkrich.billsprojectionv2.ui.settings.compose
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding

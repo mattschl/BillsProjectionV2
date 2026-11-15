@@ -8,7 +8,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItem
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.PredictionUpdateHistory
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetRule.BudgetRule
-import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
+import ms.mattschlenkrich.billsprojectionv2.ui.main.MainActivity
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 

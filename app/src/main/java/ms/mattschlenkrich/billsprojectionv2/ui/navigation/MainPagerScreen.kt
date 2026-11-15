@@ -5,10 +5,10 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import ms.mattschlenkrich.billsprojectionv2.ui.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.accounts.AccountViewScreenWrapper
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetRules.BudgetRuleScreenWrapper
 import ms.mattschlenkrich.billsprojectionv2.ui.budgetView.BudgetViewScreenWrapper
+import ms.mattschlenkrich.billsprojectionv2.ui.main.MainActivity
 import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionAnalysisScreenWrapper
 import ms.mattschlenkrich.billsprojectionv2.ui.transactions.TransactionViewScreenWrapper
 
