@@ -25,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
+import ms.mattschlenkrich.billsprojectionv2.common.columndefaults.AccountTypeItemDefaults
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountType
 
 @Composable

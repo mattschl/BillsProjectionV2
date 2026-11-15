@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
+import ms.mattschlenkrich.billsprojectionv2.common.columndefaults.TransactionHistoryItemDefaults
 import ms.mattschlenkrich.billsprojectionv2.common.settings.ColumnSettingsHelper
 import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
