@@ -42,8 +42,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
 import ms.mattschlenkrich.billsprojectionv2.common.ALL_ITEMS
-import ms.mattschlenkrich.billsprojectionv2.common.columndefaults.BudgetListItemDefaults
-import ms.mattschlenkrich.billsprojectionv2.common.columndefaults.PendingItemDefaults
+import ms.mattschlenkrich.billsprojectionv2.common.columns.BudgetListItemDefaults
+import ms.mattschlenkrich.billsprojectionv2.common.columns.PendingItemDefaults
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionBottomSheet
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.components.BudgetItemDisplay
