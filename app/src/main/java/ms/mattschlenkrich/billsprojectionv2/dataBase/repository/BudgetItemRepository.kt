@@ -23,12 +23,6 @@ class BudgetItemRepository(private val db: BillsDatabase) {
     suspend fun getLatestPredictionUpdateHistory() =
         db.getBudgetItemDao().getLatestPredictionUpdateHistory()
 
-    /*suspend fun deleteBudgetItem(
-        budgetRulId: Long, projectedDate: String, updateTime: String
-    ) = db.getBudgetItemDao().deleteBudgetItem(
-        budgetRulId, projectedDate, updateTime
-    )*/
-
     suspend fun killFutureBudgetItems(currentDate: String, updateTime: String) =
         db.getBudgetItemDao().killFutureBudgetItems(currentDate, updateTime)
 

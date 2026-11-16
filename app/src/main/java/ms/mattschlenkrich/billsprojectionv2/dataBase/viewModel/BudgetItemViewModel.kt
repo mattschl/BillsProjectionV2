@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package ms.mattschlenkrich.billsprojectionv2.dataBase.viewModel
 
 import android.app.Application
@@ -29,22 +27,6 @@ class BudgetItemViewModel(
     suspend fun getLatestPredictionUpdateHistory() =
         budgetItemRepository.getLatestPredictionUpdateHistory()
 
-    /*suspend fun updateBudgetItemSync(budgetItem: BudgetItem) =
-        budgetItemRepository.updateBudgetItem(budgetItem)*/
-
-    /*suspend fun rewriteBudgetItemSync(
-        budgetRuleId: Long, projectedDate: String, actualDate: String, payDay: String,
-        budgetName: String, isPayDay: Boolean, toAccountId: Long, fromAccountId: Long,
-        projectedAmount: Double, isFixed: Boolean, isAutomatic: Boolean, updateTime: String
-    ) =
-        budgetItemRepository.rewriteBudgetItem(
-            budgetRuleId, projectedDate, actualDate, payDay, budgetName, isPayDay, toAccountId,
-            fromAccountId, projectedAmount, isFixed, isAutomatic, updateTime
-        )*/
-
-    /*  suspend fun purgeOldBudgetItemsSync(cutoffDate: String) =
-          budgetItemRepository.purgeOldBudgetItems(cutoffDate)*/
-
     suspend fun deleteFutureItemsSync(currentDate: String, updateTime: String) =
         budgetItemRepository.deleteFutureItems(currentDate, updateTime)
 
@@ -55,21 +37,9 @@ class BudgetItemViewModel(
         budgetItemRepository.insertBudgetItem(budgetItem.copy(biLocked = true))
     }
 
-    /*fun insertOrReplaceBudgetItem(budgetItem: BudgetItem) = viewModelScope.launch {
-        budgetItemRepository.insertOrReplaceBudgetItem(budgetItem)
-    }*/
-
     fun updateBudgetItem(budgetItem: BudgetItem) = viewModelScope.launch {
         budgetItemRepository.updateBudgetItem(budgetItem.copy(biLocked = true))
     }
-
-    /* fun deleteBudgetItem(
-         budgetRulId: Long, projectedDate: String, updateTime: String
-     ) = viewModelScope.launch {
-         budgetItemRepository.deleteBudgetItem(
-             budgetRulId, projectedDate, updateTime
-         )
-     }*/
 
     fun killFutureBudgetItems(currentDate: String, updateTime: String) =
         viewModelScope.launch {
@@ -79,7 +49,6 @@ class BudgetItemViewModel(
         }
 
     fun getPayDaysActive() = budgetItemRepository.getPayDaysActive()
-
 
     fun deleteFutureItems(currentDate: String, updateTime: String) = viewModelScope.launch {
         budgetItemRepository.deleteFutureItems(
@@ -115,9 +84,6 @@ class BudgetItemViewModel(
             budgetRuleId, projectedDate, updateTime
         )
     }
-
-//    fun getBudgetItemWritable(budgetRuleId: Long, projectedDate: String) =
-//        budgetItemRepository.getBudgetItemWritable(budgetRuleId, projectedDate)
 
     suspend fun rewriteBudgetItem(
         budgetRuleId: Long, projectedDate: String, actualDate: String, payDay: String,

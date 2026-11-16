@@ -148,23 +148,6 @@ fun BudgetItemUpdateScreenWrapper(
         }
     }
 
-    /*fun confirmDeleteBudgetItem() {
-        AlertDialog.Builder(mainActivity).apply {
-            setTitle(mainActivity.getString(R.string.delete_budget_item))
-            setMessage(mainActivity.getString(R.string.are_you_sure_you_want_to_delete_this_budget_item))
-            setPositiveButton(mainActivity.getString(R.string.delete)) { _, _ ->
-                val cached = mainViewModel.getBudgetItemDetailed() ?: return@LaunchedEffect
-                budgetItemViewModel.deleteBudgetItem(
-                    cached.budgetItem!!.biRuleId,
-                    cached.budgetItem!!.biProjectedDate,
-                    df.getCurrentTimeAsString()
-                )
-                gotoCallingFragment()
-            }
-            setNegativeButton(mainActivity.getString(R.string.cancel), null)
-        }.create().show()
-    }*/
-
     fun chooseBudgetRule() {
         mainViewModel.addCallingFragment(TAG)
         mainViewModel.setBudgetItemDetailed(getCurrentBudgetItemDetailed())

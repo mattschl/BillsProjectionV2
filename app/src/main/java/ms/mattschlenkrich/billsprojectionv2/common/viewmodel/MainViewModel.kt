@@ -87,10 +87,6 @@ class MainViewModel(
         return _splitTransactionDetailed.value
     }
 
-    /*fun setReturnTo(newReturnTo: String?) {
-        _returnTo.value = newReturnTo
-    }*/
-
     fun getReturnTo(): String? {
         return _returnTo.value
     }

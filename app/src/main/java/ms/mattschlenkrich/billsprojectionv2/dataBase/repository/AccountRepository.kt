@@ -21,9 +21,6 @@ class AccountRepository(private val db: BillsDatabase) {
     suspend fun updateAccountType(accountType: AccountType) =
         db.getAccountTypesDao().updateAccountType(accountType)
 
-    /*suspend fun deleteAccountType(accountTypeId: Long, updateTime: String) =
-        db.getAccountTypesDao().deleteAccountType(accountTypeId, updateTime)*/
-
     fun getActiveAccountTypes() = db.getAccountTypesDao().getActiveAccountTypes()
 
     fun searchAccountType(query: String) = db.getAccountTypesDao().searchAccountType(query)

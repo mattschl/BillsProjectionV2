@@ -22,7 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.R
-import ms.mattschlenkrich.billsprojectionv2.common.components.CheckboxRow
+import ms.mattschlenkrich.billsprojectionv2.common.components.LabeledCheckbox
 import ms.mattschlenkrich.billsprojectionv2.common.components.ProjectTextField
 
 @Composable
@@ -74,28 +74,28 @@ fun AccountTypeFormScreen(
                 singleLine = true
             )
 
-            CheckboxRow(
-                text = stringResource(R.string.msg_account_no_balance),
+            LabeledCheckbox(
+                label = stringResource(R.string.msg_account_no_balance),
                 checked = keepTotals,
                 onCheckedChange = onKeepTotalsChange
             )
-            CheckboxRow(
-                text = stringResource(R.string.msg_is_asset),
+            LabeledCheckbox(
+                label = stringResource(R.string.msg_is_asset),
                 checked = isAsset,
                 onCheckedChange = onIsAssetChange
             )
-            CheckboxRow(
-                text = stringResource(R.string.msg_balance_owing_calc),
+            LabeledCheckbox(
+                label = stringResource(R.string.msg_balance_owing_calc),
                 checked = keepOwing,
                 onCheckedChange = onKeepOwingChange
             )
-            CheckboxRow(
-                text = stringResource(R.string.msg_used_for_budget),
+            LabeledCheckbox(
+                label = stringResource(R.string.msg_used_for_budget),
                 checked = displayAsAsset,
                 onCheckedChange = onDisplayAsAssetChange
             )
-            CheckboxRow(
-                text = stringResource(R.string.msg_transactions_postponed),
+            LabeledCheckbox(
+                label = stringResource(R.string.msg_transactions_postponed),
                 checked = allowPending,
                 onCheckedChange = onAllowPendingChange
             )
