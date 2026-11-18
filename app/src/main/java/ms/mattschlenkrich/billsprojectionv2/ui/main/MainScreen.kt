@@ -45,6 +45,8 @@ import ms.mattschlenkrich.billsprojectionv2.dataBase.BillsDatabase
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.NavGraph
 import ms.mattschlenkrich.billsprojectionv2.ui.navigation.Screen
 import ms.mattschlenkrich.billsprojectionv2.ui.sync.SyncActivity
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -107,21 +109,34 @@ fun MainScreen(
                 try {
                     val latestHistory =
                         activity.budgetItemViewModel.getLatestPredictionUpdateHistory()
-                    if (latestHistory == null) {
+                    val maxProjectedDateInDb =
+                        activity.budgetItemViewModel.getMaxProjectedDate()
+
+                    val effectiveLastDate = listOfNotNull(
+                        latestHistory?.puhLastPredictionDate,
+                        maxProjectedDateInDb
+                    ).filter { it.isNotBlank() && it != "0" && it != "0000-00-00" }
+                        .maxOrNull()
+
+                    val today = LocalDate.now()
+                    val targetDate = if (!effectiveLastDate.isNullOrBlank()) {
+                        try {
+                            LocalDate.parse(effectiveLastDate)
+                        } catch (_: Exception) {
+                            null
+                        }
+                    } else null
+
+                    if (targetDate == null) {
                         latestProjectedDate = null
                         weeksRemaining = -1
                         showBudgetUpdateWarningDialog = true
                     } else {
-                        val updateDate =
-                            DateFunctions().parseUtcTimestamp(latestHistory.puhTime)
-                        if (updateDate != null) {
-                            val diffMs = System.currentTimeMillis() - updateDate.time
-                            val diffWeeks = (diffMs / (1000L * 60 * 60 * 24 * 7)).toInt()
-                            if (diffWeeks >= settings.budgetUpdateWarningWeeks) {
-                                latestProjectedDate = latestHistory.puhLastPredictionDate
-                                weeksRemaining = diffWeeks
-                                showBudgetUpdateWarningDialog = true
-                            }
+                        val remainingWeeks = ChronoUnit.WEEKS.between(today, targetDate).toInt()
+                        if (remainingWeeks < settings.budgetUpdateWarningWeeks) {
+                            latestProjectedDate = effectiveLastDate
+                            weeksRemaining = remainingWeeks.coerceAtLeast(0)
+                            showBudgetUpdateWarningDialog = true
                         }
                     }
                 } catch (_: Exception) {

@@ -76,20 +76,23 @@ fun BudgetSummary(
                     text = stringResource(R.string.label_credits_colon) + nf.displayDollars(
                         totalCredits
                     ),
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (totalCredits < 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
                     text = stringResource(R.string.label_debits_colon) + nf.displayDollars(
                         totalDebits
                     ),
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (totalDebits != 0.0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 if (type == "monthly") {
                     Text(
                         text = stringResource(R.string.label_fixed_colon) + nf.displayDollars(
                             totalFixed
                         ),
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (totalFixed < 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }

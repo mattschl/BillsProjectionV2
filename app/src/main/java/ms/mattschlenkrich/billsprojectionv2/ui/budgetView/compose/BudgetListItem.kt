@@ -75,13 +75,14 @@ fun BudgetListItem(
         else -> budgetRule.budgetAmount
     }
 
+    val evaluatedAmt = if (showFullDetails) budgetRule.budgetAmount else amt
     val displayAmt =
         if (toAccountType?.displayAsAsset == true && fromAccountType?.displayAsAsset == true) {
             stringResource(R.string.label_na)
-        } else nf.displayDollars(if (showFullDetails) budgetRule.budgetAmount else amt)
+        } else nf.displayDollars(evaluatedAmt)
 
     val textColor =
-        if (fromAccountType?.isAsset == true || fromAccountType?.displayAsAsset == true) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+        if (evaluatedAmt < 0 || fromAccountType?.isAsset == true || fromAccountType?.displayAsAsset == true) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
 
     val context = androidx.compose.ui.platform.LocalContext.current
     val densityPref = remember {

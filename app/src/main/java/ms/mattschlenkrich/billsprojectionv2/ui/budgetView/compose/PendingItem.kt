@@ -107,7 +107,7 @@ fun PendingItem(
                 text = nf.displayDollars(trans.transAmount),
                 modifier = Modifier.padding(end = 8.dp),
                 fontWeight = FontWeight.Bold,
-                color = if (isCredit) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error,
+                color = if (isCredit && trans.transAmount >= 0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall
             )
             Column(

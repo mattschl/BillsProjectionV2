@@ -99,4 +99,6 @@ class BudgetItemRepository(private val db: BillsDatabase) {
 
     suspend fun cancelAllRegularItemsForPayDay(payDay: String, updateTime: String) =
         db.getBudgetItemDao().cancelAllRegularItemsForPayDay(payDay, updateTime)
+
+    suspend fun getMaxProjectedDate() = db.getBudgetItemDao().getMaxProjectedDate()
 }

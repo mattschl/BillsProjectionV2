@@ -59,6 +59,9 @@ fun AnalysisCard(
                 AnalysisRow(
                     label1 = stringResource(R.string.label_credit_average),
                     value1 = nf.displayDollars((sumToAccount ?: 0.0) / months) + " / $months",
+                    value1Color = if (((sumToAccount
+                            ?: 0.0) / months) < 0
+                    ) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
                     label2 = stringResource(R.string.label_debit_average),
                     value2 = nf.displayDollars((sumFromAccount ?: 0.0) / months),
                     value2Color = MaterialTheme.colorScheme.error
@@ -67,24 +70,34 @@ fun AnalysisCard(
                 AnalysisRow(
                     label1 = stringResource(R.string.label_average),
                     value1 = nf.displayDollars(totals / months) + " / $months",
+                    value1Color = if ((totals / months) < 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
                     label2 = stringResource(R.string.label_highest),
-                    value2 = nf.displayDollars(maxVal ?: 0.0)
+                    value2 = nf.displayDollars(maxVal ?: 0.0),
+                    value2Color = if ((maxVal
+                            ?: 0.0) < 0
+                    ) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
                 )
             }
 
+            val mostRecentVal = transactionList.firstOrNull()?.transaction?.transAmount ?: 0.0
             AnalysisRow(
                 label1 = stringResource(R.string.label_lowest),
                 value1 = nf.displayDollars(minVal ?: 0.0),
+                value1Color = if ((minVal
+                        ?: 0.0) < 0
+                ) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
                 label2 = stringResource(R.string.label_most_recent),
-                value2 = nf.displayDollars(
-                    transactionList.firstOrNull()?.transaction?.transAmount ?: 0.0
-                )
+                value2 = nf.displayDollars(mostRecentVal),
+                value2Color = if (mostRecentVal < 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
             )
 
             if (mode == AnalysisMode.ACCOUNT) {
                 AnalysisRow(
                     label1 = stringResource(R.string.label_total_credits),
                     value1 = nf.displayDollars(sumToAccount ?: 0.0),
+                    value1Color = if ((sumToAccount
+                            ?: 0.0) < 0
+                    ) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
                     label2 = stringResource(R.string.label_total_debits),
                     value2 = nf.displayDollars(sumFromAccount ?: 0.0),
                     value2Color = MaterialTheme.colorScheme.error
@@ -93,6 +106,9 @@ fun AnalysisCard(
                 AnalysisRow(
                     label1 = "Total (${transactionList.size})",
                     value1 = nf.displayDollars(sumCredits ?: 0.0),
+                    value1Color = if ((sumCredits
+                            ?: 0.0) < 0
+                    ) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
                     label2 = "",
                     value2 = ""
                 )

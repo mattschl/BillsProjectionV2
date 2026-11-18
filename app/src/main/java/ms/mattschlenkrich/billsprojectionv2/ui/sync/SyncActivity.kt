@@ -272,7 +272,12 @@ class SyncActivity : ComponentActivity() {
                 val result = credentialManager.getCredential(this@SyncActivity, request)
                 val googleIdTokenCredential =
                     GoogleIdTokenCredential.createFrom(result.credential.data)
-                initializeDriveService(googleIdTokenCredential.uniqueId)
+                val email = googleIdTokenCredential.id
+                if (email.isNotBlank()) {
+                    initializeDriveService(email)
+                } else {
+                    Log.e(TAG, "No email found in credential")
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Sign-in error", e)
             } catch (noCred: NoCredentialException) {

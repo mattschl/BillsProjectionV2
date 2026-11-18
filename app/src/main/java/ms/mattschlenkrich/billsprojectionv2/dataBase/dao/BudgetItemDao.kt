@@ -333,4 +333,7 @@ interface BudgetItemDao {
 
     @Update
     suspend fun updatePredictionUpdateHistory(it: PredictionUpdateHistory)
+
+    @Query("SELECT MAX($BUDGET_ITEM_PROJECTED_DATE) FROM $TABLE_BUDGET_ITEMS WHERE $BUDGET_ITEM_IS_DELETED = 0")
+    suspend fun getMaxProjectedDate(): String?
 }

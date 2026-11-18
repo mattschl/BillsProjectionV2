@@ -54,6 +54,7 @@ import ms.mattschlenkrich.billsprojectionv2.common.settings.SettingsManager
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.account.AccountWithType
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.BudgetItemDetailed
 import ms.mattschlenkrich.billsprojectionv2.dataBase.model.transactions.TransactionDetailed
+import kotlin.math.abs
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -208,15 +209,21 @@ fun BudgetViewScreen(
             )
 
             if (pendingList.isNotEmpty()) {
+                val pendingHeaderText = buildString {
+                    append(stringResource(R.string.title_pending_items))
+                    append(" (")
+                    append(nf.displayDollars(pendingAmount))
+                    append(")")
+                    if (selectedPendingSum != 0.0) {
+                        append(" (")
+                        append(stringResource(R.string.label_selected_colon))
+                        append(nf.displayDollars(selectedPendingSum))
+                        append(")")
+                    }
+                }
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = stringResource(R.string.title_pending_items) + if (selectedPendingSum != 0.0) " (${
-                        stringResource(R.string.label_selected_colon)
-                    }${
-                        nf.displayDollars(
-                            selectedPendingSum
-                        )
-                    })" else "",
+                    text = pendingHeaderText,
                     modifier = Modifier
                         .fillMaxWidth()
                         .combinedClickable(
@@ -257,9 +264,22 @@ fun BudgetViewScreen(
             }
 
             if (hasAnyBudgetItems) {
+                val scheduledNet = budgetTotals.credits - budgetTotals.debits
+                val scheduledHeaderText = buildString {
+                    append(stringResource(R.string.title_scheduled_expenses))
+                    append(" (")
+                    append(nf.displayDollars(scheduledNet))
+                    append(")")
+                    if (selectedSum != 0.0) {
+                        append(" (")
+                        append(stringResource(R.string.label_selected_colon))
+                        append(nf.displayDollars(abs(selectedSum)))
+                        append(")")
+                    }
+                }
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = stringResource(R.string.title_scheduled_expenses),
+                    text = scheduledHeaderText,
                     modifier = Modifier
                         .fillMaxWidth()
                         .combinedClickable(

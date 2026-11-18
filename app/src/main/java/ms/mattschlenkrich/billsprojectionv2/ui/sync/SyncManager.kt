@@ -110,6 +110,34 @@ class SyncManager(
                 appDb.getSyncHistoryDao().purgeOldSyncHistory(syncCutoff)
             }
 
+            onProgressUpdate("Checking prediction history...")
+            withContext(Dispatchers.IO) {
+                try {
+                    val maxProjDate = appDb.getBudgetItemDao().getMaxProjectedDate()
+                    if (!maxProjDate.isNullOrBlank() && maxProjDate != "0" && maxProjDate != "0000-00-00") {
+                        val latestHistory =
+                            appDb.getBudgetItemDao().getLatestPredictionUpdateHistory()
+                        if (latestHistory == null || latestHistory.puhLastPredictionDate < maxProjDate) {
+                            val newHistory =
+                                ms.mattschlenkrich.billsprojectionv2.dataBase.model.budgetItem.PredictionUpdateHistory(
+                                    predictionUpdateId = nf.generateId(),
+                                    puhTime = df.getCurrentTimeAsString(),
+                                    puhLastPredictionDate = maxProjDate,
+                                    puhPredictionLength = 3,
+                                    puhDeviceId = deviceId
+                                )
+                            appDb.getBudgetItemDao().insertPredictionUpdateHistory(newHistory)
+                            Log.d(
+                                TAG,
+                                "Sync: Updated PredictionUpdateHistory for max projected date $maxProjDate"
+                            )
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error updating prediction update history during sync", e)
+                }
+            }
+
             onProgressUpdate("Uploading merged database...")
             uploadTimestamp = df.getCurrentFileTimestamp()
 

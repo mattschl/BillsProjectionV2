@@ -23,7 +23,7 @@ fun TotalsSection(
                     budgetTotals.credits
                 )
             }" else stringResource(R.string.msg_no_credits),
-            color = if (budgetTotals.credits > 0.0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(
+            color = if (budgetTotals.credits < 0.0) MaterialTheme.colorScheme.error else if (budgetTotals.credits > 0.0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(
                 alpha = 0.4f
             ),
             style = MaterialTheme.typography.bodySmall

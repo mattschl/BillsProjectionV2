@@ -117,4 +117,6 @@ class BudgetItemViewModel(
         viewModelScope.launch {
             budgetItemRepository.cancelAllRegularItemsForPayDay(payDay, updateTime)
         }
+
+    suspend fun getMaxProjectedDate() = budgetItemRepository.getMaxProjectedDate()
 }

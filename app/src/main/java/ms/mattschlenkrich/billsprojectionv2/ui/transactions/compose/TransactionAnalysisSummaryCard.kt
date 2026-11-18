@@ -99,7 +99,8 @@ fun TransactionAnalysisSummaryCard(
                                 sumCredits
                             )
                         }",
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (sumCredits < 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = "${stringResource(R.string.label_average_per_month)} ${
@@ -108,7 +109,8 @@ fun TransactionAnalysisSummaryCard(
                             )
                         }",
                         style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = if (monthlyAvg < 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
@@ -156,7 +158,8 @@ fun TransactionAnalysisSummaryCard(
                 ) {
                     Text(
                         text = "Total: ${nf.displayDollars(totalSum)}",
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (totalSum < 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = "${stringResource(R.string.label_average_per_month)} ${
@@ -165,7 +168,8 @@ fun TransactionAnalysisSummaryCard(
                             )
                         }",
                         style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = if (monthlyAvg < 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
@@ -182,7 +186,8 @@ fun TransactionAnalysisSummaryCard(
                                     maxVal
                                 )
                             }",
-                            style = MaterialTheme.typography.bodySmall
+                            style = MaterialTheme.typography.bodySmall,
+                            color = if (maxVal < 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
                         )
                     }
                     if (minVal != null) {
@@ -192,7 +197,8 @@ fun TransactionAnalysisSummaryCard(
                                     minVal
                                 )
                             }",
-                            style = MaterialTheme.typography.bodySmall
+                            style = MaterialTheme.typography.bodySmall,
+                            color = if (minVal < 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -212,7 +218,7 @@ fun TransactionAnalysisSummaryCard(
                         }",
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.primary
+                        color = if (selectedSum < 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                     )
                 }
             }

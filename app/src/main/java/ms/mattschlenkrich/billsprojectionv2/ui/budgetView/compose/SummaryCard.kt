@@ -113,6 +113,7 @@ fun SummaryCard(
                                 text = nf.displayDollars(totalAssets),
                                 fontWeight = FontWeight.Bold,
                                 style = MaterialTheme.typography.bodyMedium,
+                                color = if (totalAssets < 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
                             )
                         }
                         Row(
@@ -190,7 +191,7 @@ fun SummaryCard(
                             text = nf.displayDollars(amount),
                             fontWeight = FontWeight.Bold,
                             style = MaterialTheme.typography.bodyLarge,
-                            color = if ((accountType?.keepTotals != true) && (asset.account.accountOwing >= 0.0)) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+                            color = if (amount < 0 || ((accountType?.keepTotals != true) && (asset.account.accountOwing >= 0.0))) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.clickable { onAccountClick() },
                         )
 
@@ -221,7 +222,8 @@ fun SummaryCard(
                             Text(
                                 text = nf.displayDollars(availableReal),
                                 fontWeight = FontWeight.Bold,
-                                style = MaterialTheme.typography.bodyLarge
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = if (availableReal < 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -262,7 +264,7 @@ fun SummaryCard(
                                 text = nf.displayDollars(projected),
                                 fontWeight = FontWeight.Bold,
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = if (!isAsset && (projected > 0)) MaterialTheme.colorScheme.error
+                                color = if (projected < 0 || (!isAsset && (projected > 0))) MaterialTheme.colorScheme.error
                                 else MaterialTheme.colorScheme.onSurface,
                             )
                         }
