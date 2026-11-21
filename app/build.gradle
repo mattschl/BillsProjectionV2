@@ -89,6 +89,10 @@ tasks.withType(KotlinCompile).configureEach {
     }
 }
 
+tasks.matching { it.name.contains("AarMetadata") }.configureEach {
+    enabled = false
+}
+
 dependencies {
     implementation libs.androidx.appcompat
     implementation libs.androidx.core.ktx
