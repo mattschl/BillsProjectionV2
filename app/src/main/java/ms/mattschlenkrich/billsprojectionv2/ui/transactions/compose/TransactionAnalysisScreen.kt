@@ -20,7 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import ms.mattschlenkrich.billsprojectionv2.common.AnalysisMode
 import ms.mattschlenkrich.billsprojectionv2.common.TimeRange
-import ms.mattschlenkrich.billsprojectionv2.common.columns.TransactionHistoryItemDefaults
+import ms.mattschlenkrich.billsprojectionv2.common.columnsdefaults.TransactionHistoryItemDefaults
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionBottomSheet
 import ms.mattschlenkrich.billsprojectionv2.common.components.ActionOption
 import ms.mattschlenkrich.billsprojectionv2.common.settings.ColumnSettingsHelper
